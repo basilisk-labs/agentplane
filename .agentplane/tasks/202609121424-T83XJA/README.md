@@ -1,10 +1,10 @@
 ---
 id: "202609121424-T83XJA"
 title: "Implement durable 0.7.9 usage, cost, and latency accounting for ST-08 through ST-13 and ST-17"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on:
@@ -25,9 +25,9 @@ plan_approval:
   note: null
 verification:
   state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  updated_at: "2026-09-12T23:19:52.252Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 0
 execution_route:
   frozen: true
@@ -81,6 +81,7 @@ execution_contract:
       - "The implementation uses only fake or local provider fixtures and performs no paid or live provider calls."
       - "The task changes persisted supervisor and runner accounting contracts and therefore requires schema and public export compatibility review."
       - "The task touches central runner, evaluator, and lifecycle paths, so repository policy requires a branch PR and hosted integration evidence."
+      - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/commands/evaluator; repository_effects=tests"
     repository_effects:
       - "ci"
       - "public_api"
@@ -314,6 +315,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The authorized ST-13 rework is complete, but full CI requires splitting an oversized ST-09 evaluator test outside the current writable roots. Recommended action: Extend the writable scope to the evaluator command tests and split the ST-09 cases into a focused neighboring file. Requested scope: roots=packages/agentplane/src/commands/evaluator; repository effects=tests; request digest=sha256:baf7fb7f76c4f840e1fdd97a90122eee987e3723c5abe2cf6ff91cb5a803dcfb. Agentplane receipt: external-agent-blocker/tr_a08ada226739537f9e1d448ec5defcdd/sha256:0d65aba75bbe22e792bd850d3b58a78870db0bf3cb15e3c7e1b500e63587e869/sha256:baf7fb7f76c4f840e1fdd97a90122eee987e3723c5abe2cf6ff91cb5a803dcfb."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/evaluator; repository effects: tests."
 events:
   -
     type: "status"
@@ -436,6 +440,8 @@ extensions:
     status: "active"
     task_id: "202609121424-T83XJA"
   agentplane.scope_extension_request:
+    applied_at: "2026-09-12T23:19:52.252Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:0d65aba75bbe22e792bd850d3b58a78870db0bf3cb15e3c7e1b500e63587e869"
     kind: "task_scope_extension_request"
     request:
@@ -447,20 +453,20 @@ extensions:
         - "packages/agentplane/src/commands/evaluator"
     request_digest: "sha256:baf7fb7f76c4f840e1fdd97a90122eee987e3723c5abe2cf6ff91cb5a803dcfb"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_a08ada226739537f9e1d448ec5defcdd"
     work_item_id: "ST-13"
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-12T19:28:51.014Z"
+        approved_at: "2026-09-12T23:19:52.252Z"
         approved_by: "USER"
-        approved_digest: "sha256:106b3c2da2bc74b7f6f834e120c1d7a3337e9bf54034809cf9f4af86f6d2ee92"
+        approved_digest: "sha256:47ee22d77ca7385f412a8a1da0d53ac32e469d13030f22fdc8fc03c8804e40a4"
         policy_facts:
-          - "manual_operator"
+          - "state_bound_scope_extension:sha256:baf7fb7f76c4f840e1fdd97a90122eee987e3723c5abe2cf6ff91cb5a803dcfb"
         state: "approved"
-      created_at: "2026-09-12T19:27:44.199Z"
-      digest: "sha256:106b3c2da2bc74b7f6f834e120c1d7a3337e9bf54034809cf9f4af86f6d2ee92"
+      created_at: "2026-09-12T23:19:52.252Z"
+      digest: "sha256:47ee22d77ca7385f412a8a1da0d53ac32e469d13030f22fdc8fc03c8804e40a4"
       proposal:
         assumptions:
           - "Equivalent existing focused tests may be extended instead of adding a roadmap-named file only when they prove the same acceptance contract and execute a nonzero test count."
@@ -1120,8 +1126,13 @@ extensions:
                   kind: "path"
                   mode: "write"
                   resource: "scripts/lib/test-route-registry.test.mjs"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/commands/evaluator"
               risk: "high"
               scope_roots:
+                - "packages/agentplane/src/commands/evaluator"
                 - "packages/agentplane/src/commands/shared"
                 - "packages/agentplane/src/commands/task"
                 - "packages/core/src/runner"
@@ -1190,10 +1201,10 @@ extensions:
                     required: true
                 evidence_fingerprint: "sha256:2834fa5919976a5edc26310212c8c3fe25822fe0124f2bf73bc95e91a94f66d3"
                 schema_version: 1
-      revision: 1
+      revision: 2
       schema_version: 1
       task_id: "202609121424-T83XJA"
-    event_cursor: 18
+    event_cursor: 19
     final_validation: null
     id: "202609121424-T83XJA"
     intent:
@@ -1210,10 +1221,752 @@ extensions:
 
         Source contract: agentplane-roadmap-r2 cards ST-08, ST-09, ST-10, ST-11, ST-12, ST-13, and ST-17. Capture Codex usage durably before semantic-result validation, preserve evaluator charges on failure, connect managed observations to the existing journal, account for external episodes without trusting self-reported tokens, roll up task cost from source observations, partition lifecycle latency without double counting, and separate missing telemetry from semantic quality and further-spend admission. Missing usage is unknown, never zero. A valid saved verdict is reused, while unknown budget blocks additional paid dispatch. Preserve I01-I12 and C01-C08. Do not create a second accounting store or trust model-supplied usage. The roadmap directory is source-only and must never be committed. Required checks: the focused ST-08 through ST-13 and ST-17 test commands, related runner/evaluator/task critical suites, typecheck, schema/mirror checks.
       task_id: "202609121424-T83XJA"
-    lifecycle: "BLOCKED"
+    lifecycle: "ACTIVE"
     plan_amendments: []
-    plan_history: []
-    revision: 28
+    plan_history:
+      -
+        approval:
+          approved_at: "2026-09-12T19:28:51.014Z"
+          approved_by: "USER"
+          approved_digest: "sha256:106b3c2da2bc74b7f6f834e120c1d7a3337e9bf54034809cf9f4af86f6d2ee92"
+          policy_facts:
+            - "manual_operator"
+          state: "approved"
+        created_at: "2026-09-12T19:27:44.199Z"
+        digest: "sha256:106b3c2da2bc74b7f6f834e120c1d7a3337e9bf54034809cf9f4af86f6d2ee92"
+        proposal:
+          assumptions:
+            - "Equivalent existing focused tests may be extended instead of adding a roadmap-named file only when they prove the same acceptance contract and execute a nonzero test count."
+            - "Provider usage persistence retains only normalized counts and opaque identities; raw provider events, prompts, result payloads, and secrets remain outside canonical task text."
+            - "Latency observations are diagnostic evidence and do not grant authority or change lifecycle outcomes."
+          planning_baseline:
+            captured_at: "2026-09-12T19:23:41.010Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:2834fa5919976a5edc26310212c8c3fe25822fe0124f2bf73bc95e91a94f66d3"
+            dirty_paths:
+              - ".agentplane/tasks/202609072121-9VEHKH/README.md"
+              - ".agentplane/tasks/202609080727-BAWTEE/README.md"
+              - ".agentplane/tasks/202609121424-3YAX44/README.md"
+              - ".agentplane/tasks/202609121424-49XXT3/README.md"
+              - ".agentplane/tasks/202609121424-4BC7B3/README.md"
+              - ".agentplane/tasks/202609121424-T83XJA/README.md"
+              - ".agentplane/tasks/202609121424-ZEJ656/README.md"
+              - "agentplane-roadmap-r2/AGENT-START.md"
+              - "agentplane-roadmap-r2/EXECUTION-CHARTER.md"
+              - "agentplane-roadmap-r2/README.md"
+              - "agentplane-roadmap-r2/agentplane-0.7.9-0.7.14-roadmap-r2.md"
+              - "agentplane-roadmap-r2/checksums.json"
+              - "agentplane-roadmap-r2/coverage-and-gap-audit.md"
+              - "agentplane-roadmap-r2/coverage-map.json"
+              - "agentplane-roadmap-r2/dependency-graph.json"
+              - "agentplane-roadmap-r2/experiment-requirements.json"
+              - "agentplane-roadmap-r2/releases/0.7.10.md"
+              - "agentplane-roadmap-r2/releases/0.7.11.md"
+              - "agentplane-roadmap-r2/releases/0.7.12.md"
+              - "agentplane-roadmap-r2/releases/0.7.13.md"
+              - "agentplane-roadmap-r2/releases/0.7.14.md"
+              - "agentplane-roadmap-r2/releases/0.7.9.md"
+              - "agentplane-roadmap-r2/source-evidence.json"
+              - "agentplane-roadmap-r2/tasks.json"
+              - "agentplane-roadmap-r2/tasks/BP-01.md"
+              - "agentplane-roadmap-r2/tasks/BP-02.md"
+              - "agentplane-roadmap-r2/tasks/BP-03.md"
+              - "agentplane-roadmap-r2/tasks/BP-04.md"
+              - "agentplane-roadmap-r2/tasks/BP-05.md"
+              - "agentplane-roadmap-r2/tasks/BP-06.md"
+              - "agentplane-roadmap-r2/tasks/BP-07.md"
+              - "agentplane-roadmap-r2/tasks/BP-08.md"
+              - "agentplane-roadmap-r2/tasks/BP-09.md"
+              - "agentplane-roadmap-r2/tasks/BP-10.md"
+              - "agentplane-roadmap-r2/tasks/BP-11.md"
+              - "agentplane-roadmap-r2/tasks/BP-12.md"
+              - "agentplane-roadmap-r2/tasks/BP-13.md"
+              - "agentplane-roadmap-r2/tasks/BP-14.md"
+              - "agentplane-roadmap-r2/tasks/BP-15.md"
+              - "agentplane-roadmap-r2/tasks/BP-16.md"
+              - "agentplane-roadmap-r2/tasks/BP-17.md"
+              - "agentplane-roadmap-r2/tasks/BP-18.md"
+              - "agentplane-roadmap-r2/tasks/BP-19.md"
+              - "agentplane-roadmap-r2/tasks/BP-20.md"
+              - "agentplane-roadmap-r2/tasks/BP-21.md"
+              - "agentplane-roadmap-r2/tasks/BP-22.md"
+              - "agentplane-roadmap-r2/tasks/BP-23.md"
+              - "agentplane-roadmap-r2/tasks/BP-24.md"
+              - "agentplane-roadmap-r2/tasks/BP-25.md"
+              - "agentplane-roadmap-r2/tasks/BP-26.md"
+              - "agentplane-roadmap-r2/tasks/BP-27.md"
+              - "agentplane-roadmap-r2/tasks/BP-28.md"
+              - "agentplane-roadmap-r2/tasks/BP-29.md"
+              - "agentplane-roadmap-r2/tasks/BP-30.md"
+              - "agentplane-roadmap-r2/tasks/BP-31.md"
+              - "agentplane-roadmap-r2/tasks/EV-01.md"
+              - "agentplane-roadmap-r2/tasks/EV-02.md"
+              - "agentplane-roadmap-r2/tasks/EV-03.md"
+              - "agentplane-roadmap-r2/tasks/EV-04.md"
+              - "agentplane-roadmap-r2/tasks/EV-05.md"
+              - "agentplane-roadmap-r2/tasks/EV-06.md"
+              - "agentplane-roadmap-r2/tasks/EV-07.md"
+              - "agentplane-roadmap-r2/tasks/EV-08.md"
+              - "agentplane-roadmap-r2/tasks/EV-09.md"
+              - "agentplane-roadmap-r2/tasks/EV-10.md"
+              - "agentplane-roadmap-r2/tasks/EV-11.md"
+              - "agentplane-roadmap-r2/tasks/EV-12.md"
+              - "agentplane-roadmap-r2/tasks/EV-13.md"
+              - "agentplane-roadmap-r2/tasks/LC-01.md"
+              - "agentplane-roadmap-r2/tasks/LC-02.md"
+              - "agentplane-roadmap-r2/tasks/LC-03.md"
+              - "agentplane-roadmap-r2/tasks/LC-04.md"
+              - "agentplane-roadmap-r2/tasks/LC-05.md"
+              - "agentplane-roadmap-r2/tasks/LC-06.md"
+              - "agentplane-roadmap-r2/tasks/LC-07.md"
+              - "agentplane-roadmap-r2/tasks/LC-08.md"
+              - "agentplane-roadmap-r2/tasks/LC-09.md"
+              - "agentplane-roadmap-r2/tasks/LC-10.md"
+              - "agentplane-roadmap-r2/tasks/LC-11.md"
+              - "agentplane-roadmap-r2/tasks/LC-12.md"
+              - "agentplane-roadmap-r2/tasks/LC-13.md"
+              - "agentplane-roadmap-r2/tasks/LC-14.md"
+              - "agentplane-roadmap-r2/tasks/LC-15.md"
+              - "agentplane-roadmap-r2/tasks/LC-16.md"
+              - "agentplane-roadmap-r2/tasks/LC-17.md"
+              - "agentplane-roadmap-r2/tasks/LC-18.md"
+              - "agentplane-roadmap-r2/tasks/LC-19.md"
+              - "agentplane-roadmap-r2/tasks/LC-20.md"
+              - "agentplane-roadmap-r2/tasks/LC-21.md"
+              - "agentplane-roadmap-r2/tasks/LC-22.md"
+              - "agentplane-roadmap-r2/tasks/LC-23.md"
+              - "agentplane-roadmap-r2/tasks/PL-01.md"
+              - "agentplane-roadmap-r2/tasks/PL-02.md"
+              - "agentplane-roadmap-r2/tasks/PL-03.md"
+              - "agentplane-roadmap-r2/tasks/PL-04.md"
+              - "agentplane-roadmap-r2/tasks/PL-05.md"
+              - "agentplane-roadmap-r2/tasks/PL-06.md"
+              - "agentplane-roadmap-r2/tasks/PL-07.md"
+              - "agentplane-roadmap-r2/tasks/PL-08.md"
+              - "agentplane-roadmap-r2/tasks/PL-09.md"
+              - "agentplane-roadmap-r2/tasks/PL-10.md"
+              - "agentplane-roadmap-r2/tasks/PL-11.md"
+              - "agentplane-roadmap-r2/tasks/PL-12.md"
+              - "agentplane-roadmap-r2/tasks/RC-01.md"
+              - "agentplane-roadmap-r2/tasks/RC-02.md"
+              - "agentplane-roadmap-r2/tasks/RC-03.md"
+              - "agentplane-roadmap-r2/tasks/RC-04.md"
+              - "agentplane-roadmap-r2/tasks/RC-05.md"
+              - "agentplane-roadmap-r2/tasks/RC-06.md"
+              - "agentplane-roadmap-r2/tasks/RC-07.md"
+              - "agentplane-roadmap-r2/tasks/RC-08.md"
+              - "agentplane-roadmap-r2/tasks/RC-09.md"
+              - "agentplane-roadmap-r2/tasks/RC-10.md"
+              - "agentplane-roadmap-r2/tasks/RC-11.md"
+              - "agentplane-roadmap-r2/tasks/RC-12.md"
+              - "agentplane-roadmap-r2/tasks/RC-13.md"
+              - "agentplane-roadmap-r2/tasks/RC-14.md"
+              - "agentplane-roadmap-r2/tasks/RC-15.md"
+              - "agentplane-roadmap-r2/tasks/RC-16.md"
+              - "agentplane-roadmap-r2/tasks/RC-17.md"
+              - "agentplane-roadmap-r2/tasks/RC-18.md"
+              - "agentplane-roadmap-r2/tasks/ST-01.md"
+              - "agentplane-roadmap-r2/tasks/ST-02.md"
+              - "agentplane-roadmap-r2/tasks/ST-03.md"
+              - "agentplane-roadmap-r2/tasks/ST-04.md"
+              - "agentplane-roadmap-r2/tasks/ST-05.md"
+              - "agentplane-roadmap-r2/tasks/ST-06.md"
+              - "agentplane-roadmap-r2/tasks/ST-07.md"
+              - "agentplane-roadmap-r2/tasks/ST-08.md"
+              - "agentplane-roadmap-r2/tasks/ST-09.md"
+              - "agentplane-roadmap-r2/tasks/ST-10.md"
+              - "agentplane-roadmap-r2/tasks/ST-11.md"
+              - "agentplane-roadmap-r2/tasks/ST-12.md"
+              - "agentplane-roadmap-r2/tasks/ST-13.md"
+              - "agentplane-roadmap-r2/tasks/ST-14.md"
+              - "agentplane-roadmap-r2/tasks/ST-15.md"
+              - "agentplane-roadmap-r2/tasks/ST-16.md"
+              - "agentplane-roadmap-r2/tasks/ST-17.md"
+              - "agentplane-roadmap-r2/tasks/ST-18.md"
+              - "agentplane-roadmap-r2/tasks/ST-19.md"
+              - "agentplane-roadmap-r2/tasks/ST-20.md"
+              - "agentplane-roadmap-r2/tasks/ST-21.md"
+              - "agentplane-roadmap-r2/validate_roadmap.py"
+              - "agentplane-roadmap-r2/validation-report.json"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "1f8b58d52ade59dd6185af72b00f70bb6194bdb0"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:2"
+          schema_version: 1
+          task_id: "202609121424-T83XJA"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-usage-durability.test.ts"
+                id: "check-usage-durability"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts"
+                id: "check-failed-usage"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts"
+                id: "check-managed-accounting"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-external-accounting.test.ts"
+                id: "check-external-accounting"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "node --test scripts/bench/task-cost-rollup.test.mjs"
+                id: "check-cost-rollup"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-stage-timing.test.ts"
+                id: "check-stage-timing"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/evaluator/roadmap-telemetry-disposition.test.ts"
+                id: "check-telemetry-disposition"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "bun run typecheck"
+                id: "check-typecheck"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 600000
+              -
+                capability: "task.verify"
+                command: "bun run schemas:check"
+                id: "check-schemas"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "bun run artifacts:check"
+                id: "check-artifacts"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "bun run test:critical"
+                id: "check-critical"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                command: "bun run ci:local:full"
+                id: "check-full-ci"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1800000
+            criteria:
+              -
+                check_ids:
+                  - "check-usage-durability"
+                description: "Provider-observed Codex usage is durably bound to dispatch, run, work-order, thread, and turn identity before semantic validation or result application can fail; malformed, duplicate, partial, and incomplete observations remain fail-closed and missing usage is never represented as zero."
+                id: "c-durable-usage"
+                required: true
+              -
+                check_ids:
+                  - "check-failed-usage"
+                  - "check-telemetry-disposition"
+                description: "Evaluator success, timeout, nonzero exit, and malformed-result receipts retain every observed charge without changing verdict semantics; a saved valid verdict is reused, actual human_review still stops, and unknown finite-budget availability blocks further paid dispatch rather than replaying completed semantic work."
+                id: "c-evaluator-usage"
+                required: true
+              -
+                check_ids:
+                  - "check-managed-accounting"
+                  - "check-external-accounting"
+                description: "Ordinary, kernel, and external PLANNER, CURATOR, EXECUTOR, and EVALUATOR attempts share the existing journal coverage model; replayed identities count once, formal CLI operations are not billable episodes, model-supplied token claims are ignored, and unattributable host turns stay explicitly unavailable or unallocatable."
+                id: "c-managed-external"
+                required: true
+              -
+                check_ids:
+                  - "check-cost-rollup"
+                description: "A diagnostic task rollup reconciles unique source observations, including failures, into dispatched, observed, partial, unavailable, role, and attempt coverage; cached input and reasoning remain subsets and unknown portions prevent a complete numeric total."
+                id: "c-task-rollup"
+                required: true
+              -
+                check_ids:
+                  - "check-stage-timing"
+                description: "Lifecycle timing uses bounded monotonic parent and child spans for preparation, semantic dispatch, first observed scoped mutation, native verification, review, provider or integration, verified state, closure, local work, USER wait, and external wait without overlap double-counting or negative elapsed durations."
+                id: "c-stage-timing"
+                required: true
+              -
+                check_ids:
+                  - "check-typecheck"
+                  - "check-schemas"
+                  - "check-artifacts"
+                  - "check-critical"
+                  - "check-full-ci"
+                description: "The implementation preserves I01-I12 and C01-C08, stores no provider payloads or secrets in canonical task text, adds no second mutable aggregate, and passes type, schema, generated-artifact, critical, and full local CI checks."
+                id: "c-regression"
+                required: true
+            evidence_fingerprint: "sha256:2834fa5919976a5edc26310212c8c3fe25822fe0124f2bf73bc95e91a94f66d3"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "check-usage-durability"
+                    description: "Provider-observed Codex usage is durably bound to dispatch, run, work-order, thread, and turn identity before semantic validation or result application can fail; malformed, duplicate, partial, and incomplete observations remain fail-closed and missing usage is never represented as zero."
+                    id: "c-durable-usage"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 240000
+                  optional_sources:
+                    - "Existing runner artifact migration and recovery tests"
+                  required_sources:
+                    - "packages/agentplane/src/runner/adapters/codex-result-transport.ts"
+                    - "packages/agentplane/src/runner/adapters/codex.ts"
+                    - "packages/agentplane/src/runner/artifacts.ts"
+                    - "packages/agentplane/src/runner/types.ts"
+                    - "packages/agentplane/src/runner/run-state-validation.ts"
+                  symbol_hints:
+                    - "CodexProviderUsage"
+                    - "createCodexResultEventCollector"
+                    - "recordCodexProviderUsageForResult"
+                    - "RunnerRunState"
+                depends_on: []
+                expected_outputs:
+                  - "durable provider-usage observation"
+                  - "usage durability regression coverage"
+                id: "ST-08"
+                objective: "Persist minimal provider usage observations at the Codex runner boundary before semantic parsing or result application."
+                optional: false
+                priority: 100
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/runner"
+                risk: "medium"
+                scope_roots:
+                  - "packages/agentplane/src/runner"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-usage-durability.test.ts"
+                      id: "check-usage-durability"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                  criteria:
+                    -
+                      check_ids:
+                        - "check-usage-durability"
+                      description: "Provider-observed Codex usage is durably bound to dispatch, run, work-order, thread, and turn identity before semantic validation or result application can fail; malformed, duplicate, partial, and incomplete observations remain fail-closed and missing usage is never represented as zero."
+                      id: "c-durable-usage"
+                      required: true
+                  evidence_fingerprint: "sha256:2834fa5919976a5edc26310212c8c3fe25822fe0124f2bf73bc95e91a94f66d3"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "check-failed-usage"
+                      - "check-telemetry-disposition"
+                    description: "Evaluator success, timeout, nonzero exit, and malformed-result receipts retain every observed charge without changing verdict semantics; a saved valid verdict is reused, actual human_review still stops, and unknown finite-budget availability blocks further paid dispatch rather than replaying completed semantic work."
+                    id: "c-evaluator-usage"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 260000
+                  optional_sources:
+                    - "Existing evaluator recovery, budget, and malformed-result tests"
+                  required_sources:
+                    - "packages/agentplane/src/commands/evaluator/evaluator-episode.ts"
+                    - "packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts"
+                    - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+                    - "packages/core/src/runner/supervisor-execution-episode.ts"
+                  symbol_hints:
+                    - "EvaluatorEpisodeReceipt"
+                    - "completePersistedEvaluatorEpisode"
+                    - "human_review"
+                    - "budget_exhausted"
+                depends_on:
+                  - "ST-08"
+                expected_outputs:
+                  - "failure-safe evaluator usage receipt"
+                  - "distinct telemetry and spend-admission disposition"
+                id: "ST-09-17"
+                objective: "Preserve evaluator charges on every provider outcome and separate semantic verdict reuse from telemetry coverage and further-spend admission."
+                optional: false
+                priority: 90
+                required_inputs:
+                  - "durable provider-usage observation"
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/evaluator"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/runner"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/commands/evaluator"
+                  - "packages/agentplane/src/commands/shared"
+                  - "packages/core/src/runner"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts"
+                      id: "check-failed-usage"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/evaluator/roadmap-telemetry-disposition.test.ts"
+                      id: "check-telemetry-disposition"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                  criteria:
+                    -
+                      check_ids:
+                        - "check-failed-usage"
+                        - "check-telemetry-disposition"
+                      description: "Evaluator success, timeout, nonzero exit, and malformed-result receipts retain every observed charge without changing verdict semantics; a saved valid verdict is reused, actual human_review still stops, and unknown finite-budget availability blocks further paid dispatch rather than replaying completed semantic work."
+                      id: "c-evaluator-usage"
+                      required: true
+                  evidence_fingerprint: "sha256:2834fa5919976a5edc26310212c8c3fe25822fe0124f2bf73bc95e91a94f66d3"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "check-managed-accounting"
+                      - "check-external-accounting"
+                    description: "Ordinary, kernel, and external PLANNER, CURATOR, EXECUTOR, and EVALUATOR attempts share the existing journal coverage model; replayed identities count once, formal CLI operations are not billable episodes, model-supplied token claims are ignored, and unattributable host turns stay explicitly unavailable or unallocatable."
+                    id: "c-managed-external"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 300000
+                  optional_sources:
+                    - "Existing managed supervisor and external exchange replay tests"
+                  required_sources:
+                    - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+                    - "packages/core/src/runner/supervisor-execution-episode.ts"
+                    - "packages/agentplane/src/commands/task/kernel-run.ts"
+                    - "packages/agentplane/src/commands/task/external-agent-exchange.ts"
+                    - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
+                    - "packages/agentplane/src/commands/task/agent-action-packet.ts"
+                  symbol_hints:
+                    - "SupervisorExecutionEpisodeJournal"
+                    - "provider_usage"
+                    - "completeSupervisorExecutionEpisode"
+                    - "applyAcceptedExternalAgentResult"
+                depends_on:
+                  - "ST-09-17"
+                expected_outputs:
+                  - "managed role and attempt accounting"
+                  - "external exchange coverage accounting"
+                id: "ST-10-11"
+                objective: "Connect managed and external semantic attempts to the existing supervisor journal with trustworthy attribution or explicit unavailable coverage."
+                optional: false
+                priority: 80
+                required_inputs:
+                  - "durable provider-usage observation"
+                  - "failure-safe evaluator usage receipt"
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/runner"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/commands/shared"
+                  - "packages/agentplane/src/commands/task"
+                  - "packages/core/src/runner"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts"
+                      id: "check-managed-accounting"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-external-accounting.test.ts"
+                      id: "check-external-accounting"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                  criteria:
+                    -
+                      check_ids:
+                        - "check-managed-accounting"
+                        - "check-external-accounting"
+                      description: "Ordinary, kernel, and external PLANNER, CURATOR, EXECUTOR, and EVALUATOR attempts share the existing journal coverage model; replayed identities count once, formal CLI operations are not billable episodes, model-supplied token claims are ignored, and unattributable host turns stay explicitly unavailable or unallocatable."
+                      id: "c-managed-external"
+                      required: true
+                  evidence_fingerprint: "sha256:2834fa5919976a5edc26310212c8c3fe25822fe0124f2bf73bc95e91a94f66d3"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "check-cost-rollup"
+                    description: "A diagnostic task rollup reconciles unique source observations, including failures, into dispatched, observed, partial, unavailable, role, and attempt coverage; cached input and reasoning remain subsets and unknown portions prevent a complete numeric total."
+                    id: "c-task-rollup"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 220000
+                  optional_sources:
+                    - "Existing agent-efficiency baseline and replay source semantics"
+                  required_sources:
+                    - "packages/core/src/runner/supervisor-execution-episode.ts"
+                    - "scripts/lib/agent-efficiency-repository-snapshot.mjs"
+                  symbol_hints:
+                    - "token_usage"
+                    - "provider_usage"
+                    - "token_observed_agent_runs"
+                depends_on:
+                  - "ST-10-11"
+                expected_outputs:
+                  - "diagnostic task cost rollup"
+                  - "source-observation reconciliation tests"
+                id: "ST-12"
+                objective: "Derive a read-only task cost and coverage rollup from unique supervisor journal observations."
+                optional: false
+                priority: 70
+                required_inputs:
+                  - "managed role and attempt accounting"
+                  - "external exchange coverage accounting"
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/runner"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/bench"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/lib/agent-efficiency-repository-snapshot.mjs"
+                risk: "medium"
+                scope_roots:
+                  - "packages/core/src/runner"
+                  - "scripts/bench"
+                  - "scripts/lib/agent-efficiency-repository-snapshot.mjs"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "node --test scripts/bench/task-cost-rollup.test.mjs"
+                      id: "check-cost-rollup"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                  criteria:
+                    -
+                      check_ids:
+                        - "check-cost-rollup"
+                      description: "A diagnostic task rollup reconciles unique source observations, including failures, into dispatched, observed, partial, unavailable, role, and attempt coverage; cached input and reasoning remain subsets and unknown portions prevent a complete numeric total."
+                      id: "c-task-rollup"
+                      required: true
+                  evidence_fingerprint: "sha256:2834fa5919976a5edc26310212c8c3fe25822fe0124f2bf73bc95e91a94f66d3"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "check-stage-timing"
+                    description: "Lifecycle timing uses bounded monotonic parent and child spans for preparation, semantic dispatch, first observed scoped mutation, native verification, review, provider or integration, verified state, closure, local work, USER wait, and external wait without overlap double-counting or negative elapsed durations."
+                    id: "c-stage-timing"
+                    required: true
+                  -
+                    check_ids:
+                      - "check-typecheck"
+                      - "check-schemas"
+                      - "check-artifacts"
+                      - "check-critical"
+                      - "check-full-ci"
+                    description: "The implementation preserves I01-I12 and C01-C08, stores no provider payloads or secrets in canonical task text, adds no second mutable aggregate, and passes type, schema, generated-artifact, critical, and full local CI checks."
+                    id: "c-regression"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 300000
+                  optional_sources:
+                    - "Existing monotonic wait and duration helpers"
+                  required_sources:
+                    - "packages/agentplane/src/commands/task/advance.command.ts"
+                    - "packages/agentplane/src/commands/task/direct-task-supervisor.ts"
+                    - "packages/agentplane/src/commands/task/branch-task-supervisor.ts"
+                    - "packages/agentplane/src/commands/task/direct-task-verification.ts"
+                    - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+                    - "packages/core/src/runner/supervisor-execution-episode.ts"
+                  symbol_hints:
+                    - "started_at"
+                    - "completed_at"
+                    - "duration_ms"
+                    - "performance.now"
+                depends_on:
+                  - "ST-10-11"
+                expected_outputs:
+                  - "lifecycle stage timing observations"
+                  - "clock and overlap regression coverage"
+                id: "ST-13"
+                objective: "Attach non-overlapping monotonic lifecycle spans to existing supervisor and task transition boundaries."
+                optional: false
+                priority: 60
+                required_inputs:
+                  - "managed role and attempt accounting"
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/runner"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/lib/test-route-registry.mjs"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/lib/test-route-registry.test.mjs"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/commands/shared"
+                  - "packages/agentplane/src/commands/task"
+                  - "packages/core/src/runner"
+                  - "scripts/lib/test-route-registry.mjs"
+                  - "scripts/lib/test-route-registry.test.mjs"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-stage-timing.test.ts"
+                      id: "check-stage-timing"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                    -
+                      capability: "task.verify"
+                      command: "bun run typecheck"
+                      id: "check-typecheck"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                    -
+                      capability: "task.verify"
+                      command: "bun run schemas:check"
+                      id: "check-schemas"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                    -
+                      capability: "task.verify"
+                      command: "bun run artifacts:check"
+                      id: "check-artifacts"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:critical"
+                      id: "check-critical"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "check-full-ci"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1800000
+                  criteria:
+                    -
+                      check_ids:
+                        - "check-stage-timing"
+                      description: "Lifecycle timing uses bounded monotonic parent and child spans for preparation, semantic dispatch, first observed scoped mutation, native verification, review, provider or integration, verified state, closure, local work, USER wait, and external wait without overlap double-counting or negative elapsed durations."
+                      id: "c-stage-timing"
+                      required: true
+                    -
+                      check_ids:
+                        - "check-typecheck"
+                        - "check-schemas"
+                        - "check-artifacts"
+                        - "check-critical"
+                        - "check-full-ci"
+                      description: "The implementation preserves I01-I12 and C01-C08, stores no provider payloads or secrets in canonical task text, adds no second mutable aggregate, and passes type, schema, generated-artifact, critical, and full local CI checks."
+                      id: "c-regression"
+                      required: true
+                  evidence_fingerprint: "sha256:2834fa5919976a5edc26310212c8c3fe25822fe0124f2bf73bc95e91a94f66d3"
+                  schema_version: 1
+        revision: 1
+        schema_version: 1
+        task_id: "202609121424-T83XJA"
+    revision: 29
     schema_version: 1
     updated_at: "2026-09-12T23:19:42.844Z"
     work_items:
@@ -2005,6 +2758,30 @@ extensions:
         mutation_id: "compatibility:sha256:d75e1378750895149a188c2f38782a52ee3f8f7cb2e8a5ba1423551701b958d8"
         next_revision: 7
         previous_revision: 6
+        schema_version: 1
+        task_id: "202609121424-T83XJA"
+      compatibility:sha256:d828a829fcdbe3cf1c3895430a7882bc7e6022f8d0e2fba5beb7a74fdfc6a433:
+        aggregate_digest: "sha256:90273a2eabedcb9d4fc10db422ec2fd52cd22e21e56198f9ff55f35513629957"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T23:19:42.844Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_2aeaaea37b55feef67ad8456"
+          mutation_id: "compatibility:sha256:d828a829fcdbe3cf1c3895430a7882bc7e6022f8d0e2fba5beb7a74fdfc6a433"
+          plan_digest: "sha256:106b3c2da2bc74b7f6f834e120c1d7a3337e9bf54034809cf9f4af86f6d2ee92"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-T83XJA"
+          task_revision: 28
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:d828a829fcdbe3cf1c3895430a7882bc7e6022f8d0e2fba5beb7a74fdfc6a433"
+        next_revision: 29
+        previous_revision: 28
         schema_version: 1
         task_id: "202609121424-T83XJA"
       compatibility:sha256:e196c30f7bab790e78d61ebdd034b07dd2ab43f53bf287976fd41e5bb70cb24a:
