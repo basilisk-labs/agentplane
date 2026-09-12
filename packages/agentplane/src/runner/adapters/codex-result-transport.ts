@@ -236,6 +236,7 @@ export type CodexResultEventCollector = {
   observeStdoutLine(rawLine: string): void;
   readLastAgentMessage(): string | null;
   readUsage(): CodexProviderUsage | null;
+  readUsageObservation(): CodexProviderUsageObservation;
 };
 
 export type CodexProviderUsage = {
@@ -251,9 +252,16 @@ export type CodexProviderUsage = {
   turn_id?: string;
 };
 
-// Provider usage is process-local supervisor evidence. It deliberately stays
-// outside RunnerResult, receipts, and task projections so existing machine
-// contracts do not start retaining a provider-specific telemetry field.
+export type CodexProviderUsageObservation = {
+  status: "observed" | "partial" | "unavailable";
+  usage: CodexProviderUsage | null;
+  thread_id: string | null;
+  turn_id: string | null;
+};
+
+// This process-local association remains a compatibility convenience. Durable
+// accounting uses the supervisor-owned usage observation event written by the
+// Codex adapter before semantic materialization.
 const CODEX_PROVIDER_USAGE_BY_RESULT = new WeakMap<object, CodexProviderUsage>();
 
 export function recordCodexProviderUsageForResult(result: object, usage: CodexProviderUsage): void {
@@ -314,7 +322,11 @@ function readCodexProviderUsage(providerEvent: Record<string, unknown>): CodexPr
  * trace redaction or retention. The collector intentionally retains only the
  * latest agent message and protocol state, never the full provider stream.
  */
-export function createCodexResultEventCollector(): CodexResultEventCollector {
+export function createCodexResultEventCollector(
+  opts: {
+    onUsageObserved?: (observation: CodexProviderUsageObservation) => void;
+  } = {},
+): CodexResultEventCollector {
   let lastMessage: string | null = null;
   let usage: CodexProviderUsage | null = null;
   let turnCompleted = false;
@@ -322,6 +334,19 @@ export function createCodexResultEventCollector(): CodexResultEventCollector {
   let usageError: Error | null = null;
   let threadId: string | undefined;
   let turnId: string | undefined;
+  let completionObserved = false;
+  let usageObservationEmitted = false;
+  const usageObservation = (): CodexProviderUsageObservation => ({
+    status:
+      usage && threadId && turnId
+        ? "observed"
+        : usage || completionObserved || threadId || turnId
+          ? "partial"
+          : "unavailable",
+    usage,
+    thread_id: threadId ?? null,
+    turn_id: turnId ?? null,
+  });
   return {
     observeStdoutLine(rawLine) {
       const trimmed = rawLine.trim();
@@ -346,6 +371,7 @@ export function createCodexResultEventCollector(): CodexResultEventCollector {
         return;
       }
       if (parsed.type === "turn.completed") {
+        completionObserved = true;
         try {
           const observed = readCodexProviderUsage(parsed);
           const completedTurn =
@@ -353,6 +379,7 @@ export function createCodexResultEventCollector(): CodexResultEventCollector {
           if (turnId && completedTurn !== turnId) {
             throw new Error("Codex turn completion changed provider turn identity.");
           }
+          if (!turnId && completedTurn) turnId = completedTurn;
           const next =
             observed === null
               ? null
@@ -372,6 +399,10 @@ export function createCodexResultEventCollector(): CodexResultEventCollector {
           }
           usage = next;
           turnCompleted = true;
+          if (usage && !usageObservationEmitted) {
+            usageObservationEmitted = true;
+            opts.onUsageObserved?.(usageObservation());
+          }
         } catch (error) {
           usageError = error instanceof Error ? error : new Error(String(error));
           protocolError = usageError;
@@ -407,6 +438,9 @@ export function createCodexResultEventCollector(): CodexResultEventCollector {
         throw new Error("Codex JSONL stream ended before turn completion.");
       }
       return usage;
+    },
+    readUsageObservation() {
+      return usageObservation();
     },
   };
 }

@@ -1,0 +1,5 @@
+ .../src/runner/adapters/codex-result-transport.ts  |  42 +++++-
+ packages/agentplane/src/runner/adapters/codex.ts   |  81 +++++++++--
+ .../adapters/roadmap-usage-durability.test.ts      | 159 +++++++++++++++++++++
+ packages/agentplane/src/runner/artifacts.ts        |  29 ++++
+ 4 files changed, 297 insertions(+), 14 deletions(-)

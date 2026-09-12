@@ -33,9 +33,12 @@ import {
   materializeCodexResultTransport,
   recordCodexProviderUsageForResult,
   renderCodexResultOutputSchemaJson,
-  type CodexProviderUsage,
 } from "./codex-result-transport.js";
 import { readValidatedPreparedRunnerStdin } from "./prepared-input.js";
+import {
+  appendRunnerProviderUsageObservation,
+  type RunnerProviderUsageObservation,
+} from "../artifacts.js";
 
 function byteLength(text: string | null | undefined): number {
   return Buffer.byteLength(text ?? "", "utf8");
@@ -51,14 +54,36 @@ function readOptionalCodexAgentMessage(
   }
 }
 
-function readOptionalCodexUsage(
-  collector: ReturnType<typeof createCodexResultEventCollector>,
-): CodexProviderUsage | null {
-  try {
-    return collector.readUsage();
-  } catch {
-    return null;
+function durableUsageObservation(opts: {
+  invocation: RunnerInvocation;
+  observation: ReturnType<
+    ReturnType<typeof createCodexResultEventCollector>["readUsageObservation"]
+  >;
+  prepared_context_bytes?: number;
+}): RunnerProviderUsageObservation {
+  let usage: Record<string, number> | null = null;
+  if (opts.observation.usage) {
+    const { thread_id: _threadId, turn_id: _turnId, ...tokenUsage } = opts.observation.usage;
+    usage = {
+      ...tokenUsage,
+      ...(opts.prepared_context_bytes === undefined
+        ? {}
+        : { prepared_context_bytes: opts.prepared_context_bytes }),
+    };
   }
+  return {
+    schema_version: 1,
+    kind: "runner_provider_usage_observation",
+    provider: "codex",
+    status: opts.observation.status,
+    dispatch_id: `dispatch:${opts.invocation.work_order_id}`,
+    run_id: opts.invocation.run_id,
+    work_order_id: opts.invocation.work_order_id,
+    thread_id: opts.observation.thread_id,
+    turn_id: opts.observation.turn_id,
+    usage,
+    observed_at: new Date().toISOString(),
+  };
 }
 
 function buildCodexArtifacts(
@@ -161,8 +186,41 @@ export class CodexRunnerAdapter implements RunnerAdapter {
 
   async execute(invocation: RunnerInvocation): Promise<RunnerResult> {
     const executionInvocation = structuredClone(invocation);
-    const resultEventCollector = createCodexResultEventCollector();
     let preparedContextBytes: number | undefined;
+    let usagePersistence: Promise<void> | null = null;
+    let usagePersistenceStarted = false;
+    let usageFinalizedBeforeSemantic = false;
+    const persistUsage = (
+      observation: ReturnType<
+        ReturnType<typeof createCodexResultEventCollector>["readUsageObservation"]
+      >,
+    ): Promise<void> => {
+      if (!usagePersistenceStarted) {
+        usagePersistenceStarted = true;
+        usagePersistence = appendRunnerProviderUsageObservation({
+          events_path: executionInvocation.events_path,
+          observation: durableUsageObservation({
+            invocation: executionInvocation,
+            observation,
+            ...(preparedContextBytes === undefined
+              ? {}
+              : { prepared_context_bytes: preparedContextBytes }),
+          }),
+        });
+        void usagePersistence.catch(() => {
+          // Awaited below before semantic materialization; this prevents an early unhandled rejection.
+        });
+      }
+      return usagePersistence ?? Promise.resolve();
+    };
+    const resultEventCollector = createCodexResultEventCollector({
+      onUsageObserved: (observation) => {
+        void persistUsage(observation);
+      },
+    });
+    const finalizeUsage = async (): Promise<void> => {
+      await persistUsage(resultEventCollector.readUsageObservation());
+    };
     const result = await executeSupervisedRunnerAdapter({
       invocation: executionInvocation,
       assertInvocation: assertCodexInvocation,
@@ -185,6 +243,8 @@ export class CodexRunnerAdapter implements RunnerAdapter {
         return stdin;
       },
       materializeResult: async ({ invocation: input, processResult }) => {
+        usageFinalizedBeforeSemantic = true;
+        await finalizeUsage();
         if (
           processResult.exit_code !== 0 ||
           processResult.timeout_reason !== null ||
@@ -288,7 +348,8 @@ export class CodexRunnerAdapter implements RunnerAdapter {
         };
       },
     });
-    const providerUsage = readOptionalCodexUsage(resultEventCollector);
+    if (!usageFinalizedBeforeSemantic) await finalizeUsage();
+    const providerUsage = resultEventCollector.readUsageObservation().usage;
     if (providerUsage)
       recordCodexProviderUsageForResult(result, {
         ...providerUsage,
