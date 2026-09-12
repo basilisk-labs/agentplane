@@ -4,7 +4,7 @@ title: "Implement the 0.7.9 baseline inventory and lifecycle characterization fo
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 34
+revision: 35
 origin:
   system: "manual"
 depends_on: []
@@ -234,9 +234,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "d8327ee45875d7c0f5b62bbfcf102d890c8745b7"
-  message: "🚧 9WPTCW task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -2678,9 +2676,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609121423-9WPTCW"
-    revision: 34
+    revision: 35
     schema_version: 1
-    updated_at: "2026-09-12T17:53:24.027Z"
+    updated_at: "2026-09-12T17:55:20.229Z"
     work_items:
       ST-01:
         attempt: 1
@@ -2863,14 +2861,94 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       ST-21:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "ST-21"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:76a4b6ffe0048e9359c7cee39017dc88b89297a14d2abd3e18c2cb9fb027679b"
+            id: "backend-characterization"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 3
+              task_id: "202609121423-9WPTCW"
+              work_item_id: "ST-21"
+            provenance:
+              - "sha256:9d25e3f75351e0a6a663ea881b26b651f34ecbfc4e1fafa446be5121e5f69230"
+              - ".agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:5e85e470fafda32f036c7ba1f931db8fc8d7ff942955ecddf81066d42a6293ef"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json"
+              check_id: "check-backend"
+              command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-backend-roundtrip.test.ts"
+              detail: "Observed by bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-backend-roundtrip.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-12T17:55:20.185Z"
+              repository_snapshot_digest: "sha256:5e85e470fafda32f036c7ba1f931db8fc8d7ff942955ecddf81066d42a6293ef"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json"
+              check_id: "check-typecheck"
+              command_identity: "bun run typecheck"
+              detail: "Observed by bun run typecheck."
+              exit_code: 0
+              observed_at: "2026-09-12T17:55:20.185Z"
+              repository_snapshot_digest: "sha256:5e85e470fafda32f036c7ba1f931db8fc8d7ff942955ecddf81066d42a6293ef"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json"
+              check_id: "check-schemas"
+              command_identity: "bun run schemas:check"
+              detail: "Observed by bun run schemas:check."
+              exit_code: 0
+              observed_at: "2026-09-12T17:55:20.185Z"
+              repository_snapshot_digest: "sha256:5e85e470fafda32f036c7ba1f931db8fc8d7ff942955ecddf81066d42a6293ef"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json"
+              check_id: "check-artifacts"
+              command_identity: "bun run artifacts:check"
+              detail: "Observed by bun run artifacts:check."
+              exit_code: 0
+              observed_at: "2026-09-12T17:55:20.185Z"
+              repository_snapshot_digest: "sha256:5e85e470fafda32f036c7ba1f931db8fc8d7ff942955ecddf81066d42a6293ef"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json"
+              check_id: "check-critical"
+              command_identity: "bun run test:critical"
+              detail: "Observed by bun run test:critical."
+              exit_code: 0
+              observed_at: "2026-09-12T17:55:20.185Z"
+              repository_snapshot_digest: "sha256:5e85e470fafda32f036c7ba1f931db8fc8d7ff942955ecddf81066d42a6293ef"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json"
+              check_id: "check-backend-critical"
+              command_identity: "bun run test:backend-critical"
+              detail: "Observed by bun run test:backend-critical."
+              exit_code: 0
+              observed_at: "2026-09-12T17:55:20.185Z"
+              repository_snapshot_digest: "sha256:5e85e470fafda32f036c7ba1f931db8fc8d7ff942955ecddf81066d42a6293ef"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -2992,6 +3070,23 @@ extensions:
         task_id: "202609121423-9WPTCW"
         task_revision: 31
         work_item_id: "ST-05"
+      -
+        at: "2026-09-12T17:55:20.229Z"
+        from: "PLANNED"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:8fa7e6aa6019fedd11ca3f8e8489d0f5ff3a66a73da4ad3d11da8b73082e4b06"
+        entity: "work_item"
+        id: "event_be2c846b9496dc4f12862506"
+        mutation_id: "external-result:work-order-202609121423-9WPTCW-executor-25b407200da1bb7a2590cb55"
+        plan_digest: "sha256:a9ccea53ee91bda02540f559528bdce316d1a1154bdbc4da00b22a47189a40e8"
+        plan_revision: 3
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609121423-9WPTCW"
+        task_revision: 34
+        work_item_id: "ST-21"
     leases: []
     mutation_receipts:
       compatibility:sha256:01c502b9a0d4fcd634d7b4c3eb361d7efa1419a4afc31bc4318d0c32c773a4bc:
@@ -3592,6 +3687,30 @@ extensions:
         mutation_id: "compatibility:sha256:fec9aec4a5a80fb9104dbf30edc652dd9866fc7e58c753d6e25ad91420992eb5"
         next_revision: 6
         previous_revision: 5
+        schema_version: 1
+        task_id: "202609121423-9WPTCW"
+      external-result:work-order-202609121423-9WPTCW-executor-25b407200da1bb7a2590cb55:
+        aggregate_digest: "sha256:a33f32938da3015f6ad762aaee4ed89f7b1b55ae72fce9cf5f030698d39c0968"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T17:55:20.229Z"
+          cause_refs:
+            - "semantic-result:sha256:8fa7e6aa6019fedd11ca3f8e8489d0f5ff3a66a73da4ad3d11da8b73082e4b06"
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_be2c846b9496dc4f12862506"
+          mutation_id: "external-result:work-order-202609121423-9WPTCW-executor-25b407200da1bb7a2590cb55"
+          plan_digest: "sha256:a9ccea53ee91bda02540f559528bdce316d1a1154bdbc4da00b22a47189a40e8"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121423-9WPTCW"
+          task_revision: 34
+          to: "COMPLETED"
+          work_item_id: "ST-21"
+        mutation_id: "external-result:work-order-202609121423-9WPTCW-executor-25b407200da1bb7a2590cb55"
+        next_revision: 35
+        previous_revision: 34
         schema_version: 1
         task_id: "202609121423-9WPTCW"
       external-result:work-order-202609121423-9WPTCW-executor-449741299609ac021a7fb115:
