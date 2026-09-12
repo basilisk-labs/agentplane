@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 30
+revision: 31
 origin:
   system: "manual"
 depends_on: []
@@ -24,10 +24,10 @@ plan_approval:
   note: "host_user_decision=sha256:3930e46c72abef10d21cfda7f2921700141030e4cc5c157cb76bdcaff9aa22c1"
 verification:
   state: "needs_rework"
-  updated_at: "2026-09-12T17:06:02.795Z"
+  updated_at: "2026-09-12T17:47:48.259Z"
   updated_by: "SUPERVISOR"
   note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 1
+  attempts: 2
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -341,17 +341,36 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:57bac9a3ff18f12fd22e8806753e537f9bc379b5e940f1ff7aa30aece70c7f46"
+      digest: "sha256:caf7496dd36501a2d14795a93c8cb649deef241d374dc8be2170beebdd6cf4de"
       escalation_reasons:
         - "central_component:packages/agentplane/src/runtime/task-routing/resolve.test.ts"
         - "central_component:packages/agentplane/src/runtime/task-routing/resolve.ts"
         - "central_component:scripts/checks/run-local-ci.mjs"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-mutation.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
         - "central_path:packages/agentplane/src/runtime/task-routing/resolve.test.ts"
         - "central_path:packages/agentplane/src/runtime/task-routing/resolve.ts"
         - "central_path:scripts/checks/run-local-ci.mjs"
         - "effect_ci"
+        - "unknown_path:.agentplane/tasks/202609121019-8K70MT/blueprint/resolved-snapshot.json"
+        - "unknown_path:.agentplane/tasks/202609121019-8K70MT/pr/diffstat.txt"
+        - "unknown_path:.agentplane/tasks/202609121019-8K70MT/pr/github-title.txt"
+        - "unknown_path:.agentplane/tasks/202609121019-8K70MT/pr/meta.json"
+        - "unknown_path:.agentplane/tasks/202609121019-8K70MT/quality/20260912-134049901-recovery-context/evaluator-evidence-manifest.json"
+        - "unknown_path:.agentplane/tasks/202609121019-8K70MT/quality/20260912-134049901-recovery-context/evaluator-result.json"
+        - "unknown_path:.agentplane/tasks/202609121019-8K70MT/quality/20260912-134049901-recovery-context/evaluator-work-order.json"
+        - "unknown_path:.agentplane/tasks/202609121019-8K70MT/quality/20260912-134049901-recovery-context/quality-report.json"
+        - "unknown_path:.agentplane/tasks/202609121019-8K70MT/quality/objects/sha256/52f3f6fdc8fd66f9054878d5d0e11605311b04b2a355fa62fe78c077f4ef1a1a.patch"
+        - "unknown_path:.agentplane/tasks/202609121019-8K70MT/quality/objects/sha256/6c5aa8dd5965460944f15f65ed05b11170f35619049258d548c31ca4c59e3e85.json"
+        - "unknown_path:.agentplane/tasks/202609121019-8K70MT/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+        - "unknown_path:.agentplane/tasks/202609121019-8K70MT/quality/objects/sha256/a13c83bfa6e246cb0635bda1714f9750aeead021b67868c22531a874627c731c.json"
+        - "unknown_path:.agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json"
+        - "unknown_path:.agentplane/tasks/202609121019-8K70MT/supervision/implementation-evidence.json"
+        - "unknown_path:.agentplane/tasks/202609121019-8K70MT/verification/20260912110221202-49372c9881c5699d.json"
+        - "unknown_path:.agentplane/tasks/202609121019-8K70MT/verification/20260912113736294-6635153bce446c84.json"
+        - "unknown_path:.agentplane/tasks/202609121019-8K70MT/verification/20260912121350978-f8947c4a9a45e3cb.json"
+        - "unknown_path:.agentplane/tasks/202609121019-8K70MT/verification/20260912134038604-214d32aabc2cfbaa.json"
         - "unknown_path:.agentplane/tasks/202609121443-YAQJB7/blueprint/resolved-snapshot.json"
         - "unknown_path:.agentplane/tasks/202609121443-YAQJB7/pr/diffstat.txt"
         - "unknown_path:.agentplane/tasks/202609121443-YAQJB7/pr/github-title.txt"
@@ -387,6 +406,29 @@ execution_contract:
           - "packages/agentplane"
           - "scripts"
         changed_files:
+          - ".agentplane/tasks/202609121019-8K70MT/README.md"
+          - ".agentplane/tasks/202609121019-8K70MT/blueprint/resolved-snapshot.json"
+          - ".agentplane/tasks/202609121019-8K70MT/pr/diffstat.txt"
+          - ".agentplane/tasks/202609121019-8K70MT/pr/github-body.md"
+          - ".agentplane/tasks/202609121019-8K70MT/pr/github-title.txt"
+          - ".agentplane/tasks/202609121019-8K70MT/pr/meta.json"
+          - ".agentplane/tasks/202609121019-8K70MT/pr/review.md"
+          - ".agentplane/tasks/202609121019-8K70MT/quality/20260912-134049901-recovery-context/evaluator-evidence-manifest.json"
+          - ".agentplane/tasks/202609121019-8K70MT/quality/20260912-134049901-recovery-context/evaluator-opinion.md"
+          - ".agentplane/tasks/202609121019-8K70MT/quality/20260912-134049901-recovery-context/evaluator-result.json"
+          - ".agentplane/tasks/202609121019-8K70MT/quality/20260912-134049901-recovery-context/evaluator-work-order.json"
+          - ".agentplane/tasks/202609121019-8K70MT/quality/20260912-134049901-recovery-context/quality-report.json"
+          - ".agentplane/tasks/202609121019-8K70MT/quality/objects/sha256/52f3f6fdc8fd66f9054878d5d0e11605311b04b2a355fa62fe78c077f4ef1a1a.patch"
+          - ".agentplane/tasks/202609121019-8K70MT/quality/objects/sha256/6c5aa8dd5965460944f15f65ed05b11170f35619049258d548c31ca4c59e3e85.json"
+          - ".agentplane/tasks/202609121019-8K70MT/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+          - ".agentplane/tasks/202609121019-8K70MT/quality/objects/sha256/a13c83bfa6e246cb0635bda1714f9750aeead021b67868c22531a874627c731c.json"
+          - ".agentplane/tasks/202609121019-8K70MT/quality/objects/sha256/e4388e57990a5fad81699b7982d4bed29401f30b6f7e81312f220ea036b11874.md"
+          - ".agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json"
+          - ".agentplane/tasks/202609121019-8K70MT/supervision/implementation-evidence.json"
+          - ".agentplane/tasks/202609121019-8K70MT/verification/20260912110221202-49372c9881c5699d.json"
+          - ".agentplane/tasks/202609121019-8K70MT/verification/20260912113736294-6635153bce446c84.json"
+          - ".agentplane/tasks/202609121019-8K70MT/verification/20260912121350978-f8947c4a9a45e3cb.json"
+          - ".agentplane/tasks/202609121019-8K70MT/verification/20260912134038604-214d32aabc2cfbaa.json"
           - ".agentplane/tasks/202609121443-YAQJB7/README.md"
           - ".agentplane/tasks/202609121443-YAQJB7/blueprint/resolved-snapshot.json"
           - ".agentplane/tasks/202609121443-YAQJB7/pr/diffstat.txt"
@@ -418,8 +460,10 @@ execution_contract:
           - ".agentplane/tasks/202609121443-YAQJB7/verification/20260912151433121-0625d9b1032c22f6.json"
           - ".agentplane/tasks/202609121443-YAQJB7/verification/20260912152612320-266028623a750e67.json"
           - ".agentplane/tasks/202609121443-YAQJB7/verification/20260912155829304-40fd8186769b7cb3.json"
+          - "packages/agentplane/src/adapters/task-backend/task-centric-backend-projection.ts"
           - "packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
           - "packages/agentplane/src/commands/release/release-ci-contract.test.ts"
+          - "packages/agentplane/src/commands/shared/task-mutation.test.ts"
           - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
           - "packages/agentplane/src/commands/task/external-agent-blocked-result.ts"
           - "packages/agentplane/src/commands/task/scope-extend.test.ts"
@@ -469,9 +513,7 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:recorded-check-3"
       - "verification_recovery:verification-record"
-commit:
-  hash: "84126d23d5ac571fbab9b8a59ee5a9f7cd79ab16"
-  message: "🚧 GH8BV2 task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -610,8 +652,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 84126d23d5ac. CLI accepted one state-bound external-agent semantic result."
     commit: "84126d23d5ac571fbab9b8a59ee5a9f7cd79ab16"
+  -
+    type: "verify"
+    at: "2026-09-12T17:47:48.259Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-12T17:17:41.017Z"
+doc_updated_at: "2026-09-12T17:47:54.526Z"
 doc_updated_by: "SUPERVISOR"
 description: "Reproduce the blocked recovery from task 202609111417-V1737V: the supervisor emits an exact scope extension containing repository_effects=[tests] and scope_roots=[], but task scope extend fails with 'Execution declaration with repository effects requires scope_roots.' Preserve exact request matching and fail-closed authority. Implement the smallest safe legacy-compatibility path and regression coverage, then use it to resume the blocked task."
 sections:
@@ -989,6 +1037,51 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-09-12T17:47:48.259Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 2
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f9e51c699616750c23550f0514ef0d2e4ecfaa496d4651c06be6534ea1148dc7, input_digest=sha256:e3339305f16a380d905b21ce219e18acfea42dfc59fd1db84833fd5005a8fe10
+
+    Details:
+
+    Command: bunx --no-install vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609111943-GH8BV2 declared verification
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609111943-GH8BV2 declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609111943-GH8BV2 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202609111943-GH8BV2-allow-an-approved-repository-effect-only-scope-e/.agentplane/tasks/202609111943-GH8BV2/blueprint/resolved-snapshot.json
+    - old_digest: 700ec36b764920edfb4de80d78f0e7febb1e428f41224499814bc4e07118648e
+    - current_digest: 700ec36b764920edfb4de80d78f0e7febb1e428f41224499814bc4e07118648e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609111943-GH8BV2
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609111943-GH8BV2
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -1176,7 +1269,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609111943-GH8BV2"
-    event_cursor: 26
+    event_cursor: 27
     final_validation: null
     id: "202609111943-GH8BV2"
     intent:
@@ -1201,9 +1294,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 30
+    revision: 31
     schema_version: 1
-    updated_at: "2026-09-12T17:17:40.921Z"
+    updated_at: "2026-09-12T17:47:54.518Z"
     work_items:
       preserve-legacy-effect-only-scope:
         attempt: 1
@@ -1876,6 +1969,30 @@ extensions:
         previous_revision: 11
         schema_version: 1
         task_id: "202609111943-GH8BV2"
+      compatibility:sha256:d02cb9c6f45f00b9e6a6d25b2173ac09feb736e80df7ead9af3a03c3c81167f9:
+        aggregate_digest: "sha256:8a642933f015756397a0cdd8382a5df802a5abe2c89b6e6c2e513affc94bab5b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T17:47:54.518Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_c5b5a485ccefd35ef929be27"
+          mutation_id: "compatibility:sha256:d02cb9c6f45f00b9e6a6d25b2173ac09feb736e80df7ead9af3a03c3c81167f9"
+          plan_digest: "sha256:7fc277f120476836b7d4dde39048359f4d0c7d4862462506ebe45ad3a8b43a0d"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111943-GH8BV2"
+          task_revision: 30
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:d02cb9c6f45f00b9e6a6d25b2173ac09feb736e80df7ead9af3a03c3c81167f9"
+        next_revision: 31
+        previous_revision: 30
+        schema_version: 1
+        task_id: "202609111943-GH8BV2"
       compatibility:sha256:eecd0dbcf34eaba02c9a0d38e753a7569e53afd5d40363eef22a78313c470ae7:
         aggregate_digest: "sha256:ca804db2f2d764d6b60e9211048c632aa2d85e4c992a47084037862759226d8f"
         event:
@@ -1952,8 +2069,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "84126d23d5ac571fbab9b8a59ee5a9f7cd79ab16"
   task_execution_context:
     base_ref: "main"
     base_sha: "50b1810dda648be0c0762b47e885c6ad0b2d42af"
@@ -2343,6 +2458,51 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-12T17:47:48.259Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 2
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f9e51c699616750c23550f0514ef0d2e4ecfaa496d4651c06be6534ea1148dc7, input_digest=sha256:e3339305f16a380d905b21ce219e18acfea42dfc59fd1db84833fd5005a8fe10
+
+Details:
+
+Command: bunx --no-install vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609111943-GH8BV2 declared verification
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609111943-GH8BV2 declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609111943-GH8BV2 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202609111943-GH8BV2-allow-an-approved-repository-effect-only-scope-e/.agentplane/tasks/202609111943-GH8BV2/blueprint/resolved-snapshot.json
+- old_digest: 700ec36b764920edfb4de80d78f0e7febb1e428f41224499814bc4e07118648e
+- current_digest: 700ec36b764920edfb4de80d78f0e7febb1e428f41224499814bc4e07118648e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609111943-GH8BV2
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609111943-GH8BV2
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

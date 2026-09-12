@@ -1,1 +1,1 @@
-✅ GH8BV2 task: Allow an approved repository-effect-only scope extension to recover a legacy execution contra... [202609111943-GH8BV2]
+🚧 GH8BV2 task: Allow an approved repository-effect-only scope extension to recover a legacy execution contra... [202609111943-GH8BV2]
