@@ -13,7 +13,7 @@ Created: 2026-09-12T14:30:55.296Z
 ## Verification
 
 - State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,13 +29,14 @@ Created: 2026-09-12T14:30:55.296Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .../src/cli/run-cli.core.roadmap-branch.test.ts    |  29 ++++
  .../src/cli/run-cli.core.roadmap-direct.test.ts    |  34 +++++
  scripts/baselines/architecture-inventory.json      | 159 +++++++++++++++++++++
  scripts/checks/architecture-inventory.mjs          | 113 +++++++++++++++
  scripts/checks/architecture-inventory.test.mjs     |  47 ++++++
  scripts/lib/test-route-registry.mjs                |   2 +-
  scripts/lib/test-route-registry.test.mjs           |  14 ++
- 6 files changed, 368 insertions(+), 1 deletion(-)
+ 7 files changed, 397 insertions(+), 1 deletion(-)
 ```
 
 </details>
