@@ -30,6 +30,13 @@ export function reportTaskBriefText(brief: TaskBriefWithWorkflowStep, taskId: st
       { label: "task", value: `${brief.task.id} ${brief.task.status}` },
       { label: "title", value: brief.task.title },
       { label: "owner", value: brief.task.owner },
+      { label: "task_kind", value: brief.task.task_kind ?? "unset" },
+      { label: "mutation_scope", value: brief.task.mutation_scope ?? "unset" },
+      {
+        label: "risk_flags",
+        value: brief.task.risk_flags?.length ? brief.task.risk_flags.join(", ") : "none",
+      },
+      { label: "blueprint_request", value: brief.task.blueprint_request ?? "unset" },
       ...(brief.task.token_usage
         ? [
             {
