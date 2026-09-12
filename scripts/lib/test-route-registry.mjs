@@ -12,7 +12,7 @@ export const VITEST_WORKSPACE_PROJECTS = [
     name: "agentplane",
     test: {
       include: ["packages/agentplane/src/**/*.test.ts"],
-      exclude: ["**/cli-smoke.test.ts", "**/run-cli!(*.roadmap-direct).test.ts"],
+      exclude: ["**/cli-smoke.test.ts", "**/run-cli!(*.roadmap-*).test.ts"],
     },
   },
   {
