@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The recovery path aligns the canonical aggregate revision before projecting one compatibility mutation, and the focused regression proves both legacy reconciliation and a successful subsequent task-centric mutation.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609121932-MAT0V1/quality/objects/sha256/f8d2fa7909b04a94b066f46cba2deb24f9c0ae13f67fb99a8a4e6d3b39561c05.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
