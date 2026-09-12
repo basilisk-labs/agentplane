@@ -27,9 +27,9 @@ When a needs_rework verification exceeds evaluator.max_rework_attempts, compatib
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../task-centric-backend-projection.ts             | 11 +++-
+ .../task-centric-backend-projection.ts             | 12 +++-
  .../src/commands/shared/task-mutation.test.ts      | 76 ++++++++++++++++++++++
- 2 files changed, 84 insertions(+), 3 deletions(-)
+ 2 files changed, 85 insertions(+), 3 deletions(-)
 ```
 
 </details>

@@ -29,9 +29,9 @@ Created: 2026-09-12T10:28:09.228Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../task-centric-backend-projection.ts             | 11 +++-
+ .../task-centric-backend-projection.ts             | 12 +++-
  .../src/commands/shared/task-mutation.test.ts      | 76 ++++++++++++++++++++++
- 2 files changed, 84 insertions(+), 3 deletions(-)
+ 2 files changed, 85 insertions(+), 3 deletions(-)
 ```
 
 </details>

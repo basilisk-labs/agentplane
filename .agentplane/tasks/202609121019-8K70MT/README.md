@@ -4,7 +4,7 @@ title: "Make verification rework exhaustion atomically project BLOCKED into the 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -18,15 +18,15 @@ verify:
   - "bunx --no-install vitest run packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts --maxWorkers=1"
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-12T10:27:30.950Z"
+  updated_at: "2026-09-12T12:24:25.160Z"
   updated_by: "HOST:codex:USER"
-  note: "host_user_decision=sha256:e97f359f9bfe9538c2bdc7c9da23257517b36c1eefa79f651ffc068f1c466696"
+  note: "host_user_decision=sha256:e73a41a0b87ec2c4ac2e53dc41c4480c77359ed79e4fae0202322ca2d59d8075"
 verification:
   state: "needs_rework"
-  updated_at: "2026-09-12T11:37:36.294Z"
+  updated_at: "2026-09-12T12:13:50.978Z"
   updated_by: "SUPERVISOR"
   note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 2
+  attempts: 3
 execution_route:
   frozen: true
   reason_codes:
@@ -193,9 +193,7 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:recorded-check-4"
       - "verification_recovery:verification-record"
-commit:
-  hash: "8b46de617d4a91c37ca8ae976e3309dd0f9fc872"
-  message: "🚧 8K70MT task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -253,8 +251,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 8b46de617d4a. CLI accepted one state-bound external-agent semantic result."
     commit: "8b46de617d4a91c37ca8ae976e3309dd0f9fc872"
+  -
+    type: "verify"
+    at: "2026-09-12T12:13:50.978Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-12T11:43:36.595Z"
+doc_updated_at: "2026-09-12T12:21:14.214Z"
 doc_updated_by: "SUPERVISOR"
 description: "When a needs_rework verification exceeds evaluator.max_rework_attempts, compatibility mutation currently sets the legacy task status to BLOCKED while leaving the canonical task-centric lifecycle ACTIVE, triggering task_centric_projection_mismatch and preventing recovery. Preserve normal ACTIVE rework behavior, atomically project terminal exhaustion to BLOCKED, and cover the boundary with focused tests."
 sections:
@@ -265,7 +269,7 @@ sections:
   Scope: |-
     - In scope: When a needs_rework verification exceeds evaluator.max_rework_attempts, compatibility mutation currently sets the legacy task status to BLOCKED while leaving the canonical task-centric lifecycle ACTIVE, triggering task_centric_projection_mismatch and preventing recovery. Preserve normal ACTIVE rework behavior, atomically project terminal exhaustion to BLOCKED, and cover the boundary with focused tests.
     - Out of scope: unrelated refactors not required for "Make verification rework exhaustion atomically project BLOCKED into the task-centric aggregate, with focused regression coverage, so supervisor verification failures cannot leave a partial task-centric projection".
-  Plan: "Plan one narrow atomic projection for terminal verification rework exhaustion."
+  Plan: "Preserve the implementation scope and give the required full regression check a 45-minute outer timeout."
   Verify Steps: |-
     1. Run `bunx --no-install vitest run packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts --maxWorkers=1`. Expected: terminal verification exhaustion projects canonical BLOCKED while existing rework behavior remains unchanged.
     2. Run `bun run typecheck`. Expected: TypeScript build passes.
@@ -372,6 +376,56 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-09-12T12:13:50.978Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 3
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:b0d80d98554e3667a80aa23348e4f870335af77f2c3d7653cf076e48bbc36666, input_digest=sha256:288935b02ce6a36d4bec709dc7f7fc63cee73251d7716910a6b8b2683bbb2d6f
+
+    Details:
+
+    Command: bunx --no-install vitest run packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121019-8K70MT declared verification
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121019-8K70MT declared verification
+
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609121019-8K70MT declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609121019-8K70MT declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202609121019-8K70MT-make-verification-rework-exhaustion-atomically-p/.agentplane/tasks/202609121019-8K70MT/blueprint/resolved-snapshot.json
+    - old_digest: 64d8ed4597711fd2487eaf045d531db4d83fa7be2833be34da0bf5b386c33cda
+    - current_digest: 64d8ed4597711fd2487eaf045d531db4d83fa7be2833be34da0bf5b386c33cda
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609121019-8K70MT
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609121019-8K70MT
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -380,7 +434,7 @@ sections:
 extensions:
   agentplane.execution_grant:
     actor: "HOST:codex:USER"
-    approval_evidence_digest: "sha256:e97f359f9bfe9538c2bdc7c9da23257517b36c1eefa79f651ffc068f1c466696"
+    approval_evidence_digest: "sha256:e73a41a0b87ec2c4ac2e53dc41c4480c77359ed79e4fae0202322ca2d59d8075"
     approval_kind: "host_user_decision"
     capabilities:
       - "provider.merge"
@@ -389,13 +443,13 @@ extensions:
       - "repository.write"
       - "task.lifecycle"
       - "task.scope.extend"
-    completion_contract_digest: "sha256:a18e1366f802e14001cd307a12aee83912fec47feade8d43d32d55353fdc8510"
-    digest: "sha256:fcf3c914d5add36ba21caeec95bb00fe12d084e4c729f717a9246ff3c61082c0"
-    grant_id: "4b67f59e-9c7a-4063-baf8-34440e771035"
-    issued_at: "2026-09-12T10:27:30.950Z"
+    completion_contract_digest: "sha256:a926c963876adf9a9f73425d250dc5309d71be07d4585e6c546f21d1c546e780"
+    digest: "sha256:05f24a299e3e21dc62e70732e0266b39465a6193d36a61d4342c21f189a1a644"
+    grant_id: "38d0b198-f2ab-445a-bd79-f2d0851705d7"
+    issued_at: "2026-09-12T12:24:25.160Z"
     kind: "agentplane.execution_grant"
-    plan_digest: "sha256:341d0299f75125a8c89f5dc7addefc74903d8395d102b496b8b10a067aa3a8e3"
-    plan_revision: 3
+    plan_digest: "sha256:240d60e3ed1cbc29b2cc7aaab2887d3f73721865aa6517e93e18b83964461060"
+    plan_revision: 17
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
     scope_digest: "sha256:65f818387fe18e2395974d2c9ba0010295d3db8f70b3a9a513cccae132b1d575"
@@ -404,34 +458,34 @@ extensions:
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-12T10:27:30.950Z"
+        approved_at: "2026-09-12T12:24:25.160Z"
         approved_by: "HOST:codex:USER"
-        approved_digest: "sha256:b433fea5232868963d7e2a901a4ac1a46d3998e0f110d4d454510a21a4cd5a34"
+        approved_digest: "sha256:93e7f3a2d314dd2cb370893f494cf41377a615bc4c9dee65bf408270a3a33a9e"
         policy_facts:
           - "host_user_decision"
         state: "approved"
-      created_at: "2026-09-12T10:21:57.654Z"
-      digest: "sha256:b433fea5232868963d7e2a901a4ac1a46d3998e0f110d4d454510a21a4cd5a34"
+      created_at: "2026-09-12T12:21:14.078Z"
+      digest: "sha256:93e7f3a2d314dd2cb370893f494cf41377a615bc4c9dee65bf408270a3a33a9e"
       proposal:
         assumptions:
-          - "A legacy status BLOCKED paired with verification state blocked_external is the terminal rework-exhaustion shape that must advance the canonical lifecycle to BLOCKED."
+          - "A 2700000ms outer timeout is sufficient for the clean full regression gate based on observed runtime near 1800000ms before forced termination."
         planning_baseline:
-          captured_at: "2026-09-12T10:19:53.313Z"
+          captured_at: "2026-09-12T12:18:56.397Z"
           config_digest: null
           context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
-          digest: "sha256:8bda2c3f10021684c5a519407b22629b13d8ca01a2b4c35d1ad3583484c53ff0"
+          digest: "sha256:cf981590863d1b8511c8a16582c295eaa1469140aee77cca716bcbffccbb1da6"
           dirty_paths:
-            - ".agentplane/tasks/202609111341-FK9C2T/README.md"
-            - ".agentplane/tasks/202609111341-SED9K5/README.md"
-            - ".agentplane/tasks/202609111502-4XSWZQ/README.md"
             - ".agentplane/tasks/202609121019-8K70MT/README.md"
+            - ".agentplane/tasks/202609121019-8K70MT/pr/meta.json"
+            - ".agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json"
+            - ".agentplane/tasks/202609121019-8K70MT/verification/20260912121350978-f8947c4a9a45e3cb.json"
           git:
             kind: "commit"
             ref: null
-            sha: "50b1810dda648be0c0762b47e885c6ad0b2d42af"
+            sha: "bdfa9d6d00847f4b7229f64ba4be4a5b2061e79d"
           policy_digest: null
           schema_version: 1
-          task_history_cursor: "task-revision:1"
+          task_history_cursor: "task-revision:16"
         schema_version: 1
         task_id: "202609121019-8K70MT"
         top_level_validation:
@@ -457,6 +511,13 @@ extensions:
               kind: "deterministic"
               required: true
               timeout_ms: 60000
+            -
+              capability: "task.verify"
+              command: "bun run ci:local:full"
+              id: "full-regression"
+              kind: "deterministic"
+              required: true
+              timeout_ms: 2700000
           criteria:
             -
               check_ids:
@@ -474,10 +535,16 @@ extensions:
             -
               check_ids:
                 - "diff-check"
-              description: "The implementation changes only the compatibility projection and its closest regression test; verification policy, attempt limits, supervisor routing, and timeout behavior remain unchanged."
-              id: "scope-remains-narrow"
+              description: "The implementation changes only the compatibility projection and its closest regression test; verification policy, attempt limits, supervisor routing, and CI implementation remain unchanged."
+              id: "product-scope-remains-narrow"
               required: true
-          evidence_fingerprint: "sha256:8bda2c3f10021684c5a519407b22629b13d8ca01a2b4c35d1ad3583484c53ff0"
+            -
+              check_ids:
+                - "full-regression"
+              description: "The repository full regression gate completes successfully with an explicit 2700000ms task-level timeout budget."
+              id: "full-regression-completes"
+              required: true
+          evidence_fingerprint: "sha256:cf981590863d1b8511c8a16582c295eaa1469140aee77cca716bcbffccbb1da6"
           schema_version: 1
         unresolved_questions: []
         work_items:
@@ -501,8 +568,8 @@ extensions:
                 -
                   check_ids:
                     - "diff-check"
-                  description: "The implementation changes only the compatibility projection and its closest regression test; verification policy, attempt limits, supervisor routing, and timeout behavior remain unchanged."
-                  id: "scope-remains-narrow"
+                  description: "The implementation changes only the compatibility projection and its closest regression test; verification policy, attempt limits, supervisor routing, and CI implementation remain unchanged."
+                  id: "product-scope-remains-narrow"
                   required: true
               capabilities:
                 - "task.verify"
@@ -522,7 +589,7 @@ extensions:
                 - "atomic terminal rework BLOCKED projection"
                 - "focused regression coverage"
               id: "project-terminal-verification-block"
-              objective: "Teach the task-centric compatibility projection to map only the terminal verification rework exhaustion shape to canonical BLOCKED, and add an atomic mutation regression while preserving existing projection semantics."
+              objective: "Teach the task-centric compatibility projection to map only the terminal verification rework exhaustion shape to canonical BLOCKED, and cover the persisted atomic mutation while preserving existing projection semantics."
               optional: false
               priority: 1
               required_inputs: []
@@ -579,15 +646,15 @@ extensions:
                   -
                     check_ids:
                       - "diff-check"
-                    description: "The implementation changes only the compatibility projection and its closest regression test; verification policy, attempt limits, supervisor routing, and timeout behavior remain unchanged."
-                    id: "scope-remains-narrow"
+                    description: "The implementation changes only the compatibility projection and its closest regression test; verification policy, attempt limits, supervisor routing, and CI implementation remain unchanged."
+                    id: "product-scope-remains-narrow"
                     required: true
-                evidence_fingerprint: "sha256:8bda2c3f10021684c5a519407b22629b13d8ca01a2b4c35d1ad3583484c53ff0"
+                evidence_fingerprint: "sha256:cf981590863d1b8511c8a16582c295eaa1469140aee77cca716bcbffccbb1da6"
                 schema_version: 1
-      revision: 1
+      revision: 2
       schema_version: 1
       task_id: "202609121019-8K70MT"
-    event_cursor: 11
+    event_cursor: 13
     final_validation: null
     id: "202609121019-8K70MT"
     intent:
@@ -611,85 +678,205 @@ extensions:
       task_id: "202609121019-8K70MT"
     lifecycle: "ACTIVE"
     plan_amendments: []
-    plan_history: []
-    revision: 14
+    plan_history:
+      -
+        approval:
+          approved_at: "2026-09-12T10:27:30.950Z"
+          approved_by: "HOST:codex:USER"
+          approved_digest: "sha256:b433fea5232868963d7e2a901a4ac1a46d3998e0f110d4d454510a21a4cd5a34"
+          policy_facts:
+            - "host_user_decision"
+          state: "approved"
+        created_at: "2026-09-12T10:21:57.654Z"
+        digest: "sha256:b433fea5232868963d7e2a901a4ac1a46d3998e0f110d4d454510a21a4cd5a34"
+        proposal:
+          assumptions:
+            - "A legacy status BLOCKED paired with verification state blocked_external is the terminal rework-exhaustion shape that must advance the canonical lifecycle to BLOCKED."
+          planning_baseline:
+            captured_at: "2026-09-12T10:19:53.313Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:8bda2c3f10021684c5a519407b22629b13d8ca01a2b4c35d1ad3583484c53ff0"
+            dirty_paths:
+              - ".agentplane/tasks/202609111341-FK9C2T/README.md"
+              - ".agentplane/tasks/202609111341-SED9K5/README.md"
+              - ".agentplane/tasks/202609111502-4XSWZQ/README.md"
+              - ".agentplane/tasks/202609121019-8K70MT/README.md"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "50b1810dda648be0c0762b47e885c6ad0b2d42af"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:1"
+          schema_version: 1
+          task_id: "202609121019-8K70MT"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bunx --no-install vitest run packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts --maxWorkers=1"
+                id: "projection-regressions"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 600000
+              -
+                capability: "task.verify"
+                command: "bun run typecheck"
+                id: "typecheck"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "git diff --check"
+                id: "diff-check"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 60000
+            criteria:
+              -
+                check_ids:
+                  - "projection-regressions"
+                description: "When verification rework exhaustion produces legacy status BLOCKED and verification state blocked_external from an ACTIVE task-centric aggregate, the same compatibility mutation advances the canonical lifecycle to BLOCKED at the same next revision."
+                id: "terminal-rework-projects-blocked"
+                required: true
+              -
+                check_ids:
+                  - "projection-regressions"
+                  - "typecheck"
+                description: "Ordinary ACTIVE metadata mutations and the existing COMPLETED-to-ACTIVE verification rework projection retain their current behavior and atomic revision receipts."
+                id: "existing-projection-semantics-preserved"
+                required: true
+              -
+                check_ids:
+                  - "diff-check"
+                description: "The implementation changes only the compatibility projection and its closest regression test; verification policy, attempt limits, supervisor routing, and timeout behavior remain unchanged."
+                id: "scope-remains-narrow"
+                required: true
+            evidence_fingerprint: "sha256:8bda2c3f10021684c5a519407b22629b13d8ca01a2b4c35d1ad3583484c53ff0"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "projection-regressions"
+                    description: "When verification rework exhaustion produces legacy status BLOCKED and verification state blocked_external from an ACTIVE task-centric aggregate, the same compatibility mutation advances the canonical lifecycle to BLOCKED at the same next revision."
+                    id: "terminal-rework-projects-blocked"
+                    required: true
+                  -
+                    check_ids:
+                      - "projection-regressions"
+                      - "typecheck"
+                    description: "Ordinary ACTIVE metadata mutations and the existing COMPLETED-to-ACTIVE verification rework projection retain their current behavior and atomic revision receipts."
+                    id: "existing-projection-semantics-preserved"
+                    required: true
+                  -
+                    check_ids:
+                      - "diff-check"
+                    description: "The implementation changes only the compatibility projection and its closest regression test; verification policy, attempt limits, supervisor routing, and timeout behavior remain unchanged."
+                    id: "scope-remains-narrow"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 140000
+                  optional_sources: []
+                  required_sources:
+                    - "packages/agentplane/src/adapters/task-backend/task-centric-backend-projection.ts"
+                    - "packages/agentplane/src/commands/shared/task-mutation.test.ts"
+                    - "packages/agentplane/src/commands/task/shared/workflow-transition-service.ts"
+                    - "packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts"
+                  symbol_hints:
+                    - "projectTaskCentricCompatibilityMutation"
+                    - "executeTaskVerificationTransitionRequest"
+                depends_on: []
+                expected_outputs:
+                  - "atomic terminal rework BLOCKED projection"
+                  - "focused regression coverage"
+                id: "project-terminal-verification-block"
+                objective: "Teach the task-centric compatibility projection to map only the terminal verification rework exhaustion shape to canonical BLOCKED, and add an atomic mutation regression while preserving existing projection semantics."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/adapters/task-backend/task-centric-backend-projection.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared/task-mutation.test.ts"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/adapters/task-backend/task-centric-backend-projection.ts"
+                  - "packages/agentplane/src/commands/shared/task-mutation.test.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bunx --no-install vitest run packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts --maxWorkers=1"
+                      id: "projection-regressions"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                    -
+                      capability: "task.verify"
+                      command: "bun run typecheck"
+                      id: "typecheck"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                    -
+                      capability: "task.verify"
+                      command: "git diff --check"
+                      id: "diff-check"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 60000
+                  criteria:
+                    -
+                      check_ids:
+                        - "projection-regressions"
+                      description: "When verification rework exhaustion produces legacy status BLOCKED and verification state blocked_external from an ACTIVE task-centric aggregate, the same compatibility mutation advances the canonical lifecycle to BLOCKED at the same next revision."
+                      id: "terminal-rework-projects-blocked"
+                      required: true
+                    -
+                      check_ids:
+                        - "projection-regressions"
+                        - "typecheck"
+                      description: "Ordinary ACTIVE metadata mutations and the existing COMPLETED-to-ACTIVE verification rework projection retain their current behavior and atomic revision receipts."
+                      id: "existing-projection-semantics-preserved"
+                      required: true
+                    -
+                      check_ids:
+                        - "diff-check"
+                      description: "The implementation changes only the compatibility projection and its closest regression test; verification policy, attempt limits, supervisor routing, and timeout behavior remain unchanged."
+                      id: "scope-remains-narrow"
+                      required: true
+                  evidence_fingerprint: "sha256:8bda2c3f10021684c5a519407b22629b13d8ca01a2b4c35d1ad3583484c53ff0"
+                  schema_version: 1
+        revision: 1
+        schema_version: 1
+        task_id: "202609121019-8K70MT"
+    revision: 18
     schema_version: 1
-    updated_at: "2026-09-12T11:43:36.595Z"
+    updated_at: "2026-09-12T12:21:14.214Z"
     work_items:
       project-terminal-verification-block:
-        attempt: 1
+        attempt: 0
         claim_id: null
         id: "project-terminal-verification-block"
         last_failure: null
-        output_manifests:
-          -
-            digest: "sha256:8ca64673fa17b57461d0fd056062b5004d616679164e34efca132890aaef7aa3"
-            id: "atomic terminal rework BLOCKED projection"
-            kind: "semantic_output"
-            producer:
-              attempt: 1
-              plan_revision: 1
-              task_id: "202609121019-8K70MT"
-              work_item_id: "project-terminal-verification-block"
-            provenance:
-              - "sha256:b169e1816c077aea90edcba000bd58ddecc0437a6ecdc3d544e4e35ee4a189eb"
-              - ".agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:7b5a134bbb98500cdadf64b8e71e7c2f58bfa15e92aaf28aa10f80f1bbcefedc"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-          -
-            digest: "sha256:1b1153d9cbb0177a3d98e919bc0a7dd2a746f7e90dded8262a0cbbb38aa31378"
-            id: "focused regression coverage"
-            kind: "semantic_output"
-            producer:
-              attempt: 1
-              plan_revision: 1
-              task_id: "202609121019-8K70MT"
-              work_item_id: "project-terminal-verification-block"
-            provenance:
-              - "sha256:b169e1816c077aea90edcba000bd58ddecc0437a6ecdc3d544e4e35ee4a189eb"
-              - ".agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:7b5a134bbb98500cdadf64b8e71e7c2f58bfa15e92aaf28aa10f80f1bbcefedc"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-        revision: 2
-        state: "COMPLETED"
-        validation_result:
-          evidence:
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json"
-              check_id: "projection-regressions"
-              command_identity: "bunx --no-install vitest run packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts --maxWorkers=1"
-              detail: "Observed by bunx --no-install vitest run packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts --maxWorkers=1."
-              exit_code: 0
-              observed_at: "2026-09-12T10:31:40.309Z"
-              repository_snapshot_digest: "sha256:7b5a134bbb98500cdadf64b8e71e7c2f58bfa15e92aaf28aa10f80f1bbcefedc"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json"
-              check_id: "typecheck"
-              command_identity: "bun run typecheck"
-              detail: "Observed by bun run typecheck."
-              exit_code: 0
-              observed_at: "2026-09-12T10:31:40.309Z"
-              repository_snapshot_digest: "sha256:7b5a134bbb98500cdadf64b8e71e7c2f58bfa15e92aaf28aa10f80f1bbcefedc"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json"
-              check_id: "diff-check"
-              command_identity: "git diff --check"
-              detail: "Observed by git diff --check."
-              exit_code: 0
-              observed_at: "2026-09-12T10:31:40.309Z"
-              repository_snapshot_digest: "sha256:7b5a134bbb98500cdadf64b8e71e7c2f58bfa15e92aaf28aa10f80f1bbcefedc"
-              status: "passed"
-          schema_version: 1
-          stale_evidence: []
-          status: "passed"
-          unsatisfied_criteria: []
+        output_manifests: []
+        revision: 1
+        state: "READY"
+        validation_result: null
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -710,6 +897,23 @@ extensions:
         task_id: "202609121019-8K70MT"
         task_revision: 7
         work_item_id: "project-terminal-verification-block"
+      -
+        at: "2026-09-12T12:18:42.730Z"
+        from: "ACTIVE"
+        to: "PLANNING"
+        actor_id: "external:EXECUTOR"
+        cause_refs:
+          - "acceptance_changed"
+        entity: "task"
+        id: "event_fcdf55c1b832916523da85f4"
+        mutation_id: "plan-refinement:work-order-202609121019-8K70MT-executor-1119fee01124128d064340a4"
+        plan_digest: "sha256:b433fea5232868963d7e2a901a4ac1a46d3998e0f110d4d454510a21a4cd5a34"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609121019-8K70MT"
+        task_revision: 15
+        work_item_id: null
     leases: []
     mutation_receipts:
       compatibility:sha256:15a2ce2dfca794811fcdaf14a65dca8abf08b2f102f0a26140fbb68645f0a5bf:
@@ -928,6 +1132,54 @@ extensions:
         previous_revision: 10
         schema_version: 1
         task_id: "202609121019-8K70MT"
+      compatibility:sha256:b92ebf6a234f912dd494b0e8e9f9a33965f348362fcd66b3b7086cdbde363002:
+        aggregate_digest: "sha256:0ed3904d2b160b734cb2de0009a165ce0853dc032aa408b49d4802cc82236a7a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T12:21:14.214Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "AWAITING_PLAN_APPROVAL"
+          id: "event_d543c3cae081f8e6288657f6"
+          mutation_id: "compatibility:sha256:b92ebf6a234f912dd494b0e8e9f9a33965f348362fcd66b3b7086cdbde363002"
+          plan_digest: "sha256:93e7f3a2d314dd2cb370893f494cf41377a615bc4c9dee65bf408270a3a33a9e"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121019-8K70MT"
+          task_revision: 17
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b92ebf6a234f912dd494b0e8e9f9a33965f348362fcd66b3b7086cdbde363002"
+        next_revision: 18
+        previous_revision: 17
+        schema_version: 1
+        task_id: "202609121019-8K70MT"
+      compatibility:sha256:c3fe48dad0a0cdf14ff7fcd59177a9ed910879284a796c27c56b525ef6a39e4c:
+        aggregate_digest: "sha256:56389671a529f3bc6b8e0a01998889a8019b19be56605ccbc9398e8c27910ef7"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T12:14:56.483Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_0b3b75ae915425bd7aa284ec"
+          mutation_id: "compatibility:sha256:c3fe48dad0a0cdf14ff7fcd59177a9ed910879284a796c27c56b525ef6a39e4c"
+          plan_digest: "sha256:b433fea5232868963d7e2a901a4ac1a46d3998e0f110d4d454510a21a4cd5a34"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121019-8K70MT"
+          task_revision: 14
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:c3fe48dad0a0cdf14ff7fcd59177a9ed910879284a796c27c56b525ef6a39e4c"
+        next_revision: 15
+        previous_revision: 14
+        schema_version: 1
+        task_id: "202609121019-8K70MT"
       compatibility:sha256:e4ebb39d688d9eb7d75ccc7597c3dbf38edd27b001ce14be4d73de0ce489de3c:
         aggregate_digest: "sha256:7afce5c9fadf6f106e3df5f6cbfd2695689fc5b72b791d6546643e53ae1acfbd"
         event:
@@ -1000,11 +1252,33 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202609121019-8K70MT"
+      plan-refinement:work-order-202609121019-8K70MT-executor-1119fee01124128d064340a4:
+        aggregate_digest: "sha256:ab0d003cbb3536df5374803d3355c6ac9be2a440cb3670eb6807363d04779684"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-12T12:18:42.730Z"
+          cause_refs:
+            - "acceptance_changed"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_fcdf55c1b832916523da85f4"
+          mutation_id: "plan-refinement:work-order-202609121019-8K70MT-executor-1119fee01124128d064340a4"
+          plan_digest: "sha256:b433fea5232868963d7e2a901a4ac1a46d3998e0f110d4d454510a21a4cd5a34"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121019-8K70MT"
+          task_revision: 15
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609121019-8K70MT-executor-1119fee01124128d064340a4"
+        next_revision: 16
+        previous_revision: 15
+        schema_version: 1
+        task_id: "202609121019-8K70MT"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "8b46de617d4a91c37ca8ae976e3309dd0f9fc872"
   task_execution_context:
     base_ref: "main"
     base_sha: "50b1810dda648be0c0762b47e885c6ad0b2d42af"
@@ -1029,7 +1303,7 @@ When a needs_rework verification exceeds evaluator.max_rework_attempts, compatib
 
 ## Plan
 
-Plan one narrow atomic projection for terminal verification rework exhaustion.
+Preserve the implementation scope and give the required full regression check a 45-minute outer timeout.
 
 ## Verify Steps
 
@@ -1098,6 +1372,56 @@ Note: Rework: Declared check failed: bun run ci:local:full
 Attempts: 2
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:b0d80d98554e3667a80aa23348e4f870335af77f2c3d7653cf076e48bbc36666, input_digest=sha256:8ba92fbe8d60443fc952df8ed1fce1e6f29d74070bae2c9ee24062730cad715e
+
+Details:
+
+Command: bunx --no-install vitest run packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121019-8K70MT declared verification
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121019-8K70MT declared verification
+
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609121019-8K70MT declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609121019-8K70MT declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202609121019-8K70MT-make-verification-rework-exhaustion-atomically-p/.agentplane/tasks/202609121019-8K70MT/blueprint/resolved-snapshot.json
+- old_digest: 64d8ed4597711fd2487eaf045d531db4d83fa7be2833be34da0bf5b386c33cda
+- current_digest: 64d8ed4597711fd2487eaf045d531db4d83fa7be2833be34da0bf5b386c33cda
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609121019-8K70MT
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609121019-8K70MT
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-12T12:13:50.978Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 3
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:b0d80d98554e3667a80aa23348e4f870335af77f2c3d7653cf076e48bbc36666, input_digest=sha256:288935b02ce6a36d4bec709dc7f7fc63cee73251d7716910a6b8b2683bbb2d6f
 
 Details:
 
