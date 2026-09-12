@@ -4,7 +4,7 @@ title: "Implement the 0.7.9 baseline inventory and lifecycle characterization fo
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 41
+revision: 42
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +23,11 @@ plan_approval:
   updated_by: "HOST:codex-local:USER"
   note: "host_user_decision=sha256:995683c8e5097bf5d247700fa0527e961ecee710e330d6fbce93f070989ddb64"
 verification:
-  state: "needs_rework"
-  updated_at: "2026-09-12T18:04:09.627Z"
+  state: "ok"
+  updated_at: "2026-09-12T18:19:34.737Z"
   updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 1
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 execution_route:
   frozen: true
   reason_codes:
@@ -98,9 +98,7 @@ execution_contract:
       - "scripts/lib/test-route-registry.mjs"
       - "scripts/lib/test-route-registry.test.mjs"
   observed:
-    authority_violations:
-      - "verification:recorded-check-12:fail"
-      - "verification:verification-record:fail"
+    authority_violations: []
     changed_components:
       - "packages/agentplane"
       - "scripts"
@@ -132,15 +130,126 @@ execution_contract:
         result: "pass"
       -
         id: "recorded-check-12"
-        result: "fail"
+        result: "pass"
+      -
+        id: "recorded-check-13"
+        result: "pass"
+      -
+        id: "recorded-check-14"
+        result: "pass"
+      -
+        id: "recorded-check-15"
+        result: "pass"
+      -
+        id: "recorded-check-16"
+        result: "pass"
+      -
+        id: "recorded-check-17"
+        result: "pass"
+      -
+        id: "recorded-check-18"
+        result: "pass"
+      -
+        id: "recorded-check-19"
+        result: "pass"
       -
         id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-20"
+        result: "pass"
+      -
+        id: "recorded-check-21"
+        result: "pass"
+      -
+        id: "recorded-check-22"
+        result: "pass"
+      -
+        id: "recorded-check-23"
+        result: "pass"
+      -
+        id: "recorded-check-24"
+        result: "pass"
+      -
+        id: "recorded-check-25"
+        result: "pass"
+      -
+        id: "recorded-check-26"
+        result: "pass"
+      -
+        id: "recorded-check-27"
+        result: "pass"
+      -
+        id: "recorded-check-28"
+        result: "pass"
+      -
+        id: "recorded-check-29"
         result: "pass"
       -
         id: "recorded-check-3"
         result: "pass"
       -
+        id: "recorded-check-30"
+        result: "pass"
+      -
+        id: "recorded-check-31"
+        result: "pass"
+      -
+        id: "recorded-check-32"
+        result: "pass"
+      -
+        id: "recorded-check-33"
+        result: "pass"
+      -
+        id: "recorded-check-34"
+        result: "pass"
+      -
+        id: "recorded-check-35"
+        result: "pass"
+      -
+        id: "recorded-check-36"
+        result: "pass"
+      -
+        id: "recorded-check-37"
+        result: "pass"
+      -
+        id: "recorded-check-38"
+        result: "pass"
+      -
+        id: "recorded-check-39"
+        result: "pass"
+      -
         id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-40"
+        result: "pass"
+      -
+        id: "recorded-check-41"
+        result: "pass"
+      -
+        id: "recorded-check-42"
+        result: "pass"
+      -
+        id: "recorded-check-43"
+        result: "pass"
+      -
+        id: "recorded-check-44"
+        result: "pass"
+      -
+        id: "recorded-check-45"
+        result: "pass"
+      -
+        id: "recorded-check-46"
+        result: "pass"
+      -
+        id: "recorded-check-47"
+        result: "pass"
+      -
+        id: "recorded-check-48"
+        result: "pass"
+      -
+        id: "recorded-check-49"
         result: "pass"
       -
         id: "recorded-check-5"
@@ -159,7 +268,7 @@ execution_contract:
         result: "pass"
       -
         id: "verification-record"
-        result: "fail"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_ci"
@@ -278,8 +387,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-12"
-      - "verification_recovery:verification-record"
 commit:
   hash: "ac856fe3cc89dea00266576286e9733694802e58"
   message: "🚧 9WPTCW task: apply external agent result"
@@ -446,8 +553,14 @@ events:
     to: "DOING"
     note: "Implementation committed: ac856fe3cc89. CLI accepted one state-bound external-agent semantic result."
     commit: "ac856fe3cc89dea00266576286e9733694802e58"
+  -
+    type: "verify"
+    at: "2026-09-12T18:19:34.737Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-12T18:08:55.855Z"
+doc_updated_at: "2026-09-12T18:19:36.126Z"
 doc_updated_by: "SUPERVISOR"
 description: "Source contract: agentplane-roadmap-r2 cards ST-01, ST-02, ST-03, ST-04, ST-05, and ST-21. Reproduce a source-bound lifecycle and Blueprint consumer/writer inventory, freeze ordinary direct and branch-PR completion, rework versus infrastructure retry, admission/crash/context-role invariants, and local/remote-backend serialization, staleness, conflict, and unsupported-format behavior. Preserve I01-I12 and C01-C08. Do not introduce a new runtime registry, sync subsystem, provider access, or lifecycle format. The roadmap directory is source-only and must never be committed. Required checks: node --test scripts/checks/architecture-inventory.test.mjs; focused AgentPlane characterization tests for direct, branch, rework, recovery, and backend round trips with nonzero discovery; relevant critical suites, typecheck, schema and mirror checks."
 sections:
@@ -540,6 +653,330 @@ sections:
     Result: fail
     Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-12
     Scope: branch_pr task 202609121423-9WPTCW declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121423-9WPTCW-implement-the-0-7-9-baseline-inventory-and-lifec/.agentplane/tasks/202609121423-9WPTCW/blueprint/resolved-snapshot.json
+    - old_digest: 4f418b286c8e456059156718be69923286eed7a14207bd37ea7d92df315c6def
+    - current_digest: 4f418b286c8e456059156718be69923286eed7a14207bd37ea7d92df315c6def
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609121423-9WPTCW
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609121423-9WPTCW
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-12T18:19:34.737Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8e22b9c23634dcc727c432eafd68bec9c6dd01f6db3a8de9a30aabcc273d5c15, input_digest=sha256:5e32500ca8c791de0f6af55aa2eecd09b5fe52825ff03ab5531204001f701ff3
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: node --test scripts/checks/architecture-inventory.test.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check affected_unit_integration (1/12)
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check affected_unit_integration (2/12)
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-branch.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check affected_unit_integration (3/12)
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check affected_unit_integration (4/12)
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check affected_unit_integration (5/12)
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-backend-roundtrip.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check affected_unit_integration (6/12)
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check affected_unit_integration (7/12)
+
+    Check: affected_unit_integration
+    Command: bun run schemas:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check affected_unit_integration (8/12)
+
+    Check: affected_unit_integration
+    Command: bun run artifacts:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check affected_unit_integration (9/12)
+
+    Check: affected_unit_integration
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check affected_unit_integration (10/12)
+
+    Check: affected_unit_integration
+    Command: bun run test:backend-critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check affected_unit_integration (11/12)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-12
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check affected_unit_integration (12/12)
+
+    Check: critical_paths
+    Command: node --test scripts/checks/architecture-inventory.test.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check critical_paths (1/12)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check critical_paths (2/12)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-branch.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check critical_paths (3/12)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check critical_paths (4/12)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check critical_paths (5/12)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-backend-roundtrip.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check critical_paths (6/12)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check critical_paths (7/12)
+
+    Check: critical_paths
+    Command: bun run schemas:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check critical_paths (8/12)
+
+    Check: critical_paths
+    Command: bun run artifacts:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check critical_paths (9/12)
+
+    Check: critical_paths
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check critical_paths (10/12)
+
+    Check: critical_paths
+    Command: bun run test:backend-critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check critical_paths (11/12)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-12
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check critical_paths (12/12)
+
+    Check: docs_contract
+    Command: node --test scripts/checks/architecture-inventory.test.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check docs_contract (1/12)
+
+    Check: docs_contract
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check docs_contract (2/12)
+
+    Check: docs_contract
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-branch.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check docs_contract (3/12)
+
+    Check: docs_contract
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check docs_contract (4/12)
+
+    Check: docs_contract
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check docs_contract (5/12)
+
+    Check: docs_contract
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-backend-roundtrip.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check docs_contract (6/12)
+
+    Check: docs_contract
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check docs_contract (7/12)
+
+    Check: docs_contract
+    Command: bun run schemas:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check docs_contract (8/12)
+
+    Check: docs_contract
+    Command: bun run artifacts:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check docs_contract (9/12)
+
+    Check: docs_contract
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check docs_contract (10/12)
+
+    Check: docs_contract
+    Command: bun run test:backend-critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check docs_contract (11/12)
+
+    Check: docs_contract
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-12
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check docs_contract (12/12)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-12
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: node --test scripts/checks/architecture-inventory.test.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check task_outcome (1/12)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check task_outcome (2/12)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-branch.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check task_outcome (3/12)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check task_outcome (4/12)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check task_outcome (5/12)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-backend-roundtrip.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check task_outcome (6/12)
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check task_outcome (7/12)
+
+    Check: task_outcome
+    Command: bun run schemas:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check task_outcome (8/12)
+
+    Check: task_outcome
+    Command: bun run artifacts:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check task_outcome (9/12)
+
+    Check: task_outcome
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check task_outcome (10/12)
+
+    Check: task_outcome
+    Command: bun run test:backend-critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check task_outcome (11/12)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-12
+    Scope: branch_pr task 202609121423-9WPTCW Verification Contract check task_outcome (12/12)
 
     BlueprintSnapshotRef:
     - state: current
@@ -1335,7 +1772,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609121423-9WPTCW"
-    event_cursor: 31
+    event_cursor: 32
     final_validation: null
     id: "202609121423-9WPTCW"
     intent:
@@ -2842,9 +3279,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609121423-9WPTCW"
-    revision: 41
+    revision: 42
     schema_version: 1
-    updated_at: "2026-09-12T18:08:55.855Z"
+    updated_at: "2026-09-12T18:19:36.121Z"
     work_items:
       ST-01:
         attempt: 1
@@ -3998,6 +4435,30 @@ extensions:
         previous_revision: 36
         schema_version: 1
         task_id: "202609121423-9WPTCW"
+      compatibility:sha256:efd57faf228edb9a862ea16f6f1707bddb5d7f0ccae5005a899ebf7bb2cb8d87:
+        aggregate_digest: "sha256:a35169cf602b4c483f88124014524e0212586846216e5405baa35dec1ae9d1d8"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T18:19:36.121Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_a598b8be2425343b9ef7afbb"
+          mutation_id: "compatibility:sha256:efd57faf228edb9a862ea16f6f1707bddb5d7f0ccae5005a899ebf7bb2cb8d87"
+          plan_digest: "sha256:a9ccea53ee91bda02540f559528bdce316d1a1154bdbc4da00b22a47189a40e8"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121423-9WPTCW"
+          task_revision: 41
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:efd57faf228edb9a862ea16f6f1707bddb5d7f0ccae5005a899ebf7bb2cb8d87"
+        next_revision: 42
+        previous_revision: 41
+        schema_version: 1
+        task_id: "202609121423-9WPTCW"
       compatibility:sha256:fec9aec4a5a80fb9104dbf30edc652dd9866fc7e58c753d6e25ad91420992eb5:
         aggregate_digest: "sha256:50fc66b03e7932389264cf3a3317ffa2176eb58bcf1d89762ea63a5703452e54"
         event:
@@ -4352,6 +4813,330 @@ Command: bun run ci:local:full
 Result: fail
 Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-12
 Scope: branch_pr task 202609121423-9WPTCW declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121423-9WPTCW-implement-the-0-7-9-baseline-inventory-and-lifec/.agentplane/tasks/202609121423-9WPTCW/blueprint/resolved-snapshot.json
+- old_digest: 4f418b286c8e456059156718be69923286eed7a14207bd37ea7d92df315c6def
+- current_digest: 4f418b286c8e456059156718be69923286eed7a14207bd37ea7d92df315c6def
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609121423-9WPTCW
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609121423-9WPTCW
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-12T18:19:34.737Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8e22b9c23634dcc727c432eafd68bec9c6dd01f6db3a8de9a30aabcc273d5c15, input_digest=sha256:5e32500ca8c791de0f6af55aa2eecd09b5fe52825ff03ab5531204001f701ff3
+
+Details:
+
+Check: affected_unit_integration
+Command: node --test scripts/checks/architecture-inventory.test.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check affected_unit_integration (1/12)
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check affected_unit_integration (2/12)
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-branch.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check affected_unit_integration (3/12)
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check affected_unit_integration (4/12)
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check affected_unit_integration (5/12)
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-backend-roundtrip.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check affected_unit_integration (6/12)
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check affected_unit_integration (7/12)
+
+Check: affected_unit_integration
+Command: bun run schemas:check
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check affected_unit_integration (8/12)
+
+Check: affected_unit_integration
+Command: bun run artifacts:check
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check affected_unit_integration (9/12)
+
+Check: affected_unit_integration
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check affected_unit_integration (10/12)
+
+Check: affected_unit_integration
+Command: bun run test:backend-critical
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check affected_unit_integration (11/12)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-12
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check affected_unit_integration (12/12)
+
+Check: critical_paths
+Command: node --test scripts/checks/architecture-inventory.test.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check critical_paths (1/12)
+
+Check: critical_paths
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check critical_paths (2/12)
+
+Check: critical_paths
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-branch.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check critical_paths (3/12)
+
+Check: critical_paths
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check critical_paths (4/12)
+
+Check: critical_paths
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check critical_paths (5/12)
+
+Check: critical_paths
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-backend-roundtrip.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check critical_paths (6/12)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check critical_paths (7/12)
+
+Check: critical_paths
+Command: bun run schemas:check
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check critical_paths (8/12)
+
+Check: critical_paths
+Command: bun run artifacts:check
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check critical_paths (9/12)
+
+Check: critical_paths
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check critical_paths (10/12)
+
+Check: critical_paths
+Command: bun run test:backend-critical
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check critical_paths (11/12)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-12
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check critical_paths (12/12)
+
+Check: docs_contract
+Command: node --test scripts/checks/architecture-inventory.test.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check docs_contract (1/12)
+
+Check: docs_contract
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check docs_contract (2/12)
+
+Check: docs_contract
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-branch.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check docs_contract (3/12)
+
+Check: docs_contract
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check docs_contract (4/12)
+
+Check: docs_contract
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check docs_contract (5/12)
+
+Check: docs_contract
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-backend-roundtrip.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check docs_contract (6/12)
+
+Check: docs_contract
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check docs_contract (7/12)
+
+Check: docs_contract
+Command: bun run schemas:check
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check docs_contract (8/12)
+
+Check: docs_contract
+Command: bun run artifacts:check
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check docs_contract (9/12)
+
+Check: docs_contract
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check docs_contract (10/12)
+
+Check: docs_contract
+Command: bun run test:backend-critical
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check docs_contract (11/12)
+
+Check: docs_contract
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-12
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check docs_contract (12/12)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-12
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check full_regression
+
+Check: task_outcome
+Command: node --test scripts/checks/architecture-inventory.test.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check task_outcome (1/12)
+
+Check: task_outcome
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check task_outcome (2/12)
+
+Check: task_outcome
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-branch.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check task_outcome (3/12)
+
+Check: task_outcome
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check task_outcome (4/12)
+
+Check: task_outcome
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check task_outcome (5/12)
+
+Check: task_outcome
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-backend-roundtrip.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check task_outcome (6/12)
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check task_outcome (7/12)
+
+Check: task_outcome
+Command: bun run schemas:check
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check task_outcome (8/12)
+
+Check: task_outcome
+Command: bun run artifacts:check
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check task_outcome (9/12)
+
+Check: task_outcome
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check task_outcome (10/12)
+
+Check: task_outcome
+Command: bun run test:backend-critical
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check task_outcome (11/12)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-12
+Scope: branch_pr task 202609121423-9WPTCW Verification Contract check task_outcome (12/12)
 
 BlueprintSnapshotRef:
 - state: current
