@@ -1,0 +1,33 @@
+Task: `202609121443-YAQJB7`
+Title: Fix task-centric scope extension targeting when multiple WorkItems are schedulable
+Canonical task record: `.agentplane/tasks/202609121443-YAQJB7/README.md`
+
+## Summary
+
+Fix task-centric scope extension targeting when multiple WorkItems are schedulable
+
+When a blocked external semantic result requests a repository scope extension, persist and use the blocked WorkItem identity so the exact USER-approved extension updates that WorkItem even when other independent WorkItems are schedulable. Preserve fail-closed state binding and add regression coverage. This is required to unblock task 202609121423-9WPTCW.
+
+## Scope
+
+- In scope: When a blocked external semantic result requests a repository scope extension, persist and use the blocked WorkItem identity so the exact USER-approved extension updates that WorkItem even when other independent WorkItems are schedulable. Preserve fail-closed state binding and add regression coverage. This is required to unblock task 202609121423-9WPTCW.
+- Out of scope: unrelated refactors not required for "Fix task-centric scope extension targeting when multiple WorkItems are schedulable".
+
+## Verification
+
+- State: pending
+- Note: Not recorded yet.
+- Canonical workflow state lives in the task README.
+
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-09-12T14:45:48.622Z
+- Branch: task/202609121443-YAQJB7/fix-task-centric-scope-extension-targeting-when
+- Head: computed live by `agentplane pr check` / `agentplane integrate`
+
+```text
+No changes detected.
+```
+
+</details>
