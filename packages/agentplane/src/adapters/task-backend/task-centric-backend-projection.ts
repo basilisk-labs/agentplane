@@ -140,6 +140,7 @@ export function projectTaskCentricCompatibilityMutation(opts: {
     opts.next.status === "DOING";
   const verificationBlocked =
     currentAggregate.lifecycle === "ACTIVE" &&
+    opts.current.verification?.state === "needs_rework" &&
     opts.next.verification?.state === "blocked_external" &&
     opts.next.status === "BLOCKED";
   const projectedLifecycle =
