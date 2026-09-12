@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:863c79de7430c8d83b60c07f883eaeaea4601809061ce86f53e8145f941597d8",
   "pr_number": 5940,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5940",
+  "pre_merge_closure": {
+    "basis_commit": "d89199b70f4bbc7033b2e898763d131feef6dc14",
+    "branch": "task/202609122147-5F5WP0/make-agentplane-managed-gitlab-mrs-remove-source",
+    "pr_number": 5940,
+    "recorded_at": "2026-09-12T22:42:42.693Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
