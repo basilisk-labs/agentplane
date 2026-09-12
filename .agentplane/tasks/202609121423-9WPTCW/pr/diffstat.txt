@@ -1,8 +1,9 @@
  .../src/cli/run-cli.core.roadmap-branch.test.ts    |  29 ++++
  .../src/cli/run-cli.core.roadmap-direct.test.ts    |  34 +++++
+ .../src/cli/run-cli.core.roadmap-recovery.test.ts  |  34 +++++
  scripts/baselines/architecture-inventory.json      | 159 +++++++++++++++++++++
  scripts/checks/architecture-inventory.mjs          | 113 +++++++++++++++
  scripts/checks/architecture-inventory.test.mjs     |  47 ++++++
  scripts/lib/test-route-registry.mjs                |   2 +-
  scripts/lib/test-route-registry.test.mjs           |  14 ++
- 7 files changed, 397 insertions(+), 1 deletion(-)
+ 8 files changed, 431 insertions(+), 1 deletion(-)
