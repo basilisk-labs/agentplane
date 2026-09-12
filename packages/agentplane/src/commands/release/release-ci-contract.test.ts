@@ -33,6 +33,9 @@ describe("release CI contract", () => {
       "node scripts/checks/run-local-ci.mjs --mode smoke --explain",
     );
     expect(scripts["test:critical"]).toBe("node scripts/checks/run-vitest-suite.mjs critical-cli");
+    expect(scripts["test:agent-efficiency:qualification"]).toBe(
+      "node scripts/checks/run-vitest-suite.mjs agent-efficiency-qualification",
+    );
     expect(scripts["bench:cli:cold:check"]).toContain("--attempts 3");
     expect(releaseCiCheck).toBe("bun run ci:contract && bun run ci:release-extras");
     expect(releaseCheck).toContain("bun run release:incidents:check");
@@ -56,9 +59,23 @@ describe("release CI contract", () => {
     );
 
     expect(SUITES["release-ci-base"]?.chunkSize).toBe(10);
-    expect(SUITES["critical-cli"]?.chunkSize).toBe(1);
+    expect(SUITES["critical-cli"]?.chunkSize).toBe(2);
     expect(SUITES["critical-cli"]?.files).toContain(
       "packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts",
+    );
+    expect(SUITES["critical-cli"]?.files).not.toContainEqual(
+      expect.stringContaining("run-cli.critical.agent-efficiency"),
+    );
+    expect(SUITES["agent-efficiency-qualification"]?.chunkSize).toBe(1);
+    expect(SUITES["agent-efficiency-qualification"]?.files).toHaveLength(5);
+    expect(SUITES["agent-efficiency-qualification"]?.files).toEqual(
+      expect.arrayContaining([
+        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts",
+        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts",
+        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts",
+        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay.test.ts",
+      ]),
     );
     expect(
       SUITES["release-ci-base"]?.isolatedPatterns?.some((pattern) =>
