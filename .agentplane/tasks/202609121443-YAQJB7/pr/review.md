@@ -13,7 +13,7 @@ Created: 2026-09-12T14:45:48.622Z
 ## Verification
 
 - State: pending
-- Note: Not recorded yet.
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,7 +29,11 @@ Created: 2026-09-12T14:45:48.622Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ ...un-cli.core.task-advance.blocked-result.test.ts |  7 ++++
+ .../shared/task-scope-extension-request.ts         | 40 ++++++++++++++-----
+ .../commands/task/external-agent-blocked-result.ts |  9 ++++-
+ .../src/commands/task/scope-extend.test.ts         | 45 ++++++++++++++++++++++
+ 4 files changed, 91 insertions(+), 10 deletions(-)
 ```
 
 </details>

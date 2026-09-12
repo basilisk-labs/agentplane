@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202609121443-YAQJB7/fix-task-centric-scope-extension-targeting-when",
   "created_at": "2026-09-12T14:45:48.622Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "diffstat_sha256": "sha256:dea1e5856ccb18f0ea946112bcc67621889fb9190c89787c624d6ddee50dcf10",
   "last_verified_at": null,
   "provider": {
     "hostname": "github.com",
