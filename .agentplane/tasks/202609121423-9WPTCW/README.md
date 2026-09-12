@@ -4,7 +4,7 @@ title: "Implement the 0.7.9 baseline inventory and lifecycle characterization fo
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -107,6 +107,8 @@ execution_contract:
       - "scripts/baselines/architecture-inventory.json"
       - "scripts/checks/architecture-inventory.mjs"
       - "scripts/checks/architecture-inventory.test.mjs"
+      - "scripts/lib/test-route-registry.mjs"
+      - "scripts/lib/test-route-registry.test.mjs"
     external_effects: []
     repository_effects:
       - "repository_write"
@@ -157,13 +159,15 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:2bc5b06326daa759e9e66efbae817d7cc6fdaa6c530c6cb231a9fb8cb7d1ea9d"
+      digest: "sha256:b07ee381f53438a7e272ad1837d4818f88a14e47bd02b441da154e84d3da165c"
       escalation_reasons:
         - "central_component:scripts/lib/test-route-registry.mjs"
         - "central_component:scripts/lib/test-route-registry.test.mjs"
         - "central_path:packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts"
         - "central_path:scripts/checks/architecture-inventory.mjs"
         - "central_path:scripts/checks/architecture-inventory.test.mjs"
+        - "central_path:scripts/lib/test-route-registry.mjs"
+        - "central_path:scripts/lib/test-route-registry.test.mjs"
         - "effect_ci"
         - "unknown_path:scripts/baselines/architecture-inventory.json"
       execution_groups:
@@ -180,6 +184,8 @@ execution_contract:
           - "scripts/baselines/architecture-inventory.json"
           - "scripts/checks/architecture-inventory.mjs"
           - "scripts/checks/architecture-inventory.test.mjs"
+          - "scripts/lib/test-route-registry.mjs"
+          - "scripts/lib/test-route-registry.test.mjs"
         external_effects: []
         repository_effects:
           - "repository_write"
@@ -219,7 +225,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "cd631dfb671cfdb7d599ce8a5a2a673a0d59cc1d"
+  message: "🚧 9WPTCW task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -236,6 +244,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: scripts/lib/test-route-registry.mjs, scripts/lib/test-route-registry.test.mjs; repository effects: ci, tests."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: cd631dfb671c. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -267,8 +278,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The unchanged roadmap check cannot discover its run-cli target under the current test-route registry. Recommended action: Extend scope to scripts/lib/test-route-registry.mjs and its focused tests, then add a narrow roadmap-only routing exception without changing other suite ownership. Requested scope: roots=scripts/lib/test-route-registry.mjs,scripts/lib/test-route-registry.test.mjs; repository effects=ci,tests; request digest=sha256:7cfc00abde14de1954f99f4e800630de4283b07bf54b8a99834ae542d34f10ed. Agentplane receipt: external-agent-blocker/tr_62c3e590d87ea43cc78c750a0938861b/sha256:58587c7c59b26abac1e5b295201fa1f54af07002500ce6fec4cb879d4616384a/sha256:7cfc00abde14de1954f99f4e800630de4283b07bf54b8a99834ae542d34f10ed."
+  -
+    type: "status"
+    at: "2026-09-12T16:34:14.764Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: cd631dfb671c. CLI accepted one state-bound external-agent semantic result."
+    commit: "cd631dfb671cfdb7d599ce8a5a2a673a0d59cc1d"
 doc_version: 3
-doc_updated_at: "2026-09-12T14:40:45.583Z"
+doc_updated_at: "2026-09-12T16:34:14.764Z"
 doc_updated_by: "SUPERVISOR"
 description: "Source contract: agentplane-roadmap-r2 cards ST-01, ST-02, ST-03, ST-04, ST-05, and ST-21. Reproduce a source-bound lifecycle and Blueprint consumer/writer inventory, freeze ordinary direct and branch-PR completion, rework versus infrastructure retry, admission/crash/context-role invariants, and local/remote-backend serialization, staleness, conflict, and unsupported-format behavior. Preserve I01-I12 and C01-C08. Do not introduce a new runtime registry, sync subsystem, provider access, or lifecycle format. The roadmap directory is source-only and must never be committed. Required checks: node --test scripts/checks/architecture-inventory.test.mjs; focused AgentPlane characterization tests for direct, branch, rework, recovery, and backend round trips with nonzero discovery; relevant critical suites, typecheck, schema and mirror checks."
 sections:
@@ -1056,7 +1075,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609121423-9WPTCW"
-    event_cursor: 11
+    event_cursor: 13
     final_validation: null
     id: "202609121423-9WPTCW"
     intent:
@@ -1824,9 +1843,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121423-9WPTCW"
-    revision: 15
+    revision: 17
     schema_version: 1
-    updated_at: "2026-09-12T14:40:45.583Z"
+    updated_at: "2026-09-12T16:34:14.764Z"
     work_items:
       ST-01:
         attempt: 1
@@ -2019,6 +2038,30 @@ extensions:
         work_item_id: "ST-02"
     leases: []
     mutation_receipts:
+      compatibility:sha256:43aa0b17696420e3442bca98821ec3c715524fcb92ec7d2e1a2d4b4d6de5e3fe:
+        aggregate_digest: "sha256:7424a797265232d0610ba7734faf18904616e0e42273a51294d97024a691e5aa"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T16:34:14.764Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_b56c38c1a9d1dad19d33f958"
+          mutation_id: "compatibility:sha256:43aa0b17696420e3442bca98821ec3c715524fcb92ec7d2e1a2d4b4d6de5e3fe"
+          plan_digest: "sha256:b0ece49ff2eb33e8520274d3f338393f64f1cfc4982244182f4bb700754b8fed"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121423-9WPTCW"
+          task_revision: 15
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:43aa0b17696420e3442bca98821ec3c715524fcb92ec7d2e1a2d4b4d6de5e3fe"
+        next_revision: 16
+        previous_revision: 15
+        schema_version: 1
+        task_id: "202609121423-9WPTCW"
       compatibility:sha256:6270a6c6beb2841dbe0271cb9e237e279b9df45d8cafac1bb44ff605be3611db:
         aggregate_digest: "sha256:dc56960cd64a808c909c51823e9c15abee582ec6dd3d7c343134dc53b2b858de"
         event:
@@ -2235,6 +2278,30 @@ extensions:
         previous_revision: 9
         schema_version: 1
         task_id: "202609121423-9WPTCW"
+      compatibility:sha256:e5ba67edc98e88963d7c77998358494e12b27cb585436c4547a2b25ee2e3adfd:
+        aggregate_digest: "sha256:8a1d3be5725ad7e64e67c7bfd301cf760e62162c353fceacc42d7a76abaf4b41"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T16:34:14.764Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_f483c9e016467d3d5ff35772"
+          mutation_id: "compatibility:sha256:e5ba67edc98e88963d7c77998358494e12b27cb585436c4547a2b25ee2e3adfd"
+          plan_digest: "sha256:b0ece49ff2eb33e8520274d3f338393f64f1cfc4982244182f4bb700754b8fed"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121423-9WPTCW"
+          task_revision: 16
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:e5ba67edc98e88963d7c77998358494e12b27cb585436c4547a2b25ee2e3adfd"
+        next_revision: 17
+        previous_revision: 16
+        schema_version: 1
+        task_id: "202609121423-9WPTCW"
       compatibility:sha256:fec9aec4a5a80fb9104dbf30edc652dd9866fc7e58c753d6e25ad91420992eb5:
         aggregate_digest: "sha256:50fc66b03e7932389264cf3a3317ffa2176eb58bcf1d89762ea63a5703452e54"
         event:
@@ -2334,7 +2401,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "e49569e0bfdc4c57ac0b1fcfc54018c51651a2d3"
+    hash: "cd631dfb671cfdb7d599ce8a5a2a673a0d59cc1d"
   task_execution_context:
     base_ref: "main"
     base_sha: "f3c1991ddd92943775b6b4b4688009afc3d523bc"
