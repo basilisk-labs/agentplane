@@ -29,7 +29,9 @@ Created: 2026-09-12T19:35:46.087Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ ...i.core.task-advance.worktree-resolution.test.ts | 47 ++++++++++++++++++++--
+ .../commands/branch/work-resume-planning-base.ts   | 26 ++++++++----
+ 2 files changed, 62 insertions(+), 11 deletions(-)
 ```
 
 </details>

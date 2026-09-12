@@ -4,7 +4,7 @@ title: "Fix branch_pr dependency readiness after a dependency merges into the ca
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -181,9 +181,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "fdb54b250502ad6f31f44376504f88c6b4896967"
-  message: "🚧 MAT0V1 task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -987,19 +985,101 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609121932-MAT0V1"
-    revision: 15
+    revision: 16
     schema_version: 1
-    updated_at: "2026-09-12T19:51:03.148Z"
+    updated_at: "2026-09-12T20:05:51.620Z"
     work_items:
       WI-01:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "WI-01"
-        last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        last_failure:
+          cause_refs:
+            - "recovery-revision-invariant"
+          code: "validation_failed"
+          kind: "validation"
+          message: "Reconfirmed the recorded implementation and its focused verification without further source changes."
+          retryable: true
+        output_manifests:
+          -
+            digest: "sha256:bd2d5f9a1c017571dad52c0cbd9c80e0c1d3a0a2ee80e6e6fc10ee899de5cac7"
+            id: "Revision-aligned planning-base recovery publication."
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 3
+              task_id: "202609121932-MAT0V1"
+              work_item_id: "WI-01"
+            provenance:
+              - "sha256:f111807a99afedb8d48945c0dcb353a7db2e883cbf26a0e2b39b3dbe05d30f7e"
+              - ".agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:c7aa2c562d92b0b7667eb6ca7d28d530df8d574958ea954ceabeb7201500cbc6"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:91c590492f229f1d53582f8b226ddab010ce5bd888729624639be7f8c5360f42"
+            id: "Focused regression coverage for the first lifecycle mutation after recovery and fail-closed dependency states."
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 3
+              task_id: "202609121932-MAT0V1"
+              work_item_id: "WI-01"
+            provenance:
+              - "sha256:f111807a99afedb8d48945c0dcb353a7db2e883cbf26a0e2b39b3dbe05d30f7e"
+              - ".agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:c7aa2c562d92b0b7667eb6ca7d28d530df8d574958ea954ceabeb7201500cbc6"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "REWORK_READY"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json"
+              check_id: "focused-regression"
+              command_identity: "node node_modules/vitest/vitest.mjs --config vitest.config.ts run packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts --pool=forks --maxWorkers=1 --testTimeout=60000 --hookTimeout=60000"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-09-12T20:05:51.607Z"
+              repository_snapshot_digest: "sha256:c7aa2c562d92b0b7667eb6ca7d28d530df8d574958ea954ceabeb7201500cbc6"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json"
+              check_id: "typecheck"
+              command_identity: "bun run typecheck"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-09-12T20:05:51.607Z"
+              repository_snapshot_digest: "sha256:c7aa2c562d92b0b7667eb6ca7d28d530df8d574958ea954ceabeb7201500cbc6"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json"
+              check_id: "critical"
+              command_identity: "bun run test:critical"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-09-12T20:05:51.607Z"
+              repository_snapshot_digest: "sha256:c7aa2c562d92b0b7667eb6ca7d28d530df8d574958ea954ceabeb7201500cbc6"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json"
+              check_id: "full-ci"
+              command_identity: "bun run ci:local:full"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 1
+              observed_at: "2026-09-12T20:05:51.607Z"
+              repository_snapshot_digest: "sha256:c7aa2c562d92b0b7667eb6ca7d28d530df8d574958ea954ceabeb7201500cbc6"
+              status: "failed"
+          schema_version: 1
+          stale_evidence: []
+          status: "failed"
+          unsatisfied_criteria:
+            - "recovery-revision-invariant"
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -1039,6 +1119,23 @@ extensions:
         task_id: "202609121932-MAT0V1"
         task_revision: 8
         work_item_id: null
+      -
+        at: "2026-09-12T20:05:51.620Z"
+        from: "READY"
+        to: "REWORK_READY"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:cf37133a2b806bf9e6c55e9898b03b4b5eaeaf43019cf5dd86dd22d63f90e46c"
+        entity: "work_item"
+        id: "event_aadc19a5db6eb96e3496b366"
+        mutation_id: "external-result:work-order-202609121932-MAT0V1-executor-542106585c046f44923824d8"
+        plan_digest: "sha256:f6eee473a1d7c1663ce94f01e6a2efa4c7ba9d84e518d9ac78cac73de8eaddbc"
+        plan_revision: 3
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609121932-MAT0V1"
+        task_revision: 15
+        work_item_id: "WI-01"
     leases: []
     mutation_receipts:
       compatibility:sha256:030777714651d5dede420cc39548207af0fe52b14a7ee41d9b72459ff11f574a:
@@ -1255,6 +1352,30 @@ extensions:
         mutation_id: "compatibility:sha256:f8827162dbbb476df2b1c9907ad242c139a1b972cc59f140de3dc2e5c52371a3"
         next_revision: 3
         previous_revision: 2
+        schema_version: 1
+        task_id: "202609121932-MAT0V1"
+      external-result:work-order-202609121932-MAT0V1-executor-542106585c046f44923824d8:
+        aggregate_digest: "sha256:f20ef399a8a6509c23a0a06f611c921608bf3d8c53a08458c79407386e332448"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T20:05:51.620Z"
+          cause_refs:
+            - "semantic-result:sha256:cf37133a2b806bf9e6c55e9898b03b4b5eaeaf43019cf5dd86dd22d63f90e46c"
+          entity: "work_item"
+          from: "READY"
+          id: "event_aadc19a5db6eb96e3496b366"
+          mutation_id: "external-result:work-order-202609121932-MAT0V1-executor-542106585c046f44923824d8"
+          plan_digest: "sha256:f6eee473a1d7c1663ce94f01e6a2efa4c7ba9d84e518d9ac78cac73de8eaddbc"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121932-MAT0V1"
+          task_revision: 15
+          to: "REWORK_READY"
+          work_item_id: "WI-01"
+        mutation_id: "external-result:work-order-202609121932-MAT0V1-executor-542106585c046f44923824d8"
+        next_revision: 16
+        previous_revision: 15
         schema_version: 1
         task_id: "202609121932-MAT0V1"
       plan-refinement:work-order-202609121932-MAT0V1-executor-2886d62fb018cba555d15c46:
