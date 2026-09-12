@@ -4,7 +4,7 @@ title: "Fix task-centric scope extension targeting when multiple WorkItems are s
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +23,11 @@ plan_approval:
   updated_by: "HOST:codex-local:USER"
   note: "host_user_decision=sha256:55f5cba3c72ca16b64309d068780679361851b80e3bef16f957fe1d4ae31e7eb"
 verification:
-  state: "needs_rework"
-  updated_at: "2026-09-12T15:14:33.121Z"
+  state: "ok"
+  updated_at: "2026-09-12T15:26:12.320Z"
   updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 2
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 execution_route:
   frozen: true
   reason_codes:
@@ -85,9 +85,7 @@ execution_contract:
       - "packages/agentplane/src/commands/task/external-agent-blocked-result.ts"
       - "packages/agentplane/src/commands/task/scope-extend.test.ts"
   observed:
-    authority_violations:
-      - "verification:recorded-check-3:fail"
-      - "verification:verification-record:fail"
+    authority_violations: []
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -105,14 +103,35 @@ execution_contract:
         id: "recorded-check-1"
         result: "pass"
       -
+        id: "recorded-check-10"
+        result: "pass"
+      -
         id: "recorded-check-2"
         result: "pass"
       -
         id: "recorded-check-3"
-        result: "fail"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
       -
         id: "verification-record"
-        result: "fail"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -202,8 +221,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-3"
-      - "verification_recovery:verification-record"
 commit:
   hash: "a7234fc30d705ad7246276932622601c73031c92"
   message: "🚧 YAQJB7 task: apply external agent result"
@@ -277,8 +294,14 @@ events:
     to: "DOING"
     note: "Implementation committed: a7234fc30d70. CLI accepted one state-bound external-agent semantic result."
     commit: "a7234fc30d705ad7246276932622601c73031c92"
+  -
+    type: "verify"
+    at: "2026-09-12T15:26:12.320Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-12T15:17:10.691Z"
+doc_updated_at: "2026-09-12T15:26:13.896Z"
 doc_updated_by: "SUPERVISOR"
 description: "When a blocked external semantic result requests a repository scope extension, persist and use the blocked WorkItem identity so the exact USER-approved extension updates that WorkItem even when other independent WorkItems are schedulable. Preserve fail-closed state binding and add regression coverage. This is required to unblock task 202609121423-9WPTCW."
 sections:
@@ -366,6 +389,96 @@ sections:
     Result: fail
     Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-3
     Scope: branch_pr task 202609121443-YAQJB7 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121443-YAQJB7-fix-task-centric-scope-extension-targeting-when/.agentplane/tasks/202609121443-YAQJB7/blueprint/resolved-snapshot.json
+    - old_digest: 9947e66ef95512fbd2abaf3c8f4405374ddd604288b7360683f50e1f44e4f454
+    - current_digest: 9947e66ef95512fbd2abaf3c8f4405374ddd604288b7360683f50e1f44e4f454
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609121443-YAQJB7
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609121443-YAQJB7
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-12T15:26:12.320Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:9e0102b8e88ceddae001bb0fae89f223b4caa65282d2649dfd58d77cede4d075, input_digest=sha256:253a29e1b23ad91e204cbd8017a185902ade925842c29311352921516ce5ce28
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121443-YAQJB7 Verification Contract check affected_unit_integration (1/3)
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121443-YAQJB7 Verification Contract check affected_unit_integration (2/3)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609121443-YAQJB7 Verification Contract check affected_unit_integration (3/3)
+
+    Check: critical_paths
+    Command: bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121443-YAQJB7 Verification Contract check critical_paths (1/3)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121443-YAQJB7 Verification Contract check critical_paths (2/3)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609121443-YAQJB7 Verification Contract check critical_paths (3/3)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609121443-YAQJB7 Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121443-YAQJB7 Verification Contract check task_outcome (1/3)
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121443-YAQJB7 Verification Contract check task_outcome (2/3)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609121443-YAQJB7 Verification Contract check task_outcome (3/3)
 
     BlueprintSnapshotRef:
     - state: current
@@ -734,7 +847,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609121443-YAQJB7"
-    event_cursor: 14
+    event_cursor: 15
     final_validation: null
     id: "202609121443-YAQJB7"
     intent:
@@ -1057,9 +1170,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121443-YAQJB7"
-    revision: 17
+    revision: 18
     schema_version: 1
-    updated_at: "2026-09-12T15:17:10.691Z"
+    updated_at: "2026-09-12T15:26:13.894Z"
     work_items:
       WI-01:
         attempt: 1
@@ -1298,6 +1411,30 @@ extensions:
         mutation_id: "compatibility:sha256:52a806b138798fefaee3b66abd447685c6d51e274cadc77ecd13bfa3c9836c5a"
         next_revision: 6
         previous_revision: 5
+        schema_version: 1
+        task_id: "202609121443-YAQJB7"
+      compatibility:sha256:5bea8149c5d4606fcc617c46b7340eb984d0ae5726d34d63a00d0a5a06b78f4b:
+        aggregate_digest: "sha256:ce95f3b6dc9b2e51df76d2e21463d58a2c72095f26d7fcdf47d42b75b502c495"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T15:26:13.894Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_0693469f790926c0964dc4a7"
+          mutation_id: "compatibility:sha256:5bea8149c5d4606fcc617c46b7340eb984d0ae5726d34d63a00d0a5a06b78f4b"
+          plan_digest: "sha256:8c2291aaa937649da54608045290d479e5db886c8169d8d4ba533a72ec6c40ef"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121443-YAQJB7"
+          task_revision: 17
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:5bea8149c5d4606fcc617c46b7340eb984d0ae5726d34d63a00d0a5a06b78f4b"
+        next_revision: 18
+        previous_revision: 17
         schema_version: 1
         task_id: "202609121443-YAQJB7"
       compatibility:sha256:5e51ec4879dbbce6c7ac55165f25bd01d60d60cd773a0896db2d257d39d89b21:
@@ -1602,6 +1739,96 @@ Command: bun run ci:local:full
 Result: fail
 Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-3
 Scope: branch_pr task 202609121443-YAQJB7 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121443-YAQJB7-fix-task-centric-scope-extension-targeting-when/.agentplane/tasks/202609121443-YAQJB7/blueprint/resolved-snapshot.json
+- old_digest: 9947e66ef95512fbd2abaf3c8f4405374ddd604288b7360683f50e1f44e4f454
+- current_digest: 9947e66ef95512fbd2abaf3c8f4405374ddd604288b7360683f50e1f44e4f454
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609121443-YAQJB7
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609121443-YAQJB7
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-12T15:26:12.320Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:9e0102b8e88ceddae001bb0fae89f223b4caa65282d2649dfd58d77cede4d075, input_digest=sha256:253a29e1b23ad91e204cbd8017a185902ade925842c29311352921516ce5ce28
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121443-YAQJB7 Verification Contract check affected_unit_integration (1/3)
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121443-YAQJB7 Verification Contract check affected_unit_integration (2/3)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609121443-YAQJB7 Verification Contract check affected_unit_integration (3/3)
+
+Check: critical_paths
+Command: bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121443-YAQJB7 Verification Contract check critical_paths (1/3)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121443-YAQJB7 Verification Contract check critical_paths (2/3)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609121443-YAQJB7 Verification Contract check critical_paths (3/3)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609121443-YAQJB7 Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121443-YAQJB7 Verification Contract check task_outcome (1/3)
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121443-YAQJB7 Verification Contract check task_outcome (2/3)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609121443-YAQJB7 Verification Contract check task_outcome (3/3)
 
 BlueprintSnapshotRef:
 - state: current
