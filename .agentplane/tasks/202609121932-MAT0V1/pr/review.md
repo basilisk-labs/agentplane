@@ -6,7 +6,7 @@ Created: 2026-09-12T19:35:46.087Z
 
 - Task: `202609121932-MAT0V1`
 - Title: Fix branch_pr dependency readiness after a dependency merges into the canonical base checkout. When an existing task ...
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609121932-MAT0V1/fix-branch-pr-dependency-readiness-after-a-depen`
 - Canonical task record: `.agentplane/tasks/202609121932-MAT0V1/README.md`
 
