@@ -1,10 +1,11 @@
 ---
 id: "202609121655-14X73Y"
 title: "Fix exact WorkItem-only scope extension when the global contract is already satisfied"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -57,6 +58,22 @@ quality_review:
     - "The success test proves the exact WorkItem receives the root and resource claim while the global contract roots remain unchanged."
     - "Focused rejection coverage includes missing target, mismatched target, unschedulable target, no exact target, original true no-op, and all-required-completed optional target."
     - "Residual risk: Hosted integration remains a provider gate and is not established by this local semantic review."
+token_usage:
+  agent_runs: 5
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:e4ccc505100fbaefb18ab7a3ee09a764a1b361efef51db85f89e746b0e1a19f2"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-12T17:02:32.492Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -220,8 +237,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "4ce33c3431655c6350d002d85cd531f9a0e17f86"
-  message: "🚧 14X73Y task: apply external agent result"
+  hash: "ac33d9d2a06f2db64f43ea254cec609cfc27019c"
+  message: "🚧 14X73Y task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -232,6 +249,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 4ce33c343165. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -268,9 +288,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-12T17:02:32.492Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "ac33d9d2a06f2db64f43ea254cec609cfc27019c"
 doc_version: 3
-doc_updated_at: "2026-09-12T17:01:29.680Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-12T17:02:32.492Z"
+doc_updated_by: "CODER"
 description: "Supersedes blocked task 202609121643-1PV2X7. Preserve exact pending work_item_id, require a real missing WorkItem root in a schedulable state, keep no-op and ambiguity rejection fail-closed, and include focused regression tests. This unblocks release task 202609121423-9WPTCW ST-03."
 sections:
   Summary: |-
@@ -773,7 +801,45 @@ extensions:
       schema_version: 1
       task_id: "202609121655-14X73Y"
     event_cursor: 11
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609121655-14X73Y"
+            - "git:4ce33c3431655c6350d002d85cd531f9a0e17f86"
+          check_id: "focused"
+          command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-12T17:01:28.631Z"
+          repository_snapshot_digest: "sha256:14153454594a2fdfcd57fa50fc0fe453f1011e592b5bee2f44d2ba61eaaee865"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121655-14X73Y"
+            - "git:4ce33c3431655c6350d002d85cd531f9a0e17f86"
+          check_id: "typecheck"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-12T17:01:28.631Z"
+          repository_snapshot_digest: "sha256:14153454594a2fdfcd57fa50fc0fe453f1011e592b5bee2f44d2ba61eaaee865"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121655-14X73Y"
+            - "git:4ce33c3431655c6350d002d85cd531f9a0e17f86"
+          check_id: "hosted"
+          command_identity: "task.verify"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-12T17:01:28.631Z"
+          repository_snapshot_digest: "sha256:14153454594a2fdfcd57fa50fc0fe453f1011e592b5bee2f44d2ba61eaaee865"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609121655-14X73Y"
     intent:
       acceptance_criteria:
@@ -794,12 +860,12 @@ extensions:
 
         Supersedes blocked task 202609121643-1PV2X7. Preserve exact pending work_item_id, require a real missing WorkItem root in a schedulable state, keep no-op and ambiguity rejection fail-closed, and include focused regression tests. This unblocks release task 202609121423-9WPTCW ST-03.
       task_id: "202609121655-14X73Y"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 14
+    revision: 15
     schema_version: 1
-    updated_at: "2026-09-12T17:01:29.680Z"
+    updated_at: "2026-09-12T17:02:32.492Z"
     work_items:
       WI-01:
         attempt: 1
@@ -1185,11 +1251,37 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202609121655-14X73Y"
+      legacy-finish:202609121655-14X73Y:2026-09-12T17:01:28.631Z:4ce33c3431655c6350d002d85cd531f9a0e17f86:
+        aggregate_digest: "sha256:67ec783ad9fd22268cab096c8bdb6101125db2319f6338d619c7d1633620b3aa"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-12T17:02:32.492Z"
+          cause_refs:
+            - "task-verification:202609121655-14X73Y"
+            - "git:4ce33c3431655c6350d002d85cd531f9a0e17f86"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_cc41767eb4da0da1ce10c184"
+          mutation_id: "legacy-finish:202609121655-14X73Y:2026-09-12T17:01:28.631Z:4ce33c3431655c6350d002d85cd531f9a0e17f86"
+          plan_digest: "sha256:408730a0702f2c28471447c875a390aed6c8eaeb0b4f3367500a097172b904e8"
+          plan_revision: 1
+          repository_fingerprint: "sha256:14153454594a2fdfcd57fa50fc0fe453f1011e592b5bee2f44d2ba61eaaee865"
+          schema_version: 1
+          task_id: "202609121655-14X73Y"
+          task_revision: 14
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609121655-14X73Y:2026-09-12T17:01:28.631Z:4ce33c3431655c6350d002d85cd531f9a0e17f86"
+        next_revision: 15
+        previous_revision: 14
+        schema_version: 1
+        task_id: "202609121655-14X73Y"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "4ce33c3431655c6350d002d85cd531f9a0e17f86"
+    message: "🚧 14X73Y task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "ab3a8e251ad17e8dae00fbe070767fb01f1fae57"
@@ -1366,3 +1458,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/5` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:e4ccc505100fbaefb18ab7a3ee09a764a1b361efef51db85f89e746b0e1a19f2`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-12T17:02:32.492Z`
