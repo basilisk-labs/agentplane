@@ -2,10 +2,10 @@
 id: "202609121655-14X73Y"
 title: "Fix exact WorkItem-only scope extension when the global contract is already satisfied"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -260,6 +260,9 @@ comments:
   -
     author: "USER"
     body: "Resume: GitHub verify-contract failed because scope-extend.test.ts became a new oversized test at 1110 lines. Extend the approved test scope to split the regression coverage below the enforced 1000-line baseline."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The hosted hotspot failure requires one additional focused test file outside the current writable roots. Recommended action: Approve the exact test-file scope extension, then reissue the implementation episode. Requested scope: roots=packages/agentplane/src/commands/task/scope-extend.command.test.ts; repository effects=repository_write,tests; request digest=sha256:c226d0b8ade1bd6d95781635a912c7f7867c5531cce7d769d895c6c305d56243. Agentplane receipt: external-agent-blocker/tr_5795a26c0c2ebf9b17adc399ea1b5b09/sha256:6b4530e6858336faaff40ea3edbd0734572e7a64eb4164e3784b7d136a329099/sha256:c226d0b8ade1bd6d95781635a912c7f7867c5531cce7d769d895c6c305d56243."
 events:
   -
     type: "status"
@@ -328,9 +331,16 @@ events:
     from: "BLOCKED"
     to: "DOING"
     note: "Resume: GitHub verify-contract failed because scope-extend.test.ts became a new oversized test at 1110 lines. Extend the approved test scope to split the regression coverage below the enforced 1000-line baseline."
+  -
+    type: "status"
+    at: "2026-09-12T17:23:20.453Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The hosted hotspot failure requires one additional focused test file outside the current writable roots. Recommended action: Approve the exact test-file scope extension, then reissue the implementation episode. Requested scope: roots=packages/agentplane/src/commands/task/scope-extend.command.test.ts; repository effects=repository_write,tests; request digest=sha256:c226d0b8ade1bd6d95781635a912c7f7867c5531cce7d769d895c6c305d56243. Agentplane receipt: external-agent-blocker/tr_5795a26c0c2ebf9b17adc399ea1b5b09/sha256:6b4530e6858336faaff40ea3edbd0734572e7a64eb4164e3784b7d136a329099/sha256:c226d0b8ade1bd6d95781635a912c7f7867c5531cce7d769d895c6c305d56243."
 doc_version: 3
-doc_updated_at: "2026-09-12T17:21:46.411Z"
-doc_updated_by: "USER"
+doc_updated_at: "2026-09-12T17:23:20.462Z"
+doc_updated_by: "SUPERVISOR"
 description: "Supersedes blocked task 202609121643-1PV2X7. Preserve exact pending work_item_id, require a real missing WorkItem root in a schedulable state, keep no-op and ambiguity rejection fail-closed, and include focused regression tests. This unblocks release task 202609121423-9WPTCW ST-03."
 sections:
   Summary: |-
@@ -509,6 +519,22 @@ extensions:
     scope_digest: "sha256:65f818387fe18e2395974d2c9ba0010295d3db8f70b3a9a513cccae132b1d575"
     status: "active"
     task_id: "202609121655-14X73Y"
+  agentplane.scope_extension_request:
+    blocker_state_fingerprint: "sha256:6b4530e6858336faaff40ea3edbd0734572e7a64eb4164e3784b7d136a329099"
+    kind: "task_scope_extension_request"
+    request:
+      rationale: "Split existing command-parsing tests out of the 1110-line scope-extend.test.ts so the changed test set satisfies the enforced oversized-test baseline without weakening the regression coverage."
+      repository_effects:
+        - "repository_write"
+        - "tests"
+      schema_version: 1
+      scope_roots:
+        - "packages/agentplane/src/commands/task/scope-extend.command.test.ts"
+    request_digest: "sha256:c226d0b8ade1bd6d95781635a912c7f7867c5531cce7d769d895c6c305d56243"
+    schema_version: 1
+    status: "pending"
+    transition_id: "tr_5795a26c0c2ebf9b17adc399ea1b5b09"
+    work_item_id: null
   agentplane.task_centric:
     current_plan:
       approval:
@@ -832,7 +858,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609121655-14X73Y"
-    event_cursor: 17
+    event_cursor: 19
     final_validation: null
     id: "202609121655-14X73Y"
     intent:
@@ -854,12 +880,12 @@ extensions:
 
         Supersedes blocked task 202609121643-1PV2X7. Preserve exact pending work_item_id, require a real missing WorkItem root in a schedulable state, keep no-op and ambiguity rejection fail-closed, and include focused regression tests. This unblocks release task 202609121423-9WPTCW ST-03.
       task_id: "202609121655-14X73Y"
-    lifecycle: "ACTIVE"
+    lifecycle: "BLOCKED"
     plan_amendments: []
     plan_history: []
-    revision: 21
+    revision: 23
     schema_version: 1
-    updated_at: "2026-09-12T17:20:52.695Z"
+    updated_at: "2026-09-12T17:23:20.462Z"
     work_items:
       WI-01:
         attempt: 1
@@ -1149,6 +1175,30 @@ extensions:
         previous_revision: 17
         schema_version: 1
         task_id: "202609121655-14X73Y"
+      compatibility:sha256:5e1974950cf85faec063b6911d1e9d7cc935748524171946451e73c32104047a:
+        aggregate_digest: "sha256:e27ca079be98e38391eb5d14478b3fdb55dcf68cd52cbc0c2b78117963961076"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T17:23:20.453Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_371c9f15a659577e38009896"
+          mutation_id: "compatibility:sha256:5e1974950cf85faec063b6911d1e9d7cc935748524171946451e73c32104047a"
+          plan_digest: "sha256:408730a0702f2c28471447c875a390aed6c8eaeb0b4f3367500a097172b904e8"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121655-14X73Y"
+          task_revision: 21
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:5e1974950cf85faec063b6911d1e9d7cc935748524171946451e73c32104047a"
+        next_revision: 22
+        previous_revision: 21
+        schema_version: 1
+        task_id: "202609121655-14X73Y"
       compatibility:sha256:612d50b2295b01a9a08e986bc3dec0eb695dac85df0a1ac1e6b2268d21b1a144:
         aggregate_digest: "sha256:6f300f77f86a806eecbb6d2e7ac5d7459544036caca408b33c5b22bbb10328c1"
         event:
@@ -1195,6 +1245,30 @@ extensions:
         mutation_id: "compatibility:sha256:6806cdc0d0d59d75c4714048e42ac4c8f4003c9c02e30ee7d7cbad6427717b7c"
         next_revision: 13
         previous_revision: 12
+        schema_version: 1
+        task_id: "202609121655-14X73Y"
+      compatibility:sha256:b0db015e4368492a237da0b0a055c2f927bf1525cdb966063aa0e47362b2ebf8:
+        aggregate_digest: "sha256:ebcc56535aa8e5376ee4586d2a678e26f4d56fbf0470f3b67f9108dbe350fcb0"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T17:23:20.462Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_01e83d86fd519817f5ba7c6b"
+          mutation_id: "compatibility:sha256:b0db015e4368492a237da0b0a055c2f927bf1525cdb966063aa0e47362b2ebf8"
+          plan_digest: "sha256:408730a0702f2c28471447c875a390aed6c8eaeb0b4f3367500a097172b904e8"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121655-14X73Y"
+          task_revision: 22
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b0db015e4368492a237da0b0a055c2f927bf1525cdb966063aa0e47362b2ebf8"
+        next_revision: 23
+        previous_revision: 22
         schema_version: 1
         task_id: "202609121655-14X73Y"
       compatibility:sha256:c3a894d025e8c9ddbb4a3f33540f7710cd0f7a9effdd8eddc4eb3f8f1b121e87:
