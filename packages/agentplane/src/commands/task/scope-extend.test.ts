@@ -298,6 +298,51 @@ function fixture(
 }
 
 describe("blocked task execution scope extension", () => {
+  it("extends the exact blocked WorkItem when independent WorkItems are also schedulable", () => {
+    const { command, task } = fixture();
+    const aggregate = taskCentricAggregate(task.id, true);
+    const pending = createTaskScopeExtensionRequestState({
+      request: {
+        schema_version: 1,
+        scope_roots: ["website"],
+        repository_effects: ["release_metadata"],
+        rationale: "The blocked WorkItem needs one additional path.",
+      },
+      transition_id: "tr_22222222222222222222222222222222",
+      state_fingerprint: `sha256:${"b".repeat(64)}`,
+      work_item_id: "later",
+    });
+    task.revision = aggregate.revision;
+    task.comments = [{ author: "SUPERVISOR", body: scopeExtensionReceiptForState(pending) }];
+    task.extensions = {
+      ...withTaskCentricAggregate(task.extensions, { ...aggregate, lifecycle: "BLOCKED" }),
+      [TASK_SCOPE_EXTENSION_REQUEST_KEY]: pending,
+    };
+    const executionContract = extendBlockedTaskExecutionContract({
+      command,
+      task,
+      scope_roots: pending.request.scope_roots,
+      repository_effects: pending.request.repository_effects,
+      request_digest: pending.request_digest,
+      by: "USER",
+    });
+
+    const updated = applyApprovedTaskScopeExtension({
+      task,
+      executionContract,
+      pending,
+      scopeRoots: pending.request.scope_roots,
+      repositoryEffects: pending.request.repository_effects,
+      by: "USER",
+      now: NOW,
+    });
+    const plan = taskCentricAggregateFromExtensions(updated.extensions)!.current_plan!.proposal;
+    const active = plan.work_items.work_items.find((item) => item.id === "active")!;
+    const later = plan.work_items.work_items.find((item) => item.id === "later")!;
+    expect(active.scope_roots).toEqual(["docs/releases"]);
+    expect(later.scope_roots).toEqual(["src/later.ts", "website"]);
+  });
+
   it.each(["valid", "digest", "receipt", "scope", "approval", "verification", "task", "plan"])(
     "recovers only an applied scope receipt without relaxing generic revision checks (%s)",
     async (variant) => {
