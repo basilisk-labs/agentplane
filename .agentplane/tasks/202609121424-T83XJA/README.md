@@ -4,7 +4,7 @@ title: "Implement durable 0.7.9 usage, cost, and latency accounting for ST-08 th
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on:
@@ -278,9 +278,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "b4671b637787325c9161caea5b32ccf83c24caa6"
-  message: "🚧 T83XJA task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -1169,9 +1167,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 22
+    revision: 23
     schema_version: 1
-    updated_at: "2026-09-12T22:43:54.524Z"
+    updated_at: "2026-09-12T22:43:57.759Z"
     work_items:
       ST-08:
         attempt: 1
@@ -1356,14 +1354,59 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       ST-12:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "ST-12"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:a1e5fd018d96f08d5074914e927e57ec854ab6f24d868afd372468dbcccc69c7"
+            id: "diagnostic task cost rollup"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609121424-T83XJA"
+              work_item_id: "ST-12"
+            provenance:
+              - "sha256:8556784640f5edce1bd4d047e20b97582ac28b2191f6a7ab7a2d4eafaed8e542"
+              - ".agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:72a0942f19b3262b5f823d72dba073cc48929624144e3ebc4315874f31c11447"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:a03c6b351e55dffc0134978c4185c4d224552a4d1a1b9695fd9ff11e601c0f0b"
+            id: "source-observation reconciliation tests"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609121424-T83XJA"
+              work_item_id: "ST-12"
+            provenance:
+              - "sha256:8556784640f5edce1bd4d047e20b97582ac28b2191f6a7ab7a2d4eafaed8e542"
+              - ".agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:72a0942f19b3262b5f823d72dba073cc48929624144e3ebc4315874f31c11447"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
+              check_id: "check-cost-rollup"
+              command_identity: "node --test scripts/bench/task-cost-rollup.test.mjs"
+              detail: "Observed by node --test scripts/bench/task-cost-rollup.test.mjs."
+              exit_code: 0
+              observed_at: "2026-09-12T22:43:57.750Z"
+              repository_snapshot_digest: "sha256:72a0942f19b3262b5f823d72dba073cc48929624144e3ebc4315874f31c11447"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       ST-13:
         attempt: 0
         claim_id: null
@@ -1444,6 +1487,23 @@ extensions:
         task_id: "202609121424-T83XJA"
         task_revision: 19
         work_item_id: "ST-10-11"
+      -
+        at: "2026-09-12T22:43:57.759Z"
+        from: "PLANNED"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:f29305728c904eb12ef9ee14a98f4325fc15121f8febe207f322d03cac8311fa"
+        entity: "work_item"
+        id: "event_07d7d3f31f4c7128176fc7af"
+        mutation_id: "external-result:work-order-202609121424-T83XJA-executor-a99331104b9271eb47bda6a0"
+        plan_digest: "sha256:106b3c2da2bc74b7f6f834e120c1d7a3337e9bf54034809cf9f4af86f6d2ee92"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609121424-T83XJA"
+        task_revision: 22
+        work_item_id: "ST-12"
     leases: []
     mutation_receipts:
       compatibility:sha256:1d87dc53ea2b6bcc2dab3735027c416e17d4d12335c5d63beb0800076b6f22b4:
@@ -1852,6 +1912,30 @@ extensions:
         mutation_id: "external-result:work-order-202609121424-T83XJA-executor-884458ec85c3b7ccb98fa5d5"
         next_revision: 11
         previous_revision: 10
+        schema_version: 1
+        task_id: "202609121424-T83XJA"
+      external-result:work-order-202609121424-T83XJA-executor-a99331104b9271eb47bda6a0:
+        aggregate_digest: "sha256:3a834cd4faae08f497d5259fa0f42057f0db3a0f92e2edd51f1439d958a34cda"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T22:43:57.759Z"
+          cause_refs:
+            - "semantic-result:sha256:f29305728c904eb12ef9ee14a98f4325fc15121f8febe207f322d03cac8311fa"
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_07d7d3f31f4c7128176fc7af"
+          mutation_id: "external-result:work-order-202609121424-T83XJA-executor-a99331104b9271eb47bda6a0"
+          plan_digest: "sha256:106b3c2da2bc74b7f6f834e120c1d7a3337e9bf54034809cf9f4af86f6d2ee92"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-T83XJA"
+          task_revision: 22
+          to: "COMPLETED"
+          work_item_id: "ST-12"
+        mutation_id: "external-result:work-order-202609121424-T83XJA-executor-a99331104b9271eb47bda6a0"
+        next_revision: 23
+        previous_revision: 22
         schema_version: 1
         task_id: "202609121424-T83XJA"
       external-result:work-order-202609121424-T83XJA-executor-e2514641c03ece278ea1d416:
