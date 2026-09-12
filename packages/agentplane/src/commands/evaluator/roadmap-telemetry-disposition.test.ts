@@ -39,6 +39,13 @@ describe("telemetry coverage and spend admission", () => {
       journal: started.journal,
       operation_key: started.operation_key,
       result: { verdict: "pass" },
+      provider_usage: {
+        provider: "codex",
+        run_id: "evaluator:work-order-1",
+        work_order_id: "work-order-1",
+        thread_id: null,
+        turn_id: null,
+      },
     });
     const applied = advanceSupervisorExecutionEpisodeState({
       journal: completed,
