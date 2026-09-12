@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -30,23 +30,24 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "blocked"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-12T17:02:21.707Z"
+  updated_at: "2026-09-12T17:18:46.096Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 4 typed finding(s)."
-  evaluated_sha: "4ce33c3431655c6350d002d85cd531f9a0e17f86"
+  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  evaluated_sha: "9e97cac5e82f9efc1e26a1e22c8802f96939ef3d"
   blueprint_digest: "25515cb4ded9a32b13449f99348fa47b42cbe8ba06c1e30f6a32000bab6157fd"
   evidence_refs:
-    - ".agentplane/tasks/202609121655-14X73Y/quality/20260912-170139141-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609121655-14X73Y/quality/20260912-170139141-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609121655-14X73Y/quality/objects/sha256/237ae6fd87880620f0eaf49ebf2c2cc9019d8b61bc70f5d685c5c24645019e75.md"
-    - ".agentplane/tasks/202609121655-14X73Y/quality/20260912-170139141-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609121655-14X73Y/quality/20260912-170139141-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609121655-14X73Y/quality/20260912-170139141-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609121655-14X73Y/quality/20260912-171809941-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609121655-14X73Y/quality/20260912-171809941-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609121655-14X73Y/quality/objects/sha256/55f609cd566fcdfc2f7c7919f37fc728e49e91b7ec398c481a0e4c7b22cecf21.md"
+    - ".agentplane/tasks/202609121655-14X73Y/quality/20260912-171809941-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609121655-14X73Y/quality/20260912-171809941-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609121655-14X73Y/quality/20260912-171809941-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202609121655-14X73Y/quality/20260912-171809941-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609121655-14X73Y/README.md"
     - ".agentplane/tasks/202609121655-14X73Y/quality/objects/sha256/78be06878aa806c3f440f9e711398ceb09abb1786645a6201ef44918029b5aae.patch"
-    - ".agentplane/tasks/202609121655-14X73Y/quality/objects/sha256/26ccce49362bfe0526b6093a54edf43bb6449c4dce5c7cd392eaf99a67f2bc88.json"
+    - ".agentplane/tasks/202609121655-14X73Y/quality/objects/sha256/9b7548e71f3e04d33d97d367de9342e7fa425c4567e0f08a457e9023127a3bb5.json"
     - ".agentplane/tasks/202609121655-14X73Y/verification/20260912170128631-e3627fa2f133abd2.json"
     - ".agentplane/tasks/202609121655-14X73Y/quality/objects/sha256/c34f522f8f2a26e19e7252768fdabe140c3fe8b462213c4dcba9c071243941ca.json"
     - ".agentplane/policy/dod.code.md"
@@ -54,10 +55,7 @@ quality_review:
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The exception requires the exact pending work_item_id, a matching current-plan definition, a PLANNED, READY, or REWORK_READY runtime state, at least one missing requested root, and at least one unfinished required WorkItem."
-    - "The success test proves the exact WorkItem receives the root and resource claim while the global contract roots remain unchanged."
-    - "Focused rejection coverage includes missing target, mismatched target, unschedulable target, no exact target, original true no-op, and all-required-completed optional target."
-    - "Residual risk: Hosted integration remains a provider gate and is not established by this local semantic review."
+    - "Residual risk: A provider failure may remain unresolved."
 token_usage:
   agent_runs: 5
   input_tokens: null
@@ -311,7 +309,7 @@ events:
     author: "SUPERVISOR"
     body: "Read-only worktree observation (blocked): The task worktree has a supervisor-generated task-document projection change that this read-only episode cannot resolve."
 doc_version: 3
-doc_updated_at: "2026-09-12T17:17:54.707Z"
+doc_updated_at: "2026-09-12T17:18:46.104Z"
 doc_updated_by: "SUPERVISOR"
 description: "Supersedes blocked task 202609121643-1PV2X7. Preserve exact pending work_item_id, require a real missing WorkItem root in a schedulable state, keep no-op and ambiguity rejection fail-closed, and include focused regression tests. This unblocks release task 202609121423-9WPTCW ST-03."
 sections:
@@ -814,7 +812,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609121655-14X73Y"
-    event_cursor: 13
+    event_cursor: 14
     final_validation:
       evidence:
         -
@@ -877,9 +875,9 @@ extensions:
     lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 17
+    revision: 18
     schema_version: 1
-    updated_at: "2026-09-12T17:17:54.691Z"
+    updated_at: "2026-09-12T17:17:54.707Z"
     work_items:
       WI-01:
         attempt: 1
@@ -1119,6 +1117,30 @@ extensions:
         mutation_id: "compatibility:sha256:3475847571eba31be4a92f0f40066dfc7c1834678bfcebf726dffede6e94d369"
         next_revision: 17
         previous_revision: 16
+        schema_version: 1
+        task_id: "202609121655-14X73Y"
+      compatibility:sha256:5896865a8b234c2c9d1b2a24364c680757480c8c05af392f7c0c4074afcceb78:
+        aggregate_digest: "sha256:c540986323d8c885aa1d7a2b683f97c117af4c73e5d48d4cae9548842313524d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T17:17:54.707Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_f85c0b24f9205114e427874d"
+          mutation_id: "compatibility:sha256:5896865a8b234c2c9d1b2a24364c680757480c8c05af392f7c0c4074afcceb78"
+          plan_digest: "sha256:408730a0702f2c28471447c875a390aed6c8eaeb0b4f3367500a097172b904e8"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121655-14X73Y"
+          task_revision: 17
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:5896865a8b234c2c9d1b2a24364c680757480c8c05af392f7c0c4074afcceb78"
+        next_revision: 18
+        previous_revision: 17
         schema_version: 1
         task_id: "202609121655-14X73Y"
       compatibility:sha256:612d50b2295b01a9a08e986bc3dec0eb695dac85df0a1ac1e6b2268d21b1a144:
