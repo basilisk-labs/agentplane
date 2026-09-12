@@ -4,7 +4,7 @@ title: "Simplify the test suite without weakening safety-critical coverage"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on: []
@@ -2436,9 +2436,9 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202609122236-JFNN6B"
-    revision: 28
+    revision: 29
     schema_version: 1
-    updated_at: "2026-09-12T23:22:03.229Z"
+    updated_at: "2026-09-12T23:23:34.185Z"
     work_items:
       work-item-cleanup:
         attempt: 1
@@ -2510,14 +2510,74 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       work-item-validation:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "work-item-validation"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:eaf87879512f6da32e006587b9d6dadf7360c766d514fa4adc8d59c99d479067"
+            id: "validation-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 4
+              task_id: "202609122236-JFNN6B"
+              work_item_id: "work-item-validation"
+            provenance:
+              - "sha256:44e49e34a2570567878d0bb7faa27d05349998654390c8f6e704b51c4f557349"
+              - ".agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:aa2054542b0bcd93ed0cb89bb54e120bf679094f54e2a7242bb7b4cbb870a131"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json"
+              check_id: "check-projects"
+              command_identity: "bun run vitest:projects:check"
+              detail: "Observed by bun run vitest:projects:check."
+              exit_code: 0
+              observed_at: "2026-09-12T23:23:34.154Z"
+              repository_snapshot_digest: "sha256:aa2054542b0bcd93ed0cb89bb54e120bf679094f54e2a7242bb7b4cbb870a131"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json"
+              check_id: "check-critical"
+              command_identity: "bun run test:critical"
+              detail: "Observed by bun run test:critical."
+              exit_code: 0
+              observed_at: "2026-09-12T23:23:34.154Z"
+              repository_snapshot_digest: "sha256:aa2054542b0bcd93ed0cb89bb54e120bf679094f54e2a7242bb7b4cbb870a131"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json"
+              check_id: "check-qualification"
+              command_identity: "bun run test:agent-efficiency:qualification"
+              detail: "Observed by bun run test:agent-efficiency:qualification."
+              exit_code: 0
+              observed_at: "2026-09-12T23:23:34.154Z"
+              repository_snapshot_digest: "sha256:aa2054542b0bcd93ed0cb89bb54e120bf679094f54e2a7242bb7b4cbb870a131"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json"
+              check_id: "check-focused"
+              command_identity: "bun run test:project agentplane packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/release/release-ci-contract.test.ts --maxWorkers=2"
+              detail: "Observed by bun run test:project agentplane packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/release/release-ci-contract.test.ts --maxWorkers=2."
+              exit_code: 0
+              observed_at: "2026-09-12T23:23:34.154Z"
+              repository_snapshot_digest: "sha256:aa2054542b0bcd93ed0cb89bb54e120bf679094f54e2a7242bb7b4cbb870a131"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -2589,6 +2649,23 @@ extensions:
         task_id: "202609122236-JFNN6B"
         task_revision: 25
         work_item_id: "work-item-cleanup"
+      -
+        at: "2026-09-12T23:23:34.185Z"
+        from: "PLANNED"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:29dab752639d3b3fdf7623e9f5c187d3434bb3415ca3f1b7b48eae5eddee541d"
+        entity: "work_item"
+        id: "event_a58578740b86d837619ec4a7"
+        mutation_id: "external-result:work-order-202609122236-JFNN6B-executor-01b28a39a245e56cc1ffefd1"
+        plan_digest: "sha256:395e3263f50efcbc3a42c35b2389f51b3b009827549efdcdd70afb70473535f1"
+        plan_revision: 4
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609122236-JFNN6B"
+        task_revision: 28
+        work_item_id: "work-item-validation"
     leases: []
     mutation_receipts:
       compatibility:sha256:1592e434d9fd7539732652499193cc310fbc04d00595744bf4bb59e03d2d420d:
@@ -3069,6 +3146,30 @@ extensions:
         mutation_id: "compatibility:sha256:feaf1188a39dec63147730bc10b75ac49a8c36c89d7d737bcc220c5fa7bd74b6"
         next_revision: 15
         previous_revision: 14
+        schema_version: 1
+        task_id: "202609122236-JFNN6B"
+      external-result:work-order-202609122236-JFNN6B-executor-01b28a39a245e56cc1ffefd1:
+        aggregate_digest: "sha256:dfcaf8fc1aa462e3206dca6d0954b503d34af151682a29ad307c13393594da92"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T23:23:34.185Z"
+          cause_refs:
+            - "semantic-result:sha256:29dab752639d3b3fdf7623e9f5c187d3434bb3415ca3f1b7b48eae5eddee541d"
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_a58578740b86d837619ec4a7"
+          mutation_id: "external-result:work-order-202609122236-JFNN6B-executor-01b28a39a245e56cc1ffefd1"
+          plan_digest: "sha256:395e3263f50efcbc3a42c35b2389f51b3b009827549efdcdd70afb70473535f1"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609122236-JFNN6B"
+          task_revision: 28
+          to: "COMPLETED"
+          work_item_id: "work-item-validation"
+        mutation_id: "external-result:work-order-202609122236-JFNN6B-executor-01b28a39a245e56cc1ffefd1"
+        next_revision: 29
+        previous_revision: 28
         schema_version: 1
         task_id: "202609122236-JFNN6B"
       external-result:work-order-202609122236-JFNN6B-executor-4875214cd2b36158236dc9b3:

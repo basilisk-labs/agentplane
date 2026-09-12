@@ -5,7 +5,7 @@
         "check-projects"
       ],
       "command": "bun run vitest:projects:check",
-      "duration_ms": 395,
+      "duration_ms": 384,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
@@ -23,7 +23,7 @@
         "check-critical"
       ],
       "command": "bun run test:critical",
-      "duration_ms": 36447,
+      "duration_ms": 39258,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
@@ -34,14 +34,14 @@
       },
       "script": "test:critical",
       "stderr_tail": "$ node scripts/checks/run-vitest-suite.mjs critical-cli\n",
-      "stdout_tail": "Vitest suite critical-cli: chunk 1/5 (2 files): packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts, packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts\nVitest suite critical-cli: chunk 1/5 passed in 7045ms (Test Files  2 passed (2); Tests  3 passed (3); Duration  6.80s (transform 3.41s, setup 0ms, import 2.83s, tests 6.40s, environment 0ms))\nVitest suite critical-cli: chunk 2/5 (2 files): packages/agentplane/src/cli/run-cli.critical.git-edge.test.ts, packages/agentplane/src/cli/run-cli.critical.protected-paths.test.ts\nVitest suite critical-cli: chunk 2/5 passed in 2974ms (Test Files  2 passed (2); Tests  5 passed (5); Duration  2.81s (transform 2.18s, setup 0ms, import 2.88s, tests 2.34s, environment 0ms))\nVitest suite critical-cli: chunk 3/5 (2 files): packages/agentplane/src/cli/run-cli.critical.scope-leak.test.ts, packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts\nVitest suite critical-cli: chunk 3/5 passed in 3165ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  3.00s (transform 2.22s, setup 0ms, import 2.93s, tests 2.47s, environment 0ms))\nVitest suite critical-cli: chunk 4/5 (2 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts, packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 4/5 passed in 17962ms (Test Files  2 passed (2); Tests  6 passed (6); Duration  17.78s (transform 3.28s, setup 0ms, import 2.84s, tests 16.56s, environment 0ms))\nVitest suite critical-cli: chunk 5/5 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 5/5 passed in 5084ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  4.90s (transform 1.15s, setup 0ms, import 1.38s, tests 3.45s, environment 0ms))\n"
+      "stdout_tail": "Vitest suite critical-cli: chunk 1/5 (2 files): packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts, packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts\nVitest suite critical-cli: chunk 1/5 passed in 6791ms (Test Files  2 passed (2); Tests  3 passed (3); Duration  6.61s (transform 3.46s, setup 0ms, import 2.87s, tests 6.19s, environment 0ms))\nVitest suite critical-cli: chunk 2/5 (2 files): packages/agentplane/src/cli/run-cli.critical.git-edge.test.ts, packages/agentplane/src/cli/run-cli.critical.protected-paths.test.ts\nVitest suite critical-cli: chunk 2/5 passed in 3541ms (Test Files  2 passed (2); Tests  5 passed (5); Duration  3.35s (transform 2.84s, setup 0ms, import 3.75s, tests 2.54s, environment 0ms))\nVitest suite critical-cli: chunk 3/5 (2 files): packages/agentplane/src/cli/run-cli.critical.scope-leak.test.ts, packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts\nVitest suite critical-cli: chunk 3/5 passed in 3559ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  3.38s (transform 2.58s, setup 0ms, import 3.40s, tests 2.69s, environment 0ms))\nVitest suite critical-cli: chunk 4/5 (2 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts, packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 4/5 passed in 19408ms (Test Files  2 passed (2); Tests  6 passed (6); Duration  19.13s (transform 4.20s, setup 0ms, import 3.56s, tests 17.54s, environment 0ms))\nVitest suite critical-cli: chunk 5/5 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 5/5 passed in 5744ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  5.57s (transform 1.54s, setup 0ms, import 1.86s, tests 3.65s, environment 0ms))\n"
     },
     {
       "check_ids": [
         "check-qualification"
       ],
       "command": "bun run test:agent-efficiency:qualification",
-      "duration_ms": 40898,
+      "duration_ms": 45733,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
@@ -52,14 +52,14 @@
       },
       "script": "test:agent-efficiency:qualification",
       "stderr_tail": "$ node scripts/checks/run-vitest-suite.mjs agent-efficiency-qualification\n",
-      "stdout_tail": "Vitest suite agent-efficiency-qualification: chunk 1/5 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts\nVitest suite agent-efficiency-qualification: chunk 1/5 passed in 12258ms (Test Files  1 passed (1); Tests  10 passed (10); Duration  12.10s (transform 1.08s, setup 0ms, import 1.40s, tests 10.64s, environment 0ms))\nVitest suite agent-efficiency-qualification: chunk 2/5 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts\nVitest suite agent-efficiency-qualification: chunk 2/5 passed in 7884ms (Test Files  1 passed (1); Tests  13 passed (13); Duration  7.72s (transform 1.12s, setup 0ms, import 1.40s, tests 6.26s, environment 0ms))\nVitest suite agent-efficiency-qualification: chunk 3/5 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts\nVitest suite agent-efficiency-qualification: chunk 3/5 passed in 1761ms (Test Files  1 passed (1); Tests  17 passed (17); Duration  1.57s (transform 1.12s, setup 0ms, import 1.40s, tests 104ms, environment 0ms))\nVitest suite agent-efficiency-qualification: chunk 4/5 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts\nVitest suite agent-efficiency-qualification: chunk 4/5 passed in 16757ms (Test Files  1 passed (1); Tests  11 passed (11); Duration  16.59s (transform 1.12s, setup 0ms, import 1.39s, tests 15.13s, environment 0ms))\nVitest suite agent-efficiency-qualification: chunk 5/5 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay.test.ts\nVitest suite agent-efficiency-qualification: chunk 5/5 passed in 2014ms (Test Files  1 passed (1); Tests  10 passed (10); Duration  1.83s (transform 1.16s, setup 0ms, import 1.47s, tests 295ms, environment 0ms))\n"
+      "stdout_tail": "Vitest suite agent-efficiency-qualification: chunk 1/5 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts\nVitest suite agent-efficiency-qualification: chunk 1/5 passed in 14017ms (Test Files  1 passed (1); Tests  10 passed (10); Duration  13.84s (transform 1.41s, setup 0ms, import 1.83s, tests 11.93s, environment 0ms))\nVitest suite agent-efficiency-qualification: chunk 2/5 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts\nVitest suite agent-efficiency-qualification: chunk 2/5 passed in 8668ms (Test Files  1 passed (1); Tests  13 passed (13); Duration  8.49s (transform 1.30s, setup 0ms, import 1.62s, tests 6.80s, environment 0ms))\nVitest suite agent-efficiency-qualification: chunk 3/5 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts\nVitest suite agent-efficiency-qualification: chunk 3/5 passed in 2128ms (Test Files  1 passed (1); Tests  17 passed (17); Duration  1.92s (transform 1.38s, setup 0ms, import 1.74s, tests 117ms, environment 0ms))\nVitest suite agent-efficiency-qualification: chunk 4/5 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts\nVitest suite agent-efficiency-qualification: chunk 4/5 passed in 18163ms (Test Files  1 passed (1); Tests  11 passed (11); Duration  17.97s (transform 1.39s, setup 0ms, import 1.75s, tests 16.15s, environment 0ms))\nVitest suite agent-efficiency-qualification: chunk 5/5 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay.test.ts\nVitest suite agent-efficiency-qualification: chunk 5/5 passed in 2508ms (Test Files  1 passed (1); Tests  10 passed (10); Duration  2.31s (transform 1.51s, setup 0ms, import 1.93s, tests 302ms, environment 0ms))\n"
     },
     {
       "check_ids": [
         "check-focused"
       ],
       "command": "bun run test:project agentplane packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/release/release-ci-contract.test.ts --maxWorkers=2",
-      "duration_ms": 1881,
+      "duration_ms": 2257,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
@@ -70,7 +70,7 @@
       },
       "script": "test:project",
       "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/release/release-ci-contract.test.ts \"--maxWorkers=2\"\n",
-      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609122236-JFNN6B-simplify-the-test-suite-without-weakening-safety\n\n\n Test Files  2 passed (2)\n      Tests  22 passed (22)\n   Start at  02:21:17\n   Duration  1.50s (transform 1.11s, setup 0ms, import 1.49s, tests 27ms, environment 0ms)\n\n"
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609122236-JFNN6B-simplify-the-test-suite-without-weakening-safety\n\n\n Test Files  2 passed (2)\n      Tests  22 passed (22)\n   Start at  02:23:32\n   Duration  1.84s (transform 1.37s, setup 0ms, import 1.82s, tests 31ms, environment 0ms)\n\n"
     }
   ],
   "kind": "direct_task_declared_checks",
