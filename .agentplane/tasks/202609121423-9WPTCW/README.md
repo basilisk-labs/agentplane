@@ -1,10 +1,11 @@
 ---
 id: "202609121423-9WPTCW"
 title: "Implement the 0.7.9 baseline inventory and lifecycle characterization for ST-01 through ST-05 and ST-21"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 43
+revision: 44
 origin:
   system: "manual"
 depends_on: []
@@ -56,6 +57,22 @@ quality_review:
     - "The source-bound inventory and focused characterization wrappers preserve the approved lifecycle, recovery, rework, and backend invariants without adding a new runtime or sync subsystem."
     - "Residual risk: Hosted CI and final integration must still bind to the published task head."
     - "Residual risk: The cloud backend contract is characterized through local fakes and does not establish live-provider qualification."
+token_usage:
+  agent_runs: 15
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:72d0076484367ebcbad3257ae2b5bf4b3489c521496e9047049b3cf66fd05bc6"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-12T18:21:33.938Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -416,8 +433,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "ac856fe3cc89dea00266576286e9733694802e58"
-  message: "🚧 9WPTCW task: apply external agent result"
+  hash: "1b54705a4af0428d3edaaca7b1d34b4ce74aed8f"
+  message: "🚧 9WPTCW task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -467,6 +484,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: ac856fe3cc89. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -587,9 +607,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-12T18:21:33.938Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "1b54705a4af0428d3edaaca7b1d34b4ce74aed8f"
 doc_version: 3
-doc_updated_at: "2026-09-12T18:19:36.126Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-12T18:21:33.938Z"
+doc_updated_by: "CODER"
 description: "Source contract: agentplane-roadmap-r2 cards ST-01, ST-02, ST-03, ST-04, ST-05, and ST-21. Reproduce a source-bound lifecycle and Blueprint consumer/writer inventory, freeze ordinary direct and branch-PR completion, rework versus infrastructure retry, admission/crash/context-role invariants, and local/remote-backend serialization, staleness, conflict, and unsupported-format behavior. Preserve I01-I12 and C01-C08. Do not introduce a new runtime registry, sync subsystem, provider access, or lifecycle format. The roadmap directory is source-only and must never be committed. Required checks: node --test scripts/checks/architecture-inventory.test.mjs; focused AgentPlane characterization tests for direct, branch, rework, recovery, and backend round trips with nonzero discovery; relevant critical suites, typecheck, schema and mirror checks."
 sections:
   Summary: |-
@@ -1801,7 +1829,133 @@ extensions:
       schema_version: 1
       task_id: "202609121423-9WPTCW"
     event_cursor: 33
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609121423-9WPTCW"
+            - "git:ac856fe3cc89dea00266576286e9733694802e58"
+          check_id: "check-inventory"
+          command_identity: "node --test scripts/checks/architecture-inventory.test.mjs"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-12T18:19:34.737Z"
+          repository_snapshot_digest: "sha256:3ce2747e017ee1371233ad7a9eaa1cf5595385bb06189e3a4b3bac4a64761a66"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121423-9WPTCW"
+            - "git:ac856fe3cc89dea00266576286e9733694802e58"
+          check_id: "check-direct"
+          command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-12T18:19:34.737Z"
+          repository_snapshot_digest: "sha256:3ce2747e017ee1371233ad7a9eaa1cf5595385bb06189e3a4b3bac4a64761a66"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121423-9WPTCW"
+            - "git:ac856fe3cc89dea00266576286e9733694802e58"
+          check_id: "check-branch"
+          command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-branch.test.ts"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-12T18:19:34.737Z"
+          repository_snapshot_digest: "sha256:3ce2747e017ee1371233ad7a9eaa1cf5595385bb06189e3a4b3bac4a64761a66"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121423-9WPTCW"
+            - "git:ac856fe3cc89dea00266576286e9733694802e58"
+          check_id: "check-rework"
+          command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-12T18:19:34.737Z"
+          repository_snapshot_digest: "sha256:3ce2747e017ee1371233ad7a9eaa1cf5595385bb06189e3a4b3bac4a64761a66"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121423-9WPTCW"
+            - "git:ac856fe3cc89dea00266576286e9733694802e58"
+          check_id: "check-recovery"
+          command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-12T18:19:34.737Z"
+          repository_snapshot_digest: "sha256:3ce2747e017ee1371233ad7a9eaa1cf5595385bb06189e3a4b3bac4a64761a66"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121423-9WPTCW"
+            - "git:ac856fe3cc89dea00266576286e9733694802e58"
+          check_id: "check-backend"
+          command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-backend-roundtrip.test.ts"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-12T18:19:34.737Z"
+          repository_snapshot_digest: "sha256:3ce2747e017ee1371233ad7a9eaa1cf5595385bb06189e3a4b3bac4a64761a66"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121423-9WPTCW"
+            - "git:ac856fe3cc89dea00266576286e9733694802e58"
+          check_id: "check-typecheck"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-12T18:19:34.737Z"
+          repository_snapshot_digest: "sha256:3ce2747e017ee1371233ad7a9eaa1cf5595385bb06189e3a4b3bac4a64761a66"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121423-9WPTCW"
+            - "git:ac856fe3cc89dea00266576286e9733694802e58"
+          check_id: "check-schemas"
+          command_identity: "bun run schemas:check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-12T18:19:34.737Z"
+          repository_snapshot_digest: "sha256:3ce2747e017ee1371233ad7a9eaa1cf5595385bb06189e3a4b3bac4a64761a66"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121423-9WPTCW"
+            - "git:ac856fe3cc89dea00266576286e9733694802e58"
+          check_id: "check-artifacts"
+          command_identity: "bun run artifacts:check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-12T18:19:34.737Z"
+          repository_snapshot_digest: "sha256:3ce2747e017ee1371233ad7a9eaa1cf5595385bb06189e3a4b3bac4a64761a66"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121423-9WPTCW"
+            - "git:ac856fe3cc89dea00266576286e9733694802e58"
+          check_id: "check-critical"
+          command_identity: "bun run test:critical"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-12T18:19:34.737Z"
+          repository_snapshot_digest: "sha256:3ce2747e017ee1371233ad7a9eaa1cf5595385bb06189e3a4b3bac4a64761a66"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121423-9WPTCW"
+            - "git:ac856fe3cc89dea00266576286e9733694802e58"
+          check_id: "check-backend-critical"
+          command_identity: "bun run test:backend-critical"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-12T18:19:34.737Z"
+          repository_snapshot_digest: "sha256:3ce2747e017ee1371233ad7a9eaa1cf5595385bb06189e3a4b3bac4a64761a66"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609121423-9WPTCW"
     intent:
       acceptance_criteria:
@@ -1817,7 +1971,7 @@ extensions:
 
         Source contract: agentplane-roadmap-r2 cards ST-01, ST-02, ST-03, ST-04, ST-05, and ST-21. Reproduce a source-bound lifecycle and Blueprint consumer/writer inventory, freeze ordinary direct and branch-PR completion, rework versus infrastructure retry, admission/crash/context-role invariants, and local/remote-backend serialization, staleness, conflict, and unsupported-format behavior. Preserve I01-I12 and C01-C08. Do not introduce a new runtime registry, sync subsystem, provider access, or lifecycle format. The roadmap directory is source-only and must never be committed. Required checks: node --test scripts/checks/architecture-inventory.test.mjs; focused AgentPlane characterization tests for direct, branch, rework, recovery, and backend round trips with nonzero discovery; relevant critical suites, typecheck, schema and mirror checks.
       task_id: "202609121423-9WPTCW"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments:
       -
         actor_id: "external:EXECUTOR"
@@ -3307,9 +3461,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609121423-9WPTCW"
-    revision: 43
+    revision: 44
     schema_version: 1
-    updated_at: "2026-09-12T18:19:36.126Z"
+    updated_at: "2026-09-12T18:21:33.938Z"
     work_items:
       ST-01:
         attempt: 1
@@ -4727,6 +4881,31 @@ extensions:
         previous_revision: 11
         schema_version: 1
         task_id: "202609121423-9WPTCW"
+      legacy-finish:202609121423-9WPTCW:2026-09-12T18:19:34.737Z:ac856fe3cc89dea00266576286e9733694802e58:
+        aggregate_digest: "sha256:dbf1c3b9cbe7900a30f3900f58c9633e7b70641d3addcb01a2a4ec7010878c8d"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-12T18:21:33.938Z"
+          cause_refs:
+            - "task-verification:202609121423-9WPTCW"
+            - "git:ac856fe3cc89dea00266576286e9733694802e58"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_328f51307c8d8a3f6cae6699"
+          mutation_id: "legacy-finish:202609121423-9WPTCW:2026-09-12T18:19:34.737Z:ac856fe3cc89dea00266576286e9733694802e58"
+          plan_digest: "sha256:a9ccea53ee91bda02540f559528bdce316d1a1154bdbc4da00b22a47189a40e8"
+          plan_revision: 3
+          repository_fingerprint: "sha256:3ce2747e017ee1371233ad7a9eaa1cf5595385bb06189e3a4b3bac4a64761a66"
+          schema_version: 1
+          task_id: "202609121423-9WPTCW"
+          task_revision: 43
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609121423-9WPTCW:2026-09-12T18:19:34.737Z:ac856fe3cc89dea00266576286e9733694802e58"
+        next_revision: 44
+        previous_revision: 43
+        schema_version: 1
+        task_id: "202609121423-9WPTCW"
       plan-refinement:work-order-202609121423-9WPTCW-executor-de2c46e3a39fe817d6ebee47:
         aggregate_digest: "sha256:6d9f6a78a0080217b10d6255d89e2e49dcfa515c6224ebbec2193f1256ed01ae"
         event:
@@ -4755,6 +4934,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "ac856fe3cc89dea00266576286e9733694802e58"
+    message: "🚧 9WPTCW task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "f3c1991ddd92943775b6b4b4688009afc3d523bc"
@@ -5217,3 +5397,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/15` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:72d0076484367ebcbad3257ae2b5bf4b3489c521496e9047049b3cf66fd05bc6`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-12T18:21:33.938Z`
