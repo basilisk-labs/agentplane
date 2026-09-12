@@ -4,7 +4,7 @@ title: "Fix branch_pr dependency readiness after a dependency merges into the ca
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -27,6 +27,32 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-12T20:33:21.242Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "858f3fc349daab7c990e7fd4fe66b1f02ab19bab"
+  blueprint_digest: "75affa1a467c1e6344a2ac0ec8f371c0d40d99007d85697566bf5c44d48a134a"
+  evidence_refs:
+    - ".agentplane/tasks/202609121932-MAT0V1/quality/20260912-203129563-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609121932-MAT0V1/quality/20260912-203129563-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609121932-MAT0V1/quality/objects/sha256/538d6ac7ee81b989d31c44b237ec748a9249418d708cc53de439d4ef869b74ab.md"
+    - ".agentplane/tasks/202609121932-MAT0V1/quality/20260912-203129563-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609121932-MAT0V1/quality/20260912-203129563-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609121932-MAT0V1/quality/20260912-203129563-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609121932-MAT0V1/README.md"
+    - ".agentplane/tasks/202609121932-MAT0V1/quality/objects/sha256/f8d2fa7909b04a94b066f46cba2deb24f9c0ae13f67fb99a8a4e6d3b39561c05.patch"
+    - ".agentplane/tasks/202609121932-MAT0V1/quality/objects/sha256/8f8b056961571fb1e4a204e4b56c04e758450bdb7d6d665a068c3e3e2abe0efd.json"
+    - ".agentplane/tasks/202609121932-MAT0V1/verification/20260912203120576-695065f4472d17d4.json"
+    - ".agentplane/tasks/202609121932-MAT0V1/quality/objects/sha256/5c34861b8e4080445b2222d70ca4383c097b5c61fd208c65c997e2916ab93c4e.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The recovery path aligns the canonical aggregate revision before projecting one compatibility mutation, and the focused regression proves both legacy reconciliation and a successful subsequent task-centric mutation."
 execution_route:
   frozen: true
   reason_codes:
@@ -627,7 +653,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609121932-MAT0V1"
-    event_cursor: 12
+    event_cursor: 13
     final_validation: null
     id: "202609121932-MAT0V1"
     intent:
@@ -1154,9 +1180,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609121932-MAT0V1"
-    revision: 20
+    revision: 21
     schema_version: 1
-    updated_at: "2026-09-12T20:31:21.589Z"
+    updated_at: "2026-09-12T20:31:21.590Z"
     work_items:
       WI-01:
         attempt: 2
@@ -1603,6 +1629,30 @@ extensions:
         mutation_id: "compatibility:sha256:f8827162dbbb476df2b1c9907ad242c139a1b972cc59f140de3dc2e5c52371a3"
         next_revision: 3
         previous_revision: 2
+        schema_version: 1
+        task_id: "202609121932-MAT0V1"
+      compatibility:sha256:f8a9007103b75dd6511575ba89763a1193cc7f74b27c723945ea6b7aa6affc46:
+        aggregate_digest: "sha256:dbbb1cc1751769e88be1885c7b8ac035d9ef354abdb219065bfebddc3d69b34f"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T20:31:21.590Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_8d17aaebfed3d42eaa185295"
+          mutation_id: "compatibility:sha256:f8a9007103b75dd6511575ba89763a1193cc7f74b27c723945ea6b7aa6affc46"
+          plan_digest: "sha256:f6eee473a1d7c1663ce94f01e6a2efa4c7ba9d84e518d9ac78cac73de8eaddbc"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121932-MAT0V1"
+          task_revision: 20
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:f8a9007103b75dd6511575ba89763a1193cc7f74b27c723945ea6b7aa6affc46"
+        next_revision: 21
+        previous_revision: 20
         schema_version: 1
         task_id: "202609121932-MAT0V1"
       external-result:work-order-202609121932-MAT0V1-executor-15e0100962c4b4547d755aa9:

@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609121932-MAT0V1-888e09cc4d8c4f6ee4b90cf8",
+  "prepared_at": "2026-09-12T20:31:29.563Z",
+  "task": {
+    "id": "202609121932-MAT0V1",
+    "revision": 20,
+    "objective": "Fix branch_pr dependency readiness after a dependency merges into the canonical base checkout. When an existing task worktree predates the dependency task artifact, resolve declared dependencies from the authoritative base backend without weakening incomplete or missing dependency checks. Add focused regression coverage proving a DONE dependency on current main unblocks the stale task worktree while incomplete and truly missing dependencies remain blocked.\n\nFix branch_pr dependency readiness after a dependency merges into the canonical base checkout. When an existing task worktree predates the dependency task artifact, resolve declared dependencies from the authoritative base backend without weakening incomplete or missing dependency checks. Add focused regression coverage proving a DONE dependency on current main unblocks the stale task worktree while incomplete and truly missing dependencies remain blocked.",
+    "acceptance_criteria": [
+      "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts",
+      "- In scope: Fix branch_pr dependency readiness after a dependency merges into the canonical base checkout. When an existing task worktree predates the dependency task artifact, resolve declared dependencies from the authoritative base backend without weakening incomplete or missing dependency checks. Add focused regression coverage proving a DONE dependency on current main unblocks the stale task worktree while incomplete and truly missing dependencies remain blocked.\n- Out of scope: unrelated refactors not required for \"Fix branch_pr dependency readiness after a dependency merges into the canonical base checkout. When an existing task worktree predates the dependency task artifact, resolve declared dependencies from the authoritative base backend without weakening incomplete or missing dependency checks. Add focused regression coverage proving a DONE dependency on current main unblocks the stale task worktree while incomplete and truly missing dependencies remain blocked.\".",
+      "Prepared the executable recovery-revision repair plan with a nonzero-discovery focused check.",
+      "1. Run `node node_modules/vitest/vitest.mjs --config vitest.config.ts run packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts --pool=forks --maxWorkers=1 --testTimeout=60000 --hookTimeout=60000`; require nonzero discovery, revision-aligned planning-base recovery, and a successful first lifecycle mutation after recovery.\n2. In the same focused suite, require incomplete dependencies, truly missing dependencies, dirty worktrees, started WorkItems, and stale recovery tokens to remain fail-closed.\n3. Run `bun run typecheck`; require success.\n4. Run `bun run test:critical`; require existing workflow routing, stale-state, authority, and recovery cases to remain green.\n5. Run `bun run ci:local:full`; require the full local CI route to pass before integration.\n6. Review `git diff` and `git status --short --untracked-files=all`; require only the narrow planning-base recovery implementation, its test, and CLI-owned task artifacts."
+    ]
+  },
+  "evaluated_sha": "858f3fc349daab7c990e7fd4fe66b1f02ab19bab",
+  "diff_base_sha": "1f8b58d52ade59dd6185af72b00f70bb6194bdb0",
+  "blueprint_digest": "75affa1a467c1e6344a2ac0ec8f371c0d40d99007d85697566bf5c44d48a134a",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609121932-MAT0V1/quality/20260912-203129563-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:538d54ed9c28ed27667df6963ceb4d53dd965bdeeacac4b1cf1654557ef030c8",
+    "prompt_path": ".agentplane/tasks/202609121932-MAT0V1/quality/objects/sha256/538d6ac7ee81b989d31c44b237ec748a9249418d708cc53de439d4ef869b74ab.md",
+    "result_schema_path": ".agentplane/tasks/202609121932-MAT0V1/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609121932-MAT0V1/README.md",
+      "sha256": "sha256:d82e0bf0af99df9798027e9815aae3a011926b6a86620f5728a9a221bf93e3cf",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609121932-MAT0V1/quality/objects/sha256/f8d2fa7909b04a94b066f46cba2deb24f9c0ae13f67fb99a8a4e6d3b39561c05.patch",
+      "sha256": "sha256:f8d2fa7909b04a94b066f46cba2deb24f9c0ae13f67fb99a8a4e6d3b39561c05",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609121932-MAT0V1/quality/objects/sha256/8f8b056961571fb1e4a204e4b56c04e758450bdb7d6d665a068c3e3e2abe0efd.json",
+      "sha256": "sha256:8f8b056961571fb1e4a204e4b56c04e758450bdb7d6d665a068c3e3e2abe0efd",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609121932-MAT0V1/verification/20260912203120576-695065f4472d17d4.json",
+      "sha256": "sha256:2b049a7c12ff6543bcd75bae411cf44b94380a422754a417a5e48ce4106e0110",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609121932-MAT0V1/quality/objects/sha256/5c34861b8e4080445b2222d70ca4383c097b5c61fd208c65c997e2916ab93c4e.json",
+      "sha256": "sha256:5c34861b8e4080445b2222d70ca4383c097b5c61fd208c65c997e2916ab93c4e",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

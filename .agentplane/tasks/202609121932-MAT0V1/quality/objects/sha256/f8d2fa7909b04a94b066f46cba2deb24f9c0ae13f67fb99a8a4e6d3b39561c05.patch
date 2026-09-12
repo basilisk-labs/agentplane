@@ -1,0 +1,116 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts
+index 1449cc764..68ed4aa15 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts
+@@ -601,9 +601,15 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () =>
+       }
+ 
+       const after = (await taskCtx.taskBackend.getTask(taskId))!;
+-      expect(taskCentricAggregateFromExtensions(after.extensions)).toEqual(
+-        taskCentricAggregateFromExtensions(original.extensions),
+-      );
++      const afterAggregate = taskCentricAggregateFromExtensions(after.extensions)!;
++      const originalAggregate = taskCentricAggregateFromExtensions(original.extensions)!;
++      expect(afterAggregate.revision).toBe(after.revision);
++      expect({
++        ...afterAggregate,
++        revision: originalAggregate.revision,
++        event_cursor: originalAggregate.event_cursor,
++        updated_at: originalAggregate.updated_at,
++      }).toEqual(originalAggregate);
+       expect(after.depends_on).toEqual(original.depends_on);
+       const dependencyAfter = await taskCtx.taskBackend.getTask(dependencyId);
+       expect(dependencyAfter?.status).toBe("DONE");
+@@ -630,6 +636,41 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () =>
+       const repeated = await recoverWorkPlanningBase({ ctx, taskId, apply: false });
+       expect(repeated.status).toBe("already_applied");
+       expect(await readFile(readmePath, "utf8")).toBe(completedBytes);
++      const legacy = (await taskCtx.taskBackend.getTask(taskId))!;
++      const legacyAggregate = taskCentricAggregateFromExtensions(legacy.extensions)!;
++      await taskCtx.taskBackend.writeTask({
++        ...legacy,
++        extensions: withTaskCentricAggregate(legacy.extensions, {
++          ...legacyAggregate,
++          revision: legacyAggregate.revision - 1,
++        }),
++      });
++      const reconciliation = await recoverWorkPlanningBase({ ctx, taskId, apply: false });
++      expect(reconciliation.status).toBe("ready_to_reconcile");
++      const appliedReconciliation = await recoverWorkPlanningBase({
++        ctx,
++        taskId,
++        apply: true,
++        expectedToken: reconciliation.token,
++      });
++      expect(appliedReconciliation.status).toBe("applied");
++      expect(
++        await runCliSilent([
++          "task",
++          "start-ready",
++          taskId,
++          "--author",
++          "CODER",
++          "--body",
++          "Start: continue branch_pr task after planning-base recovery.",
++          "--root",
++          taskRoot,
++        ]),
++      ).toBe(0);
++      const started = (await taskCtx.taskBackend.getTask(taskId))!;
++      expect(taskCentricAggregateFromExtensions(started.extensions)?.revision).toBe(
++        started.revision,
++      );
+     },
+   );
+ 
+diff --git a/packages/agentplane/src/commands/branch/work-resume-planning-base.ts b/packages/agentplane/src/commands/branch/work-resume-planning-base.ts
+index d7b35ed5f..77a18182d 100644
+--- a/packages/agentplane/src/commands/branch/work-resume-planning-base.ts
++++ b/packages/agentplane/src/commands/branch/work-resume-planning-base.ts
+@@ -7,8 +7,10 @@ import {
+   taskCentricAggregateFromExtensions,
+   taskCentricDigest,
+   taskExecutionBaseFromExtensions,
++  withTaskCentricAggregate,
+ } from "@agentplaneorg/core/tasks";
+ import { loadTaskRunnerDiagnosticInspection } from "../../runner/usecases/task-run-inspect.js";
++import { projectTaskCentricCompatibilityMutation } from "../../adapters/task-backend/task-centric-backend-projection.js";
+ import { runtimeFrom } from "../../adapters/task-backend/task-centric-backend-runtime.js";
+ import { LocalBackend } from "../../backends/task-backend.js";
+ import {
+@@ -208,19 +210,27 @@ export async function recoverWorkPlanningBase(opts: {
+       (previous as Record<string, unknown>).target_sha !== target
+     )
+       refuse("no planning base advancement is required");
+-    return { ...identity, token, status: "already_applied" };
++    if (aggregate.revision === task.revision)
++      return { ...identity, token, status: "already_applied" };
+   }
+   if (!opts.apply)
+     return { ...identity, token, status: head === target ? "ready_to_reconcile" : "ready" };
+   if (opts.expectedToken !== token) refuse("stale or missing recovery token; inspect again");
+-  const next = {
+-    ...task,
+-    extensions: {
+-      ...task.extensions,
+-      task_execution_context: { ...base, base_sha: target },
+-      task_planning_base_recovery: { ...identity, token, state: "applied" },
++  const normalizedExtensions = withTaskCentricAggregate(task.extensions, {
++    ...aggregate,
++    revision: task.revision!,
++  });
++  const next = projectTaskCentricCompatibilityMutation({
++    current: task,
++    next: {
++      ...task,
++      extensions: {
++        ...normalizedExtensions,
++        task_execution_context: { ...base, base_sha: target },
++        task_planning_base_recovery: { ...identity, token, state: "applied" },
++      },
+     },
+-  };
++  });
+   // Existing native persistence holds the Task lock and verifies its revision before Git.
+   // If Git lands but publication is interrupted, the original Task and approved plan still
+   // bind both SHAs. A fresh inspection can reconcile HEAD=target without another Git effect.
