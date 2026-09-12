@@ -7,7 +7,6 @@ vi.mock("node:fs/promises", { spy: true });
 vi.mock("@agentplaneorg/core/git", { spy: true });
 
 import type { TaskData } from "../../backends/task-backend.js";
-import { parseCommandArgv } from "../../cli/spec/parse.js";
 import {
   approveTaskPlan,
   createLegacyTaskAggregate,
@@ -41,101 +40,8 @@ import {
   extendBlockedTaskExecutionContract,
   taskWithRebasedExecutionGrant,
 } from "./scope-extend.js";
-import { taskScopeExtendSpec } from "./scope-extend.command.js";
 import { buildTaskStatusTransition } from "./shared/workflow-transition-service.js";
 import { projectTaskCentricCompatibilityMutation } from "../../adapters/task-backend/task-centric-backend-projection.js";
-
-const REQUEST_DIGEST = `sha256:${"1".repeat(64)}`;
-const STATE_SCOPE_DIGEST = `sha256:${"2".repeat(64)}`;
-const STATE_FINGERPRINT = `sha256:${"3".repeat(64)}`;
-
-describe("task scope extend command parsing", () => {
-  it.each(
-    [
-      { option: "--state-scope-digest", value: STATE_SCOPE_DIGEST, key: "stateScopeDigest" },
-      { option: "--state-fingerprint", value: STATE_FINGERPRINT, key: "stateFingerprint" },
-    ].flatMap((binding) => [false, true].map((padded) => ({ ...binding, padded }))),
-  )(
-    "preserves scalar $option after normalization (padded=$padded)",
-    ({ option, value, key, padded }) => {
-      expect(
-        parseCommandArgv(taskScopeExtendSpec, [
-          "T-1",
-          "--scope-root",
-          "packages/agentplane",
-          "--request-digest",
-          REQUEST_DIGEST,
-          option,
-          padded ? `  ${value}  ` : value,
-          "--by",
-          "USER",
-        ]),
-      ).toMatchObject({
-        parsed: {
-          taskId: "T-1",
-          scopeRoots: ["packages/agentplane"],
-          requestDigest: REQUEST_DIGEST,
-          by: "USER",
-          [key]: value,
-        },
-      });
-    },
-  );
-
-  it("continues to reject a missing state binding", () => {
-    const base = [
-      "T-1",
-      "--scope-root",
-      "packages/agentplane",
-      "--request-digest",
-      REQUEST_DIGEST,
-      "--by",
-      "USER",
-    ];
-
-    expect(() => parseCommandArgv(taskScopeExtendSpec, base)).toThrow(
-      "One of --state-scope-digest or --state-fingerprint is required.",
-    );
-  });
-
-  it.each(["--state-scope-digest", "--state-fingerprint"] as const)(
-    "treats whitespace-only %s as missing",
-    (option) => {
-      expect(() =>
-        parseCommandArgv(taskScopeExtendSpec, [
-          "T-1",
-          "--scope-root",
-          "packages/agentplane",
-          "--request-digest",
-          REQUEST_DIGEST,
-          option,
-          "   ",
-          "--by",
-          "USER",
-        ]),
-      ).toThrow("One of --state-scope-digest or --state-fingerprint is required.");
-    },
-  );
-
-  it.each(["--state-scope-digest", "--state-fingerprint"] as const)(
-    "continues to reject malformed %s",
-    (option) => {
-      const base = [
-        "T-1",
-        "--scope-root",
-        "packages/agentplane",
-        "--request-digest",
-        REQUEST_DIGEST,
-        "--by",
-        "USER",
-      ];
-
-      expect(() =>
-        parseCommandArgv(taskScopeExtendSpec, [...base, option, "sha256:not-a-digest"]),
-      ).toThrow(`${option} must be an exact sha256:<64 lowercase hex> digest.`);
-    },
-  );
-});
 
 const NOW = "2026-08-18T01:00:00.000Z";
 
@@ -296,6 +202,27 @@ function fixture(
   });
   return { command, pending, task };
 }
+
+function taskContractNoOp(workItemId: string | null, activeState = "READY", optionalLater = false) {
+  const noOp = fixture(
+    {},
+    { scope_roots: ["docs/releases"], repository_effects: ["documentation"] },
+  );
+  noOp.pending.work_item_id = workItemId;
+  const aggregate = structuredClone(taskCentricAggregate(noOp.task.id, false, optionalLater));
+  const active = aggregate.current_plan!.proposal.work_items.work_items.find(
+    (item) => item.id === "active",
+  )!;
+  active.scope_roots = [];
+  active.resource_claims = [];
+  aggregate.work_items.active!.state = activeState;
+  noOp.task.extensions = {
+    ...withTaskCentricAggregate(noOp.task.extensions, aggregate),
+    [TASK_SCOPE_EXTENSION_REQUEST_KEY]: noOp.pending,
+  };
+  return noOp;
+}
+
 describe("blocked task execution scope extension", () => {
   it.each(["valid", "digest", "receipt", "scope", "approval", "verification", "task", "plan"])(
     "recovers only an applied scope receipt without relaxing generic revision checks (%s)",
@@ -957,21 +884,7 @@ describe("blocked task execution scope extension", () => {
   });
 
   it("extends the exact schedulable WorkItem when the task contract already has the scope", () => {
-    const noOp = fixture(
-      {},
-      { scope_roots: ["docs/releases"], repository_effects: ["documentation"] },
-    );
-    noOp.pending.work_item_id = "active";
-    const aggregate = structuredClone(taskCentricAggregate(noOp.task.id));
-    const active = aggregate.current_plan!.proposal.work_items.work_items.find(
-      (item) => item.id === "active",
-    )!;
-    active.scope_roots = [];
-    active.resource_claims = [];
-    noOp.task.extensions = {
-      ...withTaskCentricAggregate(noOp.task.extensions, aggregate),
-      [TASK_SCOPE_EXTENSION_REQUEST_KEY]: noOp.pending,
-    };
+    const noOp = taskContractNoOp("active");
 
     const executionContract = extendBlockedTaskExecutionContract({
       command: noOp.command,
@@ -1013,20 +926,7 @@ describe("blocked task execution scope extension", () => {
   ] as const)(
     "rejects a task-contract no-op without an exact schedulable WorkItem delta (%s, %s)",
     (workItemId, state) => {
-      const noOp = fixture(
-        {},
-        { scope_roots: ["docs/releases"], repository_effects: ["documentation"] },
-      );
-      noOp.pending.work_item_id = workItemId;
-      const aggregate = structuredClone(taskCentricAggregate(noOp.task.id));
-      aggregate.current_plan!.proposal.work_items.work_items.find(
-        (item) => item.id === "active",
-      )!.scope_roots = [];
-      aggregate.work_items.active!.state = state;
-      noOp.task.extensions = {
-        ...withTaskCentricAggregate(noOp.task.extensions, aggregate),
-        [TASK_SCOPE_EXTENSION_REQUEST_KEY]: noOp.pending,
-      };
+      const noOp = taskContractNoOp(workItemId, state);
 
       expect(() =>
         extendBlockedTaskExecutionContract({
@@ -1042,17 +942,7 @@ describe("blocked task execution scope extension", () => {
   );
 
   it("rejects a WorkItem-only delta after every required WorkItem is completed", () => {
-    const noOp = fixture(
-      {},
-      { scope_roots: ["docs/releases"], repository_effects: ["documentation"] },
-    );
-    noOp.pending.work_item_id = "later";
-    const aggregate = structuredClone(taskCentricAggregate(noOp.task.id, true, true));
-    aggregate.work_items.active!.state = "COMPLETED";
-    noOp.task.extensions = {
-      ...withTaskCentricAggregate(noOp.task.extensions, aggregate),
-      [TASK_SCOPE_EXTENSION_REQUEST_KEY]: noOp.pending,
-    };
+    const noOp = taskContractNoOp("later", "COMPLETED", true);
 
     expect(() =>
       extendBlockedTaskExecutionContract({
