@@ -4,7 +4,7 @@ title: "Implement the 0.7.9 baseline inventory and lifecycle characterization fo
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 35
+revision: 37
 origin:
   system: "manual"
 depends_on: []
@@ -107,6 +107,7 @@ execution_contract:
       - "packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts"
       - "packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts"
       - "packages/agentplane/src/commands/shared/roadmap-backend-roundtrip.test.ts"
+      - "packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts"
       - "scripts/baselines/architecture-inventory.json"
       - "scripts/checks/architecture-inventory.mjs"
       - "scripts/checks/architecture-inventory.test.mjs"
@@ -162,7 +163,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:a8c916fe87bafaaccf8eb58e8bf37aed0cb05f3ddd97256c415be2328a824a46"
+      digest: "sha256:b7c5d88440e3a5ed83f307a26f48ddc60438cf8baac50e435ad30708adc5224d"
       escalation_reasons:
         - "central_component:scripts/lib/test-route-registry.mjs"
         - "central_component:scripts/lib/test-route-registry.test.mjs"
@@ -170,6 +171,7 @@ execution_contract:
         - "central_path:packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/roadmap-backend-roundtrip.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts"
         - "central_path:scripts/checks/architecture-inventory.mjs"
         - "central_path:scripts/checks/architecture-inventory.test.mjs"
         - "central_path:scripts/lib/test-route-registry.mjs"
@@ -190,6 +192,7 @@ execution_contract:
           - "packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts"
           - "packages/agentplane/src/commands/shared/roadmap-backend-roundtrip.test.ts"
+          - "packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts"
           - "scripts/baselines/architecture-inventory.json"
           - "scripts/checks/architecture-inventory.mjs"
           - "scripts/checks/architecture-inventory.test.mjs"
@@ -234,7 +237,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "63bf9e1749847cbf8f74b85812124d2216c3fc64"
+  message: "🚧 9WPTCW task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -278,6 +283,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: d8327ee45875. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 63bf9e174984. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -370,8 +378,16 @@ events:
     to: "DOING"
     note: "Implementation committed: d8327ee45875. CLI accepted one state-bound external-agent semantic result."
     commit: "d8327ee45875d7c0f5b62bbfcf102d890c8745b7"
+  -
+    type: "status"
+    at: "2026-09-12T17:56:58.803Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 63bf9e174984. CLI accepted one state-bound external-agent semantic result."
+    commit: "63bf9e1749847cbf8f74b85812124d2216c3fc64"
 doc_version: 3
-doc_updated_at: "2026-09-12T17:53:24.027Z"
+doc_updated_at: "2026-09-12T17:56:58.803Z"
 doc_updated_by: "SUPERVISOR"
 description: "Source contract: agentplane-roadmap-r2 cards ST-01, ST-02, ST-03, ST-04, ST-05, and ST-21. Reproduce a source-bound lifecycle and Blueprint consumer/writer inventory, freeze ordinary direct and branch-PR completion, rework versus infrastructure retry, admission/crash/context-role invariants, and local/remote-backend serialization, staleness, conflict, and unsupported-format behavior. Preserve I01-I12 and C01-C08. Do not introduce a new runtime registry, sync subsystem, provider access, or lifecycle format. The roadmap directory is source-only and must never be committed. Required checks: node --test scripts/checks/architecture-inventory.test.mjs; focused AgentPlane characterization tests for direct, branch, rework, recovery, and backend round trips with nonzero discovery; relevant critical suites, typecheck, schema and mirror checks."
 sections:
@@ -1169,7 +1185,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609121423-9WPTCW"
-    event_cursor: 26
+    event_cursor: 28
     final_validation: null
     id: "202609121423-9WPTCW"
     intent:
@@ -2676,9 +2692,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609121423-9WPTCW"
-    revision: 35
+    revision: 37
     schema_version: 1
-    updated_at: "2026-09-12T17:55:20.229Z"
+    updated_at: "2026-09-12T17:56:58.803Z"
     work_items:
       ST-01:
         attempt: 1
@@ -3135,6 +3151,30 @@ extensions:
         mutation_id: "compatibility:sha256:0663f1bd9f3e44df3bacff2c4ca0a89d53cb5f001e78e7ffedc8ba677ce14002"
         next_revision: 28
         previous_revision: 27
+        schema_version: 1
+        task_id: "202609121423-9WPTCW"
+      compatibility:sha256:3f1c91626012cb1ea38f84447c82dc152ae0dcaba1d5aac3ad680d7aa779a50a:
+        aggregate_digest: "sha256:53b2992f076df285a1216f7b5af5bd2101d6571691212ab1880ec3f149d41096"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T17:56:58.803Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_ca6a6eae2ef15b2fae0a901f"
+          mutation_id: "compatibility:sha256:3f1c91626012cb1ea38f84447c82dc152ae0dcaba1d5aac3ad680d7aa779a50a"
+          plan_digest: "sha256:a9ccea53ee91bda02540f559528bdce316d1a1154bdbc4da00b22a47189a40e8"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121423-9WPTCW"
+          task_revision: 35
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:3f1c91626012cb1ea38f84447c82dc152ae0dcaba1d5aac3ad680d7aa779a50a"
+        next_revision: 36
+        previous_revision: 35
         schema_version: 1
         task_id: "202609121423-9WPTCW"
       compatibility:sha256:431e78229676ed8bf11d851b9d53662f4ea7bd577f0ba91f710d9dd63a1d30de:
@@ -3665,6 +3705,30 @@ extensions:
         previous_revision: 25
         schema_version: 1
         task_id: "202609121423-9WPTCW"
+      compatibility:sha256:eda2b9cafbde3f3c34f5e76e47ba6a7c0f231335877d2752385a80ba9223c41c:
+        aggregate_digest: "sha256:731190d52da7ad841f0aedfa186112e79e5ee74891fbfa594097d060c2ebde23"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T17:56:58.803Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_19d7d8dc8097fc53fa89579e"
+          mutation_id: "compatibility:sha256:eda2b9cafbde3f3c34f5e76e47ba6a7c0f231335877d2752385a80ba9223c41c"
+          plan_digest: "sha256:a9ccea53ee91bda02540f559528bdce316d1a1154bdbc4da00b22a47189a40e8"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121423-9WPTCW"
+          task_revision: 36
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:eda2b9cafbde3f3c34f5e76e47ba6a7c0f231335877d2752385a80ba9223c41c"
+        next_revision: 37
+        previous_revision: 36
+        schema_version: 1
+        task_id: "202609121423-9WPTCW"
       compatibility:sha256:fec9aec4a5a80fb9104dbf30edc652dd9866fc7e58c753d6e25ad91420992eb5:
         aggregate_digest: "sha256:50fc66b03e7932389264cf3a3317ffa2176eb58bcf1d89762ea63a5703452e54"
         event:
@@ -3884,7 +3948,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "d8327ee45875d7c0f5b62bbfcf102d890c8745b7"
+    hash: "63bf9e1749847cbf8f74b85812124d2216c3fc64"
   task_execution_context:
     base_ref: "main"
     base_sha: "f3c1991ddd92943775b6b4b4688009afc3d523bc"
