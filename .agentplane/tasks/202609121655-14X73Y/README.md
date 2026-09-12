@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -60,8 +60,6 @@ quality_review:
     - "Residual risk: Hosted integration remains a provider gate and is not established by this local semantic review."
 token_usage:
   agent_runs: 5
-  cached_input_observed_agent_runs: 0
-  cached_input_tokens: null
   input_tokens: null
   journal_digest: "sha256:e4ccc505100fbaefb18ab7a3ee09a764a1b361efef51db85f89e746b0e1a19f2"
   observed_agent_runs: 0
@@ -252,6 +250,12 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned needs_context: Hosted integration failed, but the issued episode contains no identity or log for the failing check."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (blocked): The task worktree has a supervisor-generated task-document projection change that this read-only episode cannot resolve."
 events:
   -
     type: "status"
@@ -296,9 +300,19 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "ac33d9d2a06f2db64f43ea254cec609cfc27019c"
+  -
+    type: "comment"
+    at: "2026-09-12T17:16:47.559Z"
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned needs_context: Hosted integration failed, but the issued episode contains no identity or log for the failing check."
+  -
+    type: "comment"
+    at: "2026-09-12T17:17:54.691Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (blocked): The task worktree has a supervisor-generated task-document projection change that this read-only episode cannot resolve."
 doc_version: 3
-doc_updated_at: "2026-09-12T17:02:32.492Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-12T17:17:54.707Z"
+doc_updated_by: "SUPERVISOR"
 description: "Supersedes blocked task 202609121643-1PV2X7. Preserve exact pending work_item_id, require a real missing WorkItem root in a schedulable state, keep no-op and ambiguity rejection fail-closed, and include focused regression tests. This unblocks release task 202609121423-9WPTCW ST-03."
 sections:
   Summary: |-
@@ -800,7 +814,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609121655-14X73Y"
-    event_cursor: 11
+    event_cursor: 13
     final_validation:
       evidence:
         -
@@ -863,9 +877,9 @@ extensions:
     lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 15
+    revision: 17
     schema_version: 1
-    updated_at: "2026-09-12T17:02:32.492Z"
+    updated_at: "2026-09-12T17:17:54.691Z"
     work_items:
       WI-01:
         attempt: 1
@@ -987,6 +1001,30 @@ extensions:
         previous_revision: 3
         schema_version: 1
         task_id: "202609121655-14X73Y"
+      compatibility:sha256:15431b5a746b65606edcad26a1d003f542fa8a691d7b9ae7e47bda542547e70c:
+        aggregate_digest: "sha256:857b4a3736030812b1c64968ee56aa6d8eee1c192f7a3fa55d81d889f3222b8d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T17:16:47.559Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_d06022b34a3d40121bb19370"
+          mutation_id: "compatibility:sha256:15431b5a746b65606edcad26a1d003f542fa8a691d7b9ae7e47bda542547e70c"
+          plan_digest: "sha256:408730a0702f2c28471447c875a390aed6c8eaeb0b4f3367500a097172b904e8"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121655-14X73Y"
+          task_revision: 15
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:15431b5a746b65606edcad26a1d003f542fa8a691d7b9ae7e47bda542547e70c"
+        next_revision: 16
+        previous_revision: 15
+        schema_version: 1
+        task_id: "202609121655-14X73Y"
       compatibility:sha256:16868a76cea2be1ad7446a55e6d8843f8efafe45f124b44a0733aaa642a39e4b:
         aggregate_digest: "sha256:712d63afad1e37d87f402d316d331c593c9ced2fd641addffaa7626436f89b15"
         event:
@@ -1057,6 +1095,30 @@ extensions:
         mutation_id: "compatibility:sha256:304b0245c6e55ad9ffd592b5cfcf49ec77ec28e38aaea147cd6738d235ce1c04"
         next_revision: 14
         previous_revision: 13
+        schema_version: 1
+        task_id: "202609121655-14X73Y"
+      compatibility:sha256:3475847571eba31be4a92f0f40066dfc7c1834678bfcebf726dffede6e94d369:
+        aggregate_digest: "sha256:c0e9a7886e76f95798883bbbea933cd1502096b2e1143af4f05507b6d52cc5cd"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T17:17:54.691Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_c0254ef3396f70f3528ccf1f"
+          mutation_id: "compatibility:sha256:3475847571eba31be4a92f0f40066dfc7c1834678bfcebf726dffede6e94d369"
+          plan_digest: "sha256:408730a0702f2c28471447c875a390aed6c8eaeb0b4f3367500a097172b904e8"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121655-14X73Y"
+          task_revision: 16
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:3475847571eba31be4a92f0f40066dfc7c1834678bfcebf726dffede6e94d369"
+        next_revision: 17
+        previous_revision: 16
         schema_version: 1
         task_id: "202609121655-14X73Y"
       compatibility:sha256:612d50b2295b01a9a08e986bc3dec0eb695dac85df0a1ac1e6b2268d21b1a144:
