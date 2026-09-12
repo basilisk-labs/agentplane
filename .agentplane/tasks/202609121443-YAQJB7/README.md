@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -59,8 +59,6 @@ quality_review:
     - "Pass: CLI-owned verification recorded the focused command, typecheck, and full local CI at implementation SHA 162211482e028760b82733d2dc62bbfd502ec06c."
 token_usage:
   agent_runs: 8
-  cached_input_observed_agent_runs: 0
-  cached_input_tokens: null
   input_tokens: null
   journal_digest: "sha256:3779858e7558d095a7f66d354b00a6d65322623b79c1c62eb2388f0d9c2cc77d"
   observed_agent_runs: 0
@@ -297,6 +295,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (blocked): The task worktree is not clean after PR recovery."
 events:
   -
     type: "status"
@@ -384,9 +385,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "d49a811d9eb4b4a2f3b1ff7b7304fdd568b9751f"
+  -
+    type: "comment"
+    at: "2026-09-12T16:07:05.381Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (blocked): The task worktree is not clean after PR recovery."
 doc_version: 3
-doc_updated_at: "2026-09-12T16:00:06.072Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-12T16:07:05.401Z"
+doc_updated_by: "SUPERVISOR"
 description: "When a blocked external semantic result requests a repository scope extension, persist and use the blocked WorkItem identity so the exact USER-approved extension updates that WorkItem even when other independent WorkItems are schedulable. Preserve fail-closed state binding and add regression coverage. This is required to unblock task 202609121423-9WPTCW."
 sections:
   Summary: |-
@@ -1021,7 +1027,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609121443-YAQJB7"
-    event_cursor: 20
+    event_cursor: 21
     final_validation:
       evidence:
         -
@@ -1371,9 +1377,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121443-YAQJB7"
-    revision: 25
+    revision: 26
     schema_version: 1
-    updated_at: "2026-09-12T16:00:06.065Z"
+    updated_at: "2026-09-12T16:07:05.381Z"
     work_items:
       WI-01:
         attempt: 1
@@ -1756,6 +1762,30 @@ extensions:
         mutation_id: "compatibility:sha256:7d2669d205d07b277fac41f6af01dd4630c80bac2e2271e0e87b77ff0f7dc678"
         next_revision: 22
         previous_revision: 21
+        schema_version: 1
+        task_id: "202609121443-YAQJB7"
+      compatibility:sha256:88fa2fe4f86aefbd8a73969975534c84ef0873941e87729639e89c8d4eb5fee8:
+        aggregate_digest: "sha256:260791ba092fbf72f004bd6f890f6eaa025543f06159c96a551fb2cdf5994609"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T16:07:05.381Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_3dd8bb8ede2aa8c3c435507d"
+          mutation_id: "compatibility:sha256:88fa2fe4f86aefbd8a73969975534c84ef0873941e87729639e89c8d4eb5fee8"
+          plan_digest: "sha256:8c2291aaa937649da54608045290d479e5db886c8169d8d4ba533a72ec6c40ef"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121443-YAQJB7"
+          task_revision: 25
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:88fa2fe4f86aefbd8a73969975534c84ef0873941e87729639e89c8d4eb5fee8"
+        next_revision: 26
+        previous_revision: 25
         schema_version: 1
         task_id: "202609121443-YAQJB7"
       compatibility:sha256:8f2fa40ec34ed1041de140cbb9a0ef014290504fa80335c19ca7b684ccb9117f:
