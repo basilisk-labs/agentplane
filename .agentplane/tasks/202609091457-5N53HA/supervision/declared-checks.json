@@ -1,0 +1,99 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "ops-quality-target-tests"
+      ],
+      "command": "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts",
+      "duration_ms": 11732,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:5329375771855c663cca2e7fae9262db88f6d45f1a2f2dc8b34b1e094732c7e7",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:f16d8d658bc3dd7841a6df82f2d22f6c9ad9a6fe0a7ba0a8b204dad1174bb0c3"
+      },
+      "script": null,
+      "stderr_tail": "ℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\n",
+      "stdout_tail": "016984a6dca7ee11b1138d5624dac2beb776bb5193f48ab986c5cbbbb63.md\nopinion: .agentplane/tasks/202605240900-EV04/quality/20260911-153205586-recovery-context/evaluator-opinion.md\nevaluator run 202605240900-EV04\nprovenance: human_supplied\nverdict: pass\nrecorded: true\nwork order id: evaluator-work-order-202605240900-EV04-2e570e17321dfa096ccaa888\nreport: .agentplane/tasks/202605240900-EV04/quality/20260911-153205833-recovery-context/quality-report.json\nprompt: .agentplane/tasks/202605240900-EV04/quality/objects/sha256/fc2097885a7c31950b7f6575d8f967d0f57b78afb205bcef89cf3b51651412ca.md\nopinion: .agentplane/tasks/202605240900-EV04/quality/20260911-153205833-recovery-context/evaluator-opinion.md\n202605240900-EV05\n/tmp/agentplane-cli-test-5uVxhZ/.agentplane/tasks/202605240900-EV05/README.md\n202605240900-EV06\n/tmp/agentplane-cli-test-5uVxhZ/.agentplane/tasks/202605240900-EV06/README.md\nevaluator run 202605240900-EV05\nprovenance: human_supplied\nverdict: pass\nrecorded: true\nwork order id: evaluator-work-order-202605240900-EV05-e27ebc9a587e48f2044950e7\nreport: .agentplane/tasks/202605240900-EV05/quality/20260911-153206241-recovery-context/quality-report.json\nprompt: .agentplane/tasks/202605240900-EV05/quality/objects/sha256/7a36766fc69bae23e4bba9ded5fa700905e4346e3123b0dd883472b56deade24.md\nopinion: .agentplane/tasks/202605240900-EV05/quality/20260911-153206241-recovery-context/evaluator-opinion.md\n202605240900-EV07\n/tmp/agentplane-cli-test-GhWskc/.agentplane/tasks/202605240900-EV07/README.md\n202605240900-EV08\n/tmp/agentplane-cli-test-GhWskc/.agentplane/tasks/202605240900-EV08/README.md\nevaluator run 202605240900-EV07\nprovenance: human_supplied\nverdict: pass\nrecorded: true\nwork order id: evaluator-work-order-202605240900-EV07-d9fe67232b1361ec1732c489\nreport: .agentplane/tasks/202605240900-EV07/quality/20260911-153206615-recovery-context/quality-report.json\nprompt: .agentplane/tasks/202605240900-EV07/quality/objects/sha256/686781ef148b07ce5ec3c29335538d90fb3fb7e906688263a9002da5c86c503e.md\nopinion: .agentplane/tasks/202605240900-EV07/quality/20260911-153206615-recovery-context/evaluator-opinion.md\nevaluator run 202605240900-EV07\nprovenance: human_supplied\nverdict: pass\nrecorded: true\nwork order id: evaluator-work-order-202605240900-EV07-54aab934f51dc2fd3f33f61e\nreport: .agentplane/tasks/202605240900-EV07/quality/20260911-153206849-recovery-context/quality-report.json\nprompt: .agentplane/tasks/202605240900-EV07/quality/objects/sha256/9ea6953a3fb2df49812d2dbfdf2c4d32df9dec1a77373942956477ae6bba21a6.md\nopinion: .agentplane/tasks/202605240900-EV07/quality/20260911-153206849-recovery-context/evaluator-opinion.md\n202605240900-EV03\n/tmp/agentplane-cli-test-lKgEu9/.agentplane/tasks/202605240900-EV03/README.md\nevaluator run 202605240900-EV03\nprovenance: human_supplied\nverdict: pass\nrecorded: true\nwork order id: evaluator-work-order-202605240900-EV03-fe99a26362f9df7807b06a82\nreport: .agentplane/tasks/202605240900-EV03/quality/20260911-153207181-recovery-context/quality-report.json\nprompt: .agentplane/tasks/202605240900-EV03/quality/objects/sha256/c54a48b6d0502647d0c472dd014ffc527efbedafea1da1bfcc94198a45e27dce.md\nopinion: .agentplane/tasks/202605240900-EV03/quality/20260911-153207181-recovery-context/evaluator-opinion.md\n202605240900-EV12\n/tmp/agentplane-cli-test-rOjYaL/.agentplane/tasks/202605240900-EV12/README.md\n202605240900-EV17\n/tmp/agentplane-cli-test-ApimJf/.agentplane/tasks/202605240900-EV17/README.md\n202605240900-EV15\n/tmp/agentplane-cli-test-Mfml8O/.agentplane/tasks/202605240900-EV15/README.md\n202605240900-EV16\n/tmp/agentplane-cli-test-FBXstY/.agentplane/tasks/202605240900-EV16/README.md\n202605240900-EV13\n/tmp/agentplane-cli-test-BtsZBA/.agentplane/tasks/202605240900-EV13/README.md\n202605240900-EV14\n/tmp/agentplane-cli-test-ZkrYLR/.agentplane/tasks/202605240900-EV14/README.md\n\n Test Files  3 passed (3)\n      Tests  51 passed (51)\n   Start at  15:31:58\n   Duration  10.78s (transform 5.66s, setup 0ms, import 6.29s, tests 7.35s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "direct-ops-lifecycle-tests"
+      ],
+      "command": "bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.direct-ops-quality.test.ts",
+      "duration_ms": 19914,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:5329375771855c663cca2e7fae9262db88f6d45f1a2f2dc8b34b1e094732c7e7",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:f16d8d658bc3dd7841a6df82f2d22f6c9ad9a6fe0a7ba0a8b204dad1174bb0c3"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /srv/projects/agentplane/.agentplane/worktrees/202609091457-5N53HA-publish-direct-ops-review-fix\n\n\n Test Files  1 passed (1)\n      Tests  5 passed (5)\n   Start at  15:32:10\n   Duration  18.95s (transform 6.06s, setup 0ms, import 4.44s, tests 14.36s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "build"
+      ],
+      "command": "bun run build",
+      "duration_ms": 14180,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:5329375771855c663cca2e7fae9262db88f6d45f1a2f2dc8b34b1e094732c7e7",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:f16d8d658bc3dd7841a6df82f2d22f6c9ad9a6fe0a7ba0a8b204dad1174bb0c3"
+      },
+      "script": "build",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs && bun run --filter=@agentplaneorg/core build:bundle && bun run --filter=@agentplaneorg/recipes build:bundle && bun run --filter=agentplane build:bundle\n",
+      "stdout_tail": "d from external module \"readline/promises\" but never used in \"dist/command-catalog/task-read.js\".\nagentplane build:bundle: \"generateKeyPairSync\" and \"sign\" are imported from external module \"crypto\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"digestSupervisorEpisodeValue\", \"advanceSupervisorExecutionEpisodeState\", \"completeSupervisorExecutionEpisode\", \"migrateSupervisorExecutionEpisodeJournal\", \"prepareReplacementSupervisorExecutionEpisodeAfterFailure\", \"recoverSupervisorExecutionEpisodeJournal\", \"reopenCompletedSupervisorExecutionEpisodeAfterStaleState\", \"startSupervisorExecutionEpisode\", \"stopSupervisorExecutionEpisode\", \"renderAgentSemanticResultSchemaJson\", \"validateAgentSemanticResultForWorkOrder\", \"AGENT_WORK_ORDER_V2_ZOD_SCHEMA\", \"AGENT_SEMANTIC_RESULT_ZOD_SCHEMA\", \"assertAgentWorkOrderReadyForInvocation\", \"EXECUTION_RECEIPT_SCHEMA_VERSION\", \"validateExecutionReceipt\", \"createRunnerEffectOperation\", \"digestRunnerEffectValue\", \"createRunnerEffectClaim\", \"createRunnerEffectJournal\", \"createRunnerEffectOperationRef\", \"validateRunnerEffectClaim\", \"validateRunnerEffectJournal\", \"validateRunnerEffectOperation\", \"StateFingerprintPreconditionError\", \"assertStateFingerprintPrecondition\", \"createRunnerEffectResolution\", \"createRunnerEffectResolutionIntent\", \"createRunnerEffectResolutionLease\", \"createRunnerEffectResolutionRef\", \"validateRunnerEffectResolution\", \"validateRunnerEffectResolutionIntent\" and \"validateRunnerEffectResolutionLease\" are imported from external module \"@agentplaneorg/core/schemas\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"lstatSync\" is imported from external module \"fs\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"gitAddPaths\", \"gitCommit\", \"gitListBranches\", \"gitStagedPaths\", \"gitInitRepo\" and \"resolveInitBaseBranch\" are imported from external module \"@agentplaneorg/core/git\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"StringDecoder\" is imported from external module \"string_decoder\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"performance\" is imported from external module \"perf_hooks\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"runProcessSync\" is imported from external module \"@agentplaneorg/core/process\" but never used in \"dist/deferred-runtime.js\".\nagentplane build:bundle: \"createExecutionGrant\", \"createPlanProposal\", \"lintTaskVerifyStepsSection\", \"lintTasksSnapshot\" and \"parseDocSections\" are imported from external module \"@agentplaneorg/core/tasks\" but never used in \"dist/deferred-runtime.js\".\nagentplane build:bundle: \"validateTasksExportSnapshot\", \"renderAcrSchemaJson\" and \"assertAgentWorkOrderReadyForInvocation\" are imported from external module \"@agentplaneorg/core/schemas\" but never used in \"dist/deferred-runtime.js\".\nagentplane build:bundle: \"parseWorkflowFrontMatter\" is imported from external module \"@agentplaneorg/core/config\" but never used in \"dist/deferred-runtime.js\".\nagentplane build:bundle: \"DEFAULT_TASK_BRANCH_PREFIX\", \"clearPinnedBaseBranch\" and \"getPinnedBaseBranch\" are imported from external module \"@agentplaneorg/core/git\" but never used in \"dist/deferred-runtime.js\".\nagentplane build:bundle: \"assertAgentWorkOrderReadyForInvocation\" is imported from external module \"@agentplaneorg/core/schemas\" but never used in \"dist/cli-bun.js\".\nagentplane build:bundle: ESM dist/command-catalog/core-fast.js 170.35 KB\nagentplane build:bundle: ESM dist/command-catalog/task-read.js 240.36 KB\nagentplane build:bundle: ESM dist/cli.js                       386.45 KB\nagentplane build:bundle: ESM dist/command-catalog.js           2.29 MB\nagentplane build:bundle: ESM dist/deferred-runtime.js          2.39 MB\nagentplane build:bundle: ESM dist/cli-bun.js                   3.69 MB\nagentplane build:bundle: ESM ⚡️ Build success in 10545ms\nagentplane build:bundle: generated dist/command-help.json (265 commands)\nagentplane build:bundle: Exited with code 0\n"
+    },
+    {
+      "check_ids": [
+        "typecheck"
+      ],
+      "command": "bun run typecheck",
+      "duration_ms": 571,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:5329375771855c663cca2e7fae9262db88f6d45f1a2f2dc8b34b1e094732c7e7",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:f16d8d658bc3dd7841a6df82f2d22f6c9ad9a6fe0a7ba0a8b204dad1174bb0c3"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "tarball-check"
+      ],
+      "command": "bun run package:tarball:check",
+      "duration_ms": 33124,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:5329375771855c663cca2e7fae9262db88f6d45f1a2f2dc8b34b1e094732c7e7",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:f16d8d658bc3dd7841a6df82f2d22f6c9ad9a6fe0a7ba0a8b204dad1174bb0c3"
+      },
+      "script": "package:tarball:check",
+      "stderr_tail": "$ node scripts/release/check-package-tarball.mjs\n",
+      "stdout_tail": "package tarball policy OK (@agentplaneorg/core=127, @agentplaneorg/recipes=21, agentplane=59)\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202609091457-5N53HA"
+}

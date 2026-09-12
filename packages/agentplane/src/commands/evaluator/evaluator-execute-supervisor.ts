@@ -238,6 +238,7 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
   evaluator: EvaluatorModule;
   task_id: string;
   replacement: boolean;
+  commit?: string;
   artifacts: EvaluatorArtifactPreparationPort;
 }): Promise<EvaluatorSupervisorExecution> {
   const decision = await buildTaskRouteDecision({
@@ -394,6 +395,7 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
         taskId: opts.task_id,
         evaluatorId: opts.evaluator.id,
         provenance: "evaluator_supplied",
+        commit: opts.commit,
       });
       const replacementBinding = replacementOfOperationKey
         ? { replacement_of_operation_key: replacementOfOperationKey }

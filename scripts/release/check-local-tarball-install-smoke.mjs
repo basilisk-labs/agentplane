@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { execFileSync, spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -40,6 +41,164 @@ function runFailure(command, args, opts = {}) {
     stdout: result.stdout ?? "",
     stderr: result.stderr ?? "",
   };
+}
+
+function runJson(command, args, opts = {}) {
+  return JSON.parse(run(command, args, opts));
+}
+
+function canonicalizeJson(value) {
+  if (Array.isArray(value)) return value.map((item) => canonicalizeJson(item));
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value)
+        .toSorted(([left], [right]) => left.localeCompare(right))
+        .map(([key, item]) => [key, canonicalizeJson(item)]),
+    );
+  }
+  return value;
+}
+
+function taskCentricDigest(value) {
+  return `sha256:${createHash("sha256")
+    .update(JSON.stringify(canonicalizeJson(value)))
+    .digest("hex")}`;
+}
+
+function writeInstalledEpisodeResult(packet, result) {
+  assert.ok(packet.exchange?.directory);
+  assert.ok(packet.exchange?.work_order_ref);
+  assert.ok(packet.exchange?.result_path);
+  const workOrder = JSON.parse(
+    readFileSync(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
+  );
+  writeFileSync(
+    packet.exchange.result_path,
+    `${JSON.stringify(
+      {
+        schema_version: 1,
+        kind: "agent_action_result",
+        task_id: packet.task_id,
+        transition_id: packet.transition_id,
+        state_fingerprint: packet.state_fingerprint,
+        role: workOrder.role,
+        result: {
+          schema_version: 2,
+          kind: "agent_semantic_result",
+          work_order_id: workOrder.work_order_id,
+          status: "completed",
+          summary: result.summary,
+          findings: [],
+          uncertainty: [],
+          ...(result.task_plan_proposal
+            ? { task_plan_proposal: result.task_plan_proposal(workOrder) }
+            : {}),
+        },
+      },
+      null,
+      2,
+    )}\n`,
+    "utf8",
+  );
+  return packet.exchange.result_path;
+}
+
+function completeInstalledPlannerEpisode(agentplane, repo, taskId, actionReceipt) {
+  const packet = runJson(agentplane, ["task", "advance", taskId, "--agent-json"], { cwd: repo });
+  assert.equal(packet.action?.kind, "agent_episode");
+  assert.equal(packet.authority?.role, "PLANNER");
+  const resultPath = writeInstalledEpisodeResult(packet, {
+    summary: "Plan the bounded local operation, its checks, evidence, and rollback path.",
+    task_plan_proposal: (workOrder) => {
+      const criterion = {
+        id: "criterion-direct-ops-evidence",
+        description: "The local operation has a receipt, passing checks, and a rollback path.",
+        required: true,
+        check_ids: ["check-direct-ops-evidence"],
+      };
+      const command = "git status --short --untracked-files=no";
+      const validation = {
+        schema_version: 1,
+        criteria: [criterion],
+        checks: [
+          {
+            id: "check-direct-ops-evidence",
+            kind: "deterministic",
+            required: true,
+            capability: "task.verify",
+            command,
+          },
+        ],
+        evidence_fingerprint: taskCentricDigest({
+          task_id: taskId,
+          criterion,
+          command,
+          action_receipt: actionReceipt,
+        }),
+      };
+      return {
+        schema_version: 1,
+        task_id: taskId,
+        planning_baseline: workOrder.planning_context.repository_snapshot,
+        work_items: {
+          schema_version: 1,
+          work_items: [
+            {
+              id: "installed-direct-ops-action",
+              objective: "Execute the approved local operation and retain its evidence.",
+              depends_on: [],
+              required_inputs: [],
+              expected_outputs: [actionReceipt],
+              scope_roots: [actionReceipt],
+              acceptance_criteria: [criterion],
+              validation,
+              context: {
+                required_sources: [],
+                optional_sources: [],
+                symbol_hints: [],
+                max_bytes: 16_384,
+              },
+              risk: "low",
+              capabilities: ["task.verify"],
+              resource_claims: [{ kind: "path", resource: actionReceipt, mode: "write" }],
+              optional: false,
+              priority: 1,
+            },
+          ],
+        },
+        assumptions: [],
+        unresolved_questions: [],
+        top_level_validation: validation,
+      };
+    },
+  });
+  runJson(agentplane, ["task", "advance", taskId, "--result", resultPath, "--agent-json"], {
+    cwd: repo,
+  });
+}
+
+function completeInstalledExecutorEpisode(agentplane, repo, taskId, actionReceipt) {
+  for (let attempt = 0; attempt < 6; attempt += 1) {
+    const packet = runJson(agentplane, ["task", "advance", taskId, "--agent-json"], {
+      cwd: repo,
+    });
+    if (packet.action?.kind !== "agent_episode") continue;
+    assert.equal(packet.authority?.role, "EXECUTOR");
+    const exchange = JSON.parse(
+      readFileSync(path.join(packet.exchange.directory, "exchange.json"), "utf8"),
+    );
+    const checkout = exchange.checkout ?? repo;
+    mkdirSync(path.dirname(path.join(checkout, actionReceipt)), { recursive: true });
+    writeFileSync(path.join(checkout, actionReceipt), "operation=applied\ncheck=ready\n", "utf8");
+    const resultPath = writeInstalledEpisodeResult(packet, {
+      summary: "The approved local operation completed and produced a verifiable receipt.",
+    });
+    runJson(agentplane, ["task", "advance", taskId, "--result", resultPath, "--agent-json"], {
+      cwd: repo,
+    });
+    return checkout;
+  }
+  assert.fail("installed direct ops lifecycle did not expose an EXECUTOR episode");
 }
 
 function assertOnlyContractFields(value, contract, label) {
@@ -162,6 +321,7 @@ const main = defineScript({
     const packDir = path.join(tempRoot, "packs");
     const prefix = path.join(tempRoot, "prefix");
     const repo = path.join(tempRoot, "repo");
+    const opsRepo = path.join(tempRoot, "ops-repo");
     const cacheDir = path.resolve(process.cwd(), ".agentplane", ".npm-cache");
 
     try {
@@ -394,6 +554,226 @@ const main = defineScript({
       process.stdout.write(
         `installed migration matrix OK (scenarios=${migrationMatrix.coverage.scenarioCount})\n`,
       );
+
+      run("git", ["init", "-q", "-b", "main", opsRepo]);
+      run("git", ["config", "user.name", "AgentPlane Ops Smoke"], { cwd: opsRepo });
+      run("git", ["config", "user.email", "agentplane-ops-smoke@example.com"], {
+        cwd: opsRepo,
+      });
+      run("git", ["commit", "--allow-empty", "-m", "seed ops lifecycle"], { cwd: opsRepo });
+      run(
+        agentplane,
+        [
+          "init",
+          "--yes",
+          "--setup-profile",
+          "light",
+          "--workflow",
+          "direct",
+          "--backend",
+          "local",
+          "--hooks",
+          "false",
+          "--require-plan-approval",
+          "true",
+        ],
+        { cwd: opsRepo },
+      );
+      rmSync(path.join(opsRepo, ".agentplane", "bin"), { recursive: true, force: true });
+      const opsGitignore = path.join(opsRepo, ".gitignore");
+      const opsGitignoreText = readFileSync(opsGitignore, "utf8");
+      if (!opsGitignoreText.split(/\r?\n/u).includes(".agentplane/bin/")) {
+        writeFileSync(opsGitignore, `${opsGitignoreText.trimEnd()}\n.agentplane/bin/\n`, "utf8");
+      }
+      writeFileSync(
+        path.join(opsRepo, "package.json"),
+        `${JSON.stringify(
+          {
+            name: "agentplane-installed-direct-ops-smoke",
+            private: true,
+            scripts: { "ci:local:full": "git status --short --untracked-files=no" },
+          },
+          null,
+          2,
+        )}\n`,
+        "utf8",
+      );
+      if (run("git", ["status", "--porcelain"], { cwd: opsRepo }).trim()) {
+        run("git", ["add", "-A"], { cwd: opsRepo });
+        run("git", ["commit", "--no-verify", "-m", "normalize direct ops smoke fixture"], {
+          cwd: opsRepo,
+        });
+      }
+      const opsTaskId = run(
+        agentplane,
+        [
+          "task",
+          "new",
+          "--title",
+          "Installed direct ops lifecycle",
+          "--description",
+          "Prove that packaged AgentPlane closes an evidence-bound operational task.",
+          "--priority",
+          "high",
+          "--owner",
+          "CODER",
+          "--tag",
+          "ops",
+          "--verify",
+          "git status --short --untracked-files=no",
+          "--task-kind",
+          "ops",
+          "--mutation-scope",
+          "ops",
+          "--blueprint-request",
+          "ops.approval",
+          "--route",
+          "direct",
+          "--allow-duplicate",
+        ],
+        { cwd: opsRepo },
+      ).trim();
+      const actionReceipt = "ops-action-receipt.txt";
+      const bundledActionReceipt = `.agentplane/tasks/${opsTaskId}/evidence/action-receipt.txt`;
+      completeInstalledPlannerEpisode(agentplane, opsRepo, opsTaskId, actionReceipt);
+      run(
+        agentplane,
+        [
+          "task",
+          "doc",
+          "set",
+          opsTaskId,
+          "--section",
+          "Verify Steps",
+          "--text",
+          "Run the packaged direct ops lifecycle. Expected: evidence-bound finish succeeds.",
+          "--updated-by",
+          "PLANNER",
+        ],
+        { cwd: opsRepo },
+      );
+      run(
+        agentplane,
+        [
+          "task",
+          "doc",
+          "set",
+          opsTaskId,
+          "--section",
+          "Rollback Plan",
+          "--text",
+          "Restore the previous local state and rerun every operational check.",
+          "--updated-by",
+          "CODER",
+        ],
+        { cwd: opsRepo },
+      );
+      run(
+        agentplane,
+        ["task", "plan", "approve", opsTaskId, "--by", "ORCHESTRATOR", "--note", "Ops smoke"],
+        { cwd: opsRepo },
+      );
+      run(
+        agentplane,
+        [
+          "task",
+          "start-ready",
+          opsTaskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Start: execute the approved local operation and capture complete evidence.",
+        ],
+        { cwd: opsRepo },
+      );
+      run(agentplane, ["blueprint", "snapshot", opsTaskId], { cwd: opsRepo });
+      const opsCheckout = completeInstalledExecutorEpisode(
+        agentplane,
+        opsRepo,
+        opsTaskId,
+        actionReceipt,
+      );
+      mkdirSync(path.dirname(path.join(opsCheckout, bundledActionReceipt)), { recursive: true });
+      writeFileSync(
+        path.join(opsCheckout, bundledActionReceipt),
+        readFileSync(path.join(opsCheckout, actionReceipt), "utf8"),
+        "utf8",
+      );
+
+      const verificationDetails = ["full_regression", "real_e2e", "task_outcome"]
+        .map(
+          (check) =>
+            `Check: ${check}\nCommand: installed tarball ops lifecycle\nResult: pass\nEvidence: ${bundledActionReceipt}\nScope: isolated packaged CLI repository`,
+        )
+        .join("\n\n");
+      run(
+        agentplane,
+        [
+          "verify",
+          opsTaskId,
+          "--ok",
+          "--by",
+          "TESTER",
+          "--note",
+          "Verified: installed direct ops checks and rollback evidence are complete.",
+          "--details",
+          verificationDetails,
+        ],
+        { cwd: opsCheckout },
+      );
+      const evidenceCommit = run("git", ["rev-parse", "HEAD"], { cwd: opsCheckout }).trim();
+      assert.match(evidenceCommit, /^[a-f0-9]{40}$/u);
+      run(
+        agentplane,
+        [
+          "evaluator",
+          "run",
+          opsTaskId,
+          "--commit",
+          evidenceCommit,
+          "--provenance",
+          "evaluator_supplied",
+          "--verdict",
+          "pass",
+          "--summary",
+          "The packaged CLI operational evidence satisfies the approved direct ops contract.",
+          "--finding",
+          "The action receipt, operational checks, and rollback evidence are complete.",
+          "--evidence",
+          bundledActionReceipt,
+        ],
+        { cwd: opsCheckout },
+      );
+      run("git", ["add", "."], { cwd: opsCheckout });
+      run("git", ["commit", "--no-verify", "-m", "record ops evidence review"], {
+        cwd: opsCheckout,
+      });
+      const reviewArtifactCommit = run("git", ["rev-parse", "HEAD"], {
+        cwd: opsCheckout,
+      }).trim();
+      assert.notEqual(reviewArtifactCommit, evidenceCommit);
+      run(
+        agentplane,
+        [
+          "finish",
+          opsTaskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Verified: packaged direct ops evidence remains complete at lifecycle closeout.",
+          "--result",
+          "packaged direct ops lifecycle completed",
+          "--commit",
+          evidenceCommit,
+          "--no-close-commit",
+        ],
+        { cwd: opsCheckout },
+      );
+      assert.equal(
+        runJson(agentplane, ["task", "status", opsTaskId, "--json"], { cwd: opsCheckout }).status,
+        "DONE",
+      );
+      process.stdout.write(`installed direct ops lifecycle OK (${opsTaskId})\n`);
 
       process.stdout.write(`local tarball install smoke OK (${taskId})\n`);
     } finally {

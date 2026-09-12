@@ -214,6 +214,7 @@ function renderValueLines(key: string, value: unknown, indent: string): string[]
                   "updated_at",
                   "updated_by",
                   "note",
+                  "evaluated_subject",
                   "evaluated_sha",
                   "blueprint_digest",
                   "evidence_refs",

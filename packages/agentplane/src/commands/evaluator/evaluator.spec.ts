@@ -19,6 +19,7 @@ export type EvaluatorRunProvenance = "human_supplied" | "evaluator_supplied";
 export type EvaluatorRunParsed = {
   taskId: string;
   evaluator: string;
+  commit?: string;
   verdict: EvaluatorRunVerdict;
   provenance: EvaluatorRunProvenance;
   summary: string;
@@ -35,6 +36,7 @@ export type EvaluatorRunParsed = {
 export type EvaluatorPrepareParsed = {
   taskId: string;
   evaluator: string;
+  commit?: string;
   json: boolean;
 };
 
@@ -48,6 +50,7 @@ export type EvaluatorApplyParsed = {
 export type EvaluatorExecuteParsed = {
   taskId: string;
   evaluator: string;
+  commit?: string;
   replacement: boolean;
   json: boolean;
 };
@@ -100,6 +103,12 @@ export const evaluatorPrepareSpec: CommandSpec<EvaluatorPrepareParsed> = {
       description: "Evaluator prompt module id to use.",
     },
     {
+      kind: "string",
+      name: "commit",
+      valueHint: "<rev>",
+      description: "Git commit to freeze as the reviewed subject.",
+    },
+    {
       kind: "boolean",
       name: "json",
       default: false,
@@ -110,6 +119,7 @@ export const evaluatorPrepareSpec: CommandSpec<EvaluatorPrepareParsed> = {
     taskId: String(raw.args.taskId ?? "").trim(),
     evaluator:
       typeof raw.opts.evaluator === "string" ? raw.opts.evaluator.trim() : "recovery-context",
+    ...(typeof raw.opts.commit === "string" ? { commit: raw.opts.commit.trim() } : {}),
     json: raw.opts.json === true,
   }),
 };
@@ -178,6 +188,12 @@ export const evaluatorExecuteSpec: CommandSpec<EvaluatorExecuteParsed> = {
       description: "Evaluator prompt module id to use.",
     },
     {
+      kind: "string",
+      name: "commit",
+      valueHint: "<rev>",
+      description: "Git commit to freeze as the reviewed subject.",
+    },
+    {
       kind: "boolean",
       name: "replacement",
       default: false,
@@ -204,6 +220,7 @@ export const evaluatorExecuteSpec: CommandSpec<EvaluatorExecuteParsed> = {
     taskId: String(raw.args.taskId ?? "").trim(),
     evaluator:
       typeof raw.opts.evaluator === "string" ? raw.opts.evaluator.trim() : "recovery-context",
+    ...(typeof raw.opts.commit === "string" ? { commit: raw.opts.commit.trim() } : {}),
     replacement: raw.opts.replacement === true,
     json: raw.opts.json === true,
   }),
@@ -221,6 +238,12 @@ export const evaluatorRunSpec: CommandSpec<EvaluatorRunParsed> = {
       valueHint: "<id>",
       default: "recovery-context",
       description: "Evaluator prompt module id to use.",
+    },
+    {
+      kind: "string",
+      name: "commit",
+      valueHint: "<rev>",
+      description: "Git commit to freeze as the reviewed subject.",
     },
     {
       kind: "string",
@@ -326,6 +349,7 @@ export const evaluatorRunSpec: CommandSpec<EvaluatorRunParsed> = {
     taskId: String(raw.args.taskId ?? "").trim(),
     evaluator:
       typeof raw.opts.evaluator === "string" ? raw.opts.evaluator.trim() : "recovery-context",
+    ...(typeof raw.opts.commit === "string" ? { commit: raw.opts.commit.trim() } : {}),
     verdict: String(raw.opts.verdict) as EvaluatorRunVerdict,
     provenance: String(raw.opts.provenance) as EvaluatorRunProvenance,
     summary: typeof raw.opts.summary === "string" ? raw.opts.summary.trim() : "",

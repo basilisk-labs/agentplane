@@ -15,6 +15,7 @@ type EvaluatorArtifactPreparationRequest = {
   taskId: string;
   evaluatorId: string;
   provenance: EvaluatorRunProvenance;
+  commit?: string;
 };
 
 type PreparedEvaluatorArtifactPacket = Readonly<{
@@ -57,6 +58,7 @@ export function createEvaluatorArtifactPreparationPort(
         task,
         evaluator,
         provenance: request.provenance,
+        explicitCommit: request.commit,
       });
       return Object.freeze({
         git_root: command.resolvedProject.gitRoot,

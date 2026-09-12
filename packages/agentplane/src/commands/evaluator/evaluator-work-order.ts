@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { z } from "zod";
 
+import type { QualityReviewSubject } from "@agentplaneorg/core/tasks";
 import type { EvaluatorSgrResult } from "../../evaluators/sgr-result.js";
 import { CliError } from "../../shared/errors.js";
 
@@ -27,6 +28,18 @@ export const EVALUATOR_WORK_ORDER_SCHEMA = z
       })
       .strict(),
     evaluated_sha: z.string().trim().min(1).nullable(),
+    evaluated_subject: z
+      .discriminatedUnion("kind", [
+        z.object({ kind: z.literal("git_commit"), value: z.string().trim().min(1) }).strict(),
+        z
+          .object({
+            kind: z.literal("evidence_bundle"),
+            value: z.string().regex(/^sha256:[a-f0-9]{64}$/u),
+          })
+          .strict(),
+      ])
+      .transform((subject): QualityReviewSubject => subject as QualityReviewSubject)
+      .optional(),
     diff_base_sha: z.string().trim().min(1).nullable().optional(),
     blueprint_digest: z.string().trim().min(1).nullable(),
     evaluator: z
@@ -90,6 +103,7 @@ export function evaluatorWorkOrderId(opts: {
   taskId: string;
   revision: number | null;
   evaluatedSha: string | null;
+  evaluatedSubject?: QualityReviewSubject | null;
   diffBaseSha: string | null;
   evidence: EvaluatorWorkOrder["evidence"];
 }): string {
@@ -98,6 +112,9 @@ export function evaluatorWorkOrderId(opts: {
       task_id: opts.taskId,
       revision: opts.revision,
       evaluated_sha: opts.evaluatedSha,
+      evaluated_subject:
+        opts.evaluatedSubject ??
+        (opts.evaluatedSha ? { kind: "git_commit", value: opts.evaluatedSha } : null),
       diff_base_sha: opts.diffBaseSha,
       evidence: opts.evidence.map((entry) => [entry.id, entry.sha256]),
     }),

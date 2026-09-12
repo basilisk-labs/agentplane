@@ -1,5 +1,6 @@
 import type { EvaluatorModule } from "../../evaluators/catalog.js";
 import type { EvaluatorRunParsed, EvaluatorRunProvenance } from "./evaluator.spec.js";
+import type { QualityReviewSubject } from "@agentplaneorg/core/tasks";
 
 export const QUALITY_REPORT_FILE = "quality-report.json";
 export const EVALUATOR_PROMPT_FILE = "evaluator-prompt.md";
@@ -16,6 +17,7 @@ export type EvaluatorQualityReport = {
   verdict: EvaluatorRunParsed["verdict"];
   summary: string;
   evaluated_sha: string | null;
+  evaluated_subject?: QualityReviewSubject;
   blueprint_digest: string | null;
   findings: string[];
   evidence_refs: string[];

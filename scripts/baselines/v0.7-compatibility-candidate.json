@@ -8,14 +8,14 @@
   "candidate": {
     "section_digests": {
       "agent_facing_context_contracts": "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
-      "cli_topology": "a0b5f5f68e441d82463b7ddb00ab65301c0c1602be7f834a7434992d6724979d",
+      "cli_topology": "9293fba279b3e2b8ab244d36db2d87e521c1a6b9c602470a91f1077ec411ef60",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "package_manifests": "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
       "tarball_policy": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
       "workflow_schema": "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452"
     },
-    "surface_sha256": "8ba01d347981b2efb96b0a3645140026934f97f42552d88949bddb07ca78e0e4"
+    "surface_sha256": "a8da2c38ab4814922ee06cf642a11461ca631233ee4a7df9c2f0251c953223df"
   },
   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
   "contract_artifacts": {
@@ -380,6 +380,7 @@
                 "name": "evaluator",
                 "valueHint": "<id>"
               },
+              { "kind": "string", "name": "commit", "valueHint": "<rev>" },
               { "default": false, "kind": "boolean", "name": "replacement", "valueHint": null },
               { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
             ],
@@ -398,6 +399,7 @@
                 "name": "evaluator",
                 "valueHint": "<id>"
               },
+              { "kind": "string", "name": "commit", "valueHint": "<rev>" },
               { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
             ],
             "visibility": "user"
@@ -901,6 +903,12 @@
           },
           {
             "command": "evaluator execute",
+            "kind": "string",
+            "name": "commit",
+            "valueHint": "<rev>"
+          },
+          {
+            "command": "evaluator execute",
             "default": "recovery-context",
             "kind": "string",
             "name": "evaluator",
@@ -922,6 +930,12 @@
           },
           {
             "command": "evaluator prepare",
+            "kind": "string",
+            "name": "commit",
+            "valueHint": "<rev>"
+          },
+          {
+            "command": "evaluator prepare",
             "default": "recovery-context",
             "kind": "string",
             "name": "evaluator",
@@ -934,6 +948,7 @@
             "name": "json",
             "valueHint": null
           },
+          { "command": "evaluator run", "kind": "string", "name": "commit", "valueHint": "<rev>" },
           {
             "choices": ["human_supplied", "evaluator_supplied"],
             "command": "evaluator run",
@@ -2501,7 +2516,7 @@
             "identity": "task plan approve --by"
           }
         ],
-        "option_count": { "from": 767, "to": 874 },
+        "option_count": { "from": 767, "to": 877 },
         "positional_count": { "from": 165, "to": 183 },
         "removed_command_descriptors": [],
         "removed_commands": [],
@@ -2549,7 +2564,7 @@
         "202609060720-NZXQ0E"
       ],
       "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, safe local evidence statistics, compaction, garbage collection, and a state-bound USER-approved blocked-task scope extension; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; canonicalizes setup and execution profile selection to standard while retaining legacy init aliases; and makes auto the task route default while retiring repository as a user-facing route. Adds exact-intent operator reconciliation for interrupted integration workflow effects.",
-      "to_sha256": "a0b5f5f68e441d82463b7ddb00ab65301c0c1602be7f834a7434992d6724979d"
+      "to_sha256": "9293fba279b3e2b8ab244d36db2d87e521c1a6b9c602470a91f1077ec411ef60"
     },
     {
       "classification": "additive",
@@ -2757,7 +2772,7 @@
     "from_version": "0.6.24",
     "section": "package_manifests",
     "source_task": "202608082119-P6SHBN",
-    "surface_sha256": "772bda93ae2f4c1a6a5bfe8543da2f463cc7450822be026ac74b345232a73711",
+    "surface_sha256": "f7da773447d7a4449571c97af734817823b3ad0a1be07e8a8ee0c5cf3e8eb02d",
     "to_sha256": "366f679271e9106141cd013c4e6fce763ab287876f4b030fdd84e6d1e64621e4",
     "to_version": "0.7.9-beta.1"
   },

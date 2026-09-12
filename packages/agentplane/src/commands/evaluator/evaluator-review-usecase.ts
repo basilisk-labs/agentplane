@@ -1,5 +1,7 @@
 import path from "node:path";
 
+import { gitRevParse } from "@agentplaneorg/core/git";
+import type { QualityReviewSubject } from "@agentplaneorg/core/tasks";
 import type { TaskData } from "../../backends/task-backend.js";
 import {
   resolveTaskExecutionContext,
@@ -14,6 +16,10 @@ import { normalizeBranchPrBatchTaskIds } from "../pr/internal/sync-batch-ownersh
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import { recordedTaskImplementationCommitSha } from "../shared/quality-review-target.js";
 import { withEvidenceMutationLock } from "../evidence/evidence-mutation-lock.js";
+import {
+  buildOpsEvidenceBundle,
+  type OpsEvidenceBundle,
+} from "../evidence/ops-evidence-subject.js";
 import {
   assessLocalVerificationRecords,
   requiredVerificationContractChecks,
@@ -95,6 +101,7 @@ type PrepareEvaluatorReviewOptions = {
   provenance: EvaluatorRunProvenance;
   at?: string;
   execution?: TaskExecutionContext;
+  explicitCommit?: string;
 };
 
 type PrepareEvaluatorReviewLockedOptions = Omit<PrepareEvaluatorReviewOptions, "execution"> & {
@@ -164,12 +171,20 @@ async function prepareEvaluatorReviewLocked(
   const paths = reportPaths(reviewDir);
   const taskRoot = path.join(gitRoot, opts.ctx.config.paths.workflow_dir, opts.task.id);
   const taskReadmePath = path.join(taskRoot, "README.md");
-  const { evaluatedSha, qualificationPacket } = await resolveEvaluatorReviewTarget({
+  const blueprint = await buildTaskBlueprintResolvedSnapshot({
     ctx: opts.ctx,
     task: opts.task,
-    reason: "preparation",
-    execution: opts.execution,
   });
+  const binding = await resolveEvaluatorBinding({
+    ctx: opts.ctx,
+    task: opts.task,
+    execution: opts.execution,
+    blueprintId: blueprint.selectedBlueprint.id,
+    blueprintDigest: blueprint.digest.value,
+    explicitCommit: opts.explicitCommit,
+    reason: "preparation",
+  });
+  const { evaluatedSha, evaluatedSubject, opsEvidenceBundle, qualificationPacket } = binding;
   const diffBaseSha = await resolveEvaluatorDiffBase({
     gitRoot,
     evaluatedSha,
@@ -201,10 +216,6 @@ async function prepareEvaluatorReviewLocked(
       },
     });
   }
-  const blueprint = await buildTaskBlueprintResolvedSnapshot({
-    ctx: opts.ctx,
-    task: opts.task,
-  });
   const verificationTargetSha =
     qualificationPacket?.packet.implementation_sha ??
     evaluatedSha ??
@@ -216,9 +227,11 @@ async function prepareEvaluatorReviewLocked(
     workflowMode: opts.execution.selected_mode,
     execution: opts.execution,
   } as const;
-  const recordPaths = await verificationRecordPaths(taskRoot, opts.task, verificationTargetSha, {
-    ...verificationTargetContext,
-  });
+  const recordPaths = opsEvidenceBundle
+    ? opsEvidenceBundle.verification_records.map((record) => path.resolve(gitRoot, record.path))
+    : await verificationRecordPaths(taskRoot, opts.task, verificationTargetSha, {
+        ...verificationTargetContext,
+      });
   const selectedContractChecks = requiredVerificationContractChecks(opts.task);
   if (selectedContractChecks.length > 0 && recordPaths.length === 0) {
     const assessment = await assessLocalVerificationRecords({
@@ -403,6 +416,7 @@ async function prepareEvaluatorReviewLocked(
     taskId: opts.task.id,
     revision: opts.task.revision ?? null,
     evaluatedSha,
+    evaluatedSubject,
     diffBaseSha,
     evidence,
   });
@@ -463,6 +477,7 @@ async function prepareEvaluatorReviewLocked(
       acceptance_criteria: evaluatorAcceptanceCriteria(opts.task),
     },
     evaluated_sha: evaluatedSha,
+    ...(evaluatedSubject ? { evaluated_subject: evaluatedSubject } : {}),
     diff_base_sha: diffBaseSha,
     blueprint_digest: blueprint.digest.value,
     evaluator: {
@@ -543,18 +558,6 @@ export async function assertWorkOrderCurrent(opts: {
     tasks: [opts.task],
     primaryTaskId: opts.task.id,
   });
-  const { evaluatedSha: currentSha } = await resolveEvaluatorReviewTarget({
-    ctx: opts.ctx,
-    task: opts.task,
-    reason: "staleness",
-    execution,
-  });
-  if (currentSha !== opts.workOrder.evaluated_sha) {
-    throw new CliError({
-      code: "E_VALIDATION",
-      message: "Evaluator work order is stale because the evaluated SHA changed after preparation.",
-    });
-  }
   const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx: opts.ctx, task: opts.task });
   if (snapshot.current.digest !== opts.workOrder.blueprint_digest) {
     throw new CliError({
@@ -563,5 +566,157 @@ export async function assertWorkOrderCurrent(opts: {
         "Evaluator work order is stale because the resolved blueprint changed after preparation.",
     });
   }
+  const current = await resolveCurrentWorkOrderSubject({
+    ctx: opts.ctx,
+    task: opts.task,
+    execution,
+    workOrder: opts.workOrder,
+    blueprintId: snapshot.current.blueprintId,
+    blueprintDigest: snapshot.current.digest,
+  });
+  const reviewed =
+    opts.workOrder.evaluated_subject ??
+    (opts.workOrder.evaluated_sha
+      ? { kind: "git_commit" as const, value: opts.workOrder.evaluated_sha }
+      : null);
+  if (
+    current?.kind !== reviewed?.kind ||
+    current?.value !== reviewed?.value ||
+    (current?.kind === "git_commit" ? current.value : null) !== opts.workOrder.evaluated_sha
+  ) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: [
+        reviewed?.kind === "git_commit"
+          ? "Evaluator work order is stale because the evaluated SHA changed after preparation."
+          : "Evaluator work order is stale because the review subject changed after preparation.",
+        `reviewed_subject=${formatSubject(reviewed)}`,
+        `current_subject=${formatSubject(current)}`,
+      ].join("\n"),
+    });
+  }
   await assertFrozenEvaluatorArtifactsCurrent({ gitRoot, workOrder: opts.workOrder });
+}
+
+async function resolveCommitSha(gitRoot: string, value: string, label: string): Promise<string> {
+  const rev = value.trim();
+  if (!rev) {
+    throw new CliError({ code: "E_USAGE", message: `${label} must not be empty.` });
+  }
+  try {
+    return await gitRevParse(gitRoot, [`${rev}^{commit}`]);
+  } catch {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: `${label} does not resolve to an existing Git commit: ${rev}`,
+    });
+  }
+}
+
+function formatSubject(subject: QualityReviewSubject | null): string {
+  return subject ? `${subject.kind}:${subject.value}` : "missing";
+}
+
+async function resolveEvaluatorBinding(opts: {
+  ctx: CommandContext;
+  task: TaskData;
+  execution: TaskExecutionContext;
+  blueprintId: string;
+  blueprintDigest: string;
+  explicitCommit?: string;
+  reason: "preparation" | "staleness";
+}): Promise<{
+  evaluatedSha: string | null;
+  evaluatedSubject: QualityReviewSubject | null;
+  opsEvidenceBundle: OpsEvidenceBundle | null;
+  qualificationPacket: Awaited<
+    ReturnType<typeof resolveEvaluatorReviewTarget>
+  >["qualificationPacket"];
+}> {
+  const gitRoot = opts.ctx.resolvedProject.gitRoot;
+  const explicitSha = opts.explicitCommit
+    ? await resolveCommitSha(gitRoot, opts.explicitCommit, "Evaluator --commit")
+    : null;
+  if (opts.blueprintId === "ops.approval") {
+    const registered = explicitSha ?? opts.task.commit?.hash?.trim() ?? null;
+    if (registered) {
+      const evaluatedSha =
+        explicitSha ?? (await resolveCommitSha(gitRoot, registered, "Ops evidence commit"));
+      return {
+        evaluatedSha,
+        evaluatedSubject: { kind: "git_commit", value: evaluatedSha },
+        opsEvidenceBundle: null,
+        qualificationPacket: null,
+      };
+    }
+    const evidence = await buildOpsEvidenceBundle({
+      ctx: opts.ctx,
+      task: opts.task,
+      blueprintDigest: opts.blueprintDigest,
+    });
+    return {
+      evaluatedSha: null,
+      evaluatedSubject: evidence.subject,
+      opsEvidenceBundle: evidence.bundle,
+      qualificationPacket: null,
+    };
+  }
+
+  const target = await resolveEvaluatorReviewTarget({
+    ctx: opts.ctx,
+    task: opts.task,
+    reason: opts.reason,
+    execution: opts.execution,
+  });
+  if (explicitSha && explicitSha !== target.evaluatedSha) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: [
+        "Evaluator --commit does not match the current implementation commit.",
+        `explicit_commit=${explicitSha}`,
+        `implementation_commit=${target.evaluatedSha ?? "missing"}`,
+      ].join("\n"),
+    });
+  }
+  const evaluatedSha = explicitSha ?? target.evaluatedSha;
+  return {
+    evaluatedSha,
+    evaluatedSubject: evaluatedSha ? { kind: "git_commit", value: evaluatedSha } : null,
+    opsEvidenceBundle: null,
+    qualificationPacket: target.qualificationPacket,
+  };
+}
+
+async function resolveCurrentWorkOrderSubject(opts: {
+  ctx: CommandContext;
+  task: TaskData;
+  execution: TaskExecutionContext;
+  workOrder: EvaluatorWorkOrder;
+  blueprintId: string;
+  blueprintDigest: string;
+}): Promise<QualityReviewSubject | null> {
+  const reviewed = opts.workOrder.evaluated_subject;
+  if (opts.blueprintId === "ops.approval" && reviewed?.kind === "evidence_bundle") {
+    const evidence = await buildOpsEvidenceBundle({
+      ctx: opts.ctx,
+      task: opts.task,
+      blueprintDigest: opts.blueprintDigest,
+    });
+    return evidence.subject;
+  }
+  if (opts.blueprintId === "ops.approval" && reviewed?.kind === "git_commit") {
+    const value = await resolveCommitSha(
+      opts.ctx.resolvedProject.gitRoot,
+      reviewed.value,
+      "Reviewed ops evidence commit",
+    );
+    return { kind: "git_commit", value };
+  }
+  const target = await resolveEvaluatorReviewTarget({
+    ctx: opts.ctx,
+    task: opts.task,
+    reason: "staleness",
+    execution: opts.execution,
+  });
+  return target.evaluatedSha ? { kind: "git_commit", value: target.evaluatedSha } : null;
 }

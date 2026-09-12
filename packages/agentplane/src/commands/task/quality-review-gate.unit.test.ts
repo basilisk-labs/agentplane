@@ -101,6 +101,127 @@ describe("EVALUATOR quality review gate", () => {
     ).toThrow(/fresh EVALUATOR quality review/);
   });
 
+  it("accepts a matching evidence bundle subject without an evaluated commit", () => {
+    const digest = `sha256:${"a".repeat(64)}` as const;
+    expect(() =>
+      assertEvaluatorQualityReviewPassed({
+        task: task({
+          quality_review: {
+            state: "pass",
+            updated_at: "2026-02-09T00:00:00.000Z",
+            updated_by: "EVALUATOR",
+            note: "Reviewed operational evidence.",
+            evaluated_subject: { kind: "evidence_bundle", value: digest },
+            evaluated_sha: null,
+            blueprint_digest: "digest",
+            evidence_refs: [".agentplane/tasks/T-1/quality/run/quality-report.json"],
+            findings: ["Reviewed the frozen operational evidence bundle."],
+          },
+        }),
+        expectedSubject: { kind: "evidence_bundle", value: digest },
+        expectedBlueprintDigest: "digest",
+        command: "finish",
+      }),
+    ).not.toThrow();
+  });
+
+  it("rejects a changed evidence bundle subject with actionable values", () => {
+    const reviewedDigest = `sha256:${"a".repeat(64)}` as const;
+    const currentDigest = `sha256:${"b".repeat(64)}` as const;
+    expect(() =>
+      assertEvaluatorQualityReviewPassed({
+        task: task({
+          quality_review: {
+            state: "pass",
+            updated_at: "2026-02-09T00:00:00.000Z",
+            updated_by: "EVALUATOR",
+            note: "Reviewed operational evidence.",
+            evaluated_subject: { kind: "evidence_bundle", value: reviewedDigest },
+            evaluated_sha: null,
+            blueprint_digest: "digest",
+            evidence_refs: [".agentplane/tasks/T-1/quality/run/quality-report.json"],
+            findings: ["Reviewed the frozen operational evidence bundle."],
+          },
+        }),
+        expectedSubject: { kind: "evidence_bundle", value: currentDigest },
+        command: "finish",
+      }),
+    ).toThrow(
+      new RegExp(
+        `evaluated_subject=evidence_bundle:${reviewedDigest}.*expected_subject=evidence_bundle:${currentDigest}`,
+        "s",
+      ),
+    );
+  });
+
+  it("rejects a review subject kind mismatch even when the value matches", () => {
+    const digest = `sha256:${"c".repeat(64)}` as const;
+    expect(() =>
+      assertEvaluatorQualityReviewPassed({
+        task: task({
+          quality_review: {
+            state: "pass",
+            updated_at: "2026-02-09T00:00:00.000Z",
+            updated_by: "EVALUATOR",
+            note: "Reviewed operational evidence.",
+            evaluated_subject: { kind: "evidence_bundle", value: digest },
+            evaluated_sha: null,
+            blueprint_digest: "digest",
+            evidence_refs: [".agentplane/tasks/T-1/quality/run/quality-report.json"],
+            findings: ["Reviewed the frozen operational evidence bundle."],
+          },
+        }),
+        expectedSubject: { kind: "git_commit", value: digest },
+        command: "finish",
+      }),
+    ).toThrow(/expected_subject=git_commit/);
+  });
+
+  it("treats legacy evaluated_sha as a git commit subject", () => {
+    expect(() =>
+      assertEvaluatorQualityReviewPassed({
+        task: task({
+          quality_review: {
+            state: "pass",
+            updated_at: "2026-02-09T00:00:00.000Z",
+            updated_by: "EVALUATOR",
+            note: "Looks good",
+            evaluated_sha: "head",
+            blueprint_digest: "digest",
+            evidence_refs: [".agentplane/tasks/T-1/quality/run/quality-report.json"],
+            findings: ["Reviewed scope and evidence."],
+          },
+        }),
+        expectedSubject: { kind: "git_commit", value: "head" },
+        command: "finish",
+      }),
+    ).not.toThrow();
+  });
+
+  it("uses the explicit review subject instead of the compatibility expected SHA", () => {
+    const digest = `sha256:${"d".repeat(64)}` as const;
+    expect(() =>
+      assertEvaluatorQualityReviewPassed({
+        task: task({
+          quality_review: {
+            state: "pass",
+            updated_at: "2026-02-09T00:00:00.000Z",
+            updated_by: "EVALUATOR",
+            note: "Reviewed operational evidence.",
+            evaluated_subject: { kind: "evidence_bundle", value: digest },
+            evaluated_sha: null,
+            blueprint_digest: "digest",
+            evidence_refs: [".agentplane/tasks/T-1/quality/run/quality-report.json"],
+            findings: ["Reviewed the frozen operational evidence bundle."],
+          },
+        }),
+        expectedSha: "compatibility-sha-must-not-win",
+        expectedSubject: { kind: "evidence_bundle", value: digest },
+        command: "finish",
+      }),
+    ).not.toThrow();
+  });
+
   it("rejects missing blueprint digest when a digest is expected", () => {
     expect(() =>
       assertEvaluatorQualityReviewPassed({

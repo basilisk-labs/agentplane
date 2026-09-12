@@ -803,6 +803,13 @@ Expected evidence:
 - commands or actions taken;
 - rollback or recovery path.
 
+Operational quality review is bound either to an explicit evidence commit or to the stable digest
+of a frozen evidence bundle containing the action receipt, rollback evidence, operational checks,
+and declared verification artifacts. An implementation commit is not required when the operation
+does not change repository implementation code. Closeout metadata and quality-review output are
+outside the bundle, so they cannot invalidate the review they record; changes to operational
+evidence do invalidate it.
+
 ## Selection Rules
 
 An agent may propose a blueprint, but the Agentplane resolver must produce the final resolved

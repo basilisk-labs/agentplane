@@ -273,6 +273,40 @@
             }
           ]
         },
+        "evaluated_subject": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "git_commit"
+                },
+                "value": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": ["kind", "value"],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "evidence_bundle"
+                },
+                "value": {
+                  "type": "string",
+                  "pattern": "^sha256:[0-9a-f]{64}$"
+                }
+              },
+              "required": ["kind", "value"],
+              "additionalProperties": false
+            }
+          ]
+        },
         "evaluated_sha": {
           "anyOf": [
             {

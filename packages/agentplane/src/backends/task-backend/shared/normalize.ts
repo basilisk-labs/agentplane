@@ -12,6 +12,7 @@ import type {
   TaskRunnerTarget,
   TaskTokenUsage,
   QualityReviewResult,
+  QualityReviewSubject,
   VerificationResult,
 } from "./types.js";
 
@@ -143,6 +144,19 @@ export function normalizeQualityReviewResult(value: unknown): QualityReviewResul
     value.evaluated_sha === null || typeof value.evaluated_sha === "string"
       ? value.evaluated_sha
       : null;
+  const evaluatedSubject: QualityReviewSubject | undefined = isRecord(value.evaluated_subject)
+    ? value.evaluated_subject.kind === "git_commit" &&
+      typeof value.evaluated_subject.value === "string" &&
+      value.evaluated_subject.value.trim()
+      ? { kind: "git_commit", value: value.evaluated_subject.value.trim() }
+      : value.evaluated_subject.kind === "evidence_bundle" &&
+          typeof value.evaluated_subject.value === "string" &&
+          /^sha256:[a-f0-9]{64}$/u.test(value.evaluated_subject.value)
+        ? { kind: "evidence_bundle", value: value.evaluated_subject.value as `sha256:${string}` }
+        : undefined
+    : evaluatedSha
+      ? { kind: "git_commit", value: evaluatedSha }
+      : undefined;
   const blueprintDigest =
     value.blueprint_digest === null || typeof value.blueprint_digest === "string"
       ? value.blueprint_digest
@@ -157,6 +171,7 @@ export function normalizeQualityReviewResult(value: unknown): QualityReviewResul
     updated_at: updatedAt,
     updated_by: updatedBy,
     note,
+    ...(evaluatedSubject ? { evaluated_subject: evaluatedSubject } : {}),
     evaluated_sha: evaluatedSha,
     blueprint_digest: blueprintDigest,
     evidence_refs: normalizeStringArray(value.evidence_refs) ?? [],

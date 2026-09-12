@@ -404,6 +404,7 @@ export {
   type QualityReviewRecoveryReason,
   type QualityReviewResult,
   type QualityReviewState,
+  type QualityReviewSubject,
   type TaskRecord,
   type TaskRunnerEvidence,
   type TaskRunnerExecutionReceiptRef,

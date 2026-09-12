@@ -18,7 +18,7 @@ import {
   type PreparedEvaluatorReview,
 } from "./evaluator-review-usecase.js";
 import { applyEvaluatorSgrReview } from "./evaluator-review-apply.js";
-import { evaluatorRunSpec } from "./evaluator.spec.js";
+import { evaluatorExecuteSpec, evaluatorPrepareSpec, evaluatorRunSpec } from "./evaluator.spec.js";
 import {
   addTask,
   commitPath,
@@ -95,9 +95,20 @@ function typedEvaluatorResult(
 }
 
 describe("evaluator run command", () => {
+  it("parses explicit review commits for prepare and execute", () => {
+    expect(
+      parseCommandArgv(evaluatorPrepareSpec, ["T-1", "--commit", "HEAD"]).parsed,
+    ).toMatchObject({ taskId: "T-1", commit: "HEAD" });
+    expect(
+      parseCommandArgv(evaluatorExecuteSpec, ["T-1", "--commit", "HEAD"]).parsed,
+    ).toMatchObject({ taskId: "T-1", commit: "HEAD" });
+  });
+
   it("parses structured review evidence and findings as repeatable fields", () => {
     const { parsed } = parseCommandArgv(evaluatorRunSpec, [
       "T-1",
+      "--commit",
+      "HEAD",
       "--provenance",
       "human_supplied",
       "--verdict",
@@ -124,6 +135,7 @@ describe("evaluator run command", () => {
     expect(parsed).toMatchObject({
       taskId: "T-1",
       evaluator: "recovery-context",
+      commit: "HEAD",
       verdict: "pass",
       provenance: "human_supplied",
       summary: "Reviewed diff and verification evidence.",
@@ -304,6 +316,44 @@ describe("evaluator run command", () => {
 
     expect(metadataSha).not.toBe(implementationSha);
     expect(await readEvaluatedSha(root, taskId)).toBe(metadataSha);
+  });
+
+  it("normalizes an explicit evaluator commit and records both review subject fields", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202605240900-EV18";
+    await addTask(root, taskId);
+    const implementationSha = await commitPath(
+      root,
+      "src/explicit-review.txt",
+      "review target",
+      "feat: explicit review target",
+    );
+
+    await runEvaluatorRun(
+      { cwd: root, rootOverride: undefined },
+      {
+        taskId,
+        evaluator: "recovery-context",
+        commit: "HEAD",
+        provenance: "human_supplied",
+        verdict: "pass",
+        summary: "The explicit commit was reviewed.",
+        findings: ["The requested commit matches the current implementation target."],
+        evidenceRefs: ["src/explicit-review.txt"],
+        missingTests: [],
+        hiddenAssumptions: [],
+        residualRisks: [],
+        json: false,
+        record: true,
+      },
+    );
+
+    const stored = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(stored.frontmatter.quality_review).toMatchObject({
+      evaluated_sha: implementationSha,
+      evaluated_subject: { kind: "git_commit", value: implementationSha },
+    });
   });
 
   it("anchors a task-artifact-only work unit before unrelated workflow history", async () => {

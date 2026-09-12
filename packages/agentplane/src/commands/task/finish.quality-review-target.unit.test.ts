@@ -14,6 +14,7 @@ const mocks = vi.hoisted(() => ({
   readCommitInfo: vi.fn(),
   hasAcceptedVerificationRecord: vi.fn(),
   checkTaskBlueprintSnapshotDrift: vi.fn(),
+  buildOpsEvidenceBundle: vi.fn(),
 }));
 
 vi.mock("@agentplaneorg/core/git", async (importOriginal) => ({
@@ -45,6 +46,9 @@ vi.mock("../shared/task-verification-records.js", () => ({
 }));
 vi.mock("../blueprint/snapshot-artifact.js", () => ({
   checkTaskBlueprintSnapshotDrift: mocks.checkTaskBlueprintSnapshotDrift,
+}));
+vi.mock("../evidence/ops-evidence-subject.js", () => ({
+  buildOpsEvidenceBundle: mocks.buildOpsEvidenceBundle,
 }));
 
 function mkCtx(): CommandContext {
@@ -104,6 +108,45 @@ describe("finish quality review target selection", () => {
       path: ".agentplane/tasks/T-1/blueprint/resolved.json",
       previous: { digest: null },
       current: { digest: "d1" },
+    });
+    mocks.buildOpsEvidenceBundle.mockReset();
+  });
+
+  it("rebuilds evidence and fails closed for an unbound legacy ops review without commit metadata", async () => {
+    const loaded = mkLoadedTask();
+    loaded.task.quality_review = {
+      ...loaded.task.quality_review!,
+      evaluated_sha: null,
+    };
+    const expectedSubject = {
+      kind: "evidence_bundle" as const,
+      value: `sha256:${"a".repeat(64)}`,
+    };
+    mocks.buildOpsEvidenceBundle.mockResolvedValue({ subject: expectedSubject });
+    mocks.checkTaskBlueprintSnapshotDrift.mockResolvedValue({
+      state: "current",
+      path: ".agentplane/tasks/T-1/blueprint/resolved.json",
+      previous: { digest: null },
+      current: { blueprintId: "ops.approval", digest: "d1" },
+    });
+    const { assertQualityReviewBeforeFinish } = await import("./finish-blueprint-evidence.js");
+    const ctx = mkCtx();
+
+    await expect(
+      assertQualityReviewBeforeFinish({
+        ctx,
+        loadedTasks: [loaded],
+        taskCommitInfo: null,
+        implementationCommitInfo: null,
+        execution: mkExecution(),
+      }),
+    ).rejects.toThrow(
+      /quality_review\.evaluated_subject=missing.*expected_subject=evidence_bundle:/s,
+    );
+    expect(mocks.buildOpsEvidenceBundle).toHaveBeenCalledWith({
+      ctx,
+      task: loaded.task,
+      blueprintDigest: "d1",
     });
   });
 
