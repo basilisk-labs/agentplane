@@ -6,7 +6,7 @@ Created: 2026-09-12T14:45:48.622Z
 
 - Task: `202609121443-YAQJB7`
 - Title: Fix task-centric scope extension targeting when multiple WorkItems are schedulable
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609121443-YAQJB7/fix-task-centric-scope-extension-targeting-when`
 - Canonical task record: `.agentplane/tasks/202609121443-YAQJB7/README.md`
 
