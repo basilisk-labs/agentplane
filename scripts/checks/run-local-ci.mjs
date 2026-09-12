@@ -50,7 +50,8 @@ const testEnv = {
   GIT_COMMITTER_EMAIL: "agentplane-ci@example.com",
 };
 const VITEST_TIMEOUT_MS = "60000";
-const DEFAULT_LOCAL_VITEST_SUITE_TIMEOUT_MS = 15 * 60 * 1000;
+// A healthy core Vitest suite can exceed 20 minutes; operators can still override this bound.
+const DEFAULT_LOCAL_VITEST_SUITE_TIMEOUT_MS = 30 * 60 * 1000;
 const LOCAL_VITEST_SUITE_TIMEOUT_MS = parsePositiveIntegerEnv(
   baseEnv.AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS,
   DEFAULT_LOCAL_VITEST_SUITE_TIMEOUT_MS,

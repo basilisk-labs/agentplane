@@ -169,6 +169,7 @@ export function extendBlockedTaskExecutionContract(opts: {
     task: opts.task,
     requestedMode: opts.task.execution_route?.requested_mode,
     declaration,
+    declarationSource: current.source,
   });
   return reconcileTaskExecutionContract({
     contract: fresh,

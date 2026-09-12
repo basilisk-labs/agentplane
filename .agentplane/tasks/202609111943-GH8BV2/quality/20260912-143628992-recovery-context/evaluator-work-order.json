@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609111943-GH8BV2-69cd746ccfceb41d4724e5e2",
+  "prepared_at": "2026-09-12T14:36:28.992Z",
+  "task": {
+    "id": "202609111943-GH8BV2",
+    "revision": 21,
+    "objective": "Allow an approved repository-effect-only scope extension to recover a legacy execution contract with empty scope roots without widening repository paths\n\nReproduce the blocked recovery from task 202609111417-V1737V: the supervisor emits an exact scope extension containing repository_effects=[tests] and scope_roots=[], but task scope extend fails with 'Execution declaration with repository effects requires scope_roots.' Preserve exact request matching and fail-closed authority. Implement the smallest safe legacy-compatibility path and regression coverage, then use it to resume the blocked task.",
+    "acceptance_criteria": [
+      "bun run typecheck",
+      "bunx --no-install vitest run packages/agentplane/src/commands/task/scope-extend.test.ts --maxWorkers=1",
+      "- In scope: Reproduce the blocked recovery from task 202609111417-V1737V: the supervisor emits an exact scope extension containing repository_effects=[tests] and scope_roots=[], but task scope extend fails with 'Execution declaration with repository effects requires scope_roots.' Preserve exact request matching and fail-closed authority. Implement the smallest safe legacy-compatibility path and regression coverage, then use it to resume the blocked task.\n- Out of scope: unrelated refactors not required for \"Allow an approved repository-effect-only scope extension to recover a legacy execution contract with empty scope roots without widening repository paths\".",
+      "Plan one narrow legacy-compatible path for exact effect-only scope extensions.",
+      "1. Run `bunx --no-install vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts --maxWorkers=1`. Expected: all focused legacy scope-extension and explicit-declaration regressions pass.\n2. Run `bun run typecheck`. Expected: TypeScript build check passes.\n3. Run `git diff --check`. Expected: no whitespace errors."
+    ]
+  },
+  "evaluated_sha": "3e9fde47b020cbe33a5e292390745b3e7f837bf7",
+  "diff_base_sha": "50b1810dda648be0c0762b47e885c6ad0b2d42af",
+  "blueprint_digest": "700ec36b764920edfb4de80d78f0e7febb1e428f41224499814bc4e07118648e",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609111943-GH8BV2/quality/20260912-143628992-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:e96ca7657ebd1a1df09958a07bfa23b1d04da45879c3d19d0e6b77087ab70b4c",
+    "prompt_path": ".agentplane/tasks/202609111943-GH8BV2/quality/objects/sha256/bfc5b4151764f2021bae82c198bbfd23e5cb927fe1763e9d7c5ab9e91d86c71c.md",
+    "result_schema_path": ".agentplane/tasks/202609111943-GH8BV2/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609111943-GH8BV2/README.md",
+      "sha256": "sha256:b7764b0d40e2ae3ad693d0af78876f951bfaefcfde7bbc8c43ed87ece8766755",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609111943-GH8BV2/quality/objects/sha256/fa42e1242ae71bd1531ce67842d626e6e9f6e69b2749568631ec008d3237dbb8.patch",
+      "sha256": "sha256:fa42e1242ae71bd1531ce67842d626e6e9f6e69b2749568631ec008d3237dbb8",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609111943-GH8BV2/quality/objects/sha256/dfec286ed2a4ab23693d5f652059a81081b0babd0ddf58b52c999e3ef8f5d717.json",
+      "sha256": "sha256:dfec286ed2a4ab23693d5f652059a81081b0babd0ddf58b52c999e3ef8f5d717",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609111943-GH8BV2/verification/20260912143620257-e5aba31d725cf653.json",
+      "sha256": "sha256:34bf5a94e731f1bfa55fd98d97160f3a400949da87886678bcb72835d77d66af",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609111943-GH8BV2/quality/objects/sha256/d61ca3983bc04d1f9320b5d8b330a545095cdb526f3ed99b5962d55e514122fd.json",
+      "sha256": "sha256:d61ca3983bc04d1f9320b5d8b330a545095cdb526f3ed99b5962d55e514122fd",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

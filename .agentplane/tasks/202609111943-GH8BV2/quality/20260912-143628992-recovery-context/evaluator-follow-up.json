@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202609111943-GH8BV2-69cd746ccfceb41d4724e5e2",
+  "task_id": "202609111943-GH8BV2",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "The legacy-only scope-extension fix is sound, but the approved CI timeout rework is incomplete.",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "summary": "The evaluated diff still sets DEFAULT_LOCAL_VITEST_SUITE_TIMEOUT_MS to 20 * 60 * 1000 and asserts 20 minutes in release-ci-contract.test.ts. The current user-approved rework requires 30 minutes after repeated clean core-suite terminations at the exact 20-minute boundary. Update only those two values to 30 minutes and rerun the scoped verification.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609111943-GH8BV2/quality/objects/sha256/fa42e1242ae71bd1531ce67842d626e6e9f6e69b2749568631ec008d3237dbb8.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "summary": "Residual risk: A single clean run under the 20-minute default does not remove the previously reproduced boundary timeout variability.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609111943-GH8BV2/quality/objects/sha256/fa42e1242ae71bd1531ce67842d626e6e9f6e69b2749568631ec008d3237dbb8.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202609111943-GH8BV2/quality/20260912-143628992-recovery-context/evaluator-result.json"
+}

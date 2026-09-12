@@ -121,7 +121,7 @@ describe("release CI contract", () => {
     const localCiGroup = await readRootText("scripts/checks/run-local-ci-group.mjs");
 
     expect(localCi).toContain("AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS");
-    expect(localCi).toContain("DEFAULT_LOCAL_VITEST_SUITE_TIMEOUT_MS = 15 * 60 * 1000");
+    expect(localCi).toContain("DEFAULT_LOCAL_VITEST_SUITE_TIMEOUT_MS = 30 * 60 * 1000");
     expect(localCi).toContain("timeout: options.timeoutMs");
     expect(localCi).toContain('timeoutLabel: "Vitest suite"');
     expect(localCi).toContain('args: ["scripts/checks/run-local-ci-group.mjs", id]');

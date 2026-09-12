@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The resolver preserves empty scope roots only for a contract explicitly marked legacy_compatibility, while an ordinary explicit declaration with repository effects and empty roots remains fail-closed. The scope-extension path reuses the stored contract source, and the CI default plus its contract assertion are consistently set to 30 minutes.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609111943-GH8BV2/quality/objects/sha256/eaa47eaafe2c741c78e8a1d50a660ebe3c7eb5ee17cc772eef870ecd2ec1bbc2.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
