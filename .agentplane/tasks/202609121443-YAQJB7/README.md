@@ -1,10 +1,10 @@
 ---
 id: "202609121443-YAQJB7"
 title: "Fix task-centric scope extension targeting when multiple WorkItems are schedulable"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -24,9 +24,9 @@ plan_approval:
   note: "host_user_decision=sha256:55f5cba3c72ca16b64309d068780679361851b80e3bef16f957fe1d4ae31e7eb"
 verification:
   state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  updated_at: "2026-09-12T14:46:49.533Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 0
 execution_route:
   frozen: true
@@ -62,6 +62,7 @@ execution_contract:
     writable_roots:
       - "packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
       - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
+      - "packages/agentplane/src/commands/task/external-agent-blocked-result.ts"
       - "packages/agentplane/src/commands/task/scope-extend.test.ts"
   declaration:
     external_effects: []
@@ -70,6 +71,7 @@ execution_contract:
     rationale:
       - "Repository policy requires branch_pr integration evidence."
       - "The change is a narrow fail-closed correction to existing scope-extension state and regression coverage."
+      - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/commands/task/external-agent-blocked-result.ts"
     repository_effects:
       - "repository_write"
       - "source_code"
@@ -80,6 +82,7 @@ execution_contract:
     scope_roots:
       - "packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
       - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
+      - "packages/agentplane/src/commands/task/external-agent-blocked-result.ts"
       - "packages/agentplane/src/commands/task/scope-extend.test.ts"
   observed:
     authority_violations: []
@@ -105,6 +108,7 @@ execution_contract:
         components:
           - "packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
           - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
+          - "packages/agentplane/src/commands/task/external-agent-blocked-result.ts"
           - "packages/agentplane/src/commands/task/scope-extend.test.ts"
         evidence_requirements:
           - "hosted_integration"
@@ -121,7 +125,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:489a83860cd1be9d497ca3d448d07c76c844653e36b6dfdaba3fad617f50c343"
+      digest: "sha256:3d40761f00e7dd476f22e43be85afe508c7e25b239711f22b8380b43dc7e391d"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
@@ -174,6 +178,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The exact fix requires the blocker-recording caller to persist the issued WorkItem identity. Recommended action: Approve the narrow source root and reissue the same WorkItem. Requested scope: roots=packages/agentplane/src/commands/task/external-agent-blocked-result.ts; repository effects=unchanged; request digest=sha256:e7e5140dd9db179d8711b0a8b9fb1abad02596a5a967370bd43e914120036a79. Agentplane receipt: external-agent-blocker/tr_c69efe2e1f71998c0b447317040a479e/sha256:ffb4a2c90627671de05689115a1f8bcfcc90f14b756db6b552fcd39a933687d1/sha256:e7e5140dd9db179d8711b0a8b9fb1abad02596a5a967370bd43e914120036a79."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/task/external-agent-blocked-result.ts; repository effects: unchanged."
 events:
   -
     type: "status"
@@ -238,6 +245,8 @@ extensions:
     status: "active"
     task_id: "202609121443-YAQJB7"
   agentplane.scope_extension_request:
+    applied_at: "2026-09-12T14:46:49.533Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:ffb4a2c90627671de05689115a1f8bcfcc90f14b756db6b552fcd39a933687d1"
     kind: "task_scope_extension_request"
     request:
@@ -248,19 +257,19 @@ extensions:
         - "packages/agentplane/src/commands/task/external-agent-blocked-result.ts"
     request_digest: "sha256:e7e5140dd9db179d8711b0a8b9fb1abad02596a5a967370bd43e914120036a79"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_c69efe2e1f71998c0b447317040a479e"
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-12T14:45:43.064Z"
-        approved_by: "HOST:codex-local:USER"
-        approved_digest: "sha256:902469a2081b619f7f5bd68820784cc0e5763da2e73ceb216ed9560fa7d81ac3"
+        approved_at: "2026-09-12T14:46:49.533Z"
+        approved_by: "USER"
+        approved_digest: "sha256:8c2291aaa937649da54608045290d479e5db886c8169d8d4ba533a72ec6c40ef"
         policy_facts:
-          - "host_user_decision"
+          - "state_bound_scope_extension:sha256:e7e5140dd9db179d8711b0a8b9fb1abad02596a5a967370bd43e914120036a79"
         state: "approved"
-      created_at: "2026-09-12T14:44:48.685Z"
-      digest: "sha256:902469a2081b619f7f5bd68820784cc0e5763da2e73ceb216ed9560fa7d81ac3"
+      created_at: "2026-09-12T14:46:49.533Z"
+      digest: "sha256:8c2291aaa937649da54608045290d479e5db886c8169d8d4ba533a72ec6c40ef"
       proposal:
         assumptions: []
         planning_baseline:
@@ -509,11 +518,16 @@ extensions:
                   kind: "path"
                   mode: "write"
                   resource: "packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/commands/task/external-agent-blocked-result.ts"
               risk: "medium"
               scope_roots:
-                - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
-                - "packages/agentplane/src/commands/task/scope-extend.test.ts"
                 - "packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+                - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
+                - "packages/agentplane/src/commands/task/external-agent-blocked-result.ts"
+                - "packages/agentplane/src/commands/task/scope-extend.test.ts"
               validation:
                 checks:
                   -
@@ -546,10 +560,10 @@ extensions:
                     required: true
                 evidence_fingerprint: "sha256:b7f5ab7637d35903349a44d115b0218299b4eecf707e150564235857e5ad5e6f"
                 schema_version: 1
-      revision: 1
+      revision: 2
       schema_version: 1
       task_id: "202609121443-YAQJB7"
-    event_cursor: 5
+    event_cursor: 6
     final_validation: null
     id: "202609121443-YAQJB7"
     intent:
@@ -571,10 +585,308 @@ extensions:
 
         When a blocked external semantic result requests a repository scope extension, persist and use the blocked WorkItem identity so the exact USER-approved extension updates that WorkItem even when other independent WorkItems are schedulable. Preserve fail-closed state binding and add regression coverage. This is required to unblock task 202609121423-9WPTCW.
       task_id: "202609121443-YAQJB7"
-    lifecycle: "BLOCKED"
+    lifecycle: "ACTIVE"
     plan_amendments: []
-    plan_history: []
-    revision: 7
+    plan_history:
+      -
+        approval:
+          approved_at: "2026-09-12T14:45:43.064Z"
+          approved_by: "HOST:codex-local:USER"
+          approved_digest: "sha256:902469a2081b619f7f5bd68820784cc0e5763da2e73ceb216ed9560fa7d81ac3"
+          policy_facts:
+            - "host_user_decision"
+          state: "approved"
+        created_at: "2026-09-12T14:44:48.685Z"
+        digest: "sha256:902469a2081b619f7f5bd68820784cc0e5763da2e73ceb216ed9560fa7d81ac3"
+        proposal:
+          assumptions: []
+          planning_baseline:
+            captured_at: "2026-09-12T14:44:01.387Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:b7f5ab7637d35903349a44d115b0218299b4eecf707e150564235857e5ad5e6f"
+            dirty_paths:
+              - ".agentplane/tasks/202609072121-9VEHKH/README.md"
+              - ".agentplane/tasks/202609080727-BAWTEE/README.md"
+              - ".agentplane/tasks/202609121424-3YAX44/README.md"
+              - ".agentplane/tasks/202609121424-49XXT3/README.md"
+              - ".agentplane/tasks/202609121424-4BC7B3/README.md"
+              - ".agentplane/tasks/202609121424-T83XJA/README.md"
+              - ".agentplane/tasks/202609121424-ZEJ656/README.md"
+              - ".agentplane/tasks/202609121443-YAQJB7/README.md"
+              - "agentplane-roadmap-r2/AGENT-START.md"
+              - "agentplane-roadmap-r2/EXECUTION-CHARTER.md"
+              - "agentplane-roadmap-r2/README.md"
+              - "agentplane-roadmap-r2/agentplane-0.7.9-0.7.14-roadmap-r2.md"
+              - "agentplane-roadmap-r2/checksums.json"
+              - "agentplane-roadmap-r2/coverage-and-gap-audit.md"
+              - "agentplane-roadmap-r2/coverage-map.json"
+              - "agentplane-roadmap-r2/dependency-graph.json"
+              - "agentplane-roadmap-r2/experiment-requirements.json"
+              - "agentplane-roadmap-r2/releases/0.7.10.md"
+              - "agentplane-roadmap-r2/releases/0.7.11.md"
+              - "agentplane-roadmap-r2/releases/0.7.12.md"
+              - "agentplane-roadmap-r2/releases/0.7.13.md"
+              - "agentplane-roadmap-r2/releases/0.7.14.md"
+              - "agentplane-roadmap-r2/releases/0.7.9.md"
+              - "agentplane-roadmap-r2/source-evidence.json"
+              - "agentplane-roadmap-r2/tasks.json"
+              - "agentplane-roadmap-r2/tasks/BP-01.md"
+              - "agentplane-roadmap-r2/tasks/BP-02.md"
+              - "agentplane-roadmap-r2/tasks/BP-03.md"
+              - "agentplane-roadmap-r2/tasks/BP-04.md"
+              - "agentplane-roadmap-r2/tasks/BP-05.md"
+              - "agentplane-roadmap-r2/tasks/BP-06.md"
+              - "agentplane-roadmap-r2/tasks/BP-07.md"
+              - "agentplane-roadmap-r2/tasks/BP-08.md"
+              - "agentplane-roadmap-r2/tasks/BP-09.md"
+              - "agentplane-roadmap-r2/tasks/BP-10.md"
+              - "agentplane-roadmap-r2/tasks/BP-11.md"
+              - "agentplane-roadmap-r2/tasks/BP-12.md"
+              - "agentplane-roadmap-r2/tasks/BP-13.md"
+              - "agentplane-roadmap-r2/tasks/BP-14.md"
+              - "agentplane-roadmap-r2/tasks/BP-15.md"
+              - "agentplane-roadmap-r2/tasks/BP-16.md"
+              - "agentplane-roadmap-r2/tasks/BP-17.md"
+              - "agentplane-roadmap-r2/tasks/BP-18.md"
+              - "agentplane-roadmap-r2/tasks/BP-19.md"
+              - "agentplane-roadmap-r2/tasks/BP-20.md"
+              - "agentplane-roadmap-r2/tasks/BP-21.md"
+              - "agentplane-roadmap-r2/tasks/BP-22.md"
+              - "agentplane-roadmap-r2/tasks/BP-23.md"
+              - "agentplane-roadmap-r2/tasks/BP-24.md"
+              - "agentplane-roadmap-r2/tasks/BP-25.md"
+              - "agentplane-roadmap-r2/tasks/BP-26.md"
+              - "agentplane-roadmap-r2/tasks/BP-27.md"
+              - "agentplane-roadmap-r2/tasks/BP-28.md"
+              - "agentplane-roadmap-r2/tasks/BP-29.md"
+              - "agentplane-roadmap-r2/tasks/BP-30.md"
+              - "agentplane-roadmap-r2/tasks/BP-31.md"
+              - "agentplane-roadmap-r2/tasks/EV-01.md"
+              - "agentplane-roadmap-r2/tasks/EV-02.md"
+              - "agentplane-roadmap-r2/tasks/EV-03.md"
+              - "agentplane-roadmap-r2/tasks/EV-04.md"
+              - "agentplane-roadmap-r2/tasks/EV-05.md"
+              - "agentplane-roadmap-r2/tasks/EV-06.md"
+              - "agentplane-roadmap-r2/tasks/EV-07.md"
+              - "agentplane-roadmap-r2/tasks/EV-08.md"
+              - "agentplane-roadmap-r2/tasks/EV-09.md"
+              - "agentplane-roadmap-r2/tasks/EV-10.md"
+              - "agentplane-roadmap-r2/tasks/EV-11.md"
+              - "agentplane-roadmap-r2/tasks/EV-12.md"
+              - "agentplane-roadmap-r2/tasks/EV-13.md"
+              - "agentplane-roadmap-r2/tasks/LC-01.md"
+              - "agentplane-roadmap-r2/tasks/LC-02.md"
+              - "agentplane-roadmap-r2/tasks/LC-03.md"
+              - "agentplane-roadmap-r2/tasks/LC-04.md"
+              - "agentplane-roadmap-r2/tasks/LC-05.md"
+              - "agentplane-roadmap-r2/tasks/LC-06.md"
+              - "agentplane-roadmap-r2/tasks/LC-07.md"
+              - "agentplane-roadmap-r2/tasks/LC-08.md"
+              - "agentplane-roadmap-r2/tasks/LC-09.md"
+              - "agentplane-roadmap-r2/tasks/LC-10.md"
+              - "agentplane-roadmap-r2/tasks/LC-11.md"
+              - "agentplane-roadmap-r2/tasks/LC-12.md"
+              - "agentplane-roadmap-r2/tasks/LC-13.md"
+              - "agentplane-roadmap-r2/tasks/LC-14.md"
+              - "agentplane-roadmap-r2/tasks/LC-15.md"
+              - "agentplane-roadmap-r2/tasks/LC-16.md"
+              - "agentplane-roadmap-r2/tasks/LC-17.md"
+              - "agentplane-roadmap-r2/tasks/LC-18.md"
+              - "agentplane-roadmap-r2/tasks/LC-19.md"
+              - "agentplane-roadmap-r2/tasks/LC-20.md"
+              - "agentplane-roadmap-r2/tasks/LC-21.md"
+              - "agentplane-roadmap-r2/tasks/LC-22.md"
+              - "agentplane-roadmap-r2/tasks/LC-23.md"
+              - "agentplane-roadmap-r2/tasks/PL-01.md"
+              - "agentplane-roadmap-r2/tasks/PL-02.md"
+              - "agentplane-roadmap-r2/tasks/PL-03.md"
+              - "agentplane-roadmap-r2/tasks/PL-04.md"
+              - "agentplane-roadmap-r2/tasks/PL-05.md"
+              - "agentplane-roadmap-r2/tasks/PL-06.md"
+              - "agentplane-roadmap-r2/tasks/PL-07.md"
+              - "agentplane-roadmap-r2/tasks/PL-08.md"
+              - "agentplane-roadmap-r2/tasks/PL-09.md"
+              - "agentplane-roadmap-r2/tasks/PL-10.md"
+              - "agentplane-roadmap-r2/tasks/PL-11.md"
+              - "agentplane-roadmap-r2/tasks/PL-12.md"
+              - "agentplane-roadmap-r2/tasks/RC-01.md"
+              - "agentplane-roadmap-r2/tasks/RC-02.md"
+              - "agentplane-roadmap-r2/tasks/RC-03.md"
+              - "agentplane-roadmap-r2/tasks/RC-04.md"
+              - "agentplane-roadmap-r2/tasks/RC-05.md"
+              - "agentplane-roadmap-r2/tasks/RC-06.md"
+              - "agentplane-roadmap-r2/tasks/RC-07.md"
+              - "agentplane-roadmap-r2/tasks/RC-08.md"
+              - "agentplane-roadmap-r2/tasks/RC-09.md"
+              - "agentplane-roadmap-r2/tasks/RC-10.md"
+              - "agentplane-roadmap-r2/tasks/RC-11.md"
+              - "agentplane-roadmap-r2/tasks/RC-12.md"
+              - "agentplane-roadmap-r2/tasks/RC-13.md"
+              - "agentplane-roadmap-r2/tasks/RC-14.md"
+              - "agentplane-roadmap-r2/tasks/RC-15.md"
+              - "agentplane-roadmap-r2/tasks/RC-16.md"
+              - "agentplane-roadmap-r2/tasks/RC-17.md"
+              - "agentplane-roadmap-r2/tasks/RC-18.md"
+              - "agentplane-roadmap-r2/tasks/ST-01.md"
+              - "agentplane-roadmap-r2/tasks/ST-02.md"
+              - "agentplane-roadmap-r2/tasks/ST-03.md"
+              - "agentplane-roadmap-r2/tasks/ST-04.md"
+              - "agentplane-roadmap-r2/tasks/ST-05.md"
+              - "agentplane-roadmap-r2/tasks/ST-06.md"
+              - "agentplane-roadmap-r2/tasks/ST-07.md"
+              - "agentplane-roadmap-r2/tasks/ST-08.md"
+              - "agentplane-roadmap-r2/tasks/ST-09.md"
+              - "agentplane-roadmap-r2/tasks/ST-10.md"
+              - "agentplane-roadmap-r2/tasks/ST-11.md"
+              - "agentplane-roadmap-r2/tasks/ST-12.md"
+              - "agentplane-roadmap-r2/tasks/ST-13.md"
+              - "agentplane-roadmap-r2/tasks/ST-14.md"
+              - "agentplane-roadmap-r2/tasks/ST-15.md"
+              - "agentplane-roadmap-r2/tasks/ST-16.md"
+              - "agentplane-roadmap-r2/tasks/ST-17.md"
+              - "agentplane-roadmap-r2/tasks/ST-18.md"
+              - "agentplane-roadmap-r2/tasks/ST-19.md"
+              - "agentplane-roadmap-r2/tasks/ST-20.md"
+              - "agentplane-roadmap-r2/tasks/ST-21.md"
+              - "agentplane-roadmap-r2/validate_roadmap.py"
+              - "agentplane-roadmap-r2/validation-report.json"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "f3c1991ddd92943775b6b4b4688009afc3d523bc"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:1"
+          schema_version: 1
+          task_id: "202609121443-YAQJB7"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+                id: "check-focused"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "bun run typecheck"
+                id: "check-typecheck"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+            criteria:
+              -
+                check_ids:
+                  - "check-focused"
+                description: "A blocked WorkItem scope extension updates that exact WorkItem when independent WorkItems are also schedulable, while stale or mismatched authority still fails closed."
+                id: "c-target"
+                required: true
+              -
+                check_ids:
+                  - "check-focused"
+                  - "check-typecheck"
+                description: "The focused scope-extension suites and repository typecheck pass without weakening existing negative cases."
+                id: "c-regression"
+                required: true
+            evidence_fingerprint: "sha256:b7f5ab7637d35903349a44d115b0218299b4eecf707e150564235857e5ad5e6f"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "check-focused"
+                    description: "A blocked WorkItem scope extension updates that exact WorkItem when independent WorkItems are also schedulable, while stale or mismatched authority still fails closed."
+                    id: "c-target"
+                    required: true
+                  -
+                    check_ids:
+                      - "check-focused"
+                      - "check-typecheck"
+                    description: "The focused scope-extension suites and repository typecheck pass without weakening existing negative cases."
+                    id: "c-regression"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 220000
+                  optional_sources:
+                    - "packages/core/src/tasks/task-centric"
+                  required_sources:
+                    - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
+                    - "packages/agentplane/src/commands/task/scope-extend.test.ts"
+                    - "packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+                  symbol_hints:
+                    - "TaskScopeExtensionRequestState"
+                    - "extendTaskCentricWorkItemScope"
+                    - "applyApprovedTaskScopeExtension"
+                depends_on: []
+                expected_outputs:
+                  - "targeted-scope-extension"
+                id: "WI-01"
+                objective: "Bind an approved task-centric scope extension to the blocked WorkItem and cover parallel-ready scheduling."
+                optional: false
+                priority: 100
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/scope-extend.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+                risk: "medium"
+                scope_roots:
+                  - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
+                  - "packages/agentplane/src/commands/task/scope-extend.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+                      id: "check-focused"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                    -
+                      capability: "task.verify"
+                      command: "bun run typecheck"
+                      id: "check-typecheck"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                  criteria:
+                    -
+                      check_ids:
+                        - "check-focused"
+                      description: "A blocked WorkItem scope extension updates that exact WorkItem when independent WorkItems are also schedulable, while stale or mismatched authority still fails closed."
+                      id: "c-target"
+                      required: true
+                    -
+                      check_ids:
+                        - "check-focused"
+                        - "check-typecheck"
+                      description: "The focused scope-extension suites and repository typecheck pass without weakening existing negative cases."
+                      id: "c-regression"
+                      required: true
+                  evidence_fingerprint: "sha256:b7f5ab7637d35903349a44d115b0218299b4eecf707e150564235857e5ad5e6f"
+                  schema_version: 1
+        revision: 1
+        schema_version: 1
+        task_id: "202609121443-YAQJB7"
+    revision: 8
     schema_version: 1
     updated_at: "2026-09-12T14:46:40.701Z"
     work_items:
@@ -710,6 +1022,30 @@ extensions:
         mutation_id: "compatibility:sha256:92998288de34cfa474650885c14381e609ecf17ec1225266b836ca23245a9b65"
         next_revision: 7
         previous_revision: 6
+        schema_version: 1
+        task_id: "202609121443-YAQJB7"
+      compatibility:sha256:af4e7bdc59f67f4becb4a60bc24df099f79dc631143c932089bc3c639f6b9d26:
+        aggregate_digest: "sha256:1a3e029bcc25ab3d3dc897d149b61383dd9f61b6329a814778cbeb0cbb404ada"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T14:46:40.701Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_99d94151795d56aa5e7bbf65"
+          mutation_id: "compatibility:sha256:af4e7bdc59f67f4becb4a60bc24df099f79dc631143c932089bc3c639f6b9d26"
+          plan_digest: "sha256:902469a2081b619f7f5bd68820784cc0e5763da2e73ceb216ed9560fa7d81ac3"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121443-YAQJB7"
+          task_revision: 7
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:af4e7bdc59f67f4becb4a60bc24df099f79dc631143c932089bc3c639f6b9d26"
+        next_revision: 8
+        previous_revision: 7
         schema_version: 1
         task_id: "202609121443-YAQJB7"
     pending_effects: []
