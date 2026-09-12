@@ -4,7 +4,7 @@ title: "Fix branch_pr dependency readiness after a dependency merges into the ca
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -181,7 +181,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "858f3fc349daab7c990e7fd4fe66b1f02ab19bab"
+  message: "🚧 MAT0V1 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -192,6 +194,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation commit identity updated to the exact external-result recovery subject."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 858f3fc349da. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -216,9 +221,17 @@ events:
     to: "DOING"
     note: "Implementation commit identity updated to the exact external-result recovery subject."
     commit: "fdb54b250502ad6f31f44376504f88c6b4896967"
+  -
+    type: "status"
+    at: "2026-09-12T20:11:05.123Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 858f3fc349da. CLI accepted one state-bound external-agent semantic result."
+    commit: "858f3fc349daab7c990e7fd4fe66b1f02ab19bab"
 doc_version: 3
-doc_updated_at: "2026-09-12T19:51:03.148Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-12T20:11:05.123Z"
+doc_updated_by: "SUPERVISOR"
 description: "Fix branch_pr dependency readiness after a dependency merges into the canonical base checkout. When an existing task worktree predates the dependency task artifact, resolve declared dependencies from the authoritative base backend without weakening incomplete or missing dependency checks. Add focused regression coverage proving a DONE dependency on current main unblocks the stale task worktree while incomplete and truly missing dependencies remain blocked."
 sections:
   Summary: |-
@@ -458,7 +471,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609121932-MAT0V1"
-    event_cursor: 9
+    event_cursor: 11
     final_validation: null
     id: "202609121932-MAT0V1"
     intent:
@@ -985,9 +998,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609121932-MAT0V1"
-    revision: 16
+    revision: 18
     schema_version: 1
-    updated_at: "2026-09-12T20:05:51.620Z"
+    updated_at: "2026-09-12T20:11:05.123Z"
     work_items:
       WI-01:
         attempt: 1
@@ -1306,6 +1319,54 @@ extensions:
         previous_revision: 11
         schema_version: 1
         task_id: "202609121932-MAT0V1"
+      compatibility:sha256:992e04614f7351818393be1d099713554d581a8539436fb4d9bbe3c557dbbd1b:
+        aggregate_digest: "sha256:80aefd06c6e7bca2e4f0cc88cedbbbfbedddff7bb39770f699f230d2c45c4d3e"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T20:11:05.123Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_692b7e6e3777845c349e899d"
+          mutation_id: "compatibility:sha256:992e04614f7351818393be1d099713554d581a8539436fb4d9bbe3c557dbbd1b"
+          plan_digest: "sha256:f6eee473a1d7c1663ce94f01e6a2efa4c7ba9d84e518d9ac78cac73de8eaddbc"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121932-MAT0V1"
+          task_revision: 17
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:992e04614f7351818393be1d099713554d581a8539436fb4d9bbe3c557dbbd1b"
+        next_revision: 18
+        previous_revision: 17
+        schema_version: 1
+        task_id: "202609121932-MAT0V1"
+      compatibility:sha256:a4e07cdef65664d72250317b0d927e62ed7c37973a1d820a791c822f1a409c09:
+        aggregate_digest: "sha256:a3cfc84546702d105652fd925b5cd96ad17d251d43475b568e0d2e11cf714d8d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T20:11:05.123Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_5155ef914b3a8b517456eba7"
+          mutation_id: "compatibility:sha256:a4e07cdef65664d72250317b0d927e62ed7c37973a1d820a791c822f1a409c09"
+          plan_digest: "sha256:f6eee473a1d7c1663ce94f01e6a2efa4c7ba9d84e518d9ac78cac73de8eaddbc"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121932-MAT0V1"
+          task_revision: 16
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:a4e07cdef65664d72250317b0d927e62ed7c37973a1d820a791c822f1a409c09"
+        next_revision: 17
+        previous_revision: 16
+        schema_version: 1
+        task_id: "202609121932-MAT0V1"
       compatibility:sha256:bea8f18feaa170f5ab1721fcd3e33d0754acefa2267df8069dbe266bbb7b838b:
         aggregate_digest: "sha256:72693d6821b897c53cfd73ac6bd795abb54247681cf5c17712ec6f5844c35f00"
         event:
@@ -1432,7 +1493,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "fdb54b250502ad6f31f44376504f88c6b4896967"
+    hash: "858f3fc349daab7c990e7fd4fe66b1f02ab19bab"
   task_execution_context:
     base_ref: "main"
     base_sha: "1f8b58d52ade59dd6185af72b00f70bb6194bdb0"
