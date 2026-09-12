@@ -19,7 +19,10 @@ import { atomicWriteFile } from "@agentplaneorg/core/fs";
 import { gitRevParse } from "@agentplaneorg/core/git";
 
 import type { TaskRouteDecision } from "./route-decision-types.js";
-import { continueSupervisorExecutionEpisodeAfterRenewableBudget } from "./supervisor-execution-budget-renewal.js";
+import {
+  continueSupervisorExecutionEpisodeAfterRenewableBudget,
+  recoverSupervisorExecutionEpisodeAfterResolvedTokenTelemetry,
+} from "./supervisor-execution-budget-renewal.js";
 import { readCodexProviderUsageForResult } from "../../runner/adapters/codex-result-transport.js";
 import {
   superviseWorkflowStep,
@@ -227,7 +230,9 @@ export async function preparePersistedSupervisorReplacementAfterFailure(opts: {
   state_fingerprint_digest: string;
   allow_agent_run_budget_extension?: boolean;
   budget_only?: boolean;
-}): Promise<"prepared" | "budget_extended" | "already_prepared" | "not_failed"> {
+}): Promise<
+  "prepared" | "budget_extended" | "telemetry_recovered" | "already_prepared" | "not_failed"
+> {
   const journalPath = await resolveSupervisorExecutionEpisodePath({
     git_root: opts.git_root,
     task_id: opts.task_id,
@@ -251,6 +256,16 @@ export async function preparePersistedSupervisorReplacementAfterFailure(opts: {
     }
     const latest = journal.operations.at(-1);
     const exhaustedDimensions = journal.stop?.exhausted_dimensions ?? [];
+    const telemetryRecovery = recoverSupervisorExecutionEpisodeAfterResolvedTokenTelemetry({
+      journal,
+      state_fingerprint_digest: opts.state_fingerprint_digest,
+    });
+    if (telemetryRecovery.digest !== journal.digest) {
+      if (await opened.store.compareAndSwap(journal.digest, telemetryRecovery)) {
+        return "telemetry_recovered";
+      }
+      continue;
+    }
     const renewableBudgetExhausted =
       journal.status === "stopped" &&
       journal.stop?.reason === "budget_exhausted" &&

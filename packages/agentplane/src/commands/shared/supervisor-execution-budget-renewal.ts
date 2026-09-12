@@ -63,3 +63,52 @@ export function continueSupervisorExecutionEpisodeAfterRenewableBudget(opts: {
     digest: digestSupervisorEpisodeValue(payload),
   });
 }
+
+export function recoverSupervisorExecutionEpisodeAfterResolvedTokenTelemetry(opts: {
+  journal: SupervisorExecutionEpisodeJournal;
+  state_fingerprint_digest: string;
+}): SupervisorExecutionEpisodeJournal {
+  const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
+  const last = journal.operations.at(-1);
+  const exhausted = journal.stop?.exhausted_dimensions ?? [];
+  const stillMissingAttributedTokenUsage = journal.operations.some(
+    (operation) =>
+      (operation.kind === "agent_episode" || operation.kind === "evaluator_episode") &&
+      operation.provider_usage !== undefined &&
+      (operation.usage?.input_tokens === undefined ||
+        operation.usage.output_tokens === undefined ||
+        operation.usage.total_tokens === undefined),
+  );
+  if (
+    journal.status !== "stopped" ||
+    journal.stop?.reason !== "budget_exhausted" ||
+    journal.cursor.phase !== "stopped" ||
+    last?.status !== "completed" ||
+    (journal.stop.operation_key !== null && journal.stop.operation_key !== last.operation_key) ||
+    exhausted.length === 0 ||
+    exhausted.some(
+      (dimension) =>
+        dimension !== "input_tokens_telemetry" &&
+        dimension !== "output_tokens_telemetry" &&
+        dimension !== "total_tokens_telemetry",
+    ) ||
+    stillMissingAttributedTokenUsage
+  ) {
+    return journal;
+  }
+  const now = new Date().toISOString();
+  const { digest: previousDigest, ...previous } = journal;
+  const payload = {
+    ...previous,
+    state_fingerprint_digest: opts.state_fingerprint_digest,
+    cursor: { episode: journal.cursor.episode, phase: "ready" as const, operation_key: null },
+    status: "running" as const,
+    stop: null,
+    updated_at: now,
+    previous_digest: previousDigest,
+  };
+  return validateSupervisorExecutionEpisodeJournal({
+    ...payload,
+    digest: digestSupervisorEpisodeValue(payload),
+  });
+}
