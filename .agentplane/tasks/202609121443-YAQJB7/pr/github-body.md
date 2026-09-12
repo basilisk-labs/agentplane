@@ -27,11 +27,11 @@ When a blocked external semantic result requests a repository scope extension, p
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...un-cli.core.task-advance.blocked-result.test.ts |  8 +++++++
- .../shared/task-scope-extension-request.ts         | 28 +++++++++++++++-------
- .../commands/task/external-agent-blocked-result.ts |  9 ++++++-
- .../src/commands/task/scope-extend.test.ts         |  4 ++--
- 4 files changed, 37 insertions(+), 12 deletions(-)
+ ...un-cli.core.task-advance.blocked-result.test.ts |  8 +++++
+ .../shared/task-scope-extension-request.ts         | 38 ++++++++++++++--------
+ .../commands/task/external-agent-blocked-result.ts |  9 ++++-
+ .../src/commands/task/scope-extend.test.ts         |  8 ++---
+ 4 files changed, 44 insertions(+), 19 deletions(-)
 ```
 
 </details>
