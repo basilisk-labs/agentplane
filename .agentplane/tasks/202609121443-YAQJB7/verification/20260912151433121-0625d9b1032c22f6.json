@@ -1,0 +1,123 @@
+{
+  "details": "Command: bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609121443-YAQJB7 declared verification\n\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609121443-YAQJB7 declared verification\n\nCommand: bun run ci:local:full\nResult: fail\nEvidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609121443-YAQJB7 declared verification",
+  "digest": "sha256:0625d9b1032c22f67f557f63cf6d0bbffea651e52ae7720214bd6351c3b5ee0c",
+  "implementation_sha": "67a64b2d1392b17338768d9b366e8b703c50d74e",
+  "input": {
+    "context": {
+      "digest": "sha256:20dddbaf4e87fde843f53aec54dc59500d42d14038f2306350a4a19fabf2a0aa",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:74c689e20c4ed913af716b0a23a4655bd5aa4a9c1949daa8a387a1db70f6934c",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:c50196088ca7aafd66dfc22a3c710c3f58567ad7ef420857cdba11114e4c427b",
+      "digest": "sha256:c03d99a3f2399bb6e60a3871325e5f503cc8114261fc0c5d6728ea5aa435a391",
+      "references": [
+        {
+          "digest": "sha256:8256f7fa0a2ad675af2696eba6d613b70428b0c02b4d3383d02caddb519b94c7",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:8256f7fa0a2ad675af2696eba6d613b70428b0c02b4d3383d02caddb519b94c7",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:8256f7fa0a2ad675af2696eba6d613b70428b0c02b4d3383d02caddb519b94c7",
+          "fragment": "check-3",
+          "path": ".agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-3",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "f3c1991ddd92943775b6b4b4688009afc3d523bc",
+      "digest": "sha256:fa34b6acd2802803922b7c9038c8d123ff1930b0e8cb8fffb9a1ddfdd8aecf55",
+      "primary_task_id": "202609121443-YAQJB7",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609121443-YAQJB7"
+      ]
+    },
+    "implementation": {
+      "base_sha": "f3c1991ddd92943775b6b4b4688009afc3d523bc",
+      "digest": "sha256:9c14ab30e1687db1676f16131997563aa5074bf4289aaae044379a74d0037cd3",
+      "strategy": "branch_diff",
+      "target_sha": "67a64b2d1392b17338768d9b366e8b703c50d74e"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:7e1db3273a80793eec67b476e07eb44142c0d2eebd9510dea1ae0ed846fb5faf",
+    "verify_steps_digest": "sha256:9e0102b8e88ceddae001bb0fae89f223b4caa65282d2649dfd58d77cede4d075"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check failed: bun run ci:local:full",
+  "recorded_at": "2026-09-12T15:14:33.121Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "1. Run `bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts`; require a nonzero passing count and coverage for multiple ready WorkItems targeting the exact blocked WorkItem.\n2. Run `bun run typecheck`; require success.\n3. Review the final diff and `git status --short --untracked-files=all`; require only approved implementation, test, and task artifacts.",
+  "scope_digest": "sha256:9e0102b8e88ceddae001bb0fae89f223b4caa65282d2649dfd58d77cede4d075",
+  "task_id": "202609121443-YAQJB7",
+  "verification_command": "agentplane verify 202609121443-YAQJB7 --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

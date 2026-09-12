@@ -4,7 +4,7 @@ title: "Fix task-centric scope extension targeting when multiple WorkItems are s
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -24,10 +24,10 @@ plan_approval:
   note: "host_user_decision=sha256:55f5cba3c72ca16b64309d068780679361851b80e3bef16f957fe1d4ae31e7eb"
 verification:
   state: "needs_rework"
-  updated_at: "2026-09-12T15:01:45.007Z"
+  updated_at: "2026-09-12T15:14:33.121Z"
   updated_by: "SUPERVISOR"
   note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 1
+  attempts: 2
 execution_route:
   frozen: true
   reason_codes:
@@ -204,9 +204,7 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:recorded-check-3"
       - "verification_recovery:verification-record"
-commit:
-  hash: "67a64b2d1392b17338768d9b366e8b703c50d74e"
-  message: "🚧 YAQJB7 task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -260,8 +258,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 67a64b2d1392. CLI accepted one state-bound external-agent semantic result."
     commit: "67a64b2d1392b17338768d9b366e8b703c50d74e"
+  -
+    type: "verify"
+    at: "2026-09-12T15:14:33.121Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-12T15:10:36.227Z"
+doc_updated_at: "2026-09-12T15:14:34.108Z"
 doc_updated_by: "SUPERVISOR"
 description: "When a blocked external semantic result requests a repository scope extension, persist and use the blocked WorkItem identity so the exact USER-approved extension updates that WorkItem even when other independent WorkItems are schedulable. Preserve fail-closed state binding and add regression coverage. This is required to unblock task 202609121423-9WPTCW."
 sections:
@@ -287,6 +291,51 @@ sections:
     Attempts: 1
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:9e0102b8e88ceddae001bb0fae89f223b4caa65282d2649dfd58d77cede4d075, input_digest=sha256:23ca525241df5980ba35d1cd627edc9703c7d56278d842cc0773b0529d9ef380
+
+    Details:
+
+    Command: bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121443-YAQJB7 declared verification
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121443-YAQJB7 declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609121443-YAQJB7 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121443-YAQJB7-fix-task-centric-scope-extension-targeting-when/.agentplane/tasks/202609121443-YAQJB7/blueprint/resolved-snapshot.json
+    - old_digest: 9947e66ef95512fbd2abaf3c8f4405374ddd604288b7360683f50e1f44e4f454
+    - current_digest: 9947e66ef95512fbd2abaf3c8f4405374ddd604288b7360683f50e1f44e4f454
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609121443-YAQJB7
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609121443-YAQJB7
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-12T15:14:33.121Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 2
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:9e0102b8e88ceddae001bb0fae89f223b4caa65282d2649dfd58d77cede4d075, input_digest=sha256:74c689e20c4ed913af716b0a23a4655bd5aa4a9c1949daa8a387a1db70f6934c
 
     Details:
 
@@ -672,7 +721,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609121443-YAQJB7"
-    event_cursor: 11
+    event_cursor: 12
     final_validation: null
     id: "202609121443-YAQJB7"
     intent:
@@ -995,9 +1044,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121443-YAQJB7"
-    revision: 14
+    revision: 15
     schema_version: 1
-    updated_at: "2026-09-12T15:10:36.227Z"
+    updated_at: "2026-09-12T15:14:34.107Z"
     work_items:
       WI-01:
         attempt: 1
@@ -1334,6 +1383,30 @@ extensions:
         previous_revision: 13
         schema_version: 1
         task_id: "202609121443-YAQJB7"
+      compatibility:sha256:f2bce3aba345ed7ef216ce3106036cae86db3d4ec9fe8d9669ea26b3f3722f19:
+        aggregate_digest: "sha256:2e5a356519caaed1548ff4cbf29e4f3d5b08ee51287cd95410ee3a747e79e1bd"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T15:14:34.107Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_d091956b4d9e4c964740d484"
+          mutation_id: "compatibility:sha256:f2bce3aba345ed7ef216ce3106036cae86db3d4ec9fe8d9669ea26b3f3722f19"
+          plan_digest: "sha256:8c2291aaa937649da54608045290d479e5db886c8169d8d4ba533a72ec6c40ef"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121443-YAQJB7"
+          task_revision: 14
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:f2bce3aba345ed7ef216ce3106036cae86db3d4ec9fe8d9669ea26b3f3722f19"
+        next_revision: 15
+        previous_revision: 14
+        schema_version: 1
+        task_id: "202609121443-YAQJB7"
       external-result:work-order-202609121443-YAQJB7-executor-ba5614c8f5460d3f744ae409:
         aggregate_digest: "sha256:1359848b647126c0e2c106f831ab4bdfdc3509505d65d0132b29274cc5679c72"
         event:
@@ -1361,8 +1434,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "67a64b2d1392b17338768d9b366e8b703c50d74e"
   task_execution_context:
     base_ref: "main"
     base_sha: "f3c1991ddd92943775b6b4b4688009afc3d523bc"
@@ -1406,6 +1477,51 @@ Note: Rework: Declared check failed: bun run ci:local:full
 Attempts: 1
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:9e0102b8e88ceddae001bb0fae89f223b4caa65282d2649dfd58d77cede4d075, input_digest=sha256:23ca525241df5980ba35d1cd627edc9703c7d56278d842cc0773b0529d9ef380
+
+Details:
+
+Command: bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121443-YAQJB7 declared verification
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121443-YAQJB7 declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609121443-YAQJB7 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121443-YAQJB7-fix-task-centric-scope-extension-targeting-when/.agentplane/tasks/202609121443-YAQJB7/blueprint/resolved-snapshot.json
+- old_digest: 9947e66ef95512fbd2abaf3c8f4405374ddd604288b7360683f50e1f44e4f454
+- current_digest: 9947e66ef95512fbd2abaf3c8f4405374ddd604288b7360683f50e1f44e4f454
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609121443-YAQJB7
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609121443-YAQJB7
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-12T15:14:33.121Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 2
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:9e0102b8e88ceddae001bb0fae89f223b4caa65282d2649dfd58d77cede4d075, input_digest=sha256:74c689e20c4ed913af716b0a23a4655bd5aa4a9c1949daa8a387a1db70f6934c
 
 Details:
 
