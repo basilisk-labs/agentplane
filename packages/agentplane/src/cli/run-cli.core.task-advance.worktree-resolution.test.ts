@@ -647,16 +647,13 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
       });
       const reconciliation = await recoverWorkPlanningBase({ ctx, taskId, apply: false });
       expect(reconciliation.status).toBe("ready_to_reconcile");
-      expect(
-        (
-          await recoverWorkPlanningBase({
-            ctx,
-            taskId,
-            apply: true,
-            expectedToken: reconciliation.token,
-          })
-        ).status,
-      ).toBe("applied");
+      const appliedReconciliation = await recoverWorkPlanningBase({
+        ctx,
+        taskId,
+        apply: true,
+        expectedToken: reconciliation.token,
+      });
+      expect(appliedReconciliation.status).toBe("applied");
       expect(
         await runCliSilent([
           "task",
