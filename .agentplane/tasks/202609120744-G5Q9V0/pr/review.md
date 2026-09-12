@@ -29,13 +29,13 @@ Created: 2026-09-12T07:48:41.870Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/cli/run-cli.core.route-decision.test.ts    |  4 ++
- .../src/cli/run-cli.core.tasks.create.test.ts      | 70 ++++++++++++++++++++++
- .../agentplane/src/commands/task/brief-model.ts    |  9 +++
- .../agentplane/src/commands/task/brief-render.ts   |  7 +++
- packages/agentplane/src/commands/task/new.spec.ts  |  5 ++
- packages/agentplane/src/commands/task/new.ts       | 44 ++++++++++++++
- 6 files changed, 139 insertions(+)
+ .../src/cli/run-cli.core.route-decision.test.ts    |   4 +
+ .../src/cli/run-cli.core.tasks.create.test.ts      | 102 +++++++++++++++++++++
+ .../agentplane/src/commands/task/brief-model.ts    |   9 ++
+ .../agentplane/src/commands/task/brief-render.ts   |   7 ++
+ packages/agentplane/src/commands/task/new.spec.ts  |   5 +
+ packages/agentplane/src/commands/task/new.ts       |  44 +++++++++
+ 6 files changed, 171 insertions(+)
 ```
 
 </details>

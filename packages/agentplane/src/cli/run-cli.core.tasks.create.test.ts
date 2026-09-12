@@ -409,6 +409,38 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
     expect(task.frontmatter.blueprint_request).toBe("ops.approval");
   });
 
+  it("task new rejects explicit ops intent without a controlled ops risk", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Restart a worker",
+        "--description",
+        "Restart one external worker",
+        "--owner",
+        "OPS",
+        "--tag",
+        "maintenance",
+        "--task-kind",
+        "ops",
+        "--mutation-scope",
+        "ops",
+        "--blueprint-request",
+        "ops.approval",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("--risk <credentials|deploy|security|external_system>");
+    } finally {
+      io.restore();
+    }
+    expect(await pathExists(path.join(root, ".agentplane", "tasks"))).toBe(false);
+  });
+
   it("task new persists an explainable automatic execution route", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();

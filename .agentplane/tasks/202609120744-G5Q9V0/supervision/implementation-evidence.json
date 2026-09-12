@@ -1,0 +1,100 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check f774282d4a6ef8ce7da5bc08c8e2fd9abb99303d..a47dd3996e5a6c1db49471f28f590e725e726a5c",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB f774282d4a6ef8ce7da5bc08c8e2fd9abb99303d..a47dd3996e5a6c1db49471f28f590e725e726a5c",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202609120744-G5Q9V0/README.md",
+        "A\t.agentplane/tasks/202609120744-G5Q9V0/blueprint/resolved-snapshot.json",
+        "A\t.agentplane/tasks/202609120744-G5Q9V0/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202609120744-G5Q9V0/pr/github-body.md",
+        "A\t.agentplane/tasks/202609120744-G5Q9V0/pr/github-title.txt",
+        "A\t.agentplane/tasks/202609120744-G5Q9V0/pr/meta.json",
+        "A\t.agentplane/tasks/202609120744-G5Q9V0/pr/review.md",
+        "M\tpackages/agentplane/src/cli/run-cli.core.route-decision.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.tasks.create.test.ts",
+        "M\tpackages/agentplane/src/commands/task/brief-model.ts",
+        "M\tpackages/agentplane/src/commands/task/brief-render.ts",
+        "M\tpackages/agentplane/src/commands/task/new.spec.ts",
+        "M\tpackages/agentplane/src/commands/task/new.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "f774282d4a6ef8ce7da5bc08c8e2fd9abb99303d",
+  "implementation_commit": "a47dd3996e5a6c1db49471f28f590e725e726a5c",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "?? .agentplane/tasks/202609120744-G5Q9V0/README.md",
+      "?? .agentplane/tasks/202609120744-G5Q9V0/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202609120744-G5Q9V0/pr/diffstat.txt",
+      "?? .agentplane/tasks/202609120744-G5Q9V0/pr/github-body.md",
+      "?? .agentplane/tasks/202609120744-G5Q9V0/pr/github-title.txt",
+      "?? .agentplane/tasks/202609120744-G5Q9V0/pr/meta.json",
+      "?? .agentplane/tasks/202609120744-G5Q9V0/pr/review.md"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609120744-G5Q9V0/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609120744-G5Q9V0/blueprint/resolved-snapshot.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609120744-G5Q9V0/pr/diffstat.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609120744-G5Q9V0/pr/github-body.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609120744-G5Q9V0/pr/github-title.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609120744-G5Q9V0/pr/meta.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609120744-G5Q9V0/pr/review.md"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "?? .agentplane/tasks/202609120744-G5Q9V0/README.md",
+      "?? .agentplane/tasks/202609120744-G5Q9V0/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202609120744-G5Q9V0/pr/diffstat.txt",
+      "?? .agentplane/tasks/202609120744-G5Q9V0/pr/github-body.md",
+      "?? .agentplane/tasks/202609120744-G5Q9V0/pr/github-title.txt",
+      "?? .agentplane/tasks/202609120744-G5Q9V0/pr/meta.json",
+      "?? .agentplane/tasks/202609120744-G5Q9V0/pr/review.md"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609120744-G5Q9V0"
+}
