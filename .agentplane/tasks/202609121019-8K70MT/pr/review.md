@@ -6,7 +6,7 @@ Created: 2026-09-12T10:28:09.228Z
 
 - Task: `202609121019-8K70MT`
 - Title: Make verification rework exhaustion atomically project BLOCKED into the task-centric aggregate, with focused regressi...
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609121019-8K70MT/make-verification-rework-exhaustion-atomically-p`
 - Canonical task record: `.agentplane/tasks/202609121019-8K70MT/README.md`
 
