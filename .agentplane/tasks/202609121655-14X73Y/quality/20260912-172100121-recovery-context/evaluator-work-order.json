@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609121655-14X73Y-e604a863585d0cecd96076d7",
+  "prepared_at": "2026-09-12T17:21:00.121Z",
+  "task": {
+    "id": "202609121655-14X73Y",
+    "revision": 20,
+    "objective": "Fix exact WorkItem-only scope extension when the global contract is already satisfied\n\nSupersedes blocked task 202609121643-1PV2X7. Preserve exact pending work_item_id, require a real missing WorkItem root in a schedulable state, keep no-op and ambiguity rejection fail-closed, and include focused regression tests. This unblocks release task 202609121423-9WPTCW ST-03.",
+    "acceptance_criteria": [
+      "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts",
+      "bun run typecheck",
+      "- In scope: Supersedes blocked task 202609121643-1PV2X7. Preserve exact pending work_item_id, require a real missing WorkItem root in a schedulable state, keep no-op and ambiguity rejection fail-closed, and include focused regression tests. This unblocks release task 202609121423-9WPTCW ST-03.\n- Out of scope: unrelated refactors not required for \"Fix exact WorkItem-only scope extension when the global contract is already satisfied\".",
+      "Proposed one bounded WorkItem with both implementation files and the tests repository effect declared from the start.",
+      "1. Run `bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts`. Expected: exact WorkItem-only scope deltas succeed while true no-op, mismatched target, missing target, unschedulable target, and ambiguity cases fail closed.\n2. Run `bun run typecheck`. Expected: the touched implementation type-checks.\n3. Confirm hosted integration for the exact PR head. Expected: required hosted checks succeed before merge.\n4. Compare the final diff against the approved scope. Expected: only the task scope-extension implementation and its focused regression tests change."
+    ]
+  },
+  "evaluated_sha": "127db49863c5067825d821302f55c404dc9a4067",
+  "diff_base_sha": "ab3a8e251ad17e8dae00fbe070767fb01f1fae57",
+  "blueprint_digest": "25515cb4ded9a32b13449f99348fa47b42cbe8ba06c1e30f6a32000bab6157fd",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609121655-14X73Y/quality/20260912-172100121-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:6b43717f0a988a9343e91964eee4d08b4bfaadba25200add89bd3eb4fbebfe53",
+    "prompt_path": ".agentplane/tasks/202609121655-14X73Y/quality/objects/sha256/5b7b9a24c98e70acdcf10ca8f8102989610cefcefcc06ff82ac421f08f0a3216.md",
+    "result_schema_path": ".agentplane/tasks/202609121655-14X73Y/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609121655-14X73Y/README.md",
+      "sha256": "sha256:d909c1295a628c2a4fd5e624a0afc86c6f54c9bb39a7ded91f3570e79e1fa267",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609121655-14X73Y/quality/objects/sha256/78be06878aa806c3f440f9e711398ceb09abb1786645a6201ef44918029b5aae.patch",
+      "sha256": "sha256:78be06878aa806c3f440f9e711398ceb09abb1786645a6201ef44918029b5aae",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609121655-14X73Y/quality/objects/sha256/26ccce49362bfe0526b6093a54edf43bb6449c4dce5c7cd392eaf99a67f2bc88.json",
+      "sha256": "sha256:26ccce49362bfe0526b6093a54edf43bb6449c4dce5c7cd392eaf99a67f2bc88",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609121655-14X73Y/verification/20260912170128631-e3627fa2f133abd2.json",
+      "sha256": "sha256:23356db471f3b496d6add91b6f12521503f06162683cdebd1b7bfe37addd2aad",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609121655-14X73Y/quality/objects/sha256/c34f522f8f2a26e19e7252768fdabe140c3fe8b462213c4dcba9c071243941ca.json",
+      "sha256": "sha256:c34f522f8f2a26e19e7252768fdabe140c3fe8b462213c4dcba9c071243941ca",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
