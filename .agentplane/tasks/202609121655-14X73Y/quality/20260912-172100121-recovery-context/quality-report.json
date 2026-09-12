@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202609121655-14X73Y",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-12T17:21:46.402Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "127db49863c5067825d821302f55c404dc9a4067",
+  "blueprint_digest": "25515cb4ded9a32b13449f99348fa47b42cbe8ba06c1e30f6a32000bab6157fd",
+  "findings": [
+    "Residual risk: The current PR head fails verify-contract because the changed test file exceeds the enforced baseline."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609121655-14X73Y/quality/objects/sha256/78be06878aa806c3f440f9e711398ceb09abb1786645a6201ef44918029b5aae.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "The evaluator packet contains no prepared acceptance evidence for a new implementation result."
+  ]
+}

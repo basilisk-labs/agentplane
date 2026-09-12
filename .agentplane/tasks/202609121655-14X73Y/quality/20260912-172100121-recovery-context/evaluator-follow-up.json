@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202609121655-14X73Y-e604a863585d0cecd96076d7",
+  "task_id": "202609121655-14X73Y",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "The evaluator packet contains no prepared acceptance evidence for a new implementation result.",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "summary": "Residual risk: The current PR head fails verify-contract because the changed test file exceeds the enforced baseline.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609121655-14X73Y/quality/objects/sha256/78be06878aa806c3f440f9e711398ceb09abb1786645a6201ef44918029b5aae.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202609121655-14X73Y/quality/20260912-172100121-recovery-context/evaluator-result.json"
+}
