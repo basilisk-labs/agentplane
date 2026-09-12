@@ -4,7 +4,7 @@ title: "Fail fast on incomplete ops task intent"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 37
+revision: 38
 origin:
   system: "manual"
 depends_on: []
@@ -1116,19 +1116,99 @@ extensions:
         revision: 4
         schema_version: 1
         task_id: "202609120744-G5Q9V0"
-    revision: 37
+    revision: 38
     schema_version: 1
-    updated_at: "2026-09-12T08:23:21.653Z"
+    updated_at: "2026-09-12T08:24:00.547Z"
     work_items:
       implement-ops-intent-gate:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "implement-ops-intent-gate"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:37dba7f49d76b6da58140cf68012b44edad5f0545e421c09f84300865046a406"
+            id: "ops-intent-validation"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 5
+              task_id: "202609120744-G5Q9V0"
+              work_item_id: "implement-ops-intent-gate"
+            provenance:
+              - "sha256:930202182f3a12c88f19147d7e780c7440b46b43723492e90d76f4e0f5c9eea2"
+              - ".agentplane/tasks/202609120744-G5Q9V0/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:774d8100365df37eb6e22518c190f280e8424386a48e6c4445fd860f0706ee40"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:6d5e4253b19a6efff37f044786b01079f8ed5805fff268ecddbae957d1983c23"
+            id: "structured-task-brief"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 5
+              task_id: "202609120744-G5Q9V0"
+              work_item_id: "implement-ops-intent-gate"
+            provenance:
+              - "sha256:930202182f3a12c88f19147d7e780c7440b46b43723492e90d76f4e0f5c9eea2"
+              - ".agentplane/tasks/202609120744-G5Q9V0/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:774d8100365df37eb6e22518c190f280e8424386a48e6c4445fd860f0706ee40"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:0ba6203a688083da49582ec09e7595a4fe827cf3003d3423ecf86568c238c018"
+            id: "focused-regressions"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 5
+              task_id: "202609120744-G5Q9V0"
+              work_item_id: "implement-ops-intent-gate"
+            provenance:
+              - "sha256:930202182f3a12c88f19147d7e780c7440b46b43723492e90d76f4e0f5c9eea2"
+              - ".agentplane/tasks/202609120744-G5Q9V0/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:774d8100365df37eb6e22518c190f280e8424386a48e6c4445fd860f0706ee40"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609120744-G5Q9V0/supervision/declared-checks.json"
+              check_id: "create-tests"
+              command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts"
+              detail: "Observed by node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-12T08:24:00.509Z"
+              repository_snapshot_digest: "sha256:774d8100365df37eb6e22518c190f280e8424386a48e6c4445fd860f0706ee40"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609120744-G5Q9V0/supervision/declared-checks.json"
+              check_id: "brief-tests"
+              command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
+              detail: "Observed by node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.route-decision.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-12T08:24:00.509Z"
+              repository_snapshot_digest: "sha256:774d8100365df37eb6e22518c190f280e8424386a48e6c4445fd860f0706ee40"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609120744-G5Q9V0/supervision/declared-checks.json"
+              check_id: "typecheck"
+              command_identity: "node scripts/checks/run-typescript-build.mjs"
+              detail: "Observed by node scripts/checks/run-typescript-build.mjs."
+              exit_code: 0
+              observed_at: "2026-09-12T08:24:00.509Z"
+              repository_snapshot_digest: "sha256:774d8100365df37eb6e22518c190f280e8424386a48e6c4445fd860f0706ee40"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -1216,6 +1296,23 @@ extensions:
         task_id: "202609120744-G5Q9V0"
         task_revision: 33
         work_item_id: null
+      -
+        at: "2026-09-12T08:24:00.547Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:fea7a0c3e079ee19cc107407bb40ce36507c0f7c0cd02f7a4e017d69728cad82"
+        entity: "work_item"
+        id: "event_793fef5ac7c15e9a477dc084"
+        mutation_id: "external-result:work-order-202609120744-G5Q9V0-executor-84c2c29a7de6e838bfc353ce"
+        plan_digest: "sha256:3b66b673034279ac0ac681a7ccd57e6b38fdef36f43a931efaea4d64e98af4e7"
+        plan_revision: 5
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609120744-G5Q9V0"
+        task_revision: 37
+        work_item_id: "implement-ops-intent-gate"
     leases: []
     mutation_receipts:
       compatibility:sha256:0159271769d104eca9730a1c0e6daf5b330448ce885170edb1c9d4338e6e3b98:
@@ -1888,6 +1985,30 @@ extensions:
         mutation_id: "compatibility:sha256:ff5652e317eba93f010773cc08b91f5459f4cddf1390d4ab4b1c3b5770ea0376"
         next_revision: 4
         previous_revision: 3
+        schema_version: 1
+        task_id: "202609120744-G5Q9V0"
+      external-result:work-order-202609120744-G5Q9V0-executor-84c2c29a7de6e838bfc353ce:
+        aggregate_digest: "sha256:a1bddc215736db7a823386c37d3dbbbd76d601b680dec3dd3a8089ac84bcf31b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T08:24:00.547Z"
+          cause_refs:
+            - "semantic-result:sha256:fea7a0c3e079ee19cc107407bb40ce36507c0f7c0cd02f7a4e017d69728cad82"
+          entity: "work_item"
+          from: "READY"
+          id: "event_793fef5ac7c15e9a477dc084"
+          mutation_id: "external-result:work-order-202609120744-G5Q9V0-executor-84c2c29a7de6e838bfc353ce"
+          plan_digest: "sha256:3b66b673034279ac0ac681a7ccd57e6b38fdef36f43a931efaea4d64e98af4e7"
+          plan_revision: 5
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609120744-G5Q9V0"
+          task_revision: 37
+          to: "COMPLETED"
+          work_item_id: "implement-ops-intent-gate"
+        mutation_id: "external-result:work-order-202609120744-G5Q9V0-executor-84c2c29a7de6e838bfc353ce"
+        next_revision: 38
+        previous_revision: 37
         schema_version: 1
         task_id: "202609120744-G5Q9V0"
       external-result:work-order-202609120744-G5Q9V0-executor-d9c98b9c727e2055bfe30e78:
