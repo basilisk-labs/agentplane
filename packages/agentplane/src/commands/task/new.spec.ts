@@ -150,10 +150,15 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
       cmd: 'agentplane task new --title "Market analysis note" --description "Analyze market context" --owner ANALYST --tag analysis --task-kind analysis --mutation-scope none --show-blueprint',
       why: "Create a task and preview the resolved route without changing the task-id stdout contract.",
     },
+    {
+      cmd: 'agentplane task new --title "Restart the worker" --description "Restart one production worker" --owner OPS --tag ops --task-kind ops --mutation-scope ops --risk external_system --blueprint-request ops.approval',
+      why: "Create a controlled ops task with complete intent before lifecycle approval.",
+    },
   ],
   notes: [
     "Task creation defaults to doc_version=3 and seeds the README v3 section contract automatically.",
     "For verify-required primary tags, this command seeds a default ## Verify Steps acceptance contract in README.",
+    "Tasks tagged or declared as ops must provide task kind, mutation scope, a controlled ops risk, and ops.approval blueprint intent.",
     "`--show-blueprint` writes route preview details to stderr; stdout remains only the generated task id.",
   ],
   parse: (raw) => ({

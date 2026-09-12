@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202609120744-G5Q9V0/fail-fast-on-incomplete-ops-task-intent",
+  "created_at": "2026-09-12T07:48:41.870Z",
+  "diffstat_sha256": "sha256:bb8570924dcd6d21818649f3f5711fc63dab84c26da1c9829c18c4f7ca525cd8",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "pzzz404/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202609120744-G5Q9V0",
+  "updated_at": "2026-09-12T07:48:41.870Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

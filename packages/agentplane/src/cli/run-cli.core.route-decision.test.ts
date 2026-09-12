@@ -251,6 +251,10 @@ describe("runCli route decision commands", () => {
           const code = await runCli(["task", "brief", taskId, "--root", root]);
           expect(code).toBe(0);
           expect(textIo.stdout).toContain(`task brief: ${taskId}`);
+          expect(textIo.stdout).toContain("task_kind:                   code");
+          expect(textIo.stdout).toContain("mutation_scope:              code");
+          expect(textIo.stdout).toContain("risk_flags:                  none");
+          expect(textIo.stdout).toContain("blueprint_request:           code.branch_pr");
           expect(textIo.stdout).toContain("phase:");
           expect(textIo.stdout).toContain("step_kind:");
           expect(textIo.stdout).toContain("step_id:");

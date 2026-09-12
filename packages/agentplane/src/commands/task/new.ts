@@ -119,6 +119,42 @@ function validateEnumArray<T extends string>(flag: string, values: T[], allowed:
   return out;
 }
 
+const CONTROLLED_OPS_RISK_FLAGS = new Set(["credentials", "deploy", "security", "external_system"]);
+
+function assertCompleteControlledOpsIntent(
+  task: Pick<
+    TaskNewParsed,
+    "tags" | "taskKind" | "mutationScope" | "riskFlags" | "blueprintRequest"
+  >,
+): void {
+  const declaresOps =
+    task.tags.some((tag) => tag.toLowerCase() === "ops") ||
+    task.taskKind === "ops" ||
+    task.mutationScope === "ops" ||
+    task.blueprintRequest === "ops.approval";
+  if (!declaresOps) return;
+
+  const missing: string[] = [];
+  if (task.taskKind !== "ops") missing.push("--task-kind ops");
+  if (task.mutationScope !== "ops") missing.push("--mutation-scope ops");
+  if (!(task.riskFlags ?? []).some((risk) => CONTROLLED_OPS_RISK_FLAGS.has(risk))) {
+    missing.push("--risk <credentials|deploy|security|external_system>");
+  }
+  if (task.blueprintRequest !== "ops.approval") {
+    missing.push("--blueprint-request ops.approval");
+  }
+  if (missing.length === 0) return;
+
+  throw new CliError({
+    exitCode: 2,
+    code: "E_USAGE",
+    message:
+      "Incomplete controlled ops intent. Tasks tagged or declared as ops must provide " +
+      "--task-kind ops --mutation-scope ops, at least one controlled ops --risk, and " +
+      `--blueprint-request ops.approval. Missing or incompatible: ${missing.join(", ")}.`,
+  });
+}
+
 function sanitizeTaskNewParsed(p: TaskNewParsed): TaskNewParsed {
   const title = p.title.trim();
   if (!title)
@@ -166,6 +202,14 @@ function sanitizeTaskNewParsed(p: TaskNewParsed): TaskNewParsed {
     BLUEPRINT_REQUEST_VALUES,
   );
   const route = p.route ?? "auto";
+
+  assertCompleteControlledOpsIntent({
+    tags,
+    taskKind,
+    mutationScope,
+    riskFlags,
+    blueprintRequest,
+  });
 
   return {
     ...p,

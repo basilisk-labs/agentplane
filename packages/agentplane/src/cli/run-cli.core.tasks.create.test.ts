@@ -339,6 +339,76 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
     expect(task.frontmatter.blueprint_request).toBe("analysis.light");
   });
 
+  it("task new rejects incomplete controlled ops intent before creating a task", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Clean host cache",
+        "--description",
+        "Remove selected Docker cache data",
+        "--owner",
+        "OPS",
+        "--tag",
+        "ops",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Incomplete controlled ops intent");
+      expect(io.stderr).toContain("--task-kind ops");
+      expect(io.stderr).toContain("--mutation-scope ops");
+      expect(io.stderr).toContain("--risk <credentials|deploy|security|external_system>");
+      expect(io.stderr).toContain("--blueprint-request ops.approval");
+    } finally {
+      io.restore();
+    }
+    expect(await pathExists(path.join(root, ".agentplane", "tasks"))).toBe(false);
+  });
+
+  it("task new accepts and persists complete controlled ops intent", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Clean host cache",
+        "--description",
+        "Remove selected Docker cache data",
+        "--owner",
+        "OPS",
+        "--tag",
+        "ops",
+        "--task-kind",
+        "ops",
+        "--mutation-scope",
+        "ops",
+        "--risk",
+        "external_system",
+        "--blueprint-request",
+        "ops.approval",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = io.stdout.trim();
+    } finally {
+      io.restore();
+    }
+
+    const task = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(task.frontmatter.task_kind).toBe("ops");
+    expect(task.frontmatter.mutation_scope).toBe("ops");
+    expect(task.frontmatter.risk_flags).toEqual(["external_system"]);
+    expect(task.frontmatter.blueprint_request).toBe("ops.approval");
+  });
+
   it("task new persists an explainable automatic execution route", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();
