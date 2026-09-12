@@ -4,7 +4,7 @@ title: "Make verification rework exhaustion atomically project BLOCKED into the 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,11 @@ plan_approval:
   updated_by: "HOST:codex:USER"
   note: "host_user_decision=sha256:e97f359f9bfe9538c2bdc7c9da23257517b36c1eefa79f651ffc068f1c466696"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-09-12T11:02:21.202Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bun run ci:local:full"
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -79,7 +79,9 @@ execution_contract:
       - "packages/agentplane/src/adapters/task-backend/task-centric-backend-projection.ts"
       - "packages/agentplane/src/commands/shared/task-mutation.test.ts"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-4:fail"
+      - "verification:verification-record:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -90,7 +92,22 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "fail"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -174,9 +191,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "623d972500d99d1250ad28d04bd93bee803a4d6f"
-  message: "🚧 8K70MT task: apply external agent result"
+      - "verification_recovery:recorded-check-4"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -200,8 +217,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 623d972500d9. CLI accepted one state-bound external-agent semantic result."
     commit: "623d972500d99d1250ad28d04bd93bee803a4d6f"
+  -
+    type: "verify"
+    at: "2026-09-12T11:02:21.202Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-12T10:31:19.804Z"
+doc_updated_at: "2026-09-12T11:02:30.597Z"
 doc_updated_by: "SUPERVISOR"
 description: "When a needs_rework verification exceeds evaluator.max_rework_attempts, compatibility mutation currently sets the legacy task status to BLOCKED while leaving the canonical task-centric lifecycle ACTIVE, triggering task_centric_projection_mismatch and preventing recovery. Preserve normal ACTIVE rework behavior, atomically project terminal exhaustion to BLOCKED, and cover the boundary with focused tests."
 sections:
@@ -219,6 +242,56 @@ sections:
     3. Run `git diff --check`. Expected: no whitespace errors.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-12T11:02:21.202Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:b0d80d98554e3667a80aa23348e4f870335af77f2c3d7653cf076e48bbc36666, input_digest=sha256:d43b073ae036dbeb9e9c72453eb1933bdb9cf84171c9fcbd66743a8942f87f99
+
+    Details:
+
+    Command: bunx --no-install vitest run packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121019-8K70MT declared verification
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121019-8K70MT declared verification
+
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609121019-8K70MT declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609121019-8K70MT declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202609121019-8K70MT-make-verification-rework-exhaustion-atomically-p/.agentplane/tasks/202609121019-8K70MT/blueprint/resolved-snapshot.json
+    - old_digest: 64d8ed4597711fd2487eaf045d531db4d83fa7be2833be34da0bf5b386c33cda
+    - current_digest: 64d8ed4597711fd2487eaf045d531db4d83fa7be2833be34da0bf5b386c33cda
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609121019-8K70MT
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609121019-8K70MT
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -434,7 +507,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609121019-8K70MT"
-    event_cursor: 5
+    event_cursor: 6
     final_validation: null
     id: "202609121019-8K70MT"
     intent:
@@ -459,9 +532,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 9
     schema_version: 1
-    updated_at: "2026-09-12T10:31:40.323Z"
+    updated_at: "2026-09-12T11:02:30.592Z"
     work_items:
       project-terminal-verification-block:
         attempt: 1
@@ -559,6 +632,30 @@ extensions:
         work_item_id: "project-terminal-verification-block"
     leases: []
     mutation_receipts:
+      compatibility:sha256:15a2ce2dfca794811fcdaf14a65dca8abf08b2f102f0a26140fbb68645f0a5bf:
+        aggregate_digest: "sha256:98b9929170d39cb122d35708bd7118325d64de2cea5239cfd94823d2f6bce3a0"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T11:02:30.592Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_a8d7b9e11766f873f4ceacff"
+          mutation_id: "compatibility:sha256:15a2ce2dfca794811fcdaf14a65dca8abf08b2f102f0a26140fbb68645f0a5bf"
+          plan_digest: "sha256:b433fea5232868963d7e2a901a4ac1a46d3998e0f110d4d454510a21a4cd5a34"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121019-8K70MT"
+          task_revision: 8
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:15a2ce2dfca794811fcdaf14a65dca8abf08b2f102f0a26140fbb68645f0a5bf"
+        next_revision: 9
+        previous_revision: 8
+        schema_version: 1
+        task_id: "202609121019-8K70MT"
       compatibility:sha256:189bf9eeaa928743be7018dfe6d90c2bc410f7f7c4a4f31190e8f5ac8f66a8cb:
         aggregate_digest: "sha256:57d615d40e8896d2cf8d54504193c8450967051eceb3754c3334b70391014fda"
         event:
@@ -706,8 +803,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "623d972500d99d1250ad28d04bd93bee803a4d6f"
   task_execution_context:
     base_ref: "main"
     base_sha: "50b1810dda648be0c0762b47e885c6ad0b2d42af"
@@ -743,6 +838,56 @@ Plan one narrow atomic projection for terminal verification rework exhaustion.
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-12T11:02:21.202Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:b0d80d98554e3667a80aa23348e4f870335af77f2c3d7653cf076e48bbc36666, input_digest=sha256:d43b073ae036dbeb9e9c72453eb1933bdb9cf84171c9fcbd66743a8942f87f99
+
+Details:
+
+Command: bunx --no-install vitest run packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121019-8K70MT declared verification
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121019-8K70MT declared verification
+
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609121019-8K70MT declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609121019-8K70MT declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202609121019-8K70MT-make-verification-rework-exhaustion-atomically-p/.agentplane/tasks/202609121019-8K70MT/blueprint/resolved-snapshot.json
+- old_digest: 64d8ed4597711fd2487eaf045d531db4d83fa7be2833be34da0bf5b386c33cda
+- current_digest: 64d8ed4597711fd2487eaf045d531db4d83fa7be2833be34da0bf5b386c33cda
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609121019-8K70MT
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609121019-8K70MT
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
