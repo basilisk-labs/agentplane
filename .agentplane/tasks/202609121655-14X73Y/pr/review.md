@@ -6,7 +6,7 @@ Created: 2026-09-12T16:56:50.829Z
 
 - Task: `202609121655-14X73Y`
 - Title: Fix exact WorkItem-only scope extension when the global contract is already satisfied
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609121655-14X73Y/fix-exact-workitem-only-scope-extension-when-the`
 - Canonical task record: `.agentplane/tasks/202609121655-14X73Y/README.md`
 
