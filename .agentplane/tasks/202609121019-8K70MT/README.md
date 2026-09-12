@@ -4,7 +4,7 @@ title: "Make verification rework exhaustion atomically project BLOCKED into the 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,11 @@ plan_approval:
   updated_by: "HOST:codex:USER"
   note: "host_user_decision=sha256:e73a41a0b87ec2c4ac2e53dc41c4480c77359ed79e4fae0202322ca2d59d8075"
 verification:
-  state: "needs_rework"
-  updated_at: "2026-09-12T12:13:50.978Z"
+  state: "ok"
+  updated_at: "2026-09-12T13:40:38.604Z"
   updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 3
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  attempts: 0
 execution_route:
   frozen: true
   reason_codes:
@@ -79,9 +79,7 @@ execution_contract:
       - "packages/agentplane/src/adapters/task-backend/task-centric-backend-projection.ts"
       - "packages/agentplane/src/commands/shared/task-mutation.test.ts"
   observed:
-    authority_violations:
-      - "verification:recorded-check-4:fail"
-      - "verification:verification-record:fail"
+    authority_violations: []
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -97,6 +95,18 @@ execution_contract:
         id: "recorded-check-1"
         result: "pass"
       -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-13"
+        result: "pass"
+      -
         id: "recorded-check-2"
         result: "pass"
       -
@@ -104,10 +114,25 @@ execution_contract:
         result: "pass"
       -
         id: "recorded-check-4"
-        result: "fail"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
       -
         id: "verification-record"
-        result: "fail"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -191,8 +216,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-4"
-      - "verification_recovery:verification-record"
 commit:
   hash: "9bd82d62ce901f7962c650aa3e64577968b953c9"
   message: "🚧 8K70MT task: apply external agent result"
@@ -270,8 +293,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 9bd82d62ce90. CLI accepted one state-bound external-agent semantic result."
     commit: "9bd82d62ce901f7962c650aa3e64577968b953c9"
+  -
+    type: "verify"
+    at: "2026-09-12T13:40:38.604Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-12T12:35:16.776Z"
+doc_updated_at: "2026-09-12T13:40:40.281Z"
 doc_updated_by: "SUPERVISOR"
 description: "When a needs_rework verification exceeds evaluator.max_rework_attempts, compatibility mutation currently sets the legacy task status to BLOCKED while leaving the canonical task-centric lifecycle ACTIVE, triggering task_centric_projection_mismatch and preventing recovery. Preserve normal ACTIVE rework behavior, atomically project terminal exhaustion to BLOCKED, and cover the boundary with focused tests."
 sections:
@@ -419,6 +448,114 @@ sections:
     Result: fail
     Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-4
     Scope: branch_pr task 202609121019-8K70MT declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202609121019-8K70MT-make-verification-rework-exhaustion-atomically-p/.agentplane/tasks/202609121019-8K70MT/blueprint/resolved-snapshot.json
+    - old_digest: 64d8ed4597711fd2487eaf045d531db4d83fa7be2833be34da0bf5b386c33cda
+    - current_digest: 64d8ed4597711fd2487eaf045d531db4d83fa7be2833be34da0bf5b386c33cda
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609121019-8K70MT
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609121019-8K70MT
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-12T13:40:38.604Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:b0d80d98554e3667a80aa23348e4f870335af77f2c3d7653cf076e48bbc36666, input_digest=sha256:568b0f03a98f2022a0f92fb2c158fa51c8e6e5b319a4f77ddc391ee982533258
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx --no-install vitest run packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121019-8K70MT Verification Contract check affected_unit_integration (1/4)
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121019-8K70MT Verification Contract check affected_unit_integration (2/4)
+
+    Check: affected_unit_integration
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609121019-8K70MT Verification Contract check affected_unit_integration (3/4)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609121019-8K70MT Verification Contract check affected_unit_integration (4/4)
+
+    Check: critical_paths
+    Command: bunx --no-install vitest run packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121019-8K70MT Verification Contract check critical_paths (1/4)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121019-8K70MT Verification Contract check critical_paths (2/4)
+
+    Check: critical_paths
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609121019-8K70MT Verification Contract check critical_paths (3/4)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609121019-8K70MT Verification Contract check critical_paths (4/4)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609121019-8K70MT Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bunx --no-install vitest run packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121019-8K70MT Verification Contract check task_outcome (1/4)
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121019-8K70MT Verification Contract check task_outcome (2/4)
+
+    Check: task_outcome
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609121019-8K70MT Verification Contract check task_outcome (3/4)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609121019-8K70MT Verification Contract check task_outcome (4/4)
 
     BlueprintSnapshotRef:
     - state: current
@@ -667,7 +804,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609121019-8K70MT"
-    event_cursor: 15
+    event_cursor: 16
     final_validation: null
     id: "202609121019-8K70MT"
     intent:
@@ -877,9 +1014,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121019-8K70MT"
-    revision: 21
+    revision: 22
     schema_version: 1
-    updated_at: "2026-09-12T12:36:24.341Z"
+    updated_at: "2026-09-12T13:40:40.278Z"
     work_items:
       project-terminal-verification-block:
         attempt: 1
@@ -1129,6 +1266,30 @@ extensions:
         mutation_id: "compatibility:sha256:6418fab8c649d4d0fd258c36d734ff374c88723c9f87334d467fb6c7d289d6cd"
         next_revision: 13
         previous_revision: 12
+        schema_version: 1
+        task_id: "202609121019-8K70MT"
+      compatibility:sha256:68842c44cff66fea60900f6ff114054779c5a5dd7c34d9a48525ee4781aab9f1:
+        aggregate_digest: "sha256:b13d34b9f03d975fbbc937b3c945938e949d8c459f1a7f2345880740d47893c5"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T13:40:40.278Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_116fda2495234e5eeab69c13"
+          mutation_id: "compatibility:sha256:68842c44cff66fea60900f6ff114054779c5a5dd7c34d9a48525ee4781aab9f1"
+          plan_digest: "sha256:93e7f3a2d314dd2cb370893f494cf41377a615bc4c9dee65bf408270a3a33a9e"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121019-8K70MT"
+          task_revision: 21
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:68842c44cff66fea60900f6ff114054779c5a5dd7c34d9a48525ee4781aab9f1"
+        next_revision: 22
+        previous_revision: 21
         schema_version: 1
         task_id: "202609121019-8K70MT"
       compatibility:sha256:6b7bff0026d43adada3d13b170cfc56bc94c93617ef26f8dc444e686a6f593dd:
@@ -1613,6 +1774,114 @@ Command: bun run ci:local:full
 Result: fail
 Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-4
 Scope: branch_pr task 202609121019-8K70MT declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202609121019-8K70MT-make-verification-rework-exhaustion-atomically-p/.agentplane/tasks/202609121019-8K70MT/blueprint/resolved-snapshot.json
+- old_digest: 64d8ed4597711fd2487eaf045d531db4d83fa7be2833be34da0bf5b386c33cda
+- current_digest: 64d8ed4597711fd2487eaf045d531db4d83fa7be2833be34da0bf5b386c33cda
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609121019-8K70MT
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609121019-8K70MT
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-12T13:40:38.604Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:b0d80d98554e3667a80aa23348e4f870335af77f2c3d7653cf076e48bbc36666, input_digest=sha256:568b0f03a98f2022a0f92fb2c158fa51c8e6e5b319a4f77ddc391ee982533258
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx --no-install vitest run packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121019-8K70MT Verification Contract check affected_unit_integration (1/4)
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121019-8K70MT Verification Contract check affected_unit_integration (2/4)
+
+Check: affected_unit_integration
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609121019-8K70MT Verification Contract check affected_unit_integration (3/4)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609121019-8K70MT Verification Contract check affected_unit_integration (4/4)
+
+Check: critical_paths
+Command: bunx --no-install vitest run packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121019-8K70MT Verification Contract check critical_paths (1/4)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121019-8K70MT Verification Contract check critical_paths (2/4)
+
+Check: critical_paths
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609121019-8K70MT Verification Contract check critical_paths (3/4)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609121019-8K70MT Verification Contract check critical_paths (4/4)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609121019-8K70MT Verification Contract check full_regression
+
+Check: task_outcome
+Command: bunx --no-install vitest run packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121019-8K70MT Verification Contract check task_outcome (1/4)
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121019-8K70MT Verification Contract check task_outcome (2/4)
+
+Check: task_outcome
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609121019-8K70MT Verification Contract check task_outcome (3/4)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609121019-8K70MT Verification Contract check task_outcome (4/4)
 
 BlueprintSnapshotRef:
 - state: current
