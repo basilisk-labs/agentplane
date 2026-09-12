@@ -12,8 +12,8 @@ Created: 2026-09-12T20:52:29.086Z
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-09-12T20:52:29.086Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-12T20:52:29.086Z
+- Updated: 2026-09-12T23:45:11.158Z
 - Branch: task/202609121424-T83XJA/implement-durable-0-7-9-usage-cost-and-latency-a
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
