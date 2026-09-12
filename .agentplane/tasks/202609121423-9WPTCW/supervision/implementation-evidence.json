@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 64950c728bfeaf2ccc92d84b51c31c62aa7a5afe..e49569e0bfdc4c57ac0b1fcfc54018c51651a2d3",
+      "command": "git diff --check 74aedd161518f1916d4e5163210a11fd69d2e9e2..cd631dfb671cfdb7d599ce8a5a2a673a0d59cc1d",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 64950c728bfeaf2ccc92d84b51c31c62aa7a5afe..e49569e0bfdc4c57ac0b1fcfc54018c51651a2d3",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 74aedd161518f1916d4e5163210a11fd69d2e9e2..cd631dfb671cfdb7d599ce8a5a2a673a0d59cc1d",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,7 +21,8 @@
         "M\t.agentplane/tasks/202609121423-9WPTCW/pr/github-body.md",
         "M\t.agentplane/tasks/202609121423-9WPTCW/pr/meta.json",
         "M\t.agentplane/tasks/202609121423-9WPTCW/pr/review.md",
-        "A\tpackages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts"
+        "M\tscripts/lib/test-route-registry.mjs",
+        "A\tscripts/lib/test-route-registry.test.mjs"
       ]
     },
     {
@@ -31,8 +32,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "64950c728bfeaf2ccc92d84b51c31c62aa7a5afe",
-  "implementation_commit": "e49569e0bfdc4c57ac0b1fcfc54018c51651a2d3",
+  "execution_base_commit": "74aedd161518f1916d4e5163210a11fd69d2e9e2",
+  "implementation_commit": "cd631dfb671cfdb7d599ce8a5a2a673a0d59cc1d",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
