@@ -6,7 +6,7 @@ Created: 2026-09-11T19:51:57.383Z
 
 - Task: `202609111943-GH8BV2`
 - Title: Allow an approved repository-effect-only scope extension to recover a legacy execution contract with empty scope root...
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609111943-GH8BV2/allow-an-approved-repository-effect-only-scope-e`
 - Canonical task record: `.agentplane/tasks/202609111943-GH8BV2/README.md`
 
