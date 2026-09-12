@@ -4,7 +4,7 @@ title: "Fix task-centric scope extension targeting when multiple WorkItems are s
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -28,6 +28,32 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-12T15:27:12.938Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "a7234fc30d705ad7246276932622601c73031c92"
+  blueprint_digest: "9947e66ef95512fbd2abaf3c8f4405374ddd604288b7360683f50e1f44e4f454"
+  evidence_refs:
+    - ".agentplane/tasks/202609121443-YAQJB7/quality/20260912-152622860-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609121443-YAQJB7/quality/20260912-152622860-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609121443-YAQJB7/quality/objects/sha256/e39b3fde6118f533167fe493d76e6fca5a2bdae1ea315100549c2debaa6b7eb5.md"
+    - ".agentplane/tasks/202609121443-YAQJB7/quality/20260912-152622860-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609121443-YAQJB7/quality/20260912-152622860-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609121443-YAQJB7/quality/20260912-152622860-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609121443-YAQJB7/README.md"
+    - ".agentplane/tasks/202609121443-YAQJB7/quality/objects/sha256/4fb577afddfa23e48934d3fd97b5d4eed6a268c09f2a99b2757a787f772524c9.patch"
+    - ".agentplane/tasks/202609121443-YAQJB7/quality/objects/sha256/dcfc1025a9aed4f7c2754776832609f6fba2792fc2af68691d51c13e7ca6453e.json"
+    - ".agentplane/tasks/202609121443-YAQJB7/verification/20260912152612320-266028623a750e67.json"
+    - ".agentplane/tasks/202609121443-YAQJB7/quality/objects/sha256/4e4663b88bad490900a4220b00dc7fee5760937ec992760e9a207c7eb9e3627f.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Pass: the persisted issued WorkItem identity replaces ambiguous scheduler selection for new requests, while legacy requests retain the previous fail-closed unique-selection rule."
 execution_route:
   frozen: true
   reason_codes:
@@ -847,7 +873,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609121443-YAQJB7"
-    event_cursor: 15
+    event_cursor: 16
     final_validation: null
     id: "202609121443-YAQJB7"
     intent:
@@ -1170,9 +1196,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121443-YAQJB7"
-    revision: 18
+    revision: 19
     schema_version: 1
-    updated_at: "2026-09-12T15:26:13.894Z"
+    updated_at: "2026-09-12T15:26:13.896Z"
     work_items:
       WI-01:
         attempt: 1
@@ -1555,6 +1581,30 @@ extensions:
         mutation_id: "compatibility:sha256:af4e7bdc59f67f4becb4a60bc24df099f79dc631143c932089bc3c639f6b9d26"
         next_revision: 8
         previous_revision: 7
+        schema_version: 1
+        task_id: "202609121443-YAQJB7"
+      compatibility:sha256:b771c9ad0b90634b65e14d210098d61b2f69fdf289e1a3bb387723bef5a14232:
+        aggregate_digest: "sha256:5a31b81548c0b682782a78a174e34c2580bed1df384b1b15d0f84a39fe5fe652"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T15:26:13.896Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_097c302c774dca4c4650d1ed"
+          mutation_id: "compatibility:sha256:b771c9ad0b90634b65e14d210098d61b2f69fdf289e1a3bb387723bef5a14232"
+          plan_digest: "sha256:8c2291aaa937649da54608045290d479e5db886c8169d8d4ba533a72ec6c40ef"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121443-YAQJB7"
+          task_revision: 18
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b771c9ad0b90634b65e14d210098d61b2f69fdf289e1a3bb387723bef5a14232"
+        next_revision: 19
+        previous_revision: 18
         schema_version: 1
         task_id: "202609121443-YAQJB7"
       compatibility:sha256:eeab062caceba2d25cd5d30816e73f3fb37b3dcbdcc953ba6053a96742783a5b:

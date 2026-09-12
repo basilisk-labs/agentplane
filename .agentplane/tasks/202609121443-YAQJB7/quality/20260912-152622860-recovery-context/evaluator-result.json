@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Pass: the persisted issued WorkItem identity replaces ambiguous scheduler selection for new requests, while legacy requests retain the previous fail-closed unique-selection rule.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609121443-YAQJB7/quality/objects/sha256/4fb577afddfa23e48934d3fd97b5d4eed6a268c09f2a99b2757a787f772524c9.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
