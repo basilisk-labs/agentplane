@@ -1,10 +1,10 @@
 ---
 id: "202609120744-G5Q9V0"
 title: "Fail fast on incomplete ops task intent"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -177,7 +177,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "b33d46246d80d5c19f728b5223ba052ecac897b3"
+  message: "🚧 G5Q9V0 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -197,6 +199,12 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: b111c3b3f0a2. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: b33d46246d80. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The completed implementation includes approved regression tests that remain forbidden by the legacy effect authority. Recommended action: Approve and apply the exact structured scope extension. Requested scope: roots=packages/agentplane/src/cli; repository effects=tests; request digest=sha256:c96fbe6e38572acaa458aeaa7b8107d047b92ca9f32f6c6dee7a390287f1243f. Agentplane receipt: external-agent-blocker/tr_31c06b08db246fe5fb567335ae28a802/sha256:06c1637c52b9b73ae622928150c8ea6df4c9e9843b35d06b77ef062249bd1aaf/sha256:c96fbe6e38572acaa458aeaa7b8107d047b92ca9f32f6c6dee7a390287f1243f."
 events:
   -
     type: "status"
@@ -244,8 +252,23 @@ events:
     to: "DOING"
     note: "Implementation committed: b111c3b3f0a2. CLI accepted one state-bound external-agent semantic result."
     commit: "b111c3b3f0a296075dd2a1347da508cc64c69f7a"
+  -
+    type: "status"
+    at: "2026-09-12T08:09:26.372Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: b33d46246d80. CLI accepted one state-bound external-agent semantic result."
+    commit: "b33d46246d80d5c19f728b5223ba052ecac897b3"
+  -
+    type: "status"
+    at: "2026-09-12T08:10:20.615Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The completed implementation includes approved regression tests that remain forbidden by the legacy effect authority. Recommended action: Approve and apply the exact structured scope extension. Requested scope: roots=packages/agentplane/src/cli; repository effects=tests; request digest=sha256:c96fbe6e38572acaa458aeaa7b8107d047b92ca9f32f6c6dee7a390287f1243f. Agentplane receipt: external-agent-blocker/tr_31c06b08db246fe5fb567335ae28a802/sha256:06c1637c52b9b73ae622928150c8ea6df4c9e9843b35d06b77ef062249bd1aaf/sha256:c96fbe6e38572acaa458aeaa7b8107d047b92ca9f32f6c6dee7a390287f1243f."
 doc_version: 3
-doc_updated_at: "2026-09-12T08:07:46.844Z"
+doc_updated_at: "2026-09-12T08:10:20.615Z"
 doc_updated_by: "SUPERVISOR"
 description: "Make task new reject or materialize incomplete controlled ops intent before lifecycle approval, and expose structured intent fields in task brief so downstream host-operation guards are not the first failure point."
 sections:
@@ -294,19 +317,19 @@ extensions:
     status: "active"
     task_id: "202609120744-G5Q9V0"
   agentplane.scope_extension_request:
-    blocker_state_fingerprint: "sha256:50dbdeaf56186b061ce6d72ff8f4f8c3ff9b9f3fb6e3eb414963bee1ee399d1b"
+    blocker_state_fingerprint: "sha256:06c1637c52b9b73ae622928150c8ea6df4c9e9843b35d06b77ef062249bd1aaf"
     kind: "task_scope_extension_request"
     request:
-      rationale: "The approved plan explicitly requires focused CLI regression tests, and the implementation already includes only those task-scoped tests."
+      rationale: "The approved plan explicitly requires the focused CLI regression files already present in the implementation commits."
       repository_effects:
         - "tests"
       schema_version: 1
       scope_roots:
         - "packages/agentplane/src/cli"
-    request_digest: "sha256:2ac12634ced4bf4621f83c20d3e46273396be7a83e53dbb6c7dbf676fdc63bc0"
+    request_digest: "sha256:c96fbe6e38572acaa458aeaa7b8107d047b92ca9f32f6c6dee7a390287f1243f"
     schema_version: 1
     status: "pending"
-    transition_id: "tr_620941bcafc20ee80682808a6fef5900"
+    transition_id: "tr_31c06b08db246fe5fb567335ae28a802"
   agentplane.task_centric:
     current_plan:
       approval:
@@ -444,7 +467,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609120744-G5Q9V0"
-    event_cursor: 17
+    event_cursor: 21
     final_validation: null
     id: "202609120744-G5Q9V0"
     intent:
@@ -471,7 +494,7 @@ extensions:
 
         Make task new reject or materialize incomplete controlled ops intent before lifecycle approval, and expose structured intent fields in task brief so downstream host-operation guards are not the first failure point.
       task_id: "202609120744-G5Q9V0"
-    lifecycle: "ACTIVE"
+    lifecycle: "BLOCKED"
     plan_amendments: []
     plan_history:
       -
@@ -611,9 +634,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609120744-G5Q9V0"
-    revision: 22
+    revision: 26
     schema_version: 1
-    updated_at: "2026-09-12T08:07:46.844Z"
+    updated_at: "2026-09-12T08:10:20.615Z"
     work_items:
       implement-ops-intent-gate:
         attempt: 0
@@ -751,6 +774,30 @@ extensions:
         previous_revision: 4
         schema_version: 1
         task_id: "202609120744-G5Q9V0"
+      compatibility:sha256:42f5195a9655254124a4b0454d15dfb7d19ce139697766b007d2368fddd47aee:
+        aggregate_digest: "sha256:661a83940333b5846677668f41135202a7cdf1d48cd2e0bc7458d9eb1612051b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T08:09:26.372Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_f323a18f6faa7cc9283939cb"
+          mutation_id: "compatibility:sha256:42f5195a9655254124a4b0454d15dfb7d19ce139697766b007d2368fddd47aee"
+          plan_digest: "sha256:0778574f2eac5e98c3b9225a89e9f1a402018fe881a755d1e6bc4b7589574de4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609120744-G5Q9V0"
+          task_revision: 23
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:42f5195a9655254124a4b0454d15dfb7d19ce139697766b007d2368fddd47aee"
+        next_revision: 24
+        previous_revision: 23
+        schema_version: 1
+        task_id: "202609120744-G5Q9V0"
       compatibility:sha256:45829e5d0009846da666761ea7a85a0ada81904416dd8965534c292b939373e5:
         aggregate_digest: "sha256:53208dd565fc52172478f2d3d8efecf7f43314223cde6c8ba53af9e7d987152b"
         event:
@@ -871,6 +918,30 @@ extensions:
         previous_revision: 11
         schema_version: 1
         task_id: "202609120744-G5Q9V0"
+      compatibility:sha256:9628d6a2d06367b838cb6c220e48ca364d727f40bd49ea7b15e795ea6b177b3a:
+        aggregate_digest: "sha256:486f5294b9f9b96844a89101a56ddacf8d657d06725e34f369a464581e020858"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T08:10:20.615Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_ba29dc3de355441cba3ab0f6"
+          mutation_id: "compatibility:sha256:9628d6a2d06367b838cb6c220e48ca364d727f40bd49ea7b15e795ea6b177b3a"
+          plan_digest: "sha256:0778574f2eac5e98c3b9225a89e9f1a402018fe881a755d1e6bc4b7589574de4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609120744-G5Q9V0"
+          task_revision: 24
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:9628d6a2d06367b838cb6c220e48ca364d727f40bd49ea7b15e795ea6b177b3a"
+        next_revision: 25
+        previous_revision: 24
+        schema_version: 1
+        task_id: "202609120744-G5Q9V0"
       compatibility:sha256:9eeb218358b6c64f2cea3067a24db5d3f291e41fd221144970045b7c133671c7:
         aggregate_digest: "sha256:343d88c4dc3da73930f7c143506e757dc4f330f43041318f13a7659b9f2625a2"
         event:
@@ -893,6 +964,30 @@ extensions:
         mutation_id: "compatibility:sha256:9eeb218358b6c64f2cea3067a24db5d3f291e41fd221144970045b7c133671c7"
         next_revision: 13
         previous_revision: 12
+        schema_version: 1
+        task_id: "202609120744-G5Q9V0"
+      compatibility:sha256:a01256945713f469df56778c2c55ee94a7991e22eea15aa1b07300d7898c477a:
+        aggregate_digest: "sha256:8ccc58f3ce920fcea093f754f3b012865620d2fa1448185a0128d2ea9365473a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T08:09:26.372Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_f8608cc566294546c6eb66cc"
+          mutation_id: "compatibility:sha256:a01256945713f469df56778c2c55ee94a7991e22eea15aa1b07300d7898c477a"
+          plan_digest: "sha256:0778574f2eac5e98c3b9225a89e9f1a402018fe881a755d1e6bc4b7589574de4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609120744-G5Q9V0"
+          task_revision: 22
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:a01256945713f469df56778c2c55ee94a7991e22eea15aa1b07300d7898c477a"
+        next_revision: 23
+        previous_revision: 22
         schema_version: 1
         task_id: "202609120744-G5Q9V0"
       compatibility:sha256:a6fac775b704193ab861a4460ad4ecb23c14f80533d946a4fcb034629a08859a:
@@ -965,6 +1060,30 @@ extensions:
         mutation_id: "compatibility:sha256:c0bbd7e333bae4ac930e22284c14fc32c18528cc70d241af746ae69c0d73ec0e"
         next_revision: 3
         previous_revision: 2
+        schema_version: 1
+        task_id: "202609120744-G5Q9V0"
+      compatibility:sha256:dd929a54c7f8e0a45f55471321c1993f9799daebe77c5a41c30bc9d67d1b7ef8:
+        aggregate_digest: "sha256:65444b79cfeb9ddc45df17c52d378ebb45ffed0d9cf2e02eeb264395ebb48d4a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T08:10:20.615Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_2fb3064f0da56c12eaa9ebc4"
+          mutation_id: "compatibility:sha256:dd929a54c7f8e0a45f55471321c1993f9799daebe77c5a41c30bc9d67d1b7ef8"
+          plan_digest: "sha256:0778574f2eac5e98c3b9225a89e9f1a402018fe881a755d1e6bc4b7589574de4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609120744-G5Q9V0"
+          task_revision: 25
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:dd929a54c7f8e0a45f55471321c1993f9799daebe77c5a41c30bc9d67d1b7ef8"
+        next_revision: 26
+        previous_revision: 25
         schema_version: 1
         task_id: "202609120744-G5Q9V0"
       compatibility:sha256:df19d12f67eea264b334c3bd74dc8abe418f9067771e67273e044f9c8129ab16:
@@ -1138,7 +1257,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "b111c3b3f0a296075dd2a1347da508cc64c69f7a"
+    hash: "b33d46246d80d5c19f728b5223ba052ecac897b3"
   task_execution_context:
     base_ref: "main"
     base_sha: "f774282d4a6ef8ce7da5bc08c8e2fd9abb99303d"
