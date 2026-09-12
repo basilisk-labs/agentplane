@@ -4,7 +4,7 @@ title: "Fix exact WorkItem-only scope extension when the global contract is alre
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -592,22 +592,104 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 7
+    revision: 8
     schema_version: 1
-    updated_at: "2026-09-12T16:58:17.153Z"
+    updated_at: "2026-09-12T16:58:22.206Z"
     work_items:
       WI-01:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "WI-01"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:3c8ee994bb9d99bf5c5dcf6087fa5b0ed1369a1018295998719898e34768bfb6"
+            id: "Narrow source fix"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609121655-14X73Y"
+              work_item_id: "WI-01"
+            provenance:
+              - "sha256:c16f008fc0a9b5f65fdae2cfa0e7bdf9f3ddefb93f8de275e678eed3217f253c"
+              - ".agentplane/tasks/202609121655-14X73Y/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:21aee4f89ff39788f020eef4bc2ae9bee0e25b4ce641fb15a078a3f379e25052"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:4dd3de15bb8725d51260fa16b7c286db854f10cb0aec051f49c031ce59a4c1d5"
+            id: "Focused regression coverage"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609121655-14X73Y"
+              work_item_id: "WI-01"
+            provenance:
+              - "sha256:c16f008fc0a9b5f65fdae2cfa0e7bdf9f3ddefb93f8de275e678eed3217f253c"
+              - ".agentplane/tasks/202609121655-14X73Y/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:21aee4f89ff39788f020eef4bc2ae9bee0e25b4ce641fb15a078a3f379e25052"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121655-14X73Y/supervision/declared-checks.json"
+              check_id: "focused"
+              command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts"
+              detail: "Observed by bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-12T16:58:22.201Z"
+              repository_snapshot_digest: "sha256:21aee4f89ff39788f020eef4bc2ae9bee0e25b4ce641fb15a078a3f379e25052"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121655-14X73Y/supervision/declared-checks.json"
+              check_id: "typecheck"
+              command_identity: "bun run typecheck"
+              detail: "Observed by bun run typecheck."
+              exit_code: 0
+              observed_at: "2026-09-12T16:58:22.201Z"
+              repository_snapshot_digest: "sha256:21aee4f89ff39788f020eef4bc2ae9bee0e25b4ce641fb15a078a3f379e25052"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121655-14X73Y/supervision/declared-checks.json"
+              check_id: "hosted"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-09-12T16:58:22.201Z"
+              repository_snapshot_digest: "sha256:21aee4f89ff39788f020eef4bc2ae9bee0e25b4ce641fb15a078a3f379e25052"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-12T16:58:22.206Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:9c9c4d6dd79843e01d030a4496020fb5115470f929fce7ade36b396f340454a6"
+        entity: "work_item"
+        id: "event_54437ee116de4a440e6514ed"
+        mutation_id: "external-result:work-order-202609121655-14X73Y-executor-8bbba26d73ef0efd36b41852"
+        plan_digest: "sha256:408730a0702f2c28471447c875a390aed6c8eaeb0b4f3367500a097172b904e8"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609121655-14X73Y"
+        task_revision: 7
+        work_item_id: "WI-01"
     leases: []
     mutation_receipts:
       compatibility:sha256:056d70d1bb266c97a4e8e9e7c17d3c91e065ea83abe7e4cbce69d1cd1d8bbf48:
@@ -728,6 +810,30 @@ extensions:
         mutation_id: "compatibility:sha256:ffd6b338f5ea30175ffbe52d656691e18c9eb3142896baab5f4bb110b9baa0e6"
         next_revision: 3
         previous_revision: 2
+        schema_version: 1
+        task_id: "202609121655-14X73Y"
+      external-result:work-order-202609121655-14X73Y-executor-8bbba26d73ef0efd36b41852:
+        aggregate_digest: "sha256:ed8950c06b660a0bd45ec56c8495ee3b14330df97ba82eab1947e8a03809b803"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T16:58:22.206Z"
+          cause_refs:
+            - "semantic-result:sha256:9c9c4d6dd79843e01d030a4496020fb5115470f929fce7ade36b396f340454a6"
+          entity: "work_item"
+          from: "READY"
+          id: "event_54437ee116de4a440e6514ed"
+          mutation_id: "external-result:work-order-202609121655-14X73Y-executor-8bbba26d73ef0efd36b41852"
+          plan_digest: "sha256:408730a0702f2c28471447c875a390aed6c8eaeb0b4f3367500a097172b904e8"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121655-14X73Y"
+          task_revision: 7
+          to: "COMPLETED"
+          work_item_id: "WI-01"
+        mutation_id: "external-result:work-order-202609121655-14X73Y-executor-8bbba26d73ef0efd36b41852"
+        next_revision: 8
+        previous_revision: 7
         schema_version: 1
         task_id: "202609121655-14X73Y"
     pending_effects: []
