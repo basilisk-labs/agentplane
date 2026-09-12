@@ -4,7 +4,7 @@ title: "Implement the 0.7.9 baseline inventory and lifecycle characterization fo
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -198,9 +198,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "920a6d95418455d87c02e00ad387395c0b91ca13"
-  message: "🚧 9WPTCW task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -1027,19 +1025,64 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 7
+    revision: 8
     schema_version: 1
-    updated_at: "2026-09-12T14:34:45.208Z"
+    updated_at: "2026-09-12T14:34:48.495Z"
     work_items:
       ST-01:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "ST-01"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:2d7c0b16d73cea3dd6aad4d128126ea8829db20b6fa1f03d7aaa26782d64583d"
+            id: "inventory-ledger"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609121423-9WPTCW"
+              work_item_id: "ST-01"
+            provenance:
+              - "sha256:519e9c11c1f63ae22d17a04ee3a2c1a0605a6335a4cd071cbd778b52d0a1c2bb"
+              - ".agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:8a040949ec378e3facff843737698141a3b64dba3da58d381423c293d967596e"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:d359837419d58338ea2bb7ff34be2025201cbd2cda6b7b4130b108f6fc37f9d5"
+            id: "inventory-test"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609121423-9WPTCW"
+              work_item_id: "ST-01"
+            provenance:
+              - "sha256:519e9c11c1f63ae22d17a04ee3a2c1a0605a6335a4cd071cbd778b52d0a1c2bb"
+              - ".agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:8a040949ec378e3facff843737698141a3b64dba3da58d381423c293d967596e"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json"
+              check_id: "check-inventory"
+              command_identity: "node --test scripts/checks/architecture-inventory.test.mjs"
+              detail: "Observed by node --test scripts/checks/architecture-inventory.test.mjs."
+              exit_code: 0
+              observed_at: "2026-09-12T14:34:48.488Z"
+              repository_snapshot_digest: "sha256:8a040949ec378e3facff843737698141a3b64dba3da58d381423c293d967596e"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       ST-02:
         attempt: 0
         claim_id: null
@@ -1087,7 +1130,24 @@ extensions:
         validation_result: null
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-12T14:34:48.495Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:423b13b827b6bed811a63810d7f689d0c715037a0e9c3fa001b2a3e19255a1f4"
+        entity: "work_item"
+        id: "event_6d20a7dd8f520a29c64d5bdf"
+        mutation_id: "external-result:work-order-202609121423-9WPTCW-executor-8fc6e35760a58ecf192e9698"
+        plan_digest: "sha256:ae5b71eb9074bffca3ca705501e2d78bdd0fbc90b257e5d157332c9845bbbbdf"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609121423-9WPTCW"
+        task_revision: 7
+        work_item_id: "ST-01"
     leases: []
     mutation_receipts:
       compatibility:sha256:6860b683156ec753d5c0d9f8036dc7a969283ca388a3e7e0f5e3ef0aa16db55d:
@@ -1208,6 +1268,30 @@ extensions:
         mutation_id: "compatibility:sha256:fec9aec4a5a80fb9104dbf30edc652dd9866fc7e58c753d6e25ad91420992eb5"
         next_revision: 6
         previous_revision: 5
+        schema_version: 1
+        task_id: "202609121423-9WPTCW"
+      external-result:work-order-202609121423-9WPTCW-executor-8fc6e35760a58ecf192e9698:
+        aggregate_digest: "sha256:bbb2b2e116c9c77bf5ea98565d85db41808a67a14715e2c795c989fae42ca7bf"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T14:34:48.495Z"
+          cause_refs:
+            - "semantic-result:sha256:423b13b827b6bed811a63810d7f689d0c715037a0e9c3fa001b2a3e19255a1f4"
+          entity: "work_item"
+          from: "READY"
+          id: "event_6d20a7dd8f520a29c64d5bdf"
+          mutation_id: "external-result:work-order-202609121423-9WPTCW-executor-8fc6e35760a58ecf192e9698"
+          plan_digest: "sha256:ae5b71eb9074bffca3ca705501e2d78bdd0fbc90b257e5d157332c9845bbbbdf"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121423-9WPTCW"
+          task_revision: 7
+          to: "COMPLETED"
+          work_item_id: "ST-01"
+        mutation_id: "external-result:work-order-202609121423-9WPTCW-executor-8fc6e35760a58ecf192e9698"
+        next_revision: 8
+        previous_revision: 7
         schema_version: 1
         task_id: "202609121423-9WPTCW"
     pending_effects: []

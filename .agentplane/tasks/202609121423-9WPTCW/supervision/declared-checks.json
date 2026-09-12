@@ -1,0 +1,27 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "check-inventory"
+      ],
+      "command": "node --test scripts/checks/architecture-inventory.test.mjs",
+      "duration_ms": 302,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:e5be9d78f3d9bae7f401933eca9b9cd4297855a6df309bac94de6cfaeb8c4b13",
+        "executable_digest": "sha256:ee6fb0e015284d83a91e8ec5213f43a157f8a392b58555301682892ba928c04a",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "✔ reproduces the source-bound architecture inventory (7.555292ms)\n✔ rejects missing source evidence instead of inferring a mapping (0.905417ms)\n✔ requires unknown custom semantics to remain explicit blockers (0.230458ms)\nℹ tests 3\nℹ suites 0\nℹ pass 3\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 43.605\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202609121423-9WPTCW"
+}
