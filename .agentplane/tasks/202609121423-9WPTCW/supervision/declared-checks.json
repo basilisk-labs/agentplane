@@ -5,23 +5,23 @@
         "check-direct"
       ],
       "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts",
-      "duration_ms": 337,
-      "exit_code": 1,
+      "duration_ms": 12024,
+      "exit_code": 0,
       "runtime": {
-        "environment_digest": "sha256:e5be9d78f3d9bae7f401933eca9b9cd4297855a6df309bac94de6cfaeb8c4b13",
+        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
         "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
         "kind": "local_runtime_resolution",
         "status": "resolved",
         "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
       },
       "script": "test:project",
-      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts\nNo test files found, exiting with code 1\n\nfilter: packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts\nprojects: agentplane\n\n|agentplane| \n\ninclude: packages/agentplane/src/**/*.test.ts\nexclude:  **/node_modules/**, **/.git/**, **/cli-smoke.test.ts, **/run-cli*.test.ts\n\nerror: script \"test:project\" exited with code 1\n",
-      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121423-9WPTCW-implement-the-0-7-9-baseline-inventory-and-lifec\n\n"
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts\n",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121423-9WPTCW-implement-the-0-7-9-baseline-inventory-and-lifec\n\n\n Test Files  1 passed (1)\n      Tests  8 passed (8)\n   Start at  19:34:17\n   Duration  11.65s (transform 2.02s, setup 0ms, import 1.40s, tests 10.20s, environment 0ms)\n\n"
     }
   ],
   "kind": "direct_task_declared_checks",
-  "reason": "Declared check failed: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts",
+  "reason": null,
   "schema_version": 1,
-  "status": "failed",
+  "status": "passed",
   "task_id": "202609121423-9WPTCW"
 }
