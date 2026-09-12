@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 39
+revision: 40
 origin:
   system: "manual"
 depends_on: []
@@ -1311,19 +1311,74 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609111943-GH8BV2"
-    revision: 39
+    revision: 40
     schema_version: 1
-    updated_at: "2026-09-12T18:32:40.823Z"
+    updated_at: "2026-09-12T18:32:54.815Z"
     work_items:
       complete-legacy-recovery-and-ci-timeout-bounds:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "complete-legacy-recovery-and-ci-timeout-bounds"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:00fc4a8956bae1a16776c3d4f11b54c55fc212081a46d3e6622580583d6980d7"
+            id: "verified-legacy-scope-recovery"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609111943-GH8BV2"
+              work_item_id: "complete-legacy-recovery-and-ci-timeout-bounds"
+            provenance:
+              - "sha256:ebf32aa458d94d81606401a90b27706c19025c446bce0d05473fadeb54f8334c"
+              - ".agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:b6d47ac55de8526cc236f6a0b56da31d6b269d8f87a25d9a3fd26a5761daa085"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:0663c693e8462c4ca8216b59e66eb7d860b78405f14fd14eddeb4b7f16f50633"
+            id: "bounded-full-ci-verification-timeout"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609111943-GH8BV2"
+              work_item_id: "complete-legacy-recovery-and-ci-timeout-bounds"
+            provenance:
+              - "sha256:ebf32aa458d94d81606401a90b27706c19025c446bce0d05473fadeb54f8334c"
+              - ".agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:b6d47ac55de8526cc236f6a0b56da31d6b269d8f87a25d9a3fd26a5761daa085"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json"
+              check_id: "focused-regressions"
+              command_identity: "bunx --no-install vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts --maxWorkers=1"
+              detail: "Observed by bunx --no-install vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-12T18:32:54.790Z"
+              repository_snapshot_digest: "sha256:b6d47ac55de8526cc236f6a0b56da31d6b269d8f87a25d9a3fd26a5761daa085"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json"
+              check_id: "typecheck"
+              command_identity: "bun run typecheck"
+              detail: "Observed by bun run typecheck."
+              exit_code: 0
+              observed_at: "2026-09-12T18:32:54.790Z"
+              repository_snapshot_digest: "sha256:b6d47ac55de8526cc236f6a0b56da31d6b269d8f87a25d9a3fd26a5761daa085"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -1362,6 +1417,23 @@ extensions:
         task_id: "202609111943-GH8BV2"
         task_revision: 34
         work_item_id: null
+      -
+        at: "2026-09-12T18:32:54.815Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:bcbe7fc3c8e36e715752445edc850a886360c96a047533493e6c645660f240a7"
+        entity: "work_item"
+        id: "event_94a24cf7c0562c92ba6915f0"
+        mutation_id: "external-result:work-order-202609111943-GH8BV2-executor-e013d5aa71267054a8d1841a"
+        plan_digest: "sha256:5a8e97acd643b241f5ac20aba535e41603437672c223ae623173eeb558f20537"
+        plan_revision: 2
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609111943-GH8BV2"
+        task_revision: 39
+        work_item_id: "complete-legacy-recovery-and-ci-timeout-bounds"
     leases: []
     mutation_receipts:
       compatibility:sha256:0a91f3ccba5dd35bef5852bcdba2342a817c951411ce0ad1274f0a445503ce4b:
@@ -2154,6 +2226,30 @@ extensions:
         mutation_id: "compatibility:sha256:eecd0dbcf34eaba02c9a0d38e753a7569e53afd5d40363eef22a78313c470ae7"
         next_revision: 5
         previous_revision: 4
+        schema_version: 1
+        task_id: "202609111943-GH8BV2"
+      external-result:work-order-202609111943-GH8BV2-executor-e013d5aa71267054a8d1841a:
+        aggregate_digest: "sha256:abb9d76f80313374b18c77265d692da2ed258df976799ba5f7eb720d86a9f2de"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T18:32:54.815Z"
+          cause_refs:
+            - "semantic-result:sha256:bcbe7fc3c8e36e715752445edc850a886360c96a047533493e6c645660f240a7"
+          entity: "work_item"
+          from: "READY"
+          id: "event_94a24cf7c0562c92ba6915f0"
+          mutation_id: "external-result:work-order-202609111943-GH8BV2-executor-e013d5aa71267054a8d1841a"
+          plan_digest: "sha256:5a8e97acd643b241f5ac20aba535e41603437672c223ae623173eeb558f20537"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111943-GH8BV2"
+          task_revision: 39
+          to: "COMPLETED"
+          work_item_id: "complete-legacy-recovery-and-ci-timeout-bounds"
+        mutation_id: "external-result:work-order-202609111943-GH8BV2-executor-e013d5aa71267054a8d1841a"
+        next_revision: 40
+        previous_revision: 39
         schema_version: 1
         task_id: "202609111943-GH8BV2"
       external-result:work-order-202609111943-GH8BV2-executor-fd145775f5351c558673b0eb:
