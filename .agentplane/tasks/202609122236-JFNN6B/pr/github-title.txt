@@ -1,1 +1,1 @@
-🚧 JFNN6B task: Simplify the test suite without weakening safety-critical coverage [202609122236-JFNN6B]
+✅ JFNN6B task: Simplify the test suite without weakening safety-critical coverage [202609122236-JFNN6B]
