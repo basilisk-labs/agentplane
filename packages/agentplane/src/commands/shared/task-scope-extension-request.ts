@@ -173,7 +173,7 @@ export function parseTaskScopeExtensionRequestState(
     !/^sha256:[0-9a-f]{64}$/u.test(raw.blocker_state_fingerprint) ||
     (raw.work_item_id != null &&
       (typeof raw.work_item_id !== "string" ||
-        !raw.work_item_id ||
+        raw.work_item_id.trim().length === 0 ||
         raw.work_item_id.trim() !== raw.work_item_id)) ||
     typeof raw.request_digest !== "string" ||
     !/^sha256:[0-9a-f]{64}$/u.test(raw.request_digest) ||
