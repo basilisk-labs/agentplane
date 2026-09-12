@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check fc5387716db67167786f241eaa4626f02509b1a0..5ddea65b8d77a652ec0968237eb50e86f5e05a88",
+      "command": "git diff --check 7dc9c1b7105e4225bf2b107e56fb0e0316b11119..080335e5e5775a012743f5fdd6b9844f7ac32916",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,14 +13,15 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB fc5387716db67167786f241eaa4626f02509b1a0..5ddea65b8d77a652ec0968237eb50e86f5e05a88",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 7dc9c1b7105e4225bf2b107e56fb0e0316b11119..080335e5e5775a012743f5fdd6b9844f7ac32916",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
+        "M\t.agentplane/tasks/202609121423-9WPTCW/pr/diffstat.txt",
         "M\t.agentplane/tasks/202609121423-9WPTCW/pr/github-body.md",
+        "M\t.agentplane/tasks/202609121423-9WPTCW/pr/meta.json",
         "M\t.agentplane/tasks/202609121423-9WPTCW/pr/review.md",
-        "M\tscripts/lib/test-route-registry.mjs",
-        "M\tscripts/lib/test-route-registry.test.mjs"
+        "A\tpackages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts"
       ]
     },
     {
@@ -30,8 +31,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "fc5387716db67167786f241eaa4626f02509b1a0",
-  "implementation_commit": "5ddea65b8d77a652ec0968237eb50e86f5e05a88",
+  "execution_base_commit": "7dc9c1b7105e4225bf2b107e56fb0e0316b11119",
+  "implementation_commit": "080335e5e5775a012743f5fdd6b9844f7ac32916",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
