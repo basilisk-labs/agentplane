@@ -4,7 +4,7 @@ title: "Fail fast on incomplete ops task intent"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 31
+revision: 32
 origin:
   system: "manual"
 depends_on: []
@@ -186,7 +186,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "b33d46246d80d5c19f728b5223ba052ecac897b3"
+  message: "🚧 G5Q9V0 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -224,6 +226,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/task; repository effects: unchanged."
+  -
+    author: "CODER"
+    body: "Implementation is complete and focused checks pass; record the existing implementation commit for independent verification."
 events:
   -
     type: "status"
@@ -301,9 +306,17 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. Supervisor acceptance uses a narrower persisted writable scope than the approved WorkItem and issued WorkOrder. Recommended action: Approve the exact structured scope extension, then reuse the already passing implementation and checks. Requested scope: roots=packages/agentplane/src/commands/task; repository effects=unchanged; request digest=sha256:4f5253f4f530be20a7bd3c68759be09eef4afa065aa799f85361882de58ff0a3. Agentplane receipt: external-agent-blocker/tr_997fd71e493d938c5ef5854d84031367/sha256:18f6eb1daeb17138074520d614bc19676e07756cd614c1366ea8f22368b8d419/sha256:4f5253f4f530be20a7bd3c68759be09eef4afa065aa799f85361882de58ff0a3."
+  -
+    type: "status"
+    at: "2026-09-12T08:17:18.953Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation is complete and focused checks pass; record the existing implementation commit for independent verification."
+    commit: "b33d46246d80d5c19f728b5223ba052ecac897b3"
 doc_version: 3
-doc_updated_at: "2026-09-12T08:16:03.373Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-12T08:17:18.953Z"
+doc_updated_by: "CODER"
 description: "Make task new reject or materialize incomplete controlled ops intent before lifecycle approval, and expose structured intent fields in task brief so downstream host-operation guards are not the first failure point."
 sections:
   Summary: |-
@@ -512,7 +525,7 @@ extensions:
       revision: 4
       schema_version: 1
       task_id: "202609120744-G5Q9V0"
-    event_cursor: 26
+    event_cursor: 27
     final_validation: null
     id: "202609120744-G5Q9V0"
     intent:
@@ -956,9 +969,9 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202609120744-G5Q9V0"
-    revision: 31
+    revision: 32
     schema_version: 1
-    updated_at: "2026-09-12T08:16:03.373Z"
+    updated_at: "2026-09-12T08:17:18.953Z"
     work_items:
       implement-ops-intent-gate:
         attempt: 0
@@ -1310,6 +1323,30 @@ extensions:
         mutation_id: "compatibility:sha256:73a3f9905b9e2e44534f71b301f2d3581763d60cbc464afd2e2edc565a35d3b4"
         next_revision: 12
         previous_revision: 11
+        schema_version: 1
+        task_id: "202609120744-G5Q9V0"
+      compatibility:sha256:7e6d94922c37e7095f4b8ef6ac0f04882d9b9e0812aa8a74ef8aa8a04469087a:
+        aggregate_digest: "sha256:fff90ddc5e02b1444ca22867794afc16bec1091c15d61a33e95496cc207f668a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T08:17:18.953Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_215690d06810b021628c7e86"
+          mutation_id: "compatibility:sha256:7e6d94922c37e7095f4b8ef6ac0f04882d9b9e0812aa8a74ef8aa8a04469087a"
+          plan_digest: "sha256:04750bbfdf44a859ccd2ca64c92d80897aefc72ab921abb21e3a0743e7f1cf97"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609120744-G5Q9V0"
+          task_revision: 31
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:7e6d94922c37e7095f4b8ef6ac0f04882d9b9e0812aa8a74ef8aa8a04469087a"
+        next_revision: 32
+        previous_revision: 31
         schema_version: 1
         task_id: "202609120744-G5Q9V0"
       compatibility:sha256:9628d6a2d06367b838cb6c220e48ca364d727f40bd49ea7b15e795ea6b177b3a:
