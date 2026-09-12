@@ -27,32 +27,36 @@ Source contract: agentplane-roadmap-r2 cards ST-08, ST-09, ST-10, ST-11, ST-12, 
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/evaluator/evaluator-episode.ts    | 236 +++++++++++++---
- .../evaluator/evaluator-execute-supervisor.ts      |  66 +++--
+ .../src/commands/evaluator/evaluator-episode.ts    | 236 +++++++++++++--
+ .../evaluator/evaluator-execute-supervisor.ts      |  66 ++--
  .../evaluator/evaluator-execute.command.test.ts    |  70 ++++-
- .../evaluator/roadmap-failed-usage.test.ts         | 175 ++++++++++++
- .../roadmap-telemetry-disposition.test.ts          |  79 ++++++
- .../shared/roadmap-managed-accounting.test.ts      | 151 +++++++++++
- .../shared/supervisor-execution-budget-renewal.ts  |  49 ++++
- .../shared/supervisor-execution-episode.test.ts    |  79 ++++++
- .../shared/supervisor-execution-episode.ts         |  27 +-
+ .../evaluator/roadmap-failed-usage.test.ts         | 175 +++++++++++
+ .../roadmap-telemetry-disposition.test.ts          |  79 +++++
+ .../src/commands/shared/lifecycle-stage-timing.ts  | 130 ++++++++
+ .../shared/roadmap-managed-accounting.test.ts      | 151 ++++++++++
+ .../shared/supervisor-execution-budget-renewal.ts  |  49 +++
+ .../shared/supervisor-execution-episode.test.ts    |  79 +++++
+ .../shared/supervisor-execution-episode.ts         |  75 ++++-
  .../src/commands/task/advance.command.ts           |   4 +-
- .../task/branch-task-supervisor-episodes.ts        |   6 +-
+ .../task/branch-task-supervisor-episodes.ts        |  39 ++-
  .../commands/task/branch-task-supervisor-usage.ts  |  39 ++-
- .../src/commands/task/external-agent-exchange.ts   | 105 ++++++++
+ .../direct-task-supervisor-formal-operation.ts     |  34 +++
+ .../src/commands/task/external-agent-exchange.ts   | 105 +++++++
  .../src/commands/task/external-agent-supervisor.ts |  13 +
- .../agentplane/src/commands/task/kernel-run.ts     | 299 ++++++++++++++++-----
- .../task/roadmap-external-accounting.test.ts       | 116 ++++++++
+ .../agentplane/src/commands/task/kernel-run.ts     | 332 ++++++++++++++++-----
+ .../task/roadmap-external-accounting.test.ts       | 116 +++++++
+ .../src/commands/task/roadmap-stage-timing.test.ts | 128 ++++++++
  .../src/commands/task/task-token-usage.ts          |  11 +-
  .../src/runner/adapters/codex-result-transport.ts  |  42 ++-
- packages/agentplane/src/runner/adapters/codex.ts   |  81 +++++-
- .../adapters/roadmap-usage-durability.test.ts      | 159 +++++++++++
+ packages/agentplane/src/runner/adapters/codex.ts   |  81 ++++-
+ .../adapters/roadmap-usage-durability.test.ts      | 159 ++++++++++
  packages/agentplane/src/runner/artifacts.ts        |  29 ++
  .../runner/supervisor-execution-episode.test.ts    |   6 +-
- .../src/runner/supervisor-execution-episode.ts     |  70 ++++-
- scripts/bench/task-cost-rollup.test.mjs            | 192 +++++++++++++
- .../lib/agent-efficiency-repository-snapshot.mjs   | 167 ++++++++++++
- 25 files changed, 2103 insertions(+), 168 deletions(-)
+ .../src/runner/supervisor-execution-episode.ts     | 138 ++++++++-
+ scripts/bench/task-cost-rollup.test.mjs            | 192 ++++++++++++
+ .../lib/agent-efficiency-repository-snapshot.mjs   | 167 +++++++++++
+ scripts/lib/test-route-registry.mjs                |   1 +
+ 29 files changed, 2576 insertions(+), 170 deletions(-)
 ```
 
 </details>

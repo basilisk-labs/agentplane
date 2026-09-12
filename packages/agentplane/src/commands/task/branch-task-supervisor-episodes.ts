@@ -65,6 +65,7 @@ import {
 
 import { conflictApplicationAuthority } from "../pr/conflict-rework-authority.js";
 import { workflowTaskFingerprintComponent } from "../shared/workflow-step-fingerprint.js";
+import { buildMonotonicLifecycleTiming } from "../shared/lifecycle-stage-timing.js";
 
 async function executeBranchImplementationEpisode(opts: {
   input: BranchTaskSupervisorOptions;
@@ -173,6 +174,35 @@ async function executeBranchImplementationEpisode(opts: {
     ]);
     const eventsBefore = task.events?.length ?? 0;
     let executed: Awaited<ReturnType<typeof executeTaskRunnerExecution>>;
+    const dispatchStartedAt = performance.now();
+    const timing = (endedAt: number, firstMutation: boolean) =>
+      buildMonotonicLifecycleTiming({
+        root_span_id: started.operation_key,
+        started_ms: dispatchStartedAt,
+        ended_ms: endedAt,
+        spans: [
+          {
+            span_id: `${started.operation_key}:semantic_dispatch`,
+            parent_span_id: started.operation_key,
+            stage: "semantic_dispatch",
+            category: "external_wait",
+            started_ms: dispatchStartedAt,
+            ended_ms: endedAt,
+          },
+          ...(firstMutation
+            ? [
+                {
+                  span_id: `${started.operation_key}:first_scoped_mutation`,
+                  parent_span_id: started.operation_key,
+                  stage: "first_scoped_mutation" as const,
+                  category: "local_work" as const,
+                  started_ms: endedAt,
+                  ended_ms: endedAt,
+                },
+              ]
+            : []),
+        ],
+      });
     try {
       executed = await executeTaskRunnerExecution({
         ctx: command,
@@ -190,6 +220,7 @@ async function executeBranchImplementationEpisode(opts: {
         journal,
         operation_key: started.operation_key,
         result: { error: error instanceof Error ? error.name : "unknown_error" },
+        lifecycle_timing: timing(performance.now(), false),
         failed: true,
       });
       await opened.store.write(journal);
@@ -261,6 +292,7 @@ async function executeBranchImplementationEpisode(opts: {
       }
     }
     const accounting = branchSupervisorAccountingFromLifecycle(lifecycle);
+    const dispatchEndedAt = performance.now();
     journal = completeSupervisorExecutionEpisode({
       journal,
       operation_key: started.operation_key,
@@ -272,6 +304,7 @@ async function executeBranchImplementationEpisode(opts: {
       },
       usage: accounting.usage,
       provider_usage: accounting.provider_usage,
+      lifecycle_timing: timing(dispatchEndedAt, (accounting.usage.changed_files ?? 0) > 0),
       progress: acceptedRoute
         ? {
             authority: conflictApplicationAuthority(acceptedRoute),

@@ -29,6 +29,10 @@ import {
   type WorkflowSupervisorExecution,
   type WorkflowSupervisorExecutor,
 } from "./workflow-supervisor.js";
+import {
+  buildMonotonicLifecycleTiming,
+  workflowOperationLifecycleStage,
+} from "./lifecycle-stage-timing.js";
 
 export { tryAcquireSupervisorExecutionLease } from "./supervisor-execution-lease.js";
 
@@ -553,9 +557,44 @@ export async function supervisePersistedWorkflowEpisode(opts: {
     decision: opts.decision,
     mode: "execute",
     execute: async ({ operation: invoked }) => {
-      const operationStartedAt = Date.now();
+      const operationStartedAt = performance.now();
+      const timing = (endedAt: number, firstMutation: boolean) => {
+        const stage = workflowOperationLifecycleStage({
+          operation_id: invoked.id,
+          semantic: kind === "agent_episode" || kind === "evaluator_episode",
+          evaluator: kind === "evaluator_episode",
+        });
+        return buildMonotonicLifecycleTiming({
+          root_span_id: started.operation_key,
+          started_ms: operationStartedAt,
+          ended_ms: endedAt,
+          spans: [
+            {
+              span_id: `${started.operation_key}:${stage.stage}`,
+              parent_span_id: started.operation_key,
+              stage: stage.stage,
+              category: stage.category,
+              started_ms: operationStartedAt,
+              ended_ms: endedAt,
+            },
+            ...(firstMutation
+              ? [
+                  {
+                    span_id: `${started.operation_key}:first_scoped_mutation`,
+                    parent_span_id: started.operation_key,
+                    stage: "first_scoped_mutation" as const,
+                    category: "local_work" as const,
+                    started_ms: endedAt,
+                    ended_ms: endedAt,
+                  },
+                ]
+              : []),
+          ],
+        });
+      };
       try {
         const result = await opts.execute({ operation: invoked });
+        const operationEndedAt = performance.now();
         const observed = observedRunnerUsage({ result, budget: journal.budget });
         journal = completeSupervisorExecutionEpisode({
           journal,
@@ -567,6 +606,7 @@ export async function supervisePersistedWorkflowEpisode(opts: {
           },
           usage: observed.usage,
           provider_usage: observed.provider_usage,
+          lifecycle_timing: timing(operationEndedAt, (observed.usage.changed_files ?? 0) > 0),
           ...(observed.progress === undefined ? {} : { progress: observed.progress }),
           failed: result.status !== "succeeded",
         });
@@ -581,11 +621,15 @@ export async function supervisePersistedWorkflowEpisode(opts: {
         await store.write(journal);
         return result;
       } catch (error) {
+        const operationEndedAt = performance.now();
         journal = completeSupervisorExecutionEpisode({
           journal,
           operation_key: started.operation_key,
           result: { error: error instanceof Error ? error.name : "unknown_error" },
-          usage: { wall_time_ms: Math.max(0, Date.now() - operationStartedAt) },
+          usage: {
+            wall_time_ms: Math.max(0, Math.round(operationEndedAt - operationStartedAt)),
+          },
+          lifecycle_timing: timing(operationEndedAt, false),
           failed: true,
         });
         await store.write(journal);

@@ -25,6 +25,7 @@ import {
   openSupervisorExecutionEpisode,
   tryAcquireSupervisorExecutionLease,
 } from "../shared/supervisor-execution-episode.js";
+import { buildMonotonicLifecycleTiming } from "../shared/lifecycle-stage-timing.js";
 import { advanceCanonicalTask } from "./kernel-advance.js";
 import { writeKernelArtifact } from "./kernel-exchange.js";
 import { createKernelRuntime } from "./kernel-runtime-context.js";
@@ -293,6 +294,35 @@ async function executeKernelPacket(
         updated_at: new Date().toISOString(),
         state_fingerprint: stateFingerprint,
       });
+      const dispatchStartedAt = performance.now();
+      const timing = (endedAt: number, firstMutation: boolean) =>
+        buildMonotonicLifecycleTiming({
+          root_span_id: started.operation_key,
+          started_ms: dispatchStartedAt,
+          ended_ms: endedAt,
+          spans: [
+            {
+              span_id: `${started.operation_key}:semantic_dispatch`,
+              parent_span_id: started.operation_key,
+              stage: workOrder.role === "EVALUATOR" ? "review" : "semantic_dispatch",
+              category: "external_wait",
+              started_ms: dispatchStartedAt,
+              ended_ms: endedAt,
+            },
+            ...(firstMutation
+              ? [
+                  {
+                    span_id: `${started.operation_key}:first_scoped_mutation`,
+                    parent_span_id: started.operation_key,
+                    stage: "first_scoped_mutation" as const,
+                    category: "local_work" as const,
+                    started_ms: endedAt,
+                    ended_ms: endedAt,
+                  },
+                ]
+              : []),
+          ],
+        });
       try {
         result = await adapter.execute(invocation);
       } catch (error) {
@@ -300,6 +330,7 @@ async function executeKernelPacket(
           journal,
           operation_key: started.operation_key,
           result: { error: error instanceof Error ? error.name : "unknown_error" },
+          lifecycle_timing: timing(performance.now(), false),
           failed: true,
         });
         await opened.store.compareAndSwap(journal.digest, failed);
@@ -318,6 +349,7 @@ async function executeKernelPacket(
         },
       });
       const provider = readCodexProviderUsageForResult(result);
+      const dispatchEndedAt = performance.now();
       const completed = completeSupervisorExecutionEpisode({
         journal,
         operation_key: started.operation_key,
@@ -334,6 +366,7 @@ async function executeKernelPacket(
           thread_id: provider?.thread_id ?? null,
           turn_id: provider?.turn_id ?? null,
         },
+        lifecycle_timing: timing(dispatchEndedAt, (result.evidence?.files_changed_count ?? 0) > 0),
         failed: result.status !== "success",
       });
       if (!(await opened.store.compareAndSwap(journal.digest, completed))) {

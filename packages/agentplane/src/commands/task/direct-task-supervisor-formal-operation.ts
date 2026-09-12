@@ -14,6 +14,7 @@ import {
   tryAcquireSupervisorExecutionLease,
 } from "../shared/supervisor-execution-episode.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+import { buildMonotonicLifecycleTiming } from "../shared/lifecycle-stage-timing.js";
 
 export async function recordDirectTaskFormalOperation(opts: {
   git_root: string;
@@ -153,15 +154,47 @@ export async function recordDirectTaskFormalOperation(opts: {
     }
     journal = started.journal;
     await opened.store.write(journal);
+    const operationStartedAt = performance.now();
+    const timing = (endedAt: number, verified: boolean) =>
+      buildMonotonicLifecycleTiming({
+        root_span_id: started.operation_key,
+        started_ms: operationStartedAt,
+        ended_ms: endedAt,
+        spans: [
+          {
+            span_id: `${started.operation_key}:${opts.id}`,
+            parent_span_id: started.operation_key,
+            stage: opts.id === "task_verify" ? "native_verification" : "closure",
+            category: "local_work",
+            started_ms: operationStartedAt,
+            ended_ms: endedAt,
+          },
+          ...(verified
+            ? [
+                {
+                  span_id: `${started.operation_key}:verified_state`,
+                  parent_span_id: started.operation_key,
+                  stage: "verified_state" as const,
+                  category: "local_work" as const,
+                  started_ms: endedAt,
+                  ended_ms: endedAt,
+                },
+              ]
+            : []),
+        ],
+      });
     try {
       const result = await opts.run();
+      const operationEndedAt = performance.now();
       journal = completeSupervisorExecutionEpisode({
         journal,
         operation_key: started.operation_key,
         result: { direct_task_operation: opts.id, result },
+        lifecycle_timing: timing(operationEndedAt, opts.id === "task_verify"),
       });
       await opened.store.write(journal);
     } catch (error) {
+      const operationEndedAt = performance.now();
       journal = completeSupervisorExecutionEpisode({
         journal,
         operation_key: started.operation_key,
@@ -169,6 +202,7 @@ export async function recordDirectTaskFormalOperation(opts: {
           direct_task_operation: opts.id,
           error: error instanceof Error ? error.name : "unknown",
         },
+        lifecycle_timing: timing(operationEndedAt, false),
         failed: true,
       });
       await opened.store.write(journal);
