@@ -12,8 +12,8 @@ Created: 2026-09-12T22:42:33.380Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-09-12T22:42:33.380Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-12T22:42:33.380Z
+- Updated: 2026-09-12T23:23:45.211Z
 - Branch: task/202609122236-JFNN6B/simplify-the-test-suite-without-weakening-safety
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
