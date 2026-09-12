@@ -4,7 +4,7 @@ title: "Make verification rework exhaustion atomically project BLOCKED into the 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -27,6 +27,33 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-12T13:42:10.368Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  evaluated_sha: "9bd82d62ce901f7962c650aa3e64577968b953c9"
+  blueprint_digest: "64d8ed4597711fd2487eaf045d531db4d83fa7be2833be34da0bf5b386c33cda"
+  evidence_refs:
+    - ".agentplane/tasks/202609121019-8K70MT/quality/20260912-134049901-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609121019-8K70MT/quality/20260912-134049901-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609121019-8K70MT/quality/objects/sha256/e4388e57990a5fad81699b7982d4bed29401f30b6f7e81312f220ea036b11874.md"
+    - ".agentplane/tasks/202609121019-8K70MT/quality/20260912-134049901-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609121019-8K70MT/quality/20260912-134049901-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609121019-8K70MT/quality/20260912-134049901-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609121019-8K70MT/README.md"
+    - ".agentplane/tasks/202609121019-8K70MT/quality/objects/sha256/52f3f6fdc8fd66f9054878d5d0e11605311b04b2a355fa62fe78c077f4ef1a1a.patch"
+    - ".agentplane/tasks/202609121019-8K70MT/quality/objects/sha256/a13c83bfa6e246cb0635bda1714f9750aeead021b67868c22531a874627c731c.json"
+    - ".agentplane/tasks/202609121019-8K70MT/verification/20260912134038604-214d32aabc2cfbaa.json"
+    - ".agentplane/tasks/202609121019-8K70MT/quality/objects/sha256/6c5aa8dd5965460944f15f65ed05b11170f35619049258d548c31ca4c59e3e85.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The required local full regression gate passed all runtime, docs-schema, core, and cli groups without a product failure."
+    - "Residual risk: Hosted checks and integration have not yet completed."
 execution_route:
   frozen: true
   reason_codes:
@@ -804,7 +831,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609121019-8K70MT"
-    event_cursor: 16
+    event_cursor: 17
     final_validation: null
     id: "202609121019-8K70MT"
     intent:
@@ -1014,9 +1041,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121019-8K70MT"
-    revision: 22
+    revision: 23
     schema_version: 1
-    updated_at: "2026-09-12T13:40:40.278Z"
+    updated_at: "2026-09-12T13:40:40.281Z"
     work_items:
       project-terminal-verification-block:
         attempt: 1
@@ -1410,6 +1437,30 @@ extensions:
         mutation_id: "compatibility:sha256:b1f8c530f81190de8d3ec496ee6b109f612db020fc9306b020b6fefa5a290ed8"
         next_revision: 20
         previous_revision: 19
+        schema_version: 1
+        task_id: "202609121019-8K70MT"
+      compatibility:sha256:b31904247d86e4d41a2adae304bcd32a7de3666715ee8f70552ea721dd7473e4:
+        aggregate_digest: "sha256:84f4eb3aaaea010f9d25a56497a64ded3bcf37e0654d4dc3995fa46dae1538ea"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T13:40:40.281Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_c6d1a2a06544f7b518ad80ae"
+          mutation_id: "compatibility:sha256:b31904247d86e4d41a2adae304bcd32a7de3666715ee8f70552ea721dd7473e4"
+          plan_digest: "sha256:93e7f3a2d314dd2cb370893f494cf41377a615bc4c9dee65bf408270a3a33a9e"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121019-8K70MT"
+          task_revision: 22
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b31904247d86e4d41a2adae304bcd32a7de3666715ee8f70552ea721dd7473e4"
+        next_revision: 23
+        previous_revision: 22
         schema_version: 1
         task_id: "202609121019-8K70MT"
       compatibility:sha256:b92ebf6a234f912dd494b0e8e9f9a33965f348362fcd66b3b7086cdbde363002:
