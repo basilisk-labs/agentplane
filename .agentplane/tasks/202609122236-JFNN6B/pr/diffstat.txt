@@ -1,0 +1,12 @@
+ package.json                                       |   4 +-
+ .../commands/release/release-ci-contract.test.ts   |  19 ++-
+ .../task-run-bootstrap.result-examples.test.ts     |   5 +-
+ .../runtime/prompt-modules/gpt55-contract.test.ts  | 167 ---------------------
+ .../src/runtime/prompt-modules/gpt55-contract.ts   | 137 -----------------
+ .../runtime/prompt-modules/gpt56-contract.test.ts  | 119 ---------------
+ .../src/runtime/prompt-modules/gpt56-contract.ts   |  78 ----------
+ .../agentplane/src/runtime/prompt-modules/index.ts |   2 -
+ scripts/README.md                                  |  64 ++++----
+ scripts/checks/check-coverage-thresholds.mjs       |  48 ------
+ scripts/lib/test-route-registry.mjs                |  27 +++-
+ 11 files changed, 76 insertions(+), 594 deletions(-)
