@@ -4,7 +4,7 @@ title: "Fix exact WorkItem-only scope extension when the global contract is alre
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -29,34 +29,34 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-12T16:59:51.424Z"
+  updated_at: "2026-09-12T17:02:21.707Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 3 typed finding(s)."
-  evaluated_sha: "a974bdef9d52bba58b584dd6de411c18e311336c"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "4ce33c3431655c6350d002d85cd531f9a0e17f86"
   blueprint_digest: "25515cb4ded9a32b13449f99348fa47b42cbe8ba06c1e30f6a32000bab6157fd"
   evidence_refs:
-    - ".agentplane/tasks/202609121655-14X73Y/quality/20260912-165850039-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609121655-14X73Y/quality/20260912-165850039-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609121655-14X73Y/quality/objects/sha256/8dabed42173c1010c79d710475610931d39fa947e80d1d40e9e4c92100ef5a29.md"
-    - ".agentplane/tasks/202609121655-14X73Y/quality/20260912-165850039-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609121655-14X73Y/quality/20260912-165850039-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609121655-14X73Y/quality/20260912-165850039-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202609121655-14X73Y/quality/20260912-165850039-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609121655-14X73Y/quality/20260912-170139141-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609121655-14X73Y/quality/20260912-170139141-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609121655-14X73Y/quality/objects/sha256/237ae6fd87880620f0eaf49ebf2c2cc9019d8b61bc70f5d685c5c24645019e75.md"
+    - ".agentplane/tasks/202609121655-14X73Y/quality/20260912-170139141-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609121655-14X73Y/quality/20260912-170139141-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609121655-14X73Y/quality/20260912-170139141-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609121655-14X73Y/README.md"
-    - ".agentplane/tasks/202609121655-14X73Y/quality/objects/sha256/d0ff8a97b08f736b32fba490a592611aa232e2f17b277e1441ce63f491e1c830.patch"
-    - ".agentplane/tasks/202609121655-14X73Y/quality/objects/sha256/2d25e178965ea7a8b3764ce176d849f5ace3affd3cd7c5ba0613f132768bf577.json"
-    - ".agentplane/tasks/202609121655-14X73Y/verification/20260912165840724-794ccd03769c7438.json"
+    - ".agentplane/tasks/202609121655-14X73Y/quality/objects/sha256/78be06878aa806c3f440f9e711398ceb09abb1786645a6201ef44918029b5aae.patch"
+    - ".agentplane/tasks/202609121655-14X73Y/quality/objects/sha256/26ccce49362bfe0526b6093a54edf43bb6449c4dce5c7cd392eaf99a67f2bc88.json"
+    - ".agentplane/tasks/202609121655-14X73Y/verification/20260912170128631-e3627fa2f133abd2.json"
     - ".agentplane/tasks/202609121655-14X73Y/quality/objects/sha256/c34f522f8f2a26e19e7252768fdabe140c3fe8b462213c4dcba9c071243941ca.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "hasExactSchedulableWorkItemScopeDelta returns true for a missing root on an optional READY WorkItem even when every required WorkItem is COMPLETED."
-    - "extendTaskCentricWorkItemScope returns the aggregate unchanged when every required WorkItem is completed, so the accepted request would change only rationale and mark the extension applied without extending the target WorkItem."
-    - "The narrow repair is to make the guard mirror the shared all-required-completed rule and add a regression test for that exact state."
+    - "The exception requires the exact pending work_item_id, a matching current-plan definition, a PLANNED, READY, or REWORK_READY runtime state, at least one missing requested root, and at least one unfinished required WorkItem."
+    - "The success test proves the exact WorkItem receives the root and resource claim while the global contract roots remain unchanged."
+    - "Focused rejection coverage includes missing target, mismatched target, unschedulable target, no exact target, original true no-op, and all-required-completed optional target."
+    - "Residual risk: Hosted integration remains a provider gate and is not established by this local semantic review."
 execution_route:
   frozen: true
   reason_codes:
@@ -772,7 +772,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609121655-14X73Y"
-    event_cursor: 10
+    event_cursor: 11
     final_validation: null
     id: "202609121655-14X73Y"
     intent:
@@ -797,9 +797,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 13
+    revision: 14
     schema_version: 1
-    updated_at: "2026-09-12T17:01:29.679Z"
+    updated_at: "2026-09-12T17:01:29.680Z"
     work_items:
       WI-01:
         attempt: 1
@@ -967,6 +967,30 @@ extensions:
         mutation_id: "compatibility:sha256:26c4c33061a327b4ec12f20437c21e1852b0ce911f67d91bb05f34607b9823c5"
         next_revision: 5
         previous_revision: 4
+        schema_version: 1
+        task_id: "202609121655-14X73Y"
+      compatibility:sha256:304b0245c6e55ad9ffd592b5cfcf49ec77ec28e38aaea147cd6738d235ce1c04:
+        aggregate_digest: "sha256:d57931a29420e1babfafe8d7d515f06f2321fcc6a425b2d36027e8f30c452960"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T17:01:29.680Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_2b6f2815bf88af93683bbd82"
+          mutation_id: "compatibility:sha256:304b0245c6e55ad9ffd592b5cfcf49ec77ec28e38aaea147cd6738d235ce1c04"
+          plan_digest: "sha256:408730a0702f2c28471447c875a390aed6c8eaeb0b4f3367500a097172b904e8"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121655-14X73Y"
+          task_revision: 13
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:304b0245c6e55ad9ffd592b5cfcf49ec77ec28e38aaea147cd6738d235ce1c04"
+        next_revision: 14
+        previous_revision: 13
         schema_version: 1
         task_id: "202609121655-14X73Y"
       compatibility:sha256:612d50b2295b01a9a08e986bc3dec0eb695dac85df0a1ac1e6b2268d21b1a144:
