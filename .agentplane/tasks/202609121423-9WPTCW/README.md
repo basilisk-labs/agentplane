@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 48
+revision: 49
 origin:
   system: "manual"
 depends_on: []
@@ -58,9 +58,11 @@ quality_review:
     - "Residual risk: Hosted CI must pass for the final published task head before merge."
     - "Residual risk: Local fake coverage does not establish live remote-provider qualification."
 token_usage:
-  agent_runs: 15
+  agent_runs: 19
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:72d0076484367ebcbad3257ae2b5bf4b3489c521496e9047049b3cf66fd05bc6"
+  journal_digest: "sha256:aff4699cd3dda91d0ca3c02dac2fc0182d5bbd4a1a4c7e1df7bf59d651471dfc"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -70,7 +72,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-09-12T18:21:33.938Z"
+  updated_at: "2026-09-12T18:41:49.410Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -591,7 +593,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "1b54705a4af0428d3edaaca7b1d34b4ce74aed8f"
+  hash: "e9601ecb09bd7a5a6df19288bda3725e3669eb16"
   message: "🚧 9WPTCW task: record external evaluator result"
 comments:
   -
@@ -651,6 +653,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (blocked): The classified bun.lock drift remains the only dirty path, and this read-only episode cannot restore it."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -795,9 +800,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-12T18:41:49.410Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "e9601ecb09bd7a5a6df19288bda3725e3669eb16"
 doc_version: 3
-doc_updated_at: "2026-09-12T18:41:16.621Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-12T18:41:49.421Z"
+doc_updated_by: "CODER"
 description: "Source contract: agentplane-roadmap-r2 cards ST-01, ST-02, ST-03, ST-04, ST-05, and ST-21. Reproduce a source-bound lifecycle and Blueprint consumer/writer inventory, freeze ordinary direct and branch-PR completion, rework versus infrastructure retry, admission/crash/context-role invariants, and local/remote-backend serialization, staleness, conflict, and unsupported-format behavior. Preserve I01-I12 and C01-C08. Do not introduce a new runtime registry, sync subsystem, provider access, or lifecycle format. The roadmap directory is source-only and must never be committed. Required checks: node --test scripts/checks/architecture-inventory.test.mjs; focused AgentPlane characterization tests for direct, branch, rework, recovery, and backend round trips with nonzero discovery; relevant critical suites, typecheck, schema and mirror checks."
 sections:
   Summary: |-
@@ -2332,7 +2345,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609121423-9WPTCW"
-    event_cursor: 37
+    event_cursor: 38
     final_validation:
       evidence:
         -
@@ -3965,9 +3978,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609121423-9WPTCW"
-    revision: 48
+    revision: 49
     schema_version: 1
-    updated_at: "2026-09-12T18:40:16.602Z"
+    updated_at: "2026-09-12T18:41:49.410Z"
     work_items:
       ST-01:
         attempt: 1
@@ -4881,6 +4894,30 @@ extensions:
         previous_revision: 33
         schema_version: 1
         task_id: "202609121423-9WPTCW"
+      compatibility:sha256:a6ecfeb10d7c701582ef2d78b76941aee7790d5956975b3671e5624a8f57d35b:
+        aggregate_digest: "sha256:c0e43f4cb66dae1688ff51deb8bf32144daab779e53ada764a7f7ce978e3e499"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T18:41:49.410Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_353c292aef630ebb2482e1ed"
+          mutation_id: "compatibility:sha256:a6ecfeb10d7c701582ef2d78b76941aee7790d5956975b3671e5624a8f57d35b"
+          plan_digest: "sha256:a9ccea53ee91bda02540f559528bdce316d1a1154bdbc4da00b22a47189a40e8"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121423-9WPTCW"
+          task_revision: 48
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:a6ecfeb10d7c701582ef2d78b76941aee7790d5956975b3671e5624a8f57d35b"
+        next_revision: 49
+        previous_revision: 48
+        schema_version: 1
+        task_id: "202609121423-9WPTCW"
       compatibility:sha256:ae604a8be482581395a2cfde0c4a318680e4627497f5ad57222a18bafdd7f5b5:
         aggregate_digest: "sha256:211af4e3eacef7e445a0649e20a65c140378dee804da4f3e967e7bbf686e0151"
         event:
@@ -5533,8 +5570,8 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "ac856fe3cc89dea00266576286e9733694802e58"
-    message: "🚧 9WPTCW task: apply external agent result"
+    hash: "cf909b55ad00aae94b84dd5c59d11d3eec47e7ee"
+    message: "Merge branch 'main' into task/202609121423-9WPTCW/implement-the-0-7-9-baseline-inventory-and-lifec"
   task_execution_context:
     base_ref: "main"
     base_sha: "f3c1991ddd92943775b6b4b4688009afc3d523bc"
@@ -6325,12 +6362,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/15` agent runs
+- Completeness: `0/19` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:72d0076484367ebcbad3257ae2b5bf4b3489c521496e9047049b3cf66fd05bc6`
+- Journal digest: `sha256:aff4699cd3dda91d0ca3c02dac2fc0182d5bbd4a1a4c7e1df7bf59d651471dfc`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-09-12T18:21:33.938Z`
+- Updated at: `2026-09-12T18:41:49.410Z`
