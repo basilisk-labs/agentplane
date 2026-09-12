@@ -1,10 +1,11 @@
 ---
 id: "202609121932-MAT0V1"
 title: "Fix branch_pr dependency readiness after a dependency merges into the canonical base checkout. When an existing task worktree predates the dependency task artifact, resolve declared dependencies from the authoritative base backend without weakening incomplete or missing dependency checks. Add focused regression coverage proving a DONE dependency on current main unblocks the stale task worktree while incomplete and truly missing dependencies remain blocked."
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -53,6 +54,22 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "The recovery path aligns the canonical aggregate revision before projecting one compatibility mutation, and the focused regression proves both legacy reconciliation and a successful subsequent task-centric mutation."
+token_usage:
+  agent_runs: 9
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:0d0d1255c401cd65571007531531de2108623e54b9a8ca6764c3a5cef2d670dc"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-12T20:33:32.517Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -250,8 +267,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "858f3fc349daab7c990e7fd4fe66b1f02ab19bab"
-  message: "🚧 MAT0V1 task: apply external agent result"
+  hash: "dab868b7c05a786494ca79734a768ab959c2bc2c"
+  message: "🚧 MAT0V1 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -265,6 +282,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 858f3fc349da. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -303,9 +323,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-12T20:33:32.517Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "dab868b7c05a786494ca79734a768ab959c2bc2c"
 doc_version: 3
-doc_updated_at: "2026-09-12T20:31:21.590Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-12T20:33:32.517Z"
+doc_updated_by: "CODER"
 description: "Fix branch_pr dependency readiness after a dependency merges into the canonical base checkout. When an existing task worktree predates the dependency task artifact, resolve declared dependencies from the authoritative base backend without weakening incomplete or missing dependency checks. Add focused regression coverage proving a DONE dependency on current main unblocks the stale task worktree while incomplete and truly missing dependencies remain blocked."
 sections:
   Summary: |-
@@ -654,7 +682,56 @@ extensions:
       schema_version: 1
       task_id: "202609121932-MAT0V1"
     event_cursor: 13
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609121932-MAT0V1"
+            - "git:858f3fc349daab7c990e7fd4fe66b1f02ab19bab"
+          check_id: "focused-regression"
+          command_identity: "node node_modules/vitest/vitest.mjs --config vitest.config.ts run packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts --pool=forks --maxWorkers=1 --testTimeout=60000 --hookTimeout=60000"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-12T20:31:20.576Z"
+          repository_snapshot_digest: "sha256:16b3357da8c7cb80daccfd1903148b6c9ace4971bb84b8516f1b188baefe2c09"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121932-MAT0V1"
+            - "git:858f3fc349daab7c990e7fd4fe66b1f02ab19bab"
+          check_id: "typecheck"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-12T20:31:20.576Z"
+          repository_snapshot_digest: "sha256:16b3357da8c7cb80daccfd1903148b6c9ace4971bb84b8516f1b188baefe2c09"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121932-MAT0V1"
+            - "git:858f3fc349daab7c990e7fd4fe66b1f02ab19bab"
+          check_id: "critical"
+          command_identity: "bun run test:critical"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-12T20:31:20.576Z"
+          repository_snapshot_digest: "sha256:16b3357da8c7cb80daccfd1903148b6c9ace4971bb84b8516f1b188baefe2c09"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121932-MAT0V1"
+            - "git:858f3fc349daab7c990e7fd4fe66b1f02ab19bab"
+          check_id: "full-ci"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-12T20:31:20.576Z"
+          repository_snapshot_digest: "sha256:16b3357da8c7cb80daccfd1903148b6c9ace4971bb84b8516f1b188baefe2c09"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609121932-MAT0V1"
     intent:
       acceptance_criteria:
@@ -670,7 +747,7 @@ extensions:
 
         Fix branch_pr dependency readiness after a dependency merges into the canonical base checkout. When an existing task worktree predates the dependency task artifact, resolve declared dependencies from the authoritative base backend without weakening incomplete or missing dependency checks. Add focused regression coverage proving a DONE dependency on current main unblocks the stale task worktree while incomplete and truly missing dependencies remain blocked.
       task_id: "202609121932-MAT0V1"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -1180,9 +1257,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609121932-MAT0V1"
-    revision: 21
+    revision: 22
     schema_version: 1
-    updated_at: "2026-09-12T20:31:21.590Z"
+    updated_at: "2026-09-12T20:33:32.517Z"
     work_items:
       WI-01:
         attempt: 2
@@ -1703,6 +1780,31 @@ extensions:
         previous_revision: 15
         schema_version: 1
         task_id: "202609121932-MAT0V1"
+      legacy-finish:202609121932-MAT0V1:2026-09-12T20:31:20.576Z:858f3fc349daab7c990e7fd4fe66b1f02ab19bab:
+        aggregate_digest: "sha256:aefd4aa9d7c0c7d729cfa840f915345051d5d60a4acad9b400b8ba8c133578bd"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-12T20:33:32.517Z"
+          cause_refs:
+            - "task-verification:202609121932-MAT0V1"
+            - "git:858f3fc349daab7c990e7fd4fe66b1f02ab19bab"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_c40693115e747428557a933a"
+          mutation_id: "legacy-finish:202609121932-MAT0V1:2026-09-12T20:31:20.576Z:858f3fc349daab7c990e7fd4fe66b1f02ab19bab"
+          plan_digest: "sha256:f6eee473a1d7c1663ce94f01e6a2efa4c7ba9d84e518d9ac78cac73de8eaddbc"
+          plan_revision: 3
+          repository_fingerprint: "sha256:16b3357da8c7cb80daccfd1903148b6c9ace4971bb84b8516f1b188baefe2c09"
+          schema_version: 1
+          task_id: "202609121932-MAT0V1"
+          task_revision: 21
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609121932-MAT0V1:2026-09-12T20:31:20.576Z:858f3fc349daab7c990e7fd4fe66b1f02ab19bab"
+        next_revision: 22
+        previous_revision: 21
+        schema_version: 1
+        task_id: "202609121932-MAT0V1"
       plan-refinement:work-order-202609121932-MAT0V1-executor-2886d62fb018cba555d15c46:
         aggregate_digest: "sha256:bb1405b9b21594409e4d924d68d545ef5a320401c2b348458993f45a6cceeeef"
         event:
@@ -1758,6 +1860,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "858f3fc349daab7c990e7fd4fe66b1f02ab19bab"
+    message: "🚧 MAT0V1 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "1f8b58d52ade59dd6185af72b00f70bb6194bdb0"
@@ -1912,3 +2015,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/9` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:0d0d1255c401cd65571007531531de2108623e54b9a8ca6764c3a5cef2d670dc`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-12T20:33:32.517Z`

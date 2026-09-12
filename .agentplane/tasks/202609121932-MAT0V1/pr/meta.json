@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:0ed416152d5585f19ecfb783fa01e7929dbe6773791809a07ddb03d60b25c2a0",
   "pr_number": 5939,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5939",
+  "pre_merge_closure": {
+    "basis_commit": "dab868b7c05a786494ca79734a768ab959c2bc2c",
+    "branch": "task/202609121932-MAT0V1/fix-branch-pr-dependency-readiness-after-a-depen",
+    "pr_number": 5939,
+    "recorded_at": "2026-09-12T20:33:32.582Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
