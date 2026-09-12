@@ -4,7 +4,7 @@ title: "Fix exact WorkItem-only scope extension when the global contract is alre
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -28,6 +28,35 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-12T16:59:51.424Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 3 typed finding(s)."
+  evaluated_sha: "a974bdef9d52bba58b584dd6de411c18e311336c"
+  blueprint_digest: "25515cb4ded9a32b13449f99348fa47b42cbe8ba06c1e30f6a32000bab6157fd"
+  evidence_refs:
+    - ".agentplane/tasks/202609121655-14X73Y/quality/20260912-165850039-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609121655-14X73Y/quality/20260912-165850039-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609121655-14X73Y/quality/objects/sha256/8dabed42173c1010c79d710475610931d39fa947e80d1d40e9e4c92100ef5a29.md"
+    - ".agentplane/tasks/202609121655-14X73Y/quality/20260912-165850039-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609121655-14X73Y/quality/20260912-165850039-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609121655-14X73Y/quality/20260912-165850039-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202609121655-14X73Y/quality/20260912-165850039-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609121655-14X73Y/README.md"
+    - ".agentplane/tasks/202609121655-14X73Y/quality/objects/sha256/d0ff8a97b08f736b32fba490a592611aa232e2f17b277e1441ce63f491e1c830.patch"
+    - ".agentplane/tasks/202609121655-14X73Y/quality/objects/sha256/2d25e178965ea7a8b3764ce176d849f5ace3affd3cd7c5ba0613f132768bf577.json"
+    - ".agentplane/tasks/202609121655-14X73Y/verification/20260912165840724-794ccd03769c7438.json"
+    - ".agentplane/tasks/202609121655-14X73Y/quality/objects/sha256/c34f522f8f2a26e19e7252768fdabe140c3fe8b462213c4dcba9c071243941ca.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "hasExactSchedulableWorkItemScopeDelta returns true for a missing root on an optional READY WorkItem even when every required WorkItem is COMPLETED."
+    - "extendTaskCentricWorkItemScope returns the aggregate unchanged when every required WorkItem is completed, so the accepted request would change only rationale and mark the extension applied without extending the target WorkItem."
+    - "The narrow repair is to make the guard mirror the shared all-required-completed rule and add a regression test for that exact state."
 execution_route:
   frozen: true
   reason_codes:
@@ -660,7 +689,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609121655-14X73Y"
-    event_cursor: 6
+    event_cursor: 7
     final_validation: null
     id: "202609121655-14X73Y"
     intent:
@@ -685,9 +714,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 9
+    revision: 10
     schema_version: 1
-    updated_at: "2026-09-12T16:58:41.493Z"
+    updated_at: "2026-09-12T16:58:41.494Z"
     work_items:
       WI-01:
         attempt: 1
@@ -879,6 +908,30 @@ extensions:
         mutation_id: "compatibility:sha256:e11bc67f6de6abe2f7f3636528fc5ddebc9482b8f966d87397227f3bcf6e0609"
         next_revision: 9
         previous_revision: 8
+        schema_version: 1
+        task_id: "202609121655-14X73Y"
+      compatibility:sha256:ec564e45c701bf2baa11e00eeae61c37945759551553fa6cdb455dc188c1e271:
+        aggregate_digest: "sha256:917e0ee0bebf87a6d461835e8d8eabb10daf122947ea06c4f254de8fd753282b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T16:58:41.494Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_4ea89d91a9979ca75f6caa8a"
+          mutation_id: "compatibility:sha256:ec564e45c701bf2baa11e00eeae61c37945759551553fa6cdb455dc188c1e271"
+          plan_digest: "sha256:408730a0702f2c28471447c875a390aed6c8eaeb0b4f3367500a097172b904e8"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121655-14X73Y"
+          task_revision: 9
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:ec564e45c701bf2baa11e00eeae61c37945759551553fa6cdb455dc188c1e271"
+        next_revision: 10
+        previous_revision: 9
         schema_version: 1
         task_id: "202609121655-14X73Y"
       compatibility:sha256:ec9b126c0964079130542946c3ab5cf2c0f00511efb865f859d77939d6ef634d:
