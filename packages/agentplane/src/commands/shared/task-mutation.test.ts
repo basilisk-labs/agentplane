@@ -445,6 +445,11 @@ describe("applyTaskMutation", () => {
       lifecycle: "BLOCKED",
       final_validation: null,
     });
+    expect(taskCentricAggregateFromExtensions(currentTask.extensions)).toMatchObject({
+      revision: 5,
+      lifecycle: "BLOCKED",
+      final_validation: null,
+    });
     expect(Object.values(runtime.mutation_receipts)).toEqual([
       expect.objectContaining({ next_revision: 5 }),
     ]);
