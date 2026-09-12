@@ -1,0 +1,63 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "projection-regressions"
+      ],
+      "command": "bunx --no-install vitest run packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts --maxWorkers=1",
+      "duration_ms": 6537,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:b9a32ab4431bac635a9e38eb1636e3f7558a2ed95aba60c860fc8d60d623cf98",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:9526dad8c1a3a5f48e555bd200091840229b74c2c4cbb63bb14edce6acadbd6a"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202609121019-8K70MT-make-verification-rework-exhaustion-atomically-p\n\n\n Test Files  2 passed (2)\n      Tests  24 passed (24)\n   Start at  13:31:32\n   Duration  5.37s (transform 1.98s, setup 0ms, import 3.32s, tests 1.61s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "typecheck"
+      ],
+      "command": "bun run typecheck",
+      "duration_ms": 656,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:b9a32ab4431bac635a9e38eb1636e3f7558a2ed95aba60c860fc8d60d623cf98",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:9526dad8c1a3a5f48e555bd200091840229b74c2c4cbb63bb14edce6acadbd6a"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "diff-check"
+      ],
+      "command": "git diff --check",
+      "duration_ms": 509,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:b9a32ab4431bac635a9e38eb1636e3f7558a2ed95aba60c860fc8d60d623cf98",
+        "executable_digest": "sha256:179301dcb41ea78accc3fa0048a7e6f6710d891945a751a34addd622020c1818",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:9526dad8c1a3a5f48e555bd200091840229b74c2c4cbb63bb14edce6acadbd6a"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202609121019-8K70MT"
+}
