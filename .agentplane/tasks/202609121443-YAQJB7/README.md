@@ -4,7 +4,7 @@ title: "Fix task-centric scope extension targeting when multiple WorkItems are s
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +23,11 @@ plan_approval:
   updated_by: "HOST:codex-local:USER"
   note: "host_user_decision=sha256:55f5cba3c72ca16b64309d068780679361851b80e3bef16f957fe1d4ae31e7eb"
 verification:
-  state: "pending"
-  updated_at: "2026-09-12T14:46:49.533Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-09-12T15:01:45.007Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bun run ci:local:full"
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -85,7 +85,9 @@ execution_contract:
       - "packages/agentplane/src/commands/task/external-agent-blocked-result.ts"
       - "packages/agentplane/src/commands/task/scope-extend.test.ts"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-3:fail"
+      - "verification:verification-record:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -98,7 +100,19 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "fail"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -188,9 +202,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "36c52c2bce628196a3e310b9030135b10e93ac4d"
-  message: "🚧 YAQJB7 task: apply external agent result"
+      - "verification_recovery:recorded-check-3"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -227,8 +241,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 36c52c2bce62. CLI accepted one state-bound external-agent semantic result."
     commit: "36c52c2bce628196a3e310b9030135b10e93ac4d"
+  -
+    type: "verify"
+    at: "2026-09-12T15:01:45.007Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-12T14:52:21.793Z"
+doc_updated_at: "2026-09-12T15:01:45.970Z"
 doc_updated_by: "SUPERVISOR"
 description: "When a blocked external semantic result requests a repository scope extension, persist and use the blocked WorkItem identity so the exact USER-approved extension updates that WorkItem even when other independent WorkItems are schedulable. Preserve fail-closed state binding and add regression coverage. This is required to unblock task 202609121423-9WPTCW."
 sections:
@@ -246,6 +266,51 @@ sections:
     3. Review the final diff and `git status --short --untracked-files=all`; require only approved implementation, test, and task artifacts.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-12T15:01:45.007Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:9e0102b8e88ceddae001bb0fae89f223b4caa65282d2649dfd58d77cede4d075, input_digest=sha256:23ca525241df5980ba35d1cd627edc9703c7d56278d842cc0773b0529d9ef380
+
+    Details:
+
+    Command: bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121443-YAQJB7 declared verification
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121443-YAQJB7 declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609121443-YAQJB7 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121443-YAQJB7-fix-task-centric-scope-extension-targeting-when/.agentplane/tasks/202609121443-YAQJB7/blueprint/resolved-snapshot.json
+    - old_digest: 9947e66ef95512fbd2abaf3c8f4405374ddd604288b7360683f50e1f44e4f454
+    - current_digest: 9947e66ef95512fbd2abaf3c8f4405374ddd604288b7360683f50e1f44e4f454
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609121443-YAQJB7
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609121443-YAQJB7
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -594,7 +659,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609121443-YAQJB7"
-    event_cursor: 8
+    event_cursor: 9
     final_validation: null
     id: "202609121443-YAQJB7"
     intent:
@@ -917,9 +982,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121443-YAQJB7"
-    revision: 11
+    revision: 12
     schema_version: 1
-    updated_at: "2026-09-12T14:53:04.017Z"
+    updated_at: "2026-09-12T15:01:45.968Z"
     work_items:
       WI-01:
         attempt: 1
@@ -1062,6 +1127,30 @@ extensions:
         mutation_id: "compatibility:sha256:189aed61a611d0481f06e1a1c728d17f1520cbfd815a8c08836bb6ed7ba2df15"
         next_revision: 5
         previous_revision: 4
+        schema_version: 1
+        task_id: "202609121443-YAQJB7"
+      compatibility:sha256:1a3a0d2dd7b38f7990fb1b526f1b7283d63dfc4ef5cd38d32d14a42fd0fd044c:
+        aggregate_digest: "sha256:7255d4fa3cbd88c7fa3cd26d51c986024880240d249ada3c0e2750445a2666df"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T15:01:45.968Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_840c0e8a55a2dc1baf33c529"
+          mutation_id: "compatibility:sha256:1a3a0d2dd7b38f7990fb1b526f1b7283d63dfc4ef5cd38d32d14a42fd0fd044c"
+          plan_digest: "sha256:8c2291aaa937649da54608045290d479e5db886c8169d8d4ba533a72ec6c40ef"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121443-YAQJB7"
+          task_revision: 11
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:1a3a0d2dd7b38f7990fb1b526f1b7283d63dfc4ef5cd38d32d14a42fd0fd044c"
+        next_revision: 12
+        previous_revision: 11
         schema_version: 1
         task_id: "202609121443-YAQJB7"
       compatibility:sha256:4482eafdcc2521432742af05de984346ba75152e6bd3e1b56f55e8c301c14586:
@@ -1211,8 +1300,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "36c52c2bce628196a3e310b9030135b10e93ac4d"
   task_execution_context:
     base_ref: "main"
     base_sha: "f3c1991ddd92943775b6b4b4688009afc3d523bc"
@@ -1248,6 +1335,51 @@ Prepared one bounded regression-fix WorkItem.
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-12T15:01:45.007Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:9e0102b8e88ceddae001bb0fae89f223b4caa65282d2649dfd58d77cede4d075, input_digest=sha256:23ca525241df5980ba35d1cd627edc9703c7d56278d842cc0773b0529d9ef380
+
+Details:
+
+Command: bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121443-YAQJB7 declared verification
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121443-YAQJB7 declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609121443-YAQJB7 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121443-YAQJB7-fix-task-centric-scope-extension-targeting-when/.agentplane/tasks/202609121443-YAQJB7/blueprint/resolved-snapshot.json
+- old_digest: 9947e66ef95512fbd2abaf3c8f4405374ddd604288b7360683f50e1f44e4f454
+- current_digest: 9947e66ef95512fbd2abaf3c8f4405374ddd604288b7360683f50e1f44e4f454
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609121443-YAQJB7
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609121443-YAQJB7
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

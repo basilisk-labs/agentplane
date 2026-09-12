@@ -12,8 +12,8 @@ Created: 2026-09-12T14:45:48.622Z
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-09-12T14:45:48.622Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-12T14:45:48.622Z
+- Updated: 2026-09-12T14:53:13.365Z
 - Branch: task/202609121443-YAQJB7/fix-task-centric-scope-extension-targeting-when
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
