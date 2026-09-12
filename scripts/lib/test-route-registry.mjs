@@ -410,6 +410,7 @@ const V07_SUPERVISOR_FILES = [
   "packages/agentplane/src/commands/task/direct-task-supervisor.test.ts",
   "packages/agentplane/src/commands/task/branch-task-supervisor.test.ts",
   "packages/agentplane/src/commands/task/agent-action-packet.test.ts",
+  "packages/agentplane/src/commands/task/roadmap-stage-timing.test.ts",
   "packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts",
   "packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts",
   "packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts",

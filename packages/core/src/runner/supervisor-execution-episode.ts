@@ -29,6 +29,22 @@ export const SUPERVISOR_EPISODE_OPERATION_STATUS_VALUES = [
   "failed",
 ] as const;
 export const SUPERVISOR_EPISODE_STATUS_VALUES = ["running", "stopped"] as const;
+export const SUPERVISOR_LIFECYCLE_STAGE_VALUES = [
+  "lifecycle",
+  "preparation",
+  "semantic_dispatch",
+  "first_scoped_mutation",
+  "native_verification",
+  "review",
+  "provider_or_integration",
+  "verified_state",
+  "closure",
+] as const;
+export const SUPERVISOR_LIFECYCLE_TIME_CATEGORY_VALUES = [
+  "local_work",
+  "user_wait",
+  "external_wait",
+] as const;
 export const SUPERVISOR_EPISODE_STOP_REASON_VALUES = [
   "budget_exhausted",
   "completed",
@@ -172,6 +188,55 @@ const SUPERVISOR_EPISODE_USAGE_ATTRIBUTION_ZOD_SCHEMA = z
   })
   .strict();
 
+const SUPERVISOR_LIFECYCLE_TIMING_ZOD_SCHEMA = z
+  .object({
+    schema_version: z.literal(1),
+    clock: z.literal("monotonic"),
+    root_span_id: NON_EMPTY_STRING,
+    elapsed_ms: NON_NEGATIVE_INTEGER,
+    partitioned_ms: z
+      .object({
+        local_work: NON_NEGATIVE_INTEGER,
+        user_wait: NON_NEGATIVE_INTEGER,
+        external_wait: NON_NEGATIVE_INTEGER,
+      })
+      .strict(),
+    spans: z.array(
+      z
+        .object({
+          span_id: NON_EMPTY_STRING,
+          parent_span_id: NON_EMPTY_STRING.nullable(),
+          stage: z.enum(SUPERVISOR_LIFECYCLE_STAGE_VALUES),
+          category: z.enum(SUPERVISOR_LIFECYCLE_TIME_CATEGORY_VALUES),
+          offset_ms: NON_NEGATIVE_INTEGER,
+          elapsed_ms: NON_NEGATIVE_INTEGER,
+        })
+        .strict(),
+    ),
+  })
+  .strict()
+  .superRefine((timing, ctx) => {
+    const partitioned = Object.values(timing.partitioned_ms).reduce((sum, value) => sum + value, 0);
+    if (partitioned !== timing.elapsed_ms) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Lifecycle timing partitions must reconcile to elapsed_ms without overlap.",
+      });
+    }
+    const ids = new Set(timing.spans.map((span) => span.span_id));
+    if (ids.size !== timing.spans.length || !ids.has(timing.root_span_id)) {
+      ctx.addIssue({ code: "custom", message: "Lifecycle timing span identities must be unique." });
+    }
+    for (const span of timing.spans) {
+      if (span.offset_ms + span.elapsed_ms > timing.elapsed_ms) {
+        ctx.addIssue({ code: "custom", message: "Lifecycle timing spans must stay in the root." });
+      }
+      if (span.parent_span_id !== null && !ids.has(span.parent_span_id)) {
+        ctx.addIssue({ code: "custom", message: "Lifecycle timing parent span is missing." });
+      }
+    }
+  });
+
 const SUPERVISOR_EPISODE_OPERATION_ZOD_SCHEMA = z
   .object({
     sequence: POSITIVE_INTEGER,
@@ -198,6 +263,7 @@ const SUPERVISOR_EPISODE_OPERATION_ZOD_SCHEMA = z
       .strict()
       .optional(),
     usage_attribution: SUPERVISOR_EPISODE_USAGE_ATTRIBUTION_ZOD_SCHEMA.optional(),
+    lifecycle_timing: SUPERVISOR_LIFECYCLE_TIMING_ZOD_SCHEMA.optional(),
     usage: z
       .object({
         input_tokens: NON_NEGATIVE_INTEGER.optional(),
@@ -800,6 +866,7 @@ export function completeSupervisorExecutionEpisode(opts: {
   usage?: Partial<Omit<SupervisorExecutionUsage, "episodes" | "agent_runs">>;
   provider_usage?: SupervisorExecutionEpisodeJournal["operations"][number]["provider_usage"];
   usage_attribution?: SupervisorExecutionEpisodeJournal["operations"][number]["usage_attribution"];
+  lifecycle_timing?: SupervisorExecutionEpisodeJournal["operations"][number]["lifecycle_timing"];
   progress?: unknown;
   bounded_feedback?: unknown;
   failed?: boolean;
@@ -913,6 +980,7 @@ export function completeSupervisorExecutionEpisode(opts: {
     ...last,
     ...(providerUsage ? { provider_usage: providerUsage } : {}),
     ...(usageAttribution ? { usage_attribution: usageAttribution } : {}),
+    ...(opts.lifecycle_timing ? { lifecycle_timing: opts.lifecycle_timing } : {}),
     usage: Object.fromEntries(
       [
         "input_tokens",
