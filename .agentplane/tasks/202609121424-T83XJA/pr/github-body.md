@@ -50,7 +50,9 @@ Source contract: agentplane-roadmap-r2 cards ST-08, ST-09, ST-10, ST-11, ST-12, 
  packages/agentplane/src/runner/artifacts.ts        |  29 ++
  .../runner/supervisor-execution-episode.test.ts    |   6 +-
  .../src/runner/supervisor-execution-episode.ts     |  70 ++++-
- 23 files changed, 1744 insertions(+), 168 deletions(-)
+ scripts/bench/task-cost-rollup.test.mjs            | 192 +++++++++++++
+ .../lib/agent-efficiency-repository-snapshot.mjs   | 167 ++++++++++++
+ 25 files changed, 2103 insertions(+), 168 deletions(-)
 ```
 
 </details>
