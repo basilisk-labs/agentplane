@@ -1,10 +1,11 @@
 ---
 id: "202609122147-5F5WP0"
 title: "Make AgentPlane-managed GitLab MRs remove source branches"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -59,6 +60,22 @@ quality_review:
   findings:
     - "No actionable code or test defects were found in the scoped diff."
     - "Residual risk: Final merge and post-merge provider readback remain supervisor-owned integration steps."
+token_usage:
+  agent_runs: 3
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:aea1f6b5d9f8788165062f3165b2ff48c2f8d86cfaf68cc64676746f5cac2722"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-12T22:42:42.550Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -238,8 +255,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "13160b3a8f6a7dd6817a65cdf476b7386583aca7"
-  message: "🚧 5F5WP0 task: apply external agent result"
+  hash: "d89199b70f4bbc7033b2e898763d131feef6dc14"
+  message: "🚧 5F5WP0 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -247,6 +264,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 13160b3a8f6a. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -269,9 +289,17 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Focused tests, typecheck, full local CI, and hosted checks passed for PR #5940 at c9897380582ddd645c3e8144151d88c910406036."
+  -
+    type: "status"
+    at: "2026-09-12T22:42:42.550Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "d89199b70f4bbc7033b2e898763d131feef6dc14"
 doc_version: 3
-doc_updated_at: "2026-09-12T22:41:00.823Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-12T22:42:42.550Z"
+doc_updated_by: "CODER"
 description: "Make AgentPlane-managed GitLab MRs remove source branches"
 sections:
   Summary: |-
@@ -532,7 +560,34 @@ extensions:
       schema_version: 1
       task_id: "202609122147-5F5WP0"
     event_cursor: 7
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609122147-5F5WP0"
+            - "git:13160b3a8f6a7dd6817a65cdf476b7386583aca7"
+          check_id: "local-ci"
+          command_identity: "bun run ci:local"
+          detail: "Focused tests, typecheck, full local CI, and hosted checks passed for PR #5940 at c9897380582ddd645c3e8144151d88c910406036."
+          exit_code: 0
+          observed_at: "2026-09-12T22:40:58.659Z"
+          repository_snapshot_digest: "sha256:5466c8bc5d1d90cf2b35b39336204eb3a3e813a3a289bc1e9a77a918110564be"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609122147-5F5WP0"
+            - "git:13160b3a8f6a7dd6817a65cdf476b7386583aca7"
+          check_id: "hosted-integration"
+          command_identity: "task.verify"
+          detail: "Focused tests, typecheck, full local CI, and hosted checks passed for PR #5940 at c9897380582ddd645c3e8144151d88c910406036."
+          exit_code: 0
+          observed_at: "2026-09-12T22:40:58.659Z"
+          repository_snapshot_digest: "sha256:5466c8bc5d1d90cf2b35b39336204eb3a3e813a3a289bc1e9a77a918110564be"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609122147-5F5WP0"
     intent:
       acceptance_criteria: []
@@ -543,12 +598,12 @@ extensions:
 
         Make AgentPlane-managed GitLab MRs remove source branches
       task_id: "202609122147-5F5WP0"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 10
+    revision: 11
     schema_version: 1
-    updated_at: "2026-09-12T22:41:00.823Z"
+    updated_at: "2026-09-12T22:42:42.550Z"
     work_items:
       gitlab-remove-source-branch:
         attempt: 1
@@ -828,11 +883,37 @@ extensions:
         previous_revision: 6
         schema_version: 1
         task_id: "202609122147-5F5WP0"
+      legacy-finish:202609122147-5F5WP0:2026-09-12T22:40:58.659Z:13160b3a8f6a7dd6817a65cdf476b7386583aca7:
+        aggregate_digest: "sha256:5a55a40cada78a310aa3cf2128082a1866432d606b4c58f64b681046a477a900"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-12T22:42:42.550Z"
+          cause_refs:
+            - "task-verification:202609122147-5F5WP0"
+            - "git:13160b3a8f6a7dd6817a65cdf476b7386583aca7"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_7e2bf14a7bde18c05e9acbe6"
+          mutation_id: "legacy-finish:202609122147-5F5WP0:2026-09-12T22:40:58.659Z:13160b3a8f6a7dd6817a65cdf476b7386583aca7"
+          plan_digest: "sha256:a5787118704719d11d2c8e2c212ae6ea6c2ee76015e896bae3a13c69d6165d3b"
+          plan_revision: 1
+          repository_fingerprint: "sha256:5466c8bc5d1d90cf2b35b39336204eb3a3e813a3a289bc1e9a77a918110564be"
+          schema_version: 1
+          task_id: "202609122147-5F5WP0"
+          task_revision: 10
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609122147-5F5WP0:2026-09-12T22:40:58.659Z:13160b3a8f6a7dd6817a65cdf476b7386583aca7"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202609122147-5F5WP0"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "13160b3a8f6a7dd6817a65cdf476b7386583aca7"
+    message: "🚧 5F5WP0 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "58048a4e1ff97030d3fa86447c739397f0e0936b"
@@ -931,3 +1012,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:aea1f6b5d9f8788165062f3165b2ff48c2f8d86cfaf68cc64676746f5cac2722`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-12T22:42:42.550Z`
