@@ -16,7 +16,7 @@ Remove unused GPT-5.5/GPT-5.6 prompt diagnostic implementations and self-tests, 
 ## Verification
 
 - State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 <details>
