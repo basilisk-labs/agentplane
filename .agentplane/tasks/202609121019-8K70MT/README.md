@@ -4,7 +4,7 @@ title: "Make verification rework exhaustion atomically project BLOCKED into the 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -193,7 +193,9 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:recorded-check-4"
       - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "9bd82d62ce901f7962c650aa3e64577968b953c9"
+  message: "🚧 8K70MT task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -207,6 +209,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 8b46de617d4a. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 9bd82d62ce90. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -257,8 +262,16 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-09-12T12:35:16.776Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 9bd82d62ce90. CLI accepted one state-bound external-agent semantic result."
+    commit: "9bd82d62ce901f7962c650aa3e64577968b953c9"
 doc_version: 3
-doc_updated_at: "2026-09-12T12:21:14.214Z"
+doc_updated_at: "2026-09-12T12:35:16.776Z"
 doc_updated_by: "SUPERVISOR"
 description: "When a needs_rework verification exceeds evaluator.max_rework_attempts, compatibility mutation currently sets the legacy task status to BLOCKED while leaving the canonical task-centric lifecycle ACTIVE, triggering task_centric_projection_mismatch and preventing recovery. Preserve normal ACTIVE rework behavior, atomically project terminal exhaustion to BLOCKED, and cover the boundary with focused tests."
 sections:
@@ -654,7 +667,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609121019-8K70MT"
-    event_cursor: 13
+    event_cursor: 15
     final_validation: null
     id: "202609121019-8K70MT"
     intent:
@@ -864,9 +877,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121019-8K70MT"
-    revision: 18
+    revision: 20
     schema_version: 1
-    updated_at: "2026-09-12T12:21:14.214Z"
+    updated_at: "2026-09-12T12:35:16.776Z"
     work_items:
       project-terminal-verification-block:
         attempt: 0
@@ -1132,6 +1145,30 @@ extensions:
         previous_revision: 10
         schema_version: 1
         task_id: "202609121019-8K70MT"
+      compatibility:sha256:b1f8c530f81190de8d3ec496ee6b109f612db020fc9306b020b6fefa5a290ed8:
+        aggregate_digest: "sha256:29fdfc09b86ff1b100fbeb2919ee8f2cd587554bf5463e9a6c372850bb9b6195"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T12:35:16.776Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_8fd9a795e2b85abd205b5b61"
+          mutation_id: "compatibility:sha256:b1f8c530f81190de8d3ec496ee6b109f612db020fc9306b020b6fefa5a290ed8"
+          plan_digest: "sha256:93e7f3a2d314dd2cb370893f494cf41377a615bc4c9dee65bf408270a3a33a9e"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121019-8K70MT"
+          task_revision: 19
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b1f8c530f81190de8d3ec496ee6b109f612db020fc9306b020b6fefa5a290ed8"
+        next_revision: 20
+        previous_revision: 19
+        schema_version: 1
+        task_id: "202609121019-8K70MT"
       compatibility:sha256:b92ebf6a234f912dd494b0e8e9f9a33965f348362fcd66b3b7086cdbde363002:
         aggregate_digest: "sha256:0ed3904d2b160b734cb2de0009a165ce0853dc032aa408b49d4802cc82236a7a"
         event:
@@ -1202,6 +1239,30 @@ extensions:
         mutation_id: "compatibility:sha256:e4ebb39d688d9eb7d75ccc7597c3dbf38edd27b001ce14be4d73de0ce489de3c"
         next_revision: 10
         previous_revision: 9
+        schema_version: 1
+        task_id: "202609121019-8K70MT"
+      compatibility:sha256:ec6bb5a6d6c88812958d1a0c919c372287c0692e4f9a52a80e54d8aaedce0484:
+        aggregate_digest: "sha256:75fc2f15b35900226af9f91d9c7529b9bc516e12872f74fc3c520d9a06391f03"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T12:35:16.776Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_78bc209e8b1b1f693ef51009"
+          mutation_id: "compatibility:sha256:ec6bb5a6d6c88812958d1a0c919c372287c0692e4f9a52a80e54d8aaedce0484"
+          plan_digest: "sha256:93e7f3a2d314dd2cb370893f494cf41377a615bc4c9dee65bf408270a3a33a9e"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121019-8K70MT"
+          task_revision: 18
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:ec6bb5a6d6c88812958d1a0c919c372287c0692e4f9a52a80e54d8aaedce0484"
+        next_revision: 19
+        previous_revision: 18
         schema_version: 1
         task_id: "202609121019-8K70MT"
       compatibility:sha256:f5933e2445a96a41529c878c3220ba13d09d6ae34e366ecfdceab92f4b18750e:
@@ -1279,6 +1340,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "9bd82d62ce901f7962c650aa3e64577968b953c9"
   task_execution_context:
     base_ref: "main"
     base_sha: "50b1810dda648be0c0762b47e885c6ad0b2d42af"
