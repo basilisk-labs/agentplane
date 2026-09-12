@@ -13,6 +13,8 @@ import {
   type AgentSemanticResult,
   type AgentWorkOrderRole,
   type AgentWorkOrderV2,
+  type SupervisorExecutionEpisodeJournal,
+  type SupervisorExecutionUsage,
 } from "@agentplaneorg/core/schemas";
 import { atomicWriteFile } from "@agentplaneorg/core/fs";
 import { gitRevParse } from "@agentplaneorg/core/git";
@@ -33,6 +35,28 @@ export type ExternalAgentResultEnvelope = {
   state_fingerprint: string;
   role: AgentWorkOrderRole;
   result: AgentSemanticResult;
+};
+
+type ExternalAgentObservedUsage = Partial<
+  Pick<
+    SupervisorExecutionUsage,
+    | "input_tokens"
+    | "output_tokens"
+    | "total_tokens"
+    | "visible_output_tokens"
+    | "reasoning_tokens"
+    | "cached_input_tokens"
+    | "prepared_context_bytes"
+  >
+>;
+
+export type ExternalAgentHostUsageObservation = {
+  schema_version: 1;
+  observed_by: "host_transport";
+  state: "observed" | "partial" | "unavailable" | "unallocatable";
+  reason: string | null;
+  provider_usage: SupervisorExecutionEpisodeJournal["operations"][number]["provider_usage"] | null;
+  usage: ExternalAgentObservedUsage | null;
 };
 
 import type { ExternalImplementationVerificationCheckpoint } from "./external-agent-implementation-checkpoint.js";
@@ -64,9 +88,90 @@ export type ExternalAgentExchange = {
   result: ExternalAgentResultEnvelope | null;
   postcondition_fingerprint: string | null;
   verification_checkpoint?: ExternalImplementationVerificationCheckpoint;
+  host_usage?: ExternalAgentHostUsageObservation;
   created_at: string;
   updated_at: string;
 };
+
+const EXTERNAL_USAGE_FIELDS = [
+  "input_tokens",
+  "output_tokens",
+  "total_tokens",
+  "visible_output_tokens",
+  "reasoning_tokens",
+  "cached_input_tokens",
+  "prepared_context_bytes",
+] as const;
+
+function validOptionalIdentity(value: unknown): value is string | null {
+  return value === null || (typeof value === "string" && value.trim().length > 0);
+}
+
+export function externalAgentUsageAccounting(opts: { exchange: ExternalAgentExchange }): {
+  usage: ExternalAgentObservedUsage;
+  provider_usage?: SupervisorExecutionEpisodeJournal["operations"][number]["provider_usage"];
+  usage_attribution: NonNullable<
+    SupervisorExecutionEpisodeJournal["operations"][number]["usage_attribution"]
+  >;
+} {
+  const observation = opts.exchange.host_usage;
+  if (!observation) {
+    return {
+      usage: {},
+      usage_attribution: {
+        state: "unavailable",
+        reason: "legacy_external_host_usage_unavailable",
+      },
+    };
+  }
+  const provider = observation.provider_usage;
+  const usage = observation.usage;
+  const validProvider =
+    provider === null ||
+    (typeof provider?.provider === "string" &&
+      provider.provider.trim().length > 0 &&
+      typeof provider.run_id === "string" &&
+      provider.run_id.trim().length > 0 &&
+      provider.work_order_id === opts.exchange.work_order_id &&
+      validOptionalIdentity(provider.thread_id) &&
+      validOptionalIdentity(provider.turn_id));
+  const validUsage =
+    usage === null ||
+    (Object.keys(usage).every((key) =>
+      EXTERNAL_USAGE_FIELDS.includes(key as (typeof EXTERNAL_USAGE_FIELDS)[number]),
+    ) &&
+      Object.values(usage).every((value) => Number.isSafeInteger(value) && Number(value) >= 0));
+  const observedTrio =
+    usage !== null &&
+    Number.isSafeInteger(usage.input_tokens) &&
+    Number.isSafeInteger(usage.output_tokens) &&
+    Number.isSafeInteger(usage.total_tokens);
+  const hasUsage = usage !== null && Object.keys(usage).length > 0;
+  const validState =
+    (observation.state === "observed" && provider !== null && observedTrio) ||
+    (observation.state === "partial" && provider !== null && hasUsage && !observedTrio) ||
+    ((observation.state === "unavailable" || observation.state === "unallocatable") &&
+      usage === null);
+  if (
+    observation.schema_version !== 1 ||
+    observation.observed_by !== "host_transport" ||
+    !validProvider ||
+    !validUsage ||
+    !validState ||
+    (observation.reason !== null &&
+      (typeof observation.reason !== "string" || observation.reason.trim().length === 0))
+  ) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "External-agent host usage observation is invalid or does not match the exchange.",
+    });
+  }
+  return {
+    usage: usage ?? {},
+    ...(provider ? { provider_usage: provider } : {}),
+    usage_attribution: { state: observation.state, reason: observation.reason },
+  };
+}
 
 export type ExternalAgentExchangePaths = {
   directory: string;

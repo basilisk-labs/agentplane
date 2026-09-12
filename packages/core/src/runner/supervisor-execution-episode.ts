@@ -165,6 +165,13 @@ const SUPERVISOR_EPISODE_RECOVERY_ZOD_SCHEMA = z
   })
   .strict();
 
+const SUPERVISOR_EPISODE_USAGE_ATTRIBUTION_ZOD_SCHEMA = z
+  .object({
+    state: z.enum(["observed", "partial", "unavailable", "unallocatable"]),
+    reason: NON_EMPTY_STRING.nullable(),
+  })
+  .strict();
+
 const SUPERVISOR_EPISODE_OPERATION_ZOD_SCHEMA = z
   .object({
     sequence: POSITIVE_INTEGER,
@@ -190,6 +197,7 @@ const SUPERVISOR_EPISODE_OPERATION_ZOD_SCHEMA = z
       })
       .strict()
       .optional(),
+    usage_attribution: SUPERVISOR_EPISODE_USAGE_ATTRIBUTION_ZOD_SCHEMA.optional(),
     usage: z
       .object({
         input_tokens: NON_NEGATIVE_INTEGER.optional(),
@@ -754,6 +762,14 @@ export function startSupervisorExecutionEpisode(opts: {
     effect_ref: opts.effect_ref?.trim() ?? null,
     ...replacementBinding,
     ...recoveryBinding,
+    ...(isAgentOperation(opts.kind)
+      ? {
+          usage_attribution: {
+            state: "unavailable" as const,
+            reason: "provider_result_not_observed",
+          },
+        }
+      : {}),
     status: "intent" as const,
     result_digest: null,
     postcondition_fingerprint_digest: null,
@@ -783,6 +799,7 @@ export function completeSupervisorExecutionEpisode(opts: {
   result: unknown;
   usage?: Partial<Omit<SupervisorExecutionUsage, "episodes" | "agent_runs">>;
   provider_usage?: SupervisorExecutionEpisodeJournal["operations"][number]["provider_usage"];
+  usage_attribution?: SupervisorExecutionEpisodeJournal["operations"][number]["usage_attribution"];
   progress?: unknown;
   bounded_feedback?: unknown;
   failed?: boolean;
@@ -832,6 +849,21 @@ export function completeSupervisorExecutionEpisode(opts: {
     Number.isSafeInteger(usageInput.reasoning_tokens) &&
     Number(usageInput.visible_output_tokens) >= 0 &&
     Number(usageInput.reasoning_tokens) >= 0;
+  const observedTokenFields = [
+    usageInput.input_tokens,
+    usageInput.output_tokens,
+    usageInput.total_tokens,
+  ].filter((value) => Number.isSafeInteger(value) && Number(value) >= 0).length;
+  const usageAttribution = isAgentOperation(last.kind)
+    ? (opts.usage_attribution ??
+      (tokenUsageObserved
+        ? { state: "observed" as const, reason: null }
+        : observedTokenFields > 0
+          ? { state: "partial" as const, reason: "partial_provider_token_telemetry" }
+          : providerUsage
+            ? { state: "unavailable" as const, reason: "provider_token_telemetry_unavailable" }
+            : { state: "unavailable" as const, reason: "provider_identity_unavailable" }))
+    : undefined;
   const previousProgress = journal.operations.findLast(
     (operation) => operation.progress_digest !== null,
   )?.progress_digest;
@@ -880,6 +912,7 @@ export function completeSupervisorExecutionEpisode(opts: {
   const operation = {
     ...last,
     ...(providerUsage ? { provider_usage: providerUsage } : {}),
+    ...(usageAttribution ? { usage_attribution: usageAttribution } : {}),
     usage: Object.fromEntries(
       [
         "input_tokens",

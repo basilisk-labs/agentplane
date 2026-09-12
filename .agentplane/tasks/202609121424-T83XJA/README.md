@@ -4,7 +4,7 @@ title: "Implement durable 0.7.9 usage, cost, and latency accounting for ST-08 th
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on:
@@ -254,9 +254,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "a3ee9fe467038a030796157c5047394db064386e"
-  message: "🚧 T83XJA task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -1123,9 +1121,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 16
+    revision: 17
     schema_version: 1
-    updated_at: "2026-09-12T22:11:36.053Z"
+    updated_at: "2026-09-12T22:11:39.491Z"
     work_items:
       ST-08:
         attempt: 1
@@ -1246,14 +1244,76 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       ST-10-11:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "ST-10-11"
-        last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        last_failure:
+          cause_refs:
+            - "c-managed-external"
+          code: "validation_failed"
+          kind: "validation"
+          message: "The six scoped workspace changes are intended. They recover obsolete telemetry-only budget stops by rechecking current provider attribution without changing the budget, usage, or operation history."
+          retryable: true
+        output_manifests:
+          -
+            digest: "sha256:faac7663a9dd3c116ba19a4957745e59de45eb7401950dd1a45c843147c9e829"
+            id: "managed role and attempt accounting"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609121424-T83XJA"
+              work_item_id: "ST-10-11"
+            provenance:
+              - "sha256:1d2b12fa6b5ae1d0432686a639bcadf08d0bdaa18f169491d9795e726e9583bd"
+              - ".agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:ad7c81aeec4a1466c6f874c2191fd072b92be06b38c9a27de8b9ec135e50349e"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:e137d66001f51118845948c9bd5cca85971743127a56fa90b8fe239fcd601706"
+            id: "external exchange coverage accounting"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609121424-T83XJA"
+              work_item_id: "ST-10-11"
+            provenance:
+              - "sha256:1d2b12fa6b5ae1d0432686a639bcadf08d0bdaa18f169491d9795e726e9583bd"
+              - ".agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:ad7c81aeec4a1466c6f874c2191fd072b92be06b38c9a27de8b9ec135e50349e"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "REWORK_READY"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
+              check_id: "check-managed-accounting"
+              command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts"
+              detail: "Declared check failed: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts"
+              exit_code: 1
+              observed_at: "2026-09-12T22:11:39.479Z"
+              repository_snapshot_digest: "sha256:ad7c81aeec4a1466c6f874c2191fd072b92be06b38c9a27de8b9ec135e50349e"
+              status: "failed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
+              check_id: "check-external-accounting"
+              command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-external-accounting.test.ts"
+              detail: "Declared validation command bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-external-accounting.test.ts was not observed by AgentPlane."
+              exit_code: null
+              observed_at: "2026-09-12T22:11:39.479Z"
+              repository_snapshot_digest: "sha256:ad7c81aeec4a1466c6f874c2191fd072b92be06b38c9a27de8b9ec135e50349e"
+              status: "unsupported"
+          schema_version: 1
+          stale_evidence: []
+          status: "blocked"
+          unsatisfied_criteria:
+            - "c-managed-external"
       ST-12:
         attempt: 0
         claim_id: null
@@ -1309,6 +1369,23 @@ extensions:
         task_id: "202609121424-T83XJA"
         task_revision: 13
         work_item_id: "ST-09-17"
+      -
+        at: "2026-09-12T22:11:39.491Z"
+        from: "PLANNED"
+        to: "REWORK_READY"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:3bf7f2bba7ee59d20dde10615b1f90a745ad0d86c63218befbc71b16d1d47b80"
+        entity: "work_item"
+        id: "event_691ddadfc180e7b51261dd1f"
+        mutation_id: "external-result:work-order-202609121424-T83XJA-executor-858b1ed0b118fea6c8303ea3"
+        plan_digest: "sha256:106b3c2da2bc74b7f6f834e120c1d7a3337e9bf54034809cf9f4af86f6d2ee92"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609121424-T83XJA"
+        task_revision: 16
+        work_item_id: "ST-10-11"
     leases: []
     mutation_receipts:
       compatibility:sha256:1d87dc53ea2b6bcc2dab3735027c416e17d4d12335c5d63beb0800076b6f22b4:
@@ -1549,6 +1626,30 @@ extensions:
         mutation_id: "compatibility:sha256:f8b5d4517e4d07b36165caab592c7815c8ea3834fc0369384f140d2bedb25638"
         next_revision: 9
         previous_revision: 8
+        schema_version: 1
+        task_id: "202609121424-T83XJA"
+      external-result:work-order-202609121424-T83XJA-executor-858b1ed0b118fea6c8303ea3:
+        aggregate_digest: "sha256:fb5b10d56765f9df0b2ee67473dbe2e210232335d058b913fd67f05f4c6ffe31"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T22:11:39.491Z"
+          cause_refs:
+            - "semantic-result:sha256:3bf7f2bba7ee59d20dde10615b1f90a745ad0d86c63218befbc71b16d1d47b80"
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_691ddadfc180e7b51261dd1f"
+          mutation_id: "external-result:work-order-202609121424-T83XJA-executor-858b1ed0b118fea6c8303ea3"
+          plan_digest: "sha256:106b3c2da2bc74b7f6f834e120c1d7a3337e9bf54034809cf9f4af86f6d2ee92"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-T83XJA"
+          task_revision: 16
+          to: "REWORK_READY"
+          work_item_id: "ST-10-11"
+        mutation_id: "external-result:work-order-202609121424-T83XJA-executor-858b1ed0b118fea6c8303ea3"
+        next_revision: 17
+        previous_revision: 16
         schema_version: 1
         task_id: "202609121424-T83XJA"
       external-result:work-order-202609121424-T83XJA-executor-884458ec85c3b7ccb98fa5d5:

@@ -29,6 +29,7 @@ import { agentTransitionId } from "./agent-action-packet.js";
 import {
   externalAgentIssueDigest,
   externalAgentResultDigest,
+  externalAgentUsageAccounting,
   persistExternalAgentExchangeArtifacts,
   readExternalAgentExchange,
   readExternalAgentResult,
@@ -247,6 +248,14 @@ async function issueExternalAgentExchangeUnlocked(opts: {
     result_digest: null,
     result: null,
     postcondition_fingerprint: null,
+    host_usage: {
+      schema_version: 1,
+      observed_by: "host_transport",
+      state: "unallocatable",
+      reason: "external_host_turn_not_task_attributable",
+      provider_usage: null,
+      usage: null,
+    },
     created_at: at,
     updated_at: at,
   };
@@ -541,6 +550,7 @@ export async function acceptExternalAgentResult(opts: {
       task_id: opts.task_id,
       include_remote: includeRemote,
     });
+    const accounting = externalAgentUsageAccounting({ exchange });
     let journal = completeSupervisorExecutionEpisode({
       journal: issuedJournal,
       operation_key: operation.operation_key,
@@ -549,6 +559,9 @@ export async function acceptExternalAgentResult(opts: {
         semantic_status: envelope.result.status,
         result_digest: resultDigest,
       },
+      usage: accounting.usage,
+      provider_usage: accounting.provider_usage,
+      usage_attribution: accounting.usage_attribution,
       progress: after.workflowStep.preconditionFingerprint,
     });
     if (!(await store.compareAndSwap(issuedJournal.digest, journal))) {
