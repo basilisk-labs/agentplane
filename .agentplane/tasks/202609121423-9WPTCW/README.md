@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 44
+revision: 45
 origin:
   system: "manual"
 depends_on: []
@@ -59,8 +59,6 @@ quality_review:
     - "Residual risk: The cloud backend contract is characterized through local fakes and does not establish live-provider qualification."
 token_usage:
   agent_runs: 15
-  cached_input_observed_agent_runs: 0
-  cached_input_tokens: null
   input_tokens: null
   journal_digest: "sha256:72d0076484367ebcbad3257ae2b5bf4b3489c521496e9047049b3cf66fd05bc6"
   observed_agent_runs: 0
@@ -487,6 +485,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (blocked): The provider branch update applied, but the task worktree contains unrelated generated bun.lock drift that the read-only recovery episode cannot remove."
 events:
   -
     type: "status"
@@ -615,9 +616,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "1b54705a4af0428d3edaaca7b1d34b4ce74aed8f"
+  -
+    type: "comment"
+    at: "2026-09-12T18:26:15.731Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (blocked): The provider branch update applied, but the task worktree contains unrelated generated bun.lock drift that the read-only recovery episode cannot remove."
 doc_version: 3
-doc_updated_at: "2026-09-12T18:21:33.938Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-12T18:26:15.756Z"
+doc_updated_by: "SUPERVISOR"
 description: "Source contract: agentplane-roadmap-r2 cards ST-01, ST-02, ST-03, ST-04, ST-05, and ST-21. Reproduce a source-bound lifecycle and Blueprint consumer/writer inventory, freeze ordinary direct and branch-PR completion, rework versus infrastructure retry, admission/crash/context-role invariants, and local/remote-backend serialization, staleness, conflict, and unsupported-format behavior. Preserve I01-I12 and C01-C08. Do not introduce a new runtime registry, sync subsystem, provider access, or lifecycle format. The roadmap directory is source-only and must never be committed. Required checks: node --test scripts/checks/architecture-inventory.test.mjs; focused AgentPlane characterization tests for direct, branch, rework, recovery, and backend round trips with nonzero discovery; relevant critical suites, typecheck, schema and mirror checks."
 sections:
   Summary: |-
@@ -1828,7 +1834,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609121423-9WPTCW"
-    event_cursor: 33
+    event_cursor: 34
     final_validation:
       evidence:
         -
@@ -3461,9 +3467,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609121423-9WPTCW"
-    revision: 44
+    revision: 45
     schema_version: 1
-    updated_at: "2026-09-12T18:21:33.938Z"
+    updated_at: "2026-09-12T18:26:15.731Z"
     work_items:
       ST-01:
         attempt: 1
@@ -3967,6 +3973,30 @@ extensions:
         mutation_id: "compatibility:sha256:0663f1bd9f3e44df3bacff2c4ca0a89d53cb5f001e78e7ffedc8ba677ce14002"
         next_revision: 28
         previous_revision: 27
+        schema_version: 1
+        task_id: "202609121423-9WPTCW"
+      compatibility:sha256:0dae610748455238aaca30080d785567752f68bb8c9ddf4ddd01a28573af78c8:
+        aggregate_digest: "sha256:6d78fdd158f30c3af828904dfae4ef4bb1ddc0763aeee488a17a043b3e44443c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T18:26:15.731Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_78e24887c3c004863079c98e"
+          mutation_id: "compatibility:sha256:0dae610748455238aaca30080d785567752f68bb8c9ddf4ddd01a28573af78c8"
+          plan_digest: "sha256:a9ccea53ee91bda02540f559528bdce316d1a1154bdbc4da00b22a47189a40e8"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121423-9WPTCW"
+          task_revision: 44
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:0dae610748455238aaca30080d785567752f68bb8c9ddf4ddd01a28573af78c8"
+        next_revision: 45
+        previous_revision: 44
         schema_version: 1
         task_id: "202609121423-9WPTCW"
       compatibility:sha256:3f1c91626012cb1ea38f84447c82dc152ae0dcaba1d5aac3ad680d7aa779a50a:
