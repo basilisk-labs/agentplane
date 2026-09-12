@@ -1,10 +1,11 @@
 ---
 id: "202609121443-YAQJB7"
 title: "Fix task-centric scope extension targeting when multiple WorkItems are schedulable"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -54,6 +55,22 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "Pass: the persisted issued WorkItem identity replaces ambiguous scheduler selection for new requests, while legacy requests retain the previous fail-closed unique-selection rule."
+token_usage:
+  agent_runs: 6
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:8f94646dcf018742b4d862f4a2808ef44af48d7a6fbd38e45f7f54561f0bdb8d"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-12T15:27:19.592Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -248,8 +265,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "a7234fc30d705ad7246276932622601c73031c92"
-  message: "🚧 YAQJB7 task: apply external agent result"
+  hash: "f76e4491352c6854ee7a2fd83559cc742553010e"
+  message: "🚧 YAQJB7 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -269,6 +286,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: a7234fc30d70. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -326,9 +346,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-12T15:27:19.592Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "f76e4491352c6854ee7a2fd83559cc742553010e"
 doc_version: 3
-doc_updated_at: "2026-09-12T15:26:13.896Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-12T15:27:19.592Z"
+doc_updated_by: "CODER"
 description: "When a blocked external semantic result requests a repository scope extension, persist and use the blocked WorkItem identity so the exact USER-approved extension updates that WorkItem even when other independent WorkItems are schedulable. Preserve fail-closed state binding and add regression coverage. This is required to unblock task 202609121423-9WPTCW."
 sections:
   Summary: |-
@@ -874,7 +902,34 @@ extensions:
       schema_version: 1
       task_id: "202609121443-YAQJB7"
     event_cursor: 16
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609121443-YAQJB7"
+            - "git:a7234fc30d705ad7246276932622601c73031c92"
+          check_id: "check-focused"
+          command_identity: "bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-12T15:26:12.320Z"
+          repository_snapshot_digest: "sha256:81b4d426338af18b9cba5f0976b6cb104ed7b20bd3f80872cd3befb3b59e6a10"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121443-YAQJB7"
+            - "git:a7234fc30d705ad7246276932622601c73031c92"
+          check_id: "check-typecheck"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-12T15:26:12.320Z"
+          repository_snapshot_digest: "sha256:81b4d426338af18b9cba5f0976b6cb104ed7b20bd3f80872cd3befb3b59e6a10"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609121443-YAQJB7"
     intent:
       acceptance_criteria:
@@ -895,7 +950,7 @@ extensions:
 
         When a blocked external semantic result requests a repository scope extension, persist and use the blocked WorkItem identity so the exact USER-approved extension updates that WorkItem even when other independent WorkItems are schedulable. Preserve fail-closed state binding and add regression coverage. This is required to unblock task 202609121423-9WPTCW.
       task_id: "202609121443-YAQJB7"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -1196,9 +1251,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121443-YAQJB7"
-    revision: 19
+    revision: 20
     schema_version: 1
-    updated_at: "2026-09-12T15:26:13.896Z"
+    updated_at: "2026-09-12T15:27:19.592Z"
     work_items:
       WI-01:
         attempt: 1
@@ -1679,11 +1734,37 @@ extensions:
         previous_revision: 10
         schema_version: 1
         task_id: "202609121443-YAQJB7"
+      legacy-finish:202609121443-YAQJB7:2026-09-12T15:26:12.320Z:a7234fc30d705ad7246276932622601c73031c92:
+        aggregate_digest: "sha256:6fe8ef39777b326e6d635e36c3f08df002ee83235f32ed439049f569a0e95dbc"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-12T15:27:19.592Z"
+          cause_refs:
+            - "task-verification:202609121443-YAQJB7"
+            - "git:a7234fc30d705ad7246276932622601c73031c92"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_a4f37de3f9665f7d7a9fcdb9"
+          mutation_id: "legacy-finish:202609121443-YAQJB7:2026-09-12T15:26:12.320Z:a7234fc30d705ad7246276932622601c73031c92"
+          plan_digest: "sha256:8c2291aaa937649da54608045290d479e5db886c8169d8d4ba533a72ec6c40ef"
+          plan_revision: 2
+          repository_fingerprint: "sha256:81b4d426338af18b9cba5f0976b6cb104ed7b20bd3f80872cd3befb3b59e6a10"
+          schema_version: 1
+          task_id: "202609121443-YAQJB7"
+          task_revision: 19
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609121443-YAQJB7:2026-09-12T15:26:12.320Z:a7234fc30d705ad7246276932622601c73031c92"
+        next_revision: 20
+        previous_revision: 19
+        schema_version: 1
+        task_id: "202609121443-YAQJB7"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "a7234fc30d705ad7246276932622601c73031c92"
+    message: "🚧 YAQJB7 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "f3c1991ddd92943775b6b4b4688009afc3d523bc"
@@ -1907,3 +1988,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/6` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:8f94646dcf018742b4d862f4a2808ef44af48d7a6fbd38e45f7f54561f0bdb8d`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-12T15:27:19.592Z`
