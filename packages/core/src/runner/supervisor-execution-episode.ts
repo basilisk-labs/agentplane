@@ -321,13 +321,22 @@ function isAgentOperation(kind: SupervisorEpisodeOperationKind): boolean {
 function exhaustedDimensions(opts: {
   budget: SupervisorExecutionBudget;
   usage: SupervisorExecutionUsage;
+  operations?: SupervisorExecutionEpisodeJournal["operations"];
   next_kind?: SupervisorEpisodeOperationKind;
 }): string[] {
   const { budget, usage } = opts;
   const dimensions: string[] = [];
   const nextIsPaidAgent = isAgentOperation(opts.next_kind ?? "cli_operation");
   const tokenCoverageUnknown =
-    nextIsPaidAgent && (usage.token_observed_agent_runs ?? 0) < usage.agent_runs;
+    nextIsPaidAgent &&
+    (opts.operations ?? []).some(
+      (operation) =>
+        isAgentOperation(operation.kind) &&
+        operation.provider_usage !== undefined &&
+        (operation.usage?.input_tokens === undefined ||
+          operation.usage.output_tokens === undefined ||
+          operation.usage.total_tokens === undefined),
+    );
   if (usage.episodes >= budget.max_episodes) dimensions.push("episodes");
   if (
     isAgentOperation(opts.next_kind ?? "cli_operation") &&
@@ -692,6 +701,7 @@ export function startSupervisorExecutionEpisode(opts: {
   const exhausted = exhaustedDimensions({
     budget: journal.budget,
     usage: journal.usage,
+    operations: journal.operations,
     next_kind: opts.kind,
   });
   if (exhausted.length > 0) {
@@ -910,6 +920,7 @@ export function completeSupervisorExecutionEpisode(opts: {
   const exhausted = exhaustedDimensions({
     budget: completed.budget,
     usage: completed.usage,
+    operations: completed.operations,
   });
   return exhausted.length > 0
     ? stoppedJournal({
@@ -954,6 +965,7 @@ export function retryFailedSupervisorExecutionEpisode(opts: {
   const exhausted = exhaustedDimensions({
     budget: journal.budget,
     usage: journal.usage,
+    operations: journal.operations,
     next_kind: opts.next_kind,
   }).filter((dimension) => !dimension.endsWith("_telemetry"));
   if (exhausted.length > 0) {
@@ -1128,6 +1140,7 @@ export function prepareReplacementSupervisorExecutionEpisodeAfterFailure(opts: {
   const exhausted = exhaustedDimensions({
     budget: journal.budget,
     usage: journal.usage,
+    operations: journal.operations,
     next_kind: last.kind,
   }).filter((dimension) => !dimension.endsWith("_telemetry"));
   if (exhausted.length > 0) {
