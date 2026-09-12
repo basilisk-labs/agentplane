@@ -32,12 +32,13 @@ Created: 2026-09-12T14:30:55.296Z
  .../src/cli/run-cli.core.roadmap-branch.test.ts    |  29 ++++
  .../src/cli/run-cli.core.roadmap-direct.test.ts    |  34 +++++
  .../src/cli/run-cli.core.roadmap-recovery.test.ts  |  34 +++++
+ .../shared/roadmap-backend-roundtrip.test.ts       |  30 ++++
  scripts/baselines/architecture-inventory.json      | 159 +++++++++++++++++++++
  scripts/checks/architecture-inventory.mjs          | 113 +++++++++++++++
  scripts/checks/architecture-inventory.test.mjs     |  47 ++++++
  scripts/lib/test-route-registry.mjs                |   2 +-
  scripts/lib/test-route-registry.test.mjs           |  14 ++
- 8 files changed, 431 insertions(+), 1 deletion(-)
+ 9 files changed, 461 insertions(+), 1 deletion(-)
 ```
 
 </details>
