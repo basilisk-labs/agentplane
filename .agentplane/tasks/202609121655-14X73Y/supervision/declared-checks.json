@@ -8,7 +8,7 @@
         "task_outcome"
       ],
       "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts",
-      "duration_ms": 1640,
+      "duration_ms": 1748,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:e5be9d78f3d9bae7f401933eca9b9cd4297855a6df309bac94de6cfaeb8c4b13",
@@ -19,7 +19,7 @@
       },
       "script": "test:project",
       "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/commands/task/scope-extend.test.ts\n",
-      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121655-14X73Y-fix-exact-workitem-only-scope-extension-when-the\n\n\n Test Files  1 passed (1)\n      Tests  49 passed (49)\n   Start at  20:01:27\n   Duration  1.27s (transform 898ms, setup 0ms, import 1.17s, tests 38ms, environment 0ms)\n\n"
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121655-14X73Y-fix-exact-workitem-only-scope-extension-when-the\n\n\n Test Files  1 passed (1)\n      Tests  40 passed (40)\n   Start at  20:26:36\n   Duration  1.29s (transform 912ms, setup 0ms, import 1.19s, tests 39ms, environment 0ms)\n\n"
     },
     {
       "check_ids": [
@@ -29,7 +29,7 @@
         "task_outcome"
       ],
       "command": "bun run typecheck",
-      "duration_ms": 242,
+      "duration_ms": 276,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:e5be9d78f3d9bae7f401933eca9b9cd4297855a6df309bac94de6cfaeb8c4b13",

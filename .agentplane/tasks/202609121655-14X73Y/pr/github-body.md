@@ -15,8 +15,8 @@ Supersedes blocked task 202609121643-1PV2X7. Preserve exact pending work_item_id
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>

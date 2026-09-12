@@ -3,8 +3,8 @@
   "branch": "task/202609121655-14X73Y/fix-exact-workitem-only-scope-extension-when-the",
   "created_at": "2026-09-12T16:56:50.829Z",
   "diffstat_sha256": "sha256:30ae17f73064c6f4c3d9d2cc463657edfcb646eae638ebd7f160aeb84e8be64b",
-  "last_verified_at": "2026-09-12T17:01:28.631Z",
-  "last_verified_diffstat_sha256": "sha256:630e70588cf2cade2e2f3cdc9159795d44ebba7a56c944eb7d90b9e9ecab4f0d",
+  "last_verified_at": "2026-09-12T17:26:37.771Z",
+  "last_verified_diffstat_sha256": "sha256:30ae17f73064c6f4c3d9d2cc463657edfcb646eae638ebd7f160aeb84e8be64b",
   "pr_number": 5937,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5937",
   "pre_merge_closure": {

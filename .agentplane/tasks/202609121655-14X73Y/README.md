@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -24,10 +24,10 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "host_user_decision=sha256:c70941e957f4049b97bbee70da0639c2abf6530cdd28938950ce16a46730dd60"
 verification:
-  state: "pending"
-  updated_at: "2026-09-12T17:23:37.891Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
+  state: "ok"
+  updated_at: "2026-09-12T17:26:37.771Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
   state: "blocked"
@@ -136,7 +136,28 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "verification-record"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -337,8 +358,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 1d703105c56e. CLI accepted one state-bound external-agent semantic result."
     commit: "1d703105c56e7a949f6b4c078e558e3e6791c301"
+  -
+    type: "verify"
+    at: "2026-09-12T17:26:37.771Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-12T17:26:32.985Z"
+doc_updated_at: "2026-09-12T17:26:38.731Z"
 doc_updated_by: "SUPERVISOR"
 description: "Supersedes blocked task 202609121643-1PV2X7. Preserve exact pending work_item_id, require a real missing WorkItem root in a schedulable state, keep no-op and ambiguity rejection fail-closed, and include focused regression tests. This unblocks release task 202609121423-9WPTCW ST-03."
 sections:
@@ -431,6 +458,72 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:7fda73be16441aa35a08a8fcffbf016db679fc51e030745652a5a0ac9b5112ad, input_digest=sha256:72e08fd1a7f2a848351af76378a02f92e39e01e010cc0af84ac87ec33b8963d2
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121655-14X73Y/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121655-14X73Y Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121655-14X73Y/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121655-14X73Y Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121655-14X73Y/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121655-14X73Y Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121655-14X73Y/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121655-14X73Y Verification Contract check critical_paths (2/2)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121655-14X73Y/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121655-14X73Y Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121655-14X73Y/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121655-14X73Y Verification Contract check task_outcome (2/2)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121655-14X73Y-fix-exact-workitem-only-scope-extension-when-the/.agentplane/tasks/202609121655-14X73Y/blueprint/resolved-snapshot.json
+    - old_digest: 25515cb4ded9a32b13449f99348fa47b42cbe8ba06c1e30f6a32000bab6157fd
+    - current_digest: 25515cb4ded9a32b13449f99348fa47b42cbe8ba06c1e30f6a32000bab6157fd
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609121655-14X73Y
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609121655-14X73Y
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-12T17:26:37.771Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:7fda73be16441aa35a08a8fcffbf016db679fc51e030745652a5a0ac9b5112ad, input_digest=sha256:cd747d60a4ece65fdad7711ef4203f8411ab94991cd8c4a9c10584b46302aeab
 
     Details:
 
@@ -859,7 +952,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609121655-14X73Y"
-    event_cursor: 22
+    event_cursor: 23
     final_validation: null
     id: "202609121655-14X73Y"
     intent:
@@ -884,9 +977,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 26
+    revision: 27
     schema_version: 1
-    updated_at: "2026-09-12T17:26:32.933Z"
+    updated_at: "2026-09-12T17:26:38.730Z"
     work_items:
       WI-01:
         attempt: 1
@@ -1270,6 +1363,30 @@ extensions:
         mutation_id: "compatibility:sha256:6806cdc0d0d59d75c4714048e42ac4c8f4003c9c02e30ee7d7cbad6427717b7c"
         next_revision: 13
         previous_revision: 12
+        schema_version: 1
+        task_id: "202609121655-14X73Y"
+      compatibility:sha256:9545c7bee14a3a564b9a5b3d78a33552433a8948b8b40d999bc85f5ee2cc75d4:
+        aggregate_digest: "sha256:23b4cadb3b494e0a2c894fa31d764338e522713f7cca977283d73d41df516a6b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T17:26:38.730Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_6b132e6af871768e1922aafa"
+          mutation_id: "compatibility:sha256:9545c7bee14a3a564b9a5b3d78a33552433a8948b8b40d999bc85f5ee2cc75d4"
+          plan_digest: "sha256:408730a0702f2c28471447c875a390aed6c8eaeb0b4f3367500a097172b904e8"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121655-14X73Y"
+          task_revision: 26
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:9545c7bee14a3a564b9a5b3d78a33552433a8948b8b40d999bc85f5ee2cc75d4"
+        next_revision: 27
+        previous_revision: 26
         schema_version: 1
         task_id: "202609121655-14X73Y"
       compatibility:sha256:b0db015e4368492a237da0b0a055c2f927bf1525cdb966063aa0e47362b2ebf8:
@@ -1676,6 +1793,72 @@ Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:7fda73be16441aa35a08a8fcffbf016db679fc51e030745652a5a0ac9b5112ad, input_digest=sha256:72e08fd1a7f2a848351af76378a02f92e39e01e010cc0af84ac87ec33b8963d2
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121655-14X73Y/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121655-14X73Y Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121655-14X73Y/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121655-14X73Y Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121655-14X73Y/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121655-14X73Y Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121655-14X73Y/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121655-14X73Y Verification Contract check critical_paths (2/2)
+
+Check: task_outcome
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121655-14X73Y/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121655-14X73Y Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121655-14X73Y/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121655-14X73Y Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121655-14X73Y-fix-exact-workitem-only-scope-extension-when-the/.agentplane/tasks/202609121655-14X73Y/blueprint/resolved-snapshot.json
+- old_digest: 25515cb4ded9a32b13449f99348fa47b42cbe8ba06c1e30f6a32000bab6157fd
+- current_digest: 25515cb4ded9a32b13449f99348fa47b42cbe8ba06c1e30f6a32000bab6157fd
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609121655-14X73Y
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609121655-14X73Y
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-12T17:26:37.771Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:7fda73be16441aa35a08a8fcffbf016db679fc51e030745652a5a0ac9b5112ad, input_digest=sha256:cd747d60a4ece65fdad7711ef4203f8411ab94991cd8c4a9c10584b46302aeab
 
 Details:
 
