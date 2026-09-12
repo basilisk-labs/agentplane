@@ -956,6 +956,91 @@ describe("blocked task execution scope extension", () => {
     }
   });
 
+  it("extends the exact schedulable WorkItem when the task contract already has the scope", () => {
+    const noOp = fixture(
+      {},
+      { scope_roots: ["docs/releases"], repository_effects: ["documentation"] },
+    );
+    noOp.pending.work_item_id = "active";
+    const aggregate = structuredClone(taskCentricAggregate(noOp.task.id));
+    const active = aggregate.current_plan!.proposal.work_items.work_items.find(
+      (item) => item.id === "active",
+    )!;
+    active.scope_roots = [];
+    active.resource_claims = [];
+    noOp.task.extensions = {
+      ...withTaskCentricAggregate(noOp.task.extensions, aggregate),
+      [TASK_SCOPE_EXTENSION_REQUEST_KEY]: noOp.pending,
+    };
+
+    const executionContract = extendBlockedTaskExecutionContract({
+      command: noOp.command,
+      task: noOp.task,
+      scope_roots: noOp.pending.request.scope_roots,
+      repository_effects: noOp.pending.request.repository_effects,
+      request_digest: noOp.pending.request_digest,
+      by: "USER",
+    });
+    const updated = applyApprovedTaskScopeExtension({
+      task: noOp.task,
+      executionContract,
+      pending: noOp.pending,
+      scopeRoots: noOp.pending.request.scope_roots,
+      repositoryEffects: noOp.pending.request.repository_effects,
+      by: "USER",
+      now: NOW,
+    });
+    const nextPlan = taskCentricAggregateFromExtensions(updated.extensions)?.current_plan;
+    const nextActive = nextPlan?.proposal.work_items.work_items.find(
+      (item) => item.id === "active",
+    );
+
+    expect(executionContract.declaration.scope_roots).toEqual(
+      noOp.task.execution_contract?.declaration.scope_roots,
+    );
+    expect(nextActive?.scope_roots).toEqual(["docs/releases"]);
+    expect(nextActive?.resource_claims).toContainEqual({
+      kind: "path",
+      resource: "docs/releases",
+      mode: "write",
+    });
+  });
+
+  it.each([
+    [null, "READY"],
+    ["missing", "READY"],
+    ["active", "BLOCKED"],
+  ] as const)(
+    "rejects a task-contract no-op without an exact schedulable WorkItem delta (%s, %s)",
+    (workItemId, state) => {
+      const noOp = fixture(
+        {},
+        { scope_roots: ["docs/releases"], repository_effects: ["documentation"] },
+      );
+      noOp.pending.work_item_id = workItemId;
+      const aggregate = structuredClone(taskCentricAggregate(noOp.task.id));
+      aggregate.current_plan!.proposal.work_items.work_items.find(
+        (item) => item.id === "active",
+      )!.scope_roots = [];
+      aggregate.work_items.active!.state = state;
+      noOp.task.extensions = {
+        ...withTaskCentricAggregate(noOp.task.extensions, aggregate),
+        [TASK_SCOPE_EXTENSION_REQUEST_KEY]: noOp.pending,
+      };
+
+      expect(() =>
+        extendBlockedTaskExecutionContract({
+          command: noOp.command,
+          task: noOp.task,
+          scope_roots: noOp.pending.request.scope_roots,
+          repository_effects: noOp.pending.request.repository_effects,
+          request_digest: noOp.pending.request_digest,
+          by: "USER",
+        }),
+      ).toThrow(/must add a new scope root or repository effect/u);
+    },
+  );
+
   it("rejects unsafe roots and no-op extensions", () => {
     const { command, pending, task } = fixture();
 

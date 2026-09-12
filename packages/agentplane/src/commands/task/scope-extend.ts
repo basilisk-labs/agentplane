@@ -3,6 +3,7 @@ import {
   EXECUTION_GRANT_EXTENSION_KEY,
   executionGrantForContextFromExtensions,
   rebaseExecutionGrantScope,
+  taskCentricAggregateFromExtensions,
   type TaskRepositoryEffect,
   repositoryEffectsForPath,
 } from "@agentplaneorg/core/tasks";
@@ -35,6 +36,23 @@ const output = createCliEmitter();
 
 function uniqueSorted<T extends string>(values: readonly T[]): T[] {
   return [...new Set(values)].toSorted();
+}
+
+function hasExactSchedulableWorkItemScopeDelta(opts: {
+  task: TaskData;
+  work_item_id: string | null;
+  scope_roots: readonly string[];
+}): boolean {
+  if (!opts.work_item_id || opts.scope_roots.length === 0) return false;
+  const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
+  const plan = aggregate?.current_plan;
+  const runtime = aggregate?.work_items[opts.work_item_id];
+  const workItem = plan?.proposal.work_items.work_items.find(
+    (item) => item.id === opts.work_item_id,
+  );
+  if (!runtime || !workItem || !["PLANNED", "READY", "REWORK_READY"].includes(runtime.state))
+    return false;
+  return opts.scope_roots.some((root) => !workItem.scope_roots.includes(root));
 }
 
 export function extendBlockedTaskExecutionContract(opts: {
@@ -107,9 +125,16 @@ export function extendBlockedTaskExecutionContract(opts: {
     ...current.declaration.repository_effects,
     ...opts.repository_effects,
   ]);
-  if (
+  const executionContractIsUnchanged =
     scopeRoots.length === current.declaration.scope_roots.length &&
-    repositoryEffects.length === current.declaration.repository_effects.length
+    repositoryEffects.length === current.declaration.repository_effects.length;
+  if (
+    executionContractIsUnchanged &&
+    !hasExactSchedulableWorkItemScopeDelta({
+      task: opts.task,
+      work_item_id: pending.work_item_id,
+      scope_roots: addedRoots,
+    })
   ) {
     throw new CliError({
       code: "E_VALIDATION",
