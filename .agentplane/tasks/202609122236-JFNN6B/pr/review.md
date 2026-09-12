@@ -6,7 +6,7 @@ Created: 2026-09-12T22:42:33.380Z
 
 - Task: `202609122236-JFNN6B`
 - Title: Simplify the test suite without weakening safety-critical coverage
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609122236-JFNN6B/simplify-the-test-suite-without-weakening-safety`
 - Canonical task record: `.agentplane/tasks/202609122236-JFNN6B/README.md`
 
