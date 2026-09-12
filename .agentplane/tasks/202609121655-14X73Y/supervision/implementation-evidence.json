@@ -1,0 +1,49 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 0c0033906047eba99582674dbda9a7f3ef235f52..1d703105c56e7a949f6b4c078e558e3e6791c301",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 0c0033906047eba99582674dbda9a7f3ef235f52..1d703105c56e7a949f6b4c078e558e3e6791c301",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202609121655-14X73Y/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609121655-14X73Y/pr/github-body.md",
+        "M\t.agentplane/tasks/202609121655-14X73Y/pr/github-title.txt",
+        "M\t.agentplane/tasks/202609121655-14X73Y/pr/meta.json",
+        "M\t.agentplane/tasks/202609121655-14X73Y/pr/review.md",
+        "A\tpackages/agentplane/src/commands/task/scope-extend.command.test.ts",
+        "M\tpackages/agentplane/src/commands/task/scope-extend.test.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "0c0033906047eba99582674dbda9a7f3ef235f52",
+  "implementation_commit": "1d703105c56e7a949f6b4c078e558e3e6791c301",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [],
+    "classification": [],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609121655-14X73Y"
+}

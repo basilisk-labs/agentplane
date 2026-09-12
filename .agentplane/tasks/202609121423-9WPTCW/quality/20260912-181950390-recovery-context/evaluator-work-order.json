@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609121423-9WPTCW-a948318648685c9ccc25ddcf",
+  "prepared_at": "2026-09-12T18:19:50.390Z",
+  "task": {
+    "id": "202609121423-9WPTCW",
+    "revision": 42,
+    "objective": "Implement the 0.7.9 baseline inventory and lifecycle characterization for ST-01 through ST-05 and ST-21\n\nSource contract: agentplane-roadmap-r2 cards ST-01, ST-02, ST-03, ST-04, ST-05, and ST-21. Reproduce a source-bound lifecycle and Blueprint consumer/writer inventory, freeze ordinary direct and branch-PR completion, rework versus infrastructure retry, admission/crash/context-role invariants, and local/remote-backend serialization, staleness, conflict, and unsupported-format behavior. Preserve I01-I12 and C01-C08. Do not introduce a new runtime registry, sync subsystem, provider access, or lifecycle format. The roadmap directory is source-only and must never be committed. Required checks: node --test scripts/checks/architecture-inventory.test.mjs; focused AgentPlane characterization tests for direct, branch, rework, recovery, and backend round trips with nonzero discovery; relevant critical suites, typecheck, schema and mirror checks.",
+    "acceptance_criteria": [
+      "node --test scripts/checks/architecture-inventory.test.mjs",
+      "- In scope: Source contract: agentplane-roadmap-r2 cards ST-01, ST-02, ST-03, ST-04, ST-05, and ST-21. Reproduce a source-bound lifecycle and Blueprint consumer/writer inventory, freeze ordinary direct and branch-PR completion, rework versus infrastructure retry, admission/crash/context-role invariants, and local/remote-backend serialization, staleness, conflict, and unsupported-format behavior. Preserve I01-I12 and C01-C08. Do not introduce a new runtime registry, sync subsystem, provider access, or lifecycle format. The roadmap directory is source-only and must never be committed. Required checks: node --test scripts/checks/architecture-inventory.test.mjs; focused AgentPlane characterization tests for direct, branch, rework, recovery, and backend round trips with nonzero discovery; relevant critical suites, typecheck, schema and mirror checks.\n- Out of scope: unrelated refactors not required for \"Implement the 0.7.9 baseline inventory and lifecycle characterization for ST-01 through ST-05 and ST-21\".",
+      "Defined six dependency-ordered WorkItems for the 0.7.9 inventory and lifecycle characterization scope.",
+      "1. Run `node --test scripts/checks/architecture-inventory.test.mjs`; require a nonzero passing test count and a reproducible inventory for the same clean SHA.\n2. Run `bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts`; require direct success, forged-result rejection, independent review, and idempotent terminal replay.\n3. Run `bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-branch.test.ts`; require exact hosted identities, distinct USER/provider waits, and fail-closed wrong-head and moved-base cases.\n4. Run `bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts`; require zero new EXECUTOR dispatches for infrastructure retry and trusted SUPERVISOR rework evidence.\n5. Run `bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts`; require exact admission identity and reuse of accepted semantic results across crash boundaries.\n6. Run `bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-backend-roundtrip.test.ts`; require Plan, authority, and verification round trips plus stale, conflict, field-loss, and unsupported-format rejection.\n7. Run `bun run typecheck`, `bun run schemas:check`, `bun run artifacts:check`, `bun run test:critical`, and `bun run test:backend-critical`; require all checks to pass without weakening existing negative cases.\n8. Review the final diff and `git status --short --untracked-files=all`; require no roadmap file, unrelated task artifact, secret, generated drift, or unintended path in the task change."
+    ]
+  },
+  "evaluated_sha": "ac856fe3cc89dea00266576286e9733694802e58",
+  "diff_base_sha": "f3c1991ddd92943775b6b4b4688009afc3d523bc",
+  "blueprint_digest": "4f418b286c8e456059156718be69923286eed7a14207bd37ea7d92df315c6def",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609121423-9WPTCW/quality/20260912-181950390-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:c835308e7249ce2639d260ddc08043113af06a1dba8575164db60b177864a5b0",
+    "prompt_path": ".agentplane/tasks/202609121423-9WPTCW/quality/objects/sha256/7742ae9ae556aaadb3a1f2b08f19d06063f02f82ab3357a3d32cc71ddd680874.md",
+    "result_schema_path": ".agentplane/tasks/202609121423-9WPTCW/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609121423-9WPTCW/README.md",
+      "sha256": "sha256:aa38ddfa373a8f98c922de27a3f73d1211d679aea4eb680d26144e7ba5843d9e",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609121423-9WPTCW/quality/objects/sha256/a291f6466052bfa24f147ad1b5b96990656de650401aad0ccc90c9e62acd1396.patch",
+      "sha256": "sha256:a291f6466052bfa24f147ad1b5b96990656de650401aad0ccc90c9e62acd1396",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609121423-9WPTCW/quality/objects/sha256/f3e569be75ff70fa1f8de43325702ae00d3f60fe9c587a2a0a365c52a3ef08b4.json",
+      "sha256": "sha256:f3e569be75ff70fa1f8de43325702ae00d3f60fe9c587a2a0a365c52a3ef08b4",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609121423-9WPTCW/verification/20260912181934737-5f756d6360065722.json",
+      "sha256": "sha256:a469bb8cd27a9d7de4a26842a5197e53bdc5a93ed3516a8f97cff764740d15f9",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609121423-9WPTCW/quality/objects/sha256/a72f9a6f199ad5e966cf1f27c0ffe2d996d368307146ae61783b634f0e857c7d.json",
+      "sha256": "sha256:a72f9a6f199ad5e966cf1f27c0ffe2d996d368307146ae61783b634f0e857c7d",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
