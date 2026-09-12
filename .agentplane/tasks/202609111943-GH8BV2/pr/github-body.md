@@ -28,11 +28,13 @@ Reproduce the blocked recovery from task 202609111417-V1737V: the supervisor emi
 
 ```text
  .../commands/release/release-ci-contract.test.ts   |  2 +-
+ .../commands/task/direct-task-verification.test.ts | 31 +++++++++++++++++++
+ .../src/commands/task/direct-task-verification.ts  |  1 +
  .../agentplane/src/commands/task/scope-extend.ts   |  1 +
  .../src/runtime/task-routing/resolve.test.ts       | 35 ++++++++++++++++++++++
  .../agentplane/src/runtime/task-routing/resolve.ts | 11 +++++--
  scripts/checks/run-local-ci.mjs                    |  3 +-
- 5 files changed, 48 insertions(+), 4 deletions(-)
+ 7 files changed, 80 insertions(+), 4 deletions(-)
 ```
 
 </details>

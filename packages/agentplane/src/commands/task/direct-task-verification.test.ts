@@ -879,6 +879,37 @@ describe("direct task verification", () => {
     expect(mocks.runProcess).toHaveBeenCalledOnce();
   });
 
+  it("gives full local CI a bounded outer window without widening ordinary checks", async () => {
+    const cwd = await root();
+    mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "check ok", stderr: "" });
+
+    const result = await runDirectTaskVerification({
+      command: command(cwd),
+      task: { verify: ["bun run ci:local:full", "bun run test:critical"] },
+      task_id: TASK_ID,
+      cwd,
+      run_process: mocks.runProcess,
+    });
+
+    expect(result).toMatchObject({ status: "passed" });
+    expect(mocks.runProcess).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        command: "bun",
+        args: ["run", "ci:local:full"],
+        timeoutMs: 60 * 60_000,
+      }),
+    );
+    expect(mocks.runProcess).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        command: "bun",
+        args: ["run", "test:critical"],
+        timeoutMs: 30 * 60_000,
+      }),
+    );
+  });
+
   it("gives the canonical provider qualification its bounded release window", async () => {
     const cwd = await root();
     mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "provider gate ok", stderr: "" });
