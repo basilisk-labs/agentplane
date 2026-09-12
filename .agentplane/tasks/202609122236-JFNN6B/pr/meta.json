@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:a163ea05d1d9b3559d310137e45c76769e36f3039b7e0fd8305d8115a1202a13",
   "pr_number": 5943,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5943",
+  "pre_merge_closure": {
+    "basis_commit": "89f2f1c91f1de2bd7bafc65abc607eb6ef4d7aae",
+    "branch": "task/202609122236-JFNN6B/simplify-the-test-suite-without-weakening-safety",
+    "pr_number": 5943,
+    "recorded_at": "2026-09-12T23:38:53.402Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
