@@ -4,7 +4,7 @@ title: "Simplify the test suite without weakening safety-critical coverage"
 status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -21,9 +21,9 @@ verify:
   - "bun run vitest:projects:check"
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-12T22:42:24.477Z"
-  updated_by: "HOST:codex:USER"
-  note: "host_user_decision=sha256:ea81a88200dad920afcb822476f64a46d5897cf593ce4a41f9a16b0f8d1280fc"
+  updated_at: "2026-09-12T22:52:33.593Z"
+  updated_by: "USER"
+  note: "Refresh execution grant after the approved scope-extension blocker."
 verification:
   state: "pending"
   updated_at: null
@@ -254,6 +254,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The committed implementation needs one wrapper deletion and the conservative package.json dependency effect before it can be completed. Recommended action: Add the compatibility wrapper path and the conservative dependencies effect, then issue a replacement implementation packet. Requested scope: roots=scripts/check-coverage-thresholds.mjs; repository effects=dependencies; request digest=sha256:516e1a981070008e091076fb2f8418bffc4785476ea545e370912e14cddfa5ad. Agentplane receipt: external-agent-blocker/tr_7ed08c68bc630a6450cc26890dca997c/sha256:588428b1bdb3bc846a02f3c64b28c04581f276b133326097314f65f250c30207/sha256:516e1a981070008e091076fb2f8418bffc4785476ea545e370912e14cddfa5ad."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The committed implementation still needs the approved wrapper deletion and conservative package.json dependency effect. Recommended action: Apply the exact user-approved scope extension and issue a freshly scoped implementation packet. Requested scope: roots=scripts/check-coverage-thresholds.mjs; repository effects=dependencies; request digest=sha256:516e1a981070008e091076fb2f8418bffc4785476ea545e370912e14cddfa5ad. Agentplane receipt: external-agent-blocker/tr_0a82a1d806e742c481ecbac6642f63d1/sha256:cacdbd4fd319aee797cde23053bf02e90f346cd4b928f6a0cdaedc56f9d2e51a/sha256:516e1a981070008e091076fb2f8418bffc4785476ea545e370912e14cddfa5ad."
 events:
   -
     type: "status"
@@ -277,8 +280,15 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The committed implementation needs one wrapper deletion and the conservative package.json dependency effect before it can be completed. Recommended action: Add the compatibility wrapper path and the conservative dependencies effect, then issue a replacement implementation packet. Requested scope: roots=scripts/check-coverage-thresholds.mjs; repository effects=dependencies; request digest=sha256:516e1a981070008e091076fb2f8418bffc4785476ea545e370912e14cddfa5ad. Agentplane receipt: external-agent-blocker/tr_7ed08c68bc630a6450cc26890dca997c/sha256:588428b1bdb3bc846a02f3c64b28c04581f276b133326097314f65f250c30207/sha256:516e1a981070008e091076fb2f8418bffc4785476ea545e370912e14cddfa5ad."
+  -
+    type: "status"
+    at: "2026-09-12T22:53:30.285Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The committed implementation still needs the approved wrapper deletion and conservative package.json dependency effect. Recommended action: Apply the exact user-approved scope extension and issue a freshly scoped implementation packet. Requested scope: roots=scripts/check-coverage-thresholds.mjs; repository effects=dependencies; request digest=sha256:516e1a981070008e091076fb2f8418bffc4785476ea545e370912e14cddfa5ad. Agentplane receipt: external-agent-blocker/tr_0a82a1d806e742c481ecbac6642f63d1/sha256:cacdbd4fd319aee797cde23053bf02e90f346cd4b928f6a0cdaedc56f9d2e51a/sha256:516e1a981070008e091076fb2f8418bffc4785476ea545e370912e14cddfa5ad."
 doc_version: 3
-doc_updated_at: "2026-09-12T22:48:46.726Z"
+doc_updated_at: "2026-09-12T22:53:30.285Z"
 doc_updated_by: "SUPERVISOR"
 description: "Remove unused GPT-5.5/GPT-5.6 prompt diagnostic implementations and self-tests, retain the prompt module compiler and model-neutral behavioral contracts, remove the historical fixed-byte assertion while retaining semantic prompt assertions, remove the duplicate coverage-threshold configuration guard, and route agent-efficiency benchmark tests to a separate qualification suite instead of the normal critical CLI gate. Preserve exit-code, scope, symlink, protected-path, trust-boundary, task-centric, and context critical tests. Reduce critical suite process overhead only if the resulting suite passes repeatedly. Avoid files currently modified by tasks 202609080727-BAWTEE and 202609121424-T83XJA. Do not modify benchmark fixtures or semantic gateway implementation."
 sections:
@@ -305,9 +315,9 @@ sections:
   Findings: ""
 extensions:
   agentplane.execution_grant:
-    actor: "HOST:codex:USER"
-    approval_evidence_digest: "sha256:ea81a88200dad920afcb822476f64a46d5897cf593ce4a41f9a16b0f8d1280fc"
-    approval_kind: "host_user_decision"
+    actor: "USER"
+    approval_evidence_digest: null
+    approval_kind: "manual_operator"
     capabilities:
       - "provider.merge"
       - "provider.pr"
@@ -315,20 +325,20 @@ extensions:
       - "repository.write"
       - "task.lifecycle"
       - "task.scope.extend"
-    completion_contract_digest: "sha256:a84eaf11b1be994cc4b9d3acf4488077de494b803418609d314aec44f37dcc48"
-    digest: "sha256:492df129315384053fdccfc8beb8a2f0784214e4f10fe25c61963da355a8724f"
-    grant_id: "02a9c5e8-e4d9-4748-9e22-cd85b4b23193"
-    issued_at: "2026-09-12T22:42:24.477Z"
+    completion_contract_digest: "sha256:8dd40489408ec12ea0644f2cd273b3c3e946b46f12f76e172ab9a50e5254269a"
+    digest: "sha256:8e1ef7abc50775980090217e0c1d6c3011d1c09d91f10bc3ab9d9bee1e4aa149"
+    grant_id: "852341f2-bb1f-4cea-b8de-020595406eab"
+    issued_at: "2026-09-12T22:52:33.593Z"
     kind: "agentplane.execution_grant"
     plan_digest: "sha256:2b291f68cf366cd4c5032e4726a8dc47b044869a19d3ed4ebb4ff935f87404e9"
-    plan_revision: 3
+    plan_revision: 9
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
     scope_digest: "sha256:7c13e051dee4c78de30961a10b3f8fb89f7cadf0286ec67ceee29a6567552d81"
     status: "active"
     task_id: "202609122236-JFNN6B"
   agentplane.scope_extension_request:
-    blocker_state_fingerprint: "sha256:588428b1bdb3bc846a02f3c64b28c04581f276b133326097314f65f250c30207"
+    blocker_state_fingerprint: "sha256:cacdbd4fd319aee797cde23053bf02e90f346cd4b928f6a0cdaedc56f9d2e51a"
     kind: "task_scope_extension_request"
     request:
       rationale: "Remove the now-broken compatibility wrapper and admit the existing script-only package.json change under the repository path classifier."
@@ -340,7 +350,7 @@ extensions:
     request_digest: "sha256:516e1a981070008e091076fb2f8418bffc4785476ea545e370912e14cddfa5ad"
     schema_version: 1
     status: "pending"
-    transition_id: "tr_7ed08c68bc630a6450cc26890dca997c"
+    transition_id: "tr_0a82a1d806e742c481ecbac6642f63d1"
     work_item_id: "work-item-cleanup"
   agentplane.task_centric:
     current_plan:
@@ -922,7 +932,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609122236-JFNN6B"
-    event_cursor: 7
+    event_cursor: 10
     final_validation: null
     id: "202609122236-JFNN6B"
     intent:
@@ -957,9 +967,9 @@ extensions:
     lifecycle: "BLOCKED"
     plan_amendments: []
     plan_history: []
-    revision: 9
+    revision: 12
     schema_version: 1
-    updated_at: "2026-09-12T22:48:46.726Z"
+    updated_at: "2026-09-12T22:53:30.285Z"
     work_items:
       work-item-cleanup:
         attempt: 0
@@ -984,6 +994,30 @@ extensions:
     events: []
     leases: []
     mutation_receipts:
+      compatibility:sha256:1592e434d9fd7539732652499193cc310fbc04d00595744bf4bb59e03d2d420d:
+        aggregate_digest: "sha256:7e2804f654461c117622bcc86182058d8bf30179b1068b08c78fb51722b6a2ec"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T22:48:46.726Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_5ef86469d1074db60ffb621c"
+          mutation_id: "compatibility:sha256:1592e434d9fd7539732652499193cc310fbc04d00595744bf4bb59e03d2d420d"
+          plan_digest: "sha256:fc3fa0d62ac054df01a9b8836d07718a3949500c6c4fb435a9f8f5b8034a00ed"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609122236-JFNN6B"
+          task_revision: 9
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:1592e434d9fd7539732652499193cc310fbc04d00595744bf4bb59e03d2d420d"
+        next_revision: 10
+        previous_revision: 9
+        schema_version: 1
+        task_id: "202609122236-JFNN6B"
       compatibility:sha256:49590b7a17ee04b84aa13cb1da694ef646ba3c9465a83393fc5913ebb54eaf4a:
         aggregate_digest: "sha256:1def4b693c6da6f982a85f214f4f0098bbbdf0249fe169c2a9382d07b96f753f"
         event:
@@ -1126,6 +1160,54 @@ extensions:
         mutation_id: "compatibility:sha256:a8e3564b3f694d4d8e9dfa09080cb75c9f420ad34eaeb9830f9266f4090174d8"
         next_revision: 6
         previous_revision: 5
+        schema_version: 1
+        task_id: "202609122236-JFNN6B"
+      compatibility:sha256:b7daa50e602c4a52fce4de79e35277b0a1adde9ac4f035ca4d24cc921a940983:
+        aggregate_digest: "sha256:d7d8bfd358f7556aef6783f3be5ed95756fabe8d6aa64972b2c0519907424f37"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T22:53:30.285Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_f0a7c0e2c5d6a836534dadaf"
+          mutation_id: "compatibility:sha256:b7daa50e602c4a52fce4de79e35277b0a1adde9ac4f035ca4d24cc921a940983"
+          plan_digest: "sha256:fc3fa0d62ac054df01a9b8836d07718a3949500c6c4fb435a9f8f5b8034a00ed"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609122236-JFNN6B"
+          task_revision: 10
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b7daa50e602c4a52fce4de79e35277b0a1adde9ac4f035ca4d24cc921a940983"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202609122236-JFNN6B"
+      compatibility:sha256:d80d8ed0abe6e41bb9a2fdc4a2830180f91bd2daef6987c2114a55d940cd0c5a:
+        aggregate_digest: "sha256:a77c9ba6c7ac7cf089ebfbdfd32673e0572b265e9b1778f0626b72aafdda76d0"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T22:53:30.285Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_4f1640d9008dec33a5b74354"
+          mutation_id: "compatibility:sha256:d80d8ed0abe6e41bb9a2fdc4a2830180f91bd2daef6987c2114a55d940cd0c5a"
+          plan_digest: "sha256:fc3fa0d62ac054df01a9b8836d07718a3949500c6c4fb435a9f8f5b8034a00ed"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609122236-JFNN6B"
+          task_revision: 11
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:d80d8ed0abe6e41bb9a2fdc4a2830180f91bd2daef6987c2114a55d940cd0c5a"
+        next_revision: 12
+        previous_revision: 11
         schema_version: 1
         task_id: "202609122236-JFNN6B"
       compatibility:sha256:f0d1a076ff96dd84335c9de6b87c311063c9e5c072d4574192231d44f10f0da2:
