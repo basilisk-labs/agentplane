@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check c354b8a3b9189c0c25d71a34ecd9b16bd3ad2e3f..4ce33c3431655c6350d002d85cd531f9a0e17f86",
+      "command": "git diff --check 0c0033906047eba99582674dbda9a7f3ef235f52..1d703105c56e7a949f6b4c078e558e3e6791c301",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,16 +13,17 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB c354b8a3b9189c0c25d71a34ecd9b16bd3ad2e3f..4ce33c3431655c6350d002d85cd531f9a0e17f86",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 0c0033906047eba99582674dbda9a7f3ef235f52..1d703105c56e7a949f6b4c078e558e3e6791c301",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
         "M\t.agentplane/tasks/202609121655-14X73Y/pr/diffstat.txt",
         "M\t.agentplane/tasks/202609121655-14X73Y/pr/github-body.md",
+        "M\t.agentplane/tasks/202609121655-14X73Y/pr/github-title.txt",
         "M\t.agentplane/tasks/202609121655-14X73Y/pr/meta.json",
         "M\t.agentplane/tasks/202609121655-14X73Y/pr/review.md",
-        "M\tpackages/agentplane/src/commands/task/scope-extend.test.ts",
-        "M\tpackages/agentplane/src/commands/task/scope-extend.ts"
+        "A\tpackages/agentplane/src/commands/task/scope-extend.command.test.ts",
+        "M\tpackages/agentplane/src/commands/task/scope-extend.test.ts"
       ]
     },
     {
@@ -32,8 +33,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "c354b8a3b9189c0c25d71a34ecd9b16bd3ad2e3f",
-  "implementation_commit": "4ce33c3431655c6350d002d85cd531f9a0e17f86",
+  "execution_base_commit": "0c0033906047eba99582674dbda9a7f3ef235f52",
+  "implementation_commit": "1d703105c56e7a949f6b4c078e558e3e6791c301",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
