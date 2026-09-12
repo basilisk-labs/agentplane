@@ -4,7 +4,7 @@ title: "Allow an approved repository-effect-only scope extension to recover a le
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -27,6 +27,34 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-12T14:38:47.235Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 2 typed finding(s)."
+  evaluated_sha: "3e9fde47b020cbe33a5e292390745b3e7f837bf7"
+  blueprint_digest: "700ec36b764920edfb4de80d78f0e7febb1e428f41224499814bc4e07118648e"
+  evidence_refs:
+    - ".agentplane/tasks/202609111943-GH8BV2/quality/20260912-143628992-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609111943-GH8BV2/quality/20260912-143628992-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609111943-GH8BV2/quality/objects/sha256/bfc5b4151764f2021bae82c198bbfd23e5cb927fe1763e9d7c5ab9e91d86c71c.md"
+    - ".agentplane/tasks/202609111943-GH8BV2/quality/20260912-143628992-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609111943-GH8BV2/quality/20260912-143628992-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609111943-GH8BV2/quality/20260912-143628992-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202609111943-GH8BV2/quality/20260912-143628992-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609111943-GH8BV2/README.md"
+    - ".agentplane/tasks/202609111943-GH8BV2/quality/objects/sha256/fa42e1242ae71bd1531ce67842d626e6e9f6e69b2749568631ec008d3237dbb8.patch"
+    - ".agentplane/tasks/202609111943-GH8BV2/quality/objects/sha256/dfec286ed2a4ab23693d5f652059a81081b0babd0ddf58b52c999e3ef8f5d717.json"
+    - ".agentplane/tasks/202609111943-GH8BV2/verification/20260912143620257-e5aba31d725cf653.json"
+    - ".agentplane/tasks/202609111943-GH8BV2/quality/objects/sha256/d61ca3983bc04d1f9320b5d8b330a545095cdb526f3ed99b5962d55e514122fd.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The evaluated diff still sets DEFAULT_LOCAL_VITEST_SUITE_TIMEOUT_MS to 20 * 60 * 1000 and asserts 20 minutes in release-ci-contract.test.ts. The current user-approved rework requires 30 minutes after repeated clean core-suite terminations at the exact 20-minute boundary. Update only those two values to 30 minutes and rerun the scoped verification."
+    - "Residual risk: A single clean run under the 20-minute default does not remove the previously reproduced boundary timeout variability."
 execution_route:
   frozen: true
   reason_codes:
@@ -768,7 +796,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609111943-GH8BV2"
-    event_cursor: 18
+    event_cursor: 19
     final_validation: null
     id: "202609111943-GH8BV2"
     intent:
@@ -793,9 +821,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 21
+    revision: 22
     schema_version: 1
-    updated_at: "2026-09-12T14:36:21.575Z"
+    updated_at: "2026-09-12T14:36:21.579Z"
     work_items:
       preserve-legacy-effect-only-scope:
         attempt: 1
@@ -1250,6 +1278,30 @@ extensions:
         mutation_id: "compatibility:sha256:ace41ca515b7d6cb4e1428530de8b5ebbfa279f90dcab8c4c7d5bb9f40c8eea9"
         next_revision: 14
         previous_revision: 13
+        schema_version: 1
+        task_id: "202609111943-GH8BV2"
+      compatibility:sha256:ae52dbc69587cd6ba40f058cbe6d33ed27cde5ae8cef7d0a774d2a9d2e9e134a:
+        aggregate_digest: "sha256:9825026078a8b2eafeaf69004255d7f0a000ec0aa2255c753cec0938e3f9ad3b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T14:36:21.579Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_edb6df75962591257fb224ee"
+          mutation_id: "compatibility:sha256:ae52dbc69587cd6ba40f058cbe6d33ed27cde5ae8cef7d0a774d2a9d2e9e134a"
+          plan_digest: "sha256:7fc277f120476836b7d4dde39048359f4d0c7d4862462506ebe45ad3a8b43a0d"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111943-GH8BV2"
+          task_revision: 21
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:ae52dbc69587cd6ba40f058cbe6d33ed27cde5ae8cef7d0a774d2a9d2e9e134a"
+        next_revision: 22
+        previous_revision: 21
         schema_version: 1
         task_id: "202609111943-GH8BV2"
       compatibility:sha256:b2f026350d6983a56a4b4767119d34f95d9b221787eb2f2198d2c523156efef5:
