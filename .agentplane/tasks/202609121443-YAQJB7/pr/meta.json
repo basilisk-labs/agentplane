@@ -5,8 +5,8 @@
   "diffstat_sha256": "sha256:a10991bb470702ce0421f63a7ad6506889bf8718280bbcd15d8ca64417371464",
   "last_verified_at": "2026-09-12T15:58:29.304Z",
   "last_verified_diffstat_sha256": "sha256:a10991bb470702ce0421f63a7ad6506889bf8718280bbcd15d8ca64417371464",
-  "pr_number": 5935,
-  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5935",
+  "pr_number": 5936,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5936",
   "pre_merge_closure": {
     "basis_commit": "d49a811d9eb4b4a2f3b1ff7b7304fdd568b9751f",
     "branch": "task/202609121443-YAQJB7/fix-task-centric-scope-extension-targeting-when",
@@ -25,7 +25,7 @@
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202609121443-YAQJB7",
-  "updated_at": "2026-09-12T14:53:13.365Z",
+  "updated_at": "2026-09-12T16:06:08.064Z",
   "verify": {
     "status": "pass"
   }
