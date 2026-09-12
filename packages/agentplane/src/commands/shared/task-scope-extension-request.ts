@@ -73,7 +73,6 @@ export type TaskScopeExtensionRequestState = {
   applied_at?: string;
   applied_by?: string;
 };
-
 const REPOSITORY_EFFECTS = new Set<TaskRepositoryEffect>([
   "repository_write",
   "documentation",
@@ -86,7 +85,6 @@ const REPOSITORY_EFFECTS = new Set<TaskRepositoryEffect>([
   "release_metadata",
   "security_boundary",
 ]);
-
 function uniqueSorted<T extends string>(values: readonly T[]): T[] {
   return [...new Set(values)].toSorted();
 }
@@ -173,10 +171,9 @@ export function parseTaskScopeExtensionRequestState(
     !/^tr_[0-9a-f]{32}$/u.test(raw.transition_id) ||
     typeof raw.blocker_state_fingerprint !== "string" ||
     !/^sha256:[0-9a-f]{64}$/u.test(raw.blocker_state_fingerprint) ||
-    (raw.work_item_id !== undefined &&
-      raw.work_item_id !== null &&
+    (raw.work_item_id != null &&
       (typeof raw.work_item_id !== "string" ||
-        !raw.work_item_id.trim() ||
+        !raw.work_item_id ||
         raw.work_item_id.trim() !== raw.work_item_id)) ||
     typeof raw.request_digest !== "string" ||
     !/^sha256:[0-9a-f]{64}$/u.test(raw.request_digest) ||
@@ -310,30 +307,21 @@ function extendTaskCentricWorkItemScope(opts: {
     .filter((item) => !item.optional)
     .every((item) => aggregate.work_items[item.id]?.state === "COMPLETED");
   if (allRequiredCompleted) return aggregate;
-  const selectedId =
-    opts.workItemId ??
-    (() => {
-      const selected = new WorkItemScheduler(2).select({
+  const selected = opts.workItemId
+    ? [{ id: opts.workItemId }]
+    : new WorkItemScheduler(2).select({
         graph: currentPlan.proposal.work_items,
         runtime: aggregate.work_items,
         active_leases: [],
       });
-      if (selected.length !== 1) {
-        throw new CliError({
-          code: "E_VALIDATION",
-          message:
-            "Legacy task-centric scope extension requires exactly one schedulable WorkItem for the approved retry unless every required WorkItem is completed.",
-        });
-      }
-      return selected[0]!.id;
-    })();
-  const selectedRuntime = aggregate.work_items[selectedId];
-  if (!selectedRuntime || !["PLANNED", "READY", "REWORK_READY"].includes(selectedRuntime.state)) {
+  const selectedState = aggregate.work_items[selected[0]?.id ?? ""]?.state;
+  if (selected.length !== 1 || !["PLANNED", "READY", "REWORK_READY"].includes(selectedState ?? ""))
     throw new CliError({
       code: "E_VALIDATION",
-      message: "Task-centric scope extension target is not eligible for an implementation retry.",
+      message:
+        "Task-centric scope extension requires exactly one schedulable WorkItem for the approved retry unless every required WorkItem is completed.",
     });
-  }
+  const selectedId = selected[0]!.id;
   const addedRoots = uniqueSorted(opts.scopeRoots.map((root) => normalizeTaskScopeRoot(root)));
   const workItems = currentPlan.proposal.work_items.work_items.map((item) => {
     if (item.id !== selectedId) return item;

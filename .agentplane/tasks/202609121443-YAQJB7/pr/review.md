@@ -29,11 +29,11 @@ Created: 2026-09-12T14:45:48.622Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...un-cli.core.task-advance.blocked-result.test.ts |  7 ++++
- .../shared/task-scope-extension-request.ts         | 40 ++++++++++++++-----
- .../commands/task/external-agent-blocked-result.ts |  9 ++++-
- .../src/commands/task/scope-extend.test.ts         | 45 ++++++++++++++++++++++
- 4 files changed, 91 insertions(+), 10 deletions(-)
+ ...un-cli.core.task-advance.blocked-result.test.ts |  7 ++++++
+ .../shared/task-scope-extension-request.ts         | 28 +++++++++++++++-------
+ .../commands/task/external-agent-blocked-result.ts |  9 ++++++-
+ .../src/commands/task/scope-extend.test.ts         |  4 ++--
+ 4 files changed, 36 insertions(+), 12 deletions(-)
 ```
 
 </details>
