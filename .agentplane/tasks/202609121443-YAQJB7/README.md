@@ -2,10 +2,10 @@
 id: "202609121443-YAQJB7"
 title: "Fix task-centric scope extension targeting when multiple WorkItems are schedulable"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -57,8 +57,6 @@ quality_review:
     - "Pass: the persisted issued WorkItem identity replaces ambiguous scheduler selection for new requests, while legacy requests retain the previous fail-closed unique-selection rule."
 token_usage:
   agent_runs: 6
-  cached_input_observed_agent_runs: 0
-  cached_input_tokens: null
   input_tokens: null
   journal_digest: "sha256:8f94646dcf018742b4d862f4a2808ef44af48d7a6fbd38e45f7f54561f0bdb8d"
   observed_agent_runs: 0
@@ -265,8 +263,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "f76e4491352c6854ee7a2fd83559cc742553010e"
-  message: "🚧 YAQJB7 task: record external evaluator result"
+  hash: "162211482e028760b82733d2dc62bbfd502ec06c"
+  message: "🚧 YAQJB7 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -289,6 +287,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 162211482e02. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -354,9 +355,17 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "f76e4491352c6854ee7a2fd83559cc742553010e"
+  -
+    type: "status"
+    at: "2026-09-12T15:49:39.041Z"
+    author: "SUPERVISOR"
+    from: "DONE"
+    to: "DOING"
+    note: "Implementation committed: 162211482e02. CLI accepted one state-bound external-agent semantic result."
+    commit: "162211482e028760b82733d2dc62bbfd502ec06c"
 doc_version: 3
-doc_updated_at: "2026-09-12T15:27:19.592Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-12T15:49:39.108Z"
+doc_updated_by: "SUPERVISOR"
 description: "When a blocked external semantic result requests a repository scope extension, persist and use the blocked WorkItem identity so the exact USER-approved extension updates that WorkItem even when other independent WorkItems are schedulable. Preserve fail-closed state binding and add regression coverage. This is required to unblock task 202609121423-9WPTCW."
 sections:
   Summary: |-
@@ -901,35 +910,8 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609121443-YAQJB7"
-    event_cursor: 16
-    final_validation:
-      evidence:
-        -
-          artifact_refs:
-            - "task-verification:202609121443-YAQJB7"
-            - "git:a7234fc30d705ad7246276932622601c73031c92"
-          check_id: "check-focused"
-          command_identity: "bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
-          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-          exit_code: 0
-          observed_at: "2026-09-12T15:26:12.320Z"
-          repository_snapshot_digest: "sha256:81b4d426338af18b9cba5f0976b6cb104ed7b20bd3f80872cd3befb3b59e6a10"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609121443-YAQJB7"
-            - "git:a7234fc30d705ad7246276932622601c73031c92"
-          check_id: "check-typecheck"
-          command_identity: "bun run typecheck"
-          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-          exit_code: 0
-          observed_at: "2026-09-12T15:26:12.320Z"
-          repository_snapshot_digest: "sha256:81b4d426338af18b9cba5f0976b6cb104ed7b20bd3f80872cd3befb3b59e6a10"
-          status: "passed"
-      schema_version: 1
-      stale_evidence: []
-      status: "passed"
-      unsatisfied_criteria: []
+    event_cursor: 18
+    final_validation: null
     id: "202609121443-YAQJB7"
     intent:
       acceptance_criteria:
@@ -950,7 +932,7 @@ extensions:
 
         When a blocked external semantic result requests a repository scope extension, persist and use the blocked WorkItem identity so the exact USER-approved extension updates that WorkItem even when other independent WorkItems are schedulable. Preserve fail-closed state binding and add regression coverage. This is required to unblock task 202609121423-9WPTCW.
       task_id: "202609121443-YAQJB7"
-    lifecycle: "COMPLETED"
+    lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history:
       -
@@ -1251,9 +1233,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121443-YAQJB7"
-    revision: 20
+    revision: 22
     schema_version: 1
-    updated_at: "2026-09-12T15:27:19.592Z"
+    updated_at: "2026-09-12T15:49:39.057Z"
     work_items:
       WI-01:
         attempt: 1
@@ -1566,6 +1548,30 @@ extensions:
         previous_revision: 12
         schema_version: 1
         task_id: "202609121443-YAQJB7"
+      compatibility:sha256:7d2669d205d07b277fac41f6af01dd4630c80bac2e2271e0e87b77ff0f7dc678:
+        aggregate_digest: "sha256:6fa149bd3994d55486f9badde1da3c6770afc0c583a1246669a32a2de8388457"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T15:49:39.057Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_7997669e581e44ad6bfc9130"
+          mutation_id: "compatibility:sha256:7d2669d205d07b277fac41f6af01dd4630c80bac2e2271e0e87b77ff0f7dc678"
+          plan_digest: "sha256:8c2291aaa937649da54608045290d479e5db886c8169d8d4ba533a72ec6c40ef"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121443-YAQJB7"
+          task_revision: 21
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:7d2669d205d07b277fac41f6af01dd4630c80bac2e2271e0e87b77ff0f7dc678"
+        next_revision: 22
+        previous_revision: 21
+        schema_version: 1
+        task_id: "202609121443-YAQJB7"
       compatibility:sha256:8f2fa40ec34ed1041de140cbb9a0ef014290504fa80335c19ca7b684ccb9117f:
         aggregate_digest: "sha256:a704c207e36f6f64815308d33b8fef7c7b2e2bf4a2641c0d49c106211adb6f3e"
         event:
@@ -1660,6 +1666,30 @@ extensions:
         mutation_id: "compatibility:sha256:b771c9ad0b90634b65e14d210098d61b2f69fdf289e1a3bb387723bef5a14232"
         next_revision: 19
         previous_revision: 18
+        schema_version: 1
+        task_id: "202609121443-YAQJB7"
+      compatibility:sha256:c7f3dec883c8b16815cd3d3afb05534d5e06dab81a9ab7649f2cfa5db855f907:
+        aggregate_digest: "sha256:a302b2186a6fc4c11acdab11208368723094ed437f90f2599095651bebd5b2d8"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T15:49:39.041Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_df59b3a6d63079838a55594f"
+          mutation_id: "compatibility:sha256:c7f3dec883c8b16815cd3d3afb05534d5e06dab81a9ab7649f2cfa5db855f907"
+          plan_digest: "sha256:8c2291aaa937649da54608045290d479e5db886c8169d8d4ba533a72ec6c40ef"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121443-YAQJB7"
+          task_revision: 20
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:c7f3dec883c8b16815cd3d3afb05534d5e06dab81a9ab7649f2cfa5db855f907"
+        next_revision: 21
+        previous_revision: 20
         schema_version: 1
         task_id: "202609121443-YAQJB7"
       compatibility:sha256:eeab062caceba2d25cd5d30816e73f3fb37b3dcbdcc953ba6053a96742783a5b:
@@ -1763,8 +1793,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "a7234fc30d705ad7246276932622601c73031c92"
-    message: "🚧 YAQJB7 task: apply external agent result"
+    hash: "162211482e028760b82733d2dc62bbfd502ec06c"
   task_execution_context:
     base_ref: "main"
     base_sha: "f3c1991ddd92943775b6b4b4688009afc3d523bc"
