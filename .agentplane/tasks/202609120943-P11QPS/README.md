@@ -4,7 +4,7 @@ title: "Create the AgentPlane 0.7.9 and 0.7.10 architecture improvement roadmap"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -75,10 +75,14 @@ execution_contract:
       - "docs/internal/v0.7.9-v0.7.10-architecture-roadmap.md"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "docs"
+    changed_paths:
+      - "docs/internal/v0.7.9-v0.7.10-architecture-roadmap.md"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "documentation"
+      - "repository_write"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -109,16 +113,20 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:9f42706bc3a5024c87f4915710d8423520b16e159ffb9c3fa3611fd29226d488"
+      digest: "sha256:f32ac2081a48d9707c4d23f9e2c374325aedecbd7b8fd0e591ddfa125b65691b"
       escalation_reasons: []
       execution_groups:
         - "docs-schema"
         - "core"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "docs"
+        changed_files:
+          - "docs/internal/v0.7.9-v0.7.10-architecture-roadmap.md"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "documentation"
+          - "repository_write"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -147,11 +155,16 @@ execution_contract:
       - "repository_effect:documentation"
       - "repository_effect:repository_write"
       - "task_outcome"
-commit: null
+commit:
+  hash: "9801378b67064bbcf70222607e32d7ba7d773bd8"
+  message: "🚧 P11QPS task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 9801378b6706. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -160,9 +173,17 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-12T10:10:12.453Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 9801378b6706. CLI accepted one state-bound external-agent semantic result."
+    commit: "9801378b67064bbcf70222607e32d7ba7d773bd8"
 doc_version: 3
-doc_updated_at: "2026-09-12T10:00:36.409Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-12T10:10:12.453Z"
+doc_updated_by: "SUPERVISOR"
 description: "Recheck the three supplied architecture proposals against current main and write a standalone English roadmap document. Split implementation into atomic GitHub PR groups and assign each group to AgentPlane 0.7.9 or 0.7.10."
 sections:
   Summary: |-
@@ -402,7 +423,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609120943-P11QPS"
-    event_cursor: 3
+    event_cursor: 5
     final_validation: null
     id: "202609120943-P11QPS"
     intent:
@@ -422,9 +443,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 5
+    revision: 7
     schema_version: 1
-    updated_at: "2026-09-12T10:00:36.409Z"
+    updated_at: "2026-09-12T10:10:12.453Z"
     work_items:
       write-versioned-architecture-roadmap:
         attempt: 0
@@ -440,6 +461,30 @@ extensions:
     events: []
     leases: []
     mutation_receipts:
+      compatibility:sha256:4d26893f3cb2c6f90090af471ef0b9072bbd79a354bcf6a8141d109b5994ec60:
+        aggregate_digest: "sha256:feece7bc0ecc2a4cf4b733eddff8feecfb0d8e46852b96f8407bac113f7a104a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T10:10:12.453Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_a4d319f55737b27adcd1e677"
+          mutation_id: "compatibility:sha256:4d26893f3cb2c6f90090af471ef0b9072bbd79a354bcf6a8141d109b5994ec60"
+          plan_digest: "sha256:c04a3fd013c722ee840ae8588d230787fb244c40e180a5c82dd9b01c6f699ed5"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609120943-P11QPS"
+          task_revision: 5
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:4d26893f3cb2c6f90090af471ef0b9072bbd79a354bcf6a8141d109b5994ec60"
+        next_revision: 6
+        previous_revision: 5
+        schema_version: 1
+        task_id: "202609120943-P11QPS"
       compatibility:sha256:5cf4a113e37185dc1c1dc1f10c538425a9e2108eff7114d36bc497ba3b96d444:
         aggregate_digest: "sha256:bd5993941dee6cb6479db2afda719ffa46c46f7bb3394423660871c7c70fca44"
         event:
@@ -512,9 +557,35 @@ extensions:
         previous_revision: 4
         schema_version: 1
         task_id: "202609120943-P11QPS"
+      compatibility:sha256:e7a2d51c6ba106f8c23479d4dae67f3fdb541a1e6f67a85f7f3546ecf03a4a67:
+        aggregate_digest: "sha256:9bd6db3037c40f7946ab5b9910637e137209cab4f1ca7d8017d1df107976d976"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T10:10:12.453Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_4c40bdeb07f41e7dfaee35e4"
+          mutation_id: "compatibility:sha256:e7a2d51c6ba106f8c23479d4dae67f3fdb541a1e6f67a85f7f3546ecf03a4a67"
+          plan_digest: "sha256:c04a3fd013c722ee840ae8588d230787fb244c40e180a5c82dd9b01c6f699ed5"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609120943-P11QPS"
+          task_revision: 6
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:e7a2d51c6ba106f8c23479d4dae67f3fdb541a1e6f67a85f7f3546ecf03a4a67"
+        next_revision: 7
+        previous_revision: 6
+        schema_version: 1
+        task_id: "202609120943-P11QPS"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "9801378b67064bbcf70222607e32d7ba7d773bd8"
   task_execution_context:
     base_ref: "main"
     base_sha: "50b1810dda648be0c0762b47e885c6ad0b2d42af"
