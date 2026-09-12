@@ -15,8 +15,8 @@ Supersedes blocked task 202609121643-1PV2X7. Preserve exact pending work_item_id
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,9 +27,10 @@ Supersedes blocked task 202609121643-1PV2X7. Preserve exact pending work_item_id
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/task/scope-extend.test.ts         | 110 +++++++++++++++++++++
- .../agentplane/src/commands/task/scope-extend.ts   |  37 ++++++-
- 2 files changed, 145 insertions(+), 2 deletions(-)
+ .../src/commands/task/scope-extend.command.test.ts |  95 +++++++++++
+ .../src/commands/task/scope-extend.test.ts         | 188 ++++++++++-----------
+ .../agentplane/src/commands/task/scope-extend.ts   |  37 +++-
+ 3 files changed, 224 insertions(+), 96 deletions(-)
 ```
 
 </details>
