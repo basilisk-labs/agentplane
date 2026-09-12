@@ -4,7 +4,7 @@ title: "Fix task-centric scope extension targeting when multiple WorkItems are s
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -917,22 +917,79 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121443-YAQJB7"
-    revision: 10
+    revision: 11
     schema_version: 1
-    updated_at: "2026-09-12T14:52:21.793Z"
+    updated_at: "2026-09-12T14:53:04.017Z"
     work_items:
       WI-01:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "WI-01"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:a8d58914b3c3f65ab51b0bacae5983b09cb739251d3f0ca5fa007dd817507dbb"
+            id: "targeted-scope-extension"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609121443-YAQJB7"
+              work_item_id: "WI-01"
+            provenance:
+              - "sha256:344994d899b49cbbae3d5d2bbfb32107fa81f386a8ee6f17ff640a6c8d3edb9d"
+              - ".agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:75833979c11cd7a04f4ab7b97a820b84e0ded5820221ae41a27e94bbb154dd63"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json"
+              check_id: "check-focused"
+              command_identity: "bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+              detail: "Observed by bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-12T14:53:04.010Z"
+              repository_snapshot_digest: "sha256:75833979c11cd7a04f4ab7b97a820b84e0ded5820221ae41a27e94bbb154dd63"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json"
+              check_id: "check-typecheck"
+              command_identity: "bun run typecheck"
+              detail: "Observed by bun run typecheck."
+              exit_code: 0
+              observed_at: "2026-09-12T14:53:04.010Z"
+              repository_snapshot_digest: "sha256:75833979c11cd7a04f4ab7b97a820b84e0ded5820221ae41a27e94bbb154dd63"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-12T14:53:04.017Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:8834ff1feafca89960268bcbfba4b4bccc57359e8d729d769ec6354e4a44a4d7"
+        entity: "work_item"
+        id: "event_648f2c45be4f10226ef813bb"
+        mutation_id: "external-result:work-order-202609121443-YAQJB7-executor-ba5614c8f5460d3f744ae409"
+        plan_digest: "sha256:8c2291aaa937649da54608045290d479e5db886c8169d8d4ba533a72ec6c40ef"
+        plan_revision: 2
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609121443-YAQJB7"
+        task_revision: 10
+        work_item_id: "WI-01"
     leases: []
     mutation_receipts:
       compatibility:sha256:01ab45a5ec2f5311248cdd808c258cd1cbdefe64726fcd9304b547949b8d1d74:
@@ -1125,6 +1182,30 @@ extensions:
         mutation_id: "compatibility:sha256:af4e7bdc59f67f4becb4a60bc24df099f79dc631143c932089bc3c639f6b9d26"
         next_revision: 8
         previous_revision: 7
+        schema_version: 1
+        task_id: "202609121443-YAQJB7"
+      external-result:work-order-202609121443-YAQJB7-executor-ba5614c8f5460d3f744ae409:
+        aggregate_digest: "sha256:1359848b647126c0e2c106f831ab4bdfdc3509505d65d0132b29274cc5679c72"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T14:53:04.017Z"
+          cause_refs:
+            - "semantic-result:sha256:8834ff1feafca89960268bcbfba4b4bccc57359e8d729d769ec6354e4a44a4d7"
+          entity: "work_item"
+          from: "READY"
+          id: "event_648f2c45be4f10226ef813bb"
+          mutation_id: "external-result:work-order-202609121443-YAQJB7-executor-ba5614c8f5460d3f744ae409"
+          plan_digest: "sha256:8c2291aaa937649da54608045290d479e5db886c8169d8d4ba533a72ec6c40ef"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121443-YAQJB7"
+          task_revision: 10
+          to: "COMPLETED"
+          work_item_id: "WI-01"
+        mutation_id: "external-result:work-order-202609121443-YAQJB7-executor-ba5614c8f5460d3f744ae409"
+        next_revision: 11
+        previous_revision: 10
         schema_version: 1
         task_id: "202609121443-YAQJB7"
     pending_effects: []
