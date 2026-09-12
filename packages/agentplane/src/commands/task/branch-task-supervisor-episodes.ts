@@ -65,7 +65,7 @@ import {
 
 import { conflictApplicationAuthority } from "../pr/conflict-rework-authority.js";
 import { workflowTaskFingerprintComponent } from "../shared/workflow-step-fingerprint.js";
-import { buildMonotonicLifecycleTiming } from "../shared/lifecycle-stage-timing.js";
+import { buildSingleStageLifecycleTiming } from "../shared/lifecycle-stage-timing.js";
 
 async function executeBranchImplementationEpisode(opts: {
   input: BranchTaskSupervisorOptions;
@@ -176,32 +176,13 @@ async function executeBranchImplementationEpisode(opts: {
     let executed: Awaited<ReturnType<typeof executeTaskRunnerExecution>>;
     const dispatchStartedAt = performance.now();
     const timing = (endedAt: number, firstMutation: boolean) =>
-      buildMonotonicLifecycleTiming({
+      buildSingleStageLifecycleTiming({
         root_span_id: started.operation_key,
+        stage: "semantic_dispatch",
+        category: "external_wait",
         started_ms: dispatchStartedAt,
         ended_ms: endedAt,
-        spans: [
-          {
-            span_id: `${started.operation_key}:semantic_dispatch`,
-            parent_span_id: started.operation_key,
-            stage: "semantic_dispatch",
-            category: "external_wait",
-            started_ms: dispatchStartedAt,
-            ended_ms: endedAt,
-          },
-          ...(firstMutation
-            ? [
-                {
-                  span_id: `${started.operation_key}:first_scoped_mutation`,
-                  parent_span_id: started.operation_key,
-                  stage: "first_scoped_mutation" as const,
-                  category: "local_work" as const,
-                  started_ms: endedAt,
-                  ended_ms: endedAt,
-                },
-              ]
-            : []),
-        ],
+        first_scoped_mutation: firstMutation,
       });
     try {
       executed = await executeTaskRunnerExecution({

@@ -182,7 +182,7 @@ export type ExternalAgentExchangePaths = {
   result: string;
 };
 
-function sha256(value: string): string {
+export function externalAgentExchangeDigest(value: string): string {
   return `sha256:${createHash("sha256").update(value, "utf8").digest("hex")}`;
 }
 
@@ -462,7 +462,7 @@ export function validateExternalAgentResultEnvelope(opts: {
 }
 
 export function externalAgentResultDigest(result: ExternalAgentResultEnvelope): string {
-  return sha256(JSON.stringify(result));
+  return externalAgentExchangeDigest(JSON.stringify(result));
 }
 
 export function externalAgentIssueDigest(opts: {
@@ -491,7 +491,7 @@ export function externalAgentIssueDigest(opts: {
     work_order: validateAgentWorkOrderV2(opts.work_order),
     ...(exchange.result_format ? { result_format: exchange.result_format } : {}),
   };
-  return sha256(
+  return externalAgentExchangeDigest(
     JSON.stringify(
       exchange.issue_digest_version === 2
         ? { ...identity, issue_digest_version: 2 }

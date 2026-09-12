@@ -39,6 +39,43 @@ export function workflowOperationLifecycleStage(opts: {
   return { stage: "lifecycle", category: "local_work" };
 }
 
+export function buildSingleStageLifecycleTiming(opts: {
+  root_span_id: string;
+  stage: LifecycleStage;
+  category: LifecycleTimeCategory;
+  started_ms: number;
+  ended_ms: number;
+  first_scoped_mutation: boolean;
+}): LifecycleTiming {
+  return buildMonotonicLifecycleTiming({
+    root_span_id: opts.root_span_id,
+    started_ms: opts.started_ms,
+    ended_ms: opts.ended_ms,
+    spans: [
+      {
+        span_id: `${opts.root_span_id}:${opts.stage}`,
+        parent_span_id: opts.root_span_id,
+        stage: opts.stage,
+        category: opts.category,
+        started_ms: opts.started_ms,
+        ended_ms: opts.ended_ms,
+      },
+      ...(opts.first_scoped_mutation
+        ? [
+            {
+              span_id: `${opts.root_span_id}:first_scoped_mutation`,
+              parent_span_id: opts.root_span_id,
+              stage: "first_scoped_mutation" as const,
+              category: "local_work" as const,
+              started_ms: opts.ended_ms,
+              ended_ms: opts.ended_ms,
+            },
+          ]
+        : []),
+    ],
+  });
+}
+
 export function buildMonotonicLifecycleTiming(opts: {
   root_span_id: string;
   started_ms: number;

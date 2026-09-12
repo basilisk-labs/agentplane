@@ -13,7 +13,6 @@ import {
   type SupervisorEpisodeOperationKind,
   type SupervisorExecutionBudget,
   type SupervisorExecutionEpisodeJournal,
-  type SupervisorExecutionUsage,
 } from "@agentplaneorg/core/schemas";
 import { atomicWriteFile } from "@agentplaneorg/core/fs";
 import { gitRevParse } from "@agentplaneorg/core/git";
@@ -23,16 +22,16 @@ import {
   continueSupervisorExecutionEpisodeAfterRenewableBudget,
   recoverSupervisorExecutionEpisodeAfterResolvedTokenTelemetry,
 } from "./supervisor-execution-budget-renewal.js";
-import { readCodexProviderUsageForResult } from "../../runner/adapters/codex-result-transport.js";
 import {
   superviseWorkflowStep,
   type WorkflowSupervisorExecution,
   type WorkflowSupervisorExecutor,
 } from "./workflow-supervisor.js";
 import {
-  buildMonotonicLifecycleTiming,
+  buildSingleStageLifecycleTiming,
   workflowOperationLifecycleStage,
 } from "./lifecycle-stage-timing.js";
+import { observedRunnerUsage } from "./supervisor-execution-observation.js";
 
 export { tryAcquireSupervisorExecutionLease } from "./supervisor-execution-lease.js";
 
@@ -358,72 +357,6 @@ function stoppedExecution(opts: {
   };
 }
 
-function isNonNegativeInteger(value: unknown): value is number {
-  return typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
-}
-
-function observedRunnerUsage(opts: {
-  result: Awaited<ReturnType<WorkflowSupervisorExecutor>>;
-  budget: SupervisorExecutionBudget;
-}): {
-  usage: Partial<Omit<SupervisorExecutionUsage, "episodes" | "agent_runs">>;
-  provider_usage?: SupervisorExecutionEpisodeJournal["operations"][number]["provider_usage"];
-  progress: unknown;
-  missing_dimensions: string[];
-} {
-  const lifecycle =
-    opts.result.operation_result?.kind === "runner_lifecycle"
-      ? opts.result.operation_result.value
-      : null;
-  if (lifecycle?.phase !== "executed" || lifecycle.result === null) {
-    return { usage: {}, progress: undefined, missing_dimensions: [] };
-  }
-  const metrics = lifecycle.result.metrics;
-  const evidence = lifecycle.result.evidence;
-  const providerUsage = readCodexProviderUsageForResult(lifecycle.result);
-  const usage: Partial<Omit<SupervisorExecutionUsage, "episodes" | "agent_runs">> = {};
-  const missing: string[] = [];
-  for (const field of [
-    "input_tokens",
-    "output_tokens",
-    "total_tokens",
-    "visible_output_tokens",
-    "reasoning_tokens",
-    "cached_input_tokens",
-    "prepared_context_bytes",
-  ] as const) {
-    if (isNonNegativeInteger(providerUsage?.[field])) usage[field] = providerUsage[field];
-  }
-  // Provider token telemetry is completion-cost evidence, not execution
-  // authority. Missing usage degrades the completed task projection to
-  // `unavailable`; it must not turn an otherwise successful adapter result
-  // into human review. Observed values still charge and enforce token budgets.
-  if (isNonNegativeInteger(metrics?.duration_ms)) usage.wall_time_ms = metrics.duration_ms;
-  else if (opts.budget.max_wall_time_ms !== null) missing.push("wall_time_ms_telemetry");
-  if (isNonNegativeInteger(evidence?.files_changed_count)) {
-    usage.changed_files = evidence.files_changed_count;
-  } else if (opts.budget.max_changed_files !== null) {
-    missing.push("changed_files_telemetry");
-  }
-  if (opts.budget.max_diff_lines !== null) missing.push("diff_lines_telemetry");
-  return {
-    usage,
-    ...(lifecycle.invocation
-      ? {
-          provider_usage: {
-            provider: lifecycle.invocation.adapter_id,
-            run_id: lifecycle.invocation.run_id,
-            work_order_id: lifecycle.invocation.work_order_id,
-            thread_id: providerUsage?.thread_id ?? null,
-            turn_id: providerUsage?.turn_id ?? null,
-          },
-        }
-      : {}),
-    progress: lifecycle.lifecycle.state_fingerprint,
-    missing_dimensions: missing.toSorted(),
-  };
-}
-
 /**
  * Persist the intent before calling the existing typed supervisor. A restart
  * can therefore distinguish an uncompleted provider/effect from a completed
@@ -564,32 +497,12 @@ export async function supervisePersistedWorkflowEpisode(opts: {
           semantic: kind === "agent_episode" || kind === "evaluator_episode",
           evaluator: kind === "evaluator_episode",
         });
-        return buildMonotonicLifecycleTiming({
+        return buildSingleStageLifecycleTiming({
           root_span_id: started.operation_key,
+          ...stage,
           started_ms: operationStartedAt,
           ended_ms: endedAt,
-          spans: [
-            {
-              span_id: `${started.operation_key}:${stage.stage}`,
-              parent_span_id: started.operation_key,
-              stage: stage.stage,
-              category: stage.category,
-              started_ms: operationStartedAt,
-              ended_ms: endedAt,
-            },
-            ...(firstMutation
-              ? [
-                  {
-                    span_id: `${started.operation_key}:first_scoped_mutation`,
-                    parent_span_id: started.operation_key,
-                    stage: "first_scoped_mutation" as const,
-                    category: "local_work" as const,
-                    started_ms: endedAt,
-                    ended_ms: endedAt,
-                  },
-                ]
-              : []),
-          ],
+          first_scoped_mutation: firstMutation,
         });
       };
       try {

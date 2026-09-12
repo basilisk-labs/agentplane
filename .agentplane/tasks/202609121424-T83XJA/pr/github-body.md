@@ -16,7 +16,7 @@ Source contract: agentplane-roadmap-r2 cards ST-08, ST-09, ST-10, ST-11, ST-12, 
 ## Verification
 
 - State: pending
-- Note: Not recorded yet.
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -28,21 +28,23 @@ Source contract: agentplane-roadmap-r2 cards ST-08, ST-09, ST-10, ST-11, ST-12, 
 
 ```text
  .../src/commands/evaluator/evaluator-episode.ts    | 236 +++++++++++++--
+ .../evaluator-execute-subprocess.testkit.ts        |  72 +++++
  .../evaluator/evaluator-execute-supervisor.ts      |  66 ++--
- .../evaluator/evaluator-execute.command.test.ts    |  70 ++++-
+ .../evaluator/evaluator-execute.command.test.ts    | 142 ++++-----
  .../evaluator/roadmap-failed-usage.test.ts         | 175 +++++++++++
  .../roadmap-telemetry-disposition.test.ts          |  79 +++++
- .../src/commands/shared/lifecycle-stage-timing.ts  | 130 ++++++++
+ .../src/commands/shared/lifecycle-stage-timing.ts  | 167 +++++++++++
  .../shared/roadmap-managed-accounting.test.ts      | 151 ++++++++++
  .../shared/supervisor-execution-budget-renewal.ts  |  49 +++
  .../shared/supervisor-execution-episode.test.ts    |  79 +++++
- .../shared/supervisor-execution-episode.ts         |  75 ++++-
+ .../shared/supervisor-execution-episode.ts         | 116 +++----
+ .../shared/supervisor-execution-observation.ts     |  74 +++++
  .../src/commands/task/advance.command.ts           |   4 +-
- .../task/branch-task-supervisor-episodes.ts        |  39 ++-
+ .../task/branch-task-supervisor-episodes.ts        |  20 +-
  .../commands/task/branch-task-supervisor-usage.ts  |  39 ++-
  .../direct-task-supervisor-formal-operation.ts     |  34 +++
- .../src/commands/task/external-agent-exchange.ts   | 105 +++++++
- .../src/commands/task/external-agent-supervisor.ts |  13 +
+ .../src/commands/task/external-agent-exchange.ts   | 111 ++++++-
+ .../src/commands/task/external-agent-supervisor.ts |  27 +-
  .../agentplane/src/commands/task/kernel-run.ts     | 332 ++++++++++++++++-----
  .../task/roadmap-external-accounting.test.ts       | 116 +++++++
  .../src/commands/task/roadmap-stage-timing.test.ts | 128 ++++++++
@@ -56,7 +58,7 @@ Source contract: agentplane-roadmap-r2 cards ST-08, ST-09, ST-10, ST-11, ST-12, 
  scripts/bench/task-cost-rollup.test.mjs            | 192 ++++++++++++
  .../lib/agent-efficiency-repository-snapshot.mjs   | 167 +++++++++++
  scripts/lib/test-route-registry.mjs                |   1 +
- 29 files changed, 2576 insertions(+), 170 deletions(-)
+ 31 files changed, 2729 insertions(+), 314 deletions(-)
 ```
 
 </details>
