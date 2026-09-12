@@ -4,7 +4,7 @@ title: "Implement the 0.7.9 baseline inventory and lifecycle characterization fo
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 38
+revision: 39
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +23,11 @@ plan_approval:
   updated_by: "HOST:codex-local:USER"
   note: "host_user_decision=sha256:995683c8e5097bf5d247700fa0527e961ecee710e330d6fbce93f070989ddb64"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-09-12T18:04:09.627Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bun run ci:local:full"
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -98,7 +98,9 @@ execution_contract:
       - "scripts/lib/test-route-registry.mjs"
       - "scripts/lib/test-route-registry.test.mjs"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-12:fail"
+      - "verification:verification-record:fail"
     changed_components:
       - "packages/agentplane"
       - "scripts"
@@ -118,7 +120,46 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "fail"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_ci"
@@ -237,9 +278,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "63bf9e1749847cbf8f74b85812124d2216c3fc64"
-  message: "🚧 9WPTCW task: apply external agent result"
+      - "verification_recovery:recorded-check-12"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -386,8 +427,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 63bf9e174984. CLI accepted one state-bound external-agent semantic result."
     commit: "63bf9e1749847cbf8f74b85812124d2216c3fc64"
+  -
+    type: "verify"
+    at: "2026-09-12T18:04:09.627Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-12T17:56:58.803Z"
+doc_updated_at: "2026-09-12T18:04:10.706Z"
 doc_updated_by: "SUPERVISOR"
 description: "Source contract: agentplane-roadmap-r2 cards ST-01, ST-02, ST-03, ST-04, ST-05, and ST-21. Reproduce a source-bound lifecycle and Blueprint consumer/writer inventory, freeze ordinary direct and branch-PR completion, rework versus infrastructure retry, admission/crash/context-role invariants, and local/remote-backend serialization, staleness, conflict, and unsupported-format behavior. Preserve I01-I12 and C01-C08. Do not introduce a new runtime registry, sync subsystem, provider access, or lifecycle format. The roadmap directory is source-only and must never be committed. Required checks: node --test scripts/checks/architecture-inventory.test.mjs; focused AgentPlane characterization tests for direct, branch, rework, recovery, and backend round trips with nonzero discovery; relevant critical suites, typecheck, schema and mirror checks."
 sections:
@@ -410,6 +457,96 @@ sections:
     8. Review the final diff and `git status --short --untracked-files=all`; require no roadmap file, unrelated task artifact, secret, generated drift, or unintended path in the task change.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-12T18:04:09.627Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8e22b9c23634dcc727c432eafd68bec9c6dd01f6db3a8de9a30aabcc273d5c15, input_digest=sha256:e98e6593d33a74ba02ca7dcc2ea129effc07d52f9913d17bc445d2e70946ec1b
+
+    Details:
+
+    Command: node --test scripts/checks/architecture-inventory.test.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121423-9WPTCW declared verification
+
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121423-9WPTCW declared verification
+
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-branch.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609121423-9WPTCW declared verification
+
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609121423-9WPTCW declared verification
+
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609121423-9WPTCW declared verification
+
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-backend-roundtrip.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609121423-9WPTCW declared verification
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609121423-9WPTCW declared verification
+
+    Command: bun run schemas:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609121423-9WPTCW declared verification
+
+    Command: bun run artifacts:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202609121423-9WPTCW declared verification
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202609121423-9WPTCW declared verification
+
+    Command: bun run test:backend-critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202609121423-9WPTCW declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-12
+    Scope: branch_pr task 202609121423-9WPTCW declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121423-9WPTCW-implement-the-0-7-9-baseline-inventory-and-lifec/.agentplane/tasks/202609121423-9WPTCW/blueprint/resolved-snapshot.json
+    - old_digest: 4f418b286c8e456059156718be69923286eed7a14207bd37ea7d92df315c6def
+    - current_digest: 4f418b286c8e456059156718be69923286eed7a14207bd37ea7d92df315c6def
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609121423-9WPTCW
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609121423-9WPTCW
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -1185,7 +1322,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609121423-9WPTCW"
-    event_cursor: 28
+    event_cursor: 29
     final_validation: null
     id: "202609121423-9WPTCW"
     intent:
@@ -2692,9 +2829,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609121423-9WPTCW"
-    revision: 38
+    revision: 39
     schema_version: 1
-    updated_at: "2026-09-12T17:57:05.525Z"
+    updated_at: "2026-09-12T18:04:10.702Z"
     work_items:
       ST-01:
         attempt: 1
@@ -3536,6 +3673,30 @@ extensions:
         previous_revision: 13
         schema_version: 1
         task_id: "202609121423-9WPTCW"
+      compatibility:sha256:c0e4363ce90ed3be71aaaca19e4b57595286c2abec6c27ef56f5253c15b9c7d6:
+        aggregate_digest: "sha256:c947bbf04a78b529ebce687d8bdb0f980f10a10c590fcb1f746f690435daecaf"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T18:04:10.702Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_30311ee57597a608a8fa4a95"
+          mutation_id: "compatibility:sha256:c0e4363ce90ed3be71aaaca19e4b57595286c2abec6c27ef56f5253c15b9c7d6"
+          plan_digest: "sha256:a9ccea53ee91bda02540f559528bdce316d1a1154bdbc4da00b22a47189a40e8"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121423-9WPTCW"
+          task_revision: 38
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:c0e4363ce90ed3be71aaaca19e4b57595286c2abec6c27ef56f5253c15b9c7d6"
+        next_revision: 39
+        previous_revision: 38
+        schema_version: 1
+        task_id: "202609121423-9WPTCW"
       compatibility:sha256:c18ed0b154566068fac7dbc3077dc047133b8a9aa8da917cfa68fa15bde1d7e3:
         aggregate_digest: "sha256:ce8240d490ace3d6874bb502ebac2fa101848bd3db9d9eba7dba7ce1a3f601d4"
         event:
@@ -4018,8 +4179,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "63bf9e1749847cbf8f74b85812124d2216c3fc64"
   task_execution_context:
     base_ref: "main"
     base_sha: "f3c1991ddd92943775b6b4b4688009afc3d523bc"
@@ -4060,6 +4219,96 @@ Defined six dependency-ordered WorkItems for the 0.7.9 inventory and lifecycle c
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-12T18:04:09.627Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8e22b9c23634dcc727c432eafd68bec9c6dd01f6db3a8de9a30aabcc273d5c15, input_digest=sha256:e98e6593d33a74ba02ca7dcc2ea129effc07d52f9913d17bc445d2e70946ec1b
+
+Details:
+
+Command: node --test scripts/checks/architecture-inventory.test.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121423-9WPTCW declared verification
+
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121423-9WPTCW declared verification
+
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-branch.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609121423-9WPTCW declared verification
+
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609121423-9WPTCW declared verification
+
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609121423-9WPTCW declared verification
+
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-backend-roundtrip.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609121423-9WPTCW declared verification
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609121423-9WPTCW declared verification
+
+Command: bun run schemas:check
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609121423-9WPTCW declared verification
+
+Command: bun run artifacts:check
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202609121423-9WPTCW declared verification
+
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202609121423-9WPTCW declared verification
+
+Command: bun run test:backend-critical
+Result: pass
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202609121423-9WPTCW declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json#check-12
+Scope: branch_pr task 202609121423-9WPTCW declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121423-9WPTCW-implement-the-0-7-9-baseline-inventory-and-lifec/.agentplane/tasks/202609121423-9WPTCW/blueprint/resolved-snapshot.json
+- old_digest: 4f418b286c8e456059156718be69923286eed7a14207bd37ea7d92df315c6def
+- current_digest: 4f418b286c8e456059156718be69923286eed7a14207bd37ea7d92df315c6def
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609121423-9WPTCW
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609121423-9WPTCW
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

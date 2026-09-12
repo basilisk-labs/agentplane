@@ -3,7 +3,10 @@
   "branch": "task/202609121423-9WPTCW/implement-the-0-7-9-baseline-inventory-and-lifec",
   "created_at": "2026-09-12T14:30:55.296Z",
   "diffstat_sha256": "sha256:945051eb1fc9edabdfbbd1b994b6a381590d8b6c1dafd0feb895729df34831e7",
-  "last_verified_at": null,
+  "last_verified_at": "2026-09-12T18:04:09.627Z",
+  "last_verified_diffstat_sha256": "sha256:945051eb1fc9edabdfbbd1b994b6a381590d8b6c1dafd0feb895729df34831e7",
+  "pr_number": 5938,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5938",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -13,9 +16,10 @@
     "target_project": "basilisk-labs/agentplane"
   },
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202609121423-9WPTCW",
-  "updated_at": "2026-09-12T14:30:55.296Z",
+  "updated_at": "2026-09-12T17:57:52.207Z",
   "verify": {
-    "status": "skipped"
+    "status": "fail"
   }
 }
