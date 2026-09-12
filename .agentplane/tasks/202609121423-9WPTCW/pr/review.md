@@ -6,7 +6,7 @@ Created: 2026-09-12T14:30:55.296Z
 
 - Task: `202609121423-9WPTCW`
 - Title: Implement the 0.7.9 baseline inventory and lifecycle characterization for ST-01 through ST-05 and ST-21
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609121423-9WPTCW/implement-the-0-7-9-baseline-inventory-and-lifec`
 - Canonical task record: `.agentplane/tasks/202609121423-9WPTCW/README.md`
 
