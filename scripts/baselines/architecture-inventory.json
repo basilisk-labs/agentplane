@@ -11,7 +11,10 @@
       "replacement_test": "packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts",
       "replacement_test_status": "proposed",
       "sources": [
-        {"path": "packages/agentplane/src/commands/task/run.command.ts", "symbols": ["superviseDirectTaskRun", "superviseBranchTaskRun"]}
+        {
+          "path": "packages/agentplane/src/commands/task/run.command.ts",
+          "symbols": ["superviseDirectTaskRun", "superviseBranchTaskRun"]
+        }
       ]
     },
     {
@@ -23,7 +26,14 @@
       "replacement_test": "packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts",
       "replacement_test_status": "proposed",
       "sources": [
-        {"path": "packages/agentplane/src/commands/task/advance.command.ts", "symbols": ["acceptExternalAgentResult", "executeExternalAgentVerification", "executeBranchWorkflowOperation"]}
+        {
+          "path": "packages/agentplane/src/commands/task/advance.command.ts",
+          "symbols": [
+            "acceptExternalAgentResult",
+            "executeExternalAgentVerification",
+            "executeBranchWorkflowOperation"
+          ]
+        }
       ]
     },
     {
@@ -35,8 +45,14 @@
       "replacement_test": "packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts",
       "replacement_test_status": "existing",
       "sources": [
-        {"path": "packages/agentplane/src/commands/task/run.command.ts", "symbols": ["TASK_KERNEL_EXTENSION", "runCanonicalTask"]},
-        {"path": "packages/agentplane/src/commands/task/advance.command.ts", "symbols": ["TASK_KERNEL_EXTENSION", "advanceCanonicalTask"]}
+        {
+          "path": "packages/agentplane/src/commands/task/run.command.ts",
+          "symbols": ["TASK_KERNEL_EXTENSION", "runCanonicalTask"]
+        },
+        {
+          "path": "packages/agentplane/src/commands/task/advance.command.ts",
+          "symbols": ["TASK_KERNEL_EXTENSION", "advanceCanonicalTask"]
+        }
       ]
     },
     {
@@ -48,8 +64,14 @@
       "replacement_test": "packages/core/src/tasks/task-centric/orchestrator.test.ts",
       "replacement_test_status": "existing",
       "sources": [
-        {"path": "packages/core/src/tasks/task-centric/index.ts", "symbols": ["TaskCentricOrchestrator"]},
-        {"path": "packages/core/src/tasks/task-centric/orchestrator.ts", "symbols": ["export class TaskCentricOrchestrator"]}
+        {
+          "path": "packages/core/src/tasks/task-centric/index.ts",
+          "symbols": ["TaskCentricOrchestrator"]
+        },
+        {
+          "path": "packages/core/src/tasks/task-centric/orchestrator.ts",
+          "symbols": ["export class TaskCentricOrchestrator"]
+        }
       ]
     },
     {
@@ -61,8 +83,14 @@
       "replacement_test": "packages/agentplane/src/blueprints/resolve.test.ts",
       "replacement_test_status": "existing",
       "sources": [
-        {"path": "packages/agentplane/src/blueprints/index.ts", "symbols": ["createBlueprintRegistry", "resolveBlueprint"]},
-        {"path": "packages/agentplane/src/blueprints/resolve.ts", "symbols": ["export function resolveBlueprint"]}
+        {
+          "path": "packages/agentplane/src/blueprints/index.ts",
+          "symbols": ["createBlueprintRegistry", "resolveBlueprint"]
+        },
+        {
+          "path": "packages/agentplane/src/blueprints/resolve.ts",
+          "symbols": ["export function resolveBlueprint"]
+        }
       ]
     },
     {
@@ -74,8 +102,14 @@
       "replacement_test": "packages/agentplane/src/blueprints/snapshot.test.ts",
       "replacement_test_status": "existing",
       "sources": [
-        {"path": "packages/agentplane/src/blueprints/snapshot.ts", "symbols": ["buildBlueprintResolvedSnapshot"]},
-        {"path": "packages/agentplane/src/commands/task/verify-record-references.ts", "symbols": ["BlueprintSnapshotRef:"]}
+        {
+          "path": "packages/agentplane/src/blueprints/snapshot.ts",
+          "symbols": ["buildBlueprintResolvedSnapshot"]
+        },
+        {
+          "path": "packages/agentplane/src/commands/task/verify-record-references.ts",
+          "symbols": ["BlueprintSnapshotRef:"]
+        }
       ]
     },
     {
@@ -87,7 +121,10 @@
       "replacement_test": "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
       "replacement_test_status": "existing",
       "sources": [
-        {"path": "packages/agentplane/src/commands/task/finish-blueprint-evidence.ts", "symbols": ["BLUEPRINT_SNAPSHOT_REF_MARKER", "BlueprintSnapshotRef:"]}
+        {
+          "path": "packages/agentplane/src/commands/task/finish-blueprint-evidence.ts",
+          "symbols": ["BLUEPRINT_SNAPSHOT_REF_MARKER", "BlueprintSnapshotRef:"]
+        }
       ]
     },
     {
@@ -99,7 +136,13 @@
       "replacement_test": "packages/agentplane/src/blueprints/project-local.test.ts",
       "replacement_test_status": "existing",
       "sources": [
-        {"path": "packages/agentplane/src/blueprints/project-local.ts", "symbols": ["createTrustedProjectBlueprintRegistry", "loadTrustedProjectBlueprintRegistry"]}
+        {
+          "path": "packages/agentplane/src/blueprints/project-local.ts",
+          "symbols": [
+            "createTrustedProjectBlueprintRegistry",
+            "loadTrustedProjectBlueprintRegistry"
+          ]
+        }
       ]
     },
     {
@@ -111,8 +154,14 @@
       "replacement_test": "packages/recipes/src/blueprint-extensions.test.ts",
       "replacement_test_status": "existing",
       "sources": [
-        {"path": "packages/recipes/src/manifest-contracts.ts", "symbols": ["RecipeBlueprintExtensionKind", "blueprint_extensions"]},
-        {"path": "packages/recipes/src/blueprint-extensions.ts", "symbols": ["preferred_blueprint"]}
+        {
+          "path": "packages/recipes/src/manifest-contracts.ts",
+          "symbols": ["RecipeBlueprintExtensionKind", "blueprint_extensions"]
+        },
+        {
+          "path": "packages/recipes/src/blueprint-extensions.ts",
+          "symbols": ["preferred_blueprint"]
+        }
       ]
     },
     {
@@ -124,7 +173,10 @@
       "replacement_test": "packages/agentplane/src/commands/shared/task-verification-input.test.ts",
       "replacement_test_status": "existing",
       "sources": [
-        {"path": "packages/agentplane/src/commands/shared/task-verification-input-types.ts", "symbols": ["VerificationInputIdentity", "implementation", "verify_steps_digest"]}
+        {
+          "path": "packages/agentplane/src/commands/shared/task-verification-input-types.ts",
+          "symbols": ["VerificationInputIdentity", "implementation", "verify_steps_digest"]
+        }
       ]
     },
     {
@@ -136,9 +188,18 @@
       "replacement_test": "packages/agentplane/src/commands/shared/roadmap-backend-roundtrip.test.ts",
       "replacement_test_status": "proposed",
       "sources": [
-        {"path": "packages/agentplane/src/backends/task-backend/local-backend.ts", "symbols": ["export class LocalBackend", "supports_revision_guarded_writes"]},
-        {"path": "packages/agentplane/src/backends/task-backend/cloud-backend.ts", "symbols": ["export class CloudBackend", "ensureCloudProjectionFreshForLocalMutation"]},
-        {"path": "packages/agentplane/src/adapters/task-backend/task-centric-backend-runtime.ts", "symbols": ["TASK_CENTRIC_RUNTIME_EXTENSION_KEY", "TASK_KERNEL_EXTENSION"]}
+        {
+          "path": "packages/agentplane/src/backends/task-backend/local-backend.ts",
+          "symbols": ["export class LocalBackend", "supports_revision_guarded_writes"]
+        },
+        {
+          "path": "packages/agentplane/src/backends/task-backend/cloud-backend.ts",
+          "symbols": ["export class CloudBackend", "ensureCloudProjectionFreshForLocalMutation"]
+        },
+        {
+          "path": "packages/agentplane/src/adapters/task-backend/task-centric-backend-runtime.ts",
+          "symbols": ["TASK_CENTRIC_RUNTIME_EXTENSION_KEY", "TASK_KERNEL_EXTENSION"]
+        }
       ]
     },
     {
@@ -150,9 +211,15 @@
       "replacement_test": "scripts/generate/sync-agent-templates.test.mjs",
       "replacement_test_status": "existing",
       "sources": [
-        {"path": "scripts/generate/sync-agent-templates.mjs", "symbols": ["compareDirectoryTrees", "canonicalAgentsDir", "targetAgentsDir"]},
-        {"path": "packages/agentplane/assets/agents/PLANNER.json", "symbols": ["planning.constraints"]},
-        {"path": ".agentplane/agents/PLANNER.json", "symbols": ["planning.constraints"]}
+        {
+          "path": "scripts/generate/sync-agent-templates.mjs",
+          "symbols": ["compareDirectoryTrees", "canonicalAgentsDir", "targetAgentsDir"]
+        },
+        {
+          "path": "packages/agentplane/assets/agents/PLANNER.json",
+          "symbols": ["planning.constraints"]
+        },
+        { "path": ".agentplane/agents/PLANNER.json", "symbols": ["planning.constraints"] }
       ]
     }
   ]

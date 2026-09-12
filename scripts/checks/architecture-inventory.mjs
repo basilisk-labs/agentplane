@@ -76,20 +76,24 @@ export async function validateArchitectureInventory({ repoRoot, inventory }) {
     }
   }
 
-  const missingCategories = [...REQUIRED_CATEGORIES].filter((category) => !categories.has(category));
+  const missingCategories = [...REQUIRED_CATEGORIES].filter(
+    (category) => !categories.has(category),
+  );
   if (missingCategories.length > 0) {
-    throw new Error(`Architecture inventory is missing categories: ${missingCategories.join(", ")}.`);
+    throw new Error(
+      `Architecture inventory is missing categories: ${missingCategories.join(", ")}.`,
+    );
   }
 
   const sourceManifest = [...sourceBytes]
     .map(([relativePath, bytes]) => `${relativePath}\0${sha256(bytes)}`)
-    .sort()
+    .toSorted()
     .join("\0");
   return Object.freeze({
     schema_version: 1,
     row_count: inventory.rows.length,
     source_count: sourceBytes.size,
-    categories: [...categories].sort(),
+    categories: [...categories].toSorted(),
     source_digest: `sha256:${sha256(sourceManifest)}`,
     unknown_custom_semantics: inventory.unknown_custom_semantics,
   });
