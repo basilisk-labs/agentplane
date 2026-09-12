@@ -3,7 +3,10 @@
   "branch": "task/202609121019-8K70MT/make-verification-rework-exhaustion-atomically-p",
   "created_at": "2026-09-12T10:28:09.228Z",
   "diffstat_sha256": "sha256:13abf53026d8f5527e5c18579f98d69517668d73cc0fb295cdb6cd2a470c4a67",
-  "last_verified_at": null,
+  "last_verified_at": "2026-09-12T11:02:21.202Z",
+  "last_verified_diffstat_sha256": "sha256:13abf53026d8f5527e5c18579f98d69517668d73cc0fb295cdb6cd2a470c4a67",
+  "pr_number": 5934,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5934",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -13,9 +16,10 @@
     "target_project": "basilisk-labs/agentplane"
   },
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202609121019-8K70MT",
-  "updated_at": "2026-09-12T10:28:09.228Z",
+  "updated_at": "2026-09-12T10:32:20.538Z",
   "verify": {
-    "status": "skipped"
+    "status": "fail"
   }
 }
