@@ -3,8 +3,8 @@
   "branch": "task/202609111943-GH8BV2/allow-an-approved-repository-effect-only-scope-e",
   "created_at": "2026-09-11T19:51:57.383Z",
   "diffstat_sha256": "sha256:34f9c01a9edb8aeb0f36f93ed223cdd4abfa5a95090ff0cba285b9975f159987",
-  "last_verified_at": "2026-09-12T18:24:46.559Z",
-  "last_verified_diffstat_sha256": "sha256:5517327a3aae5104e396e0ad65a36057f4ea27242db29466c5574013d3d50235",
+  "last_verified_at": "2026-09-12T19:01:29.744Z",
+  "last_verified_diffstat_sha256": "sha256:34f9c01a9edb8aeb0f36f93ed223cdd4abfa5a95090ff0cba285b9975f159987",
   "pr_number": 5931,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5931",
   "provider": {

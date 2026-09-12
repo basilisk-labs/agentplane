@@ -6,13 +6,13 @@ Created: 2026-09-11T19:51:57.383Z
 
 - Task: `202609111943-GH8BV2`
 - Title: Allow an approved repository-effect-only scope extension to recover a legacy execution contract with empty scope root...
-- Status: DOING
+- Status: BLOCKED
 - Branch: `task/202609111943-GH8BV2/allow-an-approved-repository-effect-only-scope-e`
 - Canonical task record: `.agentplane/tasks/202609111943-GH8BV2/README.md`
 
 ## Verification
 
-- State: needs_rework
+- State: blocked_external
 - Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 

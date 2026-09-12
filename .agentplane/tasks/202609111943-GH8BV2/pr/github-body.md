@@ -15,7 +15,7 @@ Reproduce the blocked recovery from task 202609111417-V1737V: the supervisor emi
 
 ## Verification
 
-- State: needs_rework
+- State: blocked_external
 - Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
