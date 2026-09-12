@@ -3,8 +3,8 @@
   "branch": "task/202609121443-YAQJB7/fix-task-centric-scope-extension-targeting-when",
   "created_at": "2026-09-12T14:45:48.622Z",
   "diffstat_sha256": "sha256:a10991bb470702ce0421f63a7ad6506889bf8718280bbcd15d8ca64417371464",
-  "last_verified_at": "2026-09-12T15:26:12.320Z",
-  "last_verified_diffstat_sha256": "sha256:96f4f15da9f1d4aea11147806b61911985a7ae81cfb7536a5cfaa5458e2bda3f",
+  "last_verified_at": "2026-09-12T15:58:29.304Z",
+  "last_verified_diffstat_sha256": "sha256:a10991bb470702ce0421f63a7ad6506889bf8718280bbcd15d8ca64417371464",
   "pr_number": 5935,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5935",
   "pre_merge_closure": {
