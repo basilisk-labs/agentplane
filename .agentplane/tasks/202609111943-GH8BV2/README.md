@@ -2,10 +2,10 @@
 id: "202609111943-GH8BV2"
 title: "Allow an approved repository-effect-only scope extension to recover a legacy execution contract with empty scope roots without widening repository paths"
 result_summary: "pre-merge closure"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 41
+revision: 42
 origin:
   system: "manual"
 depends_on: []
@@ -420,6 +420,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 6a168f4159ea. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Start: resume after compact timeout regression coverage restored the oversized-test budget and focused runtime and docs-schema checks passed."
 events:
   -
     type: "status"
@@ -561,9 +564,16 @@ events:
     author: "SUPERVISOR"
     state: "blocked_external"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-09-12T19:06:45.579Z"
+    author: "CODER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Start: resume after compact timeout regression coverage restored the oversized-test budget and focused runtime and docs-schema checks passed."
 doc_version: 3
-doc_updated_at: "2026-09-12T19:01:32.259Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-12T19:06:45.659Z"
+doc_updated_by: "CODER"
 description: "Reproduce the blocked recovery from task 202609111417-V1737V: the supervisor emits an exact scope extension containing repository_effects=[tests] and scope_roots=[], but task scope extend fails with 'Execution declaration with repository effects requires scope_roots.' Preserve exact request matching and fail-closed authority. Implement the smallest safe legacy-compatibility path and regression coverage, then use it to resume the blocked task."
 sections:
   Summary: |-
@@ -1313,7 +1323,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609111943-GH8BV2"
-    event_cursor: 34
+    event_cursor: 35
     final_validation: null
     id: "202609111943-GH8BV2"
     intent:
@@ -1335,7 +1345,7 @@ extensions:
 
         Reproduce the blocked recovery from task 202609111417-V1737V: the supervisor emits an exact scope extension containing repository_effects=[tests] and scope_roots=[], but task scope extend fails with 'Execution declaration with repository effects requires scope_roots.' Preserve exact request matching and fail-closed authority. Implement the smallest safe legacy-compatibility path and regression coverage, then use it to resume the blocked task.
       task_id: "202609111943-GH8BV2"
-    lifecycle: "BLOCKED"
+    lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history:
       -
@@ -1501,9 +1511,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609111943-GH8BV2"
-    revision: 41
+    revision: 42
     schema_version: 1
-    updated_at: "2026-09-12T19:01:32.251Z"
+    updated_at: "2026-09-12T19:06:45.579Z"
     work_items:
       complete-legacy-recovery-and-ci-timeout-bounds:
         attempt: 1
@@ -2440,6 +2450,30 @@ extensions:
         mutation_id: "compatibility:sha256:eecd0dbcf34eaba02c9a0d38e753a7569e53afd5d40363eef22a78313c470ae7"
         next_revision: 5
         previous_revision: 4
+        schema_version: 1
+        task_id: "202609111943-GH8BV2"
+      compatibility:sha256:fff8785e29ead7772b747fe8bf5c0f98c30f0aad06661e7067f2eca027eda5a8:
+        aggregate_digest: "sha256:fa33bce93705b07e7122c7e2a9d5e84f2c1ff41fe2e4714c5a68cc5f8be1f15a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T19:06:45.579Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_768e19d063d847e1621ffe87"
+          mutation_id: "compatibility:sha256:fff8785e29ead7772b747fe8bf5c0f98c30f0aad06661e7067f2eca027eda5a8"
+          plan_digest: "sha256:5a8e97acd643b241f5ac20aba535e41603437672c223ae623173eeb558f20537"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111943-GH8BV2"
+          task_revision: 41
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:fff8785e29ead7772b747fe8bf5c0f98c30f0aad06661e7067f2eca027eda5a8"
+        next_revision: 42
+        previous_revision: 41
         schema_version: 1
         task_id: "202609111943-GH8BV2"
       external-result:work-order-202609111943-GH8BV2-executor-e013d5aa71267054a8d1841a:

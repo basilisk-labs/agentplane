@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202609111943-GH8BV2/allow-an-approved-repository-effect-only-scope-e",
   "created_at": "2026-09-11T19:51:57.383Z",
-  "diffstat_sha256": "sha256:34f9c01a9edb8aeb0f36f93ed223cdd4abfa5a95090ff0cba285b9975f159987",
+  "diffstat_sha256": "sha256:52afdd5fa8b5869fd2ae5b3a2cf9a29f7344731f0b41d6ac03e6831125203130",
   "last_verified_at": "2026-09-12T19:01:29.744Z",
   "last_verified_diffstat_sha256": "sha256:34f9c01a9edb8aeb0f36f93ed223cdd4abfa5a95090ff0cba285b9975f159987",
   "pr_number": 5931,
