@@ -4,7 +4,7 @@ title: "Implement the 0.7.9 baseline inventory and lifecycle characterization fo
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 29
+revision: 31
 origin:
   system: "manual"
 depends_on: []
@@ -105,6 +105,7 @@ execution_contract:
     changed_paths:
       - "packages/agentplane/src/cli/run-cli.core.roadmap-branch.test.ts"
       - "packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts"
       - "scripts/baselines/architecture-inventory.json"
       - "scripts/checks/architecture-inventory.mjs"
       - "scripts/checks/architecture-inventory.test.mjs"
@@ -160,12 +161,13 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:e6a1cf5b71cb62fc5bef9696adcfe670e727f43fc5203dd62db802fd3d795ffc"
+      digest: "sha256:63c99f8142677a6c173f6d0664da2e76f5753b9ec6a485ae813ed197efcf2693"
       escalation_reasons:
         - "central_component:scripts/lib/test-route-registry.mjs"
         - "central_component:scripts/lib/test-route-registry.test.mjs"
         - "central_path:packages/agentplane/src/cli/run-cli.core.roadmap-branch.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts"
         - "central_path:scripts/checks/architecture-inventory.mjs"
         - "central_path:scripts/checks/architecture-inventory.test.mjs"
         - "central_path:scripts/lib/test-route-registry.mjs"
@@ -184,6 +186,7 @@ execution_contract:
         changed_files:
           - "packages/agentplane/src/cli/run-cli.core.roadmap-branch.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts"
           - "scripts/baselines/architecture-inventory.json"
           - "scripts/checks/architecture-inventory.mjs"
           - "scripts/checks/architecture-inventory.test.mjs"
@@ -228,7 +231,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "080335e5e5775a012743f5fdd6b9844f7ac32916"
+  message: "🚧 9WPTCW task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -266,6 +271,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 5ddea65b8d77. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 080335e5e577. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -342,8 +350,16 @@ events:
     to: "DOING"
     note: "Implementation committed: 5ddea65b8d77. CLI accepted one state-bound external-agent semantic result."
     commit: "5ddea65b8d77a652ec0968237eb50e86f5e05a88"
+  -
+    type: "status"
+    at: "2026-09-12T17:51:25.569Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 080335e5e577. CLI accepted one state-bound external-agent semantic result."
+    commit: "080335e5e5775a012743f5fdd6b9844f7ac32916"
 doc_version: 3
-doc_updated_at: "2026-09-12T17:47:19.102Z"
+doc_updated_at: "2026-09-12T17:51:25.569Z"
 doc_updated_by: "SUPERVISOR"
 description: "Source contract: agentplane-roadmap-r2 cards ST-01, ST-02, ST-03, ST-04, ST-05, and ST-21. Reproduce a source-bound lifecycle and Blueprint consumer/writer inventory, freeze ordinary direct and branch-PR completion, rework versus infrastructure retry, admission/crash/context-role invariants, and local/remote-backend serialization, staleness, conflict, and unsupported-format behavior. Preserve I01-I12 and C01-C08. Do not introduce a new runtime registry, sync subsystem, provider access, or lifecycle format. The roadmap directory is source-only and must never be committed. Required checks: node --test scripts/checks/architecture-inventory.test.mjs; focused AgentPlane characterization tests for direct, branch, rework, recovery, and backend round trips with nonzero discovery; relevant critical suites, typecheck, schema and mirror checks."
 sections:
@@ -1141,7 +1157,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609121423-9WPTCW"
-    event_cursor: 22
+    event_cursor: 24
     final_validation: null
     id: "202609121423-9WPTCW"
     intent:
@@ -2648,9 +2664,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609121423-9WPTCW"
-    revision: 29
+    revision: 31
     schema_version: 1
-    updated_at: "2026-09-12T17:47:25.168Z"
+    updated_at: "2026-09-12T17:51:25.569Z"
     work_items:
       ST-01:
         attempt: 1
@@ -2917,6 +2933,30 @@ extensions:
         work_item_id: "ST-03"
     leases: []
     mutation_receipts:
+      compatibility:sha256:01c502b9a0d4fcd634d7b4c3eb361d7efa1419a4afc31bc4318d0c32c773a4bc:
+        aggregate_digest: "sha256:70c50797f1eaaebd37e05abd24ce51b061de0f76cdf28e37edff79845bfd920f"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T17:51:25.569Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_324920ba3df4a33748dbadbb"
+          mutation_id: "compatibility:sha256:01c502b9a0d4fcd634d7b4c3eb361d7efa1419a4afc31bc4318d0c32c773a4bc"
+          plan_digest: "sha256:a9ccea53ee91bda02540f559528bdce316d1a1154bdbc4da00b22a47189a40e8"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121423-9WPTCW"
+          task_revision: 29
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:01c502b9a0d4fcd634d7b4c3eb361d7efa1419a4afc31bc4318d0c32c773a4bc"
+        next_revision: 30
+        previous_revision: 29
+        schema_version: 1
+        task_id: "202609121423-9WPTCW"
       compatibility:sha256:0663f1bd9f3e44df3bacff2c4ca0a89d53cb5f001e78e7ffedc8ba677ce14002:
         aggregate_digest: "sha256:13ced9410f2b9db9472a5d6d0d3bb093486e1d5ceee1d8b6fa63ecff1423a34a"
         event:
@@ -3011,6 +3051,30 @@ extensions:
         mutation_id: "compatibility:sha256:44102d247fa1aa9f4ccb0044f525f5d15dfda0c75b3cddb30548e459c5ae4f78"
         next_revision: 23
         previous_revision: 22
+        schema_version: 1
+        task_id: "202609121423-9WPTCW"
+      compatibility:sha256:45c9994db343e95112de2153d63f28045656acfeda9bfb1d284041e46eb446cc:
+        aggregate_digest: "sha256:53ec638f48b953b7e69b5540e419cbc2ab5e150d1fa4c95098a78ed0bdc56c0b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T17:51:25.569Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_dd89083a31cdcadafc2f433e"
+          mutation_id: "compatibility:sha256:45c9994db343e95112de2153d63f28045656acfeda9bfb1d284041e46eb446cc"
+          plan_digest: "sha256:a9ccea53ee91bda02540f559528bdce316d1a1154bdbc4da00b22a47189a40e8"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121423-9WPTCW"
+          task_revision: 30
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:45c9994db343e95112de2153d63f28045656acfeda9bfb1d284041e46eb446cc"
+        next_revision: 31
+        previous_revision: 30
         schema_version: 1
         task_id: "202609121423-9WPTCW"
       compatibility:sha256:6270a6c6beb2841dbe0271cb9e237e279b9df45d8cafac1bb44ff605be3611db:
@@ -3568,7 +3632,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "5ddea65b8d77a652ec0968237eb50e86f5e05a88"
+    hash: "080335e5e5775a012743f5fdd6b9844f7ac32916"
   task_execution_context:
     base_ref: "main"
     base_sha: "f3c1991ddd92943775b6b4b4688009afc3d523bc"
