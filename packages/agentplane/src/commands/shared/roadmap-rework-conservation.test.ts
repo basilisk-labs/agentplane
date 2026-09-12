@@ -2,6 +2,8 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { expect, it } from "vitest";
 
+import { stripAnsi } from "../../shared/ansi.js";
+
 const exec = promisify(execFile);
 
 it("conserves implementation work across verification retries", { timeout: 60_000 }, async () => {
@@ -23,5 +25,5 @@ it("conserves implementation work across verification retries", { timeout: 60_00
     { cwd: process.cwd() },
   );
 
-  expect(result.stdout).toContain("Tests  12 passed");
+  expect(stripAnsi(result.stdout)).toMatch(/\bTests\s+12 passed\b/);
 });

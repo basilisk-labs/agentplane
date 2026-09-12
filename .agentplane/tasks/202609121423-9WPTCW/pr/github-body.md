@@ -27,17 +27,17 @@ Source contract: agentplane-roadmap-r2 cards ST-01, ST-02, ST-03, ST-04, ST-05, 
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/cli/run-cli.core.roadmap-branch.test.ts    |  29 +++
- .../src/cli/run-cli.core.roadmap-direct.test.ts    |  34 ++++
- .../src/cli/run-cli.core.roadmap-recovery.test.ts  |  30 +++
- .../shared/roadmap-backend-roundtrip.test.ts       |  30 +++
- .../shared/roadmap-rework-conservation.test.ts     |  27 +++
+ .../src/cli/run-cli.core.roadmap-branch.test.ts    |  31 +++
+ .../src/cli/run-cli.core.roadmap-direct.test.ts    |  35 ++++
+ .../src/cli/run-cli.core.roadmap-recovery.test.ts  |  32 +++
+ .../shared/roadmap-backend-roundtrip.test.ts       |  32 +++
+ .../shared/roadmap-rework-conservation.test.ts     |  29 +++
  scripts/baselines/architecture-inventory.json      | 226 +++++++++++++++++++++
  scripts/checks/architecture-inventory.mjs          | 117 +++++++++++
  scripts/checks/architecture-inventory.test.mjs     |  47 +++++
  scripts/lib/test-route-registry.mjs                |   2 +-
  scripts/lib/test-route-registry.test.mjs           |  14 ++
- 10 files changed, 555 insertions(+), 1 deletion(-)
+ 10 files changed, 564 insertions(+), 1 deletion(-)
 ```
 
 </details>

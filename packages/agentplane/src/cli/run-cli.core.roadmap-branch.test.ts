@@ -2,6 +2,8 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { expect, it } from "vitest";
 
+import { stripAnsi } from "../shared/ansi.js";
+
 const exec = promisify(execFile);
 
 it(
@@ -24,6 +26,6 @@ it(
       { cwd: process.cwd() },
     );
 
-    expect(result.stdout).toContain("Tests  7 passed");
+    expect(stripAnsi(result.stdout)).toMatch(/\bTests\s+7 passed\b/);
   },
 );

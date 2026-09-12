@@ -4,6 +4,7 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { expect, it } from "vitest";
 
+import { stripAnsi } from "../shared/ansi.js";
 import "./run-cli.core.direct-task-supervision.test.js";
 import "./run-cli.core.route-decision.direct-closeout.test.js";
 
@@ -29,6 +30,6 @@ it(
       { cwd: process.cwd() },
     );
 
-    expect(result.stdout).toContain("Tests  3 passed");
+    expect(stripAnsi(result.stdout)).toMatch(/\bTests\s+3 passed\b/);
   },
 );
