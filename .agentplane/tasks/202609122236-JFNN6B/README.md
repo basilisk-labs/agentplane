@@ -4,7 +4,7 @@ title: "Simplify the test suite without weakening safety-critical coverage"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 30
+revision: 31
 origin:
   system: "manual"
 depends_on: []
@@ -30,6 +30,33 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-12T23:38:35.751Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  evaluated_sha: "3dde6bc3b2297caa1615cc9e7d476fe17ebc4656"
+  blueprint_digest: "ca972e9d6960b8448cbddbc38dfa12ba169f4bacda7ac2e4c57410397cf1c585"
+  evidence_refs:
+    - ".agentplane/tasks/202609122236-JFNN6B/quality/20260912-233643946-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609122236-JFNN6B/quality/20260912-233643946-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609122236-JFNN6B/quality/objects/sha256/fc95413fdc92bd5259cb98b53ab4a22eaaf7b14b302451a1f8d74a8ad9f64982.md"
+    - ".agentplane/tasks/202609122236-JFNN6B/quality/20260912-233643946-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609122236-JFNN6B/quality/20260912-233643946-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609122236-JFNN6B/quality/20260912-233643946-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609122236-JFNN6B/README.md"
+    - ".agentplane/tasks/202609122236-JFNN6B/quality/objects/sha256/6c4d9ed6da3b65274d128a9ea9f367ad9618428f7c95c0b50e80051155a40777.patch"
+    - ".agentplane/tasks/202609122236-JFNN6B/quality/objects/sha256/d2d523b3e451aea92846b23a8d8c8ca07d8871c5f77369f156af869098b9fefc.json"
+    - ".agentplane/tasks/202609122236-JFNN6B/verification/20260912233634529-0bf83b1b982adaaa.json"
+    - ".agentplane/tasks/202609122236-JFNN6B/quality/objects/sha256/ee9a3c8d5db971958ba65fbed4becea7dfb79c3922ae194785f386526462fa32.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "No blocking findings. The frozen diff removes only the approved model-specific diagnostics and duplicate coverage guard, preserves model-neutral prompt assertions, keeps all nine safety-critical CLI files, and isolates all five agent-efficiency files in the qualification route."
+    - "Residual risk: Hosted CI and integration remain pending until the separately authorized PR lifecycle begins."
 execution_route:
   frozen: true
   reason_codes:
@@ -1067,7 +1094,7 @@ extensions:
       revision: 4
       schema_version: 1
       task_id: "202609122236-JFNN6B"
-    event_cursor: 21
+    event_cursor: 22
     final_validation: null
     id: "202609122236-JFNN6B"
     intent:
@@ -2699,9 +2726,9 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202609122236-JFNN6B"
-    revision: 30
+    revision: 31
     schema_version: 1
-    updated_at: "2026-09-12T23:36:35.617Z"
+    updated_at: "2026-09-12T23:36:35.621Z"
     work_items:
       work-item-cleanup:
         attempt: 1
@@ -3097,6 +3124,30 @@ extensions:
         mutation_id: "compatibility:sha256:62f05cf87a88f31e8abbbd8b8ad1989bf076511d97296f6acf4661fc7ccd874c"
         next_revision: 5
         previous_revision: 4
+        schema_version: 1
+        task_id: "202609122236-JFNN6B"
+      compatibility:sha256:85885518a821d226e4332b6d07ef7e63b46f1646f0184833c11d41a5435dd000:
+        aggregate_digest: "sha256:b7646635246ae38025eb0e73342f88a293dab4692e6b0028e52c0ba3dddcc76f"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T23:36:35.621Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_cc3c9f72a05323e2694a6f39"
+          mutation_id: "compatibility:sha256:85885518a821d226e4332b6d07ef7e63b46f1646f0184833c11d41a5435dd000"
+          plan_digest: "sha256:395e3263f50efcbc3a42c35b2389f51b3b009827549efdcdd70afb70473535f1"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609122236-JFNN6B"
+          task_revision: 30
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:85885518a821d226e4332b6d07ef7e63b46f1646f0184833c11d41a5435dd000"
+        next_revision: 31
+        previous_revision: 30
         schema_version: 1
         task_id: "202609122236-JFNN6B"
       compatibility:sha256:8adc67b945daf18dfe8f7f5639890b35bc6d18c394f153eb1036de56aa85c3f1:
