@@ -1,10 +1,11 @@
 ---
 id: "202609121424-3YAX44"
 title: "Add the 0.7.9 marginal-cost and paired production benchmark harness for ST-14 through ST-16"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on:
@@ -63,6 +64,22 @@ quality_review:
     - "Unknown or inconsistent raw cost and zero-success arms fail closed without a finite efficiency claim."
     - "The final diff contains only task artifacts and scoped benchmark code and tests; it does not contain agentplane-roadmap-r2 or historical baseline rewrites."
     - "Residual risk: No paid provider run was performed, so this task establishes the measurement harness and claim rules rather than a new live cost result."
+token_usage:
+  agent_runs: 5
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:0ad78f299157536221895071f572e171bbab5f1e1a9e4f507183e3ae213cbc8f"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-09-13T15:40:07.912Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -298,8 +315,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "9e32b1b8a9c75d1b20541637d2cdb3c9d7ec3b0a"
-  message: "🚧 3YAX44 task: apply external agent result"
+  hash: "dcf151d1b4a4b2d0913576a3c48bf4f9c2562039"
+  message: "🚧 3YAX44 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -316,6 +333,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 9e32b1b8a9c7. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -368,9 +388,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-13T15:40:07.912Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "dcf151d1b4a4b2d0913576a3c48bf4f9c2562039"
 doc_version: 3
-doc_updated_at: "2026-09-13T15:38:33.209Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-13T15:40:07.912Z"
+doc_updated_by: "CODER"
 description: "Source contract: agentplane-roadmap-r2 cards ST-14, ST-15, and ST-16. Measure marginal Git and artifact cost in the existing fixture harness, add one production-path paired driver using current isolation and evidence utilities, and report all-attempt cost per independently verified success with paired outcomes, success and violation rates, stage distributions, coverage, and uncertainty. Enforce matched target tree, product artifacts, model, effort, authority, checks, retries, runtime profile, verifier, and raw cost. Managed and external modes remain stratified. Unknown charges prevent a complete numeric claim; all-failed arms yield no finite success score. Do not execute paid calls in this task and do not reinterpret historical baselines. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: node --test scripts/bench/task-marginal-cost.test.mjs; node --test scripts/bench/paired-production-driver.test.mjs; node --test scripts/bench/paired-result-report.test.mjs; existing benchmark replay checks and relevant release critical checks."
 sections:
   Summary: |-
@@ -1204,7 +1232,89 @@ extensions:
       schema_version: 1
       task_id: "202609121424-3YAX44"
     event_cursor: 14
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609121424-3YAX44"
+            - "git:9e32b1b8a9c75d1b20541637d2cdb3c9d7ec3b0a"
+          check_id: "check-marginal-cost"
+          command_identity: "node --test scripts/bench/task-marginal-cost.test.mjs"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-13T15:38:32.194Z"
+          repository_snapshot_digest: "sha256:d4f7ef23c0717449430cf19e8cbdd9aad4abf20cf2904a7dd232da788cfaca6c"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-3YAX44"
+            - "git:9e32b1b8a9c75d1b20541637d2cdb3c9d7ec3b0a"
+          check_id: "check-paired-driver"
+          command_identity: "node --test scripts/bench/paired-production-driver.test.mjs"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-13T15:38:32.194Z"
+          repository_snapshot_digest: "sha256:d4f7ef23c0717449430cf19e8cbdd9aad4abf20cf2904a7dd232da788cfaca6c"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-3YAX44"
+            - "git:9e32b1b8a9c75d1b20541637d2cdb3c9d7ec3b0a"
+          check_id: "check-paired-report"
+          command_identity: "node --test scripts/bench/paired-result-report.test.mjs"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-13T15:38:32.194Z"
+          repository_snapshot_digest: "sha256:d4f7ef23c0717449430cf19e8cbdd9aad4abf20cf2904a7dd232da788cfaca6c"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-3YAX44"
+            - "git:9e32b1b8a9c75d1b20541637d2cdb3c9d7ec3b0a"
+          check_id: "check-replay"
+          command_identity: "bun run bench:agent-efficiency:replay:check"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-13T15:38:32.194Z"
+          repository_snapshot_digest: "sha256:d4f7ef23c0717449430cf19e8cbdd9aad4abf20cf2904a7dd232da788cfaca6c"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-3YAX44"
+            - "git:9e32b1b8a9c75d1b20541637d2cdb3c9d7ec3b0a"
+          check_id: "check-qualification"
+          command_identity: "bun run test:agent-efficiency:qualification"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-13T15:38:32.194Z"
+          repository_snapshot_digest: "sha256:d4f7ef23c0717449430cf19e8cbdd9aad4abf20cf2904a7dd232da788cfaca6c"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-3YAX44"
+            - "git:9e32b1b8a9c75d1b20541637d2cdb3c9d7ec3b0a"
+          check_id: "check-baseline"
+          command_identity: "bun run bench:agent-efficiency:check"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-13T15:38:32.194Z"
+          repository_snapshot_digest: "sha256:d4f7ef23c0717449430cf19e8cbdd9aad4abf20cf2904a7dd232da788cfaca6c"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-3YAX44"
+            - "git:9e32b1b8a9c75d1b20541637d2cdb3c9d7ec3b0a"
+          check_id: "check-typecheck"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-13T15:38:32.194Z"
+          repository_snapshot_digest: "sha256:d4f7ef23c0717449430cf19e8cbdd9aad4abf20cf2904a7dd232da788cfaca6c"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609121424-3YAX44"
     intent:
       acceptance_criteria:
@@ -1230,12 +1340,12 @@ extensions:
 
         Source contract: agentplane-roadmap-r2 cards ST-14, ST-15, and ST-16. Measure marginal Git and artifact cost in the existing fixture harness, add one production-path paired driver using current isolation and evidence utilities, and report all-attempt cost per independently verified success with paired outcomes, success and violation rates, stage distributions, coverage, and uncertainty. Enforce matched target tree, product artifacts, model, effort, authority, checks, retries, runtime profile, verifier, and raw cost. Managed and external modes remain stratified. Unknown charges prevent a complete numeric claim; all-failed arms yield no finite success score. Do not execute paid calls in this task and do not reinterpret historical baselines. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: node --test scripts/bench/task-marginal-cost.test.mjs; node --test scripts/bench/paired-production-driver.test.mjs; node --test scripts/bench/paired-result-report.test.mjs; existing benchmark replay checks and relevant release critical checks.
       task_id: "202609121424-3YAX44"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 20
+    revision: 21
     schema_version: 1
-    updated_at: "2026-09-13T15:38:33.209Z"
+    updated_at: "2026-09-13T15:40:07.912Z"
     work_items:
       ST-14:
         attempt: 1
@@ -1903,11 +2013,37 @@ extensions:
         previous_revision: 17
         schema_version: 1
         task_id: "202609121424-3YAX44"
+      legacy-finish:202609121424-3YAX44:2026-09-13T15:38:32.194Z:9e32b1b8a9c75d1b20541637d2cdb3c9d7ec3b0a:
+        aggregate_digest: "sha256:b1ae59575e81e17bc762d21ffab1cefe70c219313b4adaa940ffe19796609cce"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-13T15:40:07.912Z"
+          cause_refs:
+            - "task-verification:202609121424-3YAX44"
+            - "git:9e32b1b8a9c75d1b20541637d2cdb3c9d7ec3b0a"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_4e92d1a6953a332b3c96efa7"
+          mutation_id: "legacy-finish:202609121424-3YAX44:2026-09-13T15:38:32.194Z:9e32b1b8a9c75d1b20541637d2cdb3c9d7ec3b0a"
+          plan_digest: "sha256:9058c9f56183fcc658d347a916f3b9ee21711fabb6fc2f5125c6b3ed3f32004c"
+          plan_revision: 1
+          repository_fingerprint: "sha256:d4f7ef23c0717449430cf19e8cbdd9aad4abf20cf2904a7dd232da788cfaca6c"
+          schema_version: 1
+          task_id: "202609121424-3YAX44"
+          task_revision: 20
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609121424-3YAX44:2026-09-13T15:38:32.194Z:9e32b1b8a9c75d1b20541637d2cdb3c9d7ec3b0a"
+        next_revision: 21
+        previous_revision: 20
+        schema_version: 1
+        task_id: "202609121424-3YAX44"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "9e32b1b8a9c75d1b20541637d2cdb3c9d7ec3b0a"
+    message: "🚧 3YAX44 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "d03a5e786db57136bf7f6c4661b148bcf97cfaf1"
@@ -2203,3 +2339,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/5` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:0ad78f299157536221895071f572e171bbab5f1e1a9e4f507183e3ae213cbc8f`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-09-13T15:40:07.912Z`
