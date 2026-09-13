@@ -1,0 +1,57 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check fec0c23927341ff85d2f87553129e840e0966242..1d38fc3e503b4e2a6d84c17817b82a09ab1fbe8e",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB fec0c23927341ff85d2f87553129e840e0966242..1d38fc3e503b4e2a6d84c17817b82a09ab1fbe8e",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202609121424-4BC7B3/README.md",
+        "M\t.agentplane/tasks/202609121424-4BC7B3/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609121424-4BC7B3/pr/github-body.md",
+        "M\t.agentplane/tasks/202609121424-4BC7B3/pr/meta.json",
+        "M\t.agentplane/tasks/202609121424-4BC7B3/pr/review.md",
+        "A\tscripts/baselines/v0.7.9-stabilization-candidate.json"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "fec0c23927341ff85d2f87553129e840e0966242",
+  "implementation_commit": "1d38fc3e503b4e2a6d84c17817b82a09ab1fbe8e",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M .agentplane/tasks/202609121424-4BC7B3/README.md"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609121424-4BC7B3/README.md"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M .agentplane/tasks/202609121424-4BC7B3/README.md"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609121424-4BC7B3"
+}
