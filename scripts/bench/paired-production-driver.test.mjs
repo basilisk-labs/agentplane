@@ -180,13 +180,18 @@ test("runs the pinned three-arm task entrypoints offline and keeps transports st
   assert.deepEqual(Object.keys(report.strata).toSorted(), ["external", "managed"]);
 });
 
-test("rejects mismatched target, product, runtime, authority, verifier, and retry identity", () => {
+test("rejects every mismatched run identity field", () => {
   const { manifest } = fixture();
   const mutations = [
     ["target", (run) => (run.target_tree = "f".repeat(40))],
-    ["product", (run) => (run.product_source_sha = "f".repeat(40))],
+    ["product source", (run) => (run.product_source_sha = "f".repeat(40))],
+    ["product artifact", (run) => (run.product_artifact_sha256 = `sha256:${"b".repeat(64)}`)],
+    ["adapter", (run) => (run.adapter = "other-adapter")],
+    ["model", (run) => (run.model = "other-model")],
+    ["reasoning effort", (run) => (run.reasoning_effort = "low")],
     ["runtime", (run) => (run.runtime_profile = { node: "other" })],
     ["authority", (run) => (run.authority_digest = `sha256:${"b".repeat(64)}`)],
+    ["checks", (run) => (run.check_ids = ["other-check"])],
     ["verifier", (run) => (run.verifier_digest = `sha256:${"b".repeat(64)}`)],
     ["retry", (run) => (run.retry_limit = 99)],
   ];
