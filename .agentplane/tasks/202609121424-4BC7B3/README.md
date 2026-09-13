@@ -4,7 +4,7 @@ title: "Qualify and document the 0.7.9 stabilization candidate for ST-18 through
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 20
 origin:
   system: "manual"
 depends_on:
@@ -132,10 +132,22 @@ execution_contract:
       - "scripts/bench/paired-result-report.test.mjs"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "docs"
+      - "scripts"
+    changed_paths:
+      - "docs/user/commands.mdx"
+      - "docs/user/task-lifecycle.mdx"
+      - "scripts/bench/paired-production-driver.mjs"
+      - "scripts/bench/paired-production-driver.test.mjs"
+      - "scripts/bench/paired-result-report.mjs"
+      - "scripts/bench/paired-result-report.test.mjs"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "documentation"
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -199,7 +211,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:fbc32159d26e6192d9253e8710226778a41856a31e96f2e29c4390bb4f977e9c"
+      digest: "sha256:b82127b838f4fda962ef8a0a811aee4c0951a9ce2af81e606b275315196b390b"
       escalation_reasons:
         - "central_component:package.json"
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts"
@@ -214,10 +226,22 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "docs"
+          - "scripts"
+        changed_files:
+          - "docs/user/commands.mdx"
+          - "docs/user/task-lifecycle.mdx"
+          - "scripts/bench/paired-production-driver.mjs"
+          - "scripts/bench/paired-production-driver.test.mjs"
+          - "scripts/bench/paired-result-report.mjs"
+          - "scripts/bench/paired-result-report.test.mjs"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "documentation"
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -256,7 +280,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "4cd87b37e73f91597a296eb33abbfd286d6b7cb0"
+  message: "🚧 4BC7B3 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -279,6 +305,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The release owner replaced the paid-cost M01 assumption with subscription token accounting and disabled usage restrictions for 0.7.9, so the current WorkItem contract requires refinement before repository evidence can be written. Recommended action: Replace the M01 WorkItem with a token-accounting disposition. Record the current exact product identity and provider token field coverage. Mark Q02 NOT ESTABLISHED without an efficiency claim. Record the release owner's acceptance of that measurement debt. Keep token usage unrestricted by AgentPlane for 0.7.9. Agentplane receipt: external-agent-blocker/tr_0f1a9face2f308ea1fb552b62af0812b/sha256:0e5efc467cde01e78b12cea75039a43fdd75f6d711000fea2f1c72a154abd0ab."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 4cd87b37e73f. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -330,8 +359,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The release owner replaced the paid-cost M01 assumption with subscription token accounting and disabled usage restrictions for 0.7.9, so the current WorkItem contract requires refinement before repository evidence can be written. Recommended action: Replace the M01 WorkItem with a token-accounting disposition. Record the current exact product identity and provider token field coverage. Mark Q02 NOT ESTABLISHED without an efficiency claim. Record the release owner's acceptance of that measurement debt. Keep token usage unrestricted by AgentPlane for 0.7.9. Agentplane receipt: external-agent-blocker/tr_0f1a9face2f308ea1fb552b62af0812b/sha256:0e5efc467cde01e78b12cea75039a43fdd75f6d711000fea2f1c72a154abd0ab."
+  -
+    type: "status"
+    at: "2026-09-13T19:32:11.006Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 4cd87b37e73f. CLI accepted one state-bound external-agent semantic result."
+    commit: "4cd87b37e73f91597a296eb33abbfd286d6b7cb0"
 doc_version: 3
-doc_updated_at: "2026-09-13T19:19:14.936Z"
+doc_updated_at: "2026-09-13T19:32:11.006Z"
 doc_updated_by: "SUPERVISOR"
 description: "Source contract: agentplane-roadmap-r2 cards ST-18, ST-19, and ST-20. Build the exact clean installed candidate and run the frozen direct, branch, recovery, old-record, required PLANNER, and required EVALUATOR corpus. Then, under the user-approved spend and sandbox authority, execute the preregistered M01 paired pilot with complete all-attempt raw evidence and expand only by its fixed uncertainty rule; report NOT ESTABLISHED when coverage is insufficient. Record exact product and target SHAs separately. Finally document only observed 0.7.9 behavior and measurements and the 0.7.10 through 0.7.14 boundary. Do not weaken golden outcomes, disable Blueprint writers, omit required stages, rerun until green, or claim unsupported efficiency. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: package tarball check, local install smoke, release critical suite, benchmark check and replay check, documentation bootstrap and onboarding checks, plus exact evidence review."
 sections:
@@ -918,7 +955,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609121424-4BC7B3"
-    event_cursor: 13
+    event_cursor: 15
     final_validation: null
     id: "202609121424-4BC7B3"
     intent:
@@ -1548,9 +1585,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121424-4BC7B3"
-    revision: 18
+    revision: 20
     schema_version: 1
-    updated_at: "2026-09-13T19:19:14.936Z"
+    updated_at: "2026-09-13T19:32:11.006Z"
     work_items:
       align-token-measurement-contract:
         attempt: 0
@@ -1647,6 +1684,30 @@ extensions:
         mutation_id: "compatibility:sha256:227d351dedad36f32574e51784f3ded3e8cc92957227cdcf652a75b3e36c70e4"
         next_revision: 4
         previous_revision: 3
+        schema_version: 1
+        task_id: "202609121424-4BC7B3"
+      compatibility:sha256:4bafb4926232233c9c00eb13a0641ad8ff388b7ebc39af21f077708f408ea08a:
+        aggregate_digest: "sha256:21659b53ed96b6c473593ec8d80eb5489c670839626bf657c4b640c7a5d77f19"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T19:32:11.006Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_f562b885354e323e91b308de"
+          mutation_id: "compatibility:sha256:4bafb4926232233c9c00eb13a0641ad8ff388b7ebc39af21f077708f408ea08a"
+          plan_digest: "sha256:357491668d26fbe1b3a253b693c182f2430296031f26c670fb31d1a4e704c630"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-4BC7B3"
+          task_revision: 18
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:4bafb4926232233c9c00eb13a0641ad8ff388b7ebc39af21f077708f408ea08a"
+        next_revision: 19
+        previous_revision: 18
         schema_version: 1
         task_id: "202609121424-4BC7B3"
       compatibility:sha256:5fcbe832331168f57d987324bb117d7fad864698335d83fc6492d4cdcad4b0a9:
@@ -1791,6 +1852,30 @@ extensions:
         mutation_id: "compatibility:sha256:8413aa3500735aa998fdd8c5168bc1d7163ede37c202ddd343dbfb7ad98ede81"
         next_revision: 6
         previous_revision: 5
+        schema_version: 1
+        task_id: "202609121424-4BC7B3"
+      compatibility:sha256:a5ce0241ff0d18a4f449db79fa958a0f9bc04ae5681fbe008da240d2d2681499:
+        aggregate_digest: "sha256:591a307144c385bf4b5dfae9592f15b1dc61616095f6870df6018afdd2dd64e6"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T19:32:11.006Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_f0c6a0752aa21960210fa6b7"
+          mutation_id: "compatibility:sha256:a5ce0241ff0d18a4f449db79fa958a0f9bc04ae5681fbe008da240d2d2681499"
+          plan_digest: "sha256:357491668d26fbe1b3a253b693c182f2430296031f26c670fb31d1a4e704c630"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-4BC7B3"
+          task_revision: 19
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:a5ce0241ff0d18a4f449db79fa958a0f9bc04ae5681fbe008da240d2d2681499"
+        next_revision: 20
+        previous_revision: 19
         schema_version: 1
         task_id: "202609121424-4BC7B3"
       compatibility:sha256:c99a0dc1a8f9e9467aec4cd14a1916611bc60598220945e41274159d73e78e4a:
@@ -1941,7 +2026,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "1d38fc3e503b4e2a6d84c17817b82a09ab1fbe8e"
+    hash: "4cd87b37e73f91597a296eb33abbfd286d6b7cb0"
   task_execution_context:
     base_ref: "main"
     base_sha: "58dbda0d5f88c8a83802c5aee3a9380d001dd4b2"

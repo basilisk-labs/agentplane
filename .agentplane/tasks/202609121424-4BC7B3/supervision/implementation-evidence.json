@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check fec0c23927341ff85d2f87553129e840e0966242..1d38fc3e503b4e2a6d84c17817b82a09ab1fbe8e",
+      "command": "git diff --check 94a114ea288a7ac608d9f42359ba26c3e5012f00..4cd87b37e73f91597a296eb33abbfd286d6b7cb0",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB fec0c23927341ff85d2f87553129e840e0966242..1d38fc3e503b4e2a6d84c17817b82a09ab1fbe8e",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 94a114ea288a7ac608d9f42359ba26c3e5012f00..4cd87b37e73f91597a296eb33abbfd286d6b7cb0",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -22,7 +22,12 @@
         "M\t.agentplane/tasks/202609121424-4BC7B3/pr/github-body.md",
         "M\t.agentplane/tasks/202609121424-4BC7B3/pr/meta.json",
         "M\t.agentplane/tasks/202609121424-4BC7B3/pr/review.md",
-        "A\tscripts/baselines/v0.7.9-stabilization-candidate.json"
+        "M\tdocs/user/commands.mdx",
+        "M\tdocs/user/task-lifecycle.mdx",
+        "M\tscripts/bench/paired-production-driver.mjs",
+        "M\tscripts/bench/paired-production-driver.test.mjs",
+        "M\tscripts/bench/paired-result-report.mjs",
+        "M\tscripts/bench/paired-result-report.test.mjs"
       ]
     },
     {
@@ -32,8 +37,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "fec0c23927341ff85d2f87553129e840e0966242",
-  "implementation_commit": "1d38fc3e503b4e2a6d84c17817b82a09ab1fbe8e",
+  "execution_base_commit": "94a114ea288a7ac608d9f42359ba26c3e5012f00",
+  "implementation_commit": "4cd87b37e73f91597a296eb33abbfd286d6b7cb0",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
