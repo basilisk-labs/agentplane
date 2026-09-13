@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609121424-3YAX44-ab33494ba759fffd475b97c0",
+  "prepared_at": "2026-09-13T15:38:46.980Z",
+  "task": {
+    "id": "202609121424-3YAX44",
+    "revision": 19,
+    "objective": "Add the 0.7.9 marginal-cost and paired production benchmark harness for ST-14 through ST-16\n\nSource contract: agentplane-roadmap-r2 cards ST-14, ST-15, and ST-16. Measure marginal Git and artifact cost in the existing fixture harness, add one production-path paired driver using current isolation and evidence utilities, and report all-attempt cost per independently verified success with paired outcomes, success and violation rates, stage distributions, coverage, and uncertainty. Enforce matched target tree, product artifacts, model, effort, authority, checks, retries, runtime profile, verifier, and raw cost. Managed and external modes remain stratified. Unknown charges prevent a complete numeric claim; all-failed arms yield no finite success score. Do not execute paid calls in this task and do not reinterpret historical baselines. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: node --test scripts/bench/task-marginal-cost.test.mjs; node --test scripts/bench/paired-production-driver.test.mjs; node --test scripts/bench/paired-result-report.test.mjs; existing benchmark replay checks and relevant release critical checks.",
+    "acceptance_criteria": [
+      "node --test scripts/bench/paired-production-driver.test.mjs",
+      "node --test scripts/bench/paired-result-report.test.mjs",
+      "node --test scripts/bench/task-marginal-cost.test.mjs",
+      "- In scope: Source contract: agentplane-roadmap-r2 cards ST-14, ST-15, and ST-16. Measure marginal Git and artifact cost in the existing fixture harness, add one production-path paired driver using current isolation and evidence utilities, and report all-attempt cost per independently verified success with paired outcomes, success and violation rates, stage distributions, coverage, and uncertainty. Enforce matched target tree, product artifacts, model, effort, authority, checks, retries, runtime profile, verifier, and raw cost. Managed and external modes remain stratified. Unknown charges prevent a complete numeric claim; all-failed arms yield no finite success score. Do not execute paid calls in this task and do not reinterpret historical baselines. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: node --test scripts/bench/task-marginal-cost.test.mjs; node --test scripts/bench/paired-production-driver.test.mjs; node --test scripts/bench/paired-result-report.test.mjs; existing benchmark replay checks and relevant release critical checks.\n- Out of scope: unrelated refactors not required for \"Add the 0.7.9 marginal-cost and paired production benchmark harness for ST-14 through ST-16\".",
+      "Defined three dependency-ordered WorkItems for marginal task cost, a provider-free paired production driver, and fail-closed cost-per-verified-result reporting.",
+      "1. Run `node --test scripts/bench/task-marginal-cost.test.mjs`. Expected: marginal task-path, Git-object, commit, write, tool, and control-plane metrics are reproducible and duplicate blobs are counted once.\n2. Run `node --test scripts/bench/paired-production-driver.test.mjs`. Expected: the offline three-arm driver uses production entrypoints and rejects mismatched target, product, runtime, authority, verifier, retry, or cost identity.\n3. Run `node --test scripts/bench/paired-result-report.test.mjs`. Expected: all-attempt cost, paired outcomes, coverage, uncertainty, and separate gates fail closed for unknown charge or all-failed arms.\n4. Run `bun run bench:agent-efficiency:replay:check`. Expected: existing immutable replay evidence remains valid.\n5. Run `bun run test:agent-efficiency:qualification`. Expected: the established qualification suite passes with nonzero discovery.\n6. Run `bun run bench:agent-efficiency:check`. Expected: historical baseline validation remains unchanged.\n7. Run `bun run typecheck`. Expected: repository TypeScript contracts remain valid.\n8. Compare the final diff with ST-14, ST-15, and ST-16. Expected: no paid provider call, historical-baseline rewrite, or committed agentplane-roadmap-r2 path."
+    ]
+  },
+  "evaluated_sha": "9e32b1b8a9c75d1b20541637d2cdb3c9d7ec3b0a",
+  "diff_base_sha": "d03a5e786db57136bf7f6c4661b148bcf97cfaf1",
+  "blueprint_digest": "fa5bda7326628d77818e5607d9c82965c639b2adaac875c2abf479a7f619d50f",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609121424-3YAX44/quality/20260913-153846980-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:65487b0d6f7b534589844babf8ec78a56860279f713378651ebacd2f5c12d645",
+    "prompt_path": ".agentplane/tasks/202609121424-3YAX44/quality/objects/sha256/2291f3402a966b3f7abadbe286e0ce929f44fc3f09b3507981875a63e4e92ff2.md",
+    "result_schema_path": ".agentplane/tasks/202609121424-3YAX44/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609121424-3YAX44/README.md",
+      "sha256": "sha256:7a833a11ad93e8311a6947e062fda7bf2d137cdbd578fed8f86c75e108c1cc0c",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609121424-3YAX44/quality/objects/sha256/c8c9581c5ea3d219a0c86f8815b9d9c96eaf76401ba233fc877b0f22675d6ec2.patch",
+      "sha256": "sha256:c8c9581c5ea3d219a0c86f8815b9d9c96eaf76401ba233fc877b0f22675d6ec2",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609121424-3YAX44/quality/objects/sha256/9b21595f261c76c578d2ea23ceaf772798dc986f2b2e066d152b827e4bf341a7.json",
+      "sha256": "sha256:9b21595f261c76c578d2ea23ceaf772798dc986f2b2e066d152b827e4bf341a7",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609121424-3YAX44/verification/20260913153832194-42feeaf79f910e91.json",
+      "sha256": "sha256:7b6271ef6f21167d3a1a4ad801f0409e8c4a91d8941652f589ffbebb658aed54",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609121424-3YAX44/quality/objects/sha256/2d7a8a110c6e0873d5a8abf3f0d2da5a3757497b9fbbbfbf2b516aa7f9099fc2.json",
+      "sha256": "sha256:2d7a8a110c6e0873d5a8abf3f0d2da5a3757497b9fbbbfbf2b516aa7f9099fc2",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

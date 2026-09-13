@@ -142,6 +142,7 @@ export {
 export {
   SUPERVISOR_EXECUTION_EPISODE_KIND,
   SUPERVISOR_EXECUTION_EPISODE_SCHEMA_VERSION,
+  SUPERVISOR_TOKEN_BUDGET_EPOCH_KIND,
   SUPERVISOR_EXECUTION_EPISODE_JOURNAL_ZOD_SCHEMA,
   SUPERVISOR_EXECUTION_BUDGET_ZOD_SCHEMA,
   SUPERVISOR_EXECUTION_USAGE_ZOD_SCHEMA,
@@ -152,6 +153,7 @@ export {
   SUPERVISOR_EPISODE_STATUS_VALUES,
   SUPERVISOR_EPISODE_STOP_REASON_VALUES,
   advanceSupervisorExecutionEpisodeState,
+  authorizeSupervisorTokenBudgetEpoch,
   completeSupervisorExecutionEpisode,
   continueSupervisorExecutionEpisodeAfterEpisodeBudget,
   createSupervisorExecutionEpisodeJournal,
@@ -174,6 +176,7 @@ export {
   type SupervisorExecutionBudget,
   type SupervisorExecutionEpisodeJournal,
   type SupervisorExecutionUsage,
+  type SupervisorTokenBudgetEpoch,
 } from "../runner/supervisor-execution-episode.js";
 
 export {

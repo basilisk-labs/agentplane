@@ -379,6 +379,13 @@ async function directories(directory: string): Promise<string[]> {
   }
 }
 
+export function requiresExactScopeRecoveryReadme(opts: {
+  scope_recovery: boolean;
+  work_item_state: string | null | undefined;
+}): boolean {
+  return opts.scope_recovery && opts.work_item_state !== "REWORK_READY";
+}
+
 /** Recover only recorded implementation effects. Checks are executed again by the caller. */
 export async function resolveRecordedImplementationRecovery(opts: {
   command: CommandContext;
@@ -490,6 +497,10 @@ export async function resolveRecordedImplementationRecovery(opts: {
     opts.work_order.state_fingerprint.git_head === opts.head;
   if (!samePlan && !reassessment) return null;
   if (!reassessment) {
+    const exactScopeRecoveryReadme = requiresExactScopeRecoveryReadme({
+      scope_recovery: scopeRecovery,
+      work_item_state: workItemId ? aggregate.work_items[workItemId]?.state : null,
+    });
     const currentReadmes = await Promise.all([
       gitShowFile(root, opts.head, `${taskPrefix}README.md`),
       readFile(path.join(root, taskPrefix, "README.md"), "utf8"),
@@ -498,7 +509,7 @@ export async function resolveRecordedImplementationRecovery(opts: {
       currentReadmes.some(
         (readme) =>
           readme !== committedReadme &&
-          (scopeRecovery ||
+          (exactScopeRecoveryReadme ||
             !taskReadmesPreserveRecoveryContract(
               taskLevelRework ? completedWorkItemRecoveryReadme(committedReadme) : committedReadme,
               taskLevelRework ? completedWorkItemRecoveryReadme(readme) : readme,

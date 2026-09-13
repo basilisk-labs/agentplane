@@ -1,0 +1,49 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 13e325f646713a679ca0c207ca76429ffdf7a464..37ad5b999eed8154a0aa28027c58cdb94690756b",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 13e325f646713a679ca0c207ca76429ffdf7a464..37ad5b999eed8154a0aa28027c58cdb94690756b",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202609130858-RMHWQ5/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609130858-RMHWQ5/pr/github-body.md",
+        "M\t.agentplane/tasks/202609130858-RMHWQ5/pr/github-title.txt",
+        "M\t.agentplane/tasks/202609130858-RMHWQ5/pr/meta.json",
+        "M\t.agentplane/tasks/202609130858-RMHWQ5/pr/review.md",
+        "M\tscripts/baselines/v0.7-compatibility-candidate.json",
+        "M\tscripts/checks/check-compatibility-contract-baseline.mjs"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "13e325f646713a679ca0c207ca76429ffdf7a464",
+  "implementation_commit": "37ad5b999eed8154a0aa28027c58cdb94690756b",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [],
+    "classification": [],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609130858-RMHWQ5"
+}

@@ -38,16 +38,18 @@ export { tryAcquireSupervisorExecutionLease } from "./supervisor-execution-lease
 const SUPERVISOR_EPISODE_ARTIFACT_DIRECTORY = "agentplane/supervisor/episodes";
 
 /**
- * Conservative process limits. They bound supervisor-owned work without
- * becoming a second policy/configuration surface; later slices can project
- * explicit task policy onto the same canonical contract.
+ * Conservative process limits. Token limits stay disabled until the provider
+ * supplies attributable telemetry; enforcing an unobservable token cap would
+ * stop healthy external-agent workflows after their first agent result. The
+ * measurable episode, agent-run, wall-time, changed-file, and no-progress
+ * limits continue to bound supervisor-owned work.
  */
 const DEFAULT_SUPERVISOR_EXECUTION_BUDGET: SupervisorExecutionBudget = {
   max_episodes: 50,
   max_agent_runs: 50,
-  max_input_tokens: 3_000_000,
-  max_output_tokens: 1_000_000,
-  max_total_tokens: 4_000_000,
+  max_input_tokens: null,
+  max_output_tokens: null,
+  max_total_tokens: null,
   max_wall_time_ms: 4 * 60 * 60 * 1000,
   max_changed_files: 2000,
   // The runner has no supervisor-observed line delta yet. A non-null default

@@ -19,6 +19,7 @@ const TASK_COST_USAGE_FIELDS = Object.freeze([
   "reasoning_tokens",
   "prepared_context_bytes",
 ]);
+const TASK_TIMESTAMP_FIELDS = Object.freeze(["doc_updated_at", "updated_at"]);
 
 function emptyTaskCostCoverage() {
   return {
@@ -173,6 +174,203 @@ export function rollupTaskCostFromSupervisorJournal(journal) {
       },
     },
   };
+}
+
+function gitText(repoRoot, args) {
+  return execFileSync("git", args, {
+    cwd: repoRoot,
+    encoding: "utf8",
+    maxBuffer: 32 * 1024 * 1024,
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+}
+
+function resolveCommit(repoRoot, revision, label) {
+  try {
+    return gitText(repoRoot, ["rev-parse", "--verify", `${revision}^{commit}`]).trim();
+  } catch {
+    throw new Error(`${label} must resolve to a Git commit.`);
+  }
+}
+
+function treeBlobEntries(repoRoot, commit) {
+  return gitText(repoRoot, ["ls-tree", "-rlz", commit])
+    .split("\0")
+    .filter(Boolean)
+    .flatMap((row) => {
+      const match = /^(\d+) (\w+) ([a-f0-9]+)\s+(\d+|-)\t([\s\S]+)$/u.exec(row);
+      return match?.[2] === "blob"
+        ? [{ object: match[3], bytes: Number(match[4]), path: match[5] }]
+        : [];
+    });
+}
+
+function readCommitPath(repoRoot, commit, filePath) {
+  try {
+    return gitText(repoRoot, ["show", `${commit}:${filePath}`]);
+  } catch {
+    return null;
+  }
+}
+
+function withoutTaskProjectionTimestamps(value) {
+  if (value === null) return null;
+  const timestampField = TASK_TIMESTAMP_FIELDS.join("|");
+  return value.replaceAll(
+    new RegExp(`^(\\s*(?:${timestampField}):\\s*).+$`, "gmu"),
+    "$1<TIMESTAMP>",
+  );
+}
+
+function classifyMarginalCommit(repoRoot, sha) {
+  const files = gitText(repoRoot, [
+    "diff-tree",
+    "--root",
+    "--no-commit-id",
+    "--name-only",
+    "-r",
+    "-z",
+    sha,
+  ])
+    .split("\0")
+    .filter(Boolean);
+  let parent = null;
+  try {
+    parent = gitText(repoRoot, ["rev-parse", `${sha}^1`]).trim();
+  } catch {
+    // A root commit cannot be timestamp-only because every path is newly introduced.
+  }
+  const timestampOnly =
+    parent !== null &&
+    files.length > 0 &&
+    files.every((filePath) => {
+      if (!/^\.agentplane\/tasks\/[^/]+\/README\.md$/u.test(filePath)) return false;
+      const before = readCommitPath(repoRoot, parent, filePath);
+      const after = readCommitPath(repoRoot, sha, filePath);
+      return (
+        before !== null &&
+        after !== null &&
+        before !== after &&
+        withoutTaskProjectionTimestamps(before) === withoutTaskProjectionTimestamps(after)
+      );
+    });
+  const empty = files.length === 0;
+  return {
+    sha,
+    paths: files,
+    service_only:
+      files.length > 0 && files.every((filePath) => filePath.startsWith(".agentplane/")),
+    empty,
+    timestamp_only: timestampOnly,
+    meaningful: !empty && !timestampOnly,
+  };
+}
+
+function observedCounter(value, label) {
+  if (!Number.isSafeInteger(value) || value < 0) {
+    throw new Error(`${label} must be an observed non-negative integer.`);
+  }
+  return value;
+}
+
+/**
+ * Measure the committed marginal repository cost for one newly introduced task.
+ * Checkout path bytes and unique stored blob bytes are intentionally separate.
+ */
+export function measureTaskMarginalCost({
+  repoRoot,
+  beforeRevision,
+  afterRevision = "HEAD",
+  taskId,
+  observed = {},
+}) {
+  if (typeof taskId !== "string" || !/^[A-Za-z0-9][A-Za-z0-9_-]*$/u.test(taskId)) {
+    throw new Error("taskId must be one path-safe task identifier.");
+  }
+  const before = resolveCommit(repoRoot, beforeRevision, "beforeRevision");
+  const after = resolveCommit(repoRoot, afterRevision, "afterRevision");
+  try {
+    gitText(repoRoot, ["merge-base", "--is-ancestor", before, after]);
+  } catch {
+    throw new Error("beforeRevision must be an ancestor of afterRevision.");
+  }
+
+  const beforeEntries = treeBlobEntries(repoRoot, before);
+  const afterEntries = treeBlobEntries(repoRoot, after);
+  const taskPrefix = `.agentplane/tasks/${taskId}/`;
+  if (beforeEntries.some((entry) => entry.path.startsWith(taskPrefix))) {
+    throw new Error("Marginal task measurement requires a task absent from the before revision.");
+  }
+  const taskEntries = afterEntries.filter((entry) => entry.path.startsWith(taskPrefix));
+  if (taskEntries.length === 0) {
+    throw new Error("Marginal task measurement requires task artifacts in the after revision.");
+  }
+
+  const beforeObjects = new Set(beforeEntries.map((entry) => entry.object));
+  const taskObjects = new Map();
+  for (const entry of taskEntries) {
+    const current = taskObjects.get(entry.object) ?? { bytes: entry.bytes, paths: [] };
+    current.paths.push(entry.path);
+    taskObjects.set(entry.object, current);
+  }
+  const newObjects = [...taskObjects.entries()].filter(([object]) => !beforeObjects.has(object));
+  const reusedObjects = [...taskObjects.entries()].filter(([object]) => beforeObjects.has(object));
+  const commits = gitText(repoRoot, ["rev-list", "--reverse", `${before}..${after}`])
+    .trim()
+    .split("\n")
+    .filter(Boolean)
+    .map((sha) => classifyMarginalCommit(repoRoot, sha));
+  const taskPathBytes = taskEntries.reduce((sum, entry) => sum + entry.bytes, 0);
+  const uniqueTaskBlobBytes = [...taskObjects.values()].reduce(
+    (sum, entry) => sum + entry.bytes,
+    0,
+  );
+  const duplicatePaths = [...taskObjects.values()].reduce(
+    (sum, entry) => sum + Math.max(0, entry.paths.length - 1),
+    0,
+  );
+
+  const measurement = {
+    schema_version: 1,
+    kind: "agentplane.task_marginal_cost",
+    source: { before_commit: before, after_commit: after, task_id: taskId },
+    task_paths: {
+      count: taskEntries.length,
+      bytes: taskPathBytes,
+      duplicate_paths: duplicatePaths,
+      duplicate_bytes: taskPathBytes - uniqueTaskBlobBytes,
+      paths: taskEntries.map(({ bytes, object, path: filePath }) => ({
+        path: filePath,
+        blob: object,
+        bytes,
+      })),
+    },
+    git_blobs: {
+      referenced_unique_count: taskObjects.size,
+      referenced_unique_bytes: uniqueTaskBlobBytes,
+      new_unique_count: newObjects.length,
+      new_unique_bytes: newObjects.reduce((sum, [, entry]) => sum + entry.bytes, 0),
+      reused_unique_count: reusedObjects.length,
+      reused_unique_bytes: reusedObjects.reduce((sum, [, entry]) => sum + entry.bytes, 0),
+    },
+    commits: {
+      total: commits.length,
+      service_only: commits.filter((commit) => commit.service_only).length,
+      meaningful: commits.filter((commit) => commit.meaningful).length,
+      empty: commits.filter((commit) => commit.empty).length,
+      timestamp_only: commits.filter((commit) => commit.timestamp_only).length,
+      entries: commits,
+    },
+    operations: {
+      filesystem_writes: observedCounter(observed.filesystem_writes ?? 0, "filesystem_writes"),
+      tool_calls: observedCounter(observed.tool_calls ?? 0, "tool_calls"),
+      control_plane_calls: observedCounter(
+        observed.control_plane_calls ?? 0,
+        "control_plane_calls",
+      ),
+    },
+  };
+  return { ...measurement, digest: digest(stableJson(measurement)) };
 }
 
 // Git objects bind this sample to an immutable tree. Working files and runtime journals
