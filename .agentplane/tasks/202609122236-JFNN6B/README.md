@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 36
+revision: 37
 origin:
   system: "manual"
 depends_on: []
@@ -430,6 +430,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The sole uncommitted change is the intended scoped Knip rework and does not conflict with another process."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The remaining dirty path is the intended scoped Knip rework and should be committed to the task branch."
 events:
   -
     type: "status"
@@ -523,8 +526,13 @@ events:
     at: "2026-09-13T00:29:48.345Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The sole uncommitted change is the intended scoped Knip rework and does not conflict with another process."
+  -
+    type: "comment"
+    at: "2026-09-13T00:31:23.719Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The remaining dirty path is the intended scoped Knip rework and should be committed to the task branch."
 doc_version: 3
-doc_updated_at: "2026-09-13T00:29:48.383Z"
+doc_updated_at: "2026-09-13T00:31:23.747Z"
 doc_updated_by: "SUPERVISOR"
 description: "Remove unused GPT-5.5/GPT-5.6 prompt diagnostic implementations and self-tests, retain the prompt module compiler and model-neutral behavioral contracts, remove the historical fixed-byte assertion while retaining semantic prompt assertions, remove the duplicate coverage-threshold configuration guard, and route agent-efficiency benchmark tests to a separate qualification suite instead of the normal critical CLI gate. Preserve exit-code, scope, symlink, protected-path, trust-boundary, task-centric, and context critical tests. Reduce critical suite process overhead only if the resulting suite passes repeatedly. Avoid files currently modified by tasks 202609080727-BAWTEE and 202609121424-T83XJA. Do not modify benchmark fixtures or semantic gateway implementation."
 sections:
@@ -1338,7 +1346,7 @@ extensions:
       revision: 4
       schema_version: 1
       task_id: "202609122236-JFNN6B"
-    event_cursor: 26
+    event_cursor: 27
     final_validation:
       evidence:
         -
@@ -3019,9 +3027,9 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202609122236-JFNN6B"
-    revision: 36
+    revision: 37
     schema_version: 1
-    updated_at: "2026-09-13T00:29:48.345Z"
+    updated_at: "2026-09-13T00:31:23.719Z"
     work_items:
       work-item-cleanup:
         attempt: 1
@@ -3297,6 +3305,30 @@ extensions:
         mutation_id: "compatibility:sha256:1592e434d9fd7539732652499193cc310fbc04d00595744bf4bb59e03d2d420d"
         next_revision: 10
         previous_revision: 9
+        schema_version: 1
+        task_id: "202609122236-JFNN6B"
+      compatibility:sha256:22993acda4b6c6460d59f0541ea80d8f3322c04419086a10763bd0c5394511c8:
+        aggregate_digest: "sha256:151dc1dfaecb7b62096596472ec9c68a5bb63508fee823726d4f320040987e4e"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T00:31:23.719Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_09717037ba804a1a421dcb6c"
+          mutation_id: "compatibility:sha256:22993acda4b6c6460d59f0541ea80d8f3322c04419086a10763bd0c5394511c8"
+          plan_digest: "sha256:395e3263f50efcbc3a42c35b2389f51b3b009827549efdcdd70afb70473535f1"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609122236-JFNN6B"
+          task_revision: 36
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:22993acda4b6c6460d59f0541ea80d8f3322c04419086a10763bd0c5394511c8"
+        next_revision: 37
+        previous_revision: 36
         schema_version: 1
         task_id: "202609122236-JFNN6B"
       compatibility:sha256:2692b2b79cc57a810e4fa98044815c850c779164b88a6ca913a117f235453741:
