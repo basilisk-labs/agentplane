@@ -4,7 +4,7 @@ title: "Remove supervisor spend limits and retain informational usage telemetry"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -106,10 +106,16 @@ execution_contract:
       - "scripts/checks"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "scripts"
+    changed_paths:
+      - "scripts/bench/paired-production-driver.mjs"
+      - "scripts/bench/paired-production-driver.test.mjs"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -159,7 +165,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:e8fb3949f03123b07a2253e13276a516cc873d2a3029b0fc34e1ee38d8a4e82e"
+      digest: "sha256:aa3d57cc9e3d34372369aab260ad3f1be5dcc4b6ffccdd66e0bb3b17ce86dbe2"
       escalation_reasons:
         - "central_component:packages/core/src/runner"
         - "central_component:packages/core/src/schemas"
@@ -174,10 +180,16 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "scripts"
+        changed_files:
+          - "scripts/bench/paired-production-driver.mjs"
+          - "scripts/bench/paired-production-driver.test.mjs"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -213,11 +225,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "42018380f7785ef4b04cf85520e022b8b8612fad"
+  message: "🚧 X29JE4 task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 42018380f778. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -226,9 +243,17 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-13T20:12:38.723Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 42018380f778. CLI accepted one state-bound external-agent semantic result."
+    commit: "42018380f7785ef4b04cf85520e022b8b8612fad"
 doc_version: 3
-doc_updated_at: "2026-09-13T20:08:45.519Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-13T20:12:38.723Z"
+doc_updated_by: "SUPERVISOR"
 description: "Remove active supervisor token, monetary, wall-time, changed-file, diff-line, agent-run, and routine episode budget enforcement. Remove the task supervisor budget-epoch command and token-budget renewal path. Keep provider token usage as informational evaluation telemetry. Retain only a high internal orchestrator anomaly fuse that pauses resumably on a probable tight loop. Detect cycles from repeated canonical semantic state and exhausted recovery strategies, and return a concrete diagnostic without treating the task as budget-exhausted. Preserve cold decoding of existing persisted journals without continuing legacy spend enforcement. Do not change release or publication state."
 sections:
   Summary: |-
@@ -1055,7 +1080,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609132000-X29JE4"
-    event_cursor: 3
+    event_cursor: 5
     final_validation: null
     id: "202609132000-X29JE4"
     intent:
@@ -1090,9 +1115,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 5
+    revision: 7
     schema_version: 1
-    updated_at: "2026-09-13T20:08:45.519Z"
+    updated_at: "2026-09-13T20:12:38.723Z"
     work_items:
       campaign-contract:
         attempt: 0
@@ -1207,9 +1232,59 @@ extensions:
         previous_revision: 3
         schema_version: 1
         task_id: "202609132000-X29JE4"
+      compatibility:sha256:b2b2616674397ebbb14b51a7c8afd54db1af4030b52976505f37ce8a5ace4fba:
+        aggregate_digest: "sha256:ebf62cefc83d21db92e4865f5617903e7d78ff00c020b7f1050e183979122415"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T20:12:38.723Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_58ea475f389874e8bfc30b17"
+          mutation_id: "compatibility:sha256:b2b2616674397ebbb14b51a7c8afd54db1af4030b52976505f37ce8a5ace4fba"
+          plan_digest: "sha256:c21ca9fb024d6c041175d789cd83b530decf10ee5907fff6d70dcdecc07325d9"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609132000-X29JE4"
+          task_revision: 5
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b2b2616674397ebbb14b51a7c8afd54db1af4030b52976505f37ce8a5ace4fba"
+        next_revision: 6
+        previous_revision: 5
+        schema_version: 1
+        task_id: "202609132000-X29JE4"
+      compatibility:sha256:fe61b4ec75461aac095d90735238d3bd03db00c50ef0e3a32f53decc95548150:
+        aggregate_digest: "sha256:b0bfa92328ebd433ea7fd6005ffab2b1d58ccebc7b02986b595106954f5c7f2c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T20:12:38.723Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_f2af51a40bdfc47dc76428b1"
+          mutation_id: "compatibility:sha256:fe61b4ec75461aac095d90735238d3bd03db00c50ef0e3a32f53decc95548150"
+          plan_digest: "sha256:c21ca9fb024d6c041175d789cd83b530decf10ee5907fff6d70dcdecc07325d9"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609132000-X29JE4"
+          task_revision: 6
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:fe61b4ec75461aac095d90735238d3bd03db00c50ef0e3a32f53decc95548150"
+        next_revision: 7
+        previous_revision: 6
+        schema_version: 1
+        task_id: "202609132000-X29JE4"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "42018380f7785ef4b04cf85520e022b8b8612fad"
   task_execution_context:
     base_ref: "main"
     base_sha: "58dbda0d5f88c8a83802c5aee3a9380d001dd4b2"
