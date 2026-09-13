@@ -16,7 +16,7 @@ Source contract: agentplane-roadmap-r2 cards ST-08, ST-09, ST-10, ST-11, ST-12, 
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- Note: Verified current HEAD 0bf6c6336: full local CI and focused telemetry regression tests passed.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -28,6 +28,7 @@ Source contract: agentplane-roadmap-r2 cards ST-08, ST-09, ST-10, ST-11, ST-12, 
 
 ```text
  .../src/cli/run-cli.critical.task-centric.test.ts  |  24 ++
+ .../context/assimilation-supervisor.unit.test.ts   |  24 +-
  .../src/commands/evaluator/evaluator-episode.ts    | 236 ++++++++++++--
  .../evaluator-execute-subprocess.testkit.ts        |  72 +++++
  .../evaluator/evaluator-execute-supervisor.ts      | 134 ++++++--
@@ -46,6 +47,7 @@ Source contract: agentplane-roadmap-r2 cards ST-08, ST-09, ST-10, ST-11, ST-12, 
  .../commands/task/branch-task-supervisor-usage.ts  |  39 ++-
  .../direct-task-supervisor-formal-operation.ts     |  34 ++
  .../src/commands/task/external-agent-exchange.ts   | 111 ++++++-
+ .../task/external-agent-report-result.test.ts      |  56 +++-
  .../src/commands/task/external-agent-supervisor.ts |  27 +-
  .../agentplane/src/commands/task/kernel-run.ts     | 352 +++++++++++++++++----
  .../task/roadmap-external-accounting.test.ts       | 116 +++++++
@@ -62,7 +64,7 @@ Source contract: agentplane-roadmap-r2 cards ST-08, ST-09, ST-10, ST-11, ST-12, 
  scripts/bench/task-cost-rollup.test.mjs            | 192 +++++++++++
  .../lib/agent-efficiency-repository-snapshot.mjs   | 167 ++++++++++
  scripts/lib/test-route-registry.mjs                |   1 +
- 35 files changed, 3478 insertions(+), 322 deletions(-)
+ 37 files changed, 3541 insertions(+), 339 deletions(-)
 ```
 
 </details>
