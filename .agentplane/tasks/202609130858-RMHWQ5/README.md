@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 34
+revision: 35
 origin:
   system: "manual"
 depends_on: []
@@ -29,10 +29,10 @@ plan_approval:
   updated_by: "HOST:local:USER"
   note: "host_user_decision=sha256:98741261b90825d30f097dc7a9293ef96786fc2f45d34bdfe7bcee9368e1c6d5"
 verification:
-  state: "pending"
-  updated_at: "2026-09-13T14:46:30.786Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
+  state: "ok"
+  updated_at: "2026-09-13T15:01:54.090Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
   state: "pass"
@@ -175,7 +175,58 @@ execution_contract:
       - "schema"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-13"
+        result: "pass"
+      -
+        id: "recorded-check-14"
+        result: "pass"
+      -
+        id: "recorded-check-15"
+        result: "pass"
+      -
+        id: "recorded-check-16"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
+      -
+        id: "verification-record"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_schema"
@@ -433,8 +484,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 37ad5b999eed. CLI accepted one state-bound external-agent semantic result."
     commit: "37ad5b999eed8154a0aa28027c58cdb94690756b"
+  -
+    type: "verify"
+    at: "2026-09-13T15:01:54.090Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-13T14:53:50.649Z"
+doc_updated_at: "2026-09-13T15:01:55.169Z"
 doc_updated_by: "SUPERVISOR"
 description: "When a supervisor episode stops because prior paid work has unavailable or unallocatable provider token telemetry, preserve that historical usage as unknown and continue to block automatic paid dispatch. Add a narrow operator command that accepts an explicit USER authorization, records durable state-bound provenance, and opens a new independently capped token budget epoch without rewriting prior operations or treating unknown usage as zero. Reject stale authorization, non-telemetry stops, missing active USER authority, replay with different parameters, and caps that are absent or invalid. The repaired ST-14 task must be able to resume through this command. Do not weaken actual human_review verdicts or automatic fail-closed admission."
 sections:
@@ -463,6 +520,132 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a6421c05f45ced225553bec304a98dd48400a47fe0bbfc3ad8edab8e8ae3d32d, input_digest=sha256:80bd79367b17aa90114fe0a2d4bae40d54feafce3c1b9ba2f135c2c7e82a02c8
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check affected_unit_integration (1/5)
+
+    Check: affected_unit_integration
+    Command: bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check affected_unit_integration (2/5)
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check affected_unit_integration (3/5)
+
+    Check: affected_unit_integration
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check affected_unit_integration (4/5)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check affected_unit_integration (5/5)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check critical_paths (1/5)
+
+    Check: critical_paths
+    Command: bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check critical_paths (2/5)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check critical_paths (3/5)
+
+    Check: critical_paths
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check critical_paths (4/5)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check critical_paths (5/5)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check task_outcome (1/5)
+
+    Check: task_outcome
+    Command: bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check task_outcome (2/5)
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check task_outcome (3/5)
+
+    Check: task_outcome
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check task_outcome (4/5)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check task_outcome (5/5)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609130858-RMHWQ5-add-an-explicit-user-approved-supervisor-budget/.agentplane/tasks/202609130858-RMHWQ5/blueprint/resolved-snapshot.json
+    - old_digest: 979e174d7c1f997ad18f1545c2840858bef2d19ec272d7309270fdcc2a2b6df5
+    - current_digest: 979e174d7c1f997ad18f1545c2840858bef2d19ec272d7309270fdcc2a2b6df5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609130858-RMHWQ5
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609130858-RMHWQ5
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-13T15:01:54.090Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a6421c05f45ced225553bec304a98dd48400a47fe0bbfc3ad8edab8e8ae3d32d, input_digest=sha256:03f9e7dbadf5afc52fc276819d9b88e227f01d1aecfd7098bea602b2e189271e
 
     Details:
 
@@ -880,7 +1063,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609130858-RMHWQ5"
-    event_cursor: 26
+    event_cursor: 27
     final_validation: null
     id: "202609130858-RMHWQ5"
     intent:
@@ -1358,9 +1541,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609130858-RMHWQ5"
-    revision: 34
+    revision: 35
     schema_version: 1
-    updated_at: "2026-09-13T14:53:50.592Z"
+    updated_at: "2026-09-13T15:01:55.166Z"
     work_items:
       budget-epoch-repair:
         attempt: 1
@@ -2096,6 +2279,30 @@ extensions:
         previous_revision: 12
         schema_version: 1
         task_id: "202609130858-RMHWQ5"
+      compatibility:sha256:e1b2ede864c0cdd1d888f9cf82c7687d2bc8ebf9280cc709a0b49bdd9af0eb9d:
+        aggregate_digest: "sha256:6b9b0237e7a0f73054362c9eccb387cd68fe7a8f4b74473e7b43a14e4f62ac2f"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T15:01:55.166Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_9f9fb094a5c23324ae076c9e"
+          mutation_id: "compatibility:sha256:e1b2ede864c0cdd1d888f9cf82c7687d2bc8ebf9280cc709a0b49bdd9af0eb9d"
+          plan_digest: "sha256:3240f151dc9d04408ae11cf18a19b0dfa42f0de9817ead8c7e11b81eb7599ac1"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609130858-RMHWQ5"
+          task_revision: 34
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:e1b2ede864c0cdd1d888f9cf82c7687d2bc8ebf9280cc709a0b49bdd9af0eb9d"
+        next_revision: 35
+        previous_revision: 34
+        schema_version: 1
+        task_id: "202609130858-RMHWQ5"
       compatibility:sha256:eac14e46e1bfa0ba4b214654f97910e2942809d26bf7afbdf9076c47ff15b22f:
         aggregate_digest: "sha256:29a57d629afaaa814bfbc9080656999344f3435db7eca7c9806e02bb4d2ac667"
         event:
@@ -2340,6 +2547,132 @@ Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review i
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a6421c05f45ced225553bec304a98dd48400a47fe0bbfc3ad8edab8e8ae3d32d, input_digest=sha256:80bd79367b17aa90114fe0a2d4bae40d54feafce3c1b9ba2f135c2c7e82a02c8
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check affected_unit_integration (1/5)
+
+Check: affected_unit_integration
+Command: bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check affected_unit_integration (2/5)
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check affected_unit_integration (3/5)
+
+Check: affected_unit_integration
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check affected_unit_integration (4/5)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check affected_unit_integration (5/5)
+
+Check: critical_paths
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check critical_paths (1/5)
+
+Check: critical_paths
+Command: bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check critical_paths (2/5)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check critical_paths (3/5)
+
+Check: critical_paths
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check critical_paths (4/5)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check critical_paths (5/5)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check task_outcome (1/5)
+
+Check: task_outcome
+Command: bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check task_outcome (2/5)
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check task_outcome (3/5)
+
+Check: task_outcome
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check task_outcome (4/5)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609130858-RMHWQ5 Verification Contract check task_outcome (5/5)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609130858-RMHWQ5-add-an-explicit-user-approved-supervisor-budget/.agentplane/tasks/202609130858-RMHWQ5/blueprint/resolved-snapshot.json
+- old_digest: 979e174d7c1f997ad18f1545c2840858bef2d19ec272d7309270fdcc2a2b6df5
+- current_digest: 979e174d7c1f997ad18f1545c2840858bef2d19ec272d7309270fdcc2a2b6df5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609130858-RMHWQ5
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609130858-RMHWQ5
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-13T15:01:54.090Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:a6421c05f45ced225553bec304a98dd48400a47fe0bbfc3ad8edab8e8ae3d32d, input_digest=sha256:03f9e7dbadf5afc52fc276819d9b88e227f01d1aecfd7098bea602b2e189271e
 
 Details:
 
