@@ -58,6 +58,17 @@ test("measures one new task without charging duplicate or preexisting blobs twic
     observed: { filesystem_writes: 7, tool_calls: 5, control_plane_calls: 3 },
   });
 
+  assert.deepEqual(
+    measureTaskMarginalCost({
+      repoRoot: root,
+      beforeRevision: before,
+      afterRevision: after,
+      taskId: "NEW",
+      observed: { filesystem_writes: 7, tool_calls: 5, control_plane_calls: 3 },
+    }),
+    measurement,
+  );
+
   assert.equal(measurement.task_paths.count, 3);
   assert.equal(measurement.task_paths.duplicate_paths, 1);
   assert.equal(measurement.git_blobs.referenced_unique_count, 2);

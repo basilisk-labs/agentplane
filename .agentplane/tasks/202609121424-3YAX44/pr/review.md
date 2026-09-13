@@ -33,9 +33,9 @@ Created: 2026-09-13T08:00:01.413Z
  scripts/bench/paired-production-driver.test.mjs    | 289 ++++++++++
  scripts/bench/paired-result-report.mjs             | 432 +++++++++++++++
  scripts/bench/paired-result-report.test.mjs        | 207 +++++++
- scripts/bench/task-marginal-cost.test.mjs          | 104 ++++
+ scripts/bench/task-marginal-cost.test.mjs          | 115 ++++
  .../lib/agent-efficiency-repository-snapshot.mjs   | 198 +++++++
- 6 files changed, 1837 insertions(+)
+ 6 files changed, 1848 insertions(+)
 ```
 
 </details>
