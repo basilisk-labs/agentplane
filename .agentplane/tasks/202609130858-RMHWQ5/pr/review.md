@@ -6,14 +6,14 @@ Created: 2026-09-13T09:03:04.106Z
 
 - Task: `202609130858-RMHWQ5`
 - Title: Add an explicit USER-approved supervisor budget epoch for unknown token telemetry
-- Status: DONE
+- Status: DOING
 - Branch: `task/202609130858-RMHWQ5/add-an-explicit-user-approved-supervisor-budget`
 - Canonical task record: `.agentplane/tasks/202609130858-RMHWQ5/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -43,8 +43,10 @@ Created: 2026-09-13T09:03:04.106Z
  .../task/supervisor-budget-epoch.command.ts        | 229 +++++++++++++++
  .../src/runner/supervisor-execution-episode.ts     | 311 +++++++++++++++++++--
  packages/core/src/schemas/index.ts                 |   3 +
+ .../baselines/v0.7-compatibility-candidate.json    | 180 +++++++++++-
+ .../check-compatibility-contract-baseline.mjs      | 120 ++++++++
  scripts/lib/test-route-registry.mjs                |   2 +-
- 15 files changed, 1441 insertions(+), 36 deletions(-)
+ 17 files changed, 1731 insertions(+), 46 deletions(-)
 ```
 
 </details>
