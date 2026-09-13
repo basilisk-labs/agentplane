@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 38701213ee50bef6e0d9bd13db083840d593db7a..bec1148ab28dc4d0c128280e7f24fdd85ae207bf",
+      "command": "git diff --check e5b588b7db74359b3a7fa74d0b0e08d2658b5db8..f027b970809e6508f586f311cecdb9a3b853c6c3",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,19 +13,17 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 38701213ee50bef6e0d9bd13db083840d593db7a..bec1148ab28dc4d0c128280e7f24fdd85ae207bf",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB e5b588b7db74359b3a7fa74d0b0e08d2658b5db8..f027b970809e6508f586f311cecdb9a3b853c6c3",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
+        "M\t.agentplane/tasks/202609132000-X29JE4/README.md",
         "M\t.agentplane/tasks/202609132000-X29JE4/pr/diffstat.txt",
         "M\t.agentplane/tasks/202609132000-X29JE4/pr/github-body.md",
         "M\t.agentplane/tasks/202609132000-X29JE4/pr/meta.json",
         "M\t.agentplane/tasks/202609132000-X29JE4/pr/review.md",
-        "M\tpackages/core/src/runner/supervisor-execution-episode-migration.ts",
-        "M\tpackages/core/src/runner/supervisor-execution-episode-telemetry-admission.test.ts",
-        "M\tpackages/core/src/runner/supervisor-execution-episode.test.ts",
-        "M\tpackages/core/src/runner/supervisor-execution-episode.ts",
-        "M\tpackages/core/src/schemas/index.ts"
+        "M\t.agentplane/tasks/202609132000-X29JE4/supervision/declared-checks.json",
+        "M\tscripts/bench/paired-production-driver.test.mjs"
       ]
     },
     {
@@ -35,15 +33,36 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "38701213ee50bef6e0d9bd13db083840d593db7a",
-  "implementation_commit": "bec1148ab28dc4d0c128280e7f24fdd85ae207bf",
+  "execution_base_commit": "e5b588b7db74359b3a7fa74d0b0e08d2658b5db8",
+  "implementation_commit": "f027b970809e6508f586f311cecdb9a3b853c6c3",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [],
-    "classification": [],
+    "baseline": [
+      " M .agentplane/tasks/202609132000-X29JE4/README.md",
+      " M .agentplane/tasks/202609132000-X29JE4/supervision/declared-checks.json",
+      " M scripts/bench/paired-production-driver.test.mjs"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609132000-X29JE4/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609132000-X29JE4/supervision/declared-checks.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M scripts/bench/paired-production-driver.test.mjs"
+      }
+    ],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M .agentplane/tasks/202609132000-X29JE4/README.md",
+      " M .agentplane/tasks/202609132000-X29JE4/supervision/declared-checks.json",
+      " M scripts/bench/paired-production-driver.test.mjs"
+    ],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,

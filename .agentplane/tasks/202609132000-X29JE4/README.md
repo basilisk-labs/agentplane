@@ -4,7 +4,7 @@ title: "Remove supervisor spend limits and retain informational usage telemetry"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -244,7 +244,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "f027b970809e6508f586f311cecdb9a3b853c6c3"
+  message: "🚧 X29JE4 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -255,6 +257,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: bec1148ab28d. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: f027b970809e. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -279,8 +284,16 @@ events:
     to: "DOING"
     note: "Implementation committed: bec1148ab28d. CLI accepted one state-bound external-agent semantic result."
     commit: "bec1148ab28dc4d0c128280e7f24fdd85ae207bf"
+  -
+    type: "status"
+    at: "2026-09-13T20:28:28.121Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: f027b970809e. CLI accepted one state-bound external-agent semantic result."
+    commit: "f027b970809e6508f586f311cecdb9a3b853c6c3"
 doc_version: 3
-doc_updated_at: "2026-09-13T20:23:27.147Z"
+doc_updated_at: "2026-09-13T20:28:28.121Z"
 doc_updated_by: "SUPERVISOR"
 description: "Remove active supervisor token, monetary, wall-time, changed-file, diff-line, agent-run, and routine episode budget enforcement. Remove the task supervisor budget-epoch command and token-budget renewal path. Keep provider token usage as informational evaluation telemetry. Retain only a high internal orchestrator anomaly fuse that pauses resumably on a probable tight loop. Detect cycles from repeated canonical semantic state and exhausted recovery strategies, and return a concrete diagnostic without treating the task as budget-exhausted. Preserve cold decoding of existing persisted journals without continuing legacy spend enforcement. Do not change release or publication state."
 sections:
@@ -817,7 +830,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609132000-X29JE4"
-    event_cursor: 8
+    event_cursor: 10
     final_validation: null
     id: "202609132000-X29JE4"
     intent:
@@ -1628,9 +1641,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609132000-X29JE4"
-    revision: 14
+    revision: 16
     schema_version: 1
-    updated_at: "2026-09-13T20:23:27.147Z"
+    updated_at: "2026-09-13T20:28:28.121Z"
     work_items:
       campaign-contract:
         attempt: 0
@@ -1837,6 +1850,54 @@ extensions:
         previous_revision: 9
         schema_version: 1
         task_id: "202609132000-X29JE4"
+      compatibility:sha256:8cdf4b95801ae7ecc3236e3210f34bfb6d4720681a4614e811af879e00fa937c:
+        aggregate_digest: "sha256:08950c2668e40eb5b6094ed8fdcfed25e5de04c9cb8e11a3946525ffa62c058f"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T20:28:28.121Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_1110e3f83cd48d8b944c015b"
+          mutation_id: "compatibility:sha256:8cdf4b95801ae7ecc3236e3210f34bfb6d4720681a4614e811af879e00fa937c"
+          plan_digest: "sha256:2a0128895db157556120cf8c21fde4c1520781e16035ea18edc8e5784529479e"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609132000-X29JE4"
+          task_revision: 14
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:8cdf4b95801ae7ecc3236e3210f34bfb6d4720681a4614e811af879e00fa937c"
+        next_revision: 15
+        previous_revision: 14
+        schema_version: 1
+        task_id: "202609132000-X29JE4"
+      compatibility:sha256:a6777c20b4418bdc643a869884c9cf0489f0908b0da4aac7815b0bf7e2f61f7e:
+        aggregate_digest: "sha256:c4f0048ac3815a3ece0ff926455443a6cc441a78135f56b986ade7d9c0d9adca"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T20:28:28.121Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_2f2f9f680a85793d2794d18b"
+          mutation_id: "compatibility:sha256:a6777c20b4418bdc643a869884c9cf0489f0908b0da4aac7815b0bf7e2f61f7e"
+          plan_digest: "sha256:2a0128895db157556120cf8c21fde4c1520781e16035ea18edc8e5784529479e"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609132000-X29JE4"
+          task_revision: 15
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:a6777c20b4418bdc643a869884c9cf0489f0908b0da4aac7815b0bf7e2f61f7e"
+        next_revision: 16
+        previous_revision: 15
+        schema_version: 1
+        task_id: "202609132000-X29JE4"
       compatibility:sha256:b2b2616674397ebbb14b51a7c8afd54db1af4030b52976505f37ce8a5ace4fba:
         aggregate_digest: "sha256:ebf62cefc83d21db92e4865f5617903e7d78ff00c020b7f1050e183979122415"
         event:
@@ -1987,7 +2048,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "bec1148ab28dc4d0c128280e7f24fdd85ae207bf"
+    hash: "f027b970809e6508f586f311cecdb9a3b853c6c3"
   task_execution_context:
     base_ref: "main"
     base_sha: "58dbda0d5f88c8a83802c5aee3a9380d001dd4b2"
