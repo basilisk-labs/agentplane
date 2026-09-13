@@ -1,7 +1,14 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { chmodSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  chmodSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  realpathSync,
+  writeFileSync,
+} from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -69,6 +76,7 @@ function fixture() {
           artifact_sha256: artifact.digest,
           source_sha: String(index + 1).repeat(40),
           entrypoint: [artifact.path],
+          entrypoint_sha256: artifact.digest,
         },
       ];
     }),
@@ -213,6 +221,26 @@ test("rejects every mismatched run identity field", () => {
   }
 });
 
+test("pins a product artifact separately from its executable launcher", () => {
+  const { manifest, root } = fixture();
+  const launcher = makeExecutable(
+    root,
+    "launcher.mjs",
+    "#!/usr/bin/env node\nprocess.stdout.write('{}');\n",
+  );
+  manifest.products.previous_release.entrypoint = [launcher.path, "--arm", "previous_release"];
+  manifest.products.previous_release.entrypoint_sha256 = launcher.digest;
+
+  const validated = validatePairedCampaignManifest(manifest);
+
+  assert.equal(
+    validated.products.previous_release.artifact_path.endsWith("previous_release.mjs"),
+    true,
+  );
+  assert.equal(validated.products.previous_release.entrypoint[0], realpathSync(launcher.path));
+  assert.equal(validated.products.previous_release.entrypoint_sha256, launcher.digest);
+});
+
 test("rejects missing or malformed token usage", async () => {
   const { manifest, root } = fixture();
   for (const [label, tokenUsage] of [
@@ -237,6 +265,18 @@ test("rejects missing or malformed token usage", async () => {
         output_tokens: 5,
         reasoning_tokens: null,
         total_tokens: 15,
+      },
+    ],
+    [
+      "derived total mismatch",
+      {
+        state: "observed",
+        input_tokens: 10,
+        cached_input_tokens: 4,
+        output_tokens: 5,
+        reasoning_tokens: 2,
+        total_tokens: 16,
+        total_tokens_source: "derived_input_plus_output",
       },
     ],
   ]) {

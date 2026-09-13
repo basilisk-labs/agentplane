@@ -1,8 +1,33 @@
- docs/user/commands.mdx                             |   7 +-
- docs/user/task-lifecycle.mdx                       |   3 +
- .../baselines/v0.7.9-stabilization-candidate.json  |  55 ++++++
- scripts/bench/paired-production-driver.mjs         | 124 ++++++------
- scripts/bench/paired-production-driver.test.mjs    |  58 ++++--
- scripts/bench/paired-result-report.mjs             | 209 +++++++++++----------
- scripts/bench/paired-result-report.test.mjs        | 156 +++++++++------
- 7 files changed, 376 insertions(+), 236 deletions(-)
+ docs/user/commands.mdx                             |    7 +-
+ docs/user/task-lifecycle.mdx                       |    3 +
+ .../m01-0.7.9-token-pilot-v1/authority.json        |   24 +
+ .../m01-0.7.9-token-pilot-v1/campaign.lock.json    |  457 ++++++++
+ .../m01-0.7.9-token-pilot-v1/evidence.json         | 1220 ++++++++++++++++++++
+ .../previous-runtime/agentplane.tgz                |  Bin 0 -> 1754032 bytes
+ .../previous-runtime/package-lock.json             |  474 ++++++++
+ .../previous-runtime/package.json                  |    8 +
+ .../product-candidate.json                         |   35 +
+ .../product-minimal_agent.json                     |   13 +
+ .../product-previous_release.json                  |   22 +
+ .../baselines/m01-0.7.9-token-pilot-v1/report.json |  419 +++++++
+ .../m01-0.7.9-token-pilot-v1/target.bundle         |  Bin 0 -> 468 bytes
+ .../m01-0.7.9-token-pilot-v2/authority.json        |   28 +
+ .../m01-0.7.9-token-pilot-v2/campaign.lock.json    |  457 ++++++++
+ .../m01-0.7.9-token-pilot-v2/disposition.json      |   34 +
+ .../m01-0.7.9-token-pilot-v2/evidence.json         | 1170 +++++++++++++++++++
+ .../product-candidate.json                         |   35 +
+ .../product-minimal_agent.json                     |   13 +
+ .../product-previous_release.json                  |   22 +
+ .../baselines/m01-0.7.9-token-pilot-v2/report.json |  260 +++++
+ .../m01-0.7.9-token-pilot-v2/target.bundle         |  Bin 0 -> 468 bytes
+ .../baselines/v0.7.9-stabilization-candidate.json  |   55 +
+ scripts/bench/paired-live-codex-launcher.mjs       |  598 ++++++++++
+ scripts/bench/paired-live-codex-launcher.test.mjs  |  149 +++
+ scripts/bench/paired-m01-materialize.mjs           |  340 ++++++
+ scripts/bench/paired-m01-materialize.test.mjs      |   60 +
+ scripts/bench/paired-m01-oracle.mjs                |   31 +
+ scripts/bench/paired-production-driver.mjs         |  175 ++-
+ scripts/bench/paired-production-driver.test.mjs    |  100 +-
+ scripts/bench/paired-result-report.mjs             |  229 ++--
+ scripts/bench/paired-result-report.test.mjs        |  157 ++-
+ 32 files changed, 6355 insertions(+), 240 deletions(-)

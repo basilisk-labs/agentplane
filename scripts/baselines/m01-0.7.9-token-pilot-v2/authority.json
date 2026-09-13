@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane.m01_live_authority",
+  "status": "approved",
+  "campaign_id": "M01-0.7.9-token-pilot-v2",
+  "user_message_id": "680572585",
+  "continuation_message_id": "630607098",
+  "conversation_id": "01a095fd-4a1b-7e91-9912-926a2f02d0ec",
+  "authentication": "chatgpt_subscription",
+  "provider_attempts": 15,
+  "retry_limit": 0,
+  "sandbox": "workspace-write",
+  "network": "deny",
+  "token_caps": {
+    "max_input_tokens": null,
+    "max_output_tokens": null,
+    "max_total_tokens": null
+  },
+  "supersedes_evidence_digest": "sha256:804cc51f855da09a83ca7fff483aa6a373cd690c7c0a9fa955af2b6ba0cc28a6",
+  "constraints": [
+    "Use the existing ChatGPT subscription.",
+    "Do not use an API key.",
+    "Do not purchase credits.",
+    "Retain every assigned attempt.",
+    "Do not retry an attempt.",
+    "Treat the v1 HTTP 400 campaign as failed harness evidence, not product evidence."
+  ]
+}

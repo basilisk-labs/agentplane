@@ -73,6 +73,20 @@ function assertTokenUsage(value, label) {
   ) {
     throw new Error(`${label} total is lower than input plus output tokens.`);
   }
+  if (
+    value.total_tokens_source !== undefined &&
+    !["provider", "derived_input_plus_output"].includes(value.total_tokens_source)
+  ) {
+    throw new Error(`${label} has invalid total token source.`);
+  }
+  if (
+    value.total_tokens_source === "derived_input_plus_output" &&
+    (value.input_tokens === null ||
+      value.output_tokens === null ||
+      value.total_tokens !== value.input_tokens + value.output_tokens)
+  ) {
+    throw new Error(`${label} derived total does not match its components.`);
+  }
 }
 
 function wilsonInterval(successes, total, z = 1.96) {
@@ -379,6 +393,9 @@ export function buildPairedResultReport(value) {
     .filter((attempt) => attempt.token_usage.state === "unavailable")
     .map((attempt) => attempt.id);
   const incompleteTokenAttempts = [...partialTokenAttempts, ...unavailableTokenAttempts];
+  const derivedTotalTokenAttempts = attempts
+    .filter((attempt) => attempt.token_usage.total_tokens_source === "derived_input_plus_output")
+    .map((attempt) => attempt.id);
   const numericTokenClaimComplete = attempts.length > 0 && incompleteTokenAttempts.length === 0;
   const efficiency = efficiencyAssessment(strata, value.claim_policy, safety.verdict);
   const payload = {
@@ -392,6 +409,7 @@ export function buildPairedResultReport(value) {
       token_usage_partial: partialTokenAttempts.length,
       token_usage_unavailable: unavailableTokenAttempts.length,
       incomplete_token_attempt_ids: incompleteTokenAttempts,
+      derived_total_token_attempt_ids: derivedTotalTokenAttempts,
       transports: Object.fromEntries(
         Object.entries(strata).map(([transport, stratum]) => [transport, stratum.attempts]),
       ),
@@ -408,7 +426,9 @@ export function buildPairedResultReport(value) {
       paired_population:
         "Only pairs where every arm independently passes the same oracle outcome are included.",
       token_usage: numericTokenClaimComplete
-        ? "Every attempt has complete provider-observed token usage."
+        ? derivedTotalTokenAttempts.length === 0
+          ? "Every attempt has complete provider-observed token usage."
+          : "Every attempt has complete token usage. total_tokens is derived exactly as input_tokens plus output_tokens where the Codex event omits it."
         : "Partial or unavailable provider token usage prevents a complete numeric token claim.",
       subset_accounting:
         "total_tokens is the primary cost. cached_input_tokens and reasoning_tokens are reported as subsets and are not added again.",
