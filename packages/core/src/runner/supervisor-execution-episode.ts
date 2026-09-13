@@ -305,6 +305,33 @@ const SUPERVISOR_LIFECYCLE_TIMING_ZOD_SCHEMA = z
         }
       }
     }
+    const boundaries = [
+      ...new Set(
+        timing.spans.flatMap((span) => [span.offset_ms, span.offset_ms + span.elapsed_ms]),
+      ),
+    ].toSorted((a, b) => a - b);
+    const derivedPartitions = { local_work: 0, user_wait: 0, external_wait: 0 };
+    for (let index = 1; index < boundaries.length; index += 1) {
+      const start = boundaries[index - 1]!;
+      const end = boundaries[index]!;
+      const active = timing.spans
+        .filter((span) => span.offset_ms <= start && span.offset_ms + span.elapsed_ms >= end)
+        .toSorted(
+          (a, b) => (ancestors.get(b.span_id)?.size ?? 0) - (ancestors.get(a.span_id)?.size ?? 0),
+        )[0];
+      if (active) derivedPartitions[active.category] += end - start;
+    }
+    if (
+      Object.entries(derivedPartitions).some(
+        ([category, elapsed]) =>
+          timing.partitioned_ms[category as keyof typeof timing.partitioned_ms] !== elapsed,
+      )
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Lifecycle timing partitions must match the deepest active span categories.",
+      });
+    }
   });
 
 const SUPERVISOR_EPISODE_OPERATION_ZOD_SCHEMA = z

@@ -24,10 +24,10 @@
  packages/agentplane/src/runner/adapters/codex.ts   |  81 ++++-
  .../adapters/roadmap-usage-durability.test.ts      | 159 ++++++++++
  packages/agentplane/src/runner/artifacts.ts        |  29 ++
- .../supervisor-execution-episode-timing.test.ts    | 116 +++++++
+ .../supervisor-execution-episode-timing.test.ts    | 129 ++++++++
  .../runner/supervisor-execution-episode.test.ts    |   6 +-
- .../src/runner/supervisor-execution-episode.ts     | 208 ++++++++++++-
+ .../src/runner/supervisor-execution-episode.ts     | 235 ++++++++++++++-
  scripts/bench/task-cost-rollup.test.mjs            | 192 ++++++++++++
  .../lib/agent-efficiency-repository-snapshot.mjs   | 167 +++++++++++
  scripts/lib/test-route-registry.mjs                |   1 +
- 32 files changed, 2915 insertions(+), 314 deletions(-)
+ 32 files changed, 2955 insertions(+), 314 deletions(-)
