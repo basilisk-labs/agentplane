@@ -14,9 +14,9 @@ type TaskSupervisorBudgetEpochParsed = {
   taskId: string;
   expectedJournalDigest: string;
   stateFingerprintDigest: string;
-  maxInputTokens: number;
-  maxOutputTokens: number;
-  maxTotalTokens: number;
+  maxInputTokens: number | null;
+  maxOutputTokens: number | null;
+  maxTotalTokens: number | null;
   by: "USER";
   json: boolean;
 };
@@ -47,21 +47,28 @@ export const taskSupervisorBudgetEpochSpec: CommandSpec<TaskSupervisorBudgetEpoc
       kind: "string",
       name: "max-input-tokens",
       valueHint: "<positive-integer>",
-      required: true,
+      required: false,
       description: "Maximum input tokens in the new epoch.",
+    },
+    {
+      kind: "boolean",
+      name: "disable-token-limits",
+      default: false,
+      description:
+        "Disable token caps when provider telemetry is unavailable; measurable supervisor limits remain active.",
     },
     {
       kind: "string",
       name: "max-output-tokens",
       valueHint: "<positive-integer>",
-      required: true,
+      required: false,
       description: "Maximum output tokens in the new epoch.",
     },
     {
       kind: "string",
       name: "max-total-tokens",
       valueHint: "<positive-integer>",
-      required: true,
+      required: false,
       description: "Maximum total tokens in the new epoch.",
     },
     {
@@ -87,8 +94,24 @@ export const taskSupervisorBudgetEpochSpec: CommandSpec<TaskSupervisorBudgetEpoc
         });
       }
     }
-    for (const key of ["max-input-tokens", "max-output-tokens", "max-total-tokens"] as const) {
+    const tokenKeys = ["max-input-tokens", "max-output-tokens", "max-total-tokens"] as const;
+    const disableTokenLimits = raw.opts["disable-token-limits"] === true;
+    if (disableTokenLimits && tokenKeys.some((key) => raw.opts[key] !== undefined)) {
+      throw usageError({
+        spec: taskSupervisorBudgetEpochSpec,
+        message: "--disable-token-limits cannot be combined with explicit token caps.",
+      });
+    }
+    if (!disableTokenLimits && tokenKeys.some((key) => raw.opts[key] === undefined)) {
+      throw usageError({
+        spec: taskSupervisorBudgetEpochSpec,
+        message:
+          "Provide all three token caps or use --disable-token-limits when telemetry is unavailable.",
+      });
+    }
+    for (const key of tokenKeys) {
       const value = raw.opts[key];
+      if (disableTokenLimits) continue;
       if (
         typeof value !== "string" ||
         !/^\d+$/u.test(value) ||
@@ -112,9 +135,12 @@ export const taskSupervisorBudgetEpochSpec: CommandSpec<TaskSupervisorBudgetEpoc
     taskId: String(raw.args["task-id"]),
     expectedJournalDigest: String(raw.opts["expected-journal-digest"]),
     stateFingerprintDigest: String(raw.opts["state-fingerprint"]),
-    maxInputTokens: Number(raw.opts["max-input-tokens"]),
-    maxOutputTokens: Number(raw.opts["max-output-tokens"]),
-    maxTotalTokens: Number(raw.opts["max-total-tokens"]),
+    maxInputTokens:
+      raw.opts["disable-token-limits"] === true ? null : Number(raw.opts["max-input-tokens"]),
+    maxOutputTokens:
+      raw.opts["disable-token-limits"] === true ? null : Number(raw.opts["max-output-tokens"]),
+    maxTotalTokens:
+      raw.opts["disable-token-limits"] === true ? null : Number(raw.opts["max-total-tokens"]),
     by: "USER",
     json: raw.opts.json === true,
   }),

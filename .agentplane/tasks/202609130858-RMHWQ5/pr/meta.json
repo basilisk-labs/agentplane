@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202609130858-RMHWQ5/add-an-explicit-user-approved-supervisor-budget",
   "created_at": "2026-09-13T09:03:04.106Z",
-  "diffstat_sha256": "sha256:2d1c6e3deebe5c4e0b7b76ae2ddb8a298faa4916996707352454b48d762a747f",
+  "diffstat_sha256": "sha256:d0403dce97d81e7ba23922243531d24a1e1f62c4a246eaade51f0412e2518b68",
   "last_verified_at": null,
   "provider": {
     "hostname": "github.com",

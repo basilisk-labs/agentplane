@@ -6,6 +6,7 @@ import {
   completeSupervisorExecutionEpisode,
   createSupervisorExecutionEpisodeJournal,
   digestSupervisorEpisodeValue,
+  prepareReplacementSupervisorExecutionEpisodeAfterFailure,
   startSupervisorExecutionEpisode,
   stopSupervisorExecutionEpisode,
   type SupervisorExecutionEpisodeJournal,
@@ -67,6 +68,44 @@ function stoppedTelemetryJournal(): SupervisorExecutionEpisodeJournal {
   });
   if (stopped.status !== "stopped") throw new Error("expected telemetry stop");
   return stopped.journal;
+}
+
+function stoppedTelemetryJournalAfterFailedOperation(): SupervisorExecutionEpisodeJournal {
+  const stopped = stoppedTelemetryJournal();
+  const authorized = authorize(stopped);
+  const started = startSupervisorExecutionEpisode({
+    journal: authorized,
+    role: "EXECUTOR",
+    kind: "agent_episode",
+    operation_identity: { task: "TASK-1", turn: 2 },
+    precondition_fingerprint_digest: FINGERPRINT,
+    now: "2026-09-13T00:00:06.000Z",
+  });
+  if (started.status !== "started") throw new Error("expected executor intent");
+  const failed = completeSupervisorExecutionEpisode({
+    journal: started.journal,
+    operation_key: started.operation_key,
+    result: { status: "failed" },
+    usage_attribution: { state: "unavailable", reason: "provider_result_not_observed" },
+    failed: true,
+    now: "2026-09-13T00:00:07.000Z",
+  });
+  const ready = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
+    journal: failed,
+    state_fingerprint_digest: FINGERPRINT,
+    now: "2026-09-13T00:00:08.000Z",
+  });
+  const next = startSupervisorExecutionEpisode({
+    journal: ready,
+    role: "EXECUTOR",
+    kind: "agent_episode",
+    operation_identity: { task: "TASK-1", turn: 3 },
+    precondition_fingerprint_digest: FINGERPRINT,
+    replacement_of_operation_key: failed.operations.at(-1)?.operation_key,
+    now: "2026-09-13T00:00:09.000Z",
+  });
+  if (next.status !== "stopped") throw new Error("expected telemetry stop");
+  return next.journal;
 }
 
 function authorize(
@@ -168,6 +207,42 @@ describe("supervisor token budget epoch", () => {
         "total_tokens_telemetry",
       ]);
     }
+  });
+
+  it("authorizes a new epoch after a durably failed operation with unknown telemetry", () => {
+    const stopped = stoppedTelemetryJournalAfterFailedOperation();
+    expect(stopped.operations.at(-1)?.status).toBe("failed");
+
+    const authorized = authorize(stopped, { now: "2026-09-13T00:00:10.000Z" });
+
+    expect(authorized.status).toBe("running");
+    expect(authorized.stop).toBeNull();
+    expect(authorized.operations.at(-1)?.recovery?.context).toMatchObject({
+      kind: "supervisor_token_budget_epoch",
+      starts_after_operation_sequence: 3,
+    });
+  });
+
+  it("disables only token caps through an explicit USER epoch", () => {
+    const stopped = stoppedTelemetryJournalAfterFailedOperation();
+    const authorized = authorize(stopped, {
+      budget: { max_input_tokens: null, max_output_tokens: null, max_total_tokens: null },
+      now: "2026-09-13T00:00:10.000Z",
+    });
+
+    expect(authorized.operations.at(-1)?.recovery?.context).toMatchObject({
+      budget: { max_input_tokens: null, max_output_tokens: null, max_total_tokens: null },
+    });
+    const next = startSupervisorExecutionEpisode({
+      journal: authorized,
+      role: "EVALUATOR",
+      kind: "evaluator_episode",
+      operation_identity: { task: "TASK-1", turn: 4 },
+      precondition_fingerprint_digest: FINGERPRINT,
+    });
+    expect(next.status).toBe("started");
+    expect(next.journal.budget.max_agent_runs).toBe(10);
+    expect(next.journal.budget.max_episodes).toBe(20);
   });
 
   it("is replay-safe and rejects stale or conflicting authorization", () => {

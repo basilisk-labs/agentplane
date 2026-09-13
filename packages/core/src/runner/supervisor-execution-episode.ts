@@ -83,11 +83,17 @@ const SUPERVISOR_TOKEN_BUDGET_EPOCH_ZOD_SCHEMA = z
       .strict(),
     budget: z
       .object({
-        max_input_tokens: POSITIVE_INTEGER,
-        max_output_tokens: POSITIVE_INTEGER,
-        max_total_tokens: POSITIVE_INTEGER,
+        max_input_tokens: NULLABLE_LIMIT_SCHEMA,
+        max_output_tokens: NULLABLE_LIMIT_SCHEMA,
+        max_total_tokens: NULLABLE_LIMIT_SCHEMA,
       })
-      .strict(),
+      .strict()
+      .refine(
+        (budget) =>
+          Object.values(budget).every((value) => value === null) ||
+          Object.values(budget).every((value) => value !== null),
+        "Supervisor token budget epoch must set all token caps or disable all token caps.",
+      ),
     authorized_at: ISO_UTC_TIMESTAMP_SCHEMA,
   })
   .strict();
@@ -725,9 +731,9 @@ export function authorizeSupervisorTokenBudgetEpoch(opts: {
   authority_ref: string;
   authority_digest: string;
   budget: {
-    max_input_tokens: number;
-    max_output_tokens: number;
-    max_total_tokens: number;
+    max_input_tokens: number | null;
+    max_output_tokens: number | null;
+    max_total_tokens: number | null;
   };
   now?: string;
 }): SupervisorExecutionEpisodeJournal {
@@ -781,10 +787,10 @@ export function authorizeSupervisorTokenBudgetEpoch(opts: {
   }
   const last = journal.operations.at(-1);
   if (
-    last?.status !== "completed" ||
+    (last?.status !== "completed" && last?.status !== "failed") ||
     (journal.stop.operation_key !== null && journal.stop.operation_key !== last.operation_key)
   ) {
-    throw new Error("Supervisor token budget epoch requires a durably completed prior operation.");
+    throw new Error("Supervisor token budget epoch requires a durably recorded prior operation.");
   }
   const now = opts.now ?? new Date().toISOString();
   const epoch = SUPERVISOR_TOKEN_BUDGET_EPOCH_ZOD_SCHEMA.parse({
