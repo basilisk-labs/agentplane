@@ -91,16 +91,30 @@ test("keeps failed-attempt cost in the numerator and pairs only equivalent succe
   assert.equal(managed.arms.minimal_agent.raw_cost.cost_per_verified_success, 9);
   assert.equal(managed.arms.previous_release.raw_cost.cost_per_verified_success, 3);
   assert.equal(managed.arms.candidate.raw_cost.cost_per_verified_success, 2);
+  assert.equal(managed.arms.minimal_agent.success_rate, 0.5);
+  assert.equal(managed.arms.previous_release.success_rate, 1);
+  assert.equal(managed.arms.candidate.violation_rate, 0);
   assert.equal(managed.paired_outcomes.accepted.length, 1);
   assert.equal(managed.paired_outcomes.accepted[0].pair_id, "pair-1");
   assert.deepEqual(managed.paired_outcomes.rejected, [
     { pair_id: "pair-2", reason: "not_all_arms_verified" },
   ]);
-  assert.equal(managed.arms.candidate.stages.provider.observations, 2);
+  assert.deepEqual(managed.arms.candidate.stages.provider, {
+    observations: 2,
+    min_ms: 3,
+    max_ms: 3,
+    mean_ms: 3,
+  });
+  assert.equal(report.coverage.attempts, 6);
+  assert.equal(report.coverage.raw_cost_observed, 6);
+  assert.equal(report.coverage.raw_cost_unknown, 0);
+  assert.deepEqual(report.coverage.transports, { managed: 6 });
   assert.equal(report.gates.safety.verdict, "pass");
   assert.equal(report.gates.activation.verdict, "not_established");
   assert.equal(report.gates.efficiency.verdict, "pass");
   assert.equal(report.numeric_cost_claim_complete, true);
+  assert.equal(report.uncertainty.rate_interval, "Wilson score interval, 95%");
+  assert.match(report.uncertainty.paired_population, /same oracle outcome/u);
 });
 
 test("unknown charge prevents a complete numeric claim", () => {
