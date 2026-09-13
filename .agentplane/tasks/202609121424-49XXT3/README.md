@@ -1,10 +1,10 @@
 ---
 id: "202609121424-49XXT3"
 title: "Publish and independently verify AgentPlane 0.7.9 from the exact qualified main SHA"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on:
@@ -31,7 +31,7 @@ plan_approval:
   note: "host_user_decision=sha256:4a965f2340adea8c7ef8ed6627f467899167ffc6dfbfce57d01b87ce15f4e597"
 verification:
   state: "pending"
-  updated_at: "2026-09-13T23:17:41.802Z"
+  updated_at: "2026-09-13T23:22:11.249Z"
   updated_by: "USER"
   note: "Invalidated by USER-approved execution scope extension."
   attempts: 0
@@ -40,11 +40,11 @@ execution_route:
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_credentials"
+    - "effect_dependencies"
     - "effect_external_write"
+    - "effect_public_api"
     - "effect_publish"
     - "effect_release_metadata"
-    - "observed_effect_dependencies"
-    - "observed_effect_public_api"
     - "repository_branch_pr_floor"
     - "reversibility_recovery_required"
   repository_mode: "branch_pr"
@@ -56,9 +56,12 @@ execution_contract:
     allowed_external_effects:
       - "network_read"
     allowed_repository_effects:
+      - "dependencies"
       - "documentation"
+      - "public_api"
       - "release_metadata"
       - "repository_write"
+      - "source_code"
     forbidden_external_effects:
       - "external_write"
       - "credentials"
@@ -66,11 +69,8 @@ execution_contract:
       - "deploy"
       - "destructive_git"
     forbidden_repository_effects:
-      - "source_code"
       - "tests"
-      - "public_api"
       - "schema"
-      - "dependencies"
       - "ci"
       - "security_boundary"
     writable_roots:
@@ -105,13 +105,17 @@ execution_contract:
       - "Publishing npm packages, GitHub assets, setup tags, Homebrew, and Scoop requires authenticated external writes and independent readback."
       - "Stable release preparation changes canonical versions, generated release surfaces, release notes, and task evidence."
       - "The stable candidate must pass hosted branch protection before its exact merged main SHA can be published."
+      - "USER-approved blocked-result scope extension: repository_effects=dependencies,public_api,source_code"
       - "USER-approved blocked-result scope extension: roots=.agentplane/WORKFLOW.md,.agentplane/config.json; repository_effects=release_metadata,repository_write"
       - "USER-approved blocked-result scope extension: roots=website/static/img/social/docs/releases/v0.7.9-evidence/preparation.png,website/static/img/social/docs/releases/v0.7.9.png,website/static/img/social/manifest.json; repository_effects=documentation,release_metadata,repository_write"
       - "USER-approved blocked-result scope extension: roots=website/static/img/social; repository_effects=documentation,release_metadata,repository_write"
     repository_effects:
+      - "dependencies"
       - "documentation"
+      - "public_api"
       - "release_metadata"
       - "repository_write"
+      - "source_code"
     requirements_uncertainty: "bounded"
     reversibility: "recovery_required"
     schema_version: 2
@@ -136,10 +140,7 @@ execution_contract:
       - "website/static/img/social/docs/releases/v0.7.9.png"
       - "website/static/img/social/manifest.json"
   observed:
-    authority_violations:
-      - "repository_effect:dependencies"
-      - "repository_effect:public_api"
-      - "repository_effect:source_code"
+    authority_violations: []
     changed_components:
       - ".agentplane"
       - "docs"
@@ -423,11 +424,11 @@ execution_contract:
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_credentials"
+    - "effect_dependencies"
     - "effect_external_write"
+    - "effect_public_api"
     - "effect_publish"
     - "effect_release_metadata"
-    - "observed_effect_dependencies"
-    - "observed_effect_public_api"
     - "repository_branch_pr_floor"
     - "reversibility_recovery_required"
   repository_mode: "branch_pr"
@@ -483,14 +484,17 @@ execution_contract:
           - "network_read"
           - "publish"
         repository_effects:
+          - "dependencies"
           - "documentation"
+          - "public_api"
           - "release_metadata"
           - "repository_write"
+          - "source_code"
         risk:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:c9e9644b207c1abd7b1801644ee943b57b0668e3fd78b36cbbba51ea649a871a"
+      digest: "sha256:77dd8fae41c6c94d3483c685c6bd98979823170cc1b3b0fde8e1beaa3d00807f"
       escalation_reasons:
         - "central_component:package.json"
         - "central_path:packages/core/package.json"
@@ -825,9 +829,7 @@ execution_contract:
       - "repository_effect:repository_write"
       - "repository_effect:source_code"
       - "task_outcome"
-commit:
-  hash: "1e0f3ea01052bd2226fe1fd31079eecafac8f116"
-  message: "🚧 49XXT3 task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -862,6 +864,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. AgentPlane classified the canonical stable version promotion as three repository effects that are absent from the current execution contract. Recommended action: Approve the exact repository-effect extension and request a fresh packet without adding paths or external effects. Requested scope: roots=unchanged; repository effects=dependencies,public_api,source_code; request digest=sha256:9cd12c42f9888f81dff79b953cff3526dad52b5cb8593d53b1ef8913469053d1. Agentplane receipt: external-agent-blocker/tr_eb6f91d3374408b2b64c68bbfbd20f24/sha256:e534773c2819abeeaa85e5655030dfdafc4556e24dcedd39e569052f44fe9fd9/sha256:9cd12c42f9888f81dff79b953cff3526dad52b5cb8593d53b1ef8913469053d1."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: ; repository effects: dependencies, public_api, source_code."
 events:
   -
     type: "status"
@@ -952,31 +957,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
-  agentplane.execution_grant:
-    actor: "HOST:codex-desktop:USER"
-    approval_evidence_digest: "sha256:4a965f2340adea8c7ef8ed6627f467899167ffc6dfbfce57d01b87ce15f4e597"
-    approval_kind: "host_user_decision"
-    capabilities:
-      - "provider.merge"
-      - "provider.pr"
-      - "publish"
-      - "repository.integrate"
-      - "repository.write"
-      - "task.lifecycle"
-      - "task.scope.extend"
-    completion_contract_digest: "sha256:92aaa2cf63af45c27a36f2f6c82eead85eab5b28d972a480640a6f0aca50254b"
-    digest: "sha256:9d4208875231804513e373aa9c9e5b8e00f31de1fccee23b5e02544648b3406b"
-    grant_id: "b99a0dac-f12b-4a83-a897-4e42770154be"
-    issued_at: "2026-09-13T22:53:42.760Z"
-    kind: "agentplane.execution_grant"
-    plan_digest: "sha256:ecb53c93c168c8459d819f602aba8f0ca08fa4c980df540d2245457d0c181265"
-    plan_revision: 4
-    repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
-    schema_version: 1
-    scope_digest: "sha256:8d5a54544e4a1d7553d87c6de56ca756dd710c5cedc564cd83eb3299fe02ad77"
-    status: "active"
-    task_id: "202609121424-49XXT3"
   agentplane.scope_extension_request:
+    applied_at: "2026-09-13T23:22:11.249Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:e534773c2819abeeaa85e5655030dfdafc4556e24dcedd39e569052f44fe9fd9"
     kind: "task_scope_extension_request"
     request:
@@ -989,7 +972,7 @@ extensions:
       scope_roots: []
     request_digest: "sha256:9cd12c42f9888f81dff79b953cff3526dad52b5cb8593d53b1ef8913469053d1"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_eb6f91d3374408b2b64c68bbfbd20f24"
     work_item_id: "prepare_candidate"
   agentplane.task_centric:
@@ -1609,7 +1592,7 @@ extensions:
       revision: 4
       schema_version: 1
       task_id: "202609121424-49XXT3"
-    event_cursor: 19
+    event_cursor: 20
     final_validation: null
     id: "202609121424-49XXT3"
     intent:
@@ -1631,7 +1614,7 @@ extensions:
 
         Release operator task after all 0.7.9 stabilization dependencies are integrated. Prepare exact 0.7.9 version parity and release notes, run the complete release prepublish and incident gates, produce and integrate the release-ready candidate through repository policy, publish v0.7.9 from the exact qualified main SHA, and independently verify the canonical .agentplane/.release/publish/publish-result.json has success=true with an empty failures array for that SHA. Verify GitHub release assets and checksums, package registries, setup-agentplane tag and install, Homebrew and Scoop distribution, both agentplane and ap entrypoints, and default-branch state. Record any unavailable anonymous GHCR check separately. Complete the required post-publish evidence follow-up and next patch beta only through AgentPlane-managed lifecycle. Never commit agentplane-roadmap-r2. Stop only at a genuine provider or evidence boundary; the user explicitly authorized publish, merge, network, credentials, and external-system actions for v0.7.9.
       task_id: "202609121424-49XXT3"
-    lifecycle: "BLOCKED"
+    lifecycle: "ACTIVE"
     plan_amendments:
       -
         actor_id: "external:EXECUTOR"
@@ -3446,7 +3429,7 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202609121424-49XXT3"
-    revision: 22
+    revision: 23
     schema_version: 1
     updated_at: "2026-09-13T23:21:41.489Z"
     work_items:
@@ -3649,6 +3632,30 @@ extensions:
         mutation_id: "compatibility:sha256:513db44108e85ed87cef39a830dfbd3d911d3bebe2881381d70cdee02d5bb181"
         next_revision: 19
         previous_revision: 18
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+      compatibility:sha256:6a8c60830af7e59784fb00121c19a9d5f6d3567ff9b68b7a177db48775c1f288:
+        aggregate_digest: "sha256:391bb726eb853e11a177b8e41b6c676817ab8929cbe42cbdad85a1aaca195f8f"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T23:21:41.489Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_11b54774a685b955864b5695"
+          mutation_id: "compatibility:sha256:6a8c60830af7e59784fb00121c19a9d5f6d3567ff9b68b7a177db48775c1f288"
+          plan_digest: "sha256:9ef83bad341e61625d2ba8e9adf09b88aa235b97a4b7094e623134ce86bdd9eb"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          task_revision: 22
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:6a8c60830af7e59784fb00121c19a9d5f6d3567ff9b68b7a177db48775c1f288"
+        next_revision: 23
+        previous_revision: 22
         schema_version: 1
         task_id: "202609121424-49XXT3"
       compatibility:sha256:6ccf1e02c3feff59051a50a582b3058d6af2c7c50e16e050663ed5a6947b097e:
