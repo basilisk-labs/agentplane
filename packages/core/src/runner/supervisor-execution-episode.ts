@@ -286,10 +286,11 @@ const SUPERVISOR_LIFECYCLE_TIMING_ZOD_SCHEMA = z
       ancestors.set(span.span_id, lineage);
     }
     if (!hierarchyIsValid) return;
-    for (let left = 1; left < timing.spans.length; left += 1) {
-      for (let right = left + 1; right < timing.spans.length; right += 1) {
-        const a = timing.spans[left]!;
-        const b = timing.spans[right]!;
+    const nonRootSpans = timing.spans.filter((span) => span.span_id !== timing.root_span_id);
+    for (let left = 0; left < nonRootSpans.length; left += 1) {
+      for (let right = left + 1; right < nonRootSpans.length; right += 1) {
+        const a = nonRootSpans[left]!;
+        const b = nonRootSpans[right]!;
         const overlap =
           a.offset_ms < b.offset_ms + b.elapsed_ms && b.offset_ms < a.offset_ms + a.elapsed_ms;
         const nested = [
