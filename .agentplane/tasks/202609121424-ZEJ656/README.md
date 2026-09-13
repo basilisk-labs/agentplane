@@ -4,7 +4,7 @@ title: "Conserve 0.7.9 semantic requirements and managed output parity for ST-06
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on:
@@ -1002,19 +1002,109 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121424-ZEJ656"
-    revision: 21
+    revision: 22
     schema_version: 1
-    updated_at: "2026-09-13T17:27:21.989Z"
+    updated_at: "2026-09-13T17:27:58.073Z"
     work_items:
       validate_existing_implementation:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "validate_existing_implementation"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:151550853f8259e922efb7f8fba6e1f170090062e82c512304fb717f71df018d"
+            id: "qualified_requirement_and_transport_implementation"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609121424-ZEJ656"
+              work_item_id: "validate_existing_implementation"
+            provenance:
+              - "sha256:bd50410f1b6c387c3248f6acb3f2c47b6c92279504c785aad1d3f606641fcab9"
+              - ".agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:70ebe2886ad35641c19bc9ae1287d4cd8233297064e401b208d18099d95648c7"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
+              check_id: "requirement_conservation"
+              command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts"
+              detail: "Observed by bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-13T17:27:58.064Z"
+              repository_snapshot_digest: "sha256:70ebe2886ad35641c19bc9ae1287d4cd8233297064e401b208d18099d95648c7"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
+              check_id: "output_parity"
+              command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts"
+              detail: "Observed by bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-13T17:27:58.064Z"
+              repository_snapshot_digest: "sha256:70ebe2886ad35641c19bc9ae1287d4cd8233297064e401b208d18099d95648c7"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
+              check_id: "related_context_transport"
+              command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context packages/agentplane/src/runner/adapters"
+              detail: "Observed by bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context packages/agentplane/src/runner/adapters."
+              exit_code: 0
+              observed_at: "2026-09-13T17:27:58.064Z"
+              repository_snapshot_digest: "sha256:70ebe2886ad35641c19bc9ae1287d4cd8233297064e401b208d18099d95648c7"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
+              check_id: "typecheck"
+              command_identity: "bun run typecheck"
+              detail: "Observed by bun run typecheck."
+              exit_code: 0
+              observed_at: "2026-09-13T17:27:58.064Z"
+              repository_snapshot_digest: "sha256:70ebe2886ad35641c19bc9ae1287d4cd8233297064e401b208d18099d95648c7"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
+              check_id: "schema_mirrors"
+              command_identity: "bun run schemas:check && bun run agents:check"
+              detail: "Observed by bun run schemas:check && bun run agents:check."
+              exit_code: 0
+              observed_at: "2026-09-13T17:27:58.064Z"
+              repository_snapshot_digest: "sha256:70ebe2886ad35641c19bc9ae1287d4cd8233297064e401b208d18099d95648c7"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
+              check_id: "scope_hygiene"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-09-13T17:27:58.064Z"
+              repository_snapshot_digest: "sha256:70ebe2886ad35641c19bc9ae1287d4cd8233297064e401b208d18099d95648c7"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
+              check_id: "hosted_integration"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-09-13T17:27:58.064Z"
+              repository_snapshot_digest: "sha256:70ebe2886ad35641c19bc9ae1287d4cd8233297064e401b208d18099d95648c7"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -1086,6 +1176,23 @@ extensions:
         task_id: "202609121424-ZEJ656"
         task_revision: 16
         work_item_id: null
+      -
+        at: "2026-09-13T17:27:58.073Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:058ae8f854d563ddb1162c1d5d0e9e533807fc31ec89b9755ceb727aef3e8cd3"
+        entity: "work_item"
+        id: "event_3c5f0a6eafe6d53d4d01f513"
+        mutation_id: "external-result:work-order-202609121424-ZEJ656-executor-dbd7c748394ffd9e97370e79"
+        plan_digest: "sha256:6cfcdb60047f6021f1f8c7a6f4fa3d300d878b6545b029bd41f4c4553e77e321"
+        plan_revision: 2
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609121424-ZEJ656"
+        task_revision: 21
+        work_item_id: "validate_existing_implementation"
     leases: []
     mutation_receipts:
       compatibility:sha256:0ebea7e602d3a13fb1b5cac2af0b63da9614b3e798081a64f9e1faecc915efb2:
@@ -1446,6 +1553,30 @@ extensions:
         mutation_id: "external-result:work-order-202609121424-ZEJ656-executor-d12172ce0f516d4d919af572"
         next_revision: 16
         previous_revision: 15
+        schema_version: 1
+        task_id: "202609121424-ZEJ656"
+      external-result:work-order-202609121424-ZEJ656-executor-dbd7c748394ffd9e97370e79:
+        aggregate_digest: "sha256:06fa061895e7d09e96f236cf3f420e1cfb3fc824b214b98a56a8cf71c633aea1"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T17:27:58.073Z"
+          cause_refs:
+            - "semantic-result:sha256:058ae8f854d563ddb1162c1d5d0e9e533807fc31ec89b9755ceb727aef3e8cd3"
+          entity: "work_item"
+          from: "READY"
+          id: "event_3c5f0a6eafe6d53d4d01f513"
+          mutation_id: "external-result:work-order-202609121424-ZEJ656-executor-dbd7c748394ffd9e97370e79"
+          plan_digest: "sha256:6cfcdb60047f6021f1f8c7a6f4fa3d300d878b6545b029bd41f4c4553e77e321"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-ZEJ656"
+          task_revision: 21
+          to: "COMPLETED"
+          work_item_id: "validate_existing_implementation"
+        mutation_id: "external-result:work-order-202609121424-ZEJ656-executor-dbd7c748394ffd9e97370e79"
+        next_revision: 22
+        previous_revision: 21
         schema_version: 1
         task_id: "202609121424-ZEJ656"
       external-result:work-order-202609121424-ZEJ656-executor-dc52ce006ffa4182306fba90:
