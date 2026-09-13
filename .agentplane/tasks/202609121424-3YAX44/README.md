@@ -4,7 +4,7 @@ title: "Add the 0.7.9 marginal-cost and paired production benchmark harness for 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -203,7 +203,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "e2bedfbf83b765e5a31831bbb2b2b2e40f312287"
+  message: "🚧 3YAX44 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -214,6 +216,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 31a8959fee6a. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: e2bedfbf83b7. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -244,8 +249,16 @@ events:
     to: "DOING"
     note: "Implementation committed: 31a8959fee6a. CLI accepted one state-bound external-agent semantic result."
     commit: "31a8959fee6aa84f518efb530adf85a04279d07b"
+  -
+    type: "status"
+    at: "2026-09-13T15:26:58.772Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: e2bedfbf83b7. CLI accepted one state-bound external-agent semantic result."
+    commit: "e2bedfbf83b765e5a31831bbb2b2b2e40f312287"
 doc_version: 3
-doc_updated_at: "2026-09-13T15:25:33.924Z"
+doc_updated_at: "2026-09-13T15:26:58.772Z"
 doc_updated_by: "SUPERVISOR"
 description: "Source contract: agentplane-roadmap-r2 cards ST-14, ST-15, and ST-16. Measure marginal Git and artifact cost in the existing fixture harness, add one production-path paired driver using current isolation and evidence utilities, and report all-attempt cost per independently verified success with paired outcomes, success and violation rates, stage distributions, coverage, and uncertainty. Enforce matched target tree, product artifacts, model, effort, authority, checks, retries, runtime profile, verifier, and raw cost. Managed and external modes remain stratified. Unknown charges prevent a complete numeric claim; all-failed arms yield no finite success score. Do not execute paid calls in this task and do not reinterpret historical baselines. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: node --test scripts/bench/task-marginal-cost.test.mjs; node --test scripts/bench/paired-production-driver.test.mjs; node --test scripts/bench/paired-result-report.test.mjs; existing benchmark replay checks and relevant release critical checks."
 sections:
@@ -899,7 +912,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609121424-3YAX44"
-    event_cursor: 8
+    event_cursor: 10
     final_validation: null
     id: "202609121424-3YAX44"
     intent:
@@ -929,9 +942,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 12
+    revision: 14
     schema_version: 1
-    updated_at: "2026-09-13T15:25:37.558Z"
+    updated_at: "2026-09-13T15:26:58.772Z"
     work_items:
       ST-14:
         attempt: 1
@@ -1027,6 +1040,30 @@ extensions:
         work_item_id: "ST-14"
     leases: []
     mutation_receipts:
+      compatibility:sha256:1f8fac2be4dad107e0cbc4274218a0480e1f1a723652140750520eb929b0b1a3:
+        aggregate_digest: "sha256:dc500d4c103c1875ea2a6afe809e6db840c862018eb45093c863db216bffdcc9"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T15:26:58.772Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_729ea241d0b96946e024f932"
+          mutation_id: "compatibility:sha256:1f8fac2be4dad107e0cbc4274218a0480e1f1a723652140750520eb929b0b1a3"
+          plan_digest: "sha256:9058c9f56183fcc658d347a916f3b9ee21711fabb6fc2f5125c6b3ed3f32004c"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-3YAX44"
+          task_revision: 13
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:1f8fac2be4dad107e0cbc4274218a0480e1f1a723652140750520eb929b0b1a3"
+        next_revision: 14
+        previous_revision: 13
+        schema_version: 1
+        task_id: "202609121424-3YAX44"
       compatibility:sha256:4bf895105e92d6d504c3a3efa9d7a986c5129e8f7940f5c329acf23f736d0cd9:
         aggregate_digest: "sha256:7c99995fff61ba6b75c5f7c805d07a7f88882f7b983267b5addf79f9959e922e"
         event:
@@ -1219,6 +1256,30 @@ extensions:
         previous_revision: 5
         schema_version: 1
         task_id: "202609121424-3YAX44"
+      compatibility:sha256:d784f07d26fc3601de9637ba6025bf0b92f1069e2db84f6e73ec020f21f9198a:
+        aggregate_digest: "sha256:ac92042c9681854c858adb3926dec702a42bb7e10aaa22a51895252495e0b146"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T15:26:58.772Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_caa61118a72b29f30499f8fb"
+          mutation_id: "compatibility:sha256:d784f07d26fc3601de9637ba6025bf0b92f1069e2db84f6e73ec020f21f9198a"
+          plan_digest: "sha256:9058c9f56183fcc658d347a916f3b9ee21711fabb6fc2f5125c6b3ed3f32004c"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-3YAX44"
+          task_revision: 12
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:d784f07d26fc3601de9637ba6025bf0b92f1069e2db84f6e73ec020f21f9198a"
+        next_revision: 13
+        previous_revision: 12
+        schema_version: 1
+        task_id: "202609121424-3YAX44"
       external-result:work-order-202609121424-3YAX44-executor-1821446152c6606af75ac3f3:
         aggregate_digest: "sha256:fbd45e5d88a29bbfcd4fbfe386903e4acb99a24e766c22e35cfdc51a20108de0"
         event:
@@ -1247,7 +1308,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "31a8959fee6aa84f518efb530adf85a04279d07b"
+    hash: "e2bedfbf83b765e5a31831bbb2b2b2e40f312287"
   task_execution_context:
     base_ref: "main"
     base_sha: "d03a5e786db57136bf7f6c4661b148bcf97cfaf1"

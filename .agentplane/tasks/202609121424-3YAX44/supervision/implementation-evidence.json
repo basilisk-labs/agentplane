@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 3aab37424c92672d1246bf766317de9a1800105e..31a8959fee6aa84f518efb530adf85a04279d07b",
+      "command": "git diff --check bbb38f1b62b207bf9f680a73c356adac6ef33367..e2bedfbf83b765e5a31831bbb2b2b2e40f312287",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 3aab37424c92672d1246bf766317de9a1800105e..31a8959fee6aa84f518efb530adf85a04279d07b",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB bbb38f1b62b207bf9f680a73c356adac6ef33367..e2bedfbf83b765e5a31831bbb2b2b2e40f312287",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,7 +21,7 @@
         "M\t.agentplane/tasks/202609121424-3YAX44/pr/github-body.md",
         "M\t.agentplane/tasks/202609121424-3YAX44/pr/meta.json",
         "M\t.agentplane/tasks/202609121424-3YAX44/pr/review.md",
-        "M\tscripts/bench/task-marginal-cost.test.mjs"
+        "M\tscripts/bench/paired-production-driver.test.mjs"
       ]
     },
     {
@@ -31,8 +31,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "3aab37424c92672d1246bf766317de9a1800105e",
-  "implementation_commit": "31a8959fee6aa84f518efb530adf85a04279d07b",
+  "execution_base_commit": "bbb38f1b62b207bf9f680a73c356adac6ef33367",
+  "implementation_commit": "e2bedfbf83b765e5a31831bbb2b2b2e40f312287",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
