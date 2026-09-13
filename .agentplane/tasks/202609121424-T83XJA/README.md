@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 48
+revision: 49
 origin:
   system: "manual"
 depends_on:
@@ -31,35 +31,34 @@ verification:
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-13T01:08:55.478Z"
+  updated_at: "2026-09-13T01:22:48.049Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 5 typed finding(s)."
-  evaluated_sha: "44118fcf0d32825e963dc7db0504901753c4e9d5"
+  note: "EVALUATOR returned rework with 3 typed finding(s)."
+  evaluated_sha: "919e5af29cd55e2440c7fe7f023a996a2f247e61"
   blueprint_digest: "a0606595992db659882c934dc9224bb4e23891d77af067972ab0b021db13f8c1"
   evidence_refs:
-    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-010710137-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-010710137-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/f7a320856a0c9e0693c1730246a11ca86b0ff72ed1f300ac1e15b9b03e98332c.md"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-010710137-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-010710137-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-010710137-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-012029153-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-012029153-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/88f020e94fd95186a13b6b6064ff5a6f0eea5ed843345ecabe2a822eb52e3331.md"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-012029153-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-012029153-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-012029153-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-012029153-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609121424-T83XJA/README.md"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/acb5e13f22c5dfbd9ff3ef3ce69937520740933a85fb9a42a2af768300cd1951.patch"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/db1ecae63dc7907cf907f6a3c55796ccc7e657d3d08f4444fa88a636f87e19ae.json"
-    - ".agentplane/tasks/202609121424-T83XJA/verification/20260913010700093-e36892520f15824e.json"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/d878ded673bee0d3e92acec00a58b3e4abf398657b1af8c6d7acc0581a600eca.patch"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/d8780224ae6e27e7e690c2b9af37df10889c6d9f7c94998d1901ecf2aa1c8489.json"
+    - ".agentplane/tasks/202609121424-T83XJA/verification/20260913012005778-95316adc92df4839.json"
     - ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/8c7f73798b088adea69ca9b36d786e09a83742e28743c3425f571fbeb19021b1.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The canonical lifecycle timing validator now enforces root identity and coverage, rooted acyclic containment, order-independent sibling non-overlap, and category partition reconciliation from deepest active spans."
-    - "Direct boundary reproductions accept valid gapped, nested, and root-last-adjacent timing while rejecting contradictory category totals."
-    - "AgentPlane recorded all 12 required focused, schema, artifact, critical, type, and full local CI checks as passed for the evaluated implementation SHA."
-    - "The frozen branch diff contains no source roadmap path or raw provider result payload."
-    - "Residual risk: Hosted CI and provider integration must still pass against the published PR head before merge."
+    - "Unknown usage permits further paid dispatch when provider identity is absent. A read-only reproduction completed an unallocatable external episode under finite token budgets; the next evaluator episode returned started with zero charged tokens."
+    - "Managed restart recovery reads usage from a process-local WeakMap using a deserialized saved result. That lookup returns null, so recovery records unavailable usage despite an existing durable provider observation."
+    - "An interruption after persisting an evaluator failure receipt but before journal completion leaves its charge unreconciled. Restart recovery requires a successful typed result and success receipt; a saved failure receipt instead leads to effect_in_doubt."
 token_usage:
   agent_runs: 17
   input_tokens: null
@@ -842,7 +841,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-13T01:20:10.154Z"
+doc_updated_at: "2026-09-13T01:22:48.080Z"
 doc_updated_by: "CODER"
 description: "Source contract: agentplane-roadmap-r2 cards ST-08, ST-09, ST-10, ST-11, ST-12, ST-13, and ST-17. Capture Codex usage durably before semantic-result validation, preserve evaluator charges on failure, connect managed observations to the existing journal, account for external episodes without trusting self-reported tokens, roll up task cost from source observations, partition lifecycle latency without double counting, and separate missing telemetry from semantic quality and further-spend admission. Missing usage is unknown, never zero. A valid saved verdict is reused, while unknown budget blocks additional paid dispatch. Preserve I01-I12 and C01-C08. Do not create a second accounting store or trust model-supplied usage. The roadmap directory is source-only and must never be committed. Required checks: the focused ST-08 through ST-13 and ST-17 test commands, related runner/evaluator/task critical suites, typecheck, schema/mirror checks."
 sections:
@@ -2996,7 +2995,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609121424-T83XJA"
-    event_cursor: 36
+    event_cursor: 37
     final_validation:
       evidence:
         -
@@ -3895,9 +3894,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121424-T83XJA"
-    revision: 48
+    revision: 49
     schema_version: 1
-    updated_at: "2026-09-13T01:20:10.149Z"
+    updated_at: "2026-09-13T01:20:10.154Z"
     work_items:
       ST-08:
         attempt: 1
@@ -5057,6 +5056,30 @@ extensions:
         mutation_id: "compatibility:sha256:bb3ba9e8213f2997e17dad7df8abafc56c670f3bf6b4f073e405a27e80817760"
         next_revision: 40
         previous_revision: 39
+        schema_version: 1
+        task_id: "202609121424-T83XJA"
+      compatibility:sha256:cc2841a32e108d9364d74de0d444e5630850597a0da5ec88d5d830ee850c2bac:
+        aggregate_digest: "sha256:d38cbe336dc6f9da420081d3340d50534a4b9d0199d3ef11a2dd1dc14ae0bfaf"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T01:20:10.154Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_6498dd1b7560a2459f84976a"
+          mutation_id: "compatibility:sha256:cc2841a32e108d9364d74de0d444e5630850597a0da5ec88d5d830ee850c2bac"
+          plan_digest: "sha256:47ee22d77ca7385f412a8a1da0d53ac32e469d13030f22fdc8fc03c8804e40a4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-T83XJA"
+          task_revision: 48
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:cc2841a32e108d9364d74de0d444e5630850597a0da5ec88d5d830ee850c2bac"
+        next_revision: 49
+        previous_revision: 48
         schema_version: 1
         task_id: "202609121424-T83XJA"
       compatibility:sha256:d75e1378750895149a188c2f38782a52ee3f8f7cb2e8a5ba1423551701b958d8:
