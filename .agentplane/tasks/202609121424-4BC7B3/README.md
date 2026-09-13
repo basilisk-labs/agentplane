@@ -1,10 +1,11 @@
 ---
 id: "202609121424-4BC7B3"
 title: "Qualify and document the 0.7.9 stabilization candidate for ST-18 through ST-20"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 40
+revision: 41
 origin:
   system: "manual"
 depends_on:
@@ -70,6 +71,22 @@ quality_review:
     - "Supervisor evidence records all 11 declared checks as passed, including bun run ci:local:full, package checks, release-critical tests, efficiency checks, documentation checks, and git diff --check."
     - "The implementation evidence records a clean repository after commit and no agentplane-roadmap-r2 path in the implementation commit."
     - "Residual risk: A future M01 campaign needs a new preregistered identity because the launcher and oracle bytes changed after the immutable v1 and v2 campaigns."
+token_usage:
+  agent_runs: 15
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:1ceb2ddeaa138a9f80d2c356cfbf2f7bec2d37a7f66f813060452b13458a9215"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-09-13T22:34:04.542Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -593,8 +610,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "b0f5f5dc961455109b187b605b7d753e9b3266e2"
-  message: "🚧 4BC7B3 task: apply external agent result"
+  hash: "9c6dd3f23efedad8c8b648a3ad8770d75a4cd21b"
+  message: "🚧 4BC7B3 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -644,6 +661,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: b0f5f5dc9614. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -761,9 +781,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-13T22:34:04.542Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "9c6dd3f23efedad8c8b648a3ad8770d75a4cd21b"
 doc_version: 3
-doc_updated_at: "2026-09-13T22:32:27.158Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-13T22:34:04.542Z"
+doc_updated_by: "CODER"
 description: "Source contract: agentplane-roadmap-r2 cards ST-18, ST-19, and ST-20. Build the exact clean installed candidate and run the frozen direct, branch, recovery, old-record, required PLANNER, and required EVALUATOR corpus. Then, under the user-approved spend and sandbox authority, execute the preregistered M01 paired pilot with complete all-attempt raw evidence and expand only by its fixed uncertainty rule; report NOT ESTABLISHED when coverage is insufficient. Record exact product and target SHAs separately. Finally document only observed 0.7.9 behavior and measurements and the 0.7.10 through 0.7.14 boundary. Do not weaken golden outcomes, disable Blueprint writers, omit required stages, rerun until green, or claim unsupported efficiency. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: package tarball check, local install smoke, release critical suite, benchmark check and replay check, documentation bootstrap and onboarding checks, plus exact evidence review."
 sections:
   Summary: |-
@@ -1811,7 +1839,144 @@ extensions:
       schema_version: 1
       task_id: "202609121424-4BC7B3"
     event_cursor: 32
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609121424-4BC7B3"
+            - "git:b0f5f5dc961455109b187b605b7d753e9b3266e2"
+          check_id: "token-contract-tests"
+          command_identity: "bunx vitest run packages/agentplane/src/commands/shared/supervisor-execution-default-budget.test.ts packages/agentplane/src/commands/task/task-token-usage.test.ts packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-13T22:32:25.951Z"
+          repository_snapshot_digest: "sha256:96fc78519fb04832b21a2d4fedfd3d7a8574cdedcbacb4e433cd1c73ca4f0263"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-4BC7B3"
+            - "git:b0f5f5dc961455109b187b605b7d753e9b3266e2"
+          check_id: "paired-contract-tests"
+          command_identity: "node --test scripts/bench/paired-production-driver.test.mjs scripts/bench/paired-result-report.test.mjs"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-13T22:32:25.951Z"
+          repository_snapshot_digest: "sha256:96fc78519fb04832b21a2d4fedfd3d7a8574cdedcbacb4e433cd1c73ca4f0263"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-4BC7B3"
+            - "git:b0f5f5dc961455109b187b605b7d753e9b3266e2"
+          check_id: "package-tarball"
+          command_identity: "bun run package:tarball:check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-13T22:32:25.951Z"
+          repository_snapshot_digest: "sha256:96fc78519fb04832b21a2d4fedfd3d7a8574cdedcbacb4e433cd1c73ca4f0263"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-4BC7B3"
+            - "git:b0f5f5dc961455109b187b605b7d753e9b3266e2"
+          check_id: "package-install-smoke"
+          command_identity: "bun run package:install-smoke"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-13T22:32:25.951Z"
+          repository_snapshot_digest: "sha256:96fc78519fb04832b21a2d4fedfd3d7a8574cdedcbacb4e433cd1c73ca4f0263"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-4BC7B3"
+            - "git:b0f5f5dc961455109b187b605b7d753e9b3266e2"
+          check_id: "release-critical"
+          command_identity: "bun run test:release:critical"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-13T22:32:25.951Z"
+          repository_snapshot_digest: "sha256:96fc78519fb04832b21a2d4fedfd3d7a8574cdedcbacb4e433cd1c73ca4f0263"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-4BC7B3"
+            - "git:b0f5f5dc961455109b187b605b7d753e9b3266e2"
+          check_id: "efficiency-baseline"
+          command_identity: "bun run bench:agent-efficiency:check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-13T22:32:25.951Z"
+          repository_snapshot_digest: "sha256:96fc78519fb04832b21a2d4fedfd3d7a8574cdedcbacb4e433cd1c73ca4f0263"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-4BC7B3"
+            - "git:b0f5f5dc961455109b187b605b7d753e9b3266e2"
+          check_id: "efficiency-replay"
+          command_identity: "bun run bench:agent-efficiency:replay:check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-13T22:32:25.951Z"
+          repository_snapshot_digest: "sha256:96fc78519fb04832b21a2d4fedfd3d7a8574cdedcbacb4e433cd1c73ca4f0263"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-4BC7B3"
+            - "git:b0f5f5dc961455109b187b605b7d753e9b3266e2"
+          check_id: "docs-bootstrap"
+          command_identity: "bun run docs:bootstrap:check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-13T22:32:25.951Z"
+          repository_snapshot_digest: "sha256:96fc78519fb04832b21a2d4fedfd3d7a8574cdedcbacb4e433cd1c73ca4f0263"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-4BC7B3"
+            - "git:b0f5f5dc961455109b187b605b7d753e9b3266e2"
+          check_id: "docs-onboarding"
+          command_identity: "bun run docs:onboarding:check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-13T22:32:25.951Z"
+          repository_snapshot_digest: "sha256:96fc78519fb04832b21a2d4fedfd3d7a8574cdedcbacb4e433cd1c73ca4f0263"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-4BC7B3"
+            - "git:b0f5f5dc961455109b187b605b7d753e9b3266e2"
+          check_id: "diff-check"
+          command_identity: "git diff --check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-13T22:32:25.951Z"
+          repository_snapshot_digest: "sha256:96fc78519fb04832b21a2d4fedfd3d7a8574cdedcbacb4e433cd1c73ca4f0263"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-4BC7B3"
+            - "git:b0f5f5dc961455109b187b605b7d753e9b3266e2"
+          check_id: "exact-evidence-review"
+          command_identity: "task.verify"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-13T22:32:25.951Z"
+          repository_snapshot_digest: "sha256:96fc78519fb04832b21a2d4fedfd3d7a8574cdedcbacb4e433cd1c73ca4f0263"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-4BC7B3"
+            - "git:b0f5f5dc961455109b187b605b7d753e9b3266e2"
+          check_id: "hosted-integration"
+          command_identity: "task.verify"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-13T22:32:25.951Z"
+          repository_snapshot_digest: "sha256:96fc78519fb04832b21a2d4fedfd3d7a8574cdedcbacb4e433cd1c73ca4f0263"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609121424-4BC7B3"
     intent:
       acceptance_criteria:
@@ -1857,7 +2022,7 @@ extensions:
 
         Source contract: agentplane-roadmap-r2 cards ST-18, ST-19, and ST-20. Build the exact clean installed candidate and run the frozen direct, branch, recovery, old-record, required PLANNER, and required EVALUATOR corpus. Then, under the user-approved spend and sandbox authority, execute the preregistered M01 paired pilot with complete all-attempt raw evidence and expand only by its fixed uncertainty rule; report NOT ESTABLISHED when coverage is insufficient. Record exact product and target SHAs separately. Finally document only observed 0.7.9 behavior and measurements and the 0.7.10 through 0.7.14 boundary. Do not weaken golden outcomes, disable Blueprint writers, omit required stages, rerun until green, or claim unsupported efficiency. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: package tarball check, local install smoke, release critical suite, benchmark check and replay check, documentation bootstrap and onboarding checks, plus exact evidence review.
       task_id: "202609121424-4BC7B3"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -2975,9 +3140,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609121424-4BC7B3"
-    revision: 40
+    revision: 41
     schema_version: 1
-    updated_at: "2026-09-13T22:32:27.158Z"
+    updated_at: "2026-09-13T22:34:04.542Z"
     work_items:
       align-token-measurement-contract:
         attempt: 1
@@ -4338,11 +4503,37 @@ extensions:
         previous_revision: 20
         schema_version: 1
         task_id: "202609121424-4BC7B3"
+      legacy-finish:202609121424-4BC7B3:2026-09-13T22:32:25.951Z:b0f5f5dc961455109b187b605b7d753e9b3266e2:
+        aggregate_digest: "sha256:50a394caee59e9eb41f0457b825d580df923a1ae256f75cc0e3d1a9a7c6c75ff"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-13T22:34:04.542Z"
+          cause_refs:
+            - "task-verification:202609121424-4BC7B3"
+            - "git:b0f5f5dc961455109b187b605b7d753e9b3266e2"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_9b8f23be91f0653b07b1dcd4"
+          mutation_id: "legacy-finish:202609121424-4BC7B3:2026-09-13T22:32:25.951Z:b0f5f5dc961455109b187b605b7d753e9b3266e2"
+          plan_digest: "sha256:8a1ce7a2f7c1bd5543bab4cf019887053321288654bc3dbf4761cc511f44fd52"
+          plan_revision: 3
+          repository_fingerprint: "sha256:96fc78519fb04832b21a2d4fedfd3d7a8574cdedcbacb4e433cd1c73ca4f0263"
+          schema_version: 1
+          task_id: "202609121424-4BC7B3"
+          task_revision: 40
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609121424-4BC7B3:2026-09-13T22:32:25.951Z:b0f5f5dc961455109b187b605b7d753e9b3266e2"
+        next_revision: 41
+        previous_revision: 40
+        schema_version: 1
+        task_id: "202609121424-4BC7B3"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "b0f5f5dc961455109b187b605b7d753e9b3266e2"
+    message: "🚧 4BC7B3 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "58dbda0d5f88c8a83802c5aee3a9380d001dd4b2"
@@ -4854,3 +5045,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/15` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:1ceb2ddeaa138a9f80d2c356cfbf2f7bec2d37a7f66f813060452b13458a9215`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-09-13T22:34:04.542Z`
