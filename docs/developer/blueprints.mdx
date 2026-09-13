@@ -320,6 +320,21 @@ model, built-in registry, validator, resolver, and explain output.
 The task lifecycle remains the outer contract. A blueprint is the internal trajectory for a task
 while it is being planned, executed, verified, and closed.
 
+### 0.7 release boundary
+
+In 0.7.9, Blueprints remain typed route contracts and current compatibility artifacts. They do not
+become a second lifecycle owner, and 0.7.9 does not add adaptive or shadow Blueprint computation to
+the normal path. Independent evaluation remains required.
+
+Blueprint retirement is deferred to the contiguous `BP-01` through `BP-31` task set in 0.7.10.
+Those tasks first move route floors, policy loading, capabilities, evidence, migration, historical
+decoding, and public consumers to their canonical owners. Only then may the active Blueprint
+registry, graph state, writers, CLI mutation surfaces, and generated distribution assets be
+removed. The later lifecycle, planning, Recipe, and review boundaries are respectively `LC-01`
+through `LC-24` in 0.7.11, `PL-01` through `PL-12` in 0.7.12, `RC-01` through `RC-18` in 0.7.13, and
+`EV-01` through `EV-13` in 0.7.14. The read-only shadow diagnostic belongs specifically to `EV-04`;
+it is not a prerequisite for 0.7.9.
+
 ## Package Boundary
 
 The current implementation adds types, built-in blueprints, validation, resolution, explanation, and
