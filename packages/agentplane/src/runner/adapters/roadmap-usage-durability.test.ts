@@ -127,7 +127,7 @@ describe("Codex provider usage durability", () => {
         reasoning_tokens: 20,
       },
     });
-    const deserializedResult = JSON.parse(JSON.stringify(executed.result)) as object;
+    const deserializedResult = structuredClone(executed.result);
     expect(deserializedResult).not.toBe(executed.result);
     await expect(
       readRunnerProviderUsageObservation({
