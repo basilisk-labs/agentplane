@@ -4,7 +4,7 @@ title: "Conserve 0.7.9 semantic requirements and managed output parity for ST-06
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -96,10 +96,16 @@ execution_contract:
     authority_violations: []
     changed_components:
       - "packages/agentplane"
+      - "packages/core"
       - "scripts"
     changed_paths:
+      - "packages/agentplane/src/runner/adapters/codex-result-transport.ts"
+      - "packages/agentplane/src/runner/adapters/codex.ts"
+      - "packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts"
+      - "packages/agentplane/src/runner/artifacts.ts"
       - "packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts"
       - "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
+      - "packages/core/src/runner/agent-work-order.ts"
       - "scripts/lib/test-route-registry.mjs"
     external_effects: []
     repository_effects:
@@ -144,10 +150,11 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:d0c7239c35e9792774320169408b4e971b43bea428c8660f4e78060f267e57ca"
+      digest: "sha256:010bcd40df7208dd3d1348947543798218bec85341976276d87f1b39b8c0356f"
       escalation_reasons:
         - "central_component:packages/core/src/runner/agent-work-order.ts"
         - "central_component:scripts/lib/test-route-registry.mjs"
+        - "central_path:packages/core/src/runner/agent-work-order.ts"
         - "central_path:scripts/lib/test-route-registry.mjs"
       execution_groups:
         - "docs-schema"
@@ -157,10 +164,16 @@ execution_contract:
       observed:
         changed_components:
           - "packages/agentplane"
+          - "packages/core"
           - "scripts"
         changed_files:
+          - "packages/agentplane/src/runner/adapters/codex-result-transport.ts"
+          - "packages/agentplane/src/runner/adapters/codex.ts"
+          - "packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts"
+          - "packages/agentplane/src/runner/artifacts.ts"
           - "packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts"
           - "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
+          - "packages/core/src/runner/agent-work-order.ts"
           - "scripts/lib/test-route-registry.mjs"
         external_effects: []
         repository_effects:
@@ -198,7 +211,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "46a2ea5b10a9f98c0f4b5b89f9b1894f5ad906eb"
+  message: "🚧 ZEJ656 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -206,6 +221,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 7fb34bf68c83. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 46a2ea5b10a9. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -222,8 +240,16 @@ events:
     to: "DOING"
     note: "Implementation committed: 7fb34bf68c83. CLI accepted one state-bound external-agent semantic result."
     commit: "7fb34bf68c83721cf34d86f4bb6fd6893ea50ebd"
+  -
+    type: "status"
+    at: "2026-09-13T16:18:04.684Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 46a2ea5b10a9. CLI accepted one state-bound external-agent semantic result."
+    commit: "46a2ea5b10a9f98c0f4b5b89f9b1894f5ad906eb"
 doc_version: 3
-doc_updated_at: "2026-09-13T16:12:41.539Z"
+doc_updated_at: "2026-09-13T16:18:04.684Z"
 doc_updated_by: "SUPERVISOR"
 description: "Source contract: agentplane-roadmap-r2 cards ST-06 and ST-07. Preserve required objective, scope, outputs, checks, constraints, stop rules, WorkItem and WorkOrder identity across prompt compaction and role-specific projection. Repair managed semantic-result transport so completed, blocked, needs_context, and failed outcomes retain permitted typed fields without adapter loss. Do not add a second Plan or lifecycle format, and do not expose secrets. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: focused requirement-conservation and adapter output-parity tests with nonzero discovery, related transport/context critical suites, typecheck, schema/mirror checks."
 sections:
@@ -709,7 +735,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609121424-ZEJ656"
-    event_cursor: 6
+    event_cursor: 8
     final_validation: null
     id: "202609121424-ZEJ656"
     intent:
@@ -734,9 +760,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 10
+    revision: 12
     schema_version: 1
-    updated_at: "2026-09-13T16:13:13.865Z"
+    updated_at: "2026-09-13T16:18:04.684Z"
     work_items:
       conserve_requirements:
         attempt: 1
@@ -905,6 +931,30 @@ extensions:
         previous_revision: 6
         schema_version: 1
         task_id: "202609121424-ZEJ656"
+      compatibility:sha256:6e6072c053cb2c7c60da39bc2e0923ac7e6ba050279d29d5ad66278cadf91003:
+        aggregate_digest: "sha256:300aa84c296807769ef33b0f1f83e59bb6b629a2597c925b42b66c19a605a737"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T16:18:04.684Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_614c450ba81b76c0d48b0620"
+          mutation_id: "compatibility:sha256:6e6072c053cb2c7c60da39bc2e0923ac7e6ba050279d29d5ad66278cadf91003"
+          plan_digest: "sha256:e836cd4203509fd333b08434d284d133bf9c903d28fd4d3515a4a195c6e6768e"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-ZEJ656"
+          task_revision: 11
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:6e6072c053cb2c7c60da39bc2e0923ac7e6ba050279d29d5ad66278cadf91003"
+        next_revision: 12
+        previous_revision: 11
+        schema_version: 1
+        task_id: "202609121424-ZEJ656"
       compatibility:sha256:9a68bdab50b5d34a88feb2b86ad09f07852c0dac0471b221e640e60be67bd0a8:
         aggregate_digest: "sha256:e922861ff92e4742f20eb1b8b7deb275393c19005c5587aa8326ca7511c77662"
         event:
@@ -927,6 +977,30 @@ extensions:
         mutation_id: "compatibility:sha256:9a68bdab50b5d34a88feb2b86ad09f07852c0dac0471b221e640e60be67bd0a8"
         next_revision: 5
         previous_revision: 4
+        schema_version: 1
+        task_id: "202609121424-ZEJ656"
+      compatibility:sha256:c29d1a2a28567b2d1a8649cdefaa7bb9ab849c082f48c183d071d8fbfeea6d62:
+        aggregate_digest: "sha256:08209671c0491060fc5729748651f3b964ebc1dc1f8f992d6d147ce186477c74"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T16:18:04.684Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_1d71c786345cefa63476c76c"
+          mutation_id: "compatibility:sha256:c29d1a2a28567b2d1a8649cdefaa7bb9ab849c082f48c183d071d8fbfeea6d62"
+          plan_digest: "sha256:e836cd4203509fd333b08434d284d133bf9c903d28fd4d3515a4a195c6e6768e"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-ZEJ656"
+          task_revision: 10
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:c29d1a2a28567b2d1a8649cdefaa7bb9ab849c082f48c183d071d8fbfeea6d62"
+        next_revision: 11
+        previous_revision: 10
         schema_version: 1
         task_id: "202609121424-ZEJ656"
       compatibility:sha256:ec02fec9f8f5bd38055ab6ecfa155948d24ff1c94baa4d14253044944e31e888:
@@ -1005,7 +1079,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "7fb34bf68c83721cf34d86f4bb6fd6893ea50ebd"
+    hash: "46a2ea5b10a9f98c0f4b5b89f9b1894f5ad906eb"
   task_execution_context:
     base_ref: "main"
     base_sha: "d03a5e786db57136bf7f6c4661b148bcf97cfaf1"
