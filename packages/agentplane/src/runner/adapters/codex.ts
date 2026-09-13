@@ -234,7 +234,9 @@ export class CodexRunnerAdapter implements RunnerAdapter {
                 {
                   path: input.output_schema_path,
                   label: "runner prepared Codex output schema",
-                  expected_text: renderCodexResultOutputSchemaJson(),
+                  expected_text: renderCodexResultOutputSchemaJson(
+                    input.supervisor_prepared_input?.bundle.work_order,
+                  ),
                 },
               ]
             : [],
@@ -267,6 +269,9 @@ export class CodexRunnerAdapter implements RunnerAdapter {
           raw_text: resultEventCollector.readLastAgentMessage(),
           result_path: input.result_path,
           work_order_id: input.work_order_id,
+          ...(input.supervisor_prepared_input?.bundle.work_order
+            ? { work_order: input.supervisor_prepared_input.bundle.work_order }
+            : {}),
         });
       },
       startMessage: "codex exec started",

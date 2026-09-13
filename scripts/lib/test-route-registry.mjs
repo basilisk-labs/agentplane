@@ -403,6 +403,7 @@ const V07_CONTEXT_FILES = [
 
 const V07_SUPERVISOR_FILES = [
   "packages/core/src/runner/supervisor-execution-episode.test.ts",
+  "packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts",
   "packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts",
   "packages/agentplane/src/commands/shared/workflow-supervisor.test.ts",
   "packages/agentplane/src/commands/shared/workflow-step.test.ts",

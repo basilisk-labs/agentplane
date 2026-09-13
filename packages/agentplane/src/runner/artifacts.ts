@@ -233,7 +233,7 @@ export async function writePreparedRunnerArtifacts(opts: {
     }
     await writePreparedFile(
       schemaPath,
-      renderCodexResultOutputSchemaJson(),
+      renderCodexResultOutputSchemaJson(opts.bundle.work_order),
       "runner prepared output schema",
     );
   }
