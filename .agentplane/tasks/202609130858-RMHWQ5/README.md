@@ -4,7 +4,7 @@ title: "Add an explicit USER-approved supervisor budget epoch for unknown token 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -24,9 +24,9 @@ verify:
   - "bun run ci:local:full"
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-13T09:02:51.969Z"
-  updated_by: "USER"
-  note: "User explicitly authorized the bounded budget-epoch repair in this conversation."
+  updated_at: "2026-09-13T14:09:27.961Z"
+  updated_by: "HOST:local:USER"
+  note: "host_user_decision=sha256:98741261b90825d30f097dc7a9293ef96786fc2f45d34bdfe7bcee9368e1c6d5"
 verification:
   state: "pending"
   updated_at: null
@@ -272,6 +272,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: ee342a5ddee6. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: ee342a5ddee6. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -311,8 +314,16 @@ events:
     to: "DOING"
     note: "Implementation committed: ee342a5ddee6. CLI accepted one state-bound external-agent semantic result."
     commit: "ee342a5ddee6ab220c45d270e09921a5abbd2614"
+  -
+    type: "status"
+    at: "2026-09-13T14:10:03.560Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: ee342a5ddee6. CLI accepted one state-bound external-agent semantic result."
+    commit: "ee342a5ddee6ab220c45d270e09921a5abbd2614"
 doc_version: 3
-doc_updated_at: "2026-09-13T10:47:29.308Z"
+doc_updated_at: "2026-09-13T14:10:03.560Z"
 doc_updated_by: "SUPERVISOR"
 description: "When a supervisor episode stops because prior paid work has unavailable or unallocatable provider token telemetry, preserve that historical usage as unknown and continue to block automatic paid dispatch. Add a narrow operator command that accepts an explicit USER authorization, records durable state-bound provenance, and opens a new independently capped token budget epoch without rewriting prior operations or treating unknown usage as zero. Reject stale authorization, non-telemetry stops, missing active USER authority, replay with different parameters, and caps that are absent or invalid. The repaired ST-14 task must be able to resume through this command. Do not weaken actual human_review verdicts or automatic fail-closed admission."
 sections:
@@ -323,7 +334,7 @@ sections:
   Scope: |-
     - In scope: When a supervisor episode stops because prior paid work has unavailable or unallocatable provider token telemetry, preserve that historical usage as unknown and continue to block automatic paid dispatch. Add a narrow operator command that accepts an explicit USER authorization, records durable state-bound provenance, and opens a new independently capped token budget epoch without rewriting prior operations or treating unknown usage as zero. Reject stale authorization, non-telemetry stops, missing active USER authority, replay with different parameters, and caps that are absent or invalid. The repaired ST-14 task must be able to resume through this command. Do not weaken actual human_review verdicts or automatic fail-closed admission.
     - Out of scope: unrelated refactors not required for "Add an explicit USER-approved supervisor budget epoch for unknown token telemetry".
-  Plan: "Planned one cohesive security-boundary repair with state-bound USER authorization and independent epoch accounting."
+  Plan: "Prepared the replacement plan with the corrected cli-core validation route."
   Verify Steps: |-
     1. Run `bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts`. Require USER-bound epoch creation, independent caps, preserved lifetime unknown usage, deterministic replay, and unchanged journals on rejection.
     2. Run `bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts`. Require the operator command to reject stale fingerprints, non-telemetry stops, non-USER actors, invalid caps, and conflicting replay, and to resume the exact stopped task only after valid authorization across route drift.
@@ -339,6 +350,29 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.execution_grant:
+    actor: "HOST:local:USER"
+    approval_evidence_digest: "sha256:98741261b90825d30f097dc7a9293ef96786fc2f45d34bdfe7bcee9368e1c6d5"
+    approval_kind: "host_user_decision"
+    capabilities:
+      - "provider.merge"
+      - "provider.pr"
+      - "repository.integrate"
+      - "repository.write"
+      - "task.lifecycle"
+      - "task.scope.extend"
+    completion_contract_digest: "sha256:85bbe0600bbb80dbcf41f22907b5125880970e39fee9a95093bf6efae02501e4"
+    digest: "sha256:b3691549fdc40f89187510b254e7f2aa470cafc438b97092f8dfa1351851bb3f"
+    grant_id: "f56eb773-af58-48df-bf63-751a8ac6f50c"
+    issued_at: "2026-09-13T14:09:27.961Z"
+    kind: "agentplane.execution_grant"
+    plan_digest: "sha256:58e7243a7c037758b9f04b0f71cb049e6f09658c7da57ce3777c45553a795e7b"
+    plan_revision: 20
+    repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+    schema_version: 1
+    scope_digest: "sha256:c9d0249e717bc6f23b9e0202424c194ab5e98aa3cf5bca7fae437d38070a36a2"
+    status: "active"
+    task_id: "202609130858-RMHWQ5"
   agentplane.scope_extension_request:
     applied_at: "2026-09-13T10:15:05.865Z"
     applied_by: "USER"
@@ -359,218 +393,33 @@ extensions:
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-13T09:02:51.969Z"
-        approved_by: "USER"
-        approved_digest: "sha256:3b2ab083f74f5f1d1ff6d3c474e99753a1139bdcb65f1105aa2d8b8c816083b8"
+        approved_at: "2026-09-13T14:09:27.961Z"
+        approved_by: "HOST:local:USER"
+        approved_digest: "sha256:3240f151dc9d04408ae11cf18a19b0dfa42f0de9817ead8c7e11b81eb7599ac1"
         policy_facts:
-          - "manual_operator"
+          - "host_user_decision"
         state: "approved"
-      created_at: "2026-09-13T09:01:53.549Z"
-      digest: "sha256:3b2ab083f74f5f1d1ff6d3c474e99753a1139bdcb65f1105aa2d8b8c816083b8"
+      created_at: "2026-09-13T10:50:41.034Z"
+      digest: "sha256:3240f151dc9d04408ae11cf18a19b0dfa42f0de9817ead8c7e11b81eb7599ac1"
       proposal:
         assumptions:
           - "The existing side-effect authority mechanism or an equally state-bound USER receipt is reused instead of adding an unsigned permission store."
           - "Lifetime task cost reporting remains unchanged and includes all historical operations."
         planning_baseline:
-          captured_at: "2026-09-13T08:59:06.839Z"
+          captured_at: "2026-09-13T10:48:14.516Z"
           config_digest: null
           context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
-          digest: "sha256:0ad8ef9db00ea8cad90848b3a89e5ee947c06029862de584674d9a0513221d61"
+          digest: "sha256:d10286c1ab72b8d15dbb604aca8ce43c5db3fa117230741f33ee2b08618b164a"
           dirty_paths:
-            - ".agentplane/tasks/202609072121-9VEHKH/README.md"
-            - ".agentplane/tasks/202609080727-BAWTEE/README.md"
-            - ".agentplane/tasks/202609121424-49XXT3/README.md"
-            - ".agentplane/tasks/202609121424-4BC7B3/README.md"
-            - ".agentplane/tasks/202609130146-7AZ4T4/README.md"
-            - ".agentplane/tasks/202609130319-MHRRRF/README.md"
-            - ".agentplane/tasks/202609130319-X96Z3Q/README.md"
-            - ".agentplane/tasks/202609130320-EFMSMR/README.md"
-            - ".agentplane/tasks/202609130320-EFMSMR/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
-            - ".agentplane/tasks/202609130320-EFMSMR/quality/objects/sha256/5404e4f80074675cc911e313ac7ead8157492b68fa4c1a9bc85f094f038d9414.json"
-            - ".agentplane/tasks/202609130320-EFMSMR/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
-            - ".agentplane/tasks/202609130320-EFMSMR/supervision/declared-checks.json"
-            - ".agentplane/tasks/202609130352-Q99M4K/README.md"
-            - ".agentplane/tasks/202609130352-Q99M4K/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
-            - ".agentplane/tasks/202609130352-Q99M4K/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
-            - ".agentplane/tasks/202609130402-QWV6VX/README.md"
-            - ".agentplane/tasks/202609130402-QWV6VX/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
-            - ".agentplane/tasks/202609130402-QWV6VX/quality/objects/sha256/5404e4f80074675cc911e313ac7ead8157492b68fa4c1a9bc85f094f038d9414.json"
-            - ".agentplane/tasks/202609130402-QWV6VX/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
-            - ".agentplane/tasks/202609130402-QWV6VX/supervision/declared-checks.json"
-            - ".agentplane/tasks/202609130414-G8VK36/README.md"
-            - ".agentplane/tasks/202609130414-G8VK36/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
-            - ".agentplane/tasks/202609130414-G8VK36/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
-            - ".agentplane/tasks/202609130420-X9CKTH/README.md"
-            - ".agentplane/tasks/202609130420-X9CKTH/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
-            - ".agentplane/tasks/202609130420-X9CKTH/quality/objects/sha256/5404e4f80074675cc911e313ac7ead8157492b68fa4c1a9bc85f094f038d9414.json"
-            - ".agentplane/tasks/202609130420-X9CKTH/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
-            - ".agentplane/tasks/202609130420-X9CKTH/supervision/declared-checks.json"
-            - ".agentplane/tasks/202609130428-9GY63X/README.md"
-            - ".agentplane/tasks/202609130428-9GY63X/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
-            - ".agentplane/tasks/202609130428-9GY63X/quality/objects/sha256/5404e4f80074675cc911e313ac7ead8157492b68fa4c1a9bc85f094f038d9414.json"
-            - ".agentplane/tasks/202609130428-9GY63X/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
-            - ".agentplane/tasks/202609130428-9GY63X/supervision/declared-checks.json"
             - ".agentplane/tasks/202609130858-RMHWQ5/README.md"
-            - "agentplane-roadmap-r2/AGENT-START.md"
-            - "agentplane-roadmap-r2/EXECUTION-CHARTER.md"
-            - "agentplane-roadmap-r2/README.md"
-            - "agentplane-roadmap-r2/agentplane-0.7.9-0.7.14-roadmap-r2.md"
-            - "agentplane-roadmap-r2/checksums.json"
-            - "agentplane-roadmap-r2/coverage-and-gap-audit.md"
-            - "agentplane-roadmap-r2/coverage-map.json"
-            - "agentplane-roadmap-r2/dependency-graph.json"
-            - "agentplane-roadmap-r2/experiment-requirements.json"
-            - "agentplane-roadmap-r2/releases/0.7.10.md"
-            - "agentplane-roadmap-r2/releases/0.7.11.md"
-            - "agentplane-roadmap-r2/releases/0.7.12.md"
-            - "agentplane-roadmap-r2/releases/0.7.13.md"
-            - "agentplane-roadmap-r2/releases/0.7.14.md"
-            - "agentplane-roadmap-r2/releases/0.7.9.md"
-            - "agentplane-roadmap-r2/source-evidence.json"
-            - "agentplane-roadmap-r2/tasks.json"
-            - "agentplane-roadmap-r2/tasks/BP-01.md"
-            - "agentplane-roadmap-r2/tasks/BP-02.md"
-            - "agentplane-roadmap-r2/tasks/BP-03.md"
-            - "agentplane-roadmap-r2/tasks/BP-04.md"
-            - "agentplane-roadmap-r2/tasks/BP-05.md"
-            - "agentplane-roadmap-r2/tasks/BP-06.md"
-            - "agentplane-roadmap-r2/tasks/BP-07.md"
-            - "agentplane-roadmap-r2/tasks/BP-08.md"
-            - "agentplane-roadmap-r2/tasks/BP-09.md"
-            - "agentplane-roadmap-r2/tasks/BP-10.md"
-            - "agentplane-roadmap-r2/tasks/BP-11.md"
-            - "agentplane-roadmap-r2/tasks/BP-12.md"
-            - "agentplane-roadmap-r2/tasks/BP-13.md"
-            - "agentplane-roadmap-r2/tasks/BP-14.md"
-            - "agentplane-roadmap-r2/tasks/BP-15.md"
-            - "agentplane-roadmap-r2/tasks/BP-16.md"
-            - "agentplane-roadmap-r2/tasks/BP-17.md"
-            - "agentplane-roadmap-r2/tasks/BP-18.md"
-            - "agentplane-roadmap-r2/tasks/BP-19.md"
-            - "agentplane-roadmap-r2/tasks/BP-20.md"
-            - "agentplane-roadmap-r2/tasks/BP-21.md"
-            - "agentplane-roadmap-r2/tasks/BP-22.md"
-            - "agentplane-roadmap-r2/tasks/BP-23.md"
-            - "agentplane-roadmap-r2/tasks/BP-24.md"
-            - "agentplane-roadmap-r2/tasks/BP-25.md"
-            - "agentplane-roadmap-r2/tasks/BP-26.md"
-            - "agentplane-roadmap-r2/tasks/BP-27.md"
-            - "agentplane-roadmap-r2/tasks/BP-28.md"
-            - "agentplane-roadmap-r2/tasks/BP-29.md"
-            - "agentplane-roadmap-r2/tasks/BP-30.md"
-            - "agentplane-roadmap-r2/tasks/BP-31.md"
-            - "agentplane-roadmap-r2/tasks/EV-01.md"
-            - "agentplane-roadmap-r2/tasks/EV-02.md"
-            - "agentplane-roadmap-r2/tasks/EV-03.md"
-            - "agentplane-roadmap-r2/tasks/EV-04.md"
-            - "agentplane-roadmap-r2/tasks/EV-05.md"
-            - "agentplane-roadmap-r2/tasks/EV-06.md"
-            - "agentplane-roadmap-r2/tasks/EV-07.md"
-            - "agentplane-roadmap-r2/tasks/EV-08.md"
-            - "agentplane-roadmap-r2/tasks/EV-09.md"
-            - "agentplane-roadmap-r2/tasks/EV-10.md"
-            - "agentplane-roadmap-r2/tasks/EV-11.md"
-            - "agentplane-roadmap-r2/tasks/EV-12.md"
-            - "agentplane-roadmap-r2/tasks/EV-13.md"
-            - "agentplane-roadmap-r2/tasks/LC-01.md"
-            - "agentplane-roadmap-r2/tasks/LC-02.md"
-            - "agentplane-roadmap-r2/tasks/LC-03.md"
-            - "agentplane-roadmap-r2/tasks/LC-04.md"
-            - "agentplane-roadmap-r2/tasks/LC-05.md"
-            - "agentplane-roadmap-r2/tasks/LC-06.md"
-            - "agentplane-roadmap-r2/tasks/LC-07.md"
-            - "agentplane-roadmap-r2/tasks/LC-08.md"
-            - "agentplane-roadmap-r2/tasks/LC-09.md"
-            - "agentplane-roadmap-r2/tasks/LC-10.md"
-            - "agentplane-roadmap-r2/tasks/LC-11.md"
-            - "agentplane-roadmap-r2/tasks/LC-12.md"
-            - "agentplane-roadmap-r2/tasks/LC-13.md"
-            - "agentplane-roadmap-r2/tasks/LC-14.md"
-            - "agentplane-roadmap-r2/tasks/LC-15.md"
-            - "agentplane-roadmap-r2/tasks/LC-16.md"
-            - "agentplane-roadmap-r2/tasks/LC-17.md"
-            - "agentplane-roadmap-r2/tasks/LC-18.md"
-            - "agentplane-roadmap-r2/tasks/LC-19.md"
-            - "agentplane-roadmap-r2/tasks/LC-20.md"
-            - "agentplane-roadmap-r2/tasks/LC-21.md"
-            - "agentplane-roadmap-r2/tasks/LC-22.md"
-            - "agentplane-roadmap-r2/tasks/LC-23.md"
-            - "agentplane-roadmap-r2/tasks/PL-01.md"
-            - "agentplane-roadmap-r2/tasks/PL-02.md"
-            - "agentplane-roadmap-r2/tasks/PL-03.md"
-            - "agentplane-roadmap-r2/tasks/PL-04.md"
-            - "agentplane-roadmap-r2/tasks/PL-05.md"
-            - "agentplane-roadmap-r2/tasks/PL-06.md"
-            - "agentplane-roadmap-r2/tasks/PL-07.md"
-            - "agentplane-roadmap-r2/tasks/PL-08.md"
-            - "agentplane-roadmap-r2/tasks/PL-09.md"
-            - "agentplane-roadmap-r2/tasks/PL-10.md"
-            - "agentplane-roadmap-r2/tasks/PL-11.md"
-            - "agentplane-roadmap-r2/tasks/PL-12.md"
-            - "agentplane-roadmap-r2/tasks/RC-01.md"
-            - "agentplane-roadmap-r2/tasks/RC-02.md"
-            - "agentplane-roadmap-r2/tasks/RC-03.md"
-            - "agentplane-roadmap-r2/tasks/RC-04.md"
-            - "agentplane-roadmap-r2/tasks/RC-05.md"
-            - "agentplane-roadmap-r2/tasks/RC-06.md"
-            - "agentplane-roadmap-r2/tasks/RC-07.md"
-            - "agentplane-roadmap-r2/tasks/RC-08.md"
-            - "agentplane-roadmap-r2/tasks/RC-09.md"
-            - "agentplane-roadmap-r2/tasks/RC-10.md"
-            - "agentplane-roadmap-r2/tasks/RC-11.md"
-            - "agentplane-roadmap-r2/tasks/RC-12.md"
-            - "agentplane-roadmap-r2/tasks/RC-13.md"
-            - "agentplane-roadmap-r2/tasks/RC-14.md"
-            - "agentplane-roadmap-r2/tasks/RC-15.md"
-            - "agentplane-roadmap-r2/tasks/RC-16.md"
-            - "agentplane-roadmap-r2/tasks/RC-17.md"
-            - "agentplane-roadmap-r2/tasks/RC-18.md"
-            - "agentplane-roadmap-r2/tasks/ST-01.md"
-            - "agentplane-roadmap-r2/tasks/ST-02.md"
-            - "agentplane-roadmap-r2/tasks/ST-03.md"
-            - "agentplane-roadmap-r2/tasks/ST-04.md"
-            - "agentplane-roadmap-r2/tasks/ST-05.md"
-            - "agentplane-roadmap-r2/tasks/ST-06.md"
-            - "agentplane-roadmap-r2/tasks/ST-07.md"
-            - "agentplane-roadmap-r2/tasks/ST-08.md"
-            - "agentplane-roadmap-r2/tasks/ST-09.md"
-            - "agentplane-roadmap-r2/tasks/ST-10.md"
-            - "agentplane-roadmap-r2/tasks/ST-11.md"
-            - "agentplane-roadmap-r2/tasks/ST-12.md"
-            - "agentplane-roadmap-r2/tasks/ST-13.md"
-            - "agentplane-roadmap-r2/tasks/ST-14.md"
-            - "agentplane-roadmap-r2/tasks/ST-15.md"
-            - "agentplane-roadmap-r2/tasks/ST-16.md"
-            - "agentplane-roadmap-r2/tasks/ST-17.md"
-            - "agentplane-roadmap-r2/tasks/ST-18.md"
-            - "agentplane-roadmap-r2/tasks/ST-19.md"
-            - "agentplane-roadmap-r2/tasks/ST-20.md"
-            - "agentplane-roadmap-r2/tasks/ST-21.md"
-            - "agentplane-roadmap-r2/validate_roadmap.py"
-            - "agentplane-roadmap-r2/validation-report.json"
-            - "packages/agentplane/src/adapters/task-backend/kernel-plan-rejection-recovery.ts"
-            - "packages/agentplane/src/cli/run-cli.roadmap-plan-recovery.test.ts"
-            - "packages/agentplane/src/commands/task/kernel-runtime-context.ts"
-            - "packages/agentplane/src/commands/task/plan-rejection-recovery.ts"
-            - "packages/agentplane/src/runner/adapters/codex-result-transport.ts"
-            - "packages/agentplane/src/runner/adapters/codex.ts"
-            - "packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts"
-            - "packages/agentplane/src/runner/artifacts.ts"
-            - "packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts"
-            - "packages/agentplane/src/runner/usecases/kernel-authority.test.ts"
-            - "packages/agentplane/src/runner/usecases/kernel-authority.ts"
-            - "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
-            - "packages/core/src/runner/agent-work-order.ts"
-            - "packages/core/src/tasks/task-kernel/kernel.test.ts"
-            - "packages/core/src/tasks/task-kernel/kernel.ts"
-            - "scripts/lib/test-route-registry.mjs"
+            - ".agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json"
           git:
             kind: "commit"
             ref: null
-            sha: "d03a5e786db57136bf7f6c4661b148bcf97cfaf1"
+            sha: "dd2c6a982d9505cfb505d07366f5e849aa19d364"
           policy_digest: null
           schema_version: 1
-          task_history_cursor: "task-revision:1"
+          task_history_cursor: "task-revision:19"
         schema_version: 1
         task_id: "202609130858-RMHWQ5"
         top_level_validation:
@@ -584,7 +433,7 @@ extensions:
               timeout_ms: 120000
             -
               capability: "task.verify"
-              command: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts"
+              command: "bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts"
               id: "focused-cli"
               kind: "deterministic"
               required: true
@@ -640,7 +489,7 @@ extensions:
               description: "The complete local CI route passes and generated schema or CLI artifacts remain synchronized."
               id: "c-release-safe"
               required: true
-          evidence_fingerprint: "sha256:0ad8ef9db00ea8cad90848b3a89e5ee947c06029862de584674d9a0513221d61"
+          evidence_fingerprint: "sha256:d10286c1ab72b8d15dbb604aca8ce43c5db3fa117230741f33ee2b08618b164a"
           schema_version: 1
         unresolved_questions: []
         work_items:
@@ -734,7 +583,7 @@ extensions:
                     timeout_ms: 120000
                   -
                     capability: "task.verify"
-                    command: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts"
+                    command: "bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts"
                     id: "focused-cli"
                     kind: "deterministic"
                     required: true
@@ -790,12 +639,12 @@ extensions:
                     description: "The complete local CI route passes and generated schema or CLI artifacts remain synchronized."
                     id: "c-release-safe"
                     required: true
-                evidence_fingerprint: "sha256:0ad8ef9db00ea8cad90848b3a89e5ee947c06029862de584674d9a0513221d61"
+                evidence_fingerprint: "sha256:d10286c1ab72b8d15dbb604aca8ce43c5db3fa117230741f33ee2b08618b164a"
                 schema_version: 1
-      revision: 1
+      revision: 2
       schema_version: 1
       task_id: "202609130858-RMHWQ5"
-    event_cursor: 14
+    event_cursor: 16
     final_validation: null
     id: "202609130858-RMHWQ5"
     intent:
@@ -834,133 +683,458 @@ extensions:
       task_id: "202609130858-RMHWQ5"
     lifecycle: "ACTIVE"
     plan_amendments: []
-    plan_history: []
-    revision: 17
+    plan_history:
+      -
+        approval:
+          approved_at: "2026-09-13T09:02:51.969Z"
+          approved_by: "USER"
+          approved_digest: "sha256:3b2ab083f74f5f1d1ff6d3c474e99753a1139bdcb65f1105aa2d8b8c816083b8"
+          policy_facts:
+            - "manual_operator"
+          state: "approved"
+        created_at: "2026-09-13T09:01:53.549Z"
+        digest: "sha256:3b2ab083f74f5f1d1ff6d3c474e99753a1139bdcb65f1105aa2d8b8c816083b8"
+        proposal:
+          assumptions:
+            - "The existing side-effect authority mechanism or an equally state-bound USER receipt is reused instead of adding an unsigned permission store."
+            - "Lifetime task cost reporting remains unchanged and includes all historical operations."
+          planning_baseline:
+            captured_at: "2026-09-13T08:59:06.839Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:0ad8ef9db00ea8cad90848b3a89e5ee947c06029862de584674d9a0513221d61"
+            dirty_paths:
+              - ".agentplane/tasks/202609072121-9VEHKH/README.md"
+              - ".agentplane/tasks/202609080727-BAWTEE/README.md"
+              - ".agentplane/tasks/202609121424-49XXT3/README.md"
+              - ".agentplane/tasks/202609121424-4BC7B3/README.md"
+              - ".agentplane/tasks/202609130146-7AZ4T4/README.md"
+              - ".agentplane/tasks/202609130319-MHRRRF/README.md"
+              - ".agentplane/tasks/202609130319-X96Z3Q/README.md"
+              - ".agentplane/tasks/202609130320-EFMSMR/README.md"
+              - ".agentplane/tasks/202609130320-EFMSMR/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
+              - ".agentplane/tasks/202609130320-EFMSMR/quality/objects/sha256/5404e4f80074675cc911e313ac7ead8157492b68fa4c1a9bc85f094f038d9414.json"
+              - ".agentplane/tasks/202609130320-EFMSMR/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+              - ".agentplane/tasks/202609130320-EFMSMR/supervision/declared-checks.json"
+              - ".agentplane/tasks/202609130352-Q99M4K/README.md"
+              - ".agentplane/tasks/202609130352-Q99M4K/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
+              - ".agentplane/tasks/202609130352-Q99M4K/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+              - ".agentplane/tasks/202609130402-QWV6VX/README.md"
+              - ".agentplane/tasks/202609130402-QWV6VX/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
+              - ".agentplane/tasks/202609130402-QWV6VX/quality/objects/sha256/5404e4f80074675cc911e313ac7ead8157492b68fa4c1a9bc85f094f038d9414.json"
+              - ".agentplane/tasks/202609130402-QWV6VX/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+              - ".agentplane/tasks/202609130402-QWV6VX/supervision/declared-checks.json"
+              - ".agentplane/tasks/202609130414-G8VK36/README.md"
+              - ".agentplane/tasks/202609130414-G8VK36/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
+              - ".agentplane/tasks/202609130414-G8VK36/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+              - ".agentplane/tasks/202609130420-X9CKTH/README.md"
+              - ".agentplane/tasks/202609130420-X9CKTH/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
+              - ".agentplane/tasks/202609130420-X9CKTH/quality/objects/sha256/5404e4f80074675cc911e313ac7ead8157492b68fa4c1a9bc85f094f038d9414.json"
+              - ".agentplane/tasks/202609130420-X9CKTH/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+              - ".agentplane/tasks/202609130420-X9CKTH/supervision/declared-checks.json"
+              - ".agentplane/tasks/202609130428-9GY63X/README.md"
+              - ".agentplane/tasks/202609130428-9GY63X/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
+              - ".agentplane/tasks/202609130428-9GY63X/quality/objects/sha256/5404e4f80074675cc911e313ac7ead8157492b68fa4c1a9bc85f094f038d9414.json"
+              - ".agentplane/tasks/202609130428-9GY63X/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+              - ".agentplane/tasks/202609130428-9GY63X/supervision/declared-checks.json"
+              - ".agentplane/tasks/202609130858-RMHWQ5/README.md"
+              - "agentplane-roadmap-r2/AGENT-START.md"
+              - "agentplane-roadmap-r2/EXECUTION-CHARTER.md"
+              - "agentplane-roadmap-r2/README.md"
+              - "agentplane-roadmap-r2/agentplane-0.7.9-0.7.14-roadmap-r2.md"
+              - "agentplane-roadmap-r2/checksums.json"
+              - "agentplane-roadmap-r2/coverage-and-gap-audit.md"
+              - "agentplane-roadmap-r2/coverage-map.json"
+              - "agentplane-roadmap-r2/dependency-graph.json"
+              - "agentplane-roadmap-r2/experiment-requirements.json"
+              - "agentplane-roadmap-r2/releases/0.7.10.md"
+              - "agentplane-roadmap-r2/releases/0.7.11.md"
+              - "agentplane-roadmap-r2/releases/0.7.12.md"
+              - "agentplane-roadmap-r2/releases/0.7.13.md"
+              - "agentplane-roadmap-r2/releases/0.7.14.md"
+              - "agentplane-roadmap-r2/releases/0.7.9.md"
+              - "agentplane-roadmap-r2/source-evidence.json"
+              - "agentplane-roadmap-r2/tasks.json"
+              - "agentplane-roadmap-r2/tasks/BP-01.md"
+              - "agentplane-roadmap-r2/tasks/BP-02.md"
+              - "agentplane-roadmap-r2/tasks/BP-03.md"
+              - "agentplane-roadmap-r2/tasks/BP-04.md"
+              - "agentplane-roadmap-r2/tasks/BP-05.md"
+              - "agentplane-roadmap-r2/tasks/BP-06.md"
+              - "agentplane-roadmap-r2/tasks/BP-07.md"
+              - "agentplane-roadmap-r2/tasks/BP-08.md"
+              - "agentplane-roadmap-r2/tasks/BP-09.md"
+              - "agentplane-roadmap-r2/tasks/BP-10.md"
+              - "agentplane-roadmap-r2/tasks/BP-11.md"
+              - "agentplane-roadmap-r2/tasks/BP-12.md"
+              - "agentplane-roadmap-r2/tasks/BP-13.md"
+              - "agentplane-roadmap-r2/tasks/BP-14.md"
+              - "agentplane-roadmap-r2/tasks/BP-15.md"
+              - "agentplane-roadmap-r2/tasks/BP-16.md"
+              - "agentplane-roadmap-r2/tasks/BP-17.md"
+              - "agentplane-roadmap-r2/tasks/BP-18.md"
+              - "agentplane-roadmap-r2/tasks/BP-19.md"
+              - "agentplane-roadmap-r2/tasks/BP-20.md"
+              - "agentplane-roadmap-r2/tasks/BP-21.md"
+              - "agentplane-roadmap-r2/tasks/BP-22.md"
+              - "agentplane-roadmap-r2/tasks/BP-23.md"
+              - "agentplane-roadmap-r2/tasks/BP-24.md"
+              - "agentplane-roadmap-r2/tasks/BP-25.md"
+              - "agentplane-roadmap-r2/tasks/BP-26.md"
+              - "agentplane-roadmap-r2/tasks/BP-27.md"
+              - "agentplane-roadmap-r2/tasks/BP-28.md"
+              - "agentplane-roadmap-r2/tasks/BP-29.md"
+              - "agentplane-roadmap-r2/tasks/BP-30.md"
+              - "agentplane-roadmap-r2/tasks/BP-31.md"
+              - "agentplane-roadmap-r2/tasks/EV-01.md"
+              - "agentplane-roadmap-r2/tasks/EV-02.md"
+              - "agentplane-roadmap-r2/tasks/EV-03.md"
+              - "agentplane-roadmap-r2/tasks/EV-04.md"
+              - "agentplane-roadmap-r2/tasks/EV-05.md"
+              - "agentplane-roadmap-r2/tasks/EV-06.md"
+              - "agentplane-roadmap-r2/tasks/EV-07.md"
+              - "agentplane-roadmap-r2/tasks/EV-08.md"
+              - "agentplane-roadmap-r2/tasks/EV-09.md"
+              - "agentplane-roadmap-r2/tasks/EV-10.md"
+              - "agentplane-roadmap-r2/tasks/EV-11.md"
+              - "agentplane-roadmap-r2/tasks/EV-12.md"
+              - "agentplane-roadmap-r2/tasks/EV-13.md"
+              - "agentplane-roadmap-r2/tasks/LC-01.md"
+              - "agentplane-roadmap-r2/tasks/LC-02.md"
+              - "agentplane-roadmap-r2/tasks/LC-03.md"
+              - "agentplane-roadmap-r2/tasks/LC-04.md"
+              - "agentplane-roadmap-r2/tasks/LC-05.md"
+              - "agentplane-roadmap-r2/tasks/LC-06.md"
+              - "agentplane-roadmap-r2/tasks/LC-07.md"
+              - "agentplane-roadmap-r2/tasks/LC-08.md"
+              - "agentplane-roadmap-r2/tasks/LC-09.md"
+              - "agentplane-roadmap-r2/tasks/LC-10.md"
+              - "agentplane-roadmap-r2/tasks/LC-11.md"
+              - "agentplane-roadmap-r2/tasks/LC-12.md"
+              - "agentplane-roadmap-r2/tasks/LC-13.md"
+              - "agentplane-roadmap-r2/tasks/LC-14.md"
+              - "agentplane-roadmap-r2/tasks/LC-15.md"
+              - "agentplane-roadmap-r2/tasks/LC-16.md"
+              - "agentplane-roadmap-r2/tasks/LC-17.md"
+              - "agentplane-roadmap-r2/tasks/LC-18.md"
+              - "agentplane-roadmap-r2/tasks/LC-19.md"
+              - "agentplane-roadmap-r2/tasks/LC-20.md"
+              - "agentplane-roadmap-r2/tasks/LC-21.md"
+              - "agentplane-roadmap-r2/tasks/LC-22.md"
+              - "agentplane-roadmap-r2/tasks/LC-23.md"
+              - "agentplane-roadmap-r2/tasks/PL-01.md"
+              - "agentplane-roadmap-r2/tasks/PL-02.md"
+              - "agentplane-roadmap-r2/tasks/PL-03.md"
+              - "agentplane-roadmap-r2/tasks/PL-04.md"
+              - "agentplane-roadmap-r2/tasks/PL-05.md"
+              - "agentplane-roadmap-r2/tasks/PL-06.md"
+              - "agentplane-roadmap-r2/tasks/PL-07.md"
+              - "agentplane-roadmap-r2/tasks/PL-08.md"
+              - "agentplane-roadmap-r2/tasks/PL-09.md"
+              - "agentplane-roadmap-r2/tasks/PL-10.md"
+              - "agentplane-roadmap-r2/tasks/PL-11.md"
+              - "agentplane-roadmap-r2/tasks/PL-12.md"
+              - "agentplane-roadmap-r2/tasks/RC-01.md"
+              - "agentplane-roadmap-r2/tasks/RC-02.md"
+              - "agentplane-roadmap-r2/tasks/RC-03.md"
+              - "agentplane-roadmap-r2/tasks/RC-04.md"
+              - "agentplane-roadmap-r2/tasks/RC-05.md"
+              - "agentplane-roadmap-r2/tasks/RC-06.md"
+              - "agentplane-roadmap-r2/tasks/RC-07.md"
+              - "agentplane-roadmap-r2/tasks/RC-08.md"
+              - "agentplane-roadmap-r2/tasks/RC-09.md"
+              - "agentplane-roadmap-r2/tasks/RC-10.md"
+              - "agentplane-roadmap-r2/tasks/RC-11.md"
+              - "agentplane-roadmap-r2/tasks/RC-12.md"
+              - "agentplane-roadmap-r2/tasks/RC-13.md"
+              - "agentplane-roadmap-r2/tasks/RC-14.md"
+              - "agentplane-roadmap-r2/tasks/RC-15.md"
+              - "agentplane-roadmap-r2/tasks/RC-16.md"
+              - "agentplane-roadmap-r2/tasks/RC-17.md"
+              - "agentplane-roadmap-r2/tasks/RC-18.md"
+              - "agentplane-roadmap-r2/tasks/ST-01.md"
+              - "agentplane-roadmap-r2/tasks/ST-02.md"
+              - "agentplane-roadmap-r2/tasks/ST-03.md"
+              - "agentplane-roadmap-r2/tasks/ST-04.md"
+              - "agentplane-roadmap-r2/tasks/ST-05.md"
+              - "agentplane-roadmap-r2/tasks/ST-06.md"
+              - "agentplane-roadmap-r2/tasks/ST-07.md"
+              - "agentplane-roadmap-r2/tasks/ST-08.md"
+              - "agentplane-roadmap-r2/tasks/ST-09.md"
+              - "agentplane-roadmap-r2/tasks/ST-10.md"
+              - "agentplane-roadmap-r2/tasks/ST-11.md"
+              - "agentplane-roadmap-r2/tasks/ST-12.md"
+              - "agentplane-roadmap-r2/tasks/ST-13.md"
+              - "agentplane-roadmap-r2/tasks/ST-14.md"
+              - "agentplane-roadmap-r2/tasks/ST-15.md"
+              - "agentplane-roadmap-r2/tasks/ST-16.md"
+              - "agentplane-roadmap-r2/tasks/ST-17.md"
+              - "agentplane-roadmap-r2/tasks/ST-18.md"
+              - "agentplane-roadmap-r2/tasks/ST-19.md"
+              - "agentplane-roadmap-r2/tasks/ST-20.md"
+              - "agentplane-roadmap-r2/tasks/ST-21.md"
+              - "agentplane-roadmap-r2/validate_roadmap.py"
+              - "agentplane-roadmap-r2/validation-report.json"
+              - "packages/agentplane/src/adapters/task-backend/kernel-plan-rejection-recovery.ts"
+              - "packages/agentplane/src/cli/run-cli.roadmap-plan-recovery.test.ts"
+              - "packages/agentplane/src/commands/task/kernel-runtime-context.ts"
+              - "packages/agentplane/src/commands/task/plan-rejection-recovery.ts"
+              - "packages/agentplane/src/runner/adapters/codex-result-transport.ts"
+              - "packages/agentplane/src/runner/adapters/codex.ts"
+              - "packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts"
+              - "packages/agentplane/src/runner/artifacts.ts"
+              - "packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts"
+              - "packages/agentplane/src/runner/usecases/kernel-authority.test.ts"
+              - "packages/agentplane/src/runner/usecases/kernel-authority.ts"
+              - "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
+              - "packages/core/src/runner/agent-work-order.ts"
+              - "packages/core/src/tasks/task-kernel/kernel.test.ts"
+              - "packages/core/src/tasks/task-kernel/kernel.ts"
+              - "scripts/lib/test-route-registry.mjs"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "d03a5e786db57136bf7f6c4661b148bcf97cfaf1"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:1"
+          schema_version: 1
+          task_id: "202609130858-RMHWQ5"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts"
+                id: "focused-core"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 120000
+              -
+                capability: "task.verify"
+                command: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts"
+                id: "focused-cli"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 180000
+              -
+                capability: "task.verify"
+                command: "bun run typecheck"
+                id: "typecheck"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "bun run test:critical"
+                id: "critical"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                command: "bun run ci:local:full"
+                id: "full-ci"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 3600000
+            criteria:
+              -
+                check_ids:
+                  - "focused-core"
+                  - "focused-cli"
+                description: "A telemetry-only budget stop can continue only through an explicit state-bound USER authorization with positive finite input, output, and total token caps."
+                id: "c-authorized-epoch"
+                required: true
+              -
+                check_ids:
+                  - "focused-core"
+                  - "critical"
+                description: "Historical unavailable or unallocatable usage remains unknown in lifetime reporting and is never converted to zero, while the new epoch admits only spend within its independent caps."
+                id: "c-preserve-unknown"
+                required: true
+              -
+                check_ids:
+                  - "focused-core"
+                  - "focused-cli"
+                  - "critical"
+                description: "Stale authorization, non-telemetry stops, non-USER actors, invalid caps, conflicting replay, and actual human_review stops are rejected without changing the journal."
+                id: "c-fail-closed"
+                required: true
+              -
+                check_ids:
+                  - "typecheck"
+                  - "full-ci"
+                description: "The complete local CI route passes and generated schema or CLI artifacts remain synchronized."
+                id: "c-release-safe"
+                required: true
+            evidence_fingerprint: "sha256:0ad8ef9db00ea8cad90848b3a89e5ee947c06029862de584674d9a0513221d61"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "focused-core"
+                      - "focused-cli"
+                    description: "A telemetry-only budget stop can continue only through an explicit state-bound USER authorization with positive finite input, output, and total token caps."
+                    id: "c-authorized-epoch"
+                    required: true
+                  -
+                    check_ids:
+                      - "focused-core"
+                      - "critical"
+                    description: "Historical unavailable or unallocatable usage remains unknown in lifetime reporting and is never converted to zero, while the new epoch admits only spend within its independent caps."
+                    id: "c-preserve-unknown"
+                    required: true
+                  -
+                    check_ids:
+                      - "focused-core"
+                      - "focused-cli"
+                      - "critical"
+                    description: "Stale authorization, non-telemetry stops, non-USER actors, invalid caps, conflicting replay, and actual human_review stops are rejected without changing the journal."
+                    id: "c-fail-closed"
+                    required: true
+                  -
+                    check_ids:
+                      - "typecheck"
+                      - "full-ci"
+                    description: "The complete local CI route passes and generated schema or CLI artifacts remain synchronized."
+                    id: "c-release-safe"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 120000
+                  optional_sources:
+                    - "packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
+                    - "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+                  required_sources:
+                    - "packages/core/src/runner/supervisor-execution-episode.ts"
+                    - "packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.ts"
+                    - "packages/agentplane/src/commands/task/authority-grant.command.ts"
+                  symbol_hints:
+                    - "exhaustedDimensions"
+                    - "recoverSupervisorExecutionEpisodeAfterResolvedTokenTelemetry"
+                    - "makeRunTaskAuthorityGrantHandler"
+                depends_on: []
+                expected_outputs:
+                  - "Durable budget epoch state that preserves lifetime unknown usage"
+                  - "State-bound USER-only operator authorization path"
+                  - "Focused core and CLI regression coverage"
+                id: "budget-epoch-repair"
+                objective: "Implement the durable USER-approved token budget epoch and its narrow operator command, then prove admission and replay behavior end to end."
+                optional: false
+                priority: 100
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/runner/supervisor-execution-episode.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli"
+                risk: "high"
+                scope_roots:
+                  - "packages/core/src/runner/supervisor-execution-episode.ts"
+                  - "packages/core/src/schemas/index.ts"
+                  - "packages/agentplane/src/commands/shared"
+                  - "packages/agentplane/src/commands/task"
+                  - "packages/agentplane/src/cli"
+                  - "scripts/lib/test-route-registry.mjs"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts"
+                      id: "focused-core"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 120000
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts"
+                      id: "focused-cli"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 180000
+                    -
+                      capability: "task.verify"
+                      command: "bun run typecheck"
+                      id: "typecheck"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:critical"
+                      id: "critical"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "full-ci"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 3600000
+                  criteria:
+                    -
+                      check_ids:
+                        - "focused-core"
+                        - "focused-cli"
+                      description: "A telemetry-only budget stop can continue only through an explicit state-bound USER authorization with positive finite input, output, and total token caps."
+                      id: "c-authorized-epoch"
+                      required: true
+                    -
+                      check_ids:
+                        - "focused-core"
+                        - "critical"
+                      description: "Historical unavailable or unallocatable usage remains unknown in lifetime reporting and is never converted to zero, while the new epoch admits only spend within its independent caps."
+                      id: "c-preserve-unknown"
+                      required: true
+                    -
+                      check_ids:
+                        - "focused-core"
+                        - "focused-cli"
+                        - "critical"
+                      description: "Stale authorization, non-telemetry stops, non-USER actors, invalid caps, conflicting replay, and actual human_review stops are rejected without changing the journal."
+                      id: "c-fail-closed"
+                      required: true
+                    -
+                      check_ids:
+                        - "typecheck"
+                        - "full-ci"
+                      description: "The complete local CI route passes and generated schema or CLI artifacts remain synchronized."
+                      id: "c-release-safe"
+                      required: true
+                  evidence_fingerprint: "sha256:0ad8ef9db00ea8cad90848b3a89e5ee947c06029862de584674d9a0513221d61"
+                  schema_version: 1
+        revision: 1
+        schema_version: 1
+        task_id: "202609130858-RMHWQ5"
+    revision: 22
     schema_version: 1
-    updated_at: "2026-09-13T10:47:29.308Z"
+    updated_at: "2026-09-13T14:10:03.560Z"
     work_items:
       budget-epoch-repair:
-        attempt: 1
+        attempt: 0
         claim_id: null
         id: "budget-epoch-repair"
-        last_failure:
-          cause_refs:
-            - "c-authorized-epoch"
-            - "c-preserve-unknown"
-            - "c-fail-closed"
-            - "c-release-safe"
-          code: "validation_failed"
-          kind: "validation"
-          message: "Implemented durable USER-authorized supervisor token budget epochs, including an explicit token-limit disable mode for transports without attributable telemetry, and repaired the legacy scope-extension recovery path required to complete this task."
-          retryable: true
-        output_manifests:
-          -
-            digest: "sha256:fdf0cf13c282828b6f7d642970c188d5856ae0beafb0f19a6b9051c772ab068e"
-            id: "Durable budget epoch state that preserves lifetime unknown usage"
-            kind: "semantic_output"
-            producer:
-              attempt: 1
-              plan_revision: 1
-              task_id: "202609130858-RMHWQ5"
-              work_item_id: "budget-epoch-repair"
-            provenance:
-              - "sha256:0e2cbdbf92568408e95716cf7b9d4e26524550b4c3a3e9305d587077ef4b3ea5"
-              - ".agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:d6c46297dcb41de6c8203f2fb43fd0ff585ceb0b90e63947fa141ac54a170f1f"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-          -
-            digest: "sha256:acdf60d2ff6c80b7b4d67e0b25a1b02b360bfa3dd0b65b5f047f379767f5b9a7"
-            id: "State-bound USER-only operator authorization path"
-            kind: "semantic_output"
-            producer:
-              attempt: 1
-              plan_revision: 1
-              task_id: "202609130858-RMHWQ5"
-              work_item_id: "budget-epoch-repair"
-            provenance:
-              - "sha256:0e2cbdbf92568408e95716cf7b9d4e26524550b4c3a3e9305d587077ef4b3ea5"
-              - ".agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:d6c46297dcb41de6c8203f2fb43fd0ff585ceb0b90e63947fa141ac54a170f1f"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-          -
-            digest: "sha256:996ea2c07c0a1d9906fddb5c52859b55fd3446ed3e0a4b4634671f60277f3dc7"
-            id: "Focused core and CLI regression coverage"
-            kind: "semantic_output"
-            producer:
-              attempt: 1
-              plan_revision: 1
-              task_id: "202609130858-RMHWQ5"
-              work_item_id: "budget-epoch-repair"
-            provenance:
-              - "sha256:0e2cbdbf92568408e95716cf7b9d4e26524550b4c3a3e9305d587077ef4b3ea5"
-              - ".agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:d6c46297dcb41de6c8203f2fb43fd0ff585ceb0b90e63947fa141ac54a170f1f"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-        revision: 2
-        state: "REWORK_READY"
-        validation_result:
-          evidence:
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json"
-              check_id: "focused-core"
-              command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts"
-              detail: "Declared check failed: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts"
-              exit_code: 0
-              observed_at: "2026-09-13T10:41:30.372Z"
-              repository_snapshot_digest: "sha256:d6c46297dcb41de6c8203f2fb43fd0ff585ceb0b90e63947fa141ac54a170f1f"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json"
-              check_id: "focused-cli"
-              command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts"
-              detail: "Declared check failed: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts"
-              exit_code: 1
-              observed_at: "2026-09-13T10:41:30.372Z"
-              repository_snapshot_digest: "sha256:d6c46297dcb41de6c8203f2fb43fd0ff585ceb0b90e63947fa141ac54a170f1f"
-              status: "failed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json"
-              check_id: "typecheck"
-              command_identity: "bun run typecheck"
-              detail: "Declared validation command bun run typecheck was not observed by AgentPlane."
-              exit_code: null
-              observed_at: "2026-09-13T10:41:30.372Z"
-              repository_snapshot_digest: "sha256:d6c46297dcb41de6c8203f2fb43fd0ff585ceb0b90e63947fa141ac54a170f1f"
-              status: "unsupported"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json"
-              check_id: "critical"
-              command_identity: "bun run test:critical"
-              detail: "Declared validation command bun run test:critical was not observed by AgentPlane."
-              exit_code: null
-              observed_at: "2026-09-13T10:41:30.372Z"
-              repository_snapshot_digest: "sha256:d6c46297dcb41de6c8203f2fb43fd0ff585ceb0b90e63947fa141ac54a170f1f"
-              status: "unsupported"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json"
-              check_id: "full-ci"
-              command_identity: "bun run ci:local:full"
-              detail: "Declared validation command bun run ci:local:full was not observed by AgentPlane."
-              exit_code: null
-              observed_at: "2026-09-13T10:41:30.372Z"
-              repository_snapshot_digest: "sha256:d6c46297dcb41de6c8203f2fb43fd0ff585ceb0b90e63947fa141ac54a170f1f"
-              status: "unsupported"
-          schema_version: 1
-          stale_evidence: []
-          status: "blocked"
-          unsatisfied_criteria:
-            - "c-authorized-epoch"
-            - "c-preserve-unknown"
-            - "c-fail-closed"
-            - "c-release-safe"
+        last_failure: null
+        output_manifests: []
+        revision: 1
+        state: "READY"
+        validation_result: null
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -981,6 +1155,40 @@ extensions:
         task_id: "202609130858-RMHWQ5"
         task_revision: 14
         work_item_id: "budget-epoch-repair"
+      -
+        at: "2026-09-13T10:47:33.223Z"
+        from: "REWORK_READY"
+        to: "REWORK_READY"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:75ac18e3c6fe2c5181a12a31fa0c5509355352adfcdac1e05f650735098723e3"
+        entity: "work_item"
+        id: "event_9f8bd69fd52515e303222aaa"
+        mutation_id: "external-result:work-order-202609130858-RMHWQ5-executor-028ec62a985048c7b834497b"
+        plan_digest: "sha256:3b2ab083f74f5f1d1ff6d3c474e99753a1139bdcb65f1105aa2d8b8c816083b8"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609130858-RMHWQ5"
+        task_revision: 17
+        work_item_id: "budget-epoch-repair"
+      -
+        at: "2026-09-13T10:48:13.013Z"
+        from: "ACTIVE"
+        to: "PLANNING"
+        actor_id: "external:EXECUTOR"
+        cause_refs:
+          - "acceptance_changed"
+        entity: "task"
+        id: "event_94c3af2ac94c31962f0d1b05"
+        mutation_id: "plan-refinement:work-order-202609130858-RMHWQ5-executor-db37fde3cc420e325af2e2a4"
+        plan_digest: "sha256:3b2ab083f74f5f1d1ff6d3c474e99753a1139bdcb65f1105aa2d8b8c816083b8"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609130858-RMHWQ5"
+        task_revision: 18
+        work_item_id: null
     leases: []
     mutation_receipts:
       compatibility:sha256:19680a2c852d6c81dcbebebb67931ba2e11d8395df79a615903d0b5bfb1489b0:
@@ -1005,6 +1213,30 @@ extensions:
         mutation_id: "compatibility:sha256:19680a2c852d6c81dcbebebb67931ba2e11d8395df79a615903d0b5bfb1489b0"
         next_revision: 3
         previous_revision: 2
+        schema_version: 1
+        task_id: "202609130858-RMHWQ5"
+      compatibility:sha256:1d51286a429aaba5159ff7c4390b47c28d5c7c96021f026c4a41d3577f6d9a86:
+        aggregate_digest: "sha256:7e84d84b09095724c657a8bfbf2e65ad8d7367681c5aef01b32d4e63d4e48ffb"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T10:50:41.043Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "AWAITING_PLAN_APPROVAL"
+          id: "event_58b5f5c0cce442d730fea811"
+          mutation_id: "compatibility:sha256:1d51286a429aaba5159ff7c4390b47c28d5c7c96021f026c4a41d3577f6d9a86"
+          plan_digest: "sha256:3240f151dc9d04408ae11cf18a19b0dfa42f0de9817ead8c7e11b81eb7599ac1"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609130858-RMHWQ5"
+          task_revision: 20
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:1d51286a429aaba5159ff7c4390b47c28d5c7c96021f026c4a41d3577f6d9a86"
+        next_revision: 21
+        previous_revision: 20
         schema_version: 1
         task_id: "202609130858-RMHWQ5"
       compatibility:sha256:2700840116a771d4bbbc6a4c08d88a40a67bc5ec2f935f9889b13532cfabbd9c:
@@ -1101,6 +1333,30 @@ extensions:
         mutation_id: "compatibility:sha256:49d7c9d9288ec67890dd94a22aca7a476ec6e2707fe568d8987f933cd6e052d8"
         next_revision: 8
         previous_revision: 7
+        schema_version: 1
+        task_id: "202609130858-RMHWQ5"
+      compatibility:sha256:4bd05de4448510cde8aa64ca68a4265cc0dec340c575e6f2cb53aad9c44458c9:
+        aggregate_digest: "sha256:6d6935647ec9d14a1cbbd59d48aad1125c3bfca93d45bb113e3eddbd65436ccf"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T14:10:03.560Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_12cfd4ea5e33fd7de9bcfc39"
+          mutation_id: "compatibility:sha256:4bd05de4448510cde8aa64ca68a4265cc0dec340c575e6f2cb53aad9c44458c9"
+          plan_digest: "sha256:3240f151dc9d04408ae11cf18a19b0dfa42f0de9817ead8c7e11b81eb7599ac1"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609130858-RMHWQ5"
+          task_revision: 21
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:4bd05de4448510cde8aa64ca68a4265cc0dec340c575e6f2cb53aad9c44458c9"
+        next_revision: 22
+        previous_revision: 21
         schema_version: 1
         task_id: "202609130858-RMHWQ5"
       compatibility:sha256:5a57962541a4ed90a85cb0e3ddc8e234902f070347a63e756b2329206295ea19:
@@ -1319,6 +1575,30 @@ extensions:
         previous_revision: 12
         schema_version: 1
         task_id: "202609130858-RMHWQ5"
+      external-result:work-order-202609130858-RMHWQ5-executor-028ec62a985048c7b834497b:
+        aggregate_digest: "sha256:f16f69361c31c1bde9a2e50db23f11f590b695d0724e754ec6d0b4ce72e9cbce"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T10:47:33.223Z"
+          cause_refs:
+            - "semantic-result:sha256:75ac18e3c6fe2c5181a12a31fa0c5509355352adfcdac1e05f650735098723e3"
+          entity: "work_item"
+          from: "REWORK_READY"
+          id: "event_9f8bd69fd52515e303222aaa"
+          mutation_id: "external-result:work-order-202609130858-RMHWQ5-executor-028ec62a985048c7b834497b"
+          plan_digest: "sha256:3b2ab083f74f5f1d1ff6d3c474e99753a1139bdcb65f1105aa2d8b8c816083b8"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609130858-RMHWQ5"
+          task_revision: 17
+          to: "REWORK_READY"
+          work_item_id: "budget-epoch-repair"
+        mutation_id: "external-result:work-order-202609130858-RMHWQ5-executor-028ec62a985048c7b834497b"
+        next_revision: 18
+        previous_revision: 17
+        schema_version: 1
+        task_id: "202609130858-RMHWQ5"
       external-result:work-order-202609130858-RMHWQ5-executor-f76ce492284cb11a93eaf99f:
         aggregate_digest: "sha256:2b3394817d5c31d51bebd12ffc8b47ef0d2d91ae1ffd640abbc966285f446240"
         event:
@@ -1341,6 +1621,30 @@ extensions:
         mutation_id: "external-result:work-order-202609130858-RMHWQ5-executor-f76ce492284cb11a93eaf99f"
         next_revision: 15
         previous_revision: 14
+        schema_version: 1
+        task_id: "202609130858-RMHWQ5"
+      plan-refinement:work-order-202609130858-RMHWQ5-executor-db37fde3cc420e325af2e2a4:
+        aggregate_digest: "sha256:b99a9f50440d7c5e62b2d9ac2dc147d83afb9d66954f1fcfc2f2cd2c5ca8fadb"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-13T10:48:13.013Z"
+          cause_refs:
+            - "acceptance_changed"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_94c3af2ac94c31962f0d1b05"
+          mutation_id: "plan-refinement:work-order-202609130858-RMHWQ5-executor-db37fde3cc420e325af2e2a4"
+          plan_digest: "sha256:3b2ab083f74f5f1d1ff6d3c474e99753a1139bdcb65f1105aa2d8b8c816083b8"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609130858-RMHWQ5"
+          task_revision: 18
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609130858-RMHWQ5-executor-db37fde3cc420e325af2e2a4"
+        next_revision: 19
+        previous_revision: 18
         schema_version: 1
         task_id: "202609130858-RMHWQ5"
     pending_effects: []
@@ -1372,7 +1676,7 @@ When a supervisor episode stops because prior paid work has unavailable or unall
 
 ## Plan
 
-Planned one cohesive security-boundary repair with state-bound USER authorization and independent epoch accounting.
+Prepared the replacement plan with the corrected cli-core validation route.
 
 ## Verify Steps
 
