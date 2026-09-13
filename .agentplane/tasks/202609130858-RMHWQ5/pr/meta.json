@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:c5458cc7923ad9224a174fb36e3b98b4e29677a35ad59bd74fd1314f851a0405",
   "pr_number": 5945,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5945",
+  "pre_merge_closure": {
+    "basis_commit": "5fc061999d3c77cac00a7820151f794890754b04",
+    "branch": "task/202609130858-RMHWQ5/add-an-explicit-user-approved-supervisor-budget",
+    "pr_number": 5945,
+    "recorded_at": "2026-09-13T14:31:20.724Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
