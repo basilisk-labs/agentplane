@@ -4,7 +4,7 @@ title: "Remove supervisor spend limits and retain informational usage telemetry"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -107,9 +107,31 @@ execution_contract:
   observed:
     authority_violations: []
     changed_components:
+      - "packages/agentplane"
       - "packages/core"
       - "scripts"
     changed_paths:
+      - "packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts"
+      - "packages/agentplane/src/cli/run-cli/command-catalog/task-supervisor.ts"
+      - "packages/agentplane/src/cli/run-cli/command-loaders/task.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts"
+      - "packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts"
+      - "packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.ts"
+      - "packages/agentplane/src/commands/shared/supervisor-execution-default-budget.test.ts"
+      - "packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
+      - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+      - "packages/agentplane/src/commands/shared/supervisor-execution-observation.ts"
+      - "packages/agentplane/src/commands/task/advance.command.ts"
+      - "packages/agentplane/src/commands/task/agent-action-packet.ts"
+      - "packages/agentplane/src/commands/task/branch-task-supervisor.ts"
+      - "packages/agentplane/src/commands/task/external-agent-exchange-authority.ts"
+      - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
+      - "packages/agentplane/src/commands/task/kernel-advance.ts"
+      - "packages/agentplane/src/commands/task/kernel-run.ts"
+      - "packages/agentplane/src/commands/task/supervision-outcome-disposition.ts"
+      - "packages/agentplane/src/commands/task/supervisor-budget-epoch.command.ts"
       - "packages/core/src/runner/supervisor-execution-episode-migration.ts"
       - "packages/core/src/runner/supervisor-execution-episode-telemetry-admission.test.ts"
       - "packages/core/src/runner/supervisor-execution-episode.test.ts"
@@ -172,10 +194,20 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:2da6e56509e4778cfd3df0e1a3e58f72dca20abaae26f47d035e820b1df841f3"
+      digest: "sha256:37b737dc1e5c79a4ab12a2c6baa5a44d47198bee3cbb67f307d9cc43840bd701"
       escalation_reasons:
         - "central_component:packages/core/src/runner"
         - "central_component:packages/core/src/schemas"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli/command-catalog/task-supervisor.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli/command-loaders/task.ts"
+        - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.ts"
+        - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-default-budget.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+        - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-observation.ts"
         - "central_path:packages/core/src/runner/supervisor-execution-episode-migration.ts"
         - "central_path:packages/core/src/runner/supervisor-execution-episode-telemetry-admission.test.ts"
         - "central_path:packages/core/src/runner/supervisor-execution-episode.test.ts"
@@ -193,9 +225,31 @@ execution_contract:
         - "cli"
       observed:
         changed_components:
+          - "packages/agentplane"
           - "packages/core"
           - "scripts"
         changed_files:
+          - "packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts"
+          - "packages/agentplane/src/cli/run-cli/command-catalog/task-supervisor.ts"
+          - "packages/agentplane/src/cli/run-cli/command-loaders/task.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts"
+          - "packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts"
+          - "packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.ts"
+          - "packages/agentplane/src/commands/shared/supervisor-execution-default-budget.test.ts"
+          - "packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
+          - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+          - "packages/agentplane/src/commands/shared/supervisor-execution-observation.ts"
+          - "packages/agentplane/src/commands/task/advance.command.ts"
+          - "packages/agentplane/src/commands/task/agent-action-packet.ts"
+          - "packages/agentplane/src/commands/task/branch-task-supervisor.ts"
+          - "packages/agentplane/src/commands/task/external-agent-exchange-authority.ts"
+          - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
+          - "packages/agentplane/src/commands/task/kernel-advance.ts"
+          - "packages/agentplane/src/commands/task/kernel-run.ts"
+          - "packages/agentplane/src/commands/task/supervision-outcome-disposition.ts"
+          - "packages/agentplane/src/commands/task/supervisor-budget-epoch.command.ts"
           - "packages/core/src/runner/supervisor-execution-episode-migration.ts"
           - "packages/core/src/runner/supervisor-execution-episode-telemetry-admission.test.ts"
           - "packages/core/src/runner/supervisor-execution-episode.test.ts"
@@ -244,7 +298,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "78593a2476daf9eed6d71b249ac29376d59847c1"
+  message: "🚧 X29JE4 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -258,6 +314,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: f027b970809e. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 78593a2476da. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -290,8 +349,16 @@ events:
     to: "DOING"
     note: "Implementation committed: f027b970809e. CLI accepted one state-bound external-agent semantic result."
     commit: "f027b970809e6508f586f311cecdb9a3b853c6c3"
+  -
+    type: "status"
+    at: "2026-09-13T20:52:46.160Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 78593a2476da. CLI accepted one state-bound external-agent semantic result."
+    commit: "78593a2476daf9eed6d71b249ac29376d59847c1"
 doc_version: 3
-doc_updated_at: "2026-09-13T20:28:28.121Z"
+doc_updated_at: "2026-09-13T20:52:46.160Z"
 doc_updated_by: "SUPERVISOR"
 description: "Remove active supervisor token, monetary, wall-time, changed-file, diff-line, agent-run, and routine episode budget enforcement. Remove the task supervisor budget-epoch command and token-budget renewal path. Keep provider token usage as informational evaluation telemetry. Retain only a high internal orchestrator anomaly fuse that pauses resumably on a probable tight loop. Detect cycles from repeated canonical semantic state and exhausted recovery strategies, and return a concrete diagnostic without treating the task as budget-exhausted. Preserve cold decoding of existing persisted journals without continuing legacy spend enforcement. Do not change release or publication state."
 sections:
@@ -828,7 +895,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609132000-X29JE4"
-    event_cursor: 10
+    event_cursor: 12
     final_validation: null
     id: "202609132000-X29JE4"
     intent:
@@ -1639,9 +1706,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609132000-X29JE4"
-    revision: 17
+    revision: 19
     schema_version: 1
-    updated_at: "2026-09-13T20:28:32.840Z"
+    updated_at: "2026-09-13T20:52:46.160Z"
     work_items:
       campaign-contract:
         attempt: 1
@@ -1905,6 +1972,30 @@ extensions:
         previous_revision: 9
         schema_version: 1
         task_id: "202609132000-X29JE4"
+      compatibility:sha256:88bbfd8d677a189444bfe2a876d0635d36cad528ccd730a8111023fe4f0514b7:
+        aggregate_digest: "sha256:bc5a920e17ed05001fbe0420a1419a83e83540d16ae8cb4925ed6263e15d975a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T20:52:46.160Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_45e42bc8fbac1d54dfc52c54"
+          mutation_id: "compatibility:sha256:88bbfd8d677a189444bfe2a876d0635d36cad528ccd730a8111023fe4f0514b7"
+          plan_digest: "sha256:2a0128895db157556120cf8c21fde4c1520781e16035ea18edc8e5784529479e"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609132000-X29JE4"
+          task_revision: 17
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:88bbfd8d677a189444bfe2a876d0635d36cad528ccd730a8111023fe4f0514b7"
+        next_revision: 18
+        previous_revision: 17
+        schema_version: 1
+        task_id: "202609132000-X29JE4"
       compatibility:sha256:8cdf4b95801ae7ecc3236e3210f34bfb6d4720681a4614e811af879e00fa937c:
         aggregate_digest: "sha256:08950c2668e40eb5b6094ed8fdcfed25e5de04c9cb8e11a3946525ffa62c058f"
         event:
@@ -1999,6 +2090,30 @@ extensions:
         mutation_id: "compatibility:sha256:c549b771ebc8d406fee5b6c45ff3ee5eaa455c0eb95d0335544a97930a97c716"
         next_revision: 9
         previous_revision: 8
+        schema_version: 1
+        task_id: "202609132000-X29JE4"
+      compatibility:sha256:e725ce2298e166208103bad6709d0e83f650eb4011041584f86c8e0b67c4d5b7:
+        aggregate_digest: "sha256:2570c141b80d4f625acef1a078008a1b4ea1a07619461ff5493acaa9993f7e78"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T20:52:46.160Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_ecefae04516d85371886c2fa"
+          mutation_id: "compatibility:sha256:e725ce2298e166208103bad6709d0e83f650eb4011041584f86c8e0b67c4d5b7"
+          plan_digest: "sha256:2a0128895db157556120cf8c21fde4c1520781e16035ea18edc8e5784529479e"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609132000-X29JE4"
+          task_revision: 18
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:e725ce2298e166208103bad6709d0e83f650eb4011041584f86c8e0b67c4d5b7"
+        next_revision: 19
+        previous_revision: 18
         schema_version: 1
         task_id: "202609132000-X29JE4"
       compatibility:sha256:fe61b4ec75461aac095d90735238d3bd03db00c50ef0e3a32f53decc95548150:
@@ -2127,7 +2242,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "f027b970809e6508f586f311cecdb9a3b853c6c3"
+    hash: "78593a2476daf9eed6d71b249ac29376d59847c1"
   task_execution_context:
     base_ref: "main"
     base_sha: "58dbda0d5f88c8a83802c5aee3a9380d001dd4b2"
