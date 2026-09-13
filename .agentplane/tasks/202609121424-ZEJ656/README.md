@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 29
+revision: 30
 origin:
   system: "manual"
 depends_on:
@@ -34,31 +34,29 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-13T17:44:41.476Z"
+  updated_at: "2026-09-13T17:58:02.322Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 3 typed finding(s)."
-  evaluated_sha: "086025d419444b01aaf1f4e2b58bb6fce25ff662"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "592c2bd7e87ec32c6d50e48234f92ec042911194"
   blueprint_digest: "e062431b59acd88978a3a9654d5feb31dc03e5953e9b7fbffbba3560975757da"
   evidence_refs:
-    - ".agentplane/tasks/202609121424-ZEJ656/quality/20260913-174258349-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609121424-ZEJ656/quality/20260913-174258349-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609121424-ZEJ656/quality/objects/sha256/2d96a0a1b65b6eb63d63ca65f5579c5bcd837911a14fae3454151c4600379c6f.md"
-    - ".agentplane/tasks/202609121424-ZEJ656/quality/20260913-174258349-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609121424-ZEJ656/quality/20260913-174258349-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609121424-ZEJ656/quality/20260913-174258349-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609121424-ZEJ656/quality/20260913-175634428-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609121424-ZEJ656/quality/20260913-175634428-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609121424-ZEJ656/quality/objects/sha256/dd30524e816e06c170e4463e324a5b91ece050fccd1f2dc0c7e6efc1de7b7d96.md"
+    - ".agentplane/tasks/202609121424-ZEJ656/quality/20260913-175634428-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609121424-ZEJ656/quality/20260913-175634428-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609121424-ZEJ656/quality/20260913-175634428-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609121424-ZEJ656/README.md"
-    - ".agentplane/tasks/202609121424-ZEJ656/quality/objects/sha256/e250ba6eed9dac39f1d34ea4b79b5cd1af5ddbd4db9feb0eb9ca79a288d5146d.patch"
-    - ".agentplane/tasks/202609121424-ZEJ656/quality/objects/sha256/02e06f7837d90b8c1a4c80a067029b3d4f4802a7788db19bfb920cae2eb47960.json"
-    - ".agentplane/tasks/202609121424-ZEJ656/verification/20260913174248617-5e2c7c1b546c9adf.json"
+    - ".agentplane/tasks/202609121424-ZEJ656/quality/objects/sha256/3266eed93b6c2ee5c3dcafb4a3b4d13850a953740dea2310d0952072f03badf6.patch"
+    - ".agentplane/tasks/202609121424-ZEJ656/quality/objects/sha256/427f640e2ae0afe8eb8b0c213c5936829f0039f2a9a820ed6da7e4bba888d417.json"
+    - ".agentplane/tasks/202609121424-ZEJ656/verification/20260913175610563-5ac26e94d52e7e95.json"
     - ".agentplane/tasks/202609121424-ZEJ656/quality/objects/sha256/645bd8fc3172665facd7fa060bd2449d0d6807e403d60fbba893f576d782aa48.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen diff preserves process-repair requirements only under the existing explicit authority marker, keeps ordinary lifecycle instructions filtered, derives managed result schemas from the issued role and phase, injects the issued WorkOrder identity, and rejects foreign identity, cross-role, lifecycle, and stale canonical-binding fields."
-    - "Supervisor-observed verification passed both focused suites with nonzero discovery, the related context and adapter suites, typecheck, schema and agent asset checks, and ci:local:full."
-    - "Residual risk: The branch still requires hosted CI before integration."
+    - "Local verification passes for the evaluated SHA: 2 conservation tests, 10 output-parity tests, 183 related tests, typecheck, schema/template checks, and full local CI. Hosted CI remains an integration prerequisite."
 token_usage:
   agent_runs: 9
   input_tokens: null
@@ -563,7 +561,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-13T17:56:14.776Z"
+doc_updated_at: "2026-09-13T17:58:02.337Z"
 doc_updated_by: "CODER"
 description: "Source contract: agentplane-roadmap-r2 cards ST-06 and ST-07. Preserve required objective, scope, outputs, checks, constraints, stop rules, WorkItem and WorkOrder identity across prompt compaction and role-specific projection. Repair managed semantic-result transport so completed, blocked, needs_context, and failed outcomes retain permitted typed fields without adapter loss. Do not add a second Plan or lifecycle format, and do not expose secrets. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: focused requirement-conservation and adapter output-parity tests with nonzero discovery, related transport/context critical suites, typecheck, schema/mirror checks."
 sections:
@@ -1239,7 +1237,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609121424-ZEJ656"
-    event_cursor: 19
+    event_cursor: 20
     final_validation:
       evidence:
         -
@@ -1782,9 +1780,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121424-ZEJ656"
-    revision: 29
+    revision: 30
     schema_version: 1
-    updated_at: "2026-09-13T17:56:14.773Z"
+    updated_at: "2026-09-13T17:56:14.776Z"
     work_items:
       validate_existing_implementation:
         attempt: 1
@@ -2333,6 +2331,30 @@ extensions:
         mutation_id: "compatibility:sha256:cde526f858e66d05bc1841edcb5740f0f4a979510e482febe7c88d7e315f57b7"
         next_revision: 29
         previous_revision: 28
+        schema_version: 1
+        task_id: "202609121424-ZEJ656"
+      compatibility:sha256:d6b69ed4758225c6e81e2a1524aaf41612a578247ca017e22ad5d077c6ffeb3c:
+        aggregate_digest: "sha256:3b720a40f2011cb4dd34b5d7b5aaf48c5cdf838dcbbec300386b7655a6fbe2b3"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T17:56:14.776Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_7fa9fb06b55b16ed8e21e1be"
+          mutation_id: "compatibility:sha256:d6b69ed4758225c6e81e2a1524aaf41612a578247ca017e22ad5d077c6ffeb3c"
+          plan_digest: "sha256:6cfcdb60047f6021f1f8c7a6f4fa3d300d878b6545b029bd41f4c4553e77e321"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-ZEJ656"
+          task_revision: 29
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:d6b69ed4758225c6e81e2a1524aaf41612a578247ca017e22ad5d077c6ffeb3c"
+        next_revision: 30
+        previous_revision: 29
         schema_version: 1
         task_id: "202609121424-ZEJ656"
       compatibility:sha256:de0f8320be9eeb4ce5fae2b69ed4b4d846d977ecad5d81c5bc120bbfc0fba2af:
