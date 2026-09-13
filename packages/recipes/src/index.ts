@@ -1,4 +1,4 @@
-export const RECIPES_VERSION = "0.7.9-beta.1";
+export const RECIPES_VERSION = "0.7.9";
 
 export * from "./constants.js";
 export * from "./blueprint-extensions.js";

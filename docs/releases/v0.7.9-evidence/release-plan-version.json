@@ -1,0 +1,8 @@
+{
+  "prevTag": "v0.7.8",
+  "prevVersion": "0.7.9-beta.1",
+  "nextTag": "v0.7.9",
+  "nextVersion": "0.7.9",
+  "bump": "patch",
+  "baseSha": "ecfccc5ad0230fc1876a319be0af5cdb530c339f"
+}
