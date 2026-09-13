@@ -4,7 +4,7 @@ title: "Add the 0.7.9 marginal-cost and paired production benchmark harness for 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on:
@@ -27,10 +27,10 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-09-13T15:38:32.194Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 execution_route:
   frozen: true
@@ -105,13 +105,76 @@ execution_contract:
         id: "recorded-check-1"
         result: "pass"
       -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-13"
+        result: "pass"
+      -
+        id: "recorded-check-14"
+        result: "pass"
+      -
+        id: "recorded-check-15"
+        result: "pass"
+      -
+        id: "recorded-check-16"
+        result: "pass"
+      -
+        id: "recorded-check-17"
+        result: "pass"
+      -
+        id: "recorded-check-18"
+        result: "pass"
+      -
+        id: "recorded-check-19"
+        result: "pass"
+      -
         id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-20"
+        result: "pass"
+      -
+        id: "recorded-check-21"
+        result: "pass"
+      -
+        id: "recorded-check-22"
+        result: "pass"
+      -
+        id: "recorded-check-23"
+        result: "pass"
+      -
+        id: "recorded-check-24"
+        result: "pass"
+      -
+        id: "recorded-check-25"
         result: "pass"
       -
         id: "recorded-check-3"
         result: "pass"
       -
         id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
         result: "pass"
       -
         id: "verification-record"
@@ -268,8 +331,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 9e32b1b8a9c7. CLI accepted one state-bound external-agent semantic result."
     commit: "9e32b1b8a9c75d1b20541637d2cdb3c9d7ec3b0a"
+  -
+    type: "verify"
+    at: "2026-09-13T15:38:32.194Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-13T15:28:57.195Z"
+doc_updated_at: "2026-09-13T15:38:33.209Z"
 doc_updated_by: "SUPERVISOR"
 description: "Source contract: agentplane-roadmap-r2 cards ST-14, ST-15, and ST-16. Measure marginal Git and artifact cost in the existing fixture harness, add one production-path paired driver using current isolation and evidence utilities, and report all-attempt cost per independently verified success with paired outcomes, success and violation rates, stage distributions, coverage, and uncertainty. Enforce matched target tree, product artifacts, model, effort, authority, checks, retries, runtime profile, verifier, and raw cost. Managed and external modes remain stratified. Unknown charges prevent a complete numeric claim; all-failed arms yield no finite success score. Do not execute paid calls in this task and do not reinterpret historical baselines. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: node --test scripts/bench/task-marginal-cost.test.mjs; node --test scripts/bench/paired-production-driver.test.mjs; node --test scripts/bench/paired-result-report.test.mjs; existing benchmark replay checks and relevant release critical checks."
 sections:
@@ -340,6 +409,186 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-13T15:38:32.194Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:93df6d7884039c4c5baee54698f9ffe9df351e6c3477958323f36c6d3dd52777, input_digest=sha256:4988487a2f4039994fc11895a0a9f414627f5dc0fae514157088f6d2632939d0
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: node --test scripts/bench/task-marginal-cost.test.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121424-3YAX44 Verification Contract check affected_unit_integration (1/8)
+
+    Check: affected_unit_integration
+    Command: node --test scripts/bench/paired-production-driver.test.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121424-3YAX44 Verification Contract check affected_unit_integration (2/8)
+
+    Check: affected_unit_integration
+    Command: node --test scripts/bench/paired-result-report.test.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609121424-3YAX44 Verification Contract check affected_unit_integration (3/8)
+
+    Check: affected_unit_integration
+    Command: bun run bench:agent-efficiency:replay:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609121424-3YAX44 Verification Contract check affected_unit_integration (4/8)
+
+    Check: affected_unit_integration
+    Command: bun run test:agent-efficiency:qualification
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609121424-3YAX44 Verification Contract check affected_unit_integration (5/8)
+
+    Check: affected_unit_integration
+    Command: bun run bench:agent-efficiency:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609121424-3YAX44 Verification Contract check affected_unit_integration (6/8)
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609121424-3YAX44 Verification Contract check affected_unit_integration (7/8)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609121424-3YAX44 Verification Contract check affected_unit_integration (8/8)
+
+    Check: critical_paths
+    Command: node --test scripts/bench/task-marginal-cost.test.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121424-3YAX44 Verification Contract check critical_paths (1/8)
+
+    Check: critical_paths
+    Command: node --test scripts/bench/paired-production-driver.test.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121424-3YAX44 Verification Contract check critical_paths (2/8)
+
+    Check: critical_paths
+    Command: node --test scripts/bench/paired-result-report.test.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609121424-3YAX44 Verification Contract check critical_paths (3/8)
+
+    Check: critical_paths
+    Command: bun run bench:agent-efficiency:replay:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609121424-3YAX44 Verification Contract check critical_paths (4/8)
+
+    Check: critical_paths
+    Command: bun run test:agent-efficiency:qualification
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609121424-3YAX44 Verification Contract check critical_paths (5/8)
+
+    Check: critical_paths
+    Command: bun run bench:agent-efficiency:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609121424-3YAX44 Verification Contract check critical_paths (6/8)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609121424-3YAX44 Verification Contract check critical_paths (7/8)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609121424-3YAX44 Verification Contract check critical_paths (8/8)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609121424-3YAX44 Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: node --test scripts/bench/task-marginal-cost.test.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121424-3YAX44 Verification Contract check task_outcome (1/8)
+
+    Check: task_outcome
+    Command: node --test scripts/bench/paired-production-driver.test.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121424-3YAX44 Verification Contract check task_outcome (2/8)
+
+    Check: task_outcome
+    Command: node --test scripts/bench/paired-result-report.test.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609121424-3YAX44 Verification Contract check task_outcome (3/8)
+
+    Check: task_outcome
+    Command: bun run bench:agent-efficiency:replay:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609121424-3YAX44 Verification Contract check task_outcome (4/8)
+
+    Check: task_outcome
+    Command: bun run test:agent-efficiency:qualification
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609121424-3YAX44 Verification Contract check task_outcome (5/8)
+
+    Check: task_outcome
+    Command: bun run bench:agent-efficiency:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609121424-3YAX44 Verification Contract check task_outcome (6/8)
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609121424-3YAX44 Verification Contract check task_outcome (7/8)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609121424-3YAX44 Verification Contract check task_outcome (8/8)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-3YAX44-add-the-0-7-9-marginal-cost-and-paired-productio/.agentplane/tasks/202609121424-3YAX44/blueprint/resolved-snapshot.json
+    - old_digest: fa5bda7326628d77818e5607d9c82965c639b2adaac875c2abf479a7f619d50f
+    - current_digest: fa5bda7326628d77818e5607d9c82965c639b2adaac875c2abf479a7f619d50f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609121424-3YAX44
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609121424-3YAX44
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -923,7 +1172,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609121424-3YAX44"
-    event_cursor: 12
+    event_cursor: 13
     final_validation: null
     id: "202609121424-3YAX44"
     intent:
@@ -953,9 +1202,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 18
+    revision: 19
     schema_version: 1
-    updated_at: "2026-09-13T15:29:40.681Z"
+    updated_at: "2026-09-13T15:38:33.207Z"
     work_items:
       ST-14:
         attempt: 1
@@ -1431,6 +1680,30 @@ extensions:
         previous_revision: 16
         schema_version: 1
         task_id: "202609121424-3YAX44"
+      compatibility:sha256:cf5e62bfb62239a7ecb91f75e8f843f3e0772b36d9fab6df24144fd6e1f76e0d:
+        aggregate_digest: "sha256:36a9149599e022ac862edbb2060262e023c4010d47f3877d72b0cb699265be03"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T15:38:33.207Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_9733cb55ad7c190a04bcbd78"
+          mutation_id: "compatibility:sha256:cf5e62bfb62239a7ecb91f75e8f843f3e0772b36d9fab6df24144fd6e1f76e0d"
+          plan_digest: "sha256:9058c9f56183fcc658d347a916f3b9ee21711fabb6fc2f5125c6b3ed3f32004c"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-3YAX44"
+          task_revision: 18
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:cf5e62bfb62239a7ecb91f75e8f843f3e0772b36d9fab6df24144fd6e1f76e0d"
+        next_revision: 19
+        previous_revision: 18
+        schema_version: 1
+        task_id: "202609121424-3YAX44"
       compatibility:sha256:d5ebe07ccc4cf2430d6ac75278cbe5e2259f78e57df1a0155e2292904d292062:
         aggregate_digest: "sha256:b9ba930018aee1650e7fbc82108e5fca638c8c257cce28bf5f5ef7d7e8ce91e8"
         event:
@@ -1681,6 +1954,186 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-13T15:38:32.194Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:93df6d7884039c4c5baee54698f9ffe9df351e6c3477958323f36c6d3dd52777, input_digest=sha256:4988487a2f4039994fc11895a0a9f414627f5dc0fae514157088f6d2632939d0
+
+Details:
+
+Check: affected_unit_integration
+Command: node --test scripts/bench/task-marginal-cost.test.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121424-3YAX44 Verification Contract check affected_unit_integration (1/8)
+
+Check: affected_unit_integration
+Command: node --test scripts/bench/paired-production-driver.test.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121424-3YAX44 Verification Contract check affected_unit_integration (2/8)
+
+Check: affected_unit_integration
+Command: node --test scripts/bench/paired-result-report.test.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609121424-3YAX44 Verification Contract check affected_unit_integration (3/8)
+
+Check: affected_unit_integration
+Command: bun run bench:agent-efficiency:replay:check
+Result: pass
+Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609121424-3YAX44 Verification Contract check affected_unit_integration (4/8)
+
+Check: affected_unit_integration
+Command: bun run test:agent-efficiency:qualification
+Result: pass
+Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609121424-3YAX44 Verification Contract check affected_unit_integration (5/8)
+
+Check: affected_unit_integration
+Command: bun run bench:agent-efficiency:check
+Result: pass
+Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609121424-3YAX44 Verification Contract check affected_unit_integration (6/8)
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609121424-3YAX44 Verification Contract check affected_unit_integration (7/8)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609121424-3YAX44 Verification Contract check affected_unit_integration (8/8)
+
+Check: critical_paths
+Command: node --test scripts/bench/task-marginal-cost.test.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121424-3YAX44 Verification Contract check critical_paths (1/8)
+
+Check: critical_paths
+Command: node --test scripts/bench/paired-production-driver.test.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121424-3YAX44 Verification Contract check critical_paths (2/8)
+
+Check: critical_paths
+Command: node --test scripts/bench/paired-result-report.test.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609121424-3YAX44 Verification Contract check critical_paths (3/8)
+
+Check: critical_paths
+Command: bun run bench:agent-efficiency:replay:check
+Result: pass
+Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609121424-3YAX44 Verification Contract check critical_paths (4/8)
+
+Check: critical_paths
+Command: bun run test:agent-efficiency:qualification
+Result: pass
+Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609121424-3YAX44 Verification Contract check critical_paths (5/8)
+
+Check: critical_paths
+Command: bun run bench:agent-efficiency:check
+Result: pass
+Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609121424-3YAX44 Verification Contract check critical_paths (6/8)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609121424-3YAX44 Verification Contract check critical_paths (7/8)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609121424-3YAX44 Verification Contract check critical_paths (8/8)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609121424-3YAX44 Verification Contract check full_regression
+
+Check: task_outcome
+Command: node --test scripts/bench/task-marginal-cost.test.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121424-3YAX44 Verification Contract check task_outcome (1/8)
+
+Check: task_outcome
+Command: node --test scripts/bench/paired-production-driver.test.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121424-3YAX44 Verification Contract check task_outcome (2/8)
+
+Check: task_outcome
+Command: node --test scripts/bench/paired-result-report.test.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609121424-3YAX44 Verification Contract check task_outcome (3/8)
+
+Check: task_outcome
+Command: bun run bench:agent-efficiency:replay:check
+Result: pass
+Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609121424-3YAX44 Verification Contract check task_outcome (4/8)
+
+Check: task_outcome
+Command: bun run test:agent-efficiency:qualification
+Result: pass
+Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609121424-3YAX44 Verification Contract check task_outcome (5/8)
+
+Check: task_outcome
+Command: bun run bench:agent-efficiency:check
+Result: pass
+Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609121424-3YAX44 Verification Contract check task_outcome (6/8)
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609121424-3YAX44 Verification Contract check task_outcome (7/8)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609121424-3YAX44 Verification Contract check task_outcome (8/8)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-3YAX44-add-the-0-7-9-marginal-cost-and-paired-productio/.agentplane/tasks/202609121424-3YAX44/blueprint/resolved-snapshot.json
+- old_digest: fa5bda7326628d77818e5607d9c82965c639b2adaac875c2abf479a7f619d50f
+- current_digest: fa5bda7326628d77818e5607d9c82965c639b2adaac875c2abf479a7f619d50f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609121424-3YAX44
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609121424-3YAX44
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
