@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 39
+revision: 40
 origin:
   system: "manual"
 depends_on: []
@@ -34,29 +34,31 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-13T00:13:45.303Z"
+  updated_at: "2026-09-13T00:46:42.373Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "eb6e3c0b6b971928f83e5d84ae8db31ef13ab7a1"
+  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  evaluated_sha: "4ae8f226a69afecb99af84a8396d9b2fd90e2702"
   blueprint_digest: "ca972e9d6960b8448cbddbc38dfa12ba169f4bacda7ac2e4c57410397cf1c585"
   evidence_refs:
-    - ".agentplane/tasks/202609122236-JFNN6B/quality/20260913-001224128-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609122236-JFNN6B/quality/20260913-001224128-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609122236-JFNN6B/quality/objects/sha256/f04f628a684122a3026a9dc5dc2fdcb8029d03bad56f9173fc159702e2400a6e.md"
-    - ".agentplane/tasks/202609122236-JFNN6B/quality/20260913-001224128-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609122236-JFNN6B/quality/20260913-001224128-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609122236-JFNN6B/quality/20260913-001224128-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609122236-JFNN6B/quality/20260913-004504670-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609122236-JFNN6B/quality/20260913-004504670-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609122236-JFNN6B/quality/objects/sha256/641fe8301cea21b831c12722926934013a2904402679c390fb6faf83ff8b9e80.md"
+    - ".agentplane/tasks/202609122236-JFNN6B/quality/20260913-004504670-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609122236-JFNN6B/quality/20260913-004504670-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609122236-JFNN6B/quality/20260913-004504670-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609122236-JFNN6B/README.md"
-    - ".agentplane/tasks/202609122236-JFNN6B/quality/objects/sha256/60139576ecdbc1b4e0cb4c8a10b1829fb93e6ab00d3d2406bb7bbaa5ab9925cd.patch"
-    - ".agentplane/tasks/202609122236-JFNN6B/quality/objects/sha256/48733dfb6d54ec4b14bf700c9d28004337f7d0c5a531e0ad49ffce33dbb03c2c.json"
-    - ".agentplane/tasks/202609122236-JFNN6B/verification/20260913000745222-ee6c7884cd80e39b.json"
+    - ".agentplane/tasks/202609122236-JFNN6B/quality/objects/sha256/37a7c521cb68ab65ad7dd31265013466c270b018ae485ee98350cc44a6d3dfb3.patch"
+    - ".agentplane/tasks/202609122236-JFNN6B/quality/objects/sha256/8d6fd252eeb92f2e6a2e0d7743aab502bce326917c327688070cc48e0771c75e.json"
+    - ".agentplane/tasks/202609122236-JFNN6B/verification/20260913004348447-e0a20fe5276be03a.json"
     - ".agentplane/tasks/202609122236-JFNN6B/quality/objects/sha256/ee9a3c8d5db971958ba65fbed4becea7dfb79c3922ae194785f386526462fa32.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The reviewed change matches the approved cleanup scope: model-specific diagnostics are removed, semantic prompt assertions remain, all nine safety-critical CLI files remain in the critical route, and all five benchmark files move to qualification. Frozen verification records report passing required checks and repeated critical runs."
+    - "The final diff removes only the model-specific prompt diagnostics, their self-tests, the fixed-byte assertion, and the duplicate threshold guard; it preserves model-neutral prompt compiler and validation behavior, retains all nine non-benchmark critical CLI files, and moves exactly five agent-efficiency files into the explicit qualification suite."
+    - "The rework removes a redundant internal re-export from model.ts while index.ts continues to export PROMPT_MODULE_CONTRACT_SCHEMA_VERSION directly from schema.ts, so it fixes the zero-unused-export Knip budget without reducing the public prompt-module surface."
+    - "Residual risk: Hosted CI must rerun on the new implementation head before merge; the prior hosted failure covered the superseded head."
 token_usage:
   agent_runs: 15
   input_tokens: 316419
@@ -548,7 +550,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-13T00:43:52.982Z"
+doc_updated_at: "2026-09-13T00:46:42.408Z"
 doc_updated_by: "SUPERVISOR"
 description: "Remove unused GPT-5.5/GPT-5.6 prompt diagnostic implementations and self-tests, retain the prompt module compiler and model-neutral behavioral contracts, remove the historical fixed-byte assertion while retaining semantic prompt assertions, remove the duplicate coverage-threshold configuration guard, and route agent-efficiency benchmark tests to a separate qualification suite instead of the normal critical CLI gate. Preserve exit-code, scope, symlink, protected-path, trust-boundary, task-centric, and context critical tests. Reduce critical suite process overhead only if the resulting suite passes repeatedly. Avoid files currently modified by tasks 202609080727-BAWTEE and 202609121424-T83XJA. Do not modify benchmark fixtures or semantic gateway implementation."
 sections:
@@ -1518,7 +1520,7 @@ extensions:
       revision: 4
       schema_version: 1
       task_id: "202609122236-JFNN6B"
-    event_cursor: 29
+    event_cursor: 30
     final_validation:
       evidence:
         -
@@ -3199,9 +3201,9 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202609122236-JFNN6B"
-    revision: 39
+    revision: 40
     schema_version: 1
-    updated_at: "2026-09-13T00:43:52.978Z"
+    updated_at: "2026-09-13T00:43:52.982Z"
     work_items:
       work-item-cleanup:
         attempt: 1
@@ -4077,6 +4079,30 @@ extensions:
         mutation_id: "compatibility:sha256:e7ffc341c3b99a34892785cd9fa8f1348df2f2a728ce53ad56ee0381de293e0e"
         next_revision: 35
         previous_revision: 34
+        schema_version: 1
+        task_id: "202609122236-JFNN6B"
+      compatibility:sha256:eda316ad983a5096eb712df90f6045c0302f62bac997b966c6120a0910fa7b49:
+        aggregate_digest: "sha256:1e7e3eebbb83cd6e96c61b659e0146338f04ef6b6fd7facde5944b40fed8ad75"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T00:43:52.982Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_67ac944adfbc11cd69cef39a"
+          mutation_id: "compatibility:sha256:eda316ad983a5096eb712df90f6045c0302f62bac997b966c6120a0910fa7b49"
+          plan_digest: "sha256:395e3263f50efcbc3a42c35b2389f51b3b009827549efdcdd70afb70473535f1"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609122236-JFNN6B"
+          task_revision: 39
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:eda316ad983a5096eb712df90f6045c0302f62bac997b966c6120a0910fa7b49"
+        next_revision: 40
+        previous_revision: 39
         schema_version: 1
         task_id: "202609122236-JFNN6B"
       compatibility:sha256:f0d1a076ff96dd84335c9de6b87c311063c9e5c072d4574192231d44f10f0da2:
