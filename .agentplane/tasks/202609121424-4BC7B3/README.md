@@ -4,7 +4,7 @@ title: "Qualify and document the 0.7.9 stabilization candidate for ST-18 through
 status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -239,6 +239,12 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. M01 cannot be materialized or executed from the issued packet because required campaign identities and trusted live authority are absent. Recommended action: Split the work at the authority boundary. First, have the operator pin the numeric USD limit, cost basis, model and effort, exact three-task corpus and oracle, three immutable product artifacts, transport allocation, randomized pilot order, and fixed confirmation rule. Then issue a fresh WorkOrder with provider dispatch and credential authority and either a trusted launcher dependency or authority service. Execute each planned attempt once, retain failures, and report NOT ESTABLISHED whenever coverage remains insufficient. Agentplane receipt: external-agent-blocker/tr_54e19a92f915fd9bed95c10a755afc0c/sha256:e0032486587be5f54acc3aaf6d2de7d3f62460c2d6069d8df93f6e8c5a6a809b."
+  -
+    author: "HOST:codex:USER"
+    body: "The user clarified that execution uses the existing ChatGPT Pro Codex subscription. No API credential, separate provider billing, or purchased credits are involved. Current account readback shows planType=pro, Codex weekly usage usedPercent=22, credits.hasCredits=false, credits.balance=0, and spendControlReached=false. Resume with a strict external spend cap of USD 0. Use only included Codex subscription allowance. Do not buy credits or use an API key."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The release owner replaced the paid-cost M01 assumption with subscription token accounting and disabled usage restrictions for 0.7.9, so the current WorkItem contract requires refinement before repository evidence can be written. Recommended action: Replace the M01 WorkItem with a token-accounting disposition. Record the current exact product identity and provider token field coverage. Mark Q02 NOT ESTABLISHED without an efficiency claim. Record the release owner's acceptance of that measurement debt. Keep token usage unrestricted by AgentPlane for 0.7.9. Agentplane receipt: external-agent-blocker/tr_0f1a9face2f308ea1fb552b62af0812b/sha256:0e5efc467cde01e78b12cea75039a43fdd75f6d711000fea2f1c72a154abd0ab."
 events:
   -
     type: "status"
@@ -276,8 +282,22 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. M01 cannot be materialized or executed from the issued packet because required campaign identities and trusted live authority are absent. Recommended action: Split the work at the authority boundary. First, have the operator pin the numeric USD limit, cost basis, model and effort, exact three-task corpus and oracle, three immutable product artifacts, transport allocation, randomized pilot order, and fixed confirmation rule. Then issue a fresh WorkOrder with provider dispatch and credential authority and either a trusted launcher dependency or authority service. Execute each planned attempt once, retain failures, and report NOT ESTABLISHED whenever coverage remains insufficient. Agentplane receipt: external-agent-blocker/tr_54e19a92f915fd9bed95c10a755afc0c/sha256:e0032486587be5f54acc3aaf6d2de7d3f62460c2d6069d8df93f6e8c5a6a809b."
+  -
+    type: "status"
+    at: "2026-09-13T18:58:48.418Z"
+    author: "HOST:codex:USER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "The user clarified that execution uses the existing ChatGPT Pro Codex subscription. No API credential, separate provider billing, or purchased credits are involved. Current account readback shows planType=pro, Codex weekly usage usedPercent=22, credits.hasCredits=false, credits.balance=0, and spendControlReached=false. Resume with a strict external spend cap of USD 0. Use only included Codex subscription allowance. Do not buy credits or use an API key."
+  -
+    type: "status"
+    at: "2026-09-13T19:06:20.667Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The release owner replaced the paid-cost M01 assumption with subscription token accounting and disabled usage restrictions for 0.7.9, so the current WorkItem contract requires refinement before repository evidence can be written. Recommended action: Replace the M01 WorkItem with a token-accounting disposition. Record the current exact product identity and provider token field coverage. Mark Q02 NOT ESTABLISHED without an efficiency claim. Record the release owner's acceptance of that measurement debt. Keep token usage unrestricted by AgentPlane for 0.7.9. Agentplane receipt: external-agent-blocker/tr_0f1a9face2f308ea1fb552b62af0812b/sha256:0e5efc467cde01e78b12cea75039a43fdd75f6d711000fea2f1c72a154abd0ab."
 doc_version: 3
-doc_updated_at: "2026-09-13T18:48:19.729Z"
+doc_updated_at: "2026-09-13T19:06:20.667Z"
 doc_updated_by: "SUPERVISOR"
 description: "Source contract: agentplane-roadmap-r2 cards ST-18, ST-19, and ST-20. Build the exact clean installed candidate and run the frozen direct, branch, recovery, old-record, required PLANNER, and required EVALUATOR corpus. Then, under the user-approved spend and sandbox authority, execute the preregistered M01 paired pilot with complete all-attempt raw evidence and expand only by its fixed uncertainty rule; report NOT ESTABLISHED when coverage is insufficient. Record exact product and target SHAs separately. Finally document only observed 0.7.9 behavior and measurements and the 0.7.10 through 0.7.14 boundary. Do not weaken golden outcomes, disable Blueprint writers, omit required stages, rerun until green, or claim unsupported efficiency. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: package tarball check, local install smoke, release critical suite, benchmark check and replay check, documentation bootstrap and onboarding checks, plus exact evidence review."
 sections:
@@ -909,7 +929,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609121424-4BC7B3"
-    event_cursor: 9
+    event_cursor: 11
     final_validation: null
     id: "202609121424-4BC7B3"
     intent:
@@ -959,9 +979,9 @@ extensions:
     lifecycle: "BLOCKED"
     plan_amendments: []
     plan_history: []
-    revision: 13
+    revision: 15
     schema_version: 1
-    updated_at: "2026-09-13T18:48:19.729Z"
+    updated_at: "2026-09-13T19:06:20.667Z"
     work_items:
       document-stabilization-boundary:
         attempt: 0
@@ -1251,6 +1271,30 @@ extensions:
         previous_revision: 5
         schema_version: 1
         task_id: "202609121424-4BC7B3"
+      compatibility:sha256:c99a0dc1a8f9e9467aec4cd14a1916611bc60598220945e41274159d73e78e4a:
+        aggregate_digest: "sha256:c53135b0065025423620d2defd398b80549cd20efffc488ca5c821a1208017e0"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T19:06:20.667Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_25aabe99ba8358def35d0c9b"
+          mutation_id: "compatibility:sha256:c99a0dc1a8f9e9467aec4cd14a1916611bc60598220945e41274159d73e78e4a"
+          plan_digest: "sha256:d6f15a7814a25b8ee8680aed0f2a48ed6eccdb956ce2d2b288ef2a573eb22190"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-4BC7B3"
+          task_revision: 14
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:c99a0dc1a8f9e9467aec4cd14a1916611bc60598220945e41274159d73e78e4a"
+        next_revision: 15
+        previous_revision: 14
+        schema_version: 1
+        task_id: "202609121424-4BC7B3"
       compatibility:sha256:dab724360fb18164a494278b798e8cd0cb1d295b6379e9f4269590f9b6a216bb:
         aggregate_digest: "sha256:96339fcd120e21741722429ef959ffa3b320148716102c1df97bc2b537281a01"
         event:
@@ -1297,6 +1341,30 @@ extensions:
         mutation_id: "compatibility:sha256:e36635b19930b3f093b5e235aada2613356d81133a57c7cd2ad03f2f0c0506e6"
         next_revision: 8
         previous_revision: 7
+        schema_version: 1
+        task_id: "202609121424-4BC7B3"
+      compatibility:sha256:f368660db3e8eaa9797b4615572bfd4f1c43553f0f96c66135ab3cf71ef8f36f:
+        aggregate_digest: "sha256:1b0a91c6ee24cf9f544ed87306bdf82fb1befcd335e0b3b8a3e01b86f1d1a565"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T18:58:48.418Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_a82f2f2d8c5d9e1bdf2125b3"
+          mutation_id: "compatibility:sha256:f368660db3e8eaa9797b4615572bfd4f1c43553f0f96c66135ab3cf71ef8f36f"
+          plan_digest: "sha256:d6f15a7814a25b8ee8680aed0f2a48ed6eccdb956ce2d2b288ef2a573eb22190"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-4BC7B3"
+          task_revision: 13
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:f368660db3e8eaa9797b4615572bfd4f1c43553f0f96c66135ab3cf71ef8f36f"
+        next_revision: 14
+        previous_revision: 13
         schema_version: 1
         task_id: "202609121424-4BC7B3"
       compatibility:sha256:f47a5f1babbf2237bdc5b1bbbc9908707f31c9028d1fc4ba1fc244fe1257f717:
