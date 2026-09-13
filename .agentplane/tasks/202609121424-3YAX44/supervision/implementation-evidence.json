@@ -1,0 +1,47 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 3aab37424c92672d1246bf766317de9a1800105e..31a8959fee6aa84f518efb530adf85a04279d07b",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 3aab37424c92672d1246bf766317de9a1800105e..31a8959fee6aa84f518efb530adf85a04279d07b",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202609121424-3YAX44/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609121424-3YAX44/pr/github-body.md",
+        "M\t.agentplane/tasks/202609121424-3YAX44/pr/meta.json",
+        "M\t.agentplane/tasks/202609121424-3YAX44/pr/review.md",
+        "M\tscripts/bench/task-marginal-cost.test.mjs"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "3aab37424c92672d1246bf766317de9a1800105e",
+  "implementation_commit": "31a8959fee6aa84f518efb530adf85a04279d07b",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [],
+    "classification": [],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609121424-3YAX44"
+}
