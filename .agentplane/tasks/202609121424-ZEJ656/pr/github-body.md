@@ -15,14 +15,14 @@ Source contract: agentplane-roadmap-r2 cards ST-06 and ST-07. Preserve required 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-13T03:15:59.993Z
+- Updated: 2026-09-13T17:28:08.451Z
 - Branch: task/202609121424-ZEJ656/conserve-0-7-9-semantic-requirements-and-managed
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

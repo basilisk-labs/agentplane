@@ -2,10 +2,13 @@
   "checks": [
     {
       "check_ids": [
-        "requirement_conservation"
+        "requirement_conservation",
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
       ],
       "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts",
-      "duration_ms": 1850,
+      "duration_ms": 1839,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
@@ -16,14 +19,17 @@
       },
       "script": "test:project",
       "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts\n",
-      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-ZEJ656-conserve-0-7-9-semantic-requirements-and-managed\n\n\n Test Files  1 passed (1)\n      Tests  2 passed (2)\n   Start at  20:27:25\n   Duration  1.48s (transform 1.08s, setup 0ms, import 1.41s, tests 12ms, environment 0ms)\n\n"
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-ZEJ656-conserve-0-7-9-semantic-requirements-and-managed\n\n\n Test Files  1 passed (1)\n      Tests  2 passed (2)\n   Start at  20:28:12\n   Duration  1.46s (transform 1.07s, setup 0ms, import 1.39s, tests 11ms, environment 0ms)\n\n"
     },
     {
       "check_ids": [
-        "output_parity"
+        "output_parity",
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
       ],
       "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts",
-      "duration_ms": 3330,
+      "duration_ms": 3350,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
@@ -34,14 +40,17 @@
       },
       "script": "test:project",
       "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts\n",
-      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-ZEJ656-conserve-0-7-9-semantic-requirements-and-managed\n\n\n Test Files  1 passed (1)\n      Tests  10 passed (10)\n   Start at  20:27:26\n   Duration  2.98s (transform 1.07s, setup 0ms, import 1.39s, tests 1.53s, environment 0ms)\n\n"
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-ZEJ656-conserve-0-7-9-semantic-requirements-and-managed\n\n\n Test Files  1 passed (1)\n      Tests  10 passed (10)\n   Start at  20:28:14\n   Duration  3.00s (transform 1.06s, setup 0ms, import 1.40s, tests 1.55s, environment 0ms)\n\n"
     },
     {
       "check_ids": [
-        "related_context_transport"
+        "related_context_transport",
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
       ],
       "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context packages/agentplane/src/runner/adapters",
-      "duration_ms": 27139,
+      "duration_ms": 26953,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
@@ -52,14 +61,17 @@
       },
       "script": "test:project",
       "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/runner/context packages/agentplane/src/runner/adapters\n",
-      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-ZEJ656-conserve-0-7-9-semantic-requirements-and-managed\n\n\n Test Files  15 passed (15)\n      Tests  183 passed (183)\n   Start at  20:27:30\n   Duration  26.77s (transform 1.20s, setup 0ms, import 4.90s, tests 20.96s, environment 1ms)\n\n"
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-ZEJ656-conserve-0-7-9-semantic-requirements-and-managed\n\n\n Test Files  15 passed (15)\n      Tests  183 passed (183)\n   Start at  20:28:17\n   Duration  26.58s (transform 1.19s, setup 0ms, import 4.93s, tests 20.78s, environment 1ms)\n\n"
     },
     {
       "check_ids": [
-        "typecheck"
+        "typecheck",
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
       ],
       "command": "bun run typecheck",
-      "duration_ms": 281,
+      "duration_ms": 271,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
@@ -74,10 +86,13 @@
     },
     {
       "check_ids": [
-        "schema_mirrors"
+        "schema_mirrors",
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
       ],
       "command": "bun run schemas:check && bun run agents:check",
-      "duration_ms": 425,
+      "duration_ms": 423,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
@@ -89,11 +104,32 @@
       "script": null,
       "stderr_tail": "$ bun scripts/generate/sync-schemas.mjs check\n\n$ node scripts/generate/sync-agent-templates.mjs check\n",
       "stdout_tail": "schemas OK\n\nagents templates OK\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "task_outcome"
+      ],
+      "command": "bun run ci:local:full",
+      "duration_ms": 139183,
+      "exit_code": 1,
+      "runtime": {
+        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "ci:local:full",
+      "stderr_tail": "$ node scripts/checks/run-local-ci.mjs --mode full\n$ node scripts/checks/run-typescript-build.mjs && bun run --filter=@agentplaneorg/core build:bundle && bun run --filter=@agentplaneorg/recipes build:bundle && bun run --filter=agentplane build:bundle\n$ prettier . --check\n$ bun scripts/generate/sync-schemas.mjs check\n$ node scripts/generate/sync-agent-templates.mjs check\n$ node scripts/checks/check-policy-routing.mjs\n$ node scripts/release/check-release-parity.mjs\n$ node scripts/checks/check-cli-reference-fresh.mjs\n$ node scripts/checks/check-recipes-inventory-fresh.mjs\n$ node scripts/generate/generate-scripts-readme.mjs --check\n$ node scripts/checks/check-agent-onboarding-scenario.mjs\n$ node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 && node scripts/checks/check-oversized-test-baseline.mjs --threshold-lines 1000\n$ node scripts/checks/check-vitest-projects.mjs\n$ eslint packages scripts eslint.config.cjs vitest.config.ts\nerror: script \"lint:core\" exited with code 1\nnode:internal/errors:985\n  const err = new Error(message);\n              ^\n\nError: Command failed: bun run lint:core\n    at genericNodeError (node:internal/errors:985:15)\n    at wrappedFn (node:internal/errors:539:14)\n    at checkExecSyncError (node:child_process:925:11)\n    at execFileSync (node:child_process:961:15)\n    at run (file:///Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-ZEJ656-conserve-0-7-9-semantic-requirements-and-managed/scripts/checks/run-local-ci-group.mjs:4:32)\n    at bunScript (file:///Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-ZEJ656-conserve-0-7-9-semantic-requirements-and-managed/scripts/checks/run-local-ci-group.mjs:5:29)\n    at Object.core (file:///Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-ZEJ656-conserve-0-7-9-semantic-requirements-and-managed/scripts/checks/run-local-ci-group.mjs:28:5)\n    at file:///Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-ZEJ656-conserve-0-7-9-semantic-requirements-and-managed/scripts/checks/run-local-ci-group.mjs:72:14\n    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)\n    at async node:internal/modules/esm/loader:643:26 {\n  status: 1,\n  signal: null,\n  output: [ null, null, null ],\n  pid: 90655,\n  stdout: null,\n  stderr: null\n}\n\nNode.js v24.18.0\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic --timeout-ms 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":false,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":22698},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":16811},{\"id\":\"core\",\"exit_code\":1,\"timed_out\":false,\"duration_ms\":56567},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":38350}]}\nfile:///Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-ZEJ656-conserve-0-7-9-semantic-requirements-and-managed/scripts/checks/run-local-ci.mjs:525\n  if (!ok) throw new Error(\"Full verification group failed.\");\n                 ^\n\nError: Full verification group failed.\n    at runFullFastPath (file:///Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-ZEJ656-conserve-0-7-9-semantic-requirements-and-managed/scripts/checks/run-local-ci.mjs:525:18)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async file:///Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-ZEJ656-conserve-0-7-9-semantic-requirements-and-managed/scripts/checks/run-local-ci.mjs:600:7\n\nNode.js v24.18.0\nerror: script \"ci:local:full\" exited with code 1\n",
+      "stdout_tail": "/cli/run-cli.core.route-decision.test.ts: 1074 lines\n- packages/agentplane/src/cli/run-cli.core.test.ts: 1046 lines\n- packages/agentplane/src/commands/doctor.command.runtime.test.ts: 1037 lines\nHotspot threshold check passed (runtime: warn>400, error>600; tests: warn>1000, error>1300).\nOversized test baseline OK (10 entries, 11285 total lines, threshold>1000).\nvitest workspace projects OK\ntest routing OK (801 tests, 10 primary routes)\n\n== core (56567ms) ==\n\n/Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-ZEJ656-conserve-0-7-9-semantic-requirements-and-managed/packages/agentplane/src/runner/adapters/codex-result-transport.ts\n  242:33  error  Unsafe return of a value of type `any`  @typescript-eslint/no-unsafe-return\n\n/Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-ZEJ656-conserve-0-7-9-semantic-requirements-and-managed/packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts\n  359:17  error  Unsafe assignment of an `any` value                       @typescript-eslint/no-unsafe-assignment\n  374:67  error  Do not access a member directly from an await expression  unicorn/no-await-expression-member\n\n✖ 3 problems (3 errors, 0 warnings)\n\n\n== cli (38350ms) ==\nCLI cold-start baseline OK using fixture local-basic (quickstart median=190.938ms (threshold=5000ms, p95=190.938ms); task_list median=222.916ms (threshold=10000ms, p95=222.916ms); task_search median=203.04ms (threshold=6000ms, p95=203.04ms); task_next median=203.533ms (threshold=8000ms, p95=203.533ms); preflight_quick median=222.62ms (threshold=6000ms, p95=222.62ms))\nVitest suite critical-cli: chunk 1/5 (2 files): packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts, packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts\nVitest suite critical-cli: chunk 1/5 passed in 7391ms (Test Files  2 passed (2); Tests  3 passed (3); Duration  7.15s (transform 3.53s, setup 0ms, import 2.96s, tests 6.72s, environment 0ms))\nVitest suite critical-cli: chunk 2/5 (2 files): packages/agentplane/src/cli/run-cli.critical.git-edge.test.ts, packages/agentplane/src/cli/run-cli.critical.protected-paths.test.ts\nVitest suite critical-cli: chunk 2/5 passed in 3021ms (Test Files  2 passed (2); Tests  5 passed (5); Duration  2.86s (transform 2.17s, setup 0ms, import 2.85s, tests 2.38s, environment 0ms))\nVitest suite critical-cli: chunk 3/5 (2 files): packages/agentplane/src/cli/run-cli.critical.scope-leak.test.ts, packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts\nVitest suite critical-cli: chunk 3/5 passed in 3145ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  2.98s (transform 2.19s, setup 0ms, import 2.88s, tests 2.51s, environment 0ms))\nVitest suite critical-cli: chunk 4/5 (2 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts, packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 4/5 passed in 18110ms (Test Files  2 passed (2); Tests  6 passed (6); Duration  17.93s (transform 3.24s, setup 0ms, import 2.81s, tests 16.71s, environment 0ms))\nVitest suite critical-cli: chunk 5/5 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 5/5 passed in 4984ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  4.83s (transform 1.13s, setup 0ms, import 1.37s, tests 3.40s, environment 0ms))\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":false,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":22698},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":16811},{\"id\":\"core\",\"exit_code\":1,\"timed_out\":false,\"duration_ms\":56567},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":38350}]}\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":138957,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":1,\"build_invocations\":1,\"ok\":false}\n"
     }
   ],
   "kind": "direct_task_declared_checks",
-  "reason": null,
+  "reason": "Declared check failed: bun run ci:local:full",
   "schema_version": 1,
-  "status": "passed",
+  "status": "failed",
   "task_id": "202609121424-ZEJ656"
 }
