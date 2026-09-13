@@ -15,8 +15,13 @@ Source contract: agentplane-roadmap-r2 cards ST-14, ST-15, and ST-16. Measure ma
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified committed implementation 0cc76b3c323d; all selected local checks passed and no paid
+provider call was executed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

@@ -4,7 +4,7 @@ title: "Add the 0.7.9 marginal-cost and paired production benchmark harness for 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -27,10 +27,10 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-09-13T08:39:05.585Z"
+  updated_by: "CODER"
+  note: "Verified committed implementation 0cc76b3c323d; all selected local checks passed and no paid provider call was executed."
   attempts: 0
 execution_route:
   frozen: true
@@ -86,11 +86,36 @@ execution_contract:
       - "scripts/lib/agent-efficiency-repository-snapshot.mjs"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "scripts"
+    changed_paths:
+      - "scripts/bench/paired-production-driver.mjs"
+      - "scripts/bench/paired-production-driver.test.mjs"
+      - "scripts/bench/paired-result-report.mjs"
+      - "scripts/bench/paired-result-report.test.mjs"
+      - "scripts/bench/task-marginal-cost.test.mjs"
+      - "scripts/lib/agent-efficiency-repository-snapshot.mjs"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "verification-record"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -123,19 +148,30 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:292822ea1a8ce2d46c7c0723cf0de74f122f26368b2144b7230f0d587b0a306c"
+      digest: "sha256:bcc0ae60806f9caa539f1726df48e27cb68e727ec6761fcfcdd9ded65b45c2e0"
       escalation_reasons:
         - "central_component:scripts/lib/agent-efficiency-repository-snapshot.mjs"
+        - "central_path:scripts/lib/agent-efficiency-repository-snapshot.mjs"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "scripts"
+        changed_files:
+          - "scripts/bench/paired-production-driver.mjs"
+          - "scripts/bench/paired-production-driver.test.mjs"
+          - "scripts/bench/paired-result-report.mjs"
+          - "scripts/bench/paired-result-report.test.mjs"
+          - "scripts/bench/task-marginal-cost.test.mjs"
+          - "scripts/lib/agent-efficiency-repository-snapshot.mjs"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -167,11 +203,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "0cc76b3c323da62a9c18eb946438e49e5d6c204a"
+  message: "🧹 3YAX44 performance: satisfy benchmark lint contracts"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation committed at 0cc76b3c323da62a9c18eb946438e49e5d6c204a after focused checks and full local CI passed."
 events:
   -
     type: "status"
@@ -180,8 +221,22 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "verify"
+    at: "2026-09-13T08:39:05.585Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified committed implementation 0cc76b3c323d; all selected local checks passed and no paid provider call was executed."
+  -
+    type: "status"
+    at: "2026-09-13T08:39:37.088Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed at 0cc76b3c323da62a9c18eb946438e49e5d6c204a after focused checks and full local CI passed."
+    commit: "0cc76b3c323da62a9c18eb946438e49e5d6c204a"
 doc_version: 3
-doc_updated_at: "2026-09-13T08:00:01.265Z"
+doc_updated_at: "2026-09-13T08:39:37.088Z"
 doc_updated_by: "CODER"
 description: "Source contract: agentplane-roadmap-r2 cards ST-14, ST-15, and ST-16. Measure marginal Git and artifact cost in the existing fixture harness, add one production-path paired driver using current isolation and evidence utilities, and report all-attempt cost per independently verified success with paired outcomes, success and violation rates, stage distributions, coverage, and uncertainty. Enforce matched target tree, product artifacts, model, effort, authority, checks, retries, runtime profile, verifier, and raw cost. Managed and external modes remain stratified. Unknown charges prevent a complete numeric claim; all-failed arms yield no finite success score. Do not execute paid calls in this task and do not reinterpret historical baselines. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: node --test scripts/bench/task-marginal-cost.test.mjs; node --test scripts/bench/paired-production-driver.test.mjs; node --test scripts/bench/paired-result-report.test.mjs; existing benchmark replay checks and relevant release critical checks."
 sections:
@@ -204,6 +259,60 @@ sections:
     8. Compare the final diff with ST-14, ST-15, and ST-16. Expected: no paid provider call, historical-baseline rewrite, or committed agentplane-roadmap-r2 path.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-13T08:39:05.585Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified committed implementation 0cc76b3c323d; all selected local checks passed and no paid provider call was executed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:93df6d7884039c4c5baee54698f9ffe9df351e6c3477958323f36c6d3dd52777, input_digest=sha256:a5f0583db996c2964a542bca9f7470e2bdab80266bd2dd9d761ccea8a8388633
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: node --test scripts/bench/task-marginal-cost.test.mjs scripts/bench/paired-production-driver.test.mjs scripts/bench/paired-result-report.test.mjs
+    Result: pass
+    Evidence: 13 focused tests passed on committed HEAD 0cc76b3c323da62a9c18eb946438e49e5d6c204a.
+    Scope: ST-14 marginal cost, ST-15 paired driver, and ST-16 fail-closed report contracts.
+
+    Check: critical_paths
+    Command: bun run bench:agent-efficiency:replay:check && bun run test:agent-efficiency:qualification && bun run bench:agent-efficiency:check && bun run typecheck
+    Result: pass
+    Evidence: RF-04 replay 50 runs and 70 outcomes passed; qualification 61 tests passed; baseline 10 scenarios passed; TypeScript build passed.
+    Scope: immutable benchmark, qualification, historical baseline, and type contracts.
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: full local CI passed on 0cc76b3c323d, including core, runtime, CLI, docs/schema, docs site, workflow lint, Windows-critical 98 tests, and significant coverage 101 tests.
+    Scope: repository full local regression selected by the persisted verification contract.
+
+    Check: task_outcome
+    Command: git show --name-status 0cc76b3c323d^..0cc76b3c323d && git status --short
+    Result: pass
+    Evidence: task worktree is clean; the two task commits contain only the canonical 3YAX44 task artifacts and scoped scripts; agentplane-roadmap-r2 is absent; no paid provider call was executed.
+    Scope: approved task outcome and source-only roadmap exclusion.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-3YAX44-add-the-0-7-9-marginal-cost-and-paired-productio/.agentplane/tasks/202609121424-3YAX44/blueprint/resolved-snapshot.json
+    - old_digest: fa5bda7326628d77818e5607d9c82965c639b2adaac875c2abf479a7f619d50f
+    - current_digest: fa5bda7326628d77818e5607d9c82965c639b2adaac875c2abf479a7f619d50f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609121424-3YAX44
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -781,7 +890,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609121424-3YAX44"
-    event_cursor: 4
+    event_cursor: 6
     final_validation: null
     id: "202609121424-3YAX44"
     intent:
@@ -811,9 +920,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 7
+    revision: 9
     schema_version: 1
-    updated_at: "2026-09-13T08:00:01.265Z"
+    updated_at: "2026-09-13T08:39:37.088Z"
     work_items:
       ST-14:
         attempt: 0
@@ -893,6 +1002,54 @@ extensions:
         mutation_id: "compatibility:sha256:5fefc34b4e8690517fbd27e61bc9c5de04ce5fa83f73cfc156b7e0cff5c65fbd"
         next_revision: 4
         previous_revision: 3
+        schema_version: 1
+        task_id: "202609121424-3YAX44"
+      compatibility:sha256:95392f210af96a6b0278c3b51bb6a0df5ffd4e5a87a71cd426cff3234b73f35f:
+        aggregate_digest: "sha256:c2a98507c8ca69d910091f2fd92cb25b563f753c96810f5a44f79d9ea79572c3"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T08:39:06.621Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_ae5119cd6d9593e1a77a1b89"
+          mutation_id: "compatibility:sha256:95392f210af96a6b0278c3b51bb6a0df5ffd4e5a87a71cd426cff3234b73f35f"
+          plan_digest: "sha256:9058c9f56183fcc658d347a916f3b9ee21711fabb6fc2f5125c6b3ed3f32004c"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-3YAX44"
+          task_revision: 7
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:95392f210af96a6b0278c3b51bb6a0df5ffd4e5a87a71cd426cff3234b73f35f"
+        next_revision: 8
+        previous_revision: 7
+        schema_version: 1
+        task_id: "202609121424-3YAX44"
+      compatibility:sha256:ab837acc30c1a607a62285c071acf87e8c23569d75516a0fd9055d4798c9d1f7:
+        aggregate_digest: "sha256:d0f3dc13709c33cc92a117d5cb65da1e966fcf19d02da21341dbba2b992a62d4"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T08:39:37.088Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_f998ddda131922ce6a9b33a4"
+          mutation_id: "compatibility:sha256:ab837acc30c1a607a62285c071acf87e8c23569d75516a0fd9055d4798c9d1f7"
+          plan_digest: "sha256:9058c9f56183fcc658d347a916f3b9ee21711fabb6fc2f5125c6b3ed3f32004c"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-3YAX44"
+          task_revision: 8
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:ab837acc30c1a607a62285c071acf87e8c23569d75516a0fd9055d4798c9d1f7"
+        next_revision: 9
+        previous_revision: 8
         schema_version: 1
         task_id: "202609121424-3YAX44"
       compatibility:sha256:d5ebe07ccc4cf2430d6ac75278cbe5e2259f78e57df1a0155e2292904d292062:
@@ -999,6 +1156,60 @@ Defined three dependency-ordered WorkItems for marginal task cost, a provider-fr
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-13T08:39:05.585Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified committed implementation 0cc76b3c323d; all selected local checks passed and no paid provider call was executed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:93df6d7884039c4c5baee54698f9ffe9df351e6c3477958323f36c6d3dd52777, input_digest=sha256:a5f0583db996c2964a542bca9f7470e2bdab80266bd2dd9d761ccea8a8388633
+
+Details:
+
+Check: affected_unit_integration
+Command: node --test scripts/bench/task-marginal-cost.test.mjs scripts/bench/paired-production-driver.test.mjs scripts/bench/paired-result-report.test.mjs
+Result: pass
+Evidence: 13 focused tests passed on committed HEAD 0cc76b3c323da62a9c18eb946438e49e5d6c204a.
+Scope: ST-14 marginal cost, ST-15 paired driver, and ST-16 fail-closed report contracts.
+
+Check: critical_paths
+Command: bun run bench:agent-efficiency:replay:check && bun run test:agent-efficiency:qualification && bun run bench:agent-efficiency:check && bun run typecheck
+Result: pass
+Evidence: RF-04 replay 50 runs and 70 outcomes passed; qualification 61 tests passed; baseline 10 scenarios passed; TypeScript build passed.
+Scope: immutable benchmark, qualification, historical baseline, and type contracts.
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: full local CI passed on 0cc76b3c323d, including core, runtime, CLI, docs/schema, docs site, workflow lint, Windows-critical 98 tests, and significant coverage 101 tests.
+Scope: repository full local regression selected by the persisted verification contract.
+
+Check: task_outcome
+Command: git show --name-status 0cc76b3c323d^..0cc76b3c323d && git status --short
+Result: pass
+Evidence: task worktree is clean; the two task commits contain only the canonical 3YAX44 task artifacts and scoped scripts; agentplane-roadmap-r2 is absent; no paid provider call was executed.
+Scope: approved task outcome and source-only roadmap exclusion.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-3YAX44-add-the-0-7-9-marginal-cost-and-paired-productio/.agentplane/tasks/202609121424-3YAX44/blueprint/resolved-snapshot.json
+- old_digest: fa5bda7326628d77818e5607d9c82965c639b2adaac875c2abf479a7f619d50f
+- current_digest: fa5bda7326628d77818e5607d9c82965c639b2adaac875c2abf479a7f619d50f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609121424-3YAX44
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
