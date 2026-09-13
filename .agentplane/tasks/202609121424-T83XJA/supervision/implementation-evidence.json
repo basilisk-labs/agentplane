@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 2edd81f3c794b614b8110a425bd2542822db4c79..bd379a43584c154e42589150d7307547179124f0",
+      "command": "git diff --check 5468ffce522cfdab7332ddbae6b092fd9b549733..6b57e1dd765723656edb188c02193c11cdea9035",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 2edd81f3c794b614b8110a425bd2542822db4c79..bd379a43584c154e42589150d7307547179124f0",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 5468ffce522cfdab7332ddbae6b092fd9b549733..6b57e1dd765723656edb188c02193c11cdea9035",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,14 +21,8 @@
         "M\t.agentplane/tasks/202609121424-T83XJA/pr/github-body.md",
         "M\t.agentplane/tasks/202609121424-T83XJA/pr/meta.json",
         "M\t.agentplane/tasks/202609121424-T83XJA/pr/review.md",
-        "A\tpackages/agentplane/src/commands/evaluator/evaluator-execute-subprocess.testkit.ts",
-        "M\tpackages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/lifecycle-stage-timing.ts",
-        "M\tpackages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
-        "A\tpackages/agentplane/src/commands/shared/supervisor-execution-observation.ts",
-        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-exchange.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-supervisor.ts"
+        "A\tpackages/core/src/runner/supervisor-execution-episode-timing.test.ts",
+        "M\tpackages/core/src/runner/supervisor-execution-episode.ts"
       ]
     },
     {
@@ -38,54 +32,15 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "2edd81f3c794b614b8110a425bd2542822db4c79",
-  "implementation_commit": "bd379a43584c154e42589150d7307547179124f0",
+  "execution_base_commit": "5468ffce522cfdab7332ddbae6b092fd9b549733",
+  "implementation_commit": "6b57e1dd765723656edb188c02193c11cdea9035",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [
-      " M packages/agentplane/src/commands/shared/lifecycle-stage-timing.ts",
-      " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
-      " M packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts",
-      " M packages/agentplane/src/commands/task/external-agent-exchange.ts",
-      " M packages/agentplane/src/commands/task/external-agent-supervisor.ts",
-      "?? packages/agentplane/src/commands/shared/supervisor-execution-observation.ts"
-    ],
-    "classification": [
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/shared/lifecycle-stage-timing.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/external-agent-exchange.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/external-agent-supervisor.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? packages/agentplane/src/commands/shared/supervisor-execution-observation.ts"
-      }
-    ],
+    "baseline": [],
+    "classification": [],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [
-      " M packages/agentplane/src/commands/shared/lifecycle-stage-timing.ts",
-      " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
-      " M packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts",
-      " M packages/agentplane/src/commands/task/external-agent-exchange.ts",
-      " M packages/agentplane/src/commands/task/external-agent-supervisor.ts",
-      "?? packages/agentplane/src/commands/shared/supervisor-execution-observation.ts"
-    ],
+    "removed_after_execution_baseline": [],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
