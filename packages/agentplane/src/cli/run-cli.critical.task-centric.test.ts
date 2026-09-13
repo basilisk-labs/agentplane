@@ -89,6 +89,30 @@ async function writeResult(
 ): Promise<void> {
   if (!packet.exchange) throw new Error("Expected an external-agent exchange.");
   const workOrder = await readWorkOrder(packet);
+  const exchangePath = path.join(packet.exchange.directory, "exchange.json");
+  const exchange = JSON.parse(await readFile(exchangePath, "utf8")) as Record<string, unknown>;
+  exchange.host_usage = {
+    schema_version: 1,
+    observed_by: "host_transport",
+    state: "observed",
+    reason: null,
+    provider_usage: {
+      provider: "critical-test",
+      run_id: `run:${workOrder.work_order_id}`,
+      work_order_id: workOrder.work_order_id,
+      thread_id: `thread:${workOrder.work_order_id}`,
+      turn_id: `turn:${workOrder.work_order_id}`,
+    },
+    usage: {
+      input_tokens: 1,
+      output_tokens: 1,
+      total_tokens: 2,
+      visible_output_tokens: 1,
+      reasoning_tokens: 0,
+      cached_input_tokens: 0,
+    },
+  };
+  await writeFile(exchangePath, `${JSON.stringify(exchange, null, 2)}\n`, "utf8");
   await writeFile(
     packet.exchange.result_path,
     `${JSON.stringify(
