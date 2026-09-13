@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 32
+revision: 34
 origin:
   system: "manual"
 depends_on: []
@@ -166,6 +166,8 @@ execution_contract:
       - "packages/agentplane/src/commands/task/supervisor-budget-epoch.command.ts"
       - "packages/core/src/runner/supervisor-execution-episode.ts"
       - "packages/core/src/schemas/index.ts"
+      - "scripts/baselines/v0.7-compatibility-candidate.json"
+      - "scripts/checks/check-compatibility-contract-baseline.mjs"
       - "scripts/lib/test-route-registry.mjs"
     external_effects: []
     repository_effects:
@@ -218,7 +220,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:e7bdcf69e097746eff8d941d4de98d13fed9110346bcadfaa4f4218bbf65b1f0"
+      digest: "sha256:184ecc7ed4eccd967ee98cc1a64a068abbc031ef3eec83686096b401708180ea"
       escalation_reasons:
         - "central_component:packages/core/src/runner/supervisor-execution-episode.ts"
         - "central_component:packages/core/src/schemas/index.ts"
@@ -233,9 +235,11 @@ execution_contract:
         - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
         - "central_path:packages/core/src/runner/supervisor-execution-episode.ts"
         - "central_path:packages/core/src/schemas/index.ts"
+        - "central_path:scripts/checks/check-compatibility-contract-baseline.mjs"
         - "central_path:scripts/lib/test-route-registry.mjs"
         - "effect_schema"
         - "effect_security_boundary"
+        - "unknown_path:scripts/baselines/v0.7-compatibility-candidate.json"
       execution_groups:
         - "docs-schema"
         - "core"
@@ -261,6 +265,8 @@ execution_contract:
           - "packages/agentplane/src/commands/task/supervisor-budget-epoch.command.ts"
           - "packages/core/src/runner/supervisor-execution-episode.ts"
           - "packages/core/src/schemas/index.ts"
+          - "scripts/baselines/v0.7-compatibility-candidate.json"
+          - "scripts/checks/check-compatibility-contract-baseline.mjs"
           - "scripts/lib/test-route-registry.mjs"
         external_effects: []
         repository_effects:
@@ -301,7 +307,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "37ad5b999eed8154a0aa28027c58cdb94690756b"
+  message: "🚧 RMHWQ5 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -339,6 +347,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: scripts/checks/check-compatibility-contract-baseline.mjs; repository effects: unchanged."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 37ad5b999eed. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -414,8 +425,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. Regenerating the reviewed candidate exposes a second fail-closed boundary: the validator does not yet recognize the new CLI command and provenance. Recommended action: Authorize scripts/checks/check-compatibility-contract-baseline.mjs, add the exact new command and option provenance for task 202609130858-RMHWQ5, regenerate the candidate, and rerun both compatibility checks. Requested scope: roots=scripts/checks/check-compatibility-contract-baseline.mjs; repository effects=unchanged; request digest=sha256:2e3752be9ac1d134dbe9e9e9a28bd4830c7223457d6c6ccb78eb4871263945d4. Agentplane receipt: external-agent-blocker/tr_da117c5ec9fd5f725882b08132264375/sha256:182504389fec874c3e4a899020a0bc6c2a46608655d1ad79b1e8821c3896b10e/sha256:2e3752be9ac1d134dbe9e9e9a28bd4830c7223457d6c6ccb78eb4871263945d4."
+  -
+    type: "status"
+    at: "2026-09-13T14:53:50.573Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 37ad5b999eed. CLI accepted one state-bound external-agent semantic result."
+    commit: "37ad5b999eed8154a0aa28027c58cdb94690756b"
 doc_version: 3
-doc_updated_at: "2026-09-13T14:46:14.079Z"
+doc_updated_at: "2026-09-13T14:53:50.649Z"
 doc_updated_by: "SUPERVISOR"
 description: "When a supervisor episode stops because prior paid work has unavailable or unallocatable provider token telemetry, preserve that historical usage as unknown and continue to block automatic paid dispatch. Add a narrow operator command that accepts an explicit USER authorization, records durable state-bound provenance, and opens a new independently capped token budget epoch without rewriting prior operations or treating unknown usage as zero. Reject stale authorization, non-telemetry stops, missing active USER authority, replay with different parameters, and caps that are absent or invalid. The repaired ST-14 task must be able to resume through this command. Do not weaken actual human_review verdicts or automatic fail-closed admission."
 sections:
@@ -861,7 +880,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609130858-RMHWQ5"
-    event_cursor: 24
+    event_cursor: 26
     final_validation: null
     id: "202609130858-RMHWQ5"
     intent:
@@ -1339,9 +1358,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609130858-RMHWQ5"
-    revision: 32
+    revision: 34
     schema_version: 1
-    updated_at: "2026-09-13T14:46:14.079Z"
+    updated_at: "2026-09-13T14:53:50.592Z"
     work_items:
       budget-epoch-repair:
         attempt: 1
@@ -1981,6 +2000,30 @@ extensions:
         previous_revision: 24
         schema_version: 1
         task_id: "202609130858-RMHWQ5"
+      compatibility:sha256:bc4f0c6cf24a50f5e1e6bb2fbf1b2139aae2da8c6053ea0e2bc037b5a5f38493:
+        aggregate_digest: "sha256:8352e80cfe5104c397aaef9d1d758d15763cf19cc023c38f53c6a383a359076e"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T14:53:50.573Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_4e524bee6ceb1c39dc36dbf3"
+          mutation_id: "compatibility:sha256:bc4f0c6cf24a50f5e1e6bb2fbf1b2139aae2da8c6053ea0e2bc037b5a5f38493"
+          plan_digest: "sha256:3240f151dc9d04408ae11cf18a19b0dfa42f0de9817ead8c7e11b81eb7599ac1"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609130858-RMHWQ5"
+          task_revision: 32
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:bc4f0c6cf24a50f5e1e6bb2fbf1b2139aae2da8c6053ea0e2bc037b5a5f38493"
+        next_revision: 33
+        previous_revision: 32
+        schema_version: 1
+        task_id: "202609130858-RMHWQ5"
       compatibility:sha256:ca7c449cede95343bdb029439414ca0b14597ce1657a5b26e8d9ffba1e72f250:
         aggregate_digest: "sha256:3c9bb09d01f0bc266c5b74cb3b39bae594ad0f7484e3a3a04edb763608563ec4"
         event:
@@ -2051,6 +2094,30 @@ extensions:
         mutation_id: "compatibility:sha256:df27a90fa9d5ca0ede6b9192ab51667faf57cfdebaed1fe5d92977f382af54de"
         next_revision: 13
         previous_revision: 12
+        schema_version: 1
+        task_id: "202609130858-RMHWQ5"
+      compatibility:sha256:eac14e46e1bfa0ba4b214654f97910e2942809d26bf7afbdf9076c47ff15b22f:
+        aggregate_digest: "sha256:29a57d629afaaa814bfbc9080656999344f3435db7eca7c9806e02bb4d2ac667"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T14:53:50.592Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_056e26c56c7d680e29199951"
+          mutation_id: "compatibility:sha256:eac14e46e1bfa0ba4b214654f97910e2942809d26bf7afbdf9076c47ff15b22f"
+          plan_digest: "sha256:3240f151dc9d04408ae11cf18a19b0dfa42f0de9817ead8c7e11b81eb7599ac1"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609130858-RMHWQ5"
+          task_revision: 33
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:eac14e46e1bfa0ba4b214654f97910e2942809d26bf7afbdf9076c47ff15b22f"
+        next_revision: 34
+        previous_revision: 33
         schema_version: 1
         task_id: "202609130858-RMHWQ5"
       compatibility:sha256:fb25874dccd7edf4509ea15ad056d05437af90362abbe30046d578d3c0b9e1eb:
@@ -2226,8 +2293,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "ee342a5ddee6ab220c45d270e09921a5abbd2614"
-    message: "🚧 RMHWQ5 task: apply external agent result"
+    hash: "37ad5b999eed8154a0aa28027c58cdb94690756b"
   task_execution_context:
     base_ref: "main"
     base_sha: "d03a5e786db57136bf7f6c4661b148bcf97cfaf1"
