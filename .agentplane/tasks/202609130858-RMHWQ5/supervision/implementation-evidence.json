@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check e10d7788c17fa45cadb1be2241a731d26f30dfc6..acdefe5e2777725e94470b2842688e1c8f825cf0",
+      "command": "git diff --check 940c0f4103a6cde95b735eb007a19bd733dd94c6..ee342a5ddee6ab220c45d270e09921a5abbd2614",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,22 +13,18 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB e10d7788c17fa45cadb1be2241a731d26f30dfc6..acdefe5e2777725e94470b2842688e1c8f825cf0",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 940c0f4103a6cde95b735eb007a19bd733dd94c6..ee342a5ddee6ab220c45d270e09921a5abbd2614",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
+        "M\t.agentplane/tasks/202609130858-RMHWQ5/README.md",
         "M\t.agentplane/tasks/202609130858-RMHWQ5/pr/diffstat.txt",
         "M\t.agentplane/tasks/202609130858-RMHWQ5/pr/github-body.md",
         "M\t.agentplane/tasks/202609130858-RMHWQ5/pr/meta.json",
         "M\t.agentplane/tasks/202609130858-RMHWQ5/pr/review.md",
-        "M\tpackages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts",
-        "A\tpackages/agentplane/src/commands/shared/supervisor-execution-default-budget.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
-        "A\tpackages/agentplane/src/commands/task/scope-extend-legacy-compat.test.ts",
-        "M\tpackages/agentplane/src/commands/task/scope-extend.ts",
-        "M\tpackages/agentplane/src/commands/task/supervisor-budget-epoch.command.ts",
-        "M\tpackages/core/src/runner/supervisor-execution-episode.ts"
+        "A\t.agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json",
+        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
       ]
     },
     {
@@ -38,65 +34,29 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "e10d7788c17fa45cadb1be2241a731d26f30dfc6",
-  "implementation_commit": "acdefe5e2777725e94470b2842688e1c8f825cf0",
+  "execution_base_commit": "940c0f4103a6cde95b735eb007a19bd733dd94c6",
+  "implementation_commit": "ee342a5ddee6ab220c45d270e09921a5abbd2614",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
-      " M packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts",
-      " M packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts",
-      " M packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts",
-      " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
-      " M packages/agentplane/src/commands/task/scope-extend.test.ts",
-      " M packages/agentplane/src/commands/task/scope-extend.ts",
-      " M packages/agentplane/src/commands/task/supervisor-budget-epoch.command.ts",
-      " M packages/core/src/runner/supervisor-execution-episode.ts"
+      " M .agentplane/tasks/202609130858-RMHWQ5/README.md",
+      "?? .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json"
     ],
     "classification": [
       {
         "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts"
+        "line": " M .agentplane/tasks/202609130858-RMHWQ5/README.md"
       },
       {
         "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/scope-extend.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/scope-extend.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/supervisor-budget-epoch.command.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/core/src/runner/supervisor-execution-episode.ts"
+        "line": "?? .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
-      " M packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts",
-      " M packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts",
-      " M packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts",
-      " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
-      " M packages/agentplane/src/commands/task/scope-extend.test.ts",
-      " M packages/agentplane/src/commands/task/scope-extend.ts",
-      " M packages/agentplane/src/commands/task/supervisor-budget-epoch.command.ts",
-      " M packages/core/src/runner/supervisor-execution-episode.ts"
+      " M .agentplane/tasks/202609130858-RMHWQ5/README.md",
+      "?? .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json"
     ],
     "unchanged_from_execution_baseline": []
   },
