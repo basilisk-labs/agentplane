@@ -2,10 +2,10 @@
   "checks": [
     {
       "check_ids": [
-        "check-paired-driver"
+        "check-paired-report"
       ],
-      "command": "node --test scripts/bench/paired-production-driver.test.mjs",
-      "duration_ms": 1539,
+      "command": "node --test scripts/bench/paired-result-report.test.mjs",
+      "duration_ms": 226,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
@@ -16,7 +16,79 @@
       },
       "script": null,
       "stderr_tail": "",
-      "stdout_tail": "✔ runs the pinned three-arm task entrypoints offline and keeps transports stratified (973.812583ms)\n✔ rejects every mismatched run identity field (45.193583ms)\n✔ rejects missing or mismatched observed raw cost (173.899666ms)\n✔ requires a trusted authority callback before live execution (41.248375ms)\n✔ rejects an observed execution identity that differs from the campaign (85.668209ms)\nℹ tests 5\nℹ suites 0\nℹ pass 5\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1360.513958\n"
+      "stdout_tail": "✔ keeps failed-attempt cost in the numerator and pairs only equivalent successes (5.46625ms)\n✔ unknown charge prevents a complete numeric claim (0.209458ms)\n✔ an all-failed arm has no finite successful-result score (0.15325ms)\n✔ mismatched raw cost identity prevents numeric and efficiency claims (0.1645ms)\n✔ rejects outcome-mismatched successes from the paired population (0.173083ms)\n✔ keeps safety, activation, and efficiency gates independent (0.122292ms)\nℹ tests 6\nℹ suites 0\nℹ pass 6\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 46.12725\n"
+    },
+    {
+      "check_ids": [
+        "check-replay"
+      ],
+      "command": "bun run bench:agent-efficiency:replay:check",
+      "duration_ms": 278,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "bench:agent-efficiency:replay:check",
+      "stderr_tail": "$ node scripts/checks/check-agent-efficiency-replay.mjs\n",
+      "stdout_tail": "RF-04 replay baseline OK (50 runs; 70/70 outcomes; 27/27 provider token cells; 170/170 scalar cells; structural_sha256=sha256:006ddc6d2b8e8c350a879edeb7140d36dbbd31c0c745b96f57792871b9099ee4; diagnostics_sha256=sha256:01c7b81828826b44d18d0b6a26288ac62b031cf4e30242a421f77ec37b2ca44e)\n"
+    },
+    {
+      "check_ids": [
+        "check-qualification"
+      ],
+      "command": "bun run test:agent-efficiency:qualification",
+      "duration_ms": 39331,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "test:agent-efficiency:qualification",
+      "stderr_tail": "$ node scripts/checks/run-vitest-suite.mjs agent-efficiency-qualification\n",
+      "stdout_tail": "Vitest suite agent-efficiency-qualification: chunk 1/5 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts\nVitest suite agent-efficiency-qualification: chunk 1/5 passed in 12115ms (Test Files  1 passed (1); Tests  10 passed (10); Duration  11.86s (transform 1.08s, setup 0ms, import 1.41s, tests 10.38s, environment 0ms))\nVitest suite agent-efficiency-qualification: chunk 2/5 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts\nVitest suite agent-efficiency-qualification: chunk 2/5 passed in 7449ms (Test Files  1 passed (1); Tests  13 passed (13); Duration  7.29s (transform 1.12s, setup 0ms, import 1.41s, tests 5.83s, environment 0ms))\nVitest suite agent-efficiency-qualification: chunk 3/5 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts\nVitest suite agent-efficiency-qualification: chunk 3/5 passed in 1736ms (Test Files  1 passed (1); Tests  17 passed (17); Duration  1.55s (transform 1.11s, setup 0ms, import 1.39s, tests 102ms, environment 0ms))\nVitest suite agent-efficiency-qualification: chunk 4/5 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts\nVitest suite agent-efficiency-qualification: chunk 4/5 passed in 15791ms (Test Files  1 passed (1); Tests  11 passed (11); Duration  15.63s (transform 1.16s, setup 0ms, import 1.44s, tests 14.12s, environment 0ms))\nVitest suite agent-efficiency-qualification: chunk 5/5 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay.test.ts\nVitest suite agent-efficiency-qualification: chunk 5/5 passed in 2014ms (Test Files  1 passed (1); Tests  10 passed (10); Duration  1.84s (transform 1.17s, setup 0ms, import 1.48s, tests 290ms, environment 0ms))\n"
+    },
+    {
+      "check_ids": [
+        "check-baseline"
+      ],
+      "command": "bun run bench:agent-efficiency:check",
+      "duration_ms": 252,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "bench:agent-efficiency:check",
+      "stderr_tail": "$ node scripts/checks/check-agent-efficiency-baseline.mjs\n",
+      "stdout_tail": "Agent-efficiency baseline OK (10 RF-04 scenarios; 10 measured cost metrics; structural_sha256=sha256:a9b855c5887f697c21690d7386c627c555f8d46d7b083cab8c54636411e47351; timing_compared=false; summaries=0)\n"
+    },
+    {
+      "check_ids": [
+        "check-typecheck"
+      ],
+      "command": "bun run typecheck",
+      "duration_ms": 310,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
     }
   ],
   "kind": "direct_task_declared_checks",
