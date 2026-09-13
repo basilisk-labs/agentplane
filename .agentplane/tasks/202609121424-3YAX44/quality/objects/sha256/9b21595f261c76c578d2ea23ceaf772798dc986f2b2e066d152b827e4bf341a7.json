@@ -1,0 +1,160 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "node --test scripts/bench/paired-production-driver.test.mjs",
+    "node --test scripts/bench/paired-result-report.test.mjs",
+    "node --test scripts/bench/task-marginal-cost.test.mjs"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "components": [
+        "scripts/bench",
+        "scripts/lib/agent-efficiency-repository-snapshot.mjs"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:repository_write",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "scripts"
+      ],
+      "changed_files": [
+        "scripts/bench/paired-production-driver.mjs",
+        "scripts/bench/paired-production-driver.test.mjs",
+        "scripts/bench/paired-result-report.mjs",
+        "scripts/bench/paired-result-report.test.mjs",
+        "scripts/bench/task-marginal-cost.test.mjs",
+        "scripts/lib/agent-efficiency-repository-snapshot.mjs"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "full_regression",
+      "hosted_integration",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_component:scripts/lib/agent-efficiency-repository-snapshot.mjs",
+      "central_path:scripts/lib/agent-efficiency-repository-snapshot.mjs"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": false,
+    "digest": "sha256:bcc0ae60806f9caa539f1726df48e27cb68e727ec6761fcfcdd9ded65b45c2e0"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-09-13T15:38:32.194Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202609121424-3YAX44/verification/20260913153832194-42feeaf79f910e91.json",
+      "sha256": "sha256:7b6271ef6f21167d3a1a4ad801f0409e8c4a91d8941652f589ffbebb658aed54"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 41ce0900201f4607e3a1e1e42f485e204dd1edd4..9e32b1b8a9c75d1b20541637d2cdb3c9d7ec3b0a",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 41ce0900201f4607e3a1e1e42f485e204dd1edd4..9e32b1b8a9c75d1b20541637d2cdb3c9d7ec3b0a",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202609121424-3YAX44/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202609121424-3YAX44/pr/github-body.md",
+          "M\t.agentplane/tasks/202609121424-3YAX44/pr/meta.json",
+          "M\t.agentplane/tasks/202609121424-3YAX44/pr/review.md",
+          "M\tscripts/bench/paired-result-report.test.mjs"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "41ce0900201f4607e3a1e1e42f485e204dd1edd4",
+    "implementation_commit": "9e32b1b8a9c75d1b20541637d2cdb3c9d7ec3b0a",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [],
+      "classification": [],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202609121424-3YAX44",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202609121424-3YAX44/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

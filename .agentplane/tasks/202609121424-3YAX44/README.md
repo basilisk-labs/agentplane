@@ -4,7 +4,7 @@ title: "Add the 0.7.9 marginal-cost and paired production benchmark harness for 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on:
@@ -32,6 +32,37 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-13T15:39:53.839Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "9e32b1b8a9c75d1b20541637d2cdb3c9d7ec3b0a"
+  blueprint_digest: "fa5bda7326628d77818e5607d9c82965c639b2adaac875c2abf479a7f619d50f"
+  evidence_refs:
+    - ".agentplane/tasks/202609121424-3YAX44/quality/20260913-153846980-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609121424-3YAX44/quality/20260913-153846980-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609121424-3YAX44/quality/objects/sha256/2291f3402a966b3f7abadbe286e0ce929f44fc3f09b3507981875a63e4e92ff2.md"
+    - ".agentplane/tasks/202609121424-3YAX44/quality/20260913-153846980-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609121424-3YAX44/quality/20260913-153846980-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609121424-3YAX44/quality/20260913-153846980-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609121424-3YAX44/README.md"
+    - ".agentplane/tasks/202609121424-3YAX44/quality/objects/sha256/c8c9581c5ea3d219a0c86f8815b9d9c96eaf76401ba233fc877b0f22675d6ec2.patch"
+    - ".agentplane/tasks/202609121424-3YAX44/quality/objects/sha256/9b21595f261c76c578d2ea23ceaf772798dc986f2b2e066d152b827e4bf341a7.json"
+    - ".agentplane/tasks/202609121424-3YAX44/verification/20260913153832194-42feeaf79f910e91.json"
+    - ".agentplane/tasks/202609121424-3YAX44/quality/objects/sha256/2d7a8a110c6e0873d5a8abf3f0d2da5a3757497b9fbbbfbf2b516aa7f9099fc2.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Marginal task cost separates checkout bytes, deduplicated Git storage, commit classes, and observed operation counters while rejecting preexisting target tasks."
+    - "The paired driver pins all comparison identities, executes offline with network denied, preserves managed and external strata, and requires trusted authority before live execution."
+    - "The report charges every attempt, pairs only independently verified equivalent outcomes, exposes rates, intervals, stage distributions, coverage, and uncertainty, and keeps safety, activation, and efficiency gates separate."
+    - "Unknown or inconsistent raw cost and zero-success arms fail closed without a finite efficiency claim."
+    - "The final diff contains only task artifacts and scoped benchmark code and tests; it does not contain agentplane-roadmap-r2 or historical baseline rewrites."
+    - "Residual risk: No paid provider run was performed, so this task establishes the measurement harness and claim rules rather than a new live cost result."
 execution_route:
   frozen: true
   reason_codes:
@@ -1172,7 +1203,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609121424-3YAX44"
-    event_cursor: 13
+    event_cursor: 14
     final_validation: null
     id: "202609121424-3YAX44"
     intent:
@@ -1202,9 +1233,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 19
+    revision: 20
     schema_version: 1
-    updated_at: "2026-09-13T15:38:33.207Z"
+    updated_at: "2026-09-13T15:38:33.209Z"
     work_items:
       ST-14:
         attempt: 1
@@ -1654,6 +1685,30 @@ extensions:
         mutation_id: "compatibility:sha256:c867d6c6ce8a6b7ed803af21fc965b64ff02de39eaf6f0314ad9a5d7e5ebaef1"
         next_revision: 10
         previous_revision: 9
+        schema_version: 1
+        task_id: "202609121424-3YAX44"
+      compatibility:sha256:c9eb5eb4b77274e80be032f50efea938b2f590b6556a5756c0ca0eafe1f9b751:
+        aggregate_digest: "sha256:e112f1a78e4d49f648b81691e65569fb4c715e60ca5d115c37635d5f3f18d43b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T15:38:33.209Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_419f711021c9e08100c27f46"
+          mutation_id: "compatibility:sha256:c9eb5eb4b77274e80be032f50efea938b2f590b6556a5756c0ca0eafe1f9b751"
+          plan_digest: "sha256:9058c9f56183fcc658d347a916f3b9ee21711fabb6fc2f5125c6b3ed3f32004c"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-3YAX44"
+          task_revision: 19
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:c9eb5eb4b77274e80be032f50efea938b2f590b6556a5756c0ca0eafe1f9b751"
+        next_revision: 20
+        previous_revision: 19
         schema_version: 1
         task_id: "202609121424-3YAX44"
       compatibility:sha256:ce6742adf71b03722e7947357e27b84574182c6b373394d5bc3a09c1571aae83:
