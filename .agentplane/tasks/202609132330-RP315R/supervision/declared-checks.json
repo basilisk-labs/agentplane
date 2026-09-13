@@ -1,0 +1,63 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "targeted_task_state_tests"
+      ],
+      "command": "bun run test:project -- agentplane packages/agentplane/src/commands/release/task-state-script.test.ts --maxWorkers=4",
+      "duration_ms": 569,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/release/task-state-script.test.ts \"--maxWorkers=4\"\n",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609132330-RP315R-repair-task-state-validation-for-immutable-quali\n\n\n Test Files  1 passed (1)\n      Tests  5 passed (5)\n   Start at  02:44:50\n   Duration  216ms (transform 10ms, setup 0ms, import 16ms, tests 144ms, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "repository_task_state"
+      ],
+      "command": "bun run task-state:check",
+      "duration_ms": 530,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "task-state:check",
+      "stderr_tail": "$ node scripts/checks/check-task-state.mjs\n",
+      "stdout_tail": "task state OK (tasks=3391 release_closure=72)\n"
+    },
+    {
+      "check_ids": [
+        "full_release_gate"
+      ],
+      "command": "bun run release:check",
+      "duration_ms": 26056,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "release:check",
+      "stderr_tail": "$ bun run release:incidents:check && bun run release:acr-example:check && bun run docs:readme-header:check && bun run docs:social:check && bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build && bun run --filter=@agentplane/testkit build && bun run --filter=@agentplaneorg/recipes build && node scripts/release-check.mjs\n$ node scripts/check-release-incidents.mjs\n$ node scripts/checks/check-acr-example-version.mjs\n$ node scripts/generate/generate-readme-header.mjs --check\n$ cd website && bun run check-social-images\n$ node scripts/generate-social-images.mjs --check\n",
+      "stdout_tail": "RSION\", \"validateExecutionReceipt\", \"createRunnerEffectOperation\", \"digestRunnerEffectValue\", \"createRunnerEffectClaim\", \"createRunnerEffectJournal\", \"createRunnerEffectOperationRef\", \"validateRunnerEffectClaim\", \"validateRunnerEffectJournal\", \"validateRunnerEffectOperation\", \"StateFingerprintPreconditionError\", \"assertStateFingerprintPrecondition\", \"createRunnerEffectResolution\", \"createRunnerEffectResolutionIntent\", \"createRunnerEffectResolutionLease\", \"createRunnerEffectResolutionRef\", \"validateRunnerEffectResolution\", \"validateRunnerEffectResolutionIntent\" and \"validateRunnerEffectResolutionLease\" are imported from external module \"@agentplaneorg/core/schemas\" but never used in \"dist/command-catalog.js\".\nagentplane build: \"lstatSync\" is imported from external module \"fs\" but never used in \"dist/command-catalog.js\".\nagentplane build: \"gitAddPaths\", \"gitCommit\", \"gitListBranches\", \"gitStagedPaths\", \"gitInitRepo\" and \"resolveInitBaseBranch\" are imported from external module \"@agentplaneorg/core/git\" but never used in \"dist/command-catalog.js\".\nagentplane build: \"StringDecoder\" is imported from external module \"string_decoder\" but never used in \"dist/command-catalog.js\".\nagentplane build: \"performance\" is imported from external module \"perf_hooks\" but never used in \"dist/command-catalog.js\".\nagentplane build: \"runProcessSync\" is imported from external module \"@agentplaneorg/core/process\" but never used in \"dist/deferred-runtime.js\".\nagentplane build: \"createExecutionGrant\", \"createPlanProposal\", \"lintTaskVerifyStepsSection\", \"lintTasksSnapshot\" and \"parseDocSections\" are imported from external module \"@agentplaneorg/core/tasks\" but never used in \"dist/deferred-runtime.js\".\nagentplane build: \"validateTasksExportSnapshot\", \"renderAcrSchemaJson\" and \"assertAgentWorkOrderReadyForInvocation\" are imported from external module \"@agentplaneorg/core/schemas\" but never used in \"dist/deferred-runtime.js\".\nagentplane build: \"parseWorkflowFrontMatter\" is imported from external module \"@agentplaneorg/core/config\" but never used in \"dist/deferred-runtime.js\".\nagentplane build: \"DEFAULT_TASK_BRANCH_PREFIX\", \"clearPinnedBaseBranch\" and \"getPinnedBaseBranch\" are imported from external module \"@agentplaneorg/core/git\" but never used in \"dist/deferred-runtime.js\".\nagentplane build: \"assertAgentWorkOrderReadyForInvocation\" is imported from external module \"@agentplaneorg/core/schemas\" but never used in \"dist/cli-bun.js\".\nagentplane build: ESM dist/command-catalog/core-fast.js 169.88 KB\nagentplane build: ESM dist/cli.js                       380.01 KB\nagentplane build: ESM dist/command-catalog/task-read.js 239.89 KB\nagentplane build: ESM dist/deferred-runtime.js          2.41 MB\nagentplane build: ESM dist/command-catalog.js           2.29 MB\nagentplane build: ESM dist/cli-bun.js                   3.71 MB\nagentplane build: ESM ⚡️ Build success in 2931ms\nagentplane build: generated dist/command-help.json (266 commands)\nagentplane build: Exited with code 0\n@agentplane/testkit build: Exited with code 0\n@agentplaneorg/recipes build: $ node ../../scripts/release/prune-package-js.mjs dist && node ../../scripts/checks/run-tsup-build.mjs && node ../../scripts/release/manifest.mjs build .\n@agentplaneorg/recipes build: CLI Building entry: {\"index\":\"src/index.ts\"}\n@agentplaneorg/recipes build: CLI Using tsconfig: tsconfig.tsup.json\n@agentplaneorg/recipes build: CLI tsup v8.5.1\n@agentplaneorg/recipes build: CLI Using tsup config: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609132330-RP315R-repair-task-state-validation-for-immutable-quali/packages/recipes/tsup.config.ts\n@agentplaneorg/recipes build: CLI Target: node20\n@agentplaneorg/recipes build: ESM Build start\n@agentplaneorg/recipes build: ESM dist/index.js 27.43 KB\n@agentplaneorg/recipes build: ESM ⚡️ Build success in 37ms\n@agentplaneorg/recipes build: Exited with code 0\npackage tarball policy OK (@agentplaneorg/core=127, @agentplaneorg/recipes=21, agentplane=59)\nblueprint release gate OK\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202609132330-RP315R"
+}
