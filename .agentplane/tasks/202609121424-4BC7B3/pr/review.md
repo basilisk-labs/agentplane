@@ -29,8 +29,14 @@ Created: 2026-09-13T18:34:45.448Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../baselines/v0.7.9-stabilization-candidate.json  | 55 ++++++++++++++++++++++
- 1 file changed, 55 insertions(+)
+ docs/user/commands.mdx                             |   7 +-
+ docs/user/task-lifecycle.mdx                       |   3 +
+ .../baselines/v0.7.9-stabilization-candidate.json  |  55 ++++++
+ scripts/bench/paired-production-driver.mjs         | 124 ++++++------
+ scripts/bench/paired-production-driver.test.mjs    |  58 ++++--
+ scripts/bench/paired-result-report.mjs             | 209 +++++++++++----------
+ scripts/bench/paired-result-report.test.mjs        | 156 +++++++++------
+ 7 files changed, 376 insertions(+), 236 deletions(-)
 ```
 
 </details>

@@ -19,7 +19,14 @@ export const PAIRED_CAMPAIGN_TRANSPORTS = Object.freeze(["managed", "external"])
 
 const SHA_PATTERN = /^[a-f0-9]{40}$/u;
 const DIGEST_PATTERN = /^sha256:[a-f0-9]{64}$/u;
-const COST_STATES = new Set(["observed", "unknown"]);
+const TOKEN_USAGE_STATES = new Set(["observed", "partial", "unavailable"]);
+const TOKEN_FIELDS = [
+  "input_tokens",
+  "cached_input_tokens",
+  "output_tokens",
+  "reasoning_tokens",
+  "total_tokens",
+];
 
 function sha256(value) {
   return `sha256:${createHash("sha256").update(value).digest("hex")}`;
@@ -82,24 +89,53 @@ function assertRegularArtifact(filePath, expectedDigest, label) {
   return canonical;
 }
 
-function validateRawCost(value, label) {
-  if (!isRecord(value) || !COST_STATES.has(value.state)) {
-    throw new Error(`${label}.raw_cost must declare observed or unknown state.`);
+function validateTokenUsage(value, label) {
+  if (!isRecord(value) || !TOKEN_USAGE_STATES.has(value.state)) {
+    throw new Error(`${label}.token_usage must declare observed, partial, or unavailable state.`);
   }
-  exactDigest(value.basis_digest, `${label}.raw_cost.basis_digest`);
-  exactNonEmptyString(value.currency, `${label}.raw_cost.currency`);
-  if (value.state === "observed") {
-    if (typeof value.amount !== "number" || !Number.isFinite(value.amount) || value.amount < 0) {
-      throw new Error(`${label}.raw_cost.amount must be a non-negative finite number.`);
+  for (const field of TOKEN_FIELDS) {
+    const observed = value[field];
+    if (observed !== null && (!Number.isSafeInteger(observed) || observed < 0)) {
+      throw new Error(`${label}.token_usage.${field} must be a non-negative safe integer or null.`);
     }
-    if (value.reason !== undefined) {
-      throw new Error(`${label}.raw_cost observed state must not declare a reason.`);
-    }
-  } else {
-    if (value.amount !== null) {
-      throw new Error(`${label}.raw_cost unknown state must use amount=null.`);
-    }
-    exactNonEmptyString(value.reason, `${label}.raw_cost.reason`);
+  }
+  const observedFields = TOKEN_FIELDS.filter((field) => value[field] !== null);
+  if (value.state === "observed" && observedFields.length !== TOKEN_FIELDS.length) {
+    throw new Error(`${label}.token_usage observed state requires every token field.`);
+  }
+  if (value.state === "partial" && observedFields.length === 0) {
+    throw new Error(`${label}.token_usage partial state requires at least one observed field.`);
+  }
+  if (value.state === "unavailable" && observedFields.length !== 0) {
+    throw new Error(`${label}.token_usage unavailable state requires null token fields.`);
+  }
+  if (value.state === "observed" && value.reason !== undefined) {
+    throw new Error(`${label}.token_usage observed state must not declare a reason.`);
+  }
+  if (value.state !== "observed") {
+    exactNonEmptyString(value.reason, `${label}.token_usage.reason`);
+  }
+  if (
+    value.cached_input_tokens !== null &&
+    value.input_tokens !== null &&
+    value.cached_input_tokens > value.input_tokens
+  ) {
+    throw new Error(`${label}.token_usage cached input cannot exceed input tokens.`);
+  }
+  if (
+    value.reasoning_tokens !== null &&
+    value.output_tokens !== null &&
+    value.reasoning_tokens > value.output_tokens
+  ) {
+    throw new Error(`${label}.token_usage reasoning cannot exceed output tokens.`);
+  }
+  if (
+    value.input_tokens !== null &&
+    value.output_tokens !== null &&
+    value.total_tokens !== null &&
+    value.total_tokens < value.input_tokens + value.output_tokens
+  ) {
+    throw new Error(`${label}.token_usage total cannot be lower than input plus output tokens.`);
   }
   return value;
 }
@@ -113,12 +149,12 @@ function validateClaimPolicy(value) {
     !isRecord(value) ||
     !Number.isSafeInteger(value.minimum_paired_successes) ||
     value.minimum_paired_successes < 1 ||
-    typeof value.max_candidate_to_previous_cost_ratio !== "number" ||
-    !Number.isFinite(value.max_candidate_to_previous_cost_ratio) ||
-    value.max_candidate_to_previous_cost_ratio <= 0 ||
+    typeof value.max_candidate_to_previous_token_ratio !== "number" ||
+    !Number.isFinite(value.max_candidate_to_previous_token_ratio) ||
+    value.max_candidate_to_previous_token_ratio <= 0 ||
     typeof value.require_candidate_better_than_minimal !== "boolean"
   ) {
-    throw new Error("claim_policy must pin the paired coverage and efficiency thresholds.");
+    throw new Error("claim_policy must pin paired coverage and token-efficiency thresholds.");
   }
   return value;
 }
@@ -217,32 +253,12 @@ export function validatePairedCampaignManifest(value) {
     session_policy: exactNonEmptyString(value.constants.session_policy, "constants.session_policy"),
     sandbox: exactNonEmptyString(value.constants.sandbox, "constants.sandbox"),
     network: exactNonEmptyString(value.constants.network, "constants.network"),
-    raw_cost_basis_digest: exactDigest(
-      value.constants.raw_cost_basis_digest,
-      "constants.raw_cost_basis_digest",
-    ),
-    raw_cost_currency: exactNonEmptyString(
-      value.constants.raw_cost_currency,
-      "constants.raw_cost_currency",
-    ),
-    maximum_authorized_spend: value.constants.maximum_authorized_spend,
   };
   if (!Number.isSafeInteger(constants.retry_limit) || constants.retry_limit < 0) {
     throw new Error("constants.retry_limit must be a non-negative integer.");
   }
   if (!isRecord(constants.runtime_profile) || Object.keys(constants.runtime_profile).length === 0) {
     throw new Error("constants.runtime_profile must be a non-empty object.");
-  }
-  if (
-    !isRecord(constants.maximum_authorized_spend) ||
-    typeof constants.maximum_authorized_spend.amount !== "number" ||
-    !Number.isFinite(constants.maximum_authorized_spend.amount) ||
-    constants.maximum_authorized_spend.amount < 0 ||
-    constants.maximum_authorized_spend.currency !== constants.raw_cost_currency
-  ) {
-    throw new Error(
-      "constants.maximum_authorized_spend must pin a non-negative amount and matching currency.",
-    );
   }
   if (constants.network !== "deny") {
     throw new Error("The offline-capable paired campaign must pin network=deny.");
@@ -360,7 +376,7 @@ function executeProcess(entrypoint, argv, cwd, env, label) {
   );
 }
 
-function validateAgentEvidence(value, run, constants) {
+function validateAgentEvidence(value, run) {
   if (
     !isRecord(value) ||
     !["completed", "failed", "blocked"].includes(value.status) ||
@@ -392,15 +408,9 @@ function validateAgentEvidence(value, run, constants) {
   if (!same(value.observed_identity, expectedIdentity)) {
     throw new Error(`Run ${run.id} observed identity does not match the fixed campaign identity.`);
   }
-  const { raw_cost: rawCost, ...agent } = value;
-  validateRawCost(rawCost, `Run ${run.id}`);
-  if (
-    rawCost.basis_digest !== constants.raw_cost_basis_digest ||
-    rawCost.currency !== constants.raw_cost_currency
-  ) {
-    throw new Error(`Run ${run.id} raw cost does not match the fixed campaign identity.`);
-  }
-  return { agent, rawCost };
+  const { token_usage: tokenUsage, ...agent } = value;
+  validateTokenUsage(tokenUsage, `Run ${run.id}`);
+  return { agent, tokenUsage };
 }
 
 function validateOracleEvidence(value, run, verifier) {
@@ -448,11 +458,6 @@ async function executeOneRun(manifest, run, fixtureRoot, dependencies, mode) {
     AGENTPLANE_PAIRED_FAKE_PROVIDER: mode === "offline" ? "1" : "0",
     AGENTPLANE_PAIRED_NETWORK: manifest.constants.network,
     AGENTPLANE_PAIRED_VERIFIER_DIGEST: manifest.verifier.artifact_sha256,
-    AGENTPLANE_PAIRED_RAW_COST_BASIS_DIGEST: manifest.constants.raw_cost_basis_digest,
-    AGENTPLANE_PAIRED_RAW_COST_CURRENCY: manifest.constants.raw_cost_currency,
-    AGENTPLANE_PAIRED_MAXIMUM_AUTHORIZED_SPEND: String(
-      manifest.constants.maximum_authorized_spend.amount,
-    ),
     AGENTPLANE_PAIRED_ADAPTER: run.adapter,
     AGENTPLANE_PAIRED_MODEL: run.model,
     AGENTPLANE_PAIRED_REASONING_EFFORT: run.reasoning_effort,
@@ -461,7 +466,7 @@ async function executeOneRun(manifest, run, fixtureRoot, dependencies, mode) {
     AGENTPLANE_PAIRED_RETRY_LIMIT: String(run.retry_limit),
     AGENTPLANE_PAIRED_RUNTIME_PROFILE: JSON.stringify(run.runtime_profile),
   };
-  const { agent: agentEvidence, rawCost } = validateAgentEvidence(
+  const { agent: agentEvidence, tokenUsage } = validateAgentEvidence(
     await (
       dependencies.executeAttempt ??
       ((opts) =>
@@ -474,7 +479,6 @@ async function executeOneRun(manifest, run, fixtureRoot, dependencies, mode) {
         ))
     )({ manifest, product, run, fixtureRoot, env }),
     run,
-    manifest.constants,
   );
   const oracleEvidence = validateOracleEvidence(
     await (
@@ -511,7 +515,7 @@ async function executeOneRun(manifest, run, fixtureRoot, dependencies, mode) {
       runtime_profile: run.runtime_profile,
       verifier_digest: run.verifier_digest,
     },
-    raw_cost: rawCost,
+    token_usage: tokenUsage,
     agent: agentEvidence,
     oracle: oracleEvidence,
   };

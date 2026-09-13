@@ -27,8 +27,14 @@ Source contract: agentplane-roadmap-r2 cards ST-18, ST-19, and ST-20. Build the 
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../baselines/v0.7.9-stabilization-candidate.json  | 55 ++++++++++++++++++++++
- 1 file changed, 55 insertions(+)
+ docs/user/commands.mdx                             |   7 +-
+ docs/user/task-lifecycle.mdx                       |   3 +
+ .../baselines/v0.7.9-stabilization-candidate.json  |  55 ++++++
+ scripts/bench/paired-production-driver.mjs         | 124 ++++++------
+ scripts/bench/paired-production-driver.test.mjs    |  58 ++++--
+ scripts/bench/paired-result-report.mjs             | 209 +++++++++++----------
+ scripts/bench/paired-result-report.test.mjs        | 156 +++++++++------
+ 7 files changed, 376 insertions(+), 236 deletions(-)
 ```
 
 </details>

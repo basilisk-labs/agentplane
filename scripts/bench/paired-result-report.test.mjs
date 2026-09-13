@@ -9,30 +9,49 @@ function attempt({
   id,
   pair,
   arm,
-  cost,
+  tokens,
   status = "completed",
   verified = true,
   violations = [],
   transport = "managed",
   outcome = DIGEST,
-  currency = "USD",
-  basis = DIGEST,
+  usageState = tokens === null ? "unavailable" : "observed",
 }) {
+  const tokenUsage =
+    usageState === "unavailable"
+      ? {
+          state: "unavailable",
+          input_tokens: null,
+          cached_input_tokens: null,
+          output_tokens: null,
+          reasoning_tokens: null,
+          total_tokens: null,
+          reason: "provider token telemetry unavailable",
+        }
+      : usageState === "partial"
+        ? {
+            state: "partial",
+            input_tokens: tokens,
+            cached_input_tokens: null,
+            output_tokens: null,
+            reasoning_tokens: null,
+            total_tokens: null,
+            reason: "provider token telemetry incomplete",
+          }
+        : {
+            state: "observed",
+            input_tokens: tokens,
+            cached_input_tokens: 0,
+            output_tokens: 0,
+            reasoning_tokens: 0,
+            total_tokens: tokens,
+          };
   return {
     id,
     pair_id: pair,
     arm,
     transport,
-    raw_cost:
-      cost === null
-        ? {
-            state: "unknown",
-            amount: null,
-            currency,
-            basis_digest: basis,
-            reason: "provider charge unavailable",
-          }
-        : { state: "observed", amount: cost, currency, basis_digest: basis },
+    token_usage: tokenUsage,
     agent: {
       status,
       result_digest: DIGEST,
@@ -60,37 +79,37 @@ function evidence(attempts) {
     attempts,
     claim_policy: {
       minimum_paired_successes: 1,
-      max_candidate_to_previous_cost_ratio: 1.05,
+      max_candidate_to_previous_token_ratio: 1.05,
       require_candidate_better_than_minimal: true,
     },
   };
 }
 
-test("keeps failed-attempt cost in the numerator and pairs only equivalent successes", () => {
+test("keeps failed-attempt tokens in the numerator and pairs only equivalent successes", () => {
   const report = buildPairedResultReport(
     evidence([
-      attempt({ id: "m1", pair: "pair-1", arm: "minimal_agent", cost: 4 }),
-      attempt({ id: "p1", pair: "pair-1", arm: "previous_release", cost: 3 }),
-      attempt({ id: "c1", pair: "pair-1", arm: "candidate", cost: 2 }),
+      attempt({ id: "m1", pair: "pair-1", arm: "minimal_agent", tokens: 4 }),
+      attempt({ id: "p1", pair: "pair-1", arm: "previous_release", tokens: 3 }),
+      attempt({ id: "c1", pair: "pair-1", arm: "candidate", tokens: 2 }),
       attempt({
         id: "m2",
         pair: "pair-2",
         arm: "minimal_agent",
-        cost: 5,
+        tokens: 5,
         status: "failed",
         verified: false,
       }),
-      attempt({ id: "p2", pair: "pair-2", arm: "previous_release", cost: 3 }),
-      attempt({ id: "c2", pair: "pair-2", arm: "candidate", cost: 2 }),
+      attempt({ id: "p2", pair: "pair-2", arm: "previous_release", tokens: 3 }),
+      attempt({ id: "c2", pair: "pair-2", arm: "candidate", tokens: 2 }),
     ]),
   );
 
   const managed = report.strata.managed;
-  assert.equal(managed.arms.minimal_agent.raw_cost.observed_subtotal, 9);
+  assert.equal(managed.arms.minimal_agent.token_usage.observed_totals.total_tokens, 9);
   assert.equal(managed.arms.minimal_agent.verified_successes, 1);
-  assert.equal(managed.arms.minimal_agent.raw_cost.cost_per_verified_success, 9);
-  assert.equal(managed.arms.previous_release.raw_cost.cost_per_verified_success, 3);
-  assert.equal(managed.arms.candidate.raw_cost.cost_per_verified_success, 2);
+  assert.equal(managed.arms.minimal_agent.token_usage.tokens_per_verified_success, 9);
+  assert.equal(managed.arms.previous_release.token_usage.tokens_per_verified_success, 3);
+  assert.equal(managed.arms.candidate.token_usage.tokens_per_verified_success, 2);
   assert.equal(managed.arms.minimal_agent.success_rate, 0.5);
   assert.equal(managed.arms.previous_release.success_rate, 1);
   assert.equal(managed.arms.candidate.violation_rate, 0);
@@ -106,46 +125,68 @@ test("keeps failed-attempt cost in the numerator and pairs only equivalent succe
     mean_ms: 3,
   });
   assert.equal(report.coverage.attempts, 6);
-  assert.equal(report.coverage.raw_cost_observed, 6);
-  assert.equal(report.coverage.raw_cost_unknown, 0);
+  assert.equal(report.coverage.token_usage_observed, 6);
+  assert.equal(report.coverage.token_usage_partial, 0);
+  assert.equal(report.coverage.token_usage_unavailable, 0);
   assert.deepEqual(report.coverage.transports, { managed: 6 });
   assert.equal(report.gates.safety.verdict, "pass");
   assert.equal(report.gates.activation.verdict, "not_established");
   assert.equal(report.gates.efficiency.verdict, "pass");
-  assert.equal(report.numeric_cost_claim_complete, true);
+  assert.equal(report.numeric_token_claim_complete, true);
   assert.equal(report.uncertainty.rate_interval, "Wilson score interval, 95%");
   assert.match(report.uncertainty.paired_population, /same oracle outcome/u);
+  assert.match(report.uncertainty.subset_accounting, /not added again/u);
 });
 
-test("unknown charge prevents a complete numeric claim", () => {
+test("unavailable tokens prevent a complete numeric claim", () => {
   const report = buildPairedResultReport(
     evidence([
-      attempt({ id: "m1", pair: "pair-1", arm: "minimal_agent", cost: 4 }),
-      attempt({ id: "p1", pair: "pair-1", arm: "previous_release", cost: null }),
-      attempt({ id: "c1", pair: "pair-1", arm: "candidate", cost: 2 }),
+      attempt({ id: "m1", pair: "pair-1", arm: "minimal_agent", tokens: 4 }),
+      attempt({ id: "p1", pair: "pair-1", arm: "previous_release", tokens: null }),
+      attempt({ id: "c1", pair: "pair-1", arm: "candidate", tokens: 2 }),
     ]),
   );
 
-  assert.equal(report.numeric_cost_claim_complete, false);
-  assert.equal(report.strata.managed.arms.previous_release.raw_cost.total, null);
+  assert.equal(report.numeric_token_claim_complete, false);
+  assert.equal(report.strata.managed.arms.previous_release.token_usage.total_tokens, null);
   assert.equal(
-    report.strata.managed.arms.previous_release.raw_cost.cost_per_verified_success,
+    report.strata.managed.arms.previous_release.token_usage.tokens_per_verified_success,
     null,
   );
   assert.equal(report.gates.efficiency.verdict, "not_established");
-  assert.match(report.uncertainty.raw_cost, /Unknown raw cost/u);
+  assert.match(report.uncertainty.token_usage, /Partial or unavailable/u);
+});
+
+test("partial tokens remain visible and prevent a complete numeric claim", () => {
+  const report = buildPairedResultReport(
+    evidence([
+      attempt({ id: "m1", pair: "pair-1", arm: "minimal_agent", tokens: 4 }),
+      attempt({
+        id: "p1",
+        pair: "pair-1",
+        arm: "previous_release",
+        tokens: 3,
+        usageState: "partial",
+      }),
+      attempt({ id: "c1", pair: "pair-1", arm: "candidate", tokens: 2 }),
+    ]),
+  );
+
+  assert.equal(report.coverage.token_usage_partial, 1);
+  assert.deepEqual(report.coverage.incomplete_token_attempt_ids, ["p1"]);
+  assert.equal(report.numeric_token_claim_complete, false);
 });
 
 test("an all-failed arm has no finite successful-result score", () => {
   const report = buildPairedResultReport(
     evidence([
-      attempt({ id: "m1", pair: "pair-1", arm: "minimal_agent", cost: 4 }),
-      attempt({ id: "p1", pair: "pair-1", arm: "previous_release", cost: 3 }),
+      attempt({ id: "m1", pair: "pair-1", arm: "minimal_agent", tokens: 4 }),
+      attempt({ id: "p1", pair: "pair-1", arm: "previous_release", tokens: 3 }),
       attempt({
         id: "c1",
         pair: "pair-1",
         arm: "candidate",
-        cost: 2,
+        tokens: 2,
         status: "failed",
         verified: false,
       }),
@@ -153,36 +194,31 @@ test("an all-failed arm has no finite successful-result score", () => {
   );
 
   assert.equal(report.strata.managed.arms.candidate.verified_successes, 0);
-  assert.equal(report.strata.managed.arms.candidate.raw_cost.cost_per_verified_success, null);
+  assert.equal(report.strata.managed.arms.candidate.token_usage.tokens_per_verified_success, null);
   assert.equal(report.gates.efficiency.verdict, "not_established");
 });
 
-test("mismatched raw cost identity prevents numeric and efficiency claims", () => {
-  const report = buildPairedResultReport(
-    evidence([
-      attempt({ id: "m1", pair: "pair-1", arm: "minimal_agent", cost: 4 }),
-      attempt({ id: "p1", pair: "pair-1", arm: "previous_release", cost: 3 }),
-      attempt({ id: "c1", pair: "pair-1", arm: "candidate", cost: 2, currency: "EUR" }),
-    ]),
-  );
-
-  assert.equal(report.coverage.raw_cost_identity.consistent, false);
-  assert.equal(report.numeric_cost_claim_complete, false);
-  assert.equal(report.gates.efficiency.verdict, "not_established");
-  assert.deepEqual(report.gates.efficiency.reasons, ["raw_cost_identity_mismatch"]);
-  assert.match(report.uncertainty.raw_cost, /Inconsistent raw cost/u);
+test("rejects token subset double-counting", () => {
+  const value = evidence([
+    attempt({ id: "m1", pair: "pair-1", arm: "minimal_agent", tokens: 4 }),
+    attempt({ id: "p1", pair: "pair-1", arm: "previous_release", tokens: 3 }),
+    attempt({ id: "c1", pair: "pair-1", arm: "candidate", tokens: 2 }),
+  ]);
+  value.attempts[0].token_usage.output_tokens = 1;
+  value.attempts[0].token_usage.reasoning_tokens = 2;
+  assert.throws(() => buildPairedResultReport(value), /reasoning exceeds output/u);
 });
 
 test("rejects outcome-mismatched successes from the paired population", () => {
   const report = buildPairedResultReport(
     evidence([
-      attempt({ id: "m1", pair: "pair-1", arm: "minimal_agent", cost: 4 }),
-      attempt({ id: "p1", pair: "pair-1", arm: "previous_release", cost: 3 }),
+      attempt({ id: "m1", pair: "pair-1", arm: "minimal_agent", tokens: 4 }),
+      attempt({ id: "p1", pair: "pair-1", arm: "previous_release", tokens: 3 }),
       attempt({
         id: "c1",
         pair: "pair-1",
         arm: "candidate",
-        cost: 2,
+        tokens: 2,
         outcome: `sha256:${"b".repeat(64)}`,
       }),
     ]),
@@ -197,13 +233,13 @@ test("rejects outcome-mismatched successes from the paired population", () => {
 
 test("keeps safety, activation, and efficiency gates independent", () => {
   const value = evidence([
-    attempt({ id: "m1", pair: "pair-1", arm: "minimal_agent", cost: 4 }),
-    attempt({ id: "p1", pair: "pair-1", arm: "previous_release", cost: 3 }),
+    attempt({ id: "m1", pair: "pair-1", arm: "minimal_agent", tokens: 4 }),
+    attempt({ id: "p1", pair: "pair-1", arm: "previous_release", tokens: 3 }),
     attempt({
       id: "c1",
       pair: "pair-1",
       arm: "candidate",
-      cost: 2,
+      tokens: 2,
       violations: ["authority_violation"],
     }),
   ]);
