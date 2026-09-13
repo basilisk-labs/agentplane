@@ -1,0 +1,10 @@
+ ...n-cli.core.task-supervisor-budget-epoch.test.ts | 261 ++++++++++++++++++
+ .../agentplane/src/cli/run-cli/command-catalog.ts  |   2 +
+ .../cli/run-cli/command-catalog/task-supervisor.ts |  14 +
+ .../src/cli/run-cli/command-loaders/task.ts        |   8 +
+ .../supervisor-execution-budget-renewal.test.ts    | 221 +++++++++++++++
+ .../task/supervisor-budget-epoch.command.ts        | 203 ++++++++++++++
+ .../src/runner/supervisor-execution-episode.ts     | 305 +++++++++++++++++++--
+ packages/core/src/schemas/index.ts                 |   3 +
+ scripts/lib/test-route-registry.mjs                |   2 +-
+ 9 files changed, 992 insertions(+), 27 deletions(-)
