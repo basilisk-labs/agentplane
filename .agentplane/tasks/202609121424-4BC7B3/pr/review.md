@@ -6,7 +6,7 @@ Created: 2026-09-13T18:34:45.448Z
 
 - Task: `202609121424-4BC7B3`
 - Title: Qualify and document the 0.7.9 stabilization candidate for ST-18 through ST-20
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609121424-4BC7B3/qualify-and-document-the-0-7-9-stabilization-can`
 - Canonical task record: `.agentplane/tasks/202609121424-4BC7B3/README.md`
 
