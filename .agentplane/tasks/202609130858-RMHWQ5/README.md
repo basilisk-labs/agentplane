@@ -1,10 +1,11 @@
 ---
 id: "202609130858-RMHWQ5"
 title: "Add an explicit USER-approved supervisor budget epoch for unknown token telemetry"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -60,6 +61,22 @@ quality_review:
   findings:
     - "The evaluated change preserves lifetime usage, limits renewal to telemetry-only stops with USER-bound journal and state provenance, rejects stale or conflicting authorization, and covers recovery and regression paths."
     - "Residual risk: When token limits are explicitly disabled because provider telemetry is unavailable, token spend remains unmetered inside the epoch; measurable episode, agent-run, wall-time, changed-file, and no-progress limits remain active."
+token_usage:
+  agent_runs: 9
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:096d661a98914a179f0dc7ca4b835619111ecd205be7221e2de5af588f611561"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-09-13T14:31:20.657Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -329,8 +346,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "ee342a5ddee6ab220c45d270e09921a5abbd2614"
-  message: "🚧 RMHWQ5 task: apply external agent result"
+  hash: "5fc061999d3c77cac00a7820151f794890754b04"
+  message: "🚧 RMHWQ5 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -353,6 +370,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: ee342a5ddee6. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -406,9 +426,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-13T14:31:20.657Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "5fc061999d3c77cac00a7820151f794890754b04"
 doc_version: 3
-doc_updated_at: "2026-09-13T14:27:08.644Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-13T14:31:20.657Z"
+doc_updated_by: "CODER"
 description: "When a supervisor episode stops because prior paid work has unavailable or unallocatable provider token telemetry, preserve that historical usage as unknown and continue to block automatic paid dispatch. Add a narrow operator command that accepts an explicit USER authorization, records durable state-bound provenance, and opens a new independently capped token budget epoch without rewriting prior operations or treating unknown usage as zero. Reject stale authorization, non-telemetry stops, missing active USER authority, replay with different parameters, and caps that are absent or invalid. The repaired ST-14 task must be able to resume through this command. Do not weaken actual human_review verdicts or automatic fail-closed admission."
 sections:
   Summary: |-
@@ -855,7 +883,67 @@ extensions:
       schema_version: 1
       task_id: "202609130858-RMHWQ5"
     event_cursor: 18
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609130858-RMHWQ5"
+            - "git:ee342a5ddee6ab220c45d270e09921a5abbd2614"
+          check_id: "focused-core"
+          command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-13T14:27:07.528Z"
+          repository_snapshot_digest: "sha256:d3b82d5c2c5c58cbecaa828fcad3e5e36638feaacb94a9e70b2ed6d5f08f4ded"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609130858-RMHWQ5"
+            - "git:ee342a5ddee6ab220c45d270e09921a5abbd2614"
+          check_id: "focused-cli"
+          command_identity: "bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-13T14:27:07.528Z"
+          repository_snapshot_digest: "sha256:d3b82d5c2c5c58cbecaa828fcad3e5e36638feaacb94a9e70b2ed6d5f08f4ded"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609130858-RMHWQ5"
+            - "git:ee342a5ddee6ab220c45d270e09921a5abbd2614"
+          check_id: "typecheck"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-13T14:27:07.528Z"
+          repository_snapshot_digest: "sha256:d3b82d5c2c5c58cbecaa828fcad3e5e36638feaacb94a9e70b2ed6d5f08f4ded"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609130858-RMHWQ5"
+            - "git:ee342a5ddee6ab220c45d270e09921a5abbd2614"
+          check_id: "critical"
+          command_identity: "bun run test:critical"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-13T14:27:07.528Z"
+          repository_snapshot_digest: "sha256:d3b82d5c2c5c58cbecaa828fcad3e5e36638feaacb94a9e70b2ed6d5f08f4ded"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609130858-RMHWQ5"
+            - "git:ee342a5ddee6ab220c45d270e09921a5abbd2614"
+          check_id: "full-ci"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-13T14:27:07.528Z"
+          repository_snapshot_digest: "sha256:d3b82d5c2c5c58cbecaa828fcad3e5e36638feaacb94a9e70b2ed6d5f08f4ded"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609130858-RMHWQ5"
     intent:
       acceptance_criteria:
@@ -891,7 +979,7 @@ extensions:
 
         When a supervisor episode stops because prior paid work has unavailable or unallocatable provider token telemetry, preserve that historical usage as unknown and continue to block automatic paid dispatch. Add a narrow operator command that accepts an explicit USER authorization, records durable state-bound provenance, and opens a new independently capped token budget epoch without rewriting prior operations or treating unknown usage as zero. Reject stale authorization, non-telemetry stops, missing active USER authority, replay with different parameters, and caps that are absent or invalid. The repaired ST-14 task must be able to resume through this command. Do not weaken actual human_review verdicts or automatic fail-closed admission.
       task_id: "202609130858-RMHWQ5"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -1332,9 +1420,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609130858-RMHWQ5"
-    revision: 25
+    revision: 26
     schema_version: 1
-    updated_at: "2026-09-13T14:27:08.644Z"
+    updated_at: "2026-09-13T14:31:20.657Z"
     work_items:
       budget-epoch-repair:
         attempt: 1
@@ -2022,6 +2110,31 @@ extensions:
         previous_revision: 14
         schema_version: 1
         task_id: "202609130858-RMHWQ5"
+      legacy-finish:202609130858-RMHWQ5:2026-09-13T14:27:07.528Z:ee342a5ddee6ab220c45d270e09921a5abbd2614:
+        aggregate_digest: "sha256:306944e414e789964890032dae257d526a5ebc099a8918bcdbf2226d938fbe97"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-13T14:31:20.657Z"
+          cause_refs:
+            - "task-verification:202609130858-RMHWQ5"
+            - "git:ee342a5ddee6ab220c45d270e09921a5abbd2614"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_b244c8d9537ee9f12b6b89aa"
+          mutation_id: "legacy-finish:202609130858-RMHWQ5:2026-09-13T14:27:07.528Z:ee342a5ddee6ab220c45d270e09921a5abbd2614"
+          plan_digest: "sha256:3240f151dc9d04408ae11cf18a19b0dfa42f0de9817ead8c7e11b81eb7599ac1"
+          plan_revision: 2
+          repository_fingerprint: "sha256:d3b82d5c2c5c58cbecaa828fcad3e5e36638feaacb94a9e70b2ed6d5f08f4ded"
+          schema_version: 1
+          task_id: "202609130858-RMHWQ5"
+          task_revision: 25
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609130858-RMHWQ5:2026-09-13T14:27:07.528Z:ee342a5ddee6ab220c45d270e09921a5abbd2614"
+        next_revision: 26
+        previous_revision: 25
+        schema_version: 1
+        task_id: "202609130858-RMHWQ5"
       plan-refinement:work-order-202609130858-RMHWQ5-executor-db37fde3cc420e325af2e2a4:
         aggregate_digest: "sha256:b99a9f50440d7c5e62b2d9ac2dc147d83afb9d66954f1fcfc2f2cd2c5ca8fadb"
         event:
@@ -2051,6 +2164,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "ee342a5ddee6ab220c45d270e09921a5abbd2614"
+    message: "🚧 RMHWQ5 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "d03a5e786db57136bf7f6c4661b148bcf97cfaf1"
@@ -2223,3 +2337,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/9` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:096d661a98914a179f0dc7ca4b835619111ecd205be7221e2de5af588f611561`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-09-13T14:31:20.657Z`
