@@ -6,7 +6,7 @@ Created: 2026-09-13T08:00:01.413Z
 
 - Task: `202609121424-3YAX44`
 - Title: Add the 0.7.9 marginal-cost and paired production benchmark harness for ST-14 through ST-16
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609121424-3YAX44/add-the-0-7-9-marginal-cost-and-paired-productio`
 - Canonical task record: `.agentplane/tasks/202609121424-3YAX44/README.md`
 
