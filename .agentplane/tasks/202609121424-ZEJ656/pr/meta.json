@@ -8,10 +8,10 @@
   "pr_number": 5947,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5947",
   "pre_merge_closure": {
-    "basis_commit": "9e3b50cbccbc4ddce78b4e39ba0af0d83239efe5",
+    "basis_commit": "a554dc4946aaee29d11714d18817e95b5e56c897",
     "branch": "task/202609121424-ZEJ656/conserve-0-7-9-semantic-requirements-and-managed",
     "pr_number": 5947,
-    "recorded_at": "2026-09-13T17:44:47.989Z",
+    "recorded_at": "2026-09-13T17:59:27.276Z",
     "state": "closed_before_merge"
   },
   "provider": {

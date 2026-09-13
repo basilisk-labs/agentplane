@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 30
+revision: 31
 origin:
   system: "manual"
 depends_on:
@@ -58,19 +58,21 @@ quality_review:
   findings:
     - "Local verification passes for the evaluated SHA: 2 conservation tests, 10 output-parity tests, 183 related tests, typecheck, schema/template checks, and full local CI. Hosted CI remains an integration prerequisite."
 token_usage:
-  agent_runs: 9
-  input_tokens: null
-  journal_digest: "sha256:cecf3c75b43c1d075f00a2efb1c3fb1bf2a02b28377957dc3dc6fa4492cb4ac4"
-  observed_agent_runs: 0
+  agent_runs: 10
+  cached_input_observed_agent_runs: 1
+  cached_input_tokens: 312192
+  input_tokens: 383671
+  journal_digest: "sha256:ffadd7a096ed80d6e46292c84595ea948f64f62e6d27f1d4a86a544d81e006be"
+  observed_agent_runs: 1
   observed_by: "agentplane"
   output_tokens: null
   reasoning_tokens: null
   schema_version: 1
   source: "supervisor_journal"
-  state: "unavailable"
-  total_tokens: null
-  unavailable_reason: "external_host_turn_unallocatable"
-  updated_at: "2026-09-13T17:44:47.925Z"
+  state: "partial"
+  total_tokens: 385541
+  unavailable_reason: "some_agent_runs_unallocatable"
+  updated_at: "2026-09-13T17:59:27.199Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -462,8 +464,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "9e3b50cbccbc4ddce78b4e39ba0af0d83239efe5"
-  message: "🚧 ZEJ656 task: record external evaluator result"
+  hash: "a554dc4946aaee29d11714d18817e95b5e56c897"
+  message: "🧭 ZEJ656 task: record evaluator verdict"
 comments:
   -
     author: "CODER"
@@ -486,6 +488,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -560,8 +565,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-13T17:59:27.199Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "a554dc4946aaee29d11714d18817e95b5e56c897"
 doc_version: 3
-doc_updated_at: "2026-09-13T17:58:02.337Z"
+doc_updated_at: "2026-09-13T17:59:27.211Z"
 doc_updated_by: "CODER"
 description: "Source contract: agentplane-roadmap-r2 cards ST-06 and ST-07. Preserve required objective, scope, outputs, checks, constraints, stop rules, WorkItem and WorkOrder identity across prompt compaction and role-specific projection. Repair managed semantic-result transport so completed, blocked, needs_context, and failed outcomes retain permitted typed fields without adapter loss. Do not add a second Plan or lifecycle format, and do not expose secrets. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: focused requirement-conservation and adapter output-parity tests with nonzero discovery, related transport/context critical suites, typecheck, schema/mirror checks."
 sections:
@@ -1237,7 +1250,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609121424-ZEJ656"
-    event_cursor: 20
+    event_cursor: 21
     final_validation:
       evidence:
         -
@@ -1780,9 +1793,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121424-ZEJ656"
-    revision: 30
+    revision: 31
     schema_version: 1
-    updated_at: "2026-09-13T17:56:14.776Z"
+    updated_at: "2026-09-13T17:59:27.199Z"
     work_items:
       validate_existing_implementation:
         attempt: 1
@@ -1973,6 +1986,30 @@ extensions:
         work_item_id: "validate_existing_implementation"
     leases: []
     mutation_receipts:
+      compatibility:sha256:0af239677717e0c3a39f5508315594e2b3c870b8dc3113e1a0cec8811a18dde6:
+        aggregate_digest: "sha256:dab8bc2486beb476f69606453e5c3e895b2eac9dec25e2323a73e96a991c3961"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T17:59:27.199Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_02c407f6c9f75fd3e00432a2"
+          mutation_id: "compatibility:sha256:0af239677717e0c3a39f5508315594e2b3c870b8dc3113e1a0cec8811a18dde6"
+          plan_digest: "sha256:6cfcdb60047f6021f1f8c7a6f4fa3d300d878b6545b029bd41f4c4553e77e321"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-ZEJ656"
+          task_revision: 30
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:0af239677717e0c3a39f5508315594e2b3c870b8dc3113e1a0cec8811a18dde6"
+        next_revision: 31
+        previous_revision: 30
+        schema_version: 1
+        task_id: "202609121424-ZEJ656"
       compatibility:sha256:0ebea7e602d3a13fb1b5cac2af0b63da9614b3e798081a64f9e1faecc915efb2:
         aggregate_digest: "sha256:bd4e51789655b97c576c214acf1c774d91cf4b123c5ea497c5bd5d2fc3529a51"
         event:
@@ -2602,8 +2639,8 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "086025d419444b01aaf1f4e2b58bb6fce25ff662"
-    message: "🚧 ZEJ656 task: apply external agent result"
+    hash: "592c2bd7e87ec32c6d50e48234f92ec042911194"
+    message: "Merge branch 'main' into task/202609121424-ZEJ656/conserve-0-7-9-semantic-requirements-and-managed"
   task_execution_context:
     base_ref: "main"
     base_sha: "d03a5e786db57136bf7f6c4661b148bcf97cfaf1"
@@ -3049,13 +3086,13 @@ DecisionContextRef:
 
 ## Token Usage
 
-- State: `unavailable`
-- Completeness: `0/9` agent runs
-- Input tokens: `unavailable`
+- State: `partial`
+- Completeness: `1/10` agent runs
+- Input tokens: `383671`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
-- Total tokens: `unavailable`
+- Total tokens: `385541`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:cecf3c75b43c1d075f00a2efb1c3fb1bf2a02b28377957dc3dc6fa4492cb4ac4`
-- Unavailable reason: `external_host_turn_unallocatable`
-- Updated at: `2026-09-13T17:44:47.925Z`
+- Journal digest: `sha256:ffadd7a096ed80d6e46292c84595ea948f64f62e6d27f1d4a86a544d81e006be`
+- Unavailable reason: `some_agent_runs_unallocatable`
+- Updated at: `2026-09-13T17:59:27.199Z`
