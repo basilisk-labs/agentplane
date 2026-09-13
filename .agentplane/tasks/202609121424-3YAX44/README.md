@@ -4,7 +4,7 @@ title: "Add the 0.7.9 marginal-cost and paired production benchmark harness for 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on:
@@ -953,9 +953,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 17
+    revision: 18
     schema_version: 1
-    updated_at: "2026-09-13T15:28:57.195Z"
+    updated_at: "2026-09-13T15:29:40.681Z"
     work_items:
       ST-14:
         attempt: 1
@@ -1066,14 +1066,99 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       ST-16:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "ST-16"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:d332a5d4d01dd983fee60848070f18f6c500fb75cb83be284c7d941c0daa0c50"
+            id: "paired cost-per-verified-result report"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609121424-3YAX44"
+              work_item_id: "ST-16"
+            provenance:
+              - "sha256:33efda3e057d67fa30c4f0a9acb5b85acafa2f903769d83b03b12f18c6fd1b9e"
+              - ".agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:e12f2e3bc565003a81d5ab15c1cf8b8bd09bd747b760b47d6933ce2a06f5e396"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:bee0c999d30ae77c415fe4c495647970c27674034366ef3d5c439335a5a7d389"
+            id: "fail-closed claim gate regression"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609121424-3YAX44"
+              work_item_id: "ST-16"
+            provenance:
+              - "sha256:33efda3e057d67fa30c4f0a9acb5b85acafa2f903769d83b03b12f18c6fd1b9e"
+              - ".agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:e12f2e3bc565003a81d5ab15c1cf8b8bd09bd747b760b47d6933ce2a06f5e396"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json"
+              check_id: "check-paired-report"
+              command_identity: "node --test scripts/bench/paired-result-report.test.mjs"
+              detail: "Observed by node --test scripts/bench/paired-result-report.test.mjs."
+              exit_code: 0
+              observed_at: "2026-09-13T15:29:40.673Z"
+              repository_snapshot_digest: "sha256:e12f2e3bc565003a81d5ab15c1cf8b8bd09bd747b760b47d6933ce2a06f5e396"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json"
+              check_id: "check-replay"
+              command_identity: "bun run bench:agent-efficiency:replay:check"
+              detail: "Observed by bun run bench:agent-efficiency:replay:check."
+              exit_code: 0
+              observed_at: "2026-09-13T15:29:40.673Z"
+              repository_snapshot_digest: "sha256:e12f2e3bc565003a81d5ab15c1cf8b8bd09bd747b760b47d6933ce2a06f5e396"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json"
+              check_id: "check-qualification"
+              command_identity: "bun run test:agent-efficiency:qualification"
+              detail: "Observed by bun run test:agent-efficiency:qualification."
+              exit_code: 0
+              observed_at: "2026-09-13T15:29:40.673Z"
+              repository_snapshot_digest: "sha256:e12f2e3bc565003a81d5ab15c1cf8b8bd09bd747b760b47d6933ce2a06f5e396"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json"
+              check_id: "check-baseline"
+              command_identity: "bun run bench:agent-efficiency:check"
+              detail: "Observed by bun run bench:agent-efficiency:check."
+              exit_code: 0
+              observed_at: "2026-09-13T15:29:40.673Z"
+              repository_snapshot_digest: "sha256:e12f2e3bc565003a81d5ab15c1cf8b8bd09bd747b760b47d6933ce2a06f5e396"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json"
+              check_id: "check-typecheck"
+              command_identity: "bun run typecheck"
+              detail: "Observed by bun run typecheck."
+              exit_code: 0
+              observed_at: "2026-09-13T15:29:40.673Z"
+              repository_snapshot_digest: "sha256:e12f2e3bc565003a81d5ab15c1cf8b8bd09bd747b760b47d6933ce2a06f5e396"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -1111,6 +1196,23 @@ extensions:
         task_id: "202609121424-3YAX44"
         task_revision: 14
         work_item_id: "ST-15"
+      -
+        at: "2026-09-13T15:29:40.681Z"
+        from: "PLANNED"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:3f288dd6087556dd416dc75cdbc5baefbf8f671773d878fee02491724983ea18"
+        entity: "work_item"
+        id: "event_a4c7232e5d200d15311396bf"
+        mutation_id: "external-result:work-order-202609121424-3YAX44-executor-cdc86b52cd2bbb2f01fe8b54"
+        plan_digest: "sha256:9058c9f56183fcc658d347a916f3b9ee21711fabb6fc2f5125c6b3ed3f32004c"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609121424-3YAX44"
+        task_revision: 17
+        work_item_id: "ST-16"
     leases: []
     mutation_receipts:
       compatibility:sha256:1f8fac2be4dad107e0cbc4274218a0480e1f1a723652140750520eb929b0b1a3:
@@ -1447,6 +1549,30 @@ extensions:
         mutation_id: "external-result:work-order-202609121424-3YAX44-executor-7aa3e62c02ceff5a823e8e9b"
         next_revision: 15
         previous_revision: 14
+        schema_version: 1
+        task_id: "202609121424-3YAX44"
+      external-result:work-order-202609121424-3YAX44-executor-cdc86b52cd2bbb2f01fe8b54:
+        aggregate_digest: "sha256:2d7f90b1e23fa87d00e3a034bdafb44fe1a9d5fc0086ab0aeb5297936e3fc0d8"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T15:29:40.681Z"
+          cause_refs:
+            - "semantic-result:sha256:3f288dd6087556dd416dc75cdbc5baefbf8f671773d878fee02491724983ea18"
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_a4c7232e5d200d15311396bf"
+          mutation_id: "external-result:work-order-202609121424-3YAX44-executor-cdc86b52cd2bbb2f01fe8b54"
+          plan_digest: "sha256:9058c9f56183fcc658d347a916f3b9ee21711fabb6fc2f5125c6b3ed3f32004c"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-3YAX44"
+          task_revision: 17
+          to: "COMPLETED"
+          work_item_id: "ST-16"
+        mutation_id: "external-result:work-order-202609121424-3YAX44-executor-cdc86b52cd2bbb2f01fe8b54"
+        next_revision: 18
+        previous_revision: 17
         schema_version: 1
         task_id: "202609121424-3YAX44"
     pending_effects: []
