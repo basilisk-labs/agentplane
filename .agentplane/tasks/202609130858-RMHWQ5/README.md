@@ -4,7 +4,7 @@ title: "Add an explicit USER-approved supervisor budget epoch for unknown token 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -109,6 +109,10 @@ execution_contract:
       - "packages/agentplane/src/cli/run-cli/command-catalog/task-supervisor.ts"
       - "packages/agentplane/src/cli/run-cli/command-loaders/task.ts"
       - "packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts"
+      - "packages/agentplane/src/commands/shared/supervisor-execution-default-budget.test.ts"
+      - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+      - "packages/agentplane/src/commands/task/scope-extend-legacy-compat.test.ts"
+      - "packages/agentplane/src/commands/task/scope-extend.ts"
       - "packages/agentplane/src/commands/task/supervisor-budget-epoch.command.ts"
       - "packages/core/src/runner/supervisor-execution-episode.ts"
       - "packages/core/src/schemas/index.ts"
@@ -162,7 +166,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:3035211619b31155344800798f393b50da0c7bd872d7594a18a0fbf009abfada"
+      digest: "sha256:b25ad9efc289331c56f04f14296aa345f25479bbdc049422991371e9ddce15ad"
       escalation_reasons:
         - "central_component:packages/core/src/runner/supervisor-execution-episode.ts"
         - "central_component:packages/core/src/schemas/index.ts"
@@ -172,6 +176,8 @@ execution_contract:
         - "central_path:packages/agentplane/src/cli/run-cli/command-catalog/task-supervisor.ts"
         - "central_path:packages/agentplane/src/cli/run-cli/command-loaders/task.ts"
         - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-default-budget.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
         - "central_path:packages/core/src/runner/supervisor-execution-episode.ts"
         - "central_path:packages/core/src/schemas/index.ts"
         - "central_path:scripts/lib/test-route-registry.mjs"
@@ -193,6 +199,10 @@ execution_contract:
           - "packages/agentplane/src/cli/run-cli/command-catalog/task-supervisor.ts"
           - "packages/agentplane/src/cli/run-cli/command-loaders/task.ts"
           - "packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts"
+          - "packages/agentplane/src/commands/shared/supervisor-execution-default-budget.test.ts"
+          - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+          - "packages/agentplane/src/commands/task/scope-extend-legacy-compat.test.ts"
+          - "packages/agentplane/src/commands/task/scope-extend.ts"
           - "packages/agentplane/src/commands/task/supervisor-budget-epoch.command.ts"
           - "packages/core/src/runner/supervisor-execution-episode.ts"
           - "packages/core/src/schemas/index.ts"
@@ -236,7 +246,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "acdefe5e2777725e94470b2842688e1c8f825cf0"
+  message: "🚧 RMHWQ5 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -250,6 +262,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: ; repository effects: schema, tests."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: acdefe5e2777. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -273,8 +288,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The preserved implementation and its regression coverage require the execution contract to authorize schema and test effects before recovery can continue. Recommended action: Approve the exact schema and tests repository effects, then recover the preserved implementation and rerun verification. Requested scope: roots=unchanged; repository effects=schema,tests; request digest=sha256:389372f45f1c39e726832ce3c0b5c4f74b2711a235e238540e9e0817d4c44fda. Agentplane receipt: external-agent-blocker/tr_95c1827821194781dba4c05955addab8/sha256:9ae18c14dab95db76420c60e73b615b90119723fc2a3b35c57320ccf9ad50138/sha256:389372f45f1c39e726832ce3c0b5c4f74b2711a235e238540e9e0817d4c44fda."
+  -
+    type: "status"
+    at: "2026-09-13T10:41:26.463Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: acdefe5e2777. CLI accepted one state-bound external-agent semantic result."
+    commit: "acdefe5e2777725e94470b2842688e1c8f825cf0"
 doc_version: 3
-doc_updated_at: "2026-09-13T10:08:18.536Z"
+doc_updated_at: "2026-09-13T10:41:26.463Z"
 doc_updated_by: "SUPERVISOR"
 description: "When a supervisor episode stops because prior paid work has unavailable or unallocatable provider token telemetry, preserve that historical usage as unknown and continue to block automatic paid dispatch. Add a narrow operator command that accepts an explicit USER authorization, records durable state-bound provenance, and opens a new independently capped token budget epoch without rewriting prior operations or treating unknown usage as zero. Reject stale authorization, non-telemetry stops, missing active USER authority, replay with different parameters, and caps that are absent or invalid. The repaired ST-14 task must be able to resume through this command. Do not weaken actual human_review verdicts or automatic fail-closed admission."
 sections:
@@ -757,7 +780,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609130858-RMHWQ5"
-    event_cursor: 10
+    event_cursor: 12
     final_validation: null
     id: "202609130858-RMHWQ5"
     intent:
@@ -797,9 +820,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 12
+    revision: 14
     schema_version: 1
-    updated_at: "2026-09-13T10:08:18.536Z"
+    updated_at: "2026-09-13T10:41:26.463Z"
     work_items:
       budget-epoch-repair:
         attempt: 0
@@ -959,6 +982,30 @@ extensions:
         previous_revision: 8
         schema_version: 1
         task_id: "202609130858-RMHWQ5"
+      compatibility:sha256:70c8f9fe41ce0e4d969aacf07784d5cb9138a1b37fd12b313cdadbc3e947118d:
+        aggregate_digest: "sha256:e0c7c9770a4d998097348a67765a106453d6c1a0de145ce3dafafa7e6c97677b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T10:41:26.463Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_bd0d9976087703c088b71df8"
+          mutation_id: "compatibility:sha256:70c8f9fe41ce0e4d969aacf07784d5cb9138a1b37fd12b313cdadbc3e947118d"
+          plan_digest: "sha256:3b2ab083f74f5f1d1ff6d3c474e99753a1139bdcb65f1105aa2d8b8c816083b8"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609130858-RMHWQ5"
+          task_revision: 13
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:70c8f9fe41ce0e4d969aacf07784d5cb9138a1b37fd12b313cdadbc3e947118d"
+        next_revision: 14
+        previous_revision: 13
+        schema_version: 1
+        task_id: "202609130858-RMHWQ5"
       compatibility:sha256:72573ae801bd822e9ec21ceffc597fa52607636a9dc802d61d9e5d3c3766d2ee:
         aggregate_digest: "sha256:244796d1847f626a80270c89d6de33bb356a0a2770e224149aadc6881123b17d"
         event:
@@ -1055,11 +1102,35 @@ extensions:
         previous_revision: 6
         schema_version: 1
         task_id: "202609130858-RMHWQ5"
+      compatibility:sha256:df27a90fa9d5ca0ede6b9192ab51667faf57cfdebaed1fe5d92977f382af54de:
+        aggregate_digest: "sha256:aecb02841437c32ea9a52760f12eb732ce8925f33fa5223d689714496cd2948a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T10:41:26.463Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_580b3350c43eb99204252094"
+          mutation_id: "compatibility:sha256:df27a90fa9d5ca0ede6b9192ab51667faf57cfdebaed1fe5d92977f382af54de"
+          plan_digest: "sha256:3b2ab083f74f5f1d1ff6d3c474e99753a1139bdcb65f1105aa2d8b8c816083b8"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609130858-RMHWQ5"
+          task_revision: 12
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:df27a90fa9d5ca0ede6b9192ab51667faf57cfdebaed1fe5d92977f382af54de"
+        next_revision: 13
+        previous_revision: 12
+        schema_version: 1
+        task_id: "202609130858-RMHWQ5"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "d14eb0228be0d507fe296883a8eef2b7d4447de8"
+    hash: "acdefe5e2777725e94470b2842688e1c8f825cf0"
   task_execution_context:
     base_ref: "main"
     base_sha: "d03a5e786db57136bf7f6c4661b148bcf97cfaf1"
