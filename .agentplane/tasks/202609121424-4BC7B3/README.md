@@ -1,10 +1,10 @@
 ---
 id: "202609121424-4BC7B3"
 title: "Qualify and document the 0.7.9 stabilization candidate for ST-18 through ST-20"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 35
+revision: 36
 origin:
   system: "manual"
 depends_on:
@@ -36,15 +36,16 @@ plan_approval:
   updated_by: "HOST:codex:USER"
   note: "host_user_decision=sha256:2baf501f688c40a1f9e656db7b6c8f3740c13e01cca5f467688bb095a6353b13"
 verification:
-  state: "needs_rework"
-  updated_at: "2026-09-13T21:51:24.170Z"
-  updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run ci:local:full"
+  state: "pending"
+  updated_at: "2026-09-13T22:22:36.043Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 1
 execution_route:
   frozen: true
   reason_codes:
     - "agent_preferred_branch_pr"
+    - "effect_ci"
     - "effect_credentials"
     - "effect_external_write"
     - "effect_release_metadata"
@@ -60,6 +61,7 @@ execution_contract:
     allowed_external_effects:
       - "network_read"
     allowed_repository_effects:
+      - "ci"
       - "documentation"
       - "release_metadata"
       - "repository_write"
@@ -75,9 +77,9 @@ execution_contract:
       - "public_api"
       - "schema"
       - "dependencies"
-      - "ci"
       - "security_boundary"
     writable_roots:
+      - ".prettierignore"
       - "docs/developer/blueprints.mdx"
       - "docs/internal/v0.7-agent-efficiency-baseline.md"
       - "docs/user/commands.mdx"
@@ -95,6 +97,7 @@ execution_contract:
       - "scripts/bench/paired-production-driver.test.mjs"
       - "scripts/bench/paired-result-report.mjs"
       - "scripts/bench/paired-result-report.test.mjs"
+      - "website/static/llms-full.txt"
   declaration:
     external_effects:
       - "credentials"
@@ -106,8 +109,10 @@ execution_contract:
       - "M01 must stop treating a subscription-backed Codex run as a monetary purchase and instead compare provider-observed token totals for every assigned attempt."
       - "Publication remains an operator-owned action after implementation, verification, hosted integration, and exact release evidence."
       - "The product contract must remain independent of user billing route: telemetry is always projected, while token-limit enforcement is opt-in and defaults to disabled."
+      - "USER-approved blocked-result scope extension: roots=.prettierignore,website/static/llms-full.txt; repository_effects=ci,documentation,repository_write"
       - "USER-approved blocked-result scope extension: roots=docs/internal/v0.7-agent-efficiency-baseline.md,scripts/baselines,scripts/bench; repository_effects=documentation,source_code,tests"
     repository_effects:
+      - "ci"
       - "documentation"
       - "release_metadata"
       - "repository_write"
@@ -117,6 +122,7 @@ execution_contract:
     reversibility: "recovery_required"
     schema_version: 2
     scope_roots:
+      - ".prettierignore"
       - "docs/developer/blueprints.mdx"
       - "docs/internal/v0.7-agent-efficiency-baseline.md"
       - "docs/user/commands.mdx"
@@ -134,11 +140,10 @@ execution_contract:
       - "scripts/bench/paired-production-driver.test.mjs"
       - "scripts/bench/paired-result-report.mjs"
       - "scripts/bench/paired-result-report.test.mjs"
+      - "website/static/llms-full.txt"
   observed:
     authority_violations:
       - "repository_effect:dependencies"
-      - "verification:recorded-check-11:fail"
-      - "verification:verification-record:fail"
     changed_components:
       - "docs"
       - "scripts"
@@ -185,45 +190,10 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-10"
-        result: "pass"
-      -
-        id: "recorded-check-11"
-        result: "fail"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
-      -
-        id: "recorded-check-7"
-        result: "pass"
-      -
-        id: "recorded-check-8"
-        result: "pass"
-      -
-        id: "recorded-check-9"
-        result: "pass"
-      -
-        id: "verification-record"
-        result: "fail"
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
+    - "effect_ci"
     - "effect_credentials"
     - "effect_external_write"
     - "effect_release_metadata"
@@ -244,6 +214,7 @@ execution_contract:
     contract:
       declared:
         components:
+          - ".prettierignore"
           - "docs/developer/blueprints.mdx"
           - "docs/internal/v0.7-agent-efficiency-baseline.md"
           - "docs/user/commands.mdx"
@@ -261,11 +232,13 @@ execution_contract:
           - "scripts/bench/paired-production-driver.test.mjs"
           - "scripts/bench/paired-result-report.mjs"
           - "scripts/bench/paired-result-report.test.mjs"
+          - "website/static/llms-full.txt"
         evidence_requirements:
           - "external_effect:credentials"
           - "external_effect:external_write"
           - "external_effect:network_read"
           - "hosted_integration"
+          - "repository_effect:ci"
           - "repository_effect:dependencies"
           - "repository_effect:documentation"
           - "repository_effect:release_metadata"
@@ -278,6 +251,7 @@ execution_contract:
           - "external_write"
           - "network_read"
         repository_effects:
+          - "ci"
           - "documentation"
           - "release_metadata"
           - "repository_write"
@@ -287,12 +261,13 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:c09f692f7aa7072d7fda175fd506d8878479200d5765bda954bf749172ea094f"
+      digest: "sha256:b2effe84226483ab3960cf407145d814a8f78bb79bdf8c027c124604fa9a64ec"
       escalation_reasons:
         - "central_component:package.json"
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/supervisor-execution-default-budget.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+        - "effect_ci"
         - "effect_dependencies"
         - "effect_release_metadata"
         - "external_effect_requires_real_e2e"
@@ -400,6 +375,7 @@ execution_contract:
       - "external_effect:external_write"
       - "external_effect:network_read"
       - "hosted_integration"
+      - "repository_effect:ci"
       - "repository_effect:dependencies"
       - "repository_effect:documentation"
       - "repository_effect:release_metadata"
@@ -407,8 +383,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-11"
-      - "verification_recovery:verification-record"
 commit: null
 comments:
   -
@@ -453,6 +427,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The authorized M01 rework is present. Two additional files are required to resolve the full-CI workspace conflict. Recommended action: Extend the implementation scope to the two exact files and issue a replacement episode. Requested scope: roots=.prettierignore,website/static/llms-full.txt; repository effects=ci,documentation,repository_write; request digest=sha256:5f324eacdaeac07a19714d4f538c5dd76314ba2844b77bccd050d06f78500a47. Agentplane receipt: external-agent-blocker/tr_a2e7e31581cf4c25df548a24fa3d3caa/sha256:115de4d30de2755fc25a2ccd4688b0d906ca877feb46e71874a6963dcf7aab08/sha256:5f324eacdaeac07a19714d4f538c5dd76314ba2844b77bccd050d06f78500a47."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: .prettierignore, website/static/llms-full.txt; repository effects: ci, documentation, repository_write."
 events:
   -
     type: "status"
@@ -670,30 +647,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
-  agentplane.execution_grant:
-    actor: "HOST:codex:USER"
-    approval_evidence_digest: "sha256:2baf501f688c40a1f9e656db7b6c8f3740c13e01cca5f467688bb095a6353b13"
-    approval_kind: "host_user_decision"
-    capabilities:
-      - "provider.merge"
-      - "provider.pr"
-      - "repository.integrate"
-      - "repository.write"
-      - "task.lifecycle"
-      - "task.scope.extend"
-    completion_contract_digest: "sha256:87ba4b00b43a0af5b05a830561b20dcfa3df2acb6c54cee5ee895ec6dd950d17"
-    digest: "sha256:30f1306419be4723a9835a9df465dcbcb44b02f2decbaf0d65680d6fe047a6d7"
-    grant_id: "0b3b0a83-7668-468e-81fe-2bd2622128bb"
-    issued_at: "2026-09-13T19:22:13.757Z"
-    kind: "agentplane.execution_grant"
-    plan_digest: "sha256:3c5eb4aaec96a61f33846b10e3b57edcde079209060145200541739594e7e605"
-    plan_revision: 17
-    repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
-    schema_version: 1
-    scope_digest: "sha256:99b2097c821f7fe115c5e0b644883ef2ef491aaae91ee487d2ae6eb4f84fc3c4"
-    status: "active"
-    task_id: "202609121424-4BC7B3"
   agentplane.scope_extension_request:
+    applied_at: "2026-09-13T22:22:36.043Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:115de4d30de2755fc25a2ccd4688b0d906ca877feb46e71874a6963dcf7aab08"
     kind: "task_scope_extension_request"
     request:
@@ -708,7 +664,7 @@ extensions:
         - "website/static/llms-full.txt"
     request_digest: "sha256:5f324eacdaeac07a19714d4f538c5dd76314ba2844b77bccd050d06f78500a47"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_a2e7e31581cf4c25df548a24fa3d3caa"
     work_item_id: null
   agentplane.task_centric:
@@ -1260,7 +1216,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609121424-4BC7B3"
-    event_cursor: 27
+    event_cursor: 28
     final_validation: null
     id: "202609121424-4BC7B3"
     intent:
@@ -1307,7 +1263,7 @@ extensions:
 
         Source contract: agentplane-roadmap-r2 cards ST-18, ST-19, and ST-20. Build the exact clean installed candidate and run the frozen direct, branch, recovery, old-record, required PLANNER, and required EVALUATOR corpus. Then, under the user-approved spend and sandbox authority, execute the preregistered M01 paired pilot with complete all-attempt raw evidence and expand only by its fixed uncertainty rule; report NOT ESTABLISHED when coverage is insufficient. Record exact product and target SHAs separately. Finally document only observed 0.7.9 behavior and measurements and the 0.7.10 through 0.7.14 boundary. Do not weaken golden outcomes, disable Blueprint writers, omit required stages, rerun until green, or claim unsupported efficiency. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: package tarball check, local install smoke, release critical suite, benchmark check and replay check, documentation bootstrap and onboarding checks, plus exact evidence review.
       task_id: "202609121424-4BC7B3"
-    lifecycle: "BLOCKED"
+    lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history:
       -
@@ -2425,7 +2381,7 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609121424-4BC7B3"
-    revision: 35
+    revision: 36
     schema_version: 1
     updated_at: "2026-09-13T22:22:00.952Z"
     work_items:
@@ -3066,6 +3022,30 @@ extensions:
         mutation_id: "compatibility:sha256:2d1c326da2259b9c3bedae51c02afe278e42d2c486904e54dbcd8014a76c9c0d"
         next_revision: 22
         previous_revision: 21
+        schema_version: 1
+        task_id: "202609121424-4BC7B3"
+      compatibility:sha256:333eb74116bb72c4e1192fc9ba6df6958f3c62d5b1a10ed0e41223b941e90912:
+        aggregate_digest: "sha256:0ce0c5e22aeed1fa58e050028392d4003c09f62eebb5c2e6d641a6edc17cdf63"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T22:22:00.952Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_390a3df31a646b47e6bd9284"
+          mutation_id: "compatibility:sha256:333eb74116bb72c4e1192fc9ba6df6958f3c62d5b1a10ed0e41223b941e90912"
+          plan_digest: "sha256:8a1ce7a2f7c1bd5543bab4cf019887053321288654bc3dbf4761cc511f44fd52"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-4BC7B3"
+          task_revision: 35
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:333eb74116bb72c4e1192fc9ba6df6958f3c62d5b1a10ed0e41223b941e90912"
+        next_revision: 36
+        previous_revision: 35
         schema_version: 1
         task_id: "202609121424-4BC7B3"
       compatibility:sha256:4bafb4926232233c9c00eb13a0641ad8ff388b7ebc39af21f077708f408ea08a:
