@@ -1,1 +1,1 @@
-🚧 3YAX44 task: Add the 0.7.9 marginal-cost and paired production benchmark harness for ST-14 through ST-16 [202609121424-3YAX44]
+✅ 3YAX44 task: Add the 0.7.9 marginal-cost and paired production benchmark harness for ST-14 through ST-16 [202609121424-3YAX44]
