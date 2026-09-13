@@ -1,10 +1,10 @@
 ---
 id: "202609121424-49XXT3"
 title: "Publish and independently verify AgentPlane 0.7.9 from the exact qualified main SHA"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -31,9 +31,9 @@ plan_approval:
   note: "host_user_decision=sha256:4a965f2340adea8c7ef8ed6627f467899167ffc6dfbfce57d01b87ce15f4e597"
 verification:
   state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  updated_at: "2026-09-13T23:03:50.512Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 0
 execution_route:
   frozen: true
@@ -73,6 +73,8 @@ execution_contract:
       - "security_boundary"
     writable_roots:
       - ".agentplane/.release"
+      - ".agentplane/WORKFLOW.md"
+      - ".agentplane/config.json"
       - ".agentplane/tasks/202609121424-49XXT3"
       - "docs/assets"
       - "docs/reference/generated-reference.mdx"
@@ -97,6 +99,7 @@ execution_contract:
       - "Publishing npm packages, GitHub assets, setup tags, Homebrew, and Scoop requires authenticated external writes and independent readback."
       - "Stable release preparation changes canonical versions, generated release surfaces, release notes, and task evidence."
       - "The stable candidate must pass hosted branch protection before its exact merged main SHA can be published."
+      - "USER-approved blocked-result scope extension: roots=.agentplane/WORKFLOW.md,.agentplane/config.json; repository_effects=release_metadata,repository_write"
     repository_effects:
       - "documentation"
       - "release_metadata"
@@ -106,6 +109,8 @@ execution_contract:
     schema_version: 2
     scope_roots:
       - ".agentplane/.release"
+      - ".agentplane/WORKFLOW.md"
+      - ".agentplane/config.json"
       - ".agentplane/tasks/202609121424-49XXT3"
       - "docs/assets"
       - "docs/reference/generated-reference.mdx"
@@ -149,6 +154,8 @@ execution_contract:
       declared:
         components:
           - ".agentplane/.release"
+          - ".agentplane/WORKFLOW.md"
+          - ".agentplane/config.json"
           - ".agentplane/tasks/202609121424-49XXT3"
           - "docs/assets"
           - "docs/reference/generated-reference.mdx"
@@ -184,7 +191,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:c0146a581b57fec0921368e23b792cc45cbecd59ae4a04b3f238b842ec3826b0"
+      digest: "sha256:58aba6048abac365339c0fb69be2e1f788918f665dc2067a95511b4836d5613e"
       escalation_reasons:
         - "central_component:package.json"
         - "effect_release_metadata"
@@ -243,6 +250,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The canonical stable version bump requires two release metadata files outside the issued writable roots. Recommended action: Approve the exact scope extension, request a fresh packet, and rerun the canonical version bump without excluding release surfaces. Requested scope: roots=.agentplane/WORKFLOW.md,.agentplane/config.json; repository effects=release_metadata,repository_write; request digest=sha256:64efd1a8d1aa81e24d3e15b4c4e3cb13243be7dad82ee30c939d18e544bb7923. Agentplane receipt: external-agent-blocker/tr_c6fd4ad79889a8a1540b287109085a52/sha256:b8cffe516cf04d094fc3f81064acd6d65e5e21afcb7e8823df89b26d72b398d2/sha256:64efd1a8d1aa81e24d3e15b4c4e3cb13243be7dad82ee30c939d18e544bb7923."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: .agentplane/WORKFLOW.md, .agentplane/config.json; repository effects: release_metadata, repository_write."
 events:
   -
     type: "status"
@@ -315,6 +325,8 @@ extensions:
     status: "active"
     task_id: "202609121424-49XXT3"
   agentplane.scope_extension_request:
+    applied_at: "2026-09-13T23:03:50.512Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:b8cffe516cf04d094fc3f81064acd6d65e5e21afcb7e8823df89b26d72b398d2"
     kind: "task_scope_extension_request"
     request:
@@ -328,20 +340,20 @@ extensions:
         - ".agentplane/config.json"
     request_digest: "sha256:64efd1a8d1aa81e24d3e15b4c4e3cb13243be7dad82ee30c939d18e544bb7923"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_c6fd4ad79889a8a1540b287109085a52"
     work_item_id: "prepare_candidate"
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-13T22:53:42.760Z"
-        approved_by: "HOST:codex-desktop:USER"
-        approved_digest: "sha256:b60009385881a9948ab9650dbcfdceb73d95c42fed33418aa4c5510198d4176e"
+        approved_at: "2026-09-13T23:03:50.512Z"
+        approved_by: "USER"
+        approved_digest: "sha256:bbde63d3c4bfef9a5a3e4e703a3d291f1fc7284d518d2e4e12bb2fb896b6685b"
         policy_facts:
-          - "host_user_decision"
+          - "state_bound_scope_extension:sha256:64efd1a8d1aa81e24d3e15b4c4e3cb13243be7dad82ee30c939d18e544bb7923"
         state: "approved"
-      created_at: "2026-09-13T03:09:14.798Z"
-      digest: "sha256:b60009385881a9948ab9650dbcfdceb73d95c42fed33418aa4c5510198d4176e"
+      created_at: "2026-09-13T23:03:50.512Z"
+      digest: "sha256:bbde63d3c4bfef9a5a3e4e703a3d291f1fc7284d518d2e4e12bb2fb896b6685b"
       proposal:
         assumptions:
           - "The integrated 0.7.9 stabilization tasks are complete because their protected PRs and hosted close evidence are present on synchronized main."
@@ -640,16 +652,26 @@ extensions:
                   kind: "workspace"
                   mode: "exclusive"
                   resource: "release-candidate-worktree"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: ".agentplane/WORKFLOW.md"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: ".agentplane/config.json"
               risk: "high"
               scope_roots:
+                - ".agentplane/WORKFLOW.md"
+                - ".agentplane/config.json"
+                - ".agentplane/tasks/202609121424-49XXT3"
+                - "docs/assets"
+                - "docs/reference/generated-reference.mdx"
+                - "docs/releases/v0.7.9-evidence"
+                - "docs/releases/v0.7.9.md"
                 - "package.json"
                 - "packages"
-                - "docs/releases/v0.7.9.md"
-                - "docs/releases/v0.7.9-evidence"
-                - "docs/reference/generated-reference.mdx"
-                - "docs/assets"
                 - "scripts/baselines"
-                - ".agentplane/tasks/202609121424-49XXT3"
               validation:
                 checks:
                   -
@@ -915,10 +937,10 @@ extensions:
                     required: true
                 evidence_fingerprint: "sha256:08e623aa8e62234e358d889c3c8857772bad3fb84df87657f5ba597807e8cb08"
                 schema_version: 1
-      revision: 1
+      revision: 2
       schema_version: 1
       task_id: "202609121424-49XXT3"
-    event_cursor: 6
+    event_cursor: 7
     final_validation: null
     id: "202609121424-49XXT3"
     intent:
@@ -940,7 +962,7 @@ extensions:
 
         Release operator task after all 0.7.9 stabilization dependencies are integrated. Prepare exact 0.7.9 version parity and release notes, run the complete release prepublish and incident gates, produce and integrate the release-ready candidate through repository policy, publish v0.7.9 from the exact qualified main SHA, and independently verify the canonical .agentplane/.release/publish/publish-result.json has success=true with an empty failures array for that SHA. Verify GitHub release assets and checksums, package registries, setup-agentplane tag and install, Homebrew and Scoop distribution, both agentplane and ap entrypoints, and default-branch state. Record any unavailable anonymous GHCR check separately. Complete the required post-publish evidence follow-up and next patch beta only through AgentPlane-managed lifecycle. Never commit agentplane-roadmap-r2. Stop only at a genuine provider or evidence boundary; the user explicitly authorized publish, merge, network, credentials, and external-system actions for v0.7.9.
       task_id: "202609121424-49XXT3"
-    lifecycle: "BLOCKED"
+    lifecycle: "ACTIVE"
     plan_amendments:
       -
         actor_id: "external:EXECUTOR"
@@ -961,8 +983,594 @@ extensions:
           risk_changed: false
           scope_roots_added: []
         schema_version: 1
-    plan_history: []
-    revision: 9
+    plan_history:
+      -
+        approval:
+          approved_at: "2026-09-13T22:53:42.760Z"
+          approved_by: "HOST:codex-desktop:USER"
+          approved_digest: "sha256:b60009385881a9948ab9650dbcfdceb73d95c42fed33418aa4c5510198d4176e"
+          policy_facts:
+            - "host_user_decision"
+          state: "approved"
+        created_at: "2026-09-13T03:09:14.798Z"
+        digest: "sha256:b60009385881a9948ab9650dbcfdceb73d95c42fed33418aa4c5510198d4176e"
+        proposal:
+          assumptions:
+            - "The integrated 0.7.9 stabilization tasks are complete because their protected PRs and hosted close evidence are present on synchronized main."
+            - "The repository release tooling remains the owner of version expansion, publication, next-beta creation, and exact-SHA evidence."
+          planning_baseline:
+            captured_at: "2026-09-13T03:05:22.900Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:08e623aa8e62234e358d889c3c8857772bad3fb84df87657f5ba597807e8cb08"
+            dirty_paths:
+              - ".agentplane/tasks/202609072121-9VEHKH/README.md"
+              - ".agentplane/tasks/202609080727-BAWTEE/README.md"
+              - ".agentplane/tasks/202609121424-3YAX44/README.md"
+              - ".agentplane/tasks/202609121424-49XXT3/README.md"
+              - ".agentplane/tasks/202609121424-4BC7B3/README.md"
+              - ".agentplane/tasks/202609121424-ZEJ656/README.md"
+              - ".agentplane/tasks/202609130146-7AZ4T4/README.md"
+              - "agentplane-roadmap-r2/AGENT-START.md"
+              - "agentplane-roadmap-r2/EXECUTION-CHARTER.md"
+              - "agentplane-roadmap-r2/README.md"
+              - "agentplane-roadmap-r2/agentplane-0.7.9-0.7.14-roadmap-r2.md"
+              - "agentplane-roadmap-r2/checksums.json"
+              - "agentplane-roadmap-r2/coverage-and-gap-audit.md"
+              - "agentplane-roadmap-r2/coverage-map.json"
+              - "agentplane-roadmap-r2/dependency-graph.json"
+              - "agentplane-roadmap-r2/experiment-requirements.json"
+              - "agentplane-roadmap-r2/releases/0.7.10.md"
+              - "agentplane-roadmap-r2/releases/0.7.11.md"
+              - "agentplane-roadmap-r2/releases/0.7.12.md"
+              - "agentplane-roadmap-r2/releases/0.7.13.md"
+              - "agentplane-roadmap-r2/releases/0.7.14.md"
+              - "agentplane-roadmap-r2/releases/0.7.9.md"
+              - "agentplane-roadmap-r2/source-evidence.json"
+              - "agentplane-roadmap-r2/tasks.json"
+              - "agentplane-roadmap-r2/tasks/BP-01.md"
+              - "agentplane-roadmap-r2/tasks/BP-02.md"
+              - "agentplane-roadmap-r2/tasks/BP-03.md"
+              - "agentplane-roadmap-r2/tasks/BP-04.md"
+              - "agentplane-roadmap-r2/tasks/BP-05.md"
+              - "agentplane-roadmap-r2/tasks/BP-06.md"
+              - "agentplane-roadmap-r2/tasks/BP-07.md"
+              - "agentplane-roadmap-r2/tasks/BP-08.md"
+              - "agentplane-roadmap-r2/tasks/BP-09.md"
+              - "agentplane-roadmap-r2/tasks/BP-10.md"
+              - "agentplane-roadmap-r2/tasks/BP-11.md"
+              - "agentplane-roadmap-r2/tasks/BP-12.md"
+              - "agentplane-roadmap-r2/tasks/BP-13.md"
+              - "agentplane-roadmap-r2/tasks/BP-14.md"
+              - "agentplane-roadmap-r2/tasks/BP-15.md"
+              - "agentplane-roadmap-r2/tasks/BP-16.md"
+              - "agentplane-roadmap-r2/tasks/BP-17.md"
+              - "agentplane-roadmap-r2/tasks/BP-18.md"
+              - "agentplane-roadmap-r2/tasks/BP-19.md"
+              - "agentplane-roadmap-r2/tasks/BP-20.md"
+              - "agentplane-roadmap-r2/tasks/BP-21.md"
+              - "agentplane-roadmap-r2/tasks/BP-22.md"
+              - "agentplane-roadmap-r2/tasks/BP-23.md"
+              - "agentplane-roadmap-r2/tasks/BP-24.md"
+              - "agentplane-roadmap-r2/tasks/BP-25.md"
+              - "agentplane-roadmap-r2/tasks/BP-26.md"
+              - "agentplane-roadmap-r2/tasks/BP-27.md"
+              - "agentplane-roadmap-r2/tasks/BP-28.md"
+              - "agentplane-roadmap-r2/tasks/BP-29.md"
+              - "agentplane-roadmap-r2/tasks/BP-30.md"
+              - "agentplane-roadmap-r2/tasks/BP-31.md"
+              - "agentplane-roadmap-r2/tasks/EV-01.md"
+              - "agentplane-roadmap-r2/tasks/EV-02.md"
+              - "agentplane-roadmap-r2/tasks/EV-03.md"
+              - "agentplane-roadmap-r2/tasks/EV-04.md"
+              - "agentplane-roadmap-r2/tasks/EV-05.md"
+              - "agentplane-roadmap-r2/tasks/EV-06.md"
+              - "agentplane-roadmap-r2/tasks/EV-07.md"
+              - "agentplane-roadmap-r2/tasks/EV-08.md"
+              - "agentplane-roadmap-r2/tasks/EV-09.md"
+              - "agentplane-roadmap-r2/tasks/EV-10.md"
+              - "agentplane-roadmap-r2/tasks/EV-11.md"
+              - "agentplane-roadmap-r2/tasks/EV-12.md"
+              - "agentplane-roadmap-r2/tasks/EV-13.md"
+              - "agentplane-roadmap-r2/tasks/LC-01.md"
+              - "agentplane-roadmap-r2/tasks/LC-02.md"
+              - "agentplane-roadmap-r2/tasks/LC-03.md"
+              - "agentplane-roadmap-r2/tasks/LC-04.md"
+              - "agentplane-roadmap-r2/tasks/LC-05.md"
+              - "agentplane-roadmap-r2/tasks/LC-06.md"
+              - "agentplane-roadmap-r2/tasks/LC-07.md"
+              - "agentplane-roadmap-r2/tasks/LC-08.md"
+              - "agentplane-roadmap-r2/tasks/LC-09.md"
+              - "agentplane-roadmap-r2/tasks/LC-10.md"
+              - "agentplane-roadmap-r2/tasks/LC-11.md"
+              - "agentplane-roadmap-r2/tasks/LC-12.md"
+              - "agentplane-roadmap-r2/tasks/LC-13.md"
+              - "agentplane-roadmap-r2/tasks/LC-14.md"
+              - "agentplane-roadmap-r2/tasks/LC-15.md"
+              - "agentplane-roadmap-r2/tasks/LC-16.md"
+              - "agentplane-roadmap-r2/tasks/LC-17.md"
+              - "agentplane-roadmap-r2/tasks/LC-18.md"
+              - "agentplane-roadmap-r2/tasks/LC-19.md"
+              - "agentplane-roadmap-r2/tasks/LC-20.md"
+              - "agentplane-roadmap-r2/tasks/LC-21.md"
+              - "agentplane-roadmap-r2/tasks/LC-22.md"
+              - "agentplane-roadmap-r2/tasks/LC-23.md"
+              - "agentplane-roadmap-r2/tasks/PL-01.md"
+              - "agentplane-roadmap-r2/tasks/PL-02.md"
+              - "agentplane-roadmap-r2/tasks/PL-03.md"
+              - "agentplane-roadmap-r2/tasks/PL-04.md"
+              - "agentplane-roadmap-r2/tasks/PL-05.md"
+              - "agentplane-roadmap-r2/tasks/PL-06.md"
+              - "agentplane-roadmap-r2/tasks/PL-07.md"
+              - "agentplane-roadmap-r2/tasks/PL-08.md"
+              - "agentplane-roadmap-r2/tasks/PL-09.md"
+              - "agentplane-roadmap-r2/tasks/PL-10.md"
+              - "agentplane-roadmap-r2/tasks/PL-11.md"
+              - "agentplane-roadmap-r2/tasks/PL-12.md"
+              - "agentplane-roadmap-r2/tasks/RC-01.md"
+              - "agentplane-roadmap-r2/tasks/RC-02.md"
+              - "agentplane-roadmap-r2/tasks/RC-03.md"
+              - "agentplane-roadmap-r2/tasks/RC-04.md"
+              - "agentplane-roadmap-r2/tasks/RC-05.md"
+              - "agentplane-roadmap-r2/tasks/RC-06.md"
+              - "agentplane-roadmap-r2/tasks/RC-07.md"
+              - "agentplane-roadmap-r2/tasks/RC-08.md"
+              - "agentplane-roadmap-r2/tasks/RC-09.md"
+              - "agentplane-roadmap-r2/tasks/RC-10.md"
+              - "agentplane-roadmap-r2/tasks/RC-11.md"
+              - "agentplane-roadmap-r2/tasks/RC-12.md"
+              - "agentplane-roadmap-r2/tasks/RC-13.md"
+              - "agentplane-roadmap-r2/tasks/RC-14.md"
+              - "agentplane-roadmap-r2/tasks/RC-15.md"
+              - "agentplane-roadmap-r2/tasks/RC-16.md"
+              - "agentplane-roadmap-r2/tasks/RC-17.md"
+              - "agentplane-roadmap-r2/tasks/RC-18.md"
+              - "agentplane-roadmap-r2/tasks/ST-01.md"
+              - "agentplane-roadmap-r2/tasks/ST-02.md"
+              - "agentplane-roadmap-r2/tasks/ST-03.md"
+              - "agentplane-roadmap-r2/tasks/ST-04.md"
+              - "agentplane-roadmap-r2/tasks/ST-05.md"
+              - "agentplane-roadmap-r2/tasks/ST-06.md"
+              - "agentplane-roadmap-r2/tasks/ST-07.md"
+              - "agentplane-roadmap-r2/tasks/ST-08.md"
+              - "agentplane-roadmap-r2/tasks/ST-09.md"
+              - "agentplane-roadmap-r2/tasks/ST-10.md"
+              - "agentplane-roadmap-r2/tasks/ST-11.md"
+              - "agentplane-roadmap-r2/tasks/ST-12.md"
+              - "agentplane-roadmap-r2/tasks/ST-13.md"
+              - "agentplane-roadmap-r2/tasks/ST-14.md"
+              - "agentplane-roadmap-r2/tasks/ST-15.md"
+              - "agentplane-roadmap-r2/tasks/ST-16.md"
+              - "agentplane-roadmap-r2/tasks/ST-17.md"
+              - "agentplane-roadmap-r2/tasks/ST-18.md"
+              - "agentplane-roadmap-r2/tasks/ST-19.md"
+              - "agentplane-roadmap-r2/tasks/ST-20.md"
+              - "agentplane-roadmap-r2/tasks/ST-21.md"
+              - "agentplane-roadmap-r2/validate_roadmap.py"
+              - "agentplane-roadmap-r2/validation-report.json"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "d03a5e786db57136bf7f6c4661b148bcf97cfaf1"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:2"
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bun run release:check"
+                id: "release_check"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1200000
+              -
+                capability: "task.verify"
+                command: "bun run release:prepublish"
+                id: "release_prepublish"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1200000
+              -
+                capability: "task.verify"
+                id: "scope_hygiene"
+                kind: "structural"
+                required: true
+              -
+                capability: "task.verify"
+                id: "hosted_integration"
+                kind: "provider"
+                required: true
+              -
+                capability: "task.verify"
+                id: "publish_manifest"
+                kind: "structural"
+                required: true
+              -
+                capability: "task.verify"
+                id: "github_release"
+                kind: "provider"
+                required: true
+              -
+                capability: "task.verify"
+                id: "registry_readback"
+                kind: "provider"
+                required: true
+              -
+                capability: "task.verify"
+                id: "installer_readback"
+                kind: "provider"
+                required: true
+              -
+                capability: "task.verify"
+                id: "default_branch_readback"
+                kind: "provider"
+                required: true
+            criteria:
+              -
+                check_ids:
+                  - "release_check"
+                  - "release_prepublish"
+                  - "scope_hygiene"
+                description: "The release candidate promotes every canonical 0.7.9-beta.1 version and internal pin to stable 0.7.9, adds complete release notes and evidence, and introduces no semantic source change."
+                id: "candidate_exact"
+                required: true
+              -
+                check_ids:
+                  - "release_check"
+                  - "release_prepublish"
+                  - "hosted_integration"
+                description: "The exact committed candidate passes local release gates, independent evaluation, hosted CI, protected integration, and hosted close."
+                id: "candidate_qualified"
+                required: true
+              -
+                check_ids:
+                  - "publish_manifest"
+                  - "github_release"
+                description: "The protected publish workflow releases v0.7.9 from the exact qualified main SHA and writes publish-result.json with success=true and an empty failures array."
+                id: "publication_exact"
+                required: true
+              -
+                check_ids:
+                  - "registry_readback"
+                  - "installer_readback"
+                  - "default_branch_readback"
+                description: "Independent readback verifies package registries, assets and checksums, setup-agentplane, Homebrew, Scoop, both CLI entrypoints, and final default-branch state."
+                id: "distribution_verified"
+                required: true
+              -
+                check_ids:
+                  - "scope_hygiene"
+                  - "default_branch_readback"
+                description: "Post-publish evidence is committed through AgentPlane and the next patch beta opens only after public 0.7.9 proof; unrelated untracked paths remain preserved."
+                id: "post_publish_complete"
+                required: true
+            evidence_fingerprint: "sha256:08e623aa8e62234e358d889c3c8857772bad3fb84df87657f5ba597807e8cb08"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "release_check"
+                      - "release_prepublish"
+                      - "scope_hygiene"
+                    description: "The release candidate promotes every canonical 0.7.9-beta.1 version and internal pin to stable 0.7.9, adds complete release notes and evidence, and introduces no semantic source change."
+                    id: "candidate_exact"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 1000000
+                  optional_sources:
+                    - "docs/releases/v0.7.8-evidence"
+                  required_sources:
+                    - ".agentplane/policy/workflow.release.md"
+                    - ".agentplane/tasks/202609121424-49XXT3/README.md"
+                    - "docs/releases/v0.7.8.md"
+                  symbol_hints:
+                    - "release plan"
+                    - "version parity"
+                    - "release notes"
+                depends_on: []
+                expected_outputs:
+                  - "stable_candidate_diff"
+                  - "release_notes_and_evidence"
+                  - "exact_candidate_sha"
+                id: "prepare_candidate"
+                objective: "Freeze d03a5e786 as the release base and prepare stable 0.7.9 versions, internal pins, generated release surfaces, release notes, and evidence without semantic source changes."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "exclusive"
+                    resource: "release-candidate-worktree"
+                risk: "high"
+                scope_roots:
+                  - "package.json"
+                  - "packages"
+                  - "docs/releases/v0.7.9.md"
+                  - "docs/releases/v0.7.9-evidence"
+                  - "docs/reference/generated-reference.mdx"
+                  - "docs/assets"
+                  - "scripts/baselines"
+                  - ".agentplane/tasks/202609121424-49XXT3"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run release:check"
+                      id: "release_check"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1200000
+                    -
+                      capability: "task.verify"
+                      command: "bun run release:prepublish"
+                      id: "release_prepublish"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1200000
+                    -
+                      capability: "task.verify"
+                      id: "scope_hygiene"
+                      kind: "structural"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "release_check"
+                        - "release_prepublish"
+                        - "scope_hygiene"
+                      description: "The release candidate promotes every canonical 0.7.9-beta.1 version and internal pin to stable 0.7.9, adds complete release notes and evidence, and introduces no semantic source change."
+                      id: "candidate_exact"
+                      required: true
+                  evidence_fingerprint: "sha256:08e623aa8e62234e358d889c3c8857772bad3fb84df87657f5ba597807e8cb08"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "release_check"
+                      - "release_prepublish"
+                      - "hosted_integration"
+                    description: "The exact committed candidate passes local release gates, independent evaluation, hosted CI, protected integration, and hosted close."
+                    id: "candidate_qualified"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 500000
+                  optional_sources: []
+                  required_sources:
+                    - ".agentplane/tasks/202609121424-49XXT3/README.md"
+                  symbol_hints:
+                    - "verification"
+                    - "quality review"
+                    - "hosted integration"
+                depends_on:
+                  - "prepare_candidate"
+                expected_outputs:
+                  - "independent_evaluator_verdict"
+                  - "green_hosted_candidate_checks"
+                  - "qualified_main_sha"
+                id: "qualify_integrate"
+                objective: "Qualify the exact release candidate, obtain independent review and hosted checks, and integrate it through the protected AgentPlane merge lane and hosted close."
+                optional: false
+                priority: 2
+                required_inputs:
+                  - "exact_candidate_sha"
+                  - "release_notes_and_evidence"
+                resource_claims:
+                  -
+                    kind: "provider_queue"
+                    mode: "exclusive"
+                    resource: "integration-lane"
+                risk: "high"
+                scope_roots:
+                  - ".agentplane/tasks/202609121424-49XXT3"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run release:check"
+                      id: "release_check"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1200000
+                    -
+                      capability: "task.verify"
+                      command: "bun run release:prepublish"
+                      id: "release_prepublish"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1200000
+                    -
+                      capability: "task.verify"
+                      id: "hosted_integration"
+                      kind: "provider"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "release_check"
+                        - "release_prepublish"
+                        - "hosted_integration"
+                      description: "The exact committed candidate passes local release gates, independent evaluation, hosted CI, protected integration, and hosted close."
+                      id: "candidate_qualified"
+                      required: true
+                  evidence_fingerprint: "sha256:08e623aa8e62234e358d889c3c8857772bad3fb84df87657f5ba597807e8cb08"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "publish_manifest"
+                      - "github_release"
+                    description: "The protected publish workflow releases v0.7.9 from the exact qualified main SHA and writes publish-result.json with success=true and an empty failures array."
+                    id: "publication_exact"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 500000
+                  optional_sources: []
+                  required_sources:
+                    - ".agentplane/policy/workflow.release.md"
+                    - ".agentplane/tasks/202609121424-49XXT3/README.md"
+                  symbol_hints:
+                    - "publish-result.json"
+                    - "release-ready"
+                depends_on:
+                  - "qualify_integrate"
+                expected_outputs:
+                  - "v0_7_9_github_release"
+                  - "published_npm_packages"
+                  - "exact_sha_publish_result"
+                id: "publish_stable"
+                objective: "Publish v0.7.9 from the exact qualified main SHA through the protected release workflow and preserve canonical publication evidence."
+                optional: false
+                priority: 3
+                required_inputs:
+                  - "qualified_main_sha"
+                resource_claims:
+                  -
+                    kind: "provider_queue"
+                    mode: "exclusive"
+                    resource: "release-v0.7.9"
+                risk: "high"
+                scope_roots:
+                  - ".agentplane/.release"
+                  - ".agentplane/tasks/202609121424-49XXT3"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      id: "publish_manifest"
+                      kind: "structural"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      id: "github_release"
+                      kind: "provider"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "publish_manifest"
+                        - "github_release"
+                      description: "The protected publish workflow releases v0.7.9 from the exact qualified main SHA and writes publish-result.json with success=true and an empty failures array."
+                      id: "publication_exact"
+                      required: true
+                  evidence_fingerprint: "sha256:08e623aa8e62234e358d889c3c8857772bad3fb84df87657f5ba597807e8cb08"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "registry_readback"
+                      - "installer_readback"
+                      - "default_branch_readback"
+                    description: "Independent readback verifies package registries, assets and checksums, setup-agentplane, Homebrew, Scoop, both CLI entrypoints, and final default-branch state."
+                    id: "distribution_verified"
+                    required: true
+                  -
+                    check_ids:
+                      - "scope_hygiene"
+                      - "default_branch_readback"
+                    description: "Post-publish evidence is committed through AgentPlane and the next patch beta opens only after public 0.7.9 proof; unrelated untracked paths remain preserved."
+                    id: "post_publish_complete"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 500000
+                  optional_sources:
+                    - "public GHCR metadata"
+                  required_sources:
+                    - ".agentplane/.release/publish/publish-result.json"
+                    - ".agentplane/tasks/202609121424-49XXT3/README.md"
+                  symbol_hints:
+                    - "agentplane"
+                    - "ap"
+                    - "Homebrew"
+                    - "Scoop"
+                    - "setup-agentplane"
+                depends_on:
+                  - "publish_stable"
+                expected_outputs:
+                  - "independent_distribution_readback"
+                  - "verified_cli_entrypoints"
+                  - "final_main_and_next_beta_evidence"
+                  - "residual_limitations"
+                id: "verify_distribution"
+                objective: "Independently verify all public 0.7.9 artifacts and installers, record limitations precisely, and complete the AgentPlane-managed post-publish evidence and next-beta follow-up."
+                optional: false
+                priority: 4
+                required_inputs:
+                  - "exact_sha_publish_result"
+                  - "v0_7_9_github_release"
+                  - "published_npm_packages"
+                resource_claims:
+                  -
+                    kind: "provider_queue"
+                    mode: "read"
+                    resource: "release-readback-v0.7.9"
+                risk: "high"
+                scope_roots:
+                  - ".agentplane/.release"
+                  - ".agentplane/tasks/202609121424-49XXT3"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      id: "registry_readback"
+                      kind: "provider"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      id: "installer_readback"
+                      kind: "provider"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      id: "default_branch_readback"
+                      kind: "provider"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      id: "scope_hygiene"
+                      kind: "structural"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "registry_readback"
+                        - "installer_readback"
+                        - "default_branch_readback"
+                      description: "Independent readback verifies package registries, assets and checksums, setup-agentplane, Homebrew, Scoop, both CLI entrypoints, and final default-branch state."
+                      id: "distribution_verified"
+                      required: true
+                    -
+                      check_ids:
+                        - "scope_hygiene"
+                        - "default_branch_readback"
+                      description: "Post-publish evidence is committed through AgentPlane and the next patch beta opens only after public 0.7.9 proof; unrelated untracked paths remain preserved."
+                      id: "post_publish_complete"
+                      required: true
+                  evidence_fingerprint: "sha256:08e623aa8e62234e358d889c3c8857772bad3fb84df87657f5ba597807e8cb08"
+                  schema_version: 1
+        revision: 1
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+    revision: 10
     schema_version: 1
     updated_at: "2026-09-13T23:03:44.698Z"
     work_items:
@@ -1117,6 +1725,30 @@ extensions:
         mutation_id: "compatibility:sha256:a7d45aee995566076a18d8eb39dd713b1dc66734a91bf0a72b74c4ddc3a73ade"
         next_revision: 6
         previous_revision: 5
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+      compatibility:sha256:cc12436d82e1fc92fb5205c4a12aac03ea968defa3d06a8b39fa165b39ad67ee:
+        aggregate_digest: "sha256:a3df4e024aad4766d649f76ad116f63cb5c8e88fef4597198b17d12c883f48f5"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T23:03:44.698Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_132744cdb786aba96bd255bd"
+          mutation_id: "compatibility:sha256:cc12436d82e1fc92fb5205c4a12aac03ea968defa3d06a8b39fa165b39ad67ee"
+          plan_digest: "sha256:b60009385881a9948ab9650dbcfdceb73d95c42fed33418aa4c5510198d4176e"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          task_revision: 9
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:cc12436d82e1fc92fb5205c4a12aac03ea968defa3d06a8b39fa165b39ad67ee"
+        next_revision: 10
+        previous_revision: 9
         schema_version: 1
         task_id: "202609121424-49XXT3"
       compatibility:sha256:fb084963bb1d968abf870aa3a833bd8e091f8cdd124fccb25b16de2c2c441b8e:
