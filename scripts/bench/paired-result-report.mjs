@@ -125,7 +125,7 @@ function stageDistribution(attempts) {
 }
 
 function summarizeArm(attempts) {
-  const successes = attempts.filter(attemptSucceeded).length;
+  const successes = attempts.filter((attempt) => attemptSucceeded(attempt)).length;
   const violations = attempts.filter((attempt) => attempt.agent.violations.length > 0).length;
   const observedCosts = attempts.filter((attempt) => attempt.raw_cost.state === "observed");
   const currencies = new Set(attempts.map((attempt) => attempt.raw_cost.currency));
@@ -255,13 +255,17 @@ function efficiencyAssessment(strata, claimPolicy, safetyVerdict, campaignCostId
       !stratum.raw_cost_identity.consistent ||
       stratum.paired_outcomes.accepted.length < minimumPairs
     ) {
+      let reason;
+      if (complete) {
+        reason = stratum.raw_cost_identity.consistent
+          ? "paired_coverage_insufficient"
+          : "raw_cost_identity_mismatch";
+      } else {
+        reason = "incomplete_cost_or_zero_success";
+      }
       assessments[transport] = {
         verdict: "not_established",
-        reason: !complete
-          ? "incomplete_cost_or_zero_success"
-          : !stratum.raw_cost_identity.consistent
-            ? "raw_cost_identity_mismatch"
-            : "paired_coverage_insufficient",
+        reason,
         cost_per_verified_success: armCosts,
       };
       continue;
@@ -322,7 +326,7 @@ export function buildPairedResultReport(value) {
   ) {
     throw new Error("Paired result report requires campaign evidence v1.");
   }
-  const attempts = value.attempts.map(assertAttempt);
+  const attempts = value.attempts.map((attempt, index) => assertAttempt(attempt, index));
   const ids = new Set(attempts.map((attempt) => attempt.id));
   if (ids.size !== attempts.length) throw new Error("Paired attempt IDs must be unique.");
   const strata = {};
