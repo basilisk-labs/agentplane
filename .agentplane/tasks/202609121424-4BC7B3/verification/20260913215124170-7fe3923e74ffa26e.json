@@ -1,0 +1,186 @@
+{
+  "details": "Command: bunx vitest run packages/agentplane/src/commands/shared/supervisor-execution-default-budget.test.ts packages/agentplane/src/commands/task/task-token-usage.test.ts packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609121424-4BC7B3 declared verification\n\nCommand: node --test scripts/bench/paired-production-driver.test.mjs scripts/bench/paired-result-report.test.mjs\nResult: pass\nEvidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609121424-4BC7B3 declared verification\n\nCommand: bun run package:tarball:check\nResult: pass\nEvidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609121424-4BC7B3 declared verification\n\nCommand: bun run package:install-smoke\nResult: pass\nEvidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-4\nScope: branch_pr task 202609121424-4BC7B3 declared verification\n\nCommand: bun run test:release:critical\nResult: pass\nEvidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-5\nScope: branch_pr task 202609121424-4BC7B3 declared verification\n\nCommand: bun run bench:agent-efficiency:check\nResult: pass\nEvidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-6\nScope: branch_pr task 202609121424-4BC7B3 declared verification\n\nCommand: bun run bench:agent-efficiency:replay:check\nResult: pass\nEvidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-7\nScope: branch_pr task 202609121424-4BC7B3 declared verification\n\nCommand: bun run docs:bootstrap:check\nResult: pass\nEvidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-8\nScope: branch_pr task 202609121424-4BC7B3 declared verification\n\nCommand: bun run docs:onboarding:check\nResult: pass\nEvidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-9\nScope: branch_pr task 202609121424-4BC7B3 declared verification\n\nCommand: git diff --check\nResult: pass\nEvidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-10\nScope: branch_pr task 202609121424-4BC7B3 declared verification\n\nCommand: bun run ci:local:full\nResult: fail\nEvidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-11\nScope: branch_pr task 202609121424-4BC7B3 declared verification",
+  "digest": "sha256:7fe3923e74ffa26e7a95f8a948d1e5d632ceae50b8af32cfc8ade8b9f5b19c52",
+  "implementation_sha": "9777074e0a925b369988eae8b309c729166b04e5",
+  "input": {
+    "context": {
+      "digest": "sha256:be2cd4a1822669e850198c66e1dff5858d19f4644abe13560d0a8d2504db633b",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+        "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:e0df2d119577ffee54a234f9ea612a8442b7fbcf970e8e4db425944e83cbe183",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:d0702e8376f4bd7c9389e0364304922d681f1d948d51dd582b4e8d1696d44558",
+      "digest": "sha256:005fda572f0acb36975a5a53988bf94ac4805bd74c62a3e55fbed3e48d5ca04d",
+      "references": [
+        {
+          "digest": "sha256:0a2d34bf4cbf23587a5e4b10d9cfee0b89d8b16c9c387d0a58d4f3372d8d59fd",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:0a2d34bf4cbf23587a5e4b10d9cfee0b89d8b16c9c387d0a58d4f3372d8d59fd",
+          "fragment": "check-10",
+          "path": ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-10",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:0a2d34bf4cbf23587a5e4b10d9cfee0b89d8b16c9c387d0a58d4f3372d8d59fd",
+          "fragment": "check-11",
+          "path": ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-11",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:0a2d34bf4cbf23587a5e4b10d9cfee0b89d8b16c9c387d0a58d4f3372d8d59fd",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:0a2d34bf4cbf23587a5e4b10d9cfee0b89d8b16c9c387d0a58d4f3372d8d59fd",
+          "fragment": "check-3",
+          "path": ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-3",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:0a2d34bf4cbf23587a5e4b10d9cfee0b89d8b16c9c387d0a58d4f3372d8d59fd",
+          "fragment": "check-4",
+          "path": ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-4",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:0a2d34bf4cbf23587a5e4b10d9cfee0b89d8b16c9c387d0a58d4f3372d8d59fd",
+          "fragment": "check-5",
+          "path": ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-5",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:0a2d34bf4cbf23587a5e4b10d9cfee0b89d8b16c9c387d0a58d4f3372d8d59fd",
+          "fragment": "check-6",
+          "path": ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-6",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:0a2d34bf4cbf23587a5e4b10d9cfee0b89d8b16c9c387d0a58d4f3372d8d59fd",
+          "fragment": "check-7",
+          "path": ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-7",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:0a2d34bf4cbf23587a5e4b10d9cfee0b89d8b16c9c387d0a58d4f3372d8d59fd",
+          "fragment": "check-8",
+          "path": ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-8",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:0a2d34bf4cbf23587a5e4b10d9cfee0b89d8b16c9c387d0a58d4f3372d8d59fd",
+          "fragment": "check-9",
+          "path": ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-9",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "58dbda0d5f88c8a83802c5aee3a9380d001dd4b2",
+      "digest": "sha256:7a61c1acd6923a10ef108d19eeacc56cbcb5967835fa0b01b79819f60faac479",
+      "primary_task_id": "202609121424-4BC7B3",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_credentials",
+        "effect_external_write",
+        "effect_release_metadata",
+        "observed_effect_dependencies",
+        "repository_branch_pr_floor",
+        "reversibility_recovery_required"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609121424-4BC7B3"
+      ]
+    },
+    "implementation": {
+      "base_sha": "58dbda0d5f88c8a83802c5aee3a9380d001dd4b2",
+      "digest": "sha256:b63af6b144251ec66a8a70c2b99a8854c254f8224eac75e8267779ff660d36bf",
+      "strategy": "branch_diff",
+      "target_sha": "9777074e0a925b369988eae8b309c729166b04e5"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:c09f692f7aa7072d7fda175fd506d8878479200d5765bda954bf749172ea094f",
+    "verify_steps_digest": "sha256:84ebb72486f4ea2a9ffe75b61a54b3fa1629db460ce93c2c5b98dee49f967795"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check failed: bun run ci:local:full",
+  "recorded_at": "2026-09-13T21:51:24.170Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "1. Run `bun run package:tarball:check`. Expected: the exact clean candidate tarball and package inventory pass with recorded package/source/runtime identities.\n2. Run `bun run package:install-smoke`. Expected: installed direct, branch, recovery, old-record, required-PLANNER, and required-EVALUATOR entrypoints retain frozen behavior.\n3. Run `bun run test:release:critical`. Expected: the complete release-critical corpus passes without weakened golden outcomes or disabled Blueprint writers.\n4. Run `bun run bench:agent-efficiency:check` and `bun run bench:agent-efficiency:replay:check`. Expected: committed baseline and replay evidence remain internally consistent.\n5. Review the M01 manifest, all-attempt raw evidence, paired report, fixed expansion decision, usage coverage, and separate product/target identities. Expected: no rerun-until-green or unsupported efficiency claim; insufficient coverage is reported as NOT ESTABLISHED.\n6. Run `bun run docs:bootstrap:check` and `bun run docs:onboarding:check`. Expected: observed-only 0.7.9 documentation and the 0.7.10-0.7.14 boundary are coherent and all deferred work names exact task IDs.\n7. Review `git diff --check`, the exact task diff, final status, and hosted integration for the accepted head. Expected: I01-I12 and C01-C08 remain conserved, publication is absent, and `agentplane-roadmap-r2` is not committed.",
+  "scope_digest": "sha256:84ebb72486f4ea2a9ffe75b61a54b3fa1629db460ce93c2c5b98dee49f967795",
+  "task_id": "202609121424-4BC7B3",
+  "verification_command": "agentplane verify 202609121424-4BC7B3 --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

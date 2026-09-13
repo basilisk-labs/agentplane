@@ -15,14 +15,14 @@ Source contract: agentplane-roadmap-r2 cards ST-18, ST-19, and ST-20. Build the 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-13T18:34:45.448Z
+- Updated: 2026-09-13T21:47:48.659Z
 - Branch: task/202609121424-4BC7B3/qualify-and-document-the-0-7-9-stabilization-can
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
