@@ -27,7 +27,8 @@ Source contract: agentplane-roadmap-r2 cards ST-18, ST-19, and ST-20. Build the 
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../baselines/v0.7.9-stabilization-candidate.json  | 55 ++++++++++++++++++++++
+ 1 file changed, 55 insertions(+)
 ```
 
 </details>
