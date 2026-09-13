@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 58dbda0d5f88c8a83802c5aee3a9380d001dd4b2..42018380f7785ef4b04cf85520e022b8b8612fad",
+      "command": "git diff --check 38701213ee50bef6e0d9bd13db083840d593db7a..bec1148ab28dc4d0c128280e7f24fdd85ae207bf",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,19 +13,19 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 58dbda0d5f88c8a83802c5aee3a9380d001dd4b2..42018380f7785ef4b04cf85520e022b8b8612fad",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 38701213ee50bef6e0d9bd13db083840d593db7a..bec1148ab28dc4d0c128280e7f24fdd85ae207bf",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "A\t.agentplane/tasks/202609132000-X29JE4/README.md",
-        "A\t.agentplane/tasks/202609132000-X29JE4/blueprint/resolved-snapshot.json",
-        "A\t.agentplane/tasks/202609132000-X29JE4/pr/diffstat.txt",
-        "A\t.agentplane/tasks/202609132000-X29JE4/pr/github-body.md",
-        "A\t.agentplane/tasks/202609132000-X29JE4/pr/github-title.txt",
-        "A\t.agentplane/tasks/202609132000-X29JE4/pr/meta.json",
-        "A\t.agentplane/tasks/202609132000-X29JE4/pr/review.md",
-        "M\tscripts/bench/paired-production-driver.mjs",
-        "M\tscripts/bench/paired-production-driver.test.mjs"
+        "M\t.agentplane/tasks/202609132000-X29JE4/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609132000-X29JE4/pr/github-body.md",
+        "M\t.agentplane/tasks/202609132000-X29JE4/pr/meta.json",
+        "M\t.agentplane/tasks/202609132000-X29JE4/pr/review.md",
+        "M\tpackages/core/src/runner/supervisor-execution-episode-migration.ts",
+        "M\tpackages/core/src/runner/supervisor-execution-episode-telemetry-admission.test.ts",
+        "M\tpackages/core/src/runner/supervisor-execution-episode.test.ts",
+        "M\tpackages/core/src/runner/supervisor-execution-episode.ts",
+        "M\tpackages/core/src/schemas/index.ts"
       ]
     },
     {
@@ -35,72 +35,15 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "58dbda0d5f88c8a83802c5aee3a9380d001dd4b2",
-  "implementation_commit": "42018380f7785ef4b04cf85520e022b8b8612fad",
+  "execution_base_commit": "38701213ee50bef6e0d9bd13db083840d593db7a",
+  "implementation_commit": "bec1148ab28dc4d0c128280e7f24fdd85ae207bf",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [
-      "A  .agentplane/tasks/202609132000-X29JE4/README.md",
-      "A  .agentplane/tasks/202609132000-X29JE4/blueprint/resolved-snapshot.json",
-      "A  .agentplane/tasks/202609132000-X29JE4/pr/diffstat.txt",
-      "A  .agentplane/tasks/202609132000-X29JE4/pr/github-body.md",
-      "A  .agentplane/tasks/202609132000-X29JE4/pr/github-title.txt",
-      "A  .agentplane/tasks/202609132000-X29JE4/pr/meta.json",
-      "A  .agentplane/tasks/202609132000-X29JE4/pr/review.md",
-      "M  scripts/bench/paired-production-driver.mjs",
-      "M  scripts/bench/paired-production-driver.test.mjs"
-    ],
-    "classification": [
-      {
-        "classification": "removed_during_execution",
-        "line": "A  .agentplane/tasks/202609132000-X29JE4/README.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "A  .agentplane/tasks/202609132000-X29JE4/blueprint/resolved-snapshot.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "A  .agentplane/tasks/202609132000-X29JE4/pr/diffstat.txt"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "A  .agentplane/tasks/202609132000-X29JE4/pr/github-body.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "A  .agentplane/tasks/202609132000-X29JE4/pr/github-title.txt"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "A  .agentplane/tasks/202609132000-X29JE4/pr/meta.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "A  .agentplane/tasks/202609132000-X29JE4/pr/review.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "M  scripts/bench/paired-production-driver.mjs"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "M  scripts/bench/paired-production-driver.test.mjs"
-      }
-    ],
+    "baseline": [],
+    "classification": [],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [
-      "A  .agentplane/tasks/202609132000-X29JE4/README.md",
-      "A  .agentplane/tasks/202609132000-X29JE4/blueprint/resolved-snapshot.json",
-      "A  .agentplane/tasks/202609132000-X29JE4/pr/diffstat.txt",
-      "A  .agentplane/tasks/202609132000-X29JE4/pr/github-body.md",
-      "A  .agentplane/tasks/202609132000-X29JE4/pr/github-title.txt",
-      "A  .agentplane/tasks/202609132000-X29JE4/pr/meta.json",
-      "A  .agentplane/tasks/202609132000-X29JE4/pr/review.md",
-      "M  scripts/bench/paired-production-driver.mjs",
-      "M  scripts/bench/paired-production-driver.test.mjs"
-    ],
+    "removed_after_execution_baseline": [],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
