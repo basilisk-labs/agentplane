@@ -1,10 +1,10 @@
 ---
 id: "202609121424-4BC7B3"
 title: "Qualify and document the 0.7.9 stabilization candidate for ST-18 through ST-20"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 33
+revision: 35
 origin:
   system: "manual"
 depends_on:
@@ -450,6 +450,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 9777074e0a92. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The authorized M01 rework is present. Two additional files are required to resolve the full-CI workspace conflict. Recommended action: Extend the implementation scope to the two exact files and issue a replacement episode. Requested scope: roots=.prettierignore,website/static/llms-full.txt; repository effects=ci,documentation,repository_write; request digest=sha256:5f324eacdaeac07a19714d4f538c5dd76314ba2844b77bccd050d06f78500a47. Agentplane receipt: external-agent-blocker/tr_a2e7e31581cf4c25df548a24fa3d3caa/sha256:115de4d30de2755fc25a2ccd4688b0d906ca877feb46e71874a6963dcf7aab08/sha256:5f324eacdaeac07a19714d4f538c5dd76314ba2844b77bccd050d06f78500a47."
 events:
   -
     type: "status"
@@ -546,8 +549,15 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-09-13T22:22:00.952Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The authorized M01 rework is present. Two additional files are required to resolve the full-CI workspace conflict. Recommended action: Extend the implementation scope to the two exact files and issue a replacement episode. Requested scope: roots=.prettierignore,website/static/llms-full.txt; repository effects=ci,documentation,repository_write; request digest=sha256:5f324eacdaeac07a19714d4f538c5dd76314ba2844b77bccd050d06f78500a47. Agentplane receipt: external-agent-blocker/tr_a2e7e31581cf4c25df548a24fa3d3caa/sha256:115de4d30de2755fc25a2ccd4688b0d906ca877feb46e71874a6963dcf7aab08/sha256:5f324eacdaeac07a19714d4f538c5dd76314ba2844b77bccd050d06f78500a47."
 doc_version: 3
-doc_updated_at: "2026-09-13T21:51:25.420Z"
+doc_updated_at: "2026-09-13T22:22:00.952Z"
 doc_updated_by: "SUPERVISOR"
 description: "Source contract: agentplane-roadmap-r2 cards ST-18, ST-19, and ST-20. Build the exact clean installed candidate and run the frozen direct, branch, recovery, old-record, required PLANNER, and required EVALUATOR corpus. Then, under the user-approved spend and sandbox authority, execute the preregistered M01 paired pilot with complete all-attempt raw evidence and expand only by its fixed uncertainty rule; report NOT ESTABLISHED when coverage is insufficient. Record exact product and target SHAs separately. Finally document only observed 0.7.9 behavior and measurements and the 0.7.10 through 0.7.14 boundary. Do not weaken golden outcomes, disable Blueprint writers, omit required stages, rerun until green, or claim unsupported efficiency. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: package tarball check, local install smoke, release critical suite, benchmark check and replay check, documentation bootstrap and onboarding checks, plus exact evidence review."
 sections:
@@ -684,26 +694,23 @@ extensions:
     status: "active"
     task_id: "202609121424-4BC7B3"
   agentplane.scope_extension_request:
-    applied_at: "2026-09-13T19:38:13.148Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:ce6b89008e02fa60f96cc7cc3dddde2089bc0628006d1c719735241e3d4643f2"
+    blocker_state_fingerprint: "sha256:115de4d30de2755fc25a2ccd4688b0d906ca877feb46e71874a6963dcf7aab08"
     kind: "task_scope_extension_request"
     request:
-      rationale: "The paired driver intentionally requires injected live authority, while the repository has no production caller or provider token adapter. A reproducible M01 cannot be created only as baseline data."
+      rationale: "The full-CI gate requires an immutable-baseline formatter exclusion and a refreshed generated documentation artifact."
       repository_effects:
+        - "ci"
         - "documentation"
-        - "source_code"
-        - "tests"
+        - "repository_write"
       schema_version: 1
       scope_roots:
-        - "docs/internal/v0.7-agent-efficiency-baseline.md"
-        - "scripts/baselines"
-        - "scripts/bench"
-    request_digest: "sha256:dccc59c448e3628824e2eac935490d1294b0abdbe1371ab8b7e48b91e087e27f"
+        - ".prettierignore"
+        - "website/static/llms-full.txt"
+    request_digest: "sha256:5f324eacdaeac07a19714d4f538c5dd76314ba2844b77bccd050d06f78500a47"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_aef08c1c2c9042f4bf60e458d905fff9"
-    work_item_id: "run-token-measured-m01"
+    status: "pending"
+    transition_id: "tr_a2e7e31581cf4c25df548a24fa3d3caa"
+    work_item_id: null
   agentplane.task_centric:
     current_plan:
       approval:
@@ -1253,7 +1260,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609121424-4BC7B3"
-    event_cursor: 25
+    event_cursor: 27
     final_validation: null
     id: "202609121424-4BC7B3"
     intent:
@@ -1300,7 +1307,7 @@ extensions:
 
         Source contract: agentplane-roadmap-r2 cards ST-18, ST-19, and ST-20. Build the exact clean installed candidate and run the frozen direct, branch, recovery, old-record, required PLANNER, and required EVALUATOR corpus. Then, under the user-approved spend and sandbox authority, execute the preregistered M01 paired pilot with complete all-attempt raw evidence and expand only by its fixed uncertainty rule; report NOT ESTABLISHED when coverage is insufficient. Record exact product and target SHAs separately. Finally document only observed 0.7.9 behavior and measurements and the 0.7.10 through 0.7.14 boundary. Do not weaken golden outcomes, disable Blueprint writers, omit required stages, rerun until green, or claim unsupported efficiency. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: package tarball check, local install smoke, release critical suite, benchmark check and replay check, documentation bootstrap and onboarding checks, plus exact evidence review.
       task_id: "202609121424-4BC7B3"
-    lifecycle: "ACTIVE"
+    lifecycle: "BLOCKED"
     plan_amendments: []
     plan_history:
       -
@@ -2418,9 +2425,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609121424-4BC7B3"
-    revision: 33
+    revision: 35
     schema_version: 1
-    updated_at: "2026-09-13T21:51:25.416Z"
+    updated_at: "2026-09-13T22:22:00.952Z"
     work_items:
       align-token-measurement-contract:
         attempt: 1
@@ -3253,6 +3260,30 @@ extensions:
         previous_revision: 5
         schema_version: 1
         task_id: "202609121424-4BC7B3"
+      compatibility:sha256:938f6474edb6458c992363d6634dc2674f8f0f07e625913f74b4df729ae51dbc:
+        aggregate_digest: "sha256:3df437d3289dd66bced45fedc379020476123d76b2439e4cbf55be6a16d6a31b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T22:22:00.952Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_4c081ec44c6c41b856c9bf39"
+          mutation_id: "compatibility:sha256:938f6474edb6458c992363d6634dc2674f8f0f07e625913f74b4df729ae51dbc"
+          plan_digest: "sha256:8a1ce7a2f7c1bd5543bab4cf019887053321288654bc3dbf4761cc511f44fd52"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-4BC7B3"
+          task_revision: 33
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:938f6474edb6458c992363d6634dc2674f8f0f07e625913f74b4df729ae51dbc"
+        next_revision: 34
+        previous_revision: 33
+        schema_version: 1
+        task_id: "202609121424-4BC7B3"
       compatibility:sha256:9b3fa7242b1fc67128e7a361703c14295310c9d45ce4cb93bc7f340c67470faf:
         aggregate_digest: "sha256:98f05bcf7ad7f7f3632f25f5cc3e1fb036fb7844da0725f87a96637da7d6d776"
         event:
@@ -3395,6 +3426,30 @@ extensions:
         mutation_id: "compatibility:sha256:c99a0dc1a8f9e9467aec4cd14a1916611bc60598220945e41274159d73e78e4a"
         next_revision: 15
         previous_revision: 14
+        schema_version: 1
+        task_id: "202609121424-4BC7B3"
+      compatibility:sha256:d33246083a1c18d39a17121e1cf46d895ba521429b73784210c3f14404b40e0d:
+        aggregate_digest: "sha256:2689c304e3969e9a3daec3a5321bf3aa8bb72dc72e1cd5ba3e01c076d99940ad"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T22:22:00.952Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_f507538a07de39ecc2ef547c"
+          mutation_id: "compatibility:sha256:d33246083a1c18d39a17121e1cf46d895ba521429b73784210c3f14404b40e0d"
+          plan_digest: "sha256:8a1ce7a2f7c1bd5543bab4cf019887053321288654bc3dbf4761cc511f44fd52"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-4BC7B3"
+          task_revision: 34
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:d33246083a1c18d39a17121e1cf46d895ba521429b73784210c3f14404b40e0d"
+        next_revision: 35
+        previous_revision: 34
         schema_version: 1
         task_id: "202609121424-4BC7B3"
       compatibility:sha256:dab724360fb18164a494278b798e8cd0cb1d295b6379e9f4269590f9b6a216bb:
