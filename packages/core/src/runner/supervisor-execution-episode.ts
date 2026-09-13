@@ -29,7 +29,7 @@ export const SUPERVISOR_EPISODE_OPERATION_STATUS_VALUES = [
   "failed",
 ] as const;
 export const SUPERVISOR_EPISODE_STATUS_VALUES = ["running", "stopped"] as const;
-export const SUPERVISOR_LIFECYCLE_STAGE_VALUES = [
+const SUPERVISOR_LIFECYCLE_STAGE_VALUES = [
   "lifecycle",
   "preparation",
   "semantic_dispatch",
@@ -40,7 +40,7 @@ export const SUPERVISOR_LIFECYCLE_STAGE_VALUES = [
   "verified_state",
   "closure",
 ] as const;
-export const SUPERVISOR_LIFECYCLE_TIME_CATEGORY_VALUES = [
+const SUPERVISOR_LIFECYCLE_TIME_CATEGORY_VALUES = [
   "local_work",
   "user_wait",
   "external_wait",

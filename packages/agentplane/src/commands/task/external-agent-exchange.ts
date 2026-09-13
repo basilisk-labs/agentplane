@@ -50,7 +50,7 @@ type ExternalAgentObservedUsage = Partial<
   >
 >;
 
-export type ExternalAgentHostUsageObservation = {
+type ExternalAgentHostUsageObservation = {
   schema_version: 1;
   observed_by: "host_transport";
   state: "observed" | "partial" | "unavailable" | "unallocatable";
