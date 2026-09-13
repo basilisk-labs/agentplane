@@ -641,6 +641,39 @@ Compared with manually choosing task kind, process profile, mutation class, risk
 the normal path has no manual mode-selection command and no recovery-command sequence. Significant
 work still receives `branch_pr`, hosted-integration evidence, and explicit external authority.
 
+## 0.7 stabilization boundary
+
+The 0.7.9 line stabilizes the current supervised path. Agentplane owns task state, routing,
+authority, verification, repository operations, and closeout. A semantic agent receives one bounded
+episode at a time. Completed tasks expose provider token usage as informational telemetry when the
+provider reports it, or an explicit partial/unavailable state when it does not. Input, cached-input,
+output, reasoning, and total token fields keep their subset relationships; cached-input and
+reasoning tokens are not added to the total again. Token caps are disabled by default and do not
+depend on API billing, credits, purchases, or account classification. Non-token safety limits remain
+active.
+
+The preregistered M01 pilot does not establish a token-efficiency result for 0.7.9. Its first
+15-attempt campaign failed provider schema admission. A schema-corrected 15-attempt campaign
+observed token usage for every attempt, but a task-entry mismatch and a path-verifier defect left no
+quality-equivalent verified pair. Agentplane retains both campaigns and makes no performance or
+safety claim from their raw totals. A future measurement must use a new preregistered campaign; it
+must not replace or selectively retry these attempts.
+
+Later releases retain their own boundaries:
+
+| Release | Deferred task ids       | Boundary                                                                |
+| ------- | ----------------------- | ----------------------------------------------------------------------- |
+| 0.7.10  | `BP-01` through `BP-31` | Retire Blueprint runtime ownership only after each consumer is rebound. |
+| 0.7.11  | `LC-01` through `LC-24` | Converge lifecycle execution on one Kernel-backed coordinator.          |
+| 0.7.12  | `PL-01` through `PL-12` | Qualify optional planning while preserving required planning semantics. |
+| 0.7.13  | `RC-01` through `RC-18` | Introduce and qualify the formal Recipe contract.                       |
+| 0.7.14  | `EV-01` through `EV-13` | Qualify a narrow review-omission rule before activation.                |
+
+Adaptive or shadow review classification is not part of the default 0.7.9 path and is not a 0.7.9
+release dependency. Its first read-only diagnostic is deferred to `EV-04`; independent review
+remains required in 0.7.9. Publication remains a separate operator action after exact-head local and
+hosted verification.
+
 ## First managed workflow
 
 ```bash
@@ -861,6 +894,9 @@ process, Git, filesystem, artifact, provider, and check facts.
 
 - Agent-reported checks are not persisted as observed verification without supervisor evidence.
 - Managed provider token usage is counted exactly once from observed receipts.
+- Provider token usage is informational for every user and is independent of subscription or
+  provider-billing authentication. Token caps default to disabled and require an explicit user
+  action; episode, agent-run, wall-time, changed-file, and no-progress safety limits stay active.
 - External, malformed, legacy, or partially observed usage stays `partial` or `unavailable`; the CLI
   does not accept model-supplied token totals or fabricate zeroes.
 - Independent evaluator evidence stays distinct from executor claims.
@@ -1232,8 +1268,11 @@ task lifecycle evidence. `finish` refreshes the task-local ACR automatically whe
 derived projection, not a second source of truth. Completed tasks expose provider token usage as
 `token_usage` in the task README, task JSON/brief projections, and
 `extensions["agentplane.token-usage"]` in the ACR. The state is `observed`, `partial`, or
-`unavailable`; an unavailable provider signal is never serialized as zero. `acr validate --mode schema` checks only JSON
-shape; `acr check --mode ci` enforces merge-ready semantics. See
+`unavailable`; an unavailable provider signal is never serialized as zero. This informational
+telemetry does not depend on whether the user authenticates through a subscription or provider
+billing account. Token caps are disabled by default and require a separate explicit user action;
+the supervisor's non-token safety limits remain active. `acr validate --mode schema` checks only
+JSON shape; `acr check --mode ci` enforces merge-ready semantics. See
 [Agent Change Records](../reference/acr).
 
 ## Local context

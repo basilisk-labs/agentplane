@@ -106,7 +106,7 @@ function validateTokenUsage(value, label) {
   if (value.state === "partial" && observedFields.length === 0) {
     throw new Error(`${label}.token_usage partial state requires at least one observed field.`);
   }
-  if (value.state === "unavailable" && observedFields.length !== 0) {
+  if (value.state === "unavailable" && observedFields.length > 0) {
     throw new Error(`${label}.token_usage unavailable state requires null token fields.`);
   }
   if (value.state === "observed" && value.reason !== undefined) {

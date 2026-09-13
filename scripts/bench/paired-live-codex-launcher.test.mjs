@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { chmodSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { chmodSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -146,4 +147,30 @@ test("pins the product descriptor and its runtime source identity", () => {
   assert.equal(readM01ProductArtifact(product).artifact.arm, "candidate");
   product.source_sha = "b".repeat(40);
   assert.throws(() => readM01ProductArtifact(product), /invalid/u);
+});
+
+test("oracle preserves the first character of a tracked changed path", () => {
+  const root = mkdtempSync(path.join(os.tmpdir(), "agentplane-m01-oracle-"));
+  mkdirSync(path.join(root, "work"));
+  writeFileSync(path.join(root, "work", "result.txt"), "INITIAL\n");
+  execFileSync("git", ["init", "--quiet", "--initial-branch=main"], { cwd: root });
+  execFileSync("git", ["config", "user.name", "M01 Test"], { cwd: root });
+  execFileSync("git", ["config", "user.email", "m01-test@invalid.local"], { cwd: root });
+  execFileSync("git", ["add", "work/result.txt"], { cwd: root });
+  execFileSync("git", ["commit", "--quiet", "-m", "fixture"], { cwd: root });
+  writeFileSync(path.join(root, "work", "result.txt"), "VERIFIED\n");
+
+  const output = execFileSync(
+    process.execPath,
+    [path.resolve(import.meta.dirname, "paired-m01-oracle.mjs")],
+    {
+      cwd: root,
+      encoding: "utf8",
+      env: {
+        ...process.env,
+        AGENTPLANE_PAIRED_VERIFIER_DIGEST: sha256("oracle"),
+      },
+    },
+  );
+  assert.equal(JSON.parse(output).verified, true);
 });

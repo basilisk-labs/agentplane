@@ -15,8 +15,8 @@ Source contract: agentplane-roadmap-r2 cards ST-18, ST-19, and ST-20. Build the 
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run ci:local:full
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,6 +27,7 @@ Source contract: agentplane-roadmap-r2 cards ST-18, ST-19, and ST-20. Build the 
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .prettierignore                                    |    4 +
  docs/developer/blueprints.mdx                      |   15 +
  docs/internal/v0.7-agent-efficiency-baseline.md    |   32 +
  docs/user/commands.mdx                             |    7 +-
@@ -53,16 +54,17 @@ Source contract: agentplane-roadmap-r2 cards ST-18, ST-19, and ST-20. Build the 
  .../baselines/m01-0.7.9-token-pilot-v2/report.json |  260 +++++
  .../m01-0.7.9-token-pilot-v2/target.bundle         |  Bin 0 -> 468 bytes
  .../baselines/v0.7.9-stabilization-candidate.json  |   58 +
- scripts/bench/paired-live-codex-launcher.mjs       |  598 ++++++++++
- scripts/bench/paired-live-codex-launcher.test.mjs  |  149 +++
+ scripts/bench/paired-live-codex-launcher.mjs       |  605 ++++++++++
+ scripts/bench/paired-live-codex-launcher.test.mjs  |  176 +++
  scripts/bench/paired-m01-materialize.mjs           |  340 ++++++
  scripts/bench/paired-m01-materialize.test.mjs      |   60 +
- scripts/bench/paired-m01-oracle.mjs                |   31 +
+ scripts/bench/paired-m01-oracle.mjs                |   30 +
  scripts/bench/paired-production-driver.mjs         |  175 ++-
  scripts/bench/paired-production-driver.test.mjs    |  100 +-
  scripts/bench/paired-result-report.mjs             |  229 ++--
  scripts/bench/paired-result-report.test.mjs        |  157 ++-
- 35 files changed, 6444 insertions(+), 240 deletions(-)
+ website/static/llms-full.txt                       |   43 +-
+ 37 files changed, 6522 insertions(+), 242 deletions(-)
 ```
 
 </details>
