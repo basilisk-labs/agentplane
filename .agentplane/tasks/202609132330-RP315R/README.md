@@ -4,7 +4,7 @@ title: "Repair task-state validation for immutable quality-object directories wi
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -1078,19 +1078,109 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609132330-RP315R"
-    revision: 12
+    revision: 13
     schema_version: 1
-    updated_at: "2026-09-13T23:44:47.901Z"
+    updated_at: "2026-09-13T23:45:18.020Z"
     work_items:
       repair_task_state_object_store_classification:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "repair_task_state_object_store_classification"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:cfb1b5e8eb30758174c6d9fc4f9c8c262252fec365fb134135c8c04bdc49f375"
+            id: "task_state_classifier_repair"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 3
+              task_id: "202609132330-RP315R"
+              work_item_id: "repair_task_state_object_store_classification"
+            provenance:
+              - "sha256:52d7206048451721eed2df9f31848c9bba80004bb92dd596e14ddfe4e696f5f4"
+              - ".agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:d3d7b77cf79aa4e5a78ccb14c2ab585d6fab42e57e49ff28653d6a4059918864"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:f62a7e8db9364a325447950464146123900cc2e4b7f0e3dc5a18a485a585620d"
+            id: "regression_tests"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 3
+              task_id: "202609132330-RP315R"
+              work_item_id: "repair_task_state_object_store_classification"
+            provenance:
+              - "sha256:52d7206048451721eed2df9f31848c9bba80004bb92dd596e14ddfe4e696f5f4"
+              - ".agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:d3d7b77cf79aa4e5a78ccb14c2ab585d6fab42e57e49ff28653d6a4059918864"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:56e896f9bffdb818c2792b92636ab1f3cf1fae3bf5efd0b4a0e9d73a17718ba9"
+            id: "release_gate_evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 3
+              task_id: "202609132330-RP315R"
+              work_item_id: "repair_task_state_object_store_classification"
+            provenance:
+              - "sha256:52d7206048451721eed2df9f31848c9bba80004bb92dd596e14ddfe4e696f5f4"
+              - ".agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:d3d7b77cf79aa4e5a78ccb14c2ab585d6fab42e57e49ff28653d6a4059918864"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json"
+              check_id: "targeted_task_state_tests"
+              command_identity: "bun run test:project -- agentplane packages/agentplane/src/commands/release/task-state-script.test.ts --maxWorkers=4"
+              detail: "Observed by bun run test:project -- agentplane packages/agentplane/src/commands/release/task-state-script.test.ts --maxWorkers=4."
+              exit_code: 0
+              observed_at: "2026-09-13T23:45:18.012Z"
+              repository_snapshot_digest: "sha256:d3d7b77cf79aa4e5a78ccb14c2ab585d6fab42e57e49ff28653d6a4059918864"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json"
+              check_id: "repository_task_state"
+              command_identity: "bun run task-state:check"
+              detail: "Observed by bun run task-state:check."
+              exit_code: 0
+              observed_at: "2026-09-13T23:45:18.012Z"
+              repository_snapshot_digest: "sha256:d3d7b77cf79aa4e5a78ccb14c2ab585d6fab42e57e49ff28653d6a4059918864"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json"
+              check_id: "full_release_gate"
+              command_identity: "bun run release:check"
+              detail: "Observed by bun run release:check."
+              exit_code: 0
+              observed_at: "2026-09-13T23:45:18.012Z"
+              repository_snapshot_digest: "sha256:d3d7b77cf79aa4e5a78ccb14c2ab585d6fab42e57e49ff28653d6a4059918864"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json"
+              check_id: "hosted_integration"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-09-13T23:45:18.012Z"
+              repository_snapshot_digest: "sha256:d3d7b77cf79aa4e5a78ccb14c2ab585d6fab42e57e49ff28653d6a4059918864"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -1128,6 +1218,23 @@ extensions:
         task_id: "202609132330-RP315R"
         task_revision: 7
         work_item_id: null
+      -
+        at: "2026-09-13T23:45:18.020Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:dbdcbfad9865dcf7d338f26ece04e96a11ac8075638854409a5d40c94c1c0406"
+        entity: "work_item"
+        id: "event_af38ce70fde2a416e3cc65bd"
+        mutation_id: "external-result:work-order-202609132330-RP315R-executor-26658a837cef89424f620ed1"
+        plan_digest: "sha256:d2d827b02520ca449713d5ac66f10bb428289a4d6fa99e303fcd8ec8d6880dbe"
+        plan_revision: 3
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609132330-RP315R"
+        task_revision: 12
+        work_item_id: "repair_task_state_object_store_classification"
     leases: []
     mutation_receipts:
       compatibility:sha256:03004b9ed662baabe70955f1f267b1b3fced4407e927291d2c5e05ad8b01561e:
@@ -1272,6 +1379,30 @@ extensions:
         mutation_id: "compatibility:sha256:f261b963f02f0f485dfdb5646c5534409ef2e3c5f1d1e44b2c08f947077fa138"
         next_revision: 10
         previous_revision: 9
+        schema_version: 1
+        task_id: "202609132330-RP315R"
+      external-result:work-order-202609132330-RP315R-executor-26658a837cef89424f620ed1:
+        aggregate_digest: "sha256:2bbc43170b05312c0165ff11a2251381dde8acce18fb68997e629ac84e7a975a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T23:45:18.020Z"
+          cause_refs:
+            - "semantic-result:sha256:dbdcbfad9865dcf7d338f26ece04e96a11ac8075638854409a5d40c94c1c0406"
+          entity: "work_item"
+          from: "READY"
+          id: "event_af38ce70fde2a416e3cc65bd"
+          mutation_id: "external-result:work-order-202609132330-RP315R-executor-26658a837cef89424f620ed1"
+          plan_digest: "sha256:d2d827b02520ca449713d5ac66f10bb428289a4d6fa99e303fcd8ec8d6880dbe"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609132330-RP315R"
+          task_revision: 12
+          to: "COMPLETED"
+          work_item_id: "repair_task_state_object_store_classification"
+        mutation_id: "external-result:work-order-202609132330-RP315R-executor-26658a837cef89424f620ed1"
+        next_revision: 13
+        previous_revision: 12
         schema_version: 1
         task_id: "202609132330-RP315R"
       plan-refinement:work-order-202609132330-RP315R-executor-19b1c35d6ab9b999bb8575b2:
