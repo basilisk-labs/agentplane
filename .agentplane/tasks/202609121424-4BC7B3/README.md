@@ -4,7 +4,7 @@ title: "Qualify and document the 0.7.9 stabilization candidate for ST-18 through
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on:
@@ -280,9 +280,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "4cd87b37e73f91597a296eb33abbfd286d6b7cb0"
-  message: "🚧 4BC7B3 task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -1585,19 +1583,149 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121424-4BC7B3"
-    revision: 20
+    revision: 21
     schema_version: 1
-    updated_at: "2026-09-13T19:32:11.006Z"
+    updated_at: "2026-09-13T19:32:19.611Z"
     work_items:
       align-token-measurement-contract:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "align-token-measurement-contract"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:14e1082447cf86a6738b353bf14126e18d270a4745550c7ca20aa7fa1419e2ca"
+            id: "paired attempt token-usage contract"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609121424-4BC7B3"
+              work_item_id: "align-token-measurement-contract"
+            provenance:
+              - "sha256:1d2162987ff17c715adf4cd5da9e3eb007c2e133b71b3618fe164655347fff70"
+              - ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:e415fef1ff46edd881bf87a0700ea429d2339dfcd155a9d14cca1541e8e57e77"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:5c0887b079e249f24ae988186cf5c28ba0dcba08ac26b40328a15fad0c27410b"
+            id: "token cost-per-verified-result report"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609121424-4BC7B3"
+              work_item_id: "align-token-measurement-contract"
+            provenance:
+              - "sha256:1d2162987ff17c715adf4cd5da9e3eb007c2e133b71b3618fe164655347fff70"
+              - ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:e415fef1ff46edd881bf87a0700ea429d2339dfcd155a9d14cca1541e8e57e77"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:ed2aab9a406861e4273c4b6b8552862998ba112bd1cc778f88ed0a724b319416"
+            id: "no monetary spend or billing-account dependency"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609121424-4BC7B3"
+              work_item_id: "align-token-measurement-contract"
+            provenance:
+              - "sha256:1d2162987ff17c715adf4cd5da9e3eb007c2e133b71b3618fe164655347fff70"
+              - ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:e415fef1ff46edd881bf87a0700ea429d2339dfcd155a9d14cca1541e8e57e77"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:f3cf394fa8880abfaf68464ffb3d1fe7559c59d2265cc6a1abfbd7910d098579"
+            id: "default-disabled token-cap evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609121424-4BC7B3"
+              work_item_id: "align-token-measurement-contract"
+            provenance:
+              - "sha256:1d2162987ff17c715adf4cd5da9e3eb007c2e133b71b3618fe164655347fff70"
+              - ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:e415fef1ff46edd881bf87a0700ea429d2339dfcd155a9d14cca1541e8e57e77"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:b67a829b7545990daaa113b0a3ff9ea9de923a4ed7f018f37ea663e33b9c068c"
+            id: "account-independent task telemetry evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609121424-4BC7B3"
+              work_item_id: "align-token-measurement-contract"
+            provenance:
+              - "sha256:1d2162987ff17c715adf4cd5da9e3eb007c2e133b71b3618fe164655347fff70"
+              - ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:e415fef1ff46edd881bf87a0700ea429d2339dfcd155a9d14cca1541e8e57e77"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json"
+              check_id: "token-contract-tests"
+              command_identity: "bunx vitest run packages/agentplane/src/commands/shared/supervisor-execution-default-budget.test.ts packages/agentplane/src/commands/task/task-token-usage.test.ts packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts"
+              detail: "Observed by bunx vitest run packages/agentplane/src/commands/shared/supervisor-execution-default-budget.test.ts packages/agentplane/src/commands/task/task-token-usage.test.ts packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-13T19:32:19.601Z"
+              repository_snapshot_digest: "sha256:e415fef1ff46edd881bf87a0700ea429d2339dfcd155a9d14cca1541e8e57e77"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json"
+              check_id: "paired-contract-tests"
+              command_identity: "node --test scripts/bench/paired-production-driver.test.mjs scripts/bench/paired-result-report.test.mjs"
+              detail: "Observed by node --test scripts/bench/paired-production-driver.test.mjs scripts/bench/paired-result-report.test.mjs."
+              exit_code: 0
+              observed_at: "2026-09-13T19:32:19.601Z"
+              repository_snapshot_digest: "sha256:e415fef1ff46edd881bf87a0700ea429d2339dfcd155a9d14cca1541e8e57e77"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json"
+              check_id: "efficiency-baseline"
+              command_identity: "bun run bench:agent-efficiency:check"
+              detail: "Observed by bun run bench:agent-efficiency:check."
+              exit_code: 0
+              observed_at: "2026-09-13T19:32:19.601Z"
+              repository_snapshot_digest: "sha256:e415fef1ff46edd881bf87a0700ea429d2339dfcd155a9d14cca1541e8e57e77"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json"
+              check_id: "efficiency-replay"
+              command_identity: "bun run bench:agent-efficiency:replay:check"
+              detail: "Observed by bun run bench:agent-efficiency:replay:check."
+              exit_code: 0
+              observed_at: "2026-09-13T19:32:19.601Z"
+              repository_snapshot_digest: "sha256:e415fef1ff46edd881bf87a0700ea429d2339dfcd155a9d14cca1541e8e57e77"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json"
+              check_id: "exact-evidence-review"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-09-13T19:32:19.601Z"
+              repository_snapshot_digest: "sha256:e415fef1ff46edd881bf87a0700ea429d2339dfcd155a9d14cca1541e8e57e77"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       qualify-and-document-final-candidate:
         attempt: 0
         claim_id: null
@@ -1636,6 +1764,23 @@ extensions:
         task_id: "202609121424-4BC7B3"
         task_revision: 11
         work_item_id: "qualify-installed-candidate"
+      -
+        at: "2026-09-13T19:32:19.611Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:a53955da9ad3d2e9e7548826be0b7f715736baf9a4c1d2ac777bc8860e2e51b7"
+        entity: "work_item"
+        id: "event_4f66f3e986d875eb92ef64de"
+        mutation_id: "external-result:work-order-202609121424-4BC7B3-executor-ae310ae6ef6d0c75257326f4"
+        plan_digest: "sha256:357491668d26fbe1b3a253b693c182f2430296031f26c670fb31d1a4e704c630"
+        plan_revision: 2
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609121424-4BC7B3"
+        task_revision: 20
+        work_item_id: "align-token-measurement-contract"
     leases: []
     mutation_receipts:
       compatibility:sha256:0fa9aaba0913cdfb37cac6f6019915bc1c80a2252e4f616765179f811a12f17f:
@@ -2020,6 +2165,30 @@ extensions:
         mutation_id: "external-result:work-order-202609121424-4BC7B3-executor-19aeac4acd405b02f1906430"
         next_revision: 12
         previous_revision: 11
+        schema_version: 1
+        task_id: "202609121424-4BC7B3"
+      external-result:work-order-202609121424-4BC7B3-executor-ae310ae6ef6d0c75257326f4:
+        aggregate_digest: "sha256:5fed680370d70104dded7e125664d80b75c4df31f17b5d44815f573c79bb25ab"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T19:32:19.611Z"
+          cause_refs:
+            - "semantic-result:sha256:a53955da9ad3d2e9e7548826be0b7f715736baf9a4c1d2ac777bc8860e2e51b7"
+          entity: "work_item"
+          from: "READY"
+          id: "event_4f66f3e986d875eb92ef64de"
+          mutation_id: "external-result:work-order-202609121424-4BC7B3-executor-ae310ae6ef6d0c75257326f4"
+          plan_digest: "sha256:357491668d26fbe1b3a253b693c182f2430296031f26c670fb31d1a4e704c630"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-4BC7B3"
+          task_revision: 20
+          to: "COMPLETED"
+          work_item_id: "align-token-measurement-contract"
+        mutation_id: "external-result:work-order-202609121424-4BC7B3-executor-ae310ae6ef6d0c75257326f4"
+        next_revision: 21
+        previous_revision: 20
         schema_version: 1
         task_id: "202609121424-4BC7B3"
     pending_effects: []
