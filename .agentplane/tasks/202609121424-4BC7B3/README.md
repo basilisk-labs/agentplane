@@ -4,7 +4,7 @@ title: "Qualify and document the 0.7.9 stabilization candidate for ST-18 through
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 26
 origin:
   system: "manual"
 depends_on:
@@ -48,6 +48,7 @@ execution_route:
     - "effect_credentials"
     - "effect_external_write"
     - "effect_release_metadata"
+    - "observed_effect_dependencies"
     - "repository_branch_pr_floor"
     - "reversibility_recovery_required"
   repository_mode: "branch_pr"
@@ -134,19 +135,46 @@ execution_contract:
       - "scripts/bench/paired-result-report.mjs"
       - "scripts/bench/paired-result-report.test.mjs"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "repository_effect:dependencies"
     changed_components:
       - "docs"
       - "scripts"
     changed_paths:
       - "docs/user/commands.mdx"
       - "docs/user/task-lifecycle.mdx"
+      - "scripts/baselines/m01-0.7.9-token-pilot-v1/authority.json"
+      - "scripts/baselines/m01-0.7.9-token-pilot-v1/campaign.lock.json"
+      - "scripts/baselines/m01-0.7.9-token-pilot-v1/evidence.json"
+      - "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/agentplane.tgz"
+      - "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json"
+      - "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json"
+      - "scripts/baselines/m01-0.7.9-token-pilot-v1/product-candidate.json"
+      - "scripts/baselines/m01-0.7.9-token-pilot-v1/product-minimal_agent.json"
+      - "scripts/baselines/m01-0.7.9-token-pilot-v1/product-previous_release.json"
+      - "scripts/baselines/m01-0.7.9-token-pilot-v1/report.json"
+      - "scripts/baselines/m01-0.7.9-token-pilot-v1/target.bundle"
+      - "scripts/baselines/m01-0.7.9-token-pilot-v2/authority.json"
+      - "scripts/baselines/m01-0.7.9-token-pilot-v2/campaign.lock.json"
+      - "scripts/baselines/m01-0.7.9-token-pilot-v2/disposition.json"
+      - "scripts/baselines/m01-0.7.9-token-pilot-v2/evidence.json"
+      - "scripts/baselines/m01-0.7.9-token-pilot-v2/product-candidate.json"
+      - "scripts/baselines/m01-0.7.9-token-pilot-v2/product-minimal_agent.json"
+      - "scripts/baselines/m01-0.7.9-token-pilot-v2/product-previous_release.json"
+      - "scripts/baselines/m01-0.7.9-token-pilot-v2/report.json"
+      - "scripts/baselines/m01-0.7.9-token-pilot-v2/target.bundle"
+      - "scripts/bench/paired-live-codex-launcher.mjs"
+      - "scripts/bench/paired-live-codex-launcher.test.mjs"
+      - "scripts/bench/paired-m01-materialize.mjs"
+      - "scripts/bench/paired-m01-materialize.test.mjs"
+      - "scripts/bench/paired-m01-oracle.mjs"
       - "scripts/bench/paired-production-driver.mjs"
       - "scripts/bench/paired-production-driver.test.mjs"
       - "scripts/bench/paired-result-report.mjs"
       - "scripts/bench/paired-result-report.test.mjs"
     external_effects: []
     repository_effects:
+      - "dependencies"
       - "documentation"
       - "repository_write"
       - "source_code"
@@ -157,6 +185,7 @@ execution_contract:
     - "effect_credentials"
     - "effect_external_write"
     - "effect_release_metadata"
+    - "observed_effect_dependencies"
     - "repository_branch_pr_floor"
     - "reversibility_recovery_required"
   repository_mode: "branch_pr"
@@ -195,6 +224,7 @@ execution_contract:
           - "external_effect:external_write"
           - "external_effect:network_read"
           - "hosted_integration"
+          - "repository_effect:dependencies"
           - "repository_effect:documentation"
           - "repository_effect:release_metadata"
           - "repository_effect:repository_write"
@@ -215,15 +245,34 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:c5456a12c8bcc521e3a880d610261d84604bf2d9b1c8a2403dd4c3e21a59d9e3"
+      digest: "sha256:bab2623c9d169a51abe6bb5dfdbf80d9942956e9139f2130c98c1aa22b4371c2"
       escalation_reasons:
         - "central_component:package.json"
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/supervisor-execution-default-budget.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+        - "effect_dependencies"
         - "effect_release_metadata"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
+        - "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v1/authority.json"
+        - "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v1/campaign.lock.json"
+        - "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v1/evidence.json"
+        - "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/agentplane.tgz"
+        - "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v1/product-candidate.json"
+        - "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v1/product-minimal_agent.json"
+        - "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v1/product-previous_release.json"
+        - "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v1/report.json"
+        - "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v1/target.bundle"
+        - "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v2/authority.json"
+        - "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v2/campaign.lock.json"
+        - "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v2/disposition.json"
+        - "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v2/evidence.json"
+        - "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v2/product-candidate.json"
+        - "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v2/product-minimal_agent.json"
+        - "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v2/product-previous_release.json"
+        - "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v2/report.json"
+        - "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v2/target.bundle"
       execution_groups:
         - "docs-schema"
         - "core"
@@ -236,12 +285,38 @@ execution_contract:
         changed_files:
           - "docs/user/commands.mdx"
           - "docs/user/task-lifecycle.mdx"
+          - "scripts/baselines/m01-0.7.9-token-pilot-v1/authority.json"
+          - "scripts/baselines/m01-0.7.9-token-pilot-v1/campaign.lock.json"
+          - "scripts/baselines/m01-0.7.9-token-pilot-v1/evidence.json"
+          - "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/agentplane.tgz"
+          - "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json"
+          - "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json"
+          - "scripts/baselines/m01-0.7.9-token-pilot-v1/product-candidate.json"
+          - "scripts/baselines/m01-0.7.9-token-pilot-v1/product-minimal_agent.json"
+          - "scripts/baselines/m01-0.7.9-token-pilot-v1/product-previous_release.json"
+          - "scripts/baselines/m01-0.7.9-token-pilot-v1/report.json"
+          - "scripts/baselines/m01-0.7.9-token-pilot-v1/target.bundle"
+          - "scripts/baselines/m01-0.7.9-token-pilot-v2/authority.json"
+          - "scripts/baselines/m01-0.7.9-token-pilot-v2/campaign.lock.json"
+          - "scripts/baselines/m01-0.7.9-token-pilot-v2/disposition.json"
+          - "scripts/baselines/m01-0.7.9-token-pilot-v2/evidence.json"
+          - "scripts/baselines/m01-0.7.9-token-pilot-v2/product-candidate.json"
+          - "scripts/baselines/m01-0.7.9-token-pilot-v2/product-minimal_agent.json"
+          - "scripts/baselines/m01-0.7.9-token-pilot-v2/product-previous_release.json"
+          - "scripts/baselines/m01-0.7.9-token-pilot-v2/report.json"
+          - "scripts/baselines/m01-0.7.9-token-pilot-v2/target.bundle"
+          - "scripts/bench/paired-live-codex-launcher.mjs"
+          - "scripts/bench/paired-live-codex-launcher.test.mjs"
+          - "scripts/bench/paired-m01-materialize.mjs"
+          - "scripts/bench/paired-m01-materialize.test.mjs"
+          - "scripts/bench/paired-m01-oracle.mjs"
           - "scripts/bench/paired-production-driver.mjs"
           - "scripts/bench/paired-production-driver.test.mjs"
           - "scripts/bench/paired-result-report.mjs"
           - "scripts/bench/paired-result-report.test.mjs"
         external_effects: []
         repository_effects:
+          - "dependencies"
           - "documentation"
           - "repository_write"
           - "source_code"
@@ -278,13 +353,16 @@ execution_contract:
       - "external_effect:external_write"
       - "external_effect:network_read"
       - "hosted_integration"
+      - "repository_effect:dependencies"
       - "repository_effect:documentation"
       - "repository_effect:release_metadata"
       - "repository_effect:repository_write"
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "c37d4da284813bc9c2cfd09defa6629e9df4b0c3"
+  message: "🚧 4BC7B3 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -316,6 +394,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: docs/internal/v0.7-agent-efficiency-baseline.md, scripts/baselines, scripts/bench; repository effects: documentation, source_code, tests."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: c37d4da28481. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -382,8 +463,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The live M01 campaign cannot be executed reproducibly from the current scoped surface. ChatGPT-authenticated Codex is available, but the repository has neither an immutable M01 manifest nor a trusted live launcher that can supply authority and provider-attempt callbacks to the paired driver. Recommended action: Split the work at the measurement-tool boundary. Add and test a trusted ChatGPT-authenticated live launcher that binds the recorded user authority, executes the minimal-agent, v0.7.8, and exact-candidate artifacts against one fixed target and oracle, and converts Codex JSONL usage into the typed token_usage contract. Materialize and review the 15-attempt randomized manifest before dispatch. Then execute it once and retain all outcomes. If the release should not wait for that implementation, change the release acceptance to Q02 NOT ESTABLISHED and record explicit release-owner acceptance of the measurement debt. Requested scope: roots=docs/internal/v0.7-agent-efficiency-baseline.md,scripts/baselines,scripts/bench; repository effects=documentation,source_code,tests; request digest=sha256:dccc59c448e3628824e2eac935490d1294b0abdbe1371ab8b7e48b91e087e27f. Agentplane receipt: external-agent-blocker/tr_aef08c1c2c9042f4bf60e458d905fff9/sha256:ce6b89008e02fa60f96cc7cc3dddde2089bc0628006d1c719735241e3d4643f2/sha256:dccc59c448e3628824e2eac935490d1294b0abdbe1371ab8b7e48b91e087e27f."
+  -
+    type: "status"
+    at: "2026-09-13T21:34:12.843Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: c37d4da28481. CLI accepted one state-bound external-agent semantic result."
+    commit: "c37d4da284813bc9c2cfd09defa6629e9df4b0c3"
 doc_version: 3
-doc_updated_at: "2026-09-13T19:38:04.383Z"
+doc_updated_at: "2026-09-13T21:34:12.843Z"
 doc_updated_by: "SUPERVISOR"
 description: "Source contract: agentplane-roadmap-r2 cards ST-18, ST-19, and ST-20. Build the exact clean installed candidate and run the frozen direct, branch, recovery, old-record, required PLANNER, and required EVALUATOR corpus. Then, under the user-approved spend and sandbox authority, execute the preregistered M01 paired pilot with complete all-attempt raw evidence and expand only by its fixed uncertainty rule; report NOT ESTABLISHED when coverage is insufficient. Record exact product and target SHAs separately. Finally document only observed 0.7.9 behavior and measurements and the 0.7.10 through 0.7.14 boundary. Do not weaken golden outcomes, disable Blueprint writers, omit required stages, rerun until green, or claim unsupported efficiency. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: package tarball check, local install smoke, release critical suite, benchmark check and replay check, documentation bootstrap and onboarding checks, plus exact evidence review."
 sections:
@@ -1004,7 +1093,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609121424-4BC7B3"
-    event_cursor: 18
+    event_cursor: 20
     final_validation: null
     id: "202609121424-4BC7B3"
     intent:
@@ -2169,9 +2258,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609121424-4BC7B3"
-    revision: 24
+    revision: 26
     schema_version: 1
-    updated_at: "2026-09-13T19:38:04.383Z"
+    updated_at: "2026-09-13T21:34:12.843Z"
     work_items:
       align-token-measurement-contract:
         attempt: 1
@@ -2439,6 +2528,30 @@ extensions:
         mutation_id: "compatibility:sha256:227d351dedad36f32574e51784f3ded3e8cc92957227cdcf652a75b3e36c70e4"
         next_revision: 4
         previous_revision: 3
+        schema_version: 1
+        task_id: "202609121424-4BC7B3"
+      compatibility:sha256:28f59ba66aab4504c0a75b088f7c2e9aef9a27e81d1895090be8c0d07d36930c:
+        aggregate_digest: "sha256:eaac87cbcf350a40e8e610636686b66c2a49afede34ee5e7c6eb289999354391"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T21:34:12.843Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_b57f451d77c7ac2e812344e9"
+          mutation_id: "compatibility:sha256:28f59ba66aab4504c0a75b088f7c2e9aef9a27e81d1895090be8c0d07d36930c"
+          plan_digest: "sha256:8a1ce7a2f7c1bd5543bab4cf019887053321288654bc3dbf4761cc511f44fd52"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-4BC7B3"
+          task_revision: 24
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:28f59ba66aab4504c0a75b088f7c2e9aef9a27e81d1895090be8c0d07d36930c"
+        next_revision: 25
+        previous_revision: 24
         schema_version: 1
         task_id: "202609121424-4BC7B3"
       compatibility:sha256:2d1c326da2259b9c3bedae51c02afe278e42d2c486904e54dbcd8014a76c9c0d:
@@ -2729,6 +2842,30 @@ extensions:
         previous_revision: 4
         schema_version: 1
         task_id: "202609121424-4BC7B3"
+      compatibility:sha256:db54420e92c044667fb07899113c97dfdabd041a20f4b8688ea1d73ffc4616fd:
+        aggregate_digest: "sha256:ffa1dc93e328598ec9576bcc0696e77af577c0d8aaddb60e6ea4ed312d56e880"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T21:34:12.843Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_4e35bfae3b9a4af5a27ceb83"
+          mutation_id: "compatibility:sha256:db54420e92c044667fb07899113c97dfdabd041a20f4b8688ea1d73ffc4616fd"
+          plan_digest: "sha256:8a1ce7a2f7c1bd5543bab4cf019887053321288654bc3dbf4761cc511f44fd52"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-4BC7B3"
+          task_revision: 25
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:db54420e92c044667fb07899113c97dfdabd041a20f4b8688ea1d73ffc4616fd"
+        next_revision: 26
+        previous_revision: 25
+        schema_version: 1
+        task_id: "202609121424-4BC7B3"
       compatibility:sha256:e36635b19930b3f093b5e235aada2613356d81133a57c7cd2ad03f2f0c0506e6:
         aggregate_digest: "sha256:8cf429664d4fcd2fb0aaa366d8cfcc044267d1775577b7e00d67c2eb7c91271d"
         event:
@@ -2853,7 +2990,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "4cd87b37e73f91597a296eb33abbfd286d6b7cb0"
+    hash: "c37d4da284813bc9c2cfd09defa6629e9df4b0c3"
   task_execution_context:
     base_ref: "main"
     base_sha: "58dbda0d5f88c8a83802c5aee3a9380d001dd4b2"

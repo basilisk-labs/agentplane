@@ -42,7 +42,7 @@ Source contract: agentplane-roadmap-r2 cards ST-18, ST-19, and ST-20. Build the 
  .../m01-0.7.9-token-pilot-v1/target.bundle         |  Bin 0 -> 468 bytes
  .../m01-0.7.9-token-pilot-v2/authority.json        |   28 +
  .../m01-0.7.9-token-pilot-v2/campaign.lock.json    |  457 ++++++++
- .../m01-0.7.9-token-pilot-v2/disposition.json      |   34 +
+ .../m01-0.7.9-token-pilot-v2/disposition.json      |   40 +
  .../m01-0.7.9-token-pilot-v2/evidence.json         | 1170 +++++++++++++++++++
  .../product-candidate.json                         |   35 +
  .../product-minimal_agent.json                     |   13 +
@@ -59,7 +59,7 @@ Source contract: agentplane-roadmap-r2 cards ST-18, ST-19, and ST-20. Build the 
  scripts/bench/paired-production-driver.test.mjs    |  100 +-
  scripts/bench/paired-result-report.mjs             |  229 ++--
  scripts/bench/paired-result-report.test.mjs        |  157 ++-
- 32 files changed, 6355 insertions(+), 240 deletions(-)
+ 32 files changed, 6361 insertions(+), 240 deletions(-)
 ```
 
 </details>

@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 94a114ea288a7ac608d9f42359ba26c3e5012f00..4cd87b37e73f91597a296eb33abbfd286d6b7cb0",
+      "command": "git diff --check d6d10521f776881c94de92ae293a4c7ca2012562..c37d4da284813bc9c2cfd09defa6629e9df4b0c3",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,17 +13,39 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 94a114ea288a7ac608d9f42359ba26c3e5012f00..4cd87b37e73f91597a296eb33abbfd286d6b7cb0",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB d6d10521f776881c94de92ae293a4c7ca2012562..c37d4da284813bc9c2cfd09defa6629e9df4b0c3",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "M\t.agentplane/tasks/202609121424-4BC7B3/README.md",
         "M\t.agentplane/tasks/202609121424-4BC7B3/pr/diffstat.txt",
         "M\t.agentplane/tasks/202609121424-4BC7B3/pr/github-body.md",
         "M\t.agentplane/tasks/202609121424-4BC7B3/pr/meta.json",
         "M\t.agentplane/tasks/202609121424-4BC7B3/pr/review.md",
-        "M\tdocs/user/commands.mdx",
-        "M\tdocs/user/task-lifecycle.mdx",
+        "A\tscripts/baselines/m01-0.7.9-token-pilot-v1/authority.json",
+        "A\tscripts/baselines/m01-0.7.9-token-pilot-v1/campaign.lock.json",
+        "A\tscripts/baselines/m01-0.7.9-token-pilot-v1/evidence.json",
+        "A\tscripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/agentplane.tgz",
+        "A\tscripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+        "A\tscripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+        "A\tscripts/baselines/m01-0.7.9-token-pilot-v1/product-candidate.json",
+        "A\tscripts/baselines/m01-0.7.9-token-pilot-v1/product-minimal_agent.json",
+        "A\tscripts/baselines/m01-0.7.9-token-pilot-v1/product-previous_release.json",
+        "A\tscripts/baselines/m01-0.7.9-token-pilot-v1/report.json",
+        "A\tscripts/baselines/m01-0.7.9-token-pilot-v1/target.bundle",
+        "A\tscripts/baselines/m01-0.7.9-token-pilot-v2/authority.json",
+        "A\tscripts/baselines/m01-0.7.9-token-pilot-v2/campaign.lock.json",
+        "A\tscripts/baselines/m01-0.7.9-token-pilot-v2/disposition.json",
+        "A\tscripts/baselines/m01-0.7.9-token-pilot-v2/evidence.json",
+        "A\tscripts/baselines/m01-0.7.9-token-pilot-v2/product-candidate.json",
+        "A\tscripts/baselines/m01-0.7.9-token-pilot-v2/product-minimal_agent.json",
+        "A\tscripts/baselines/m01-0.7.9-token-pilot-v2/product-previous_release.json",
+        "A\tscripts/baselines/m01-0.7.9-token-pilot-v2/report.json",
+        "A\tscripts/baselines/m01-0.7.9-token-pilot-v2/target.bundle",
+        "A\tscripts/bench/paired-live-codex-launcher.mjs",
+        "A\tscripts/bench/paired-live-codex-launcher.test.mjs",
+        "A\tscripts/bench/paired-m01-materialize.mjs",
+        "A\tscripts/bench/paired-m01-materialize.test.mjs",
+        "A\tscripts/bench/paired-m01-oracle.mjs",
         "M\tscripts/bench/paired-production-driver.mjs",
         "M\tscripts/bench/paired-production-driver.test.mjs",
         "M\tscripts/bench/paired-result-report.mjs",
@@ -37,24 +59,15 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "94a114ea288a7ac608d9f42359ba26c3e5012f00",
-  "implementation_commit": "4cd87b37e73f91597a296eb33abbfd286d6b7cb0",
+  "execution_base_commit": "d6d10521f776881c94de92ae293a4c7ca2012562",
+  "implementation_commit": "c37d4da284813bc9c2cfd09defa6629e9df4b0c3",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [
-      " M .agentplane/tasks/202609121424-4BC7B3/README.md"
-    ],
-    "classification": [
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202609121424-4BC7B3/README.md"
-      }
-    ],
+    "baseline": [],
+    "classification": [],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [
-      " M .agentplane/tasks/202609121424-4BC7B3/README.md"
-    ],
+    "removed_after_execution_baseline": [],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
