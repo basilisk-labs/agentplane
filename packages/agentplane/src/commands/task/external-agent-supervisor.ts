@@ -566,12 +566,7 @@ export async function acceptExternalAgentResult(opts: {
         message: "External-agent supervisor changed while completing the semantic operation.",
       });
     }
-    if (
-      (journal.status === "running" && journal.cursor.phase === "completed") ||
-      (journal.status === "stopped" &&
-        journal.stop?.reason === "budget_exhausted" &&
-        journal.cursor.phase === "stopped")
-    ) {
+    if (journal.status === "running" && journal.cursor.phase === "completed") {
       const completedDigest = journal.digest;
       journal = advanceSupervisorExecutionEpisodeState({
         journal,

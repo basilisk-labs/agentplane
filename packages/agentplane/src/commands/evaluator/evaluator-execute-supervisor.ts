@@ -277,7 +277,7 @@ function hasCompletedEvaluatorOutcomeForApplication(
   if (journal.status === "running" && journal.cursor.phase === "completed") return true;
   return (
     journal.status === "stopped" &&
-    (journal.stop?.reason === "budget_exhausted" || journal.stop?.reason === "human_review") &&
+    journal.stop?.reason === "human_review" &&
     journal.cursor.phase === "stopped" &&
     journal.stop.operation_key === last.operation_key
   );

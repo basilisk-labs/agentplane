@@ -245,7 +245,7 @@ describe("persisted supervisor execution episodes", () => {
     expect(outcome.journal.operations[0]?.recovery).toEqual(persisted.operations[0]?.recovery);
   });
 
-  it("extends an episode-only budget stop through explicit replacement recovery", async () => {
+  it("cold-migrates an episode-only budget stop without renewing a limit", async () => {
     const root = await mkGitRepoRoot();
     const decision = fixtureDecision(root, 1);
     const created = createSupervisorExecutionEpisodeJournal({
@@ -275,10 +275,15 @@ describe("persisted supervisor execution episodes", () => {
       effect_ref: "review",
     });
     if (started.status !== "started") throw new Error("expected started fixture episode");
-    const stopped = completeSupervisorExecutionEpisode({
+    const completed = completeSupervisorExecutionEpisode({
       journal: started.journal,
       operation_key: started.operation_key,
       result: { verdict: "pass" },
+    });
+    const stopped = stopSupervisorExecutionEpisode({
+      journal: completed,
+      reason: "budget_exhausted",
+      exhausted_dimensions: ["episodes"],
     });
     const journalPath = await resolveSupervisorExecutionEpisodePath({
       git_root: root,
@@ -292,11 +297,11 @@ describe("persisted supervisor execution episodes", () => {
         task_id: taskId,
         state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
       }),
-    ).resolves.toBe("budget_extended");
+    ).resolves.toBe("not_failed");
     expect(await createSupervisorEpisodeStore(journalPath).read()).toMatchObject({
       status: "running",
       stop: null,
-      budget: { max_episodes: 51 },
+      budget: { max_episodes: 1 },
       usage: { episodes: 1 },
       cursor: { episode: 1, phase: "ready", operation_key: null },
     });
@@ -353,9 +358,8 @@ describe("persisted supervisor execution episodes", () => {
         git_root: root,
         task_id: taskId,
         state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
-        budget_only: true,
       }),
-    ).resolves.toBe("telemetry_recovered");
+    ).resolves.toBe("not_failed");
     expect(await createSupervisorEpisodeStore(journalPath).read()).toMatchObject({
       status: "running",
       stop: null,
@@ -367,7 +371,67 @@ describe("persisted supervisor execution episodes", () => {
     });
   });
 
-  it("extends an agent-run budget only when an active grant authorizes autonomy", async () => {
+  it("resumes a diagnosed internal anomaly only through explicit replacement recovery", async () => {
+    const root = await mkGitRepoRoot();
+    const decision = fixtureDecision(root, 1);
+    const created = createSupervisorExecutionEpisodeJournal({
+      task_id: taskId,
+      task_revision: 1,
+      state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+      budget: UNMETERED_TOKEN_BUDGET,
+    });
+    const started = startSupervisorExecutionEpisode({
+      journal: created,
+      role: "EXECUTOR",
+      kind: "agent_episode",
+      operation_identity: { id: "repeating-route" },
+      precondition_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+    });
+    if (started.status !== "started") throw new Error("expected started fixture episode");
+    const completed = completeSupervisorExecutionEpisode({
+      journal: started.journal,
+      operation_key: started.operation_key,
+      result: { status: "success" },
+    });
+    const ready = advanceSupervisorExecutionEpisodeState({
+      journal: completed,
+      state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+    });
+    const stopped = stopSupervisorExecutionEpisode({
+      journal: ready,
+      reason: "internal_anomaly",
+      diagnostic: {
+        code: "orchestrator_tight_loop",
+        summary: "The semantic state repeated after recovery.",
+        semantic_state_digest: decision.workflowStep.preconditionFingerprint.digest,
+        repetition_count: 1000,
+        exhausted_recovery_strategies: ["route_refresh"],
+        resume_hint: "Inspect and explicitly resume.",
+      },
+    });
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    await createSupervisorEpisodeStore(journalPath).write(stopped);
+
+    await expect(
+      preparePersistedSupervisorReplacementAfterFailure({
+        git_root: root,
+        task_id: taskId,
+        state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+      }),
+    ).resolves.toBe("anomaly_resumed");
+    expect(await createSupervisorEpisodeStore(journalPath).read()).toMatchObject({
+      status: "running",
+      stop: null,
+      operations: stopped.operations,
+      previous_digest: stopped.digest,
+      cursor: { phase: "ready", operation_key: null },
+    });
+  });
+
+  it("records agent-run usage without stopping at a legacy agent-run limit", async () => {
     const root = await mkGitRepoRoot();
     const decision = fixtureDecision(root, 1);
     let current = createSupervisorExecutionEpisodeJournal({
@@ -405,7 +469,7 @@ describe("persisted supervisor execution episodes", () => {
       journal: current,
       state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
     });
-    const exhausted = startSupervisorExecutionEpisode({
+    const continued = startSupervisorExecutionEpisode({
       journal: current,
       role: "EXECUTOR",
       kind: "agent_episode",
@@ -414,36 +478,11 @@ describe("persisted supervisor execution episodes", () => {
       authority_ref: "authority",
       authority_digest: decision.workflowStep.preconditionFingerprint.digest,
     });
-    if (exhausted.status !== "stopped") throw new Error("expected stopped fixture episode");
-    const journalPath = await resolveSupervisorExecutionEpisodePath({
-      git_root: root,
-      task_id: taskId,
-    });
-    await createSupervisorEpisodeStore(journalPath).write(exhausted.journal);
-
-    await expect(
-      preparePersistedSupervisorReplacementAfterFailure({
-        git_root: root,
-        task_id: taskId,
-        state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
-        budget_only: true,
-      }),
-    ).resolves.toBe("not_failed");
-    await expect(
-      preparePersistedSupervisorReplacementAfterFailure({
-        git_root: root,
-        task_id: taskId,
-        state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
-        allow_agent_run_budget_extension: true,
-        budget_only: true,
-      }),
-    ).resolves.toBe("budget_extended");
-    expect(await createSupervisorEpisodeStore(journalPath).read()).toMatchObject({
+    expect(continued.status).toBe("started");
+    expect(continued.journal).toMatchObject({
       status: "running",
       stop: null,
-      budget: { max_episodes: 53, max_agent_runs: 51 },
-      usage: { episodes: 1, agent_runs: 1 },
-      cursor: { phase: "ready", operation_key: null },
+      usage: { episodes: 2, agent_runs: 2 },
     });
   });
   it("does not steal an old lease from a live long-running supervisor", async () => {
@@ -947,7 +986,7 @@ describe("persisted supervisor execution episodes", () => {
     );
   });
 
-  it("still stops for review when active non-token budgets lack trusted telemetry", async () => {
+  it("keeps missing non-token telemetry informational", async () => {
     const root = await mkGitRepoRoot();
     const decision = fixtureDecision(root, 1);
     const outcome = await supervisePersistedWorkflowEpisode({
@@ -983,11 +1022,8 @@ describe("persisted supervisor execution episodes", () => {
     });
 
     expect(outcome.journal).toMatchObject({
-      status: "stopped",
-      stop: {
-        reason: "human_review",
-        exhausted_dimensions: ["changed_files_telemetry", "wall_time_ms_telemetry"],
-      },
+      status: "running",
+      stop: null,
     });
   });
 });

@@ -27,6 +27,9 @@ import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
 
 type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
 
+const INTERNAL_ORCHESTRATOR_TRANSITION_FUSE = 1000;
+const SEMANTIC_CYCLE_RECOVERY_STRATEGIES = ["route_refresh", "repository_checkpoint"] as const;
+
 async function authorityDeltaStop(runtime: Runtime, taskId: string) {
   const prepared = await runtime.authority.prepareDelta(taskId, repositoryEffectsForPath);
   return {
@@ -224,14 +227,15 @@ export async function advanceCanonicalTask(opts: {
     );
     if (stop) return { schema_version: 1, task_id: opts.task_id, action: stop };
   }
-  const visited = new Set<string>();
+  const semanticStateVisits = new Map<string, number>();
+  let lastSemanticStateDigest = k.kernelDigest({ task_id: opts.task_id, state: "initial" });
   let finalValidation: {
     fingerprint: string;
     environment_digest: string;
     evidence_digest: k.Sha256Digest;
     plan_digest: string;
   } | null = null;
-  for (let step = 0; step < 16; step++) {
+  for (let step = 0; step < INTERNAL_ORCHESTRATOR_TRANSITION_FUSE; step++) {
     const context = await runtime.native.readContext(opts.task_id);
     const current = await runtime.lifecycle.read(opts.task_id, context.repository_fingerprint);
     if (current.read.kind !== "canonical")
@@ -281,13 +285,40 @@ export async function advanceCanonicalTask(opts: {
         };
       }
     }
-    if (visited.has(operationId))
+    const semanticStateDigest = k.kernelDigest({
+      reason_code: route.reason_code,
+      work_item_id: route.work_item_id ?? null,
+      record_digest: record.digest,
+      repository_fingerprint: context.repository_fingerprint,
+    });
+    lastSemanticStateDigest = semanticStateDigest;
+    const repetitionCount = (semanticStateVisits.get(semanticStateDigest) ?? 0) + 1;
+    semanticStateVisits.set(semanticStateDigest, repetitionCount);
+    if (repetitionCount === 2) {
+      // Re-read authoritative task and repository state before escalating.
+      continue;
+    }
+    if (repetitionCount === 3) {
+      await runtime.checkpoint(await runtime.observe());
+      continue;
+    }
+    if (repetitionCount > SEMANTIC_CYCLE_RECOVERY_STRATEGIES.length + 1)
       return {
         schema_version: 1,
         task_id: opts.task_id,
-        action: { kind: "human_required", reason: "canonical_transition_no_progress" },
+        action: {
+          kind: "human_required",
+          reason: "internal_anomaly",
+          diagnostic: {
+            code: "orchestrator_tight_loop",
+            summary: "The canonical semantic state repeated after every applicable recovery.",
+            semantic_state_digest: semanticStateDigest,
+            repetition_count: repetitionCount,
+            exhausted_recovery_strategies: [...SEMANTIC_CYCLE_RECOVERY_STRATEGIES],
+            resume_hint: "Inspect the route and repository checkpoint, then rerun task advance.",
+          },
+        },
       };
-    visited.add(operationId);
     if (
       route.reason_code === "kernel_final_validation_required" ||
       route.reason_code === "kernel_task_completion_required"
@@ -431,6 +462,17 @@ export async function advanceCanonicalTask(opts: {
   return {
     schema_version: 1,
     task_id: opts.task_id,
-    action: { kind: "human_required", reason: "canonical_transition_budget_exhausted" },
+    action: {
+      kind: "human_required",
+      reason: "internal_anomaly",
+      diagnostic: {
+        code: "orchestrator_tight_loop",
+        summary: `The orchestrator crossed ${INTERNAL_ORCHESTRATOR_TRANSITION_FUSE} internal transitions without reaching a semantic boundary.`,
+        semantic_state_digest: lastSemanticStateDigest,
+        repetition_count: INTERNAL_ORCHESTRATOR_TRANSITION_FUSE,
+        exhausted_recovery_strategies: ["route_refresh"],
+        resume_hint: "Inspect the changing canonical route, then rerun task advance.",
+      },
+    },
   };
 }

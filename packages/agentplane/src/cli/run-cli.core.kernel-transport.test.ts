@@ -588,7 +588,13 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
           const stopped = await runJson(root, ["task", "run", taskId, "--json"]);
           expect(stopped.action).toMatchObject({
             kind: "human_required",
-            reason: "canonical_transition_no_progress",
+            reason: "internal_anomaly",
+            diagnostic: {
+              code: "orchestrator_tight_loop",
+              repetition_count: 4,
+              exhausted_recovery_strategies: ["route_refresh", "repository_checkpoint"],
+              resume_hint: "Inspect the route and repository checkpoint, then rerun task advance.",
+            },
           });
           expect(execute).toHaveBeenCalledTimes(1);
         } finally {

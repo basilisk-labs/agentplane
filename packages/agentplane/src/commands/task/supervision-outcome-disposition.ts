@@ -84,7 +84,7 @@ export function branchStopOutcome(code: BranchTaskSupervisorStopCode): Supervisi
       return "external_wait";
     }
     case "terminal_attention":
-    case "step_budget_exhausted":
+    case "internal_anomaly":
     case "unsupported_agent_episode":
     case "supervisor_stopped":
     case "executor_blocked":

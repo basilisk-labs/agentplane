@@ -225,24 +225,12 @@ export function validatePairedCampaignManifest(value) {
       value.constants.raw_cost_currency,
       "constants.raw_cost_currency",
     ),
-    maximum_authorized_spend: value.constants.maximum_authorized_spend,
   };
   if (!Number.isSafeInteger(constants.retry_limit) || constants.retry_limit < 0) {
     throw new Error("constants.retry_limit must be a non-negative integer.");
   }
   if (!isRecord(constants.runtime_profile) || Object.keys(constants.runtime_profile).length === 0) {
     throw new Error("constants.runtime_profile must be a non-empty object.");
-  }
-  if (
-    !isRecord(constants.maximum_authorized_spend) ||
-    typeof constants.maximum_authorized_spend.amount !== "number" ||
-    !Number.isFinite(constants.maximum_authorized_spend.amount) ||
-    constants.maximum_authorized_spend.amount < 0 ||
-    constants.maximum_authorized_spend.currency !== constants.raw_cost_currency
-  ) {
-    throw new Error(
-      "constants.maximum_authorized_spend must pin a non-negative amount and matching currency.",
-    );
   }
   if (constants.network !== "deny") {
     throw new Error("The offline-capable paired campaign must pin network=deny.");
@@ -450,9 +438,6 @@ async function executeOneRun(manifest, run, fixtureRoot, dependencies, mode) {
     AGENTPLANE_PAIRED_VERIFIER_DIGEST: manifest.verifier.artifact_sha256,
     AGENTPLANE_PAIRED_RAW_COST_BASIS_DIGEST: manifest.constants.raw_cost_basis_digest,
     AGENTPLANE_PAIRED_RAW_COST_CURRENCY: manifest.constants.raw_cost_currency,
-    AGENTPLANE_PAIRED_MAXIMUM_AUTHORIZED_SPEND: String(
-      manifest.constants.maximum_authorized_spend.amount,
-    ),
     AGENTPLANE_PAIRED_ADAPTER: run.adapter,
     AGENTPLANE_PAIRED_MODEL: run.model,
     AGENTPLANE_PAIRED_REASONING_EFFORT: run.reasoning_effort,

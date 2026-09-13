@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest";
 import {
   completeSupervisorExecutionEpisode,
   digestSupervisorEpisodeValue,
-  continueSupervisorExecutionEpisodeAfterEpisodeBudget,
   createSupervisorExecutionEpisodeJournal,
   advanceSupervisorExecutionEpisodeState,
   prepareReplacementSupervisorExecutionEpisodeAfterFailure,
@@ -11,6 +10,7 @@ import {
   recoverSupervisorExecutionEpisodeJournal,
   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
   reopenSupervisorExecutionEpisodeAfterEffectEvidence,
+  resumeSupervisorExecutionEpisodeAfterInternalAnomaly,
   retireSupervisorExecutionEpisodeIntentAfterStateDrift,
   retryFailedSupervisorExecutionEpisode,
   stopSupervisorExecutionEpisode,
@@ -124,7 +124,7 @@ describe("SupervisorExecutionEpisodeJournal", () => {
     }
   });
 
-  it("continues only an episode-count budget stop with a larger explicit cap", () => {
+  it("continues a cold-read legacy episode-count budget stop", () => {
     let current = journal({ max_episodes: 1, max_agent_runs: 1 });
     const started = startSupervisorExecutionEpisode({
       journal: current,
@@ -144,45 +144,39 @@ describe("SupervisorExecutionEpisodeJournal", () => {
       result: { verdict: "pass" },
       now: NOW,
     });
+    current = stopSupervisorExecutionEpisode({
+      journal: current,
+      reason: "budget_exhausted",
+      exhausted_dimensions: ["episodes"],
+      now: NOW,
+    });
     expect(current).toMatchObject({
       status: "stopped",
       stop: { reason: "budget_exhausted", exhausted_dimensions: ["episodes"] },
     });
 
-    const continued = continueSupervisorExecutionEpisodeAfterEpisodeBudget({
-      journal: current,
-      state_fingerprint_digest: NEXT_FINGERPRINT,
-      max_episodes: 51,
-      now: NOW,
-    });
-
-    expect(continued).toMatchObject({
-      status: "running",
-      stop: null,
-      budget: { max_episodes: 51 },
-      usage: { episodes: 1 },
-      cursor: { episode: 1, phase: "ready", operation_key: null },
-      state_fingerprint_digest: NEXT_FINGERPRINT,
-      previous_digest: current.digest,
-    });
-  });
-
-  it("does not continue resource-budget exhaustion as an episode extension", () => {
-    const stopped = stopSupervisorExecutionEpisode({
-      journal: journal(),
-      reason: "budget_exhausted",
-      exhausted_dimensions: ["wall_time_ms"],
-      now: NOW,
-    });
-
-    expect(() =>
-      continueSupervisorExecutionEpisodeAfterEpisodeBudget({
-        journal: stopped,
+    const migrated = migrateSupervisorExecutionEpisodeJournal({
+      input: current,
+      create: {
+        task_id: current.task_id,
+        task_revision: current.task_revision,
         state_fingerprint_digest: NEXT_FINGERPRINT,
-        max_episodes: 51,
-        now: NOW,
-      }),
-    ).toThrow(/caused only by the episode-count budget/u);
+        budget: budget(),
+      },
+    });
+
+    expect(migrated).toMatchObject({
+      source: "legacy_budget_v1",
+      migrated: true,
+      journal: {
+        status: "running",
+        stop: null,
+        budget: { max_episodes: 1 },
+        usage: { episodes: 1 },
+        cursor: { episode: 1, phase: "ready", operation_key: null },
+        previous_digest: current.digest,
+      },
+    });
   });
   it("is canonical and binds the task state to its digest", () => {
     const first = journal();
@@ -230,7 +224,120 @@ describe("SupervisorExecutionEpisodeJournal", () => {
     expect(repeated).toEqual({ journal: legacy.journal, source: "current", migrated: false });
   });
 
-  it("reserves the episode and agent-run budget before a provider launch", () => {
+  it("cold-reads a persisted budget stop without retaining spend enforcement", () => {
+    const stopped = stopSupervisorExecutionEpisode({
+      journal: journal({ max_total_tokens: 1 }),
+      reason: "budget_exhausted",
+      exhausted_dimensions: ["total_tokens"],
+      now: NOW,
+    });
+
+    const migrated = migrateSupervisorExecutionEpisodeJournal({
+      input: stopped,
+      create: {
+        task_id: stopped.task_id,
+        task_revision: stopped.task_revision,
+        state_fingerprint_digest: stopped.state_fingerprint_digest,
+        budget: budget(),
+      },
+    });
+
+    expect(migrated).toMatchObject({
+      source: "legacy_budget_v1",
+      migrated: true,
+      journal: {
+        status: "running",
+        stop: null,
+        cursor: { phase: "ready", operation_key: null },
+        usage: stopped.usage,
+        operations: stopped.operations,
+        previous_digest: stopped.digest,
+      },
+    });
+  });
+
+  it("cold-reads a legacy token-budget epoch without exposing renewal behavior", () => {
+    const original = journal();
+    const authorization = {
+      schema_version: 1 as const,
+      kind: "supervisor_token_budget_epoch" as const,
+      prior_journal_digest: original.digest,
+      stopped_state_fingerprint_digest: FINGERPRINT,
+      authorized_state_fingerprint_digest: NEXT_FINGERPRINT,
+      authorized_by: "USER" as const,
+      authority_ref: "user:T-episode:legacy-token-budget-epoch",
+      authority_digest: FINGERPRINT,
+      budget: { max_input_tokens: 100, max_output_tokens: 100, max_total_tokens: 200 },
+    };
+    const epoch = {
+      ...authorization,
+      starts_after_operation_sequence: 0,
+      baseline_usage: { input_tokens: 0, output_tokens: 0, total_tokens: 0 },
+      authorized_at: NOW,
+    };
+    const recovery = { operation_identity: authorization, context: epoch };
+    const operationKey = digestSupervisorEpisodeValue({
+      task_id: original.task_id,
+      episode: 1,
+      role: "EXECUTOR",
+      kind: "cli_operation",
+      operation_identity: authorization,
+      precondition_fingerprint_digest: FINGERPRINT,
+      authority_ref: authorization.authority_ref,
+      authority_digest: authorization.authority_digest,
+      work_order_ref: null,
+      effect_ref: null,
+      recovery,
+    });
+    const { digest: _digest, ...base } = original;
+    const payload = {
+      ...base,
+      state_fingerprint_digest: NEXT_FINGERPRINT,
+      usage: { ...original.usage, episodes: 1 },
+      cursor: { episode: 1, phase: "ready" as const, operation_key: null },
+      operations: [
+        {
+          sequence: 1,
+          episode: 1,
+          role: "EXECUTOR" as const,
+          kind: "cli_operation" as const,
+          operation_key: operationKey,
+          precondition_fingerprint_digest: FINGERPRINT,
+          authority_ref: authorization.authority_ref,
+          authority_digest: authorization.authority_digest,
+          work_order_ref: null,
+          effect_ref: null,
+          recovery,
+          status: "completed" as const,
+          usage: {},
+          result_digest: digestSupervisorEpisodeValue(epoch),
+          postcondition_fingerprint_digest: NEXT_FINGERPRINT,
+          feedback_digest: null,
+          progress_digest: null,
+          started_at: NOW,
+          completed_at: NOW,
+        },
+      ],
+      updated_at: NOW,
+      previous_digest: original.digest,
+    };
+    const legacy = { ...payload, digest: digestSupervisorEpisodeValue(payload) };
+
+    expect(validateSupervisorExecutionEpisodeJournal(legacy)).toEqual(legacy);
+    expect(
+      migrateSupervisorExecutionEpisodeJournal({
+        input: legacy,
+        create: {
+          task_id: original.task_id,
+          task_revision: original.task_revision,
+          state_fingerprint_digest: NEXT_FINGERPRINT,
+          budget: budget(),
+        },
+      }),
+    ).toEqual({ journal: legacy, source: "current", migrated: false });
+  });
+
+  it("records episode and agent-run usage without using legacy limits for admission", () => {
     const prepared = start({ journal: journal({ max_episodes: 1, max_agent_runs: 1 }) });
     expect(prepared.status).toBe("started");
     if (prepared.status !== "started") throw new Error("expected started episode");
@@ -247,10 +354,7 @@ describe("SupervisorExecutionEpisodeJournal", () => {
 
     expect(completed.usage).toMatchObject({ episodes: 1, agent_runs: 1, total_tokens: 15 });
     expect(prepared.journal.operations[0]).not.toHaveProperty("replacement_of_operation_key");
-    expect(next).toMatchObject({
-      status: "stopped",
-      stop: { reason: "budget_exhausted", exhausted_dimensions: ["episodes"] },
-    });
+    expect(next.status).toBe("started");
   });
 
   it("persists cache coverage and per-role usage once across journal reloads", () => {
@@ -344,7 +448,7 @@ describe("SupervisorExecutionEpisodeJournal", () => {
     });
   });
 
-  it("charges wall-time budget only from observed execution, not inactive journal age", () => {
+  it("records observed wall time without using it for admission", () => {
     const first = start({ journal: journal({ max_wall_time_ms: 10 }) });
     if (first.status !== "started") throw new Error("expected first agent episode");
 
@@ -377,9 +481,9 @@ describe("SupervisorExecutionEpisodeJournal", () => {
     });
 
     expect(exhausted).toMatchObject({
-      status: "stopped",
+      status: "running",
       usage: { wall_time_ms: 10 },
-      stop: { reason: "budget_exhausted", exhausted_dimensions: ["wall_time_ms"] },
+      stop: null,
     });
   });
 
@@ -588,7 +692,7 @@ describe("SupervisorExecutionEpisodeJournal", () => {
     expect(next.status).toBe("started");
   });
 
-  it("records a postcondition after a completed operation exhausts the budget", () => {
+  it("records a postcondition after usage reaches a legacy token cap", () => {
     const first = start({ journal: journal({ max_input_tokens: 10 }) });
     if (first.status !== "started") throw new Error("expected started episode");
     const exhausted = completeSupervisorExecutionEpisode({
@@ -607,9 +711,9 @@ describe("SupervisorExecutionEpisodeJournal", () => {
     });
 
     expect(advanced).toMatchObject({
-      status: "stopped",
-      cursor: { phase: "stopped", operation_key: first.operation_key },
-      stop: { reason: "budget_exhausted", operation_key: first.operation_key },
+      status: "running",
+      cursor: { phase: "ready", operation_key: null },
+      stop: null,
       state_fingerprint_digest: NEXT_FINGERPRINT,
       operations: [{ status: "completed", postcondition_fingerprint_digest: NEXT_FINGERPRINT }],
     });
@@ -899,7 +1003,7 @@ describe("SupervisorExecutionEpisodeJournal", () => {
     });
   });
 
-  it("rejects replacement for effect-in-doubt or an exhausted known failure", () => {
+  it("rejects replacement for effect-in-doubt but not because of legacy limits", () => {
     const first = start({ journal: journal() });
     if (first.status !== "started") throw new Error("expected started episode");
     const effectInDoubt = recoverSupervisorExecutionEpisodeJournal({
@@ -923,12 +1027,12 @@ describe("SupervisorExecutionEpisodeJournal", () => {
         state_fingerprint_digest: NEXT_FINGERPRINT,
       }),
     ).toThrow("requires a stopped operation_failed journal");
-    expect(() =>
+    expect(
       prepareReplacementSupervisorExecutionEpisodeAfterFailure({
         journal: exhaustedFailure,
         state_fingerprint_digest: NEXT_FINGERPRINT,
       }),
-    ).toThrow("requires remaining budget");
+    ).toMatchObject({ status: "running", stop: null });
   });
 
   it("accounts for bounded feedback without storing its raw semantic content", () => {
@@ -949,7 +1053,7 @@ describe("SupervisorExecutionEpisodeJournal", () => {
     expect(JSON.stringify(completed)).not.toContain("provider output is never copied");
   });
 
-  it("stops a repeated no-progress agent cycle before a third work order", () => {
+  it("records repeated progress digests without treating them as a task limit", () => {
     const first = start({ journal: journal({ max_no_progress_episodes: 1 }) });
     if (first.status !== "started") throw new Error("expected first agent episode");
     const firstCompleted = completeSupervisorExecutionEpisode({
@@ -976,9 +1080,62 @@ describe("SupervisorExecutionEpisodeJournal", () => {
     });
 
     expect(stopped).toMatchObject({
-      status: "stopped",
+      status: "running",
       usage: { no_progress_episodes: 1 },
-      stop: { reason: "budget_exhausted", exhausted_dimensions: ["no_progress_episodes"] },
+      stop: null,
+    });
+  });
+
+  it("records a concrete internal anomaly diagnostic and resumes explicitly", () => {
+    const first = start({ journal: journal() });
+    if (first.status !== "started") throw new Error("expected first agent episode");
+    const completed = completeSupervisorExecutionEpisode({
+      journal: first.journal,
+      operation_key: first.operation_key,
+      result: { status: "ok" },
+      progress: { canonical_semantic_state: "repeated" },
+      now: "2026-07-28T00:00:01.000Z",
+    });
+    const semanticStateDigest = digestSupervisorEpisodeValue({
+      canonical_semantic_state: "repeated",
+    });
+    const stopped = stopSupervisorExecutionEpisode({
+      journal: completed,
+      reason: "internal_anomaly",
+      diagnostic: {
+        code: "orchestrator_tight_loop",
+        summary: "The canonical semantic state repeated after every applicable recovery.",
+        semantic_state_digest: semanticStateDigest,
+        repetition_count: 1000,
+        exhausted_recovery_strategies: ["replacement", "route_refresh"],
+        resume_hint: "Inspect the route and resume the retained journal.",
+      },
+      now: "2026-07-28T00:00:02.000Z",
+    });
+
+    expect(stopped).toMatchObject({
+      status: "stopped",
+      stop: {
+        reason: "internal_anomaly",
+        diagnostic: {
+          code: "orchestrator_tight_loop",
+          semantic_state_digest: semanticStateDigest,
+          repetition_count: 1000,
+          exhausted_recovery_strategies: ["replacement", "route_refresh"],
+        },
+      },
+    });
+    expect(
+      resumeSupervisorExecutionEpisodeAfterInternalAnomaly({
+        journal: stopped,
+        state_fingerprint_digest: NEXT_FINGERPRINT,
+        now: "2026-07-28T00:00:03.000Z",
+      }),
+    ).toMatchObject({
+      status: "running",
+      stop: null,
+      state_fingerprint_digest: NEXT_FINGERPRINT,
+      cursor: { phase: "ready", operation_key: null },
     });
   });
 });

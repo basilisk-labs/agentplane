@@ -1,5 +1,4 @@
 import type {
-  SupervisorExecutionBudget,
   SupervisorExecutionEpisodeJournal,
   SupervisorExecutionUsage,
 } from "@agentplaneorg/core/schemas";
@@ -13,25 +12,22 @@ function isNonNegativeInteger(value: unknown): value is number {
 
 export function observedRunnerUsage(opts: {
   result: Awaited<ReturnType<WorkflowSupervisorExecutor>>;
-  budget: SupervisorExecutionBudget;
 }): {
   usage: Partial<Omit<SupervisorExecutionUsage, "episodes" | "agent_runs">>;
   provider_usage?: SupervisorExecutionEpisodeJournal["operations"][number]["provider_usage"];
   progress: unknown;
-  missing_dimensions: string[];
 } {
   const lifecycle =
     opts.result.operation_result?.kind === "runner_lifecycle"
       ? opts.result.operation_result.value
       : null;
   if (lifecycle?.phase !== "executed" || lifecycle.result === null) {
-    return { usage: {}, progress: undefined, missing_dimensions: [] };
+    return { usage: {}, progress: undefined };
   }
   const metrics = lifecycle.result.metrics;
   const evidence = lifecycle.result.evidence;
   const providerUsage = readCodexProviderUsageForResult(lifecycle.result);
   const usage: Partial<Omit<SupervisorExecutionUsage, "episodes" | "agent_runs">> = {};
-  const missing: string[] = [];
   for (const field of [
     "input_tokens",
     "output_tokens",
@@ -43,18 +39,12 @@ export function observedRunnerUsage(opts: {
   ] as const) {
     if (isNonNegativeInteger(providerUsage?.[field])) usage[field] = providerUsage[field];
   }
-  // Provider token telemetry is completion-cost evidence, not execution
-  // authority. Missing usage degrades the completed task projection to
-  // `unavailable`; it must not turn an otherwise successful adapter result
-  // into human review. Observed values still charge and enforce token budgets.
+  // Provider and workspace usage are evidence only. Missing measurements do
+  // not change execution authority or turn successful work into human review.
   if (isNonNegativeInteger(metrics?.duration_ms)) usage.wall_time_ms = metrics.duration_ms;
-  else if (opts.budget.max_wall_time_ms !== null) missing.push("wall_time_ms_telemetry");
   if (isNonNegativeInteger(evidence?.files_changed_count)) {
     usage.changed_files = evidence.files_changed_count;
-  } else if (opts.budget.max_changed_files !== null) {
-    missing.push("changed_files_telemetry");
   }
-  if (opts.budget.max_diff_lines !== null) missing.push("diff_lines_telemetry");
   return {
     usage,
     ...(lifecycle.invocation
@@ -69,6 +59,5 @@ export function observedRunnerUsage(opts: {
         }
       : {}),
     progress: lifecycle.lifecycle.state_fingerprint,
-    missing_dimensions: missing.toSorted(),
   };
 }

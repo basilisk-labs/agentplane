@@ -355,7 +355,6 @@ function validateReviewedCandidate({
     "202608301851-5W3XW6",
     "202609030849-925NNG",
     "202609060720-NZXQ0E",
-    "202609130858-RMHWQ5",
   ];
   const expectedSourceTasks = [
     "202607221846-4VB97J",
@@ -404,7 +403,6 @@ function validateReviewedCandidate({
     "202609030849-925NNG",
     "202609060720-NZXQ0E",
     "202609071501-VN1FN4",
-    "202609130858-RMHWQ5",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -1670,47 +1668,6 @@ function validateReviewedCandidate({
       ],
     },
     {
-      id: ["task", "supervisor", "budget-epoch"],
-      visibility: "advanced",
-      group: "Task",
-      args: [{ name: "task-id", required: true, variadic: false, valueHint: "<task-id>" }],
-      options: [
-        {
-          name: "expected-journal-digest",
-          kind: "string",
-          valueHint: "<sha256>",
-          required: true,
-        },
-        {
-          name: "state-fingerprint",
-          kind: "string",
-          valueHint: "<sha256>",
-          required: true,
-        },
-        {
-          name: "max-input-tokens",
-          kind: "string",
-          valueHint: "<positive-integer>",
-          required: false,
-        },
-        { name: "disable-token-limits", kind: "boolean", valueHint: null, default: false },
-        {
-          name: "max-output-tokens",
-          kind: "string",
-          valueHint: "<positive-integer>",
-          required: false,
-        },
-        {
-          name: "max-total-tokens",
-          kind: "string",
-          valueHint: "<positive-integer>",
-          required: false,
-        },
-        { name: "by", kind: "string", valueHint: "<USER>", required: true },
-        { name: "json", kind: "boolean", valueHint: null, default: false },
-      ],
-    },
-    {
       id: ["workflow", "migrate"],
       visibility: "user",
       group: "Workflow",
@@ -2319,62 +2276,6 @@ function validateReviewedCandidate({
       valueHint: "<sha256:...>",
     },
     {
-      command: "task supervisor budget-epoch",
-      name: "by",
-      kind: "string",
-      valueHint: "<USER>",
-      required: true,
-    },
-    {
-      command: "task supervisor budget-epoch",
-      name: "disable-token-limits",
-      kind: "boolean",
-      valueHint: null,
-      default: false,
-    },
-    {
-      command: "task supervisor budget-epoch",
-      name: "expected-journal-digest",
-      kind: "string",
-      valueHint: "<sha256>",
-      required: true,
-    },
-    {
-      command: "task supervisor budget-epoch",
-      name: "json",
-      kind: "boolean",
-      valueHint: null,
-      default: false,
-    },
-    {
-      command: "task supervisor budget-epoch",
-      name: "max-input-tokens",
-      kind: "string",
-      valueHint: "<positive-integer>",
-      required: false,
-    },
-    {
-      command: "task supervisor budget-epoch",
-      name: "max-output-tokens",
-      kind: "string",
-      valueHint: "<positive-integer>",
-      required: false,
-    },
-    {
-      command: "task supervisor budget-epoch",
-      name: "max-total-tokens",
-      kind: "string",
-      valueHint: "<positive-integer>",
-      required: false,
-    },
-    {
-      command: "task supervisor budget-epoch",
-      name: "state-fingerprint",
-      kind: "string",
-      valueHint: "<sha256>",
-      required: true,
-    },
-    {
       command: "work resume",
       name: "apply",
       kind: "boolean",
@@ -2463,11 +2364,6 @@ function validateReviewedCandidate({
       kind: "command",
       command: "task scope extend",
       source_task: "202608181404-CR1F9W",
-    },
-    {
-      kind: "command",
-      command: "task supervisor budget-epoch",
-      source_task: "202609130858-RMHWQ5",
     },
     { kind: "command", command: "workflow migrate", source_task: "202607221846-4VB97J" },
     {
@@ -2893,21 +2789,6 @@ function validateReviewedCandidate({
       name: "state-scope-digest",
       source_task: "202608211020-FGAPJC",
     },
-    ...[
-      "by",
-      "disable-token-limits",
-      "expected-journal-digest",
-      "json",
-      "max-input-tokens",
-      "max-output-tokens",
-      "max-total-tokens",
-      "state-fingerprint",
-    ].map((name) => ({
-      kind: "option",
-      command: "task supervisor budget-epoch",
-      name,
-      source_task: "202609130858-RMHWQ5",
-    })),
     {
       kind: "option",
       command: "workflow migrate",
@@ -3094,7 +2975,6 @@ function validateReviewedCandidate({
         "task run resume-effect",
         "task run tool",
         "task scope extend",
-        "task supervisor budget-epoch",
         "workflow migrate",
       ]),
     "unexpected CLI addition",

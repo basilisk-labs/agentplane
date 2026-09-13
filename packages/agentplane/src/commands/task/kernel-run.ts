@@ -46,7 +46,20 @@ async function readManagedProviderAccounting(invocation: {
     work_order_id: invocation.work_order_id,
   });
   if (!observation) {
-    throw new Error("Canonical managed provider usage observation is unavailable");
+    return {
+      usage: {},
+      provider_usage: {
+        provider: invocation.adapter_id,
+        run_id: invocation.run_id,
+        work_order_id: invocation.work_order_id,
+        thread_id: null,
+        turn_id: null,
+      },
+      usage_attribution: {
+        state: "unavailable" as const,
+        reason: "provider_token_telemetry_unavailable",
+      },
+    };
   }
   return {
     usage: observation.usage ?? {},
