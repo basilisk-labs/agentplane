@@ -4,7 +4,7 @@ title: "Qualify and document the 0.7.9 stabilization candidate for ST-18 through
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 39
+revision: 40
 origin:
   system: "manual"
 depends_on:
@@ -41,6 +41,35 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-13T22:33:35.444Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "b0f5f5dc961455109b187b605b7d753e9b3266e2"
+  blueprint_digest: "0ed189bbde8e28a6717a705c84b96f4f99c526db0386072d4b664c8114696afd"
+  evidence_refs:
+    - ".agentplane/tasks/202609121424-4BC7B3/quality/20260913-223237193-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609121424-4BC7B3/quality/20260913-223237193-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609121424-4BC7B3/quality/objects/sha256/8c817dee3cddba59fb8dc1b1dd3b8bd1f3379f0f8c7db7c14a9130365246ff36.md"
+    - ".agentplane/tasks/202609121424-4BC7B3/quality/20260913-223237193-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609121424-4BC7B3/quality/20260913-223237193-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609121424-4BC7B3/quality/20260913-223237193-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609121424-4BC7B3/README.md"
+    - ".agentplane/tasks/202609121424-4BC7B3/quality/objects/sha256/2072024e66e6094a60e57ea0984da6f9dd2235f59d0bdcbd08e5fadfa48650d3.patch"
+    - ".agentplane/tasks/202609121424-4BC7B3/quality/objects/sha256/d6715c311400d3f9b7409fa270cd5b70055f2c2bf9416d1a523d534c7bbdc515.json"
+    - ".agentplane/tasks/202609121424-4BC7B3/verification/20260913223225951-b368eaf4bc2dcacc.json"
+    - ".agentplane/tasks/202609121424-4BC7B3/quality/objects/sha256/5796c240fc3e94c0807be30fa446b71f8f882f5f600ba056700f49dc5f5060fd.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.release.md"
+  findings:
+    - "PASS: implementation commit b0f5f5dc961455109b187b605b7d753e9b3266e2 fixes the path parser defect, adds the focused regression, resolves lint, preserves immutable M01 evidence, and synchronizes generated documentation."
+    - "Supervisor evidence records all 11 declared checks as passed, including bun run ci:local:full, package checks, release-critical tests, efficiency checks, documentation checks, and git diff --check."
+    - "The implementation evidence records a clean repository after commit and no agentplane-roadmap-r2 path in the implementation commit."
+    - "Residual risk: A future M01 campaign needs a new preregistered identity because the launcher and oracle bytes changed after the immutable v1 and v2 campaigns."
 execution_route:
   frozen: true
   reason_codes:
@@ -1781,7 +1810,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609121424-4BC7B3"
-    event_cursor: 31
+    event_cursor: 32
     final_validation: null
     id: "202609121424-4BC7B3"
     intent:
@@ -2946,9 +2975,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609121424-4BC7B3"
-    revision: 39
+    revision: 40
     schema_version: 1
-    updated_at: "2026-09-13T22:32:27.154Z"
+    updated_at: "2026-09-13T22:32:27.158Z"
     work_items:
       align-token-measurement-contract:
         attempt: 1
@@ -4043,6 +4072,30 @@ extensions:
         mutation_id: "compatibility:sha256:c99a0dc1a8f9e9467aec4cd14a1916611bc60598220945e41274159d73e78e4a"
         next_revision: 15
         previous_revision: 14
+        schema_version: 1
+        task_id: "202609121424-4BC7B3"
+      compatibility:sha256:ca70a1677ecbf5379803b2b5e9a07c22a347e81eb3e5d485d86fba0f8edd7abe:
+        aggregate_digest: "sha256:385ea3345e7d591c4751dd475877435e2efb8f2a3fcc2ef9df26465d8d5d2f8b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T22:32:27.158Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_7aa7bd54dd12380ba323e8a4"
+          mutation_id: "compatibility:sha256:ca70a1677ecbf5379803b2b5e9a07c22a347e81eb3e5d485d86fba0f8edd7abe"
+          plan_digest: "sha256:8a1ce7a2f7c1bd5543bab4cf019887053321288654bc3dbf4761cc511f44fd52"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-4BC7B3"
+          task_revision: 39
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:ca70a1677ecbf5379803b2b5e9a07c22a347e81eb3e5d485d86fba0f8edd7abe"
+        next_revision: 40
+        previous_revision: 39
         schema_version: 1
         task_id: "202609121424-4BC7B3"
       compatibility:sha256:d33246083a1c18d39a17121e1cf46d895ba521429b73784210c3f14404b40e0d:

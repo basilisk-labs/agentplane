@@ -1,0 +1,299 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run bench:agent-efficiency:check",
+    "bun run bench:agent-efficiency:replay:check",
+    "bun run docs:bootstrap:check",
+    "bun run docs:onboarding:check",
+    "bun run package:install-smoke",
+    "bun run package:tarball:check",
+    "bun run test:release:critical"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "ci",
+        "documentation",
+        "release_metadata",
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [
+        "credentials",
+        "external_write",
+        "network_read"
+      ],
+      "components": [
+        ".prettierignore",
+        "docs/developer/blueprints.mdx",
+        "docs/internal/v0.7-agent-efficiency-baseline.md",
+        "docs/user/commands.mdx",
+        "docs/user/task-lifecycle.mdx",
+        "docs/user/workflow.mdx",
+        "package.json",
+        "packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts",
+        "packages/agentplane/src/commands/shared/supervisor-execution-default-budget.test.ts",
+        "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
+        "packages/agentplane/src/commands/task/task-token-usage.test.ts",
+        "packages/agentplane/src/commands/task/task-token-usage.ts",
+        "scripts/baselines",
+        "scripts/bench",
+        "scripts/bench/paired-production-driver.mjs",
+        "scripts/bench/paired-production-driver.test.mjs",
+        "scripts/bench/paired-result-report.mjs",
+        "scripts/bench/paired-result-report.test.mjs",
+        "website/static/llms-full.txt"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "recovery_required"
+      },
+      "evidence_requirements": [
+        "external_effect:credentials",
+        "external_effect:external_write",
+        "external_effect:network_read",
+        "hosted_integration",
+        "repository_effect:ci",
+        "repository_effect:dependencies",
+        "repository_effect:documentation",
+        "repository_effect:release_metadata",
+        "repository_effect:repository_write",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "dependencies",
+        "documentation",
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        ".prettierignore",
+        "docs",
+        "scripts",
+        "website"
+      ],
+      "changed_files": [
+        ".prettierignore",
+        "docs/developer/blueprints.mdx",
+        "docs/internal/v0.7-agent-efficiency-baseline.md",
+        "docs/user/commands.mdx",
+        "docs/user/task-lifecycle.mdx",
+        "docs/user/workflow.mdx",
+        "scripts/baselines/m01-0.7.9-token-pilot-v1/authority.json",
+        "scripts/baselines/m01-0.7.9-token-pilot-v1/campaign.lock.json",
+        "scripts/baselines/m01-0.7.9-token-pilot-v1/evidence.json",
+        "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/agentplane.tgz",
+        "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+        "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+        "scripts/baselines/m01-0.7.9-token-pilot-v1/product-candidate.json",
+        "scripts/baselines/m01-0.7.9-token-pilot-v1/product-minimal_agent.json",
+        "scripts/baselines/m01-0.7.9-token-pilot-v1/product-previous_release.json",
+        "scripts/baselines/m01-0.7.9-token-pilot-v1/report.json",
+        "scripts/baselines/m01-0.7.9-token-pilot-v1/target.bundle",
+        "scripts/baselines/m01-0.7.9-token-pilot-v2/authority.json",
+        "scripts/baselines/m01-0.7.9-token-pilot-v2/campaign.lock.json",
+        "scripts/baselines/m01-0.7.9-token-pilot-v2/disposition.json",
+        "scripts/baselines/m01-0.7.9-token-pilot-v2/evidence.json",
+        "scripts/baselines/m01-0.7.9-token-pilot-v2/product-candidate.json",
+        "scripts/baselines/m01-0.7.9-token-pilot-v2/product-minimal_agent.json",
+        "scripts/baselines/m01-0.7.9-token-pilot-v2/product-previous_release.json",
+        "scripts/baselines/m01-0.7.9-token-pilot-v2/report.json",
+        "scripts/baselines/m01-0.7.9-token-pilot-v2/target.bundle",
+        "scripts/baselines/v0.7.9-stabilization-candidate.json",
+        "scripts/bench/paired-live-codex-launcher.mjs",
+        "scripts/bench/paired-live-codex-launcher.test.mjs",
+        "scripts/bench/paired-m01-materialize.mjs",
+        "scripts/bench/paired-m01-materialize.test.mjs",
+        "scripts/bench/paired-m01-oracle.mjs",
+        "scripts/bench/paired-production-driver.mjs",
+        "scripts/bench/paired-production-driver.test.mjs",
+        "scripts/bench/paired-result-report.mjs",
+        "scripts/bench/paired-result-report.test.mjs",
+        "website/static/llms-full.txt"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "docs_contract",
+      "full_regression",
+      "hosted_integration",
+      "real_e2e",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_component:package.json",
+      "central_component:packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts",
+      "central_component:packages/agentplane/src/commands/shared/supervisor-execution-default-budget.test.ts",
+      "central_component:packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
+      "effect_ci",
+      "effect_dependencies",
+      "effect_release_metadata",
+      "external_effect_requires_real_e2e",
+      "reversibility_recovery_required",
+      "unknown_path:.prettierignore",
+      "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v1/authority.json",
+      "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v1/campaign.lock.json",
+      "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v1/evidence.json",
+      "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/agentplane.tgz",
+      "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v1/product-candidate.json",
+      "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v1/product-minimal_agent.json",
+      "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v1/product-previous_release.json",
+      "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v1/report.json",
+      "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v1/target.bundle",
+      "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v2/authority.json",
+      "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v2/campaign.lock.json",
+      "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v2/disposition.json",
+      "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v2/evidence.json",
+      "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v2/product-candidate.json",
+      "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v2/product-minimal_agent.json",
+      "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v2/product-previous_release.json",
+      "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v2/report.json",
+      "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v2/target.bundle",
+      "unknown_path:scripts/baselines/v0.7.9-stabilization-candidate.json"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": true,
+    "digest": "sha256:46ffb59c792f0a3e4debd5abceef6e01dc0627c06ceab2ce06c327854a4d648d"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-09-13T22:32:25.951Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202609121424-4BC7B3/verification/20260913223225951-b368eaf4bc2dcacc.json",
+      "sha256": "sha256:6b4132d17b09a5bb4129cbcb5c723f817bbfcadd7ec02193fa905493ca3d18e3"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check c2f3ff0d14faeecc6622a1cda4ac65f37858f372..b0f5f5dc961455109b187b605b7d753e9b3266e2",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB c2f3ff0d14faeecc6622a1cda4ac65f37858f372..b0f5f5dc961455109b187b605b7d753e9b3266e2",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202609121424-4BC7B3/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202609121424-4BC7B3/pr/github-body.md",
+          "M\t.agentplane/tasks/202609121424-4BC7B3/pr/meta.json",
+          "M\t.agentplane/tasks/202609121424-4BC7B3/pr/review.md",
+          "M\t.prettierignore",
+          "M\tscripts/bench/paired-live-codex-launcher.mjs",
+          "M\tscripts/bench/paired-live-codex-launcher.test.mjs",
+          "M\tscripts/bench/paired-m01-oracle.mjs",
+          "M\tscripts/bench/paired-production-driver.mjs",
+          "M\tscripts/bench/paired-result-report.mjs",
+          "M\twebsite/static/llms-full.txt"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "c2f3ff0d14faeecc6622a1cda4ac65f37858f372",
+    "implementation_commit": "b0f5f5dc961455109b187b605b7d753e9b3266e2",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        " M scripts/bench/paired-live-codex-launcher.mjs",
+        " M scripts/bench/paired-live-codex-launcher.test.mjs",
+        " M scripts/bench/paired-m01-oracle.mjs",
+        " M scripts/bench/paired-production-driver.mjs",
+        " M scripts/bench/paired-result-report.mjs"
+      ],
+      "classification": [
+        {
+          "classification": "removed_during_execution",
+          "line": " M scripts/bench/paired-live-codex-launcher.mjs"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M scripts/bench/paired-live-codex-launcher.test.mjs"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M scripts/bench/paired-m01-oracle.mjs"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M scripts/bench/paired-production-driver.mjs"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M scripts/bench/paired-result-report.mjs"
+        }
+      ],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [
+        " M scripts/bench/paired-live-codex-launcher.mjs",
+        " M scripts/bench/paired-live-codex-launcher.test.mjs",
+        " M scripts/bench/paired-m01-oracle.mjs",
+        " M scripts/bench/paired-production-driver.mjs",
+        " M scripts/bench/paired-result-report.mjs"
+      ],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202609121424-4BC7B3",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202609121424-4BC7B3/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
