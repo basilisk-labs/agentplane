@@ -1,0 +1,4217 @@
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-episode.ts b/packages/agentplane/src/commands/evaluator/evaluator-episode.ts
+index 9f2290aa2..4d63315b4 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-episode.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-episode.ts
+@@ -40,11 +40,16 @@ type EvaluatorEpisodeProviderResult = {
+   stdout_bytes: number;
+   stderr_bytes: number;
+   provider_usage?: CodexProviderUsage | null;
++  provider_usage_status?: "observed" | "partial" | "unavailable";
++  provider_thread_id?: string | null;
++  provider_turn_id?: string | null;
+ };
+ 
+ type EvaluatorProviderFailureKind =
+   | "nonzero_exit"
++  | "malformed_structured_result"
+   | "missing_structured_result"
++  | "provider_error"
+   | "stdin_write_failure"
+   | "stderr_limit"
+   | "stdout_limit"
+@@ -69,6 +74,34 @@ class EvaluatorProviderFailure extends Error {
+   }
+ }
+ 
++type EvaluatorProviderFailureObservation = {
++  started_at: string;
++  ended_at: string;
++  stdout_bytes: number;
++  stderr_bytes: number;
++  provider_usage_status: "observed" | "partial" | "unavailable";
++  provider_usage: CodexProviderUsage | null;
++  provider_thread_id: string | null;
++  provider_turn_id: string | null;
++};
++
++class ObservedEvaluatorProviderFailure extends Error {
++  readonly kind: EvaluatorProviderFailureKind | "provider_error";
++  readonly exit_code: number | null;
++  readonly signal: string | null;
++
++  constructor(
++    readonly failure: Error,
++    readonly observation: EvaluatorProviderFailureObservation,
++  ) {
++    super(failure.message);
++    this.name = "ObservedEvaluatorProviderFailure";
++    this.kind = failure instanceof EvaluatorProviderFailure ? failure.kind : "provider_error";
++    this.exit_code = failure instanceof EvaluatorProviderFailure ? failure.exit_code : null;
++    this.signal = failure instanceof EvaluatorProviderFailure ? failure.signal : null;
++  }
++}
++
+ export type EvaluatorEpisodeProvider = (
+   invocation: EvaluatorEpisodeInvocation,
+ ) => Promise<EvaluatorEpisodeProviderResult>;
+@@ -85,10 +118,106 @@ export type EvaluatorEpisodeReceipt = {
+   stdout_bytes: number;
+   stderr_bytes: number;
+   provider_usage: CodexProviderUsage | null;
++  provider_usage_status?: "observed" | "partial" | "unavailable";
++  provider_thread_id?: string | null;
++  provider_turn_id?: string | null;
+   workspace_state: "unchanged";
+   result_sha256: `sha256:${string}`;
+ };
+ 
++export type EvaluatorProviderFailureReceipt = {
++  schema_version: 1;
++  kind: "evaluator_provider_failure_receipt";
++  work_order_id: string;
++  provider: "codex";
++  authority: { sandbox: "read-only"; writable_roots: [] };
++  argv: string[];
++  started_at: string;
++  ended_at: string;
++  stdout_bytes: number;
++  stderr_bytes: number;
++  provider_usage: CodexProviderUsage | null;
++  provider_usage_status: "observed" | "partial" | "unavailable";
++  provider_thread_id: string | null;
++  provider_turn_id: string | null;
++  workspace_state: "unchanged";
++  failure: ReturnType<typeof evaluatorProviderFailureRecord>;
++};
++
++export class EvaluatorEpisodeFailureError extends CliError {
++  constructor(
++    readonly receipt: EvaluatorProviderFailureReceipt,
++    message?: string,
++  ) {
++    super({
++      code: "E_RUNTIME",
++      message:
++        message ??
++        "Codex evaluator provider failed before returning a typed result " +
++          `(classification=${receipt.failure.classification} exit_code=${receipt.failure.exit_code ?? "unknown"} signal=${receipt.failure.signal ?? "none"}). ` +
++          "The typed result was not applied.",
++    });
++  }
++}
++
++function providerFailureObservation(opts: {
++  failure: unknown;
++  result: EvaluatorEpisodeProviderResult | null;
++  message?: string;
++}): EvaluatorProviderFailureObservation {
++  if (opts.failure instanceof ObservedEvaluatorProviderFailure) {
++    return opts.failure.observation;
++  }
++  if (opts.result) {
++    return {
++      started_at: opts.result.started_at,
++      ended_at: opts.result.ended_at,
++      stdout_bytes: opts.result.stdout_bytes,
++      stderr_bytes: opts.result.stderr_bytes,
++      provider_usage_status:
++        opts.result.provider_usage_status ??
++        (opts.result.provider_usage === null ? "unavailable" : "partial"),
++      provider_usage: opts.result.provider_usage ?? null,
++      provider_thread_id:
++        opts.result.provider_thread_id ?? opts.result.provider_usage?.thread_id ?? null,
++      provider_turn_id: opts.result.provider_turn_id ?? opts.result.provider_usage?.turn_id ?? null,
++    };
++  }
++  const now = new Date().toISOString();
++  return {
++    started_at: now,
++    ended_at: now,
++    stdout_bytes: 0,
++    stderr_bytes: 0,
++    provider_usage_status: "unavailable",
++    provider_usage: null,
++    provider_thread_id: null,
++    provider_turn_id: null,
++  };
++}
++
++async function persistEvaluatorProviderFailure(opts: {
++  prepared: PreparedEvaluatorReview;
++  invocation: EvaluatorEpisodeInvocation;
++  failure: unknown;
++  result: EvaluatorEpisodeProviderResult | null;
++  message?: string;
++}): Promise<never> {
++  const receipt: EvaluatorProviderFailureReceipt = {
++    schema_version: 1,
++    kind: "evaluator_provider_failure_receipt",
++    work_order_id: opts.invocation.work_order_id,
++    provider: "codex",
++    authority: { sandbox: "read-only", writable_roots: [] },
++    argv: opts.invocation.argv,
++    ...providerFailureObservation({ failure: opts.failure, result: opts.result }),
++    workspace_state: "unchanged",
++    failure: evaluatorProviderFailureRecord(opts.failure),
++  };
++  await writeEvaluatorReceipt({ prepared: opts.prepared, receipt });
++  throw new EvaluatorEpisodeFailureError(receipt, opts.message);
++}
++
+ function sha256(value: string): `sha256:${string}` {
+   return `sha256:${createHash("sha256").update(value, "utf8").digest("hex")}`;
+ }
+@@ -152,12 +281,13 @@ export function evaluatorProviderFailureRecord(error: unknown): {
+   exit_code: number | null;
+   signal: string | null;
+ } {
+-  if (error instanceof EvaluatorProviderFailure) {
++  const failure = error instanceof ObservedEvaluatorProviderFailure ? error.failure : error;
++  if (failure instanceof EvaluatorProviderFailure) {
+     return {
+       kind: "evaluator_provider_failure",
+-      classification: error.kind,
+-      exit_code: error.exit_code,
+-      signal: error.signal,
++      classification: failure.kind,
++      exit_code: failure.exit_code,
++      signal: failure.signal,
+     };
+   }
+   return {
+@@ -247,10 +377,30 @@ export const executeCodexEvaluatorEpisode: EvaluatorEpisodeProvider = async (inv
+       if (settled) return;
+       settled = true;
+       if (timeout !== null) clearTimeout(timeout);
+-      if (error) reject(error);
+-      else if (value) resolve(value);
++      if (error) {
++        const usage = collector.readUsageObservation();
++        reject(
++          new ObservedEvaluatorProviderFailure(error, {
++            started_at: startedAt,
++            ended_at: new Date().toISOString(),
++            stdout_bytes: stdoutBytes,
++            stderr_bytes: stderrBytes,
++            provider_usage_status: usage.status,
++            provider_usage: usage.usage,
++            provider_thread_id: usage.thread_id,
++            provider_turn_id: usage.turn_id,
++          }),
++        );
++      } else if (value) resolve(value);
+     };
+-    child.on("error", (error) => finish(error));
++    child.on("error", (error) =>
++      finish(
++        new EvaluatorProviderFailure({
++          kind: "provider_error",
++          message: error.message,
++        }),
++      ),
++    );
+     child.stdout.on("data", (chunk: Buffer) => {
+       stdoutBytes += chunk.length;
+       if (stdoutBytes > MAX_PROVIDER_STDOUT_BYTES) {
+@@ -318,6 +468,7 @@ export const executeCodexEvaluatorEpisode: EvaluatorEpisodeProvider = async (inv
+           throw new EvaluatorProviderFailure({ kind: "missing_structured_result" });
+         }
+         const providerUsage = collector.readUsage();
++        const usageObservation = collector.readUsageObservation();
+         finish(undefined, {
+           raw_result: JSON.parse(rawText) as unknown,
+           started_at: startedAt,
+@@ -325,9 +476,19 @@ export const executeCodexEvaluatorEpisode: EvaluatorEpisodeProvider = async (inv
+           stdout_bytes: stdoutBytes,
+           stderr_bytes: stderrBytes,
+           provider_usage: providerUsage,
++          provider_usage_status: usageObservation.status,
++          provider_thread_id: usageObservation.thread_id,
++          provider_turn_id: usageObservation.turn_id,
+         });
+       } catch (error) {
+-        finish(error instanceof Error ? error : new Error(String(error)));
++        finish(
++          error instanceof EvaluatorProviderFailure
++            ? error
++            : new EvaluatorProviderFailure({
++                kind: "malformed_structured_result",
++                message: error instanceof Error ? error.message : String(error),
++              }),
++        );
+       }
+     });
+     child.stdin.end(invocation.prompt);
+@@ -357,28 +518,36 @@ export async function executePreparedEvaluatorEpisode(opts: {
+   const after = await readWorkspaceState(invocation.repository_root);
+   assertUnchangedWorkspace({ before, after });
+   if (providerFailure !== null || providerResult === null) {
+-    const failure = evaluatorProviderFailureRecord(providerFailure);
+-    throw new CliError({
+-      code: "E_RUNTIME",
+-      message:
+-        "Codex evaluator provider failed before returning a typed result " +
+-        `(classification=${failure.classification} exit_code=${failure.exit_code ?? "unknown"} signal=${failure.signal ?? "none"}). ` +
+-        "The typed result was not applied.",
+-    });
+-  }
+-  const result = validateStrictEvaluatorResult(providerResult.raw_result);
+-  if (result.evaluator_id !== opts.prepared.work_order.evaluator.id) {
+-    throw new CliError({
+-      code: "E_VALIDATION",
+-      message: "Evaluator episode result id does not match the prepared work order.",
++    return await persistEvaluatorProviderFailure({
++      prepared: opts.prepared,
++      invocation,
++      failure: providerFailure,
++      result: providerResult,
+     });
+   }
+-  assertResultEvidenceIsFrozen({ workOrder: opts.prepared.work_order, result });
+-  if (result.verdict !== "pass" && !result.recovery_context) {
+-    throw new CliError({
+-      code: "E_VALIDATION",
+-      message:
++  let result: EvaluatorSgrResult;
++  try {
++    result = validateStrictEvaluatorResult(providerResult.raw_result);
++    if (result.evaluator_id !== opts.prepared.work_order.evaluator.id) {
++      throw new Error("Evaluator episode result id does not match the prepared work order.");
++    }
++    assertResultEvidenceIsFrozen({ workOrder: opts.prepared.work_order, result });
++    if (result.verdict !== "pass" && !result.recovery_context) {
++      throw new Error(
+         "Evaluator episode rework, blocked, and human_review results require a bounded recovery_context.",
++      );
++    }
++  } catch (error) {
++    const message = error instanceof Error ? error.message : String(error);
++    return await persistEvaluatorProviderFailure({
++      prepared: opts.prepared,
++      invocation,
++      failure: new EvaluatorProviderFailure({
++        kind: "malformed_structured_result",
++        message,
++      }),
++      result: providerResult,
++      message,
+     });
+   }
+   const canonicalResult = `${JSON.stringify(result, null, 2)}\n`;
+@@ -394,6 +563,13 @@ export async function executePreparedEvaluatorEpisode(opts: {
+     stdout_bytes: providerResult.stdout_bytes,
+     stderr_bytes: providerResult.stderr_bytes,
+     provider_usage: providerResult.provider_usage ?? null,
++    provider_usage_status:
++      providerResult.provider_usage_status ??
++      (providerResult.provider_usage === null ? "unavailable" : "partial"),
++    provider_thread_id:
++      providerResult.provider_thread_id ?? providerResult.provider_usage?.thread_id ?? null,
++    provider_turn_id:
++      providerResult.provider_turn_id ?? providerResult.provider_usage?.turn_id ?? null,
+     workspace_state: "unchanged",
+     result_sha256: sha256(canonicalResult),
+   };
+@@ -401,16 +577,16 @@ export async function executePreparedEvaluatorEpisode(opts: {
+   // task mutation that applies its verdict. A restart can validate and apply
+   // this outcome instead of asking the provider to repeat the evaluation.
+   await writeFile(opts.prepared.result_path, canonicalResult, "utf8");
+-  await writeEvaluatorEpisodeReceipt({ prepared: opts.prepared, receipt });
++  await writeEvaluatorReceipt({ prepared: opts.prepared, receipt });
+   return {
+     result,
+     receipt,
+   };
+ }
+ 
+-async function writeEvaluatorEpisodeReceipt(opts: {
++async function writeEvaluatorReceipt(opts: {
+   prepared: PreparedEvaluatorReview;
+-  receipt: EvaluatorEpisodeReceipt;
++  receipt: EvaluatorEpisodeReceipt | EvaluatorProviderFailureReceipt;
+ }): Promise<string> {
+   const receiptPath = path.join(
+     path.dirname(opts.prepared.work_order_path),
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-execute-subprocess.testkit.ts b/packages/agentplane/src/commands/evaluator/evaluator-execute-subprocess.testkit.ts
+new file mode 100644
+index 000000000..3549dbd24
+--- /dev/null
++++ b/packages/agentplane/src/commands/evaluator/evaluator-execute-subprocess.testkit.ts
+@@ -0,0 +1,72 @@
++import { execFile } from "node:child_process";
++import { chmod, readFile, writeFile } from "node:fs/promises";
++import path from "node:path";
++
++export async function replaceCodexWithFailure(fakeBin: string, delayMs = 0): Promise<void> {
++  const source = [
++    "#!/usr/bin/env node",
++    "const fs = require('node:fs');",
++    "const invocationLog = process.env.AGENTPLANE_FAKE_CODEX_INVOCATIONS;",
++    "if (invocationLog) fs.appendFileSync(invocationLog, 'provider-started\\n');",
++    "process.stdout.write(JSON.stringify({ type: 'thread.started', thread_id: 'failed-thread' }) + '\\n');",
++    "process.stdout.write(JSON.stringify({ type: 'turn.started', turn_id: 'failed-turn' }) + '\\n');",
++    "process.stdout.write(JSON.stringify({ type: 'turn.completed', turn_id: 'failed-turn', usage: { input_tokens: 0, output_tokens: 0, reasoning_output_tokens: 0 } }) + '\\n');",
++    `setTimeout(() => process.exit(99), ${delayMs});`,
++    "",
++  ].join("\n");
++  await writeFile(path.join(fakeBin, "codex"), source, "utf8");
++  await chmod(path.join(fakeBin, "codex"), 0o755);
++}
++
++export async function runEvaluatorCliInSeparateProcess(opts: {
++  root: string;
++  taskId: string;
++  fakeBin: string;
++  executeArgs?: string[];
++  env?: Record<string, string>;
++}): Promise<{ code: number; stdout: string; stderr: string }> {
++  const cli = path.resolve(process.cwd(), "packages/agentplane/src/cli.ts");
++  const args = [
++    "--bun",
++    cli,
++    "evaluator",
++    "execute",
++    opts.taskId,
++    ...(opts.executeArgs ?? []),
++    "--json",
++    "--root",
++    opts.root,
++  ];
++  return await new Promise((resolve, reject) => {
++    execFile(
++      "bun",
++      args,
++      {
++        cwd: process.cwd(),
++        env: {
++          ...process.env,
++          PATH: `${opts.fakeBin}${path.delimiter}${process.env.PATH ?? ""}`,
++          ...opts.env,
++        },
++        maxBuffer: 1024 * 1024,
++      },
++      (error, stdout, stderr) => {
++        if (error && typeof error.code !== "number") {
++          reject(error instanceof Error ? error : new Error("subprocess execution failed"));
++          return;
++        }
++        resolve({ code: typeof error?.code === "number" ? error.code : 0, stdout, stderr });
++      },
++    );
++  });
++}
++
++export async function waitForFileText(filePath: string, expected: string): Promise<void> {
++  const deadline = Date.now() + 30_000;
++  while (Date.now() < deadline) {
++    const text = await readFile(filePath, "utf8").catch(() => "");
++    if (text.includes(expected)) return;
++    await new Promise<void>((resolve) => setTimeout(resolve, 20));
++  }
++  throw new Error(`Timed out waiting for ${JSON.stringify(expected)} in ${filePath}`);
++}
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts b/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts
+index b8e8b7a86..a7c67d028 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts
+@@ -25,8 +25,10 @@ import type { EvaluatorArtifactPreparationPort } from "./evaluator-artifact-port
+ 
+ import {
+   evaluatorProviderFailureRecord,
++  EvaluatorEpisodeFailureError,
+   executePreparedEvaluatorEpisode,
+   type EvaluatorEpisodeReceipt,
++  type EvaluatorProviderFailureReceipt,
+ } from "./evaluator-episode.js";
+ import {
+   isWithinRoot,
+@@ -84,6 +86,18 @@ function assertPersistedEvaluatorReceipt(opts: {
+       (usage.visible_output_tokens === undefined ||
+         isNonNegativeInteger(usage.visible_output_tokens)) &&
+       (usage.reasoning_tokens === undefined || isNonNegativeInteger(usage.reasoning_tokens)));
++  const usageStatusIsValid =
++    value.provider_usage_status === undefined ||
++    value.provider_usage_status === "observed" ||
++    value.provider_usage_status === "partial" ||
++    value.provider_usage_status === "unavailable";
++  const providerIdentityIsValid =
++    (value.provider_thread_id === undefined ||
++      value.provider_thread_id === null ||
++      (typeof value.provider_thread_id === "string" && value.provider_thread_id.length > 0)) &&
++    (value.provider_turn_id === undefined ||
++      value.provider_turn_id === null ||
++      (typeof value.provider_turn_id === "string" && value.provider_turn_id.length > 0));
+   if (
+     value.schema_version !== 1 ||
+     value.kind !== "evaluator_episode_receipt" ||
+@@ -92,6 +106,8 @@ function assertPersistedEvaluatorReceipt(opts: {
+     value.authority?.sandbox !== "read-only" ||
+     value.authority?.writable_roots?.length !== 0 ||
+     !usageIsValid ||
++    !usageStatusIsValid ||
++    !providerIdentityIsValid ||
+     value.result_sha256 !== sha256(opts.canonical_result)
+   ) {
+     throw new CliError({
+@@ -155,7 +171,7 @@ async function readCompletedEvaluatorOutcome(opts: {
+   };
+ }
+ 
+-function evaluatorUsage(receipt: EvaluatorEpisodeReceipt): {
++function evaluatorUsage(receipt: EvaluatorEpisodeReceipt | EvaluatorProviderFailureReceipt): {
+   input_tokens?: number;
+   output_tokens?: number;
+   total_tokens?: number;
+@@ -172,17 +188,31 @@ function evaluatorUsage(receipt: EvaluatorEpisodeReceipt): {
+   };
+ }
+ 
++function evaluatorProviderUsageIdentity(
++  receipt: EvaluatorEpisodeReceipt | EvaluatorProviderFailureReceipt,
++  operationKey: string,
++): NonNullable<SupervisorExecutionEpisodeJournal["operations"][number]["provider_usage"]> {
++  return {
++    provider: receipt.provider,
++    run_id: `evaluator:${operationKey}`,
++    work_order_id: receipt.work_order_id,
++    thread_id: receipt.provider_thread_id ?? receipt.provider_usage?.thread_id ?? null,
++    turn_id: receipt.provider_turn_id ?? receipt.provider_usage?.turn_id ?? null,
++  };
++}
++
+ function completePersistedEvaluatorEpisode(opts: {
+   journal: SupervisorExecutionEpisodeJournal;
+   operation_key: string;
+   result: ReturnType<typeof validateStrictEvaluatorResult>;
+   receipt: EvaluatorEpisodeReceipt;
+ }): SupervisorExecutionEpisodeJournal {
+-  let journal = completeSupervisorExecutionEpisode({
++  const completed = completeSupervisorExecutionEpisode({
+     journal: opts.journal,
+     operation_key: opts.operation_key,
+     result: opts.result,
+     usage: evaluatorUsage(opts.receipt),
++    provider_usage: evaluatorProviderUsageIdentity(opts.receipt, opts.operation_key),
+     progress: {
+       evaluator_id: opts.result.evaluator_id,
+       verdict: opts.result.verdict,
+@@ -197,18 +227,9 @@ function completePersistedEvaluatorEpisode(opts: {
+         }
+       : {}),
+   });
+-  if (opts.receipt.provider_usage === null) {
+-    journal = stopSupervisorExecutionEpisode({
+-      journal,
+-      reason: "human_review",
+-      exhausted_dimensions: [
+-        "input_tokens_telemetry",
+-        "output_tokens_telemetry",
+-        "total_tokens_telemetry",
+-      ],
+-    });
+-  }
+-  return journal;
++  return opts.result.verdict === "human_review"
++    ? stopSupervisorExecutionEpisode({ journal: completed, reason: "human_review" })
++    : completed;
+ }
+ 
+ function hasCompletedEvaluatorOutcomeForApplication(
+@@ -225,7 +246,7 @@ function hasCompletedEvaluatorOutcomeForApplication(
+   if (journal.status === "running" && journal.cursor.phase === "completed") return true;
+   return (
+     journal.status === "stopped" &&
+-    journal.stop?.reason === "budget_exhausted" &&
++    (journal.stop?.reason === "budget_exhausted" || journal.stop?.reason === "human_review") &&
+     journal.cursor.phase === "stopped" &&
+     journal.stop.operation_key === last.operation_key
+   );
+@@ -451,14 +472,25 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
+       try {
+         episode = await executePreparedEvaluatorEpisode({ ctx: opts.command, prepared });
+       } catch (error) {
++        const failureReceipt = error instanceof EvaluatorEpisodeFailureError ? error.receipt : null;
+         journal = completeSupervisorExecutionEpisode({
+           journal,
+           operation_key: started.operation_key,
+           // Persist only a small classification. Provider stderr and model
+           // output can contain sensitive data and belong neither in the task
+           // record nor in the durable supervisor journal.
+-          result: evaluatorProviderFailureRecord(error),
+-          usage: { wall_time_ms: Math.max(0, Date.now() - providerStartedAt) },
++          result: failureReceipt?.failure ?? evaluatorProviderFailureRecord(error),
++          usage: failureReceipt
++            ? evaluatorUsage(failureReceipt)
++            : { wall_time_ms: Math.max(0, Date.now() - providerStartedAt) },
++          ...(failureReceipt
++            ? {
++                provider_usage: evaluatorProviderUsageIdentity(
++                  failureReceipt,
++                  started.operation_key,
++                ),
++              }
++            : {}),
+           failed: true,
+         });
+         await opened.store.write(journal);
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts b/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
+index b187585b6..eab2d0e65 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
+@@ -23,6 +23,11 @@ import {
+ } from "../shared/supervisor-execution-episode.js";
+ import { buildTaskRouteDecision } from "../shared/route-decision.js";
+ import { cmdTaskAdd } from "../workflow.js";
++import {
++  replaceCodexWithFailure,
++  runEvaluatorCliInSeparateProcess,
++  waitForFileText,
++} from "./evaluator-execute-subprocess.testkit.js";
+ 
+ const execFileAsync = promisify(execFile);
+ 
+@@ -120,7 +125,8 @@ async function installFakeCodex(root: string): Promise<string> {
+     "  if (!evidence) process.exit(1);",
+     "  const invocationLog = process.env.AGENTPLANE_FAKE_CODEX_INVOCATIONS;",
+     "  if (invocationLog) fs.appendFileSync(invocationLog, 'provider-started\\n');",
+-    "  const result = { schema_version: 1, kind: 'evaluator_result', evaluator_id: 'recovery-context', verdict: 'pass', findings: [{ id: 'fixture-pass', severity: 'low', summary: 'Fixture verifies the persisted EVALUATOR result path.', broken_invariant: 'Pass reviews require one evidence-backed finding.', evidence_refs: [{ path: evidence.path }] }], missing_tests: [], hidden_assumptions: [] };",
++    "  const verdict = process.env.AGENTPLANE_FAKE_CODEX_VERDICT ?? 'pass';",
++    "  const result = { schema_version: 1, kind: 'evaluator_result', evaluator_id: 'recovery-context', verdict, findings: [{ id: 'fixture-pass', severity: 'low', summary: 'Fixture verifies the persisted EVALUATOR result path.', broken_invariant: 'Pass reviews require one evidence-backed finding.', evidence_refs: [{ path: evidence.path }] }], missing_tests: [], hidden_assumptions: [], ...(verdict === 'pass' ? {} : { recovery_context: 'Should the owner accept this explicit decision boundary?' }) };",
+     "  const complete = () => {",
+     "    process.stdout.write(JSON.stringify({ type: 'session.started' }) + '\\n');",
+     "    process.stdout.write(JSON.stringify({ type: 'item.completed', item: { type: 'agent_message', text: JSON.stringify(result) } }) + '\\n');",
+@@ -138,19 +144,6 @@ async function installFakeCodex(root: string): Promise<string> {
+   return bin;
+ }
+ 
+-async function replaceCodexWithFailure(fakeBin: string, delayMs = 0): Promise<void> {
+-  const source = [
+-    "#!/usr/bin/env node",
+-    "const fs = require('node:fs');",
+-    "const invocationLog = process.env.AGENTPLANE_FAKE_CODEX_INVOCATIONS;",
+-    "if (invocationLog) fs.appendFileSync(invocationLog, 'provider-started\\n');",
+-    `setTimeout(() => process.exit(99), ${delayMs});`,
+-    "",
+-  ].join("\n");
+-  await writeFile(path.join(fakeBin, "codex"), source, "utf8");
+-  await chmod(path.join(fakeBin, "codex"), 0o755);
+-}
+-
+ async function runWithFakeCodex(
+   root: string,
+   taskId: string,
+@@ -181,59 +174,6 @@ async function runWithFakeCodex(
+   }
+ }
+ 
+-async function runCliInSeparateProcess(opts: {
+-  root: string;
+-  taskId: string;
+-  fakeBin: string;
+-  executeArgs?: string[];
+-  env?: Record<string, string>;
+-}): Promise<{ code: number; stdout: string; stderr: string }> {
+-  const cli = path.resolve(process.cwd(), "packages/agentplane/src/cli.ts");
+-  const args = [
+-    "--bun",
+-    cli,
+-    "evaluator",
+-    "execute",
+-    opts.taskId,
+-    ...(opts.executeArgs ?? []),
+-    "--json",
+-    "--root",
+-    opts.root,
+-  ];
+-  return await new Promise((resolve, reject) => {
+-    execFile(
+-      "bun",
+-      args,
+-      {
+-        cwd: process.cwd(),
+-        env: {
+-          ...process.env,
+-          PATH: `${opts.fakeBin}${path.delimiter}${process.env.PATH ?? ""}`,
+-          ...opts.env,
+-        },
+-        maxBuffer: 1024 * 1024,
+-      },
+-      (error, stdout, stderr) => {
+-        if (error && typeof error.code !== "number") {
+-          reject(error instanceof Error ? error : new Error("subprocess execution failed"));
+-          return;
+-        }
+-        resolve({ code: typeof error?.code === "number" ? error.code : 0, stdout, stderr });
+-      },
+-    );
+-  });
+-}
+-
+-async function waitForFileText(filePath: string, expected: string): Promise<void> {
+-  const deadline = Date.now() + 30_000;
+-  while (Date.now() < deadline) {
+-    const text = await readFile(filePath, "utf8").catch(() => "");
+-    if (text.includes(expected)) return;
+-    await new Promise<void>((resolve) => setTimeout(resolve, 20));
+-  }
+-  throw new Error(`Timed out waiting for ${JSON.stringify(expected)} in ${filePath}`);
+-}
+-
+ describe("evaluator execute supervisor episode", () => {
+   it("persists one bounded EVALUATOR episode and applies its durable result", async () => {
+     const root = await mkGitRepoRoot();
+@@ -303,6 +243,52 @@ describe("evaluator execute supervisor episode", () => {
+     expect(verificationEvidence?.sha256).toMatch(/^sha256:[a-f0-9]{64}$/u);
+   });
+ 
++  it("applies human_review and preserves its terminal supervisor stop", async () => {
++    const root = await mkGitRepoRoot();
++    await writeDefaultConfig(root);
++    const taskId = "202607280000-EE13";
++    await addTask(root, taskId);
++    await commitTarget(root);
++    const fakeBin = await installFakeCodex(root);
++    const previousVerdict = process.env.AGENTPLANE_FAKE_CODEX_VERDICT;
++    process.env.AGENTPLANE_FAKE_CODEX_VERDICT = "human_review";
++    let execution;
++    try {
++      execution = await runWithFakeCodex(root, taskId, fakeBin);
++    } finally {
++      if (previousVerdict === undefined) delete process.env.AGENTPLANE_FAKE_CODEX_VERDICT;
++      else process.env.AGENTPLANE_FAKE_CODEX_VERDICT = previousVerdict;
++    }
++
++    expect(execution.code, execution.stderr).toBe(0);
++    expect(JSON.parse(execution.stdout)).toMatchObject({
++      verdict: "human_review",
++      supervisor_episode: {
++        status: "stopped",
++        cursor: { phase: "stopped" },
++        stop: { reason: "human_review" },
++      },
++    });
++    const stored = await readTask({ cwd: root, rootOverride: root, taskId });
++    expect(stored.frontmatter.quality_review).toMatchObject({
++      state: "human_review",
++      updated_by: "EVALUATOR",
++    });
++    const journalPath = await resolveSupervisorExecutionEpisodePath({
++      git_root: root,
++      task_id: taskId,
++    });
++    const persisted = validateSupervisorExecutionEpisodeJournal(
++      await createSupervisorEpisodeStore(journalPath).read(),
++    );
++    expect(persisted).toMatchObject({
++      status: "stopped",
++      cursor: { phase: "stopped" },
++      stop: { reason: "human_review" },
++      operations: [{ status: "completed" }],
++    });
++  });
++
+   it("applies a completed EVALUATOR result before preserving its terminal budget stop", async () => {
+     const root = await mkGitRepoRoot();
+     await writeDefaultConfig(root);
+@@ -627,9 +613,23 @@ describe("evaluator execute supervisor episode", () => {
+       status: "stopped",
+       stop: { reason: "operation_failed" },
+       cursor: { phase: "stopped" },
+-      usage: { episodes: 1, agent_runs: 1 },
+-      operations: [{ role: "EVALUATOR", kind: "evaluator_episode", status: "failed" }],
++      usage: { episodes: 1, agent_runs: 1, token_observed_agent_runs: 1 },
++      operations: [
++        {
++          role: "EVALUATOR",
++          kind: "evaluator_episode",
++          status: "failed",
++          provider_usage: {
++            provider: "codex",
++            thread_id: "failed-thread",
++            turn_id: "failed-turn",
++          },
++        },
++      ],
+     });
++    expect(recorded.operations[0]?.provider_usage?.work_order_id).toMatch(
++      /^evaluator-work-order-/u,
++    );
+     expect(recorded.usage.wall_time_ms).toBeGreaterThan(0);
+     expect(JSON.stringify(recorded)).not.toContain("provider diagnostics");
+ 
+@@ -956,7 +956,7 @@ describe("evaluator execute supervisor episode", () => {
+       AGENTPLANE_FAKE_CODEX_INVOCATIONS: invocationLog,
+       AGENTPLANE_FAKE_CODEX_DELAY_MS: "2000",
+     };
+-    const winner = runCliInSeparateProcess({
++    const winner = runEvaluatorCliInSeparateProcess({
+       root,
+       taskId,
+       fakeBin,
+@@ -964,7 +964,7 @@ describe("evaluator execute supervisor episode", () => {
+       env: childEnv,
+     });
+     await waitForFileText(invocationLog, "provider-started\n");
+-    const loser = runCliInSeparateProcess({
++    const loser = runEvaluatorCliInSeparateProcess({
+       root,
+       taskId,
+       fakeBin,
+diff --git a/packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts b/packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts
+new file mode 100644
+index 000000000..f98973c39
+--- /dev/null
++++ b/packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts
+@@ -0,0 +1,175 @@
++import { chmod, mkdir, readFile, writeFile } from "node:fs/promises";
++import path from "node:path";
++
++import { execFileAsync } from "@agentplaneorg/core/process";
++import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
++import { describe, expect, it } from "vitest";
++
++import { loadEvaluatorCatalog } from "../../evaluators/catalog.js";
++import { cmdTaskAdd } from "../workflow.js";
++import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
++import {
++  EvaluatorEpisodeFailureError,
++  executePreparedEvaluatorEpisode,
++} from "./evaluator-episode.js";
++import { prepareEvaluatorReview } from "./evaluator-review-usecase.js";
++
++async function prepare(root: string, taskId: string) {
++  await writeDefaultConfig(root);
++  await cmdTaskAdd({
++    cwd: root,
++    taskIds: [taskId],
++    title: "Evaluator failure usage fixture",
++    description: "Retain provider charges when evaluator output cannot be applied.",
++    status: "TODO",
++    priority: "med",
++    owner: "CODER",
++    tags: ["nodejs"],
++    dependsOn: [],
++    verify: [],
++    commentAuthor: null,
++    commentBody: null,
++  });
++  await mkdir(path.join(root, "src"), { recursive: true });
++  await writeFile(path.join(root, "src", "evaluated.ts"), "export const reviewed = true;\n");
++  await execFileAsync("git", ["add", "--", "src/evaluated.ts"], { cwd: root });
++  await execFileAsync("git", ["commit", "-m", "feat: evaluator failure fixture"], {
++    cwd: root,
++  });
++  const command = await loadCommandContext({ cwd: root, rootOverride: root });
++  const task = await loadTaskFromContext({ ctx: command, taskId });
++  const evaluatorCatalog = await loadEvaluatorCatalog({ projectRoot: root, includeBuiltin: true });
++  const evaluator = evaluatorCatalog.find((entry) => entry.id === "recovery-context");
++  if (!evaluator) throw new Error("Missing recovery-context evaluator.");
++  const prepared = await prepareEvaluatorReview({
++    ctx: command,
++    task,
++    evaluator,
++    provenance: "evaluator_supplied",
++  });
++  return { command, prepared };
++}
++
++async function installProvider(
++  root: string,
++  mode: "nonzero" | "malformed" | "timeout" | "unavailable",
++) {
++  const bin = path.join(root, "fake-bin");
++  await mkdir(bin, { recursive: true });
++  const terminal =
++    mode === "unavailable"
++      ? "process.exit(43);"
++      : mode === "nonzero"
++        ? "process.exit(42);"
++        : mode === "malformed"
++          ? [
++              "process.stdout.write(JSON.stringify({ type: 'item.completed', item: { type: 'agent_message', text: '{' } }) + '\\n');",
++              "process.exit(0);",
++            ].join("\n")
++          : "setInterval(() => {}, 1000);";
++  const source = [
++    "#!/usr/bin/env node",
++    "process.stdin.resume();",
++    "process.stdin.on('end', () => {",
++    ...(mode === "unavailable"
++      ? []
++      : [
++          "  process.stdout.write(JSON.stringify({ type: 'thread.started', thread_id: 'failure-thread' }) + '\\n');",
++          "  process.stdout.write(JSON.stringify({ type: 'turn.started', turn_id: 'failure-turn' }) + '\\n');",
++          "  process.stdout.write(JSON.stringify({ type: 'turn.completed', turn_id: 'failure-turn', usage: { input_tokens: 11, cached_input_tokens: 5, output_tokens: 7, reasoning_output_tokens: 3 } }) + '\\n');",
++        ]),
++    terminal,
++    "});",
++  ].join("\n");
++  const executable = path.join(bin, "codex");
++  await writeFile(executable, source);
++  await chmod(executable, 0o755);
++  return bin;
++}
++
++describe("evaluator failure usage receipts", () => {
++  it.each(["nonzero", "malformed", "timeout"] as const)(
++    "retains an observed charge after a %s provider outcome",
++    async (mode) => {
++      const root = await mkGitRepoRoot();
++      const taskId = `202609130000-${mode === "nonzero" ? "FA01" : mode === "malformed" ? "FA02" : "FA03"}`;
++      const { command, prepared } = await prepare(root, taskId);
++      const fakeBin = await installProvider(root, mode);
++      const previousPath = process.env.PATH;
++      process.env.PATH = `${fakeBin}${path.delimiter}${previousPath ?? ""}`;
++      if (mode === "timeout") command.config.runner.timeouts.wall_clock_ms = 500;
++      let caught: unknown;
++      try {
++        await executePreparedEvaluatorEpisode({ ctx: command, prepared });
++      } catch (error) {
++        caught = error;
++      } finally {
++        if (previousPath === undefined) delete process.env.PATH;
++        else process.env.PATH = previousPath;
++      }
++
++      expect(caught).toBeInstanceOf(EvaluatorEpisodeFailureError);
++      const receipt = JSON.parse(
++        await readFile(
++          path.join(path.dirname(prepared.work_order_path), "evaluator-episode.json"),
++          "utf8",
++        ),
++      ) as Record<string, unknown>;
++      expect(receipt).toMatchObject({
++        schema_version: 1,
++        kind: "evaluator_provider_failure_receipt",
++        work_order_id: prepared.work_order.work_order_id,
++        provider_usage_status: "observed",
++        provider_thread_id: "failure-thread",
++        provider_turn_id: "failure-turn",
++        provider_usage: {
++          input_tokens: 11,
++          cached_input_tokens: 5,
++          output_tokens: 7,
++          total_tokens: 18,
++          visible_output_tokens: 4,
++          reasoning_tokens: 3,
++        },
++        failure: {
++          classification:
++            mode === "nonzero"
++              ? "nonzero_exit"
++              : mode === "malformed"
++                ? "malformed_structured_result"
++                : "timeout",
++        },
++      });
++      expect(receipt).not.toHaveProperty("raw_result");
++    },
++  );
++
++  it("records unavailable usage explicitly when the provider emits no observation", async () => {
++    const root = await mkGitRepoRoot();
++    const { command, prepared } = await prepare(root, "202609130000-FA04");
++    const fakeBin = await installProvider(root, "unavailable");
++    const previousPath = process.env.PATH;
++    process.env.PATH = `${fakeBin}${path.delimiter}${previousPath ?? ""}`;
++    try {
++      await expect(
++        executePreparedEvaluatorEpisode({ ctx: command, prepared }),
++      ).rejects.toBeInstanceOf(EvaluatorEpisodeFailureError);
++    } finally {
++      if (previousPath === undefined) delete process.env.PATH;
++      else process.env.PATH = previousPath;
++    }
++    const receipt = JSON.parse(
++      await readFile(
++        path.join(path.dirname(prepared.work_order_path), "evaluator-episode.json"),
++        "utf8",
++      ),
++    ) as Record<string, unknown>;
++    expect(receipt).toMatchObject({
++      kind: "evaluator_provider_failure_receipt",
++      provider_usage_status: "unavailable",
++      provider_usage: null,
++      provider_thread_id: null,
++      provider_turn_id: null,
++      failure: { classification: "nonzero_exit", exit_code: 43 },
++    });
++  });
++});
+diff --git a/packages/agentplane/src/commands/evaluator/roadmap-telemetry-disposition.test.ts b/packages/agentplane/src/commands/evaluator/roadmap-telemetry-disposition.test.ts
+new file mode 100644
+index 000000000..1725b1559
+--- /dev/null
++++ b/packages/agentplane/src/commands/evaluator/roadmap-telemetry-disposition.test.ts
+@@ -0,0 +1,79 @@
++import {
++  advanceSupervisorExecutionEpisodeState,
++  completeSupervisorExecutionEpisode,
++  createSupervisorExecutionEpisodeJournal,
++  startSupervisorExecutionEpisode,
++} from "@agentplaneorg/core/schemas";
++import { describe, expect, it } from "vitest";
++
++const fingerprint = `sha256:${"a".repeat(64)}`;
++const nextFingerprint = `sha256:${"b".repeat(64)}`;
++
++describe("telemetry coverage and spend admission", () => {
++  it("retains a valid verdict but blocks another paid dispatch when finite token coverage is unknown", () => {
++    const created = createSupervisorExecutionEpisodeJournal({
++      task_id: "202609130000-TEL001",
++      task_revision: 1,
++      state_fingerprint_digest: fingerprint,
++      budget: {
++        max_episodes: 3,
++        max_agent_runs: 3,
++        max_input_tokens: 100,
++        max_output_tokens: 100,
++        max_total_tokens: 200,
++        max_wall_time_ms: null,
++        max_changed_files: null,
++        max_diff_lines: null,
++        max_no_progress_episodes: null,
++      },
++    });
++    const started = startSupervisorExecutionEpisode({
++      journal: created,
++      role: "EVALUATOR",
++      kind: "evaluator_episode",
++      operation_identity: { work_order_id: "work-order-1" },
++      precondition_fingerprint_digest: fingerprint,
++    });
++    if (started.status !== "started") throw new Error("Expected evaluator episode to start.");
++    const completed = completeSupervisorExecutionEpisode({
++      journal: started.journal,
++      operation_key: started.operation_key,
++      result: { verdict: "pass" },
++      provider_usage: {
++        provider: "codex",
++        run_id: "evaluator:work-order-1",
++        work_order_id: "work-order-1",
++        thread_id: null,
++        turn_id: null,
++      },
++    });
++    const applied = advanceSupervisorExecutionEpisodeState({
++      journal: completed,
++      state_fingerprint_digest: nextFingerprint,
++      route_observation: { verdict_applied: "pass" },
++    });
++
++    const next = startSupervisorExecutionEpisode({
++      journal: applied,
++      role: "EVALUATOR",
++      kind: "evaluator_episode",
++      operation_identity: { work_order_id: "work-order-2" },
++      precondition_fingerprint_digest: nextFingerprint,
++    });
++
++    expect(applied.operations).toHaveLength(1);
++    expect(applied.operations[0]?.result_digest).not.toBeNull();
++    expect(next).toMatchObject({
++      status: "stopped",
++      stop: {
++        reason: "budget_exhausted",
++        exhausted_dimensions: [
++          "input_tokens_telemetry",
++          "output_tokens_telemetry",
++          "total_tokens_telemetry",
++        ],
++      },
++      journal: { operations: [{ status: "completed" }] },
++    });
++  });
++});
+diff --git a/packages/agentplane/src/commands/shared/lifecycle-stage-timing.ts b/packages/agentplane/src/commands/shared/lifecycle-stage-timing.ts
+new file mode 100644
+index 000000000..e2a5e1a0b
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/lifecycle-stage-timing.ts
+@@ -0,0 +1,167 @@
++import type { SupervisorExecutionEpisodeJournal } from "@agentplaneorg/core/schemas";
++
++type LifecycleTiming = NonNullable<
++  SupervisorExecutionEpisodeJournal["operations"][number]["lifecycle_timing"]
++>;
++type LifecycleStage = LifecycleTiming["spans"][number]["stage"];
++type LifecycleTimeCategory = LifecycleTiming["spans"][number]["category"];
++
++export type MonotonicStageObservation = {
++  span_id: string;
++  parent_span_id: string;
++  stage: LifecycleStage;
++  category: LifecycleTimeCategory;
++  started_ms: number;
++  ended_ms: number;
++};
++
++function sample(value: number, fallback: number): number {
++  return Number.isFinite(value) ? Math.max(0, Math.round(value)) : fallback;
++}
++
++export function workflowOperationLifecycleStage(opts: {
++  operation_id: string;
++  semantic: boolean;
++  evaluator: boolean;
++}): { stage: LifecycleStage; category: LifecycleTimeCategory } {
++  if (opts.evaluator) return { stage: "review", category: "external_wait" };
++  if (opts.semantic) return { stage: "semantic_dispatch", category: "external_wait" };
++  if (opts.operation_id === "task.start") return { stage: "preparation", category: "local_work" };
++  if (opts.operation_id.includes("verify")) {
++    return { stage: "native_verification", category: "local_work" };
++  }
++  if (opts.operation_id.startsWith("provider.") || opts.operation_id.startsWith("integration.")) {
++    return { stage: "provider_or_integration", category: "external_wait" };
++  }
++  if (opts.operation_id.includes("finish") || opts.operation_id.includes("complete")) {
++    return { stage: "closure", category: "local_work" };
++  }
++  return { stage: "lifecycle", category: "local_work" };
++}
++
++export function buildSingleStageLifecycleTiming(opts: {
++  root_span_id: string;
++  stage: LifecycleStage;
++  category: LifecycleTimeCategory;
++  started_ms: number;
++  ended_ms: number;
++  first_scoped_mutation: boolean;
++}): LifecycleTiming {
++  return buildMonotonicLifecycleTiming({
++    root_span_id: opts.root_span_id,
++    started_ms: opts.started_ms,
++    ended_ms: opts.ended_ms,
++    spans: [
++      {
++        span_id: `${opts.root_span_id}:${opts.stage}`,
++        parent_span_id: opts.root_span_id,
++        stage: opts.stage,
++        category: opts.category,
++        started_ms: opts.started_ms,
++        ended_ms: opts.ended_ms,
++      },
++      ...(opts.first_scoped_mutation
++        ? [
++            {
++              span_id: `${opts.root_span_id}:first_scoped_mutation`,
++              parent_span_id: opts.root_span_id,
++              stage: "first_scoped_mutation" as const,
++              category: "local_work" as const,
++              started_ms: opts.ended_ms,
++              ended_ms: opts.ended_ms,
++            },
++          ]
++        : []),
++    ],
++  });
++}
++
++export function buildMonotonicLifecycleTiming(opts: {
++  root_span_id: string;
++  started_ms: number;
++  ended_ms: number;
++  root_category?: LifecycleTimeCategory;
++  spans?: readonly MonotonicStageObservation[];
++}): LifecycleTiming {
++  const rootStart = sample(opts.started_ms, 0);
++  const rootEnd = Math.max(rootStart, sample(opts.ended_ms, rootStart));
++  const elapsed = rootEnd - rootStart;
++  const observations = [
++    {
++      span_id: opts.root_span_id,
++      parent_span_id: null,
++      stage: "lifecycle" as const,
++      category: opts.root_category ?? ("local_work" as const),
++      start: rootStart,
++      end: rootEnd,
++    },
++    ...(opts.spans ?? []).map((span) => {
++      const start = Math.min(rootEnd, Math.max(rootStart, sample(span.started_ms, rootStart)));
++      const end = Math.min(rootEnd, Math.max(start, sample(span.ended_ms, start)));
++      return { ...span, start, end };
++    }),
++  ];
++  const byId = new Map(observations.map((span) => [span.span_id, span]));
++  if (byId.size !== observations.length || !opts.root_span_id.trim()) {
++    throw new Error("Lifecycle timing span identities must be non-empty and unique.");
++  }
++  const ancestors = (spanId: string): string[] => {
++    const seen = new Set<string>();
++    let current = byId.get(spanId);
++    while (current?.parent_span_id !== null) {
++      if (!current || seen.has(current.span_id))
++        throw new Error("Lifecycle timing contains a cycle.");
++      seen.add(current.span_id);
++      const parentId: string = current.parent_span_id;
++      const parent = byId.get(parentId);
++      if (!parent) throw new Error("Lifecycle timing parent span is missing.");
++      if (current.start < parent.start || current.end > parent.end) {
++        throw new Error("Lifecycle timing child span is outside its parent.");
++      }
++      current = parent;
++    }
++    return [...seen];
++  };
++  const ancestry = new Map(observations.map((span) => [span.span_id, ancestors(span.span_id)]));
++  for (let left = 1; left < observations.length; left += 1) {
++    for (let right = left + 1; right < observations.length; right += 1) {
++      const a = observations[left];
++      const b = observations[right];
++      const overlap = a.start < b.end && b.start < a.end;
++      const nested = [
++        ancestry.get(a.span_id)?.includes(b.span_id),
++        ancestry.get(b.span_id)?.includes(a.span_id),
++      ].some(Boolean);
++      if (overlap && !nested) throw new Error("Lifecycle timing sibling spans must not overlap.");
++    }
++  }
++  const boundaries = [...new Set(observations.flatMap((span) => [span.start, span.end]))].toSorted(
++    (a, b) => a - b,
++  );
++  const partitioned = { local_work: 0, user_wait: 0, external_wait: 0 };
++  for (let index = 1; index < boundaries.length; index += 1) {
++    const start = boundaries[index - 1];
++    const end = boundaries[index];
++    const active = observations
++      .filter((span) => span.start <= start && span.end >= end)
++      .toSorted(
++        (a, b) => (ancestry.get(b.span_id)?.length ?? 0) - (ancestry.get(a.span_id)?.length ?? 0),
++      )[0];
++    if (active) partitioned[active.category] += end - start;
++  }
++  return {
++    schema_version: 1,
++    clock: "monotonic",
++    root_span_id: opts.root_span_id,
++    elapsed_ms: elapsed,
++    partitioned_ms: partitioned,
++    spans: observations.map((span) => ({
++      span_id: span.span_id,
++      parent_span_id: span.parent_span_id,
++      stage: span.stage,
++      category: span.category,
++      offset_ms: span.start - rootStart,
++      elapsed_ms: span.end - span.start,
++    })),
++  };
++}
+diff --git a/packages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts b/packages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts
+new file mode 100644
+index 000000000..f95a9765f
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts
+@@ -0,0 +1,151 @@
++import { describe, expect, it } from "vitest";
++
++import {
++  advanceSupervisorExecutionEpisodeState,
++  completeSupervisorExecutionEpisode,
++  createSupervisorExecutionEpisodeJournal,
++  startSupervisorExecutionEpisode,
++  type SupervisorEpisodeRole,
++} from "@agentplaneorg/core/schemas";
++
++const fingerprint = (value: string) => `sha256:${value.repeat(64)}`;
++
++function journal() {
++  return createSupervisorExecutionEpisodeJournal({
++    task_id: "202609120000-MANAGED",
++    task_revision: 1,
++    state_fingerprint_digest: fingerprint("a"),
++    budget: {
++      max_episodes: 10,
++      max_agent_runs: 8,
++      max_input_tokens: 10_000,
++      max_output_tokens: 10_000,
++      max_total_tokens: 20_000,
++      max_wall_time_ms: null,
++      max_changed_files: null,
++      max_diff_lines: null,
++      max_no_progress_episodes: null,
++    },
++  });
++}
++
++describe("roadmap managed accounting", () => {
++  it("keeps every managed role and attempt in one journal", () => {
++    let current = journal();
++    const roles: SupervisorEpisodeRole[] = ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"];
++    for (const [index, role] of roles.entries()) {
++      const state = fingerprint(index === 0 ? "a" : String(index + 1));
++      if (index > 0) {
++        current = advanceSupervisorExecutionEpisodeState({
++          journal: current,
++          state_fingerprint_digest: state,
++        });
++      }
++      const started = startSupervisorExecutionEpisode({
++        journal: current,
++        role,
++        kind: role === "EVALUATOR" ? "evaluator_episode" : "agent_episode",
++        operation_identity: { transport: "managed", role, attempt: index + 1 },
++        precondition_fingerprint_digest: state,
++        work_order_ref: `work-order-${String(index + 1)}`,
++        effect_ref: `result-${String(index + 1)}`,
++      });
++      if (started.status !== "started") throw new Error("managed fixture did not start");
++      expect(started.journal.operations.at(-1)?.usage_attribution).toEqual({
++        state: "unavailable",
++        reason: "provider_result_not_observed",
++      });
++      current = completeSupervisorExecutionEpisode({
++        journal: started.journal,
++        operation_key: started.operation_key,
++        result: { status: "completed" },
++        usage: {
++          input_tokens: 10 + index,
++          output_tokens: 5,
++          total_tokens: 15 + index,
++        },
++        provider_usage: {
++          provider: "codex",
++          run_id: `run-${String(index + 1)}`,
++          work_order_id: `work-order-${String(index + 1)}`,
++          thread_id: `thread-${String(index + 1)}`,
++          turn_id: `turn-${String(index + 1)}`,
++        },
++      });
++    }
++
++    expect(current.operations.map(({ role }) => role)).toEqual(roles);
++    expect(current.usage).toMatchObject({
++      episodes: 4,
++      agent_runs: 4,
++      input_tokens: 46,
++      output_tokens: 20,
++      total_tokens: 66,
++      token_observed_agent_runs: 4,
++    });
++    expect(
++      current.operations.every((operation) => operation.usage_attribution?.state === "observed"),
++    ).toBe(true);
++  });
++
++  it("does not count formal CLI operations as provider runs", () => {
++    const started = startSupervisorExecutionEpisode({
++      journal: journal(),
++      role: "EXECUTOR",
++      kind: "cli_operation",
++      operation_identity: { id: "task.start" },
++      precondition_fingerprint_digest: fingerprint("a"),
++    });
++    if (started.status !== "started") throw new Error("CLI fixture did not start");
++
++    expect(started.journal.usage).toMatchObject({ episodes: 1, agent_runs: 0 });
++    expect(started.journal.operations[0]).not.toHaveProperty("usage_attribution");
++  });
++
++  it("rejects replay of one provider identity instead of double-counting it", () => {
++    const first = startSupervisorExecutionEpisode({
++      journal: journal(),
++      role: "EXECUTOR",
++      kind: "agent_episode",
++      operation_identity: { attempt: 1 },
++      precondition_fingerprint_digest: fingerprint("a"),
++    });
++    if (first.status !== "started") throw new Error("first fixture did not start");
++    const provider = {
++      provider: "codex",
++      run_id: "run-replayed",
++      work_order_id: "work-order-replayed",
++      thread_id: "thread-replayed",
++      turn_id: "turn-replayed",
++    };
++    const completed = completeSupervisorExecutionEpisode({
++      journal: first.journal,
++      operation_key: first.operation_key,
++      result: { status: "completed" },
++      usage: { input_tokens: 10, output_tokens: 5, total_tokens: 15 },
++      provider_usage: provider,
++    });
++    const ready = advanceSupervisorExecutionEpisodeState({
++      journal: completed,
++      state_fingerprint_digest: fingerprint("b"),
++    });
++    const replay = startSupervisorExecutionEpisode({
++      journal: ready,
++      role: "EXECUTOR",
++      kind: "agent_episode",
++      operation_identity: { attempt: 2 },
++      precondition_fingerprint_digest: fingerprint("b"),
++    });
++    if (replay.status !== "started") throw new Error("replay fixture did not start");
++
++    expect(() =>
++      completeSupervisorExecutionEpisode({
++        journal: replay.journal,
++        operation_key: replay.operation_key,
++        result: { status: "completed" },
++        usage: { input_tokens: 10, output_tokens: 5, total_tokens: 15 },
++        provider_usage: provider,
++      }),
++    ).toThrow("Provider usage is already bound");
++  });
++});
+diff --git a/packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.ts b/packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.ts
+index a9ba37ed9..dc4b14a3f 100644
+--- a/packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.ts
++++ b/packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.ts
+@@ -63,3 +63,52 @@ export function continueSupervisorExecutionEpisodeAfterRenewableBudget(opts: {
+     digest: digestSupervisorEpisodeValue(payload),
+   });
+ }
++
++export function recoverSupervisorExecutionEpisodeAfterResolvedTokenTelemetry(opts: {
++  journal: SupervisorExecutionEpisodeJournal;
++  state_fingerprint_digest: string;
++}): SupervisorExecutionEpisodeJournal {
++  const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
++  const last = journal.operations.at(-1);
++  const exhausted = journal.stop?.exhausted_dimensions ?? [];
++  const stillMissingAttributedTokenUsage = journal.operations.some(
++    (operation) =>
++      (operation.kind === "agent_episode" || operation.kind === "evaluator_episode") &&
++      operation.provider_usage !== undefined &&
++      (operation.usage?.input_tokens === undefined ||
++        operation.usage.output_tokens === undefined ||
++        operation.usage.total_tokens === undefined),
++  );
++  if (
++    journal.status !== "stopped" ||
++    journal.stop?.reason !== "budget_exhausted" ||
++    journal.cursor.phase !== "stopped" ||
++    last?.status !== "completed" ||
++    (journal.stop.operation_key !== null && journal.stop.operation_key !== last.operation_key) ||
++    exhausted.length === 0 ||
++    exhausted.some(
++      (dimension) =>
++        dimension !== "input_tokens_telemetry" &&
++        dimension !== "output_tokens_telemetry" &&
++        dimension !== "total_tokens_telemetry",
++    ) ||
++    stillMissingAttributedTokenUsage
++  ) {
++    return journal;
++  }
++  const now = new Date().toISOString();
++  const { digest: previousDigest, ...previous } = journal;
++  const payload = {
++    ...previous,
++    state_fingerprint_digest: opts.state_fingerprint_digest,
++    cursor: { episode: journal.cursor.episode, phase: "ready" as const, operation_key: null },
++    status: "running" as const,
++    stop: null,
++    updated_at: now,
++    previous_digest: previousDigest,
++  };
++  return validateSupervisorExecutionEpisodeJournal({
++    ...payload,
++    digest: digestSupervisorEpisodeValue(payload),
++  });
++}
+diff --git a/packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts b/packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts
+index 410a12b17..96990cc72 100644
+--- a/packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts
++++ b/packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts
+@@ -9,6 +9,7 @@ import {
+   completeSupervisorExecutionEpisode,
+   createSupervisorExecutionEpisodeJournal,
+   startSupervisorExecutionEpisode,
++  stopSupervisorExecutionEpisode,
+   validateSupervisorExecutionEpisodeJournal,
+ } from "@agentplaneorg/core/schemas";
+ import { renderTaskReadme } from "@agentplaneorg/core/tasks";
+@@ -29,6 +30,17 @@ import {
+ } from "./supervisor-execution-episode.js";
+ 
+ const taskId = "202607280001-EPISODE";
++const UNMETERED_TOKEN_BUDGET = {
++  max_episodes: 50,
++  max_agent_runs: 50,
++  max_input_tokens: null,
++  max_output_tokens: null,
++  max_total_tokens: null,
++  max_wall_time_ms: 4 * 60 * 60 * 1000,
++  max_changed_files: 2000,
++  max_diff_lines: null,
++  max_no_progress_episodes: 3,
++} as const;
+ 
+ function fixtureDecision(
+   root: string,
+@@ -290,6 +302,71 @@ describe("persisted supervisor execution episodes", () => {
+     });
+   });
+ 
++  it("recovers a persisted telemetry-only stop without changing budget or history", async () => {
++    const root = await mkGitRepoRoot();
++    const decision = fixtureDecision(root, 1);
++    const created = createSupervisorExecutionEpisodeJournal({
++      task_id: taskId,
++      task_revision: 1,
++      state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
++      budget: {
++        ...UNMETERED_TOKEN_BUDGET,
++        max_input_tokens: 100,
++        max_output_tokens: 100,
++        max_total_tokens: 200,
++      },
++    });
++    const started = startSupervisorExecutionEpisode({
++      journal: created,
++      role: "EXECUTOR",
++      kind: "agent_episode",
++      operation_identity: { id: "legacy-unattributed-run" },
++      precondition_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
++    });
++    if (started.status !== "started") throw new Error("expected started fixture episode");
++    const completed = completeSupervisorExecutionEpisode({
++      journal: started.journal,
++      operation_key: started.operation_key,
++      result: { status: "success" },
++    });
++    const ready = advanceSupervisorExecutionEpisodeState({
++      journal: completed,
++      state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
++    });
++    const stopped = stopSupervisorExecutionEpisode({
++      journal: ready,
++      reason: "budget_exhausted",
++      exhausted_dimensions: [
++        "input_tokens_telemetry",
++        "output_tokens_telemetry",
++        "total_tokens_telemetry",
++      ],
++    });
++    const journalPath = await resolveSupervisorExecutionEpisodePath({
++      git_root: root,
++      task_id: taskId,
++    });
++    await createSupervisorEpisodeStore(journalPath).write(stopped);
++
++    await expect(
++      preparePersistedSupervisorReplacementAfterFailure({
++        git_root: root,
++        task_id: taskId,
++        state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
++        budget_only: true,
++      }),
++    ).resolves.toBe("telemetry_recovered");
++    expect(await createSupervisorEpisodeStore(journalPath).read()).toMatchObject({
++      status: "running",
++      stop: null,
++      budget: stopped.budget,
++      usage: stopped.usage,
++      operations: stopped.operations,
++      cursor: { episode: 1, phase: "ready", operation_key: null },
++      previous_digest: stopped.digest,
++    });
++  });
++
+   it("extends an agent-run budget only when an active grant authorizes autonomy", async () => {
+     const root = await mkGitRepoRoot();
+     const decision = fixtureDecision(root, 1);
+@@ -590,6 +667,7 @@ describe("persisted supervisor execution episodes", () => {
+       task_revision: 1,
+       execute: successfulOperationResult,
+       refresh: () => Promise.resolve(firstDecision),
++      budget: UNMETERED_TOKEN_BUDGET,
+     });
+     expect(first.execution.executable).toBe(true);
+ 
+@@ -603,6 +681,7 @@ describe("persisted supervisor execution episodes", () => {
+         return successfulOperationResult();
+       },
+       refresh: () => Promise.resolve(finalDecision),
++      budget: UNMETERED_TOKEN_BUDGET,
+     });
+ 
+     expect(secondExecutions).toBe(1);
+diff --git a/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts b/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
+index 8bd9f6e77..738f096bf 100644
+--- a/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
++++ b/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
+@@ -13,19 +13,25 @@ import {
+   type SupervisorEpisodeOperationKind,
+   type SupervisorExecutionBudget,
+   type SupervisorExecutionEpisodeJournal,
+-  type SupervisorExecutionUsage,
+ } from "@agentplaneorg/core/schemas";
+ import { atomicWriteFile } from "@agentplaneorg/core/fs";
+ import { gitRevParse } from "@agentplaneorg/core/git";
+ 
+ import type { TaskRouteDecision } from "./route-decision-types.js";
+-import { continueSupervisorExecutionEpisodeAfterRenewableBudget } from "./supervisor-execution-budget-renewal.js";
+-import { readCodexProviderUsageForResult } from "../../runner/adapters/codex-result-transport.js";
++import {
++  continueSupervisorExecutionEpisodeAfterRenewableBudget,
++  recoverSupervisorExecutionEpisodeAfterResolvedTokenTelemetry,
++} from "./supervisor-execution-budget-renewal.js";
+ import {
+   superviseWorkflowStep,
+   type WorkflowSupervisorExecution,
+   type WorkflowSupervisorExecutor,
+ } from "./workflow-supervisor.js";
++import {
++  buildSingleStageLifecycleTiming,
++  workflowOperationLifecycleStage,
++} from "./lifecycle-stage-timing.js";
++import { observedRunnerUsage } from "./supervisor-execution-observation.js";
+ 
+ export { tryAcquireSupervisorExecutionLease } from "./supervisor-execution-lease.js";
+ 
+@@ -227,7 +233,9 @@ export async function preparePersistedSupervisorReplacementAfterFailure(opts: {
+   state_fingerprint_digest: string;
+   allow_agent_run_budget_extension?: boolean;
+   budget_only?: boolean;
+-}): Promise<"prepared" | "budget_extended" | "already_prepared" | "not_failed"> {
++}): Promise<
++  "prepared" | "budget_extended" | "telemetry_recovered" | "already_prepared" | "not_failed"
++> {
+   const journalPath = await resolveSupervisorExecutionEpisodePath({
+     git_root: opts.git_root,
+     task_id: opts.task_id,
+@@ -251,6 +259,16 @@ export async function preparePersistedSupervisorReplacementAfterFailure(opts: {
+     }
+     const latest = journal.operations.at(-1);
+     const exhaustedDimensions = journal.stop?.exhausted_dimensions ?? [];
++    const telemetryRecovery = recoverSupervisorExecutionEpisodeAfterResolvedTokenTelemetry({
++      journal,
++      state_fingerprint_digest: opts.state_fingerprint_digest,
++    });
++    if (telemetryRecovery.digest !== journal.digest) {
++      if (await opened.store.compareAndSwap(journal.digest, telemetryRecovery)) {
++        return "telemetry_recovered";
++      }
++      continue;
++    }
+     const renewableBudgetExhausted =
+       journal.status === "stopped" &&
+       journal.stop?.reason === "budget_exhausted" &&
+@@ -339,72 +357,6 @@ function stoppedExecution(opts: {
+   };
+ }
+ 
+-function isNonNegativeInteger(value: unknown): value is number {
+-  return typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
+-}
+-
+-function observedRunnerUsage(opts: {
+-  result: Awaited<ReturnType<WorkflowSupervisorExecutor>>;
+-  budget: SupervisorExecutionBudget;
+-}): {
+-  usage: Partial<Omit<SupervisorExecutionUsage, "episodes" | "agent_runs">>;
+-  provider_usage?: SupervisorExecutionEpisodeJournal["operations"][number]["provider_usage"];
+-  progress: unknown;
+-  missing_dimensions: string[];
+-} {
+-  const lifecycle =
+-    opts.result.operation_result?.kind === "runner_lifecycle"
+-      ? opts.result.operation_result.value
+-      : null;
+-  if (lifecycle?.phase !== "executed" || lifecycle.result === null) {
+-    return { usage: {}, progress: undefined, missing_dimensions: [] };
+-  }
+-  const metrics = lifecycle.result.metrics;
+-  const evidence = lifecycle.result.evidence;
+-  const providerUsage = readCodexProviderUsageForResult(lifecycle.result);
+-  const usage: Partial<Omit<SupervisorExecutionUsage, "episodes" | "agent_runs">> = {};
+-  const missing: string[] = [];
+-  for (const field of [
+-    "input_tokens",
+-    "output_tokens",
+-    "total_tokens",
+-    "visible_output_tokens",
+-    "reasoning_tokens",
+-    "cached_input_tokens",
+-    "prepared_context_bytes",
+-  ] as const) {
+-    if (isNonNegativeInteger(providerUsage?.[field])) usage[field] = providerUsage[field];
+-  }
+-  // Provider token telemetry is completion-cost evidence, not execution
+-  // authority. Missing usage degrades the completed task projection to
+-  // `unavailable`; it must not turn an otherwise successful adapter result
+-  // into human review. Observed values still charge and enforce token budgets.
+-  if (isNonNegativeInteger(metrics?.duration_ms)) usage.wall_time_ms = metrics.duration_ms;
+-  else if (opts.budget.max_wall_time_ms !== null) missing.push("wall_time_ms_telemetry");
+-  if (isNonNegativeInteger(evidence?.files_changed_count)) {
+-    usage.changed_files = evidence.files_changed_count;
+-  } else if (opts.budget.max_changed_files !== null) {
+-    missing.push("changed_files_telemetry");
+-  }
+-  if (opts.budget.max_diff_lines !== null) missing.push("diff_lines_telemetry");
+-  return {
+-    usage,
+-    ...(providerUsage && lifecycle.invocation
+-      ? {
+-          provider_usage: {
+-            provider: "codex",
+-            run_id: lifecycle.invocation.run_id,
+-            work_order_id: lifecycle.invocation.work_order_id,
+-            thread_id: providerUsage.thread_id ?? null,
+-            turn_id: providerUsage.turn_id ?? null,
+-          },
+-        }
+-      : {}),
+-    progress: lifecycle.lifecycle.state_fingerprint,
+-    missing_dimensions: missing.toSorted(),
+-  };
+-}
+-
+ /**
+  * Persist the intent before calling the existing typed supervisor. A restart
+  * can therefore distinguish an uncompleted provider/effect from a completed
+@@ -538,9 +490,24 @@ export async function supervisePersistedWorkflowEpisode(opts: {
+     decision: opts.decision,
+     mode: "execute",
+     execute: async ({ operation: invoked }) => {
+-      const operationStartedAt = Date.now();
++      const operationStartedAt = performance.now();
++      const timing = (endedAt: number, firstMutation: boolean) => {
++        const stage = workflowOperationLifecycleStage({
++          operation_id: invoked.id,
++          semantic: kind === "agent_episode" || kind === "evaluator_episode",
++          evaluator: kind === "evaluator_episode",
++        });
++        return buildSingleStageLifecycleTiming({
++          root_span_id: started.operation_key,
++          ...stage,
++          started_ms: operationStartedAt,
++          ended_ms: endedAt,
++          first_scoped_mutation: firstMutation,
++        });
++      };
+       try {
+         const result = await opts.execute({ operation: invoked });
++        const operationEndedAt = performance.now();
+         const observed = observedRunnerUsage({ result, budget: journal.budget });
+         journal = completeSupervisorExecutionEpisode({
+           journal,
+@@ -552,6 +519,7 @@ export async function supervisePersistedWorkflowEpisode(opts: {
+           },
+           usage: observed.usage,
+           provider_usage: observed.provider_usage,
++          lifecycle_timing: timing(operationEndedAt, (observed.usage.changed_files ?? 0) > 0),
+           ...(observed.progress === undefined ? {} : { progress: observed.progress }),
+           failed: result.status !== "succeeded",
+         });
+@@ -566,11 +534,15 @@ export async function supervisePersistedWorkflowEpisode(opts: {
+         await store.write(journal);
+         return result;
+       } catch (error) {
++        const operationEndedAt = performance.now();
+         journal = completeSupervisorExecutionEpisode({
+           journal,
+           operation_key: started.operation_key,
+           result: { error: error instanceof Error ? error.name : "unknown_error" },
+-          usage: { wall_time_ms: Math.max(0, Date.now() - operationStartedAt) },
++          usage: {
++            wall_time_ms: Math.max(0, Math.round(operationEndedAt - operationStartedAt)),
++          },
++          lifecycle_timing: timing(operationEndedAt, false),
+           failed: true,
+         });
+         await store.write(journal);
+diff --git a/packages/agentplane/src/commands/shared/supervisor-execution-observation.ts b/packages/agentplane/src/commands/shared/supervisor-execution-observation.ts
+new file mode 100644
+index 000000000..9b2fa7986
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/supervisor-execution-observation.ts
+@@ -0,0 +1,74 @@
++import type {
++  SupervisorExecutionBudget,
++  SupervisorExecutionEpisodeJournal,
++  SupervisorExecutionUsage,
++} from "@agentplaneorg/core/schemas";
++
++import { readCodexProviderUsageForResult } from "../../runner/adapters/codex-result-transport.js";
++import type { WorkflowSupervisorExecutor } from "./workflow-supervisor.js";
++
++function isNonNegativeInteger(value: unknown): value is number {
++  return typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
++}
++
++export function observedRunnerUsage(opts: {
++  result: Awaited<ReturnType<WorkflowSupervisorExecutor>>;
++  budget: SupervisorExecutionBudget;
++}): {
++  usage: Partial<Omit<SupervisorExecutionUsage, "episodes" | "agent_runs">>;
++  provider_usage?: SupervisorExecutionEpisodeJournal["operations"][number]["provider_usage"];
++  progress: unknown;
++  missing_dimensions: string[];
++} {
++  const lifecycle =
++    opts.result.operation_result?.kind === "runner_lifecycle"
++      ? opts.result.operation_result.value
++      : null;
++  if (lifecycle?.phase !== "executed" || lifecycle.result === null) {
++    return { usage: {}, progress: undefined, missing_dimensions: [] };
++  }
++  const metrics = lifecycle.result.metrics;
++  const evidence = lifecycle.result.evidence;
++  const providerUsage = readCodexProviderUsageForResult(lifecycle.result);
++  const usage: Partial<Omit<SupervisorExecutionUsage, "episodes" | "agent_runs">> = {};
++  const missing: string[] = [];
++  for (const field of [
++    "input_tokens",
++    "output_tokens",
++    "total_tokens",
++    "visible_output_tokens",
++    "reasoning_tokens",
++    "cached_input_tokens",
++    "prepared_context_bytes",
++  ] as const) {
++    if (isNonNegativeInteger(providerUsage?.[field])) usage[field] = providerUsage[field];
++  }
++  // Provider token telemetry is completion-cost evidence, not execution
++  // authority. Missing usage degrades the completed task projection to
++  // `unavailable`; it must not turn an otherwise successful adapter result
++  // into human review. Observed values still charge and enforce token budgets.
++  if (isNonNegativeInteger(metrics?.duration_ms)) usage.wall_time_ms = metrics.duration_ms;
++  else if (opts.budget.max_wall_time_ms !== null) missing.push("wall_time_ms_telemetry");
++  if (isNonNegativeInteger(evidence?.files_changed_count)) {
++    usage.changed_files = evidence.files_changed_count;
++  } else if (opts.budget.max_changed_files !== null) {
++    missing.push("changed_files_telemetry");
++  }
++  if (opts.budget.max_diff_lines !== null) missing.push("diff_lines_telemetry");
++  return {
++    usage,
++    ...(lifecycle.invocation
++      ? {
++          provider_usage: {
++            provider: lifecycle.invocation.adapter_id,
++            run_id: lifecycle.invocation.run_id,
++            work_order_id: lifecycle.invocation.work_order_id,
++            thread_id: providerUsage?.thread_id ?? null,
++            turn_id: providerUsage?.turn_id ?? null,
++          },
++        }
++      : {}),
++    progress: lifecycle.lifecycle.state_fingerprint,
++    missing_dimensions: missing.toSorted(),
++  };
++}
+diff --git a/packages/agentplane/src/commands/task/advance.command.ts b/packages/agentplane/src/commands/task/advance.command.ts
+index 9c93180ed..425e78e78 100644
+--- a/packages/agentplane/src/commands/task/advance.command.ts
++++ b/packages/agentplane/src/commands/task/advance.command.ts
+@@ -170,7 +170,9 @@ export function makeRunTaskAdvanceHandler(deps: {
+         allow_agent_run_budget_extension: true,
+         budget_only: true,
+       });
+-      if (continuation === "budget_extended") current = await decide(true);
++      if (continuation === "budget_extended" || continuation === "telemetry_recovered") {
++        current = await decide(true);
++      }
+     }
+     let replacementPrepared = false;
+     if (parsed.replacement) {
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts b/packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts
+index de8a22893..1e3b0c1cd 100644
+--- a/packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts
+@@ -51,7 +51,7 @@ import {
+   branchSupervisorArtifactCommitMessage,
+   commitBranchSupervisorTaskArtifacts,
+ } from "./branch-task-supervisor-artifact-commit.js";
+-import { branchSupervisorUsageFromLifecycle } from "./branch-task-supervisor-usage.js";
++import { branchSupervisorAccountingFromLifecycle } from "./branch-task-supervisor-usage.js";
+ 
+ import path from "node:path";
+ import { readFile } from "node:fs/promises";
+@@ -65,6 +65,7 @@ import {
+ 
+ import { conflictApplicationAuthority } from "../pr/conflict-rework-authority.js";
+ import { workflowTaskFingerprintComponent } from "../shared/workflow-step-fingerprint.js";
++import { buildSingleStageLifecycleTiming } from "../shared/lifecycle-stage-timing.js";
+ 
+ async function executeBranchImplementationEpisode(opts: {
+   input: BranchTaskSupervisorOptions;
+@@ -173,6 +174,16 @@ async function executeBranchImplementationEpisode(opts: {
+     ]);
+     const eventsBefore = task.events?.length ?? 0;
+     let executed: Awaited<ReturnType<typeof executeTaskRunnerExecution>>;
++    const dispatchStartedAt = performance.now();
++    const timing = (endedAt: number, firstMutation: boolean) =>
++      buildSingleStageLifecycleTiming({
++        root_span_id: started.operation_key,
++        stage: "semantic_dispatch",
++        category: "external_wait",
++        started_ms: dispatchStartedAt,
++        ended_ms: endedAt,
++        first_scoped_mutation: firstMutation,
++      });
+     try {
+       executed = await executeTaskRunnerExecution({
+         ctx: command,
+@@ -190,6 +201,7 @@ async function executeBranchImplementationEpisode(opts: {
+         journal,
+         operation_key: started.operation_key,
+         result: { error: error instanceof Error ? error.name : "unknown_error" },
++        lifecycle_timing: timing(performance.now(), false),
+         failed: true,
+       });
+       await opened.store.write(journal);
+@@ -260,6 +272,8 @@ async function executeBranchImplementationEpisode(opts: {
+         }
+       }
+     }
++    const accounting = branchSupervisorAccountingFromLifecycle(lifecycle);
++    const dispatchEndedAt = performance.now();
+     journal = completeSupervisorExecutionEpisode({
+       journal,
+       operation_key: started.operation_key,
+@@ -269,7 +283,9 @@ async function executeBranchImplementationEpisode(opts: {
+         receipt: lifecycle.result?.execution_receipt ?? null,
+         semantic_status: lifecycle.result?.semantic_result?.value.status ?? null,
+       },
+-      usage: branchSupervisorUsageFromLifecycle(lifecycle),
++      usage: accounting.usage,
++      provider_usage: accounting.provider_usage,
++      lifecycle_timing: timing(dispatchEndedAt, (accounting.usage.changed_files ?? 0) > 0),
+       progress: acceptedRoute
+         ? {
+             authority: conflictApplicationAuthority(acceptedRoute),
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor-usage.ts b/packages/agentplane/src/commands/task/branch-task-supervisor-usage.ts
+index cb87fbc2c..00f58a985 100644
+--- a/packages/agentplane/src/commands/task/branch-task-supervisor-usage.ts
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor-usage.ts
+@@ -1,22 +1,37 @@
+-import type { SupervisorExecutionUsage } from "@agentplaneorg/core/schemas";
++import type {
++  SupervisorExecutionEpisodeJournal,
++  SupervisorExecutionUsage,
++} from "@agentplaneorg/core/schemas";
+ 
+ import { readCodexProviderUsageForResult } from "../../runner/adapters/codex-result-transport.js";
+ import type { TaskRunnerLifecycleResult } from "../../runner/usecases/task-run-lifecycle-result.js";
+ 
+-export function branchSupervisorUsageFromLifecycle(
+-  lifecycle: TaskRunnerLifecycleResult,
+-): Partial<Omit<SupervisorExecutionUsage, "episodes" | "agent_runs">> {
+-  if (lifecycle.phase !== "executed" || !lifecycle.result) return {};
++export function branchSupervisorAccountingFromLifecycle(lifecycle: TaskRunnerLifecycleResult): {
++  usage: Partial<Omit<SupervisorExecutionUsage, "episodes" | "agent_runs">>;
++  provider_usage?: SupervisorExecutionEpisodeJournal["operations"][number]["provider_usage"];
++} {
++  if (lifecycle.phase !== "executed" || !lifecycle.result) return { usage: {} };
+   const provider = readCodexProviderUsageForResult(lifecycle.result);
+   const duration = lifecycle.result.metrics?.duration_ms;
+   const changedFiles = lifecycle.result.evidence?.files_changed_count;
+   return {
+-    ...(provider ?? {}),
+-    ...(typeof duration === "number" && Number.isSafeInteger(duration) && duration >= 0
+-      ? { wall_time_ms: duration }
+-      : {}),
+-    ...(typeof changedFiles === "number" && Number.isSafeInteger(changedFiles) && changedFiles >= 0
+-      ? { changed_files: changedFiles }
+-      : {}),
++    usage: {
++      ...(provider ?? {}),
++      ...(typeof duration === "number" && Number.isSafeInteger(duration) && duration >= 0
++        ? { wall_time_ms: duration }
++        : {}),
++      ...(typeof changedFiles === "number" &&
++      Number.isSafeInteger(changedFiles) &&
++      changedFiles >= 0
++        ? { changed_files: changedFiles }
++        : {}),
++    },
++    provider_usage: {
++      provider: lifecycle.invocation.adapter_id,
++      run_id: lifecycle.invocation.run_id,
++      work_order_id: lifecycle.invocation.work_order_id,
++      thread_id: provider?.thread_id ?? null,
++      turn_id: provider?.turn_id ?? null,
++    },
+   };
+ }
+diff --git a/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts b/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts
+index 236a3e7a4..f56cd1c2e 100644
+--- a/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts
++++ b/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts
+@@ -14,6 +14,7 @@ import {
+   tryAcquireSupervisorExecutionLease,
+ } from "../shared/supervisor-execution-episode.js";
+ import type { TaskRouteDecision } from "../shared/route-decision-types.js";
++import { buildMonotonicLifecycleTiming } from "../shared/lifecycle-stage-timing.js";
+ 
+ export async function recordDirectTaskFormalOperation(opts: {
+   git_root: string;
+@@ -153,15 +154,47 @@ export async function recordDirectTaskFormalOperation(opts: {
+     }
+     journal = started.journal;
+     await opened.store.write(journal);
++    const operationStartedAt = performance.now();
++    const timing = (endedAt: number, verified: boolean) =>
++      buildMonotonicLifecycleTiming({
++        root_span_id: started.operation_key,
++        started_ms: operationStartedAt,
++        ended_ms: endedAt,
++        spans: [
++          {
++            span_id: `${started.operation_key}:${opts.id}`,
++            parent_span_id: started.operation_key,
++            stage: opts.id === "task_verify" ? "native_verification" : "closure",
++            category: "local_work",
++            started_ms: operationStartedAt,
++            ended_ms: endedAt,
++          },
++          ...(verified
++            ? [
++                {
++                  span_id: `${started.operation_key}:verified_state`,
++                  parent_span_id: started.operation_key,
++                  stage: "verified_state" as const,
++                  category: "local_work" as const,
++                  started_ms: endedAt,
++                  ended_ms: endedAt,
++                },
++              ]
++            : []),
++        ],
++      });
+     try {
+       const result = await opts.run();
++      const operationEndedAt = performance.now();
+       journal = completeSupervisorExecutionEpisode({
+         journal,
+         operation_key: started.operation_key,
+         result: { direct_task_operation: opts.id, result },
++        lifecycle_timing: timing(operationEndedAt, opts.id === "task_verify"),
+       });
+       await opened.store.write(journal);
+     } catch (error) {
++      const operationEndedAt = performance.now();
+       journal = completeSupervisorExecutionEpisode({
+         journal,
+         operation_key: started.operation_key,
+@@ -169,6 +202,7 @@ export async function recordDirectTaskFormalOperation(opts: {
+           direct_task_operation: opts.id,
+           error: error instanceof Error ? error.name : "unknown",
+         },
++        lifecycle_timing: timing(operationEndedAt, false),
+         failed: true,
+       });
+       await opened.store.write(journal);
+diff --git a/packages/agentplane/src/commands/task/external-agent-exchange.ts b/packages/agentplane/src/commands/task/external-agent-exchange.ts
+index f29a5130d..469cdb10e 100644
+--- a/packages/agentplane/src/commands/task/external-agent-exchange.ts
++++ b/packages/agentplane/src/commands/task/external-agent-exchange.ts
+@@ -13,6 +13,8 @@ import {
+   type AgentSemanticResult,
+   type AgentWorkOrderRole,
+   type AgentWorkOrderV2,
++  type SupervisorExecutionEpisodeJournal,
++  type SupervisorExecutionUsage,
+ } from "@agentplaneorg/core/schemas";
+ import { atomicWriteFile } from "@agentplaneorg/core/fs";
+ import { gitRevParse } from "@agentplaneorg/core/git";
+@@ -35,6 +37,28 @@ export type ExternalAgentResultEnvelope = {
+   result: AgentSemanticResult;
+ };
+ 
++type ExternalAgentObservedUsage = Partial<
++  Pick<
++    SupervisorExecutionUsage,
++    | "input_tokens"
++    | "output_tokens"
++    | "total_tokens"
++    | "visible_output_tokens"
++    | "reasoning_tokens"
++    | "cached_input_tokens"
++    | "prepared_context_bytes"
++  >
++>;
++
++export type ExternalAgentHostUsageObservation = {
++  schema_version: 1;
++  observed_by: "host_transport";
++  state: "observed" | "partial" | "unavailable" | "unallocatable";
++  reason: string | null;
++  provider_usage: SupervisorExecutionEpisodeJournal["operations"][number]["provider_usage"] | null;
++  usage: ExternalAgentObservedUsage | null;
++};
++
+ import type { ExternalImplementationVerificationCheckpoint } from "./external-agent-implementation-checkpoint.js";
+ 
+ export type ExternalAgentExchange = {
+@@ -64,10 +88,91 @@ export type ExternalAgentExchange = {
+   result: ExternalAgentResultEnvelope | null;
+   postcondition_fingerprint: string | null;
+   verification_checkpoint?: ExternalImplementationVerificationCheckpoint;
++  host_usage?: ExternalAgentHostUsageObservation;
+   created_at: string;
+   updated_at: string;
+ };
+ 
++const EXTERNAL_USAGE_FIELDS = [
++  "input_tokens",
++  "output_tokens",
++  "total_tokens",
++  "visible_output_tokens",
++  "reasoning_tokens",
++  "cached_input_tokens",
++  "prepared_context_bytes",
++] as const;
++
++function validOptionalIdentity(value: unknown): value is string | null {
++  return value === null || (typeof value === "string" && value.trim().length > 0);
++}
++
++export function externalAgentUsageAccounting(opts: { exchange: ExternalAgentExchange }): {
++  usage: ExternalAgentObservedUsage;
++  provider_usage?: SupervisorExecutionEpisodeJournal["operations"][number]["provider_usage"];
++  usage_attribution: NonNullable<
++    SupervisorExecutionEpisodeJournal["operations"][number]["usage_attribution"]
++  >;
++} {
++  const observation = opts.exchange.host_usage;
++  if (!observation) {
++    return {
++      usage: {},
++      usage_attribution: {
++        state: "unavailable",
++        reason: "legacy_external_host_usage_unavailable",
++      },
++    };
++  }
++  const provider = observation.provider_usage;
++  const usage = observation.usage;
++  const validProvider =
++    provider === null ||
++    (typeof provider?.provider === "string" &&
++      provider.provider.trim().length > 0 &&
++      typeof provider.run_id === "string" &&
++      provider.run_id.trim().length > 0 &&
++      provider.work_order_id === opts.exchange.work_order_id &&
++      validOptionalIdentity(provider.thread_id) &&
++      validOptionalIdentity(provider.turn_id));
++  const validUsage =
++    usage === null ||
++    (Object.keys(usage).every((key) =>
++      EXTERNAL_USAGE_FIELDS.includes(key as (typeof EXTERNAL_USAGE_FIELDS)[number]),
++    ) &&
++      Object.values(usage).every((value) => Number.isSafeInteger(value) && Number(value) >= 0));
++  const observedTrio =
++    usage !== null &&
++    Number.isSafeInteger(usage.input_tokens) &&
++    Number.isSafeInteger(usage.output_tokens) &&
++    Number.isSafeInteger(usage.total_tokens);
++  const hasUsage = usage !== null && Object.keys(usage).length > 0;
++  const validState =
++    (observation.state === "observed" && provider !== null && observedTrio) ||
++    (observation.state === "partial" && provider !== null && hasUsage && !observedTrio) ||
++    ((observation.state === "unavailable" || observation.state === "unallocatable") &&
++      usage === null);
++  if (
++    observation.schema_version !== 1 ||
++    observation.observed_by !== "host_transport" ||
++    !validProvider ||
++    !validUsage ||
++    !validState ||
++    (observation.reason !== null &&
++      (typeof observation.reason !== "string" || observation.reason.trim().length === 0))
++  ) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "External-agent host usage observation is invalid or does not match the exchange.",
++    });
++  }
++  return {
++    usage: usage ?? {},
++    ...(provider ? { provider_usage: provider } : {}),
++    usage_attribution: { state: observation.state, reason: observation.reason },
++  };
++}
++
+ export type ExternalAgentExchangePaths = {
+   directory: string;
+   exchange: string;
+@@ -77,7 +182,7 @@ export type ExternalAgentExchangePaths = {
+   result: string;
+ };
+ 
+-function sha256(value: string): string {
++export function externalAgentExchangeDigest(value: string): string {
+   return `sha256:${createHash("sha256").update(value, "utf8").digest("hex")}`;
+ }
+ 
+@@ -357,7 +462,7 @@ export function validateExternalAgentResultEnvelope(opts: {
+ }
+ 
+ export function externalAgentResultDigest(result: ExternalAgentResultEnvelope): string {
+-  return sha256(JSON.stringify(result));
++  return externalAgentExchangeDigest(JSON.stringify(result));
+ }
+ 
+ export function externalAgentIssueDigest(opts: {
+@@ -386,7 +491,7 @@ export function externalAgentIssueDigest(opts: {
+     work_order: validateAgentWorkOrderV2(opts.work_order),
+     ...(exchange.result_format ? { result_format: exchange.result_format } : {}),
+   };
+-  return sha256(
++  return externalAgentExchangeDigest(
+     JSON.stringify(
+       exchange.issue_digest_version === 2
+         ? { ...identity, issue_digest_version: 2 }
+diff --git a/packages/agentplane/src/commands/task/external-agent-supervisor.ts b/packages/agentplane/src/commands/task/external-agent-supervisor.ts
+index 4e9047297..b423de870 100644
+--- a/packages/agentplane/src/commands/task/external-agent-supervisor.ts
++++ b/packages/agentplane/src/commands/task/external-agent-supervisor.ts
+@@ -1,5 +1,4 @@
+ import { captureExternalTaskArtifacts } from "./external-agent-task-artifact-baseline.js";
+-import { createHash } from "node:crypto";
+ import { readFile } from "node:fs/promises";
+ import path from "node:path";
+ 
+@@ -24,11 +23,12 @@ import {
+   resolveCommandGitCommonDir,
+   type CommandContext,
+ } from "../shared/task-backend.js";
+-
+ import { agentTransitionId } from "./agent-action-packet.js";
+ import {
+   externalAgentIssueDigest,
++  externalAgentExchangeDigest,
+   externalAgentResultDigest,
++  externalAgentUsageAccounting,
+   persistExternalAgentExchangeArtifacts,
+   readExternalAgentExchange,
+   readExternalAgentResult,
+@@ -63,17 +63,12 @@ import {
+ } from "./external-agent-result-routing.js";
+ import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
+ import { resolveConflictReworkSemanticInput } from "../pr/conflict-rework-semantic-input.js";
+-
+ export type IssuedExternalAgentExchange = {
+   exchange: ExternalAgentExchange;
+   paths: ExternalAgentExchangePaths;
+   work_order: AgentWorkOrderV2;
+ };
+ 
+-function digestText(value: string): string {
+-  return `sha256:${createHash("sha256").update(value, "utf8").digest("hex")}`;
+-}
+-
+ async function commandContextForCheckout(opts: {
+   command: CommandContext;
+   checkout: string;
+@@ -125,7 +120,7 @@ async function prepareEvaluatorInput(opts: {
+       work_order: opts.work_order,
+       git_root: packet.git_root,
+       work_order_path: prepared.work_order_path,
+-      digest: digestText(serialized),
++      digest: externalAgentExchangeDigest(serialized),
+     }),
+     evaluator_work_order_ref: prepared.work_order_path,
+   };
+@@ -247,6 +242,14 @@ async function issueExternalAgentExchangeUnlocked(opts: {
+     result_digest: null,
+     result: null,
+     postcondition_fingerprint: null,
++    host_usage: {
++      schema_version: 1,
++      observed_by: "host_transport",
++      state: "unallocatable",
++      reason: "external_host_turn_not_task_attributable",
++      provider_usage: null,
++      usage: null,
++    },
+     created_at: at,
+     updated_at: at,
+   };
+@@ -318,7 +321,9 @@ async function assertReadOnlyReturnFresh(opts: {
+     );
+     if (
+       !opts.exchange.evaluator_work_order_ref ||
+-      digestText(await readFile(opts.exchange.evaluator_work_order_ref, "utf8")) !== frozen?.digest
++      externalAgentExchangeDigest(
++        await readFile(opts.exchange.evaluator_work_order_ref, "utf8"),
++      ) !== frozen?.digest
+     ) {
+       throw new CliError({
+         code: "E_VALIDATION",
+@@ -541,6 +546,7 @@ export async function acceptExternalAgentResult(opts: {
+       task_id: opts.task_id,
+       include_remote: includeRemote,
+     });
++    const accounting = externalAgentUsageAccounting({ exchange });
+     let journal = completeSupervisorExecutionEpisode({
+       journal: issuedJournal,
+       operation_key: operation.operation_key,
+@@ -549,6 +555,9 @@ export async function acceptExternalAgentResult(opts: {
+         semantic_status: envelope.result.status,
+         result_digest: resultDigest,
+       },
++      usage: accounting.usage,
++      provider_usage: accounting.provider_usage,
++      usage_attribution: accounting.usage_attribution,
+       progress: after.workflowStep.preconditionFingerprint,
+     });
+     if (!(await store.compareAndSwap(issuedJournal.digest, journal))) {
+diff --git a/packages/agentplane/src/commands/task/kernel-run.ts b/packages/agentplane/src/commands/task/kernel-run.ts
+index a4176ebf8..f7c5ab7ee 100644
+--- a/packages/agentplane/src/commands/task/kernel-run.ts
++++ b/packages/agentplane/src/commands/task/kernel-run.ts
+@@ -4,9 +4,14 @@ import path from "node:path";
+ import {
+   AGENT_SEMANTIC_RESULT_ZOD_SCHEMA,
+   AGENT_WORK_ORDER_V2_ZOD_SCHEMA,
++  advanceSupervisorExecutionEpisodeState,
++  completeSupervisorExecutionEpisode,
+   evaluateStateFingerprintPrecondition,
++  reopenSupervisorExecutionEpisodeAfterEffectEvidence,
++  startSupervisorExecutionEpisode,
+ } from "@agentplaneorg/core/schemas";
+ import { createRunnerAdapter } from "../../runner/adapters/index.js";
++import { readCodexProviderUsageForResult } from "../../runner/adapters/codex-result-transport.js";
+ import { RunnerRunRepository } from "../../runner/run-repository.js";
+ import { resolveSupervisorTaskRunnerPaths } from "../../runner/task-run-paths.js";
+ import { buildRunnerPolicyDecision } from "../../runner/policy-decision.js";
+@@ -16,6 +21,11 @@ import { resolveRunnerSandboxPolicy } from "../../runner/sandbox-policy.js";
+ import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js";
+ import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
+ import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-backend.js";
++import {
++  openSupervisorExecutionEpisode,
++  tryAcquireSupervisorExecutionLease,
++} from "../shared/supervisor-execution-episode.js";
++import { buildMonotonicLifecycleTiming } from "../shared/lifecycle-stage-timing.js";
+ import { advanceCanonicalTask } from "./kernel-advance.js";
+ import { writeKernelArtifact } from "./kernel-exchange.js";
+ import { createKernelRuntime } from "./kernel-runtime-context.js";
+@@ -107,14 +117,25 @@ async function executeKernelPacket(
+   });
+   assertRunnerPolicyCompatibility(bundle);
+   const repository = RunnerRunRepository.fromBundle(bundle);
+-  await repository.createFreshDirectory({ run_id: runId });
+   const invocation = await adapter.prepare(bundle);
+-  const bootstrap = renderSemanticBootstrap(bundle, invocation);
+-  const prepared = await repository.writePrepared({
+-    bundle,
+-    invocation,
+-    bootstrap_markdown: bootstrap,
+-  });
++  const existing = await repository.readRecord();
++  if (
++    existing &&
++    (existing.bundle.execution.run_id !== runId ||
++      existing.bundle.work_order?.work_order_id !== workOrder.work_order_id)
++  ) {
++    throw new Error("Canonical managed run artifacts do not match the current WorkOrder");
++  }
++  let prepared = existing?.state ?? null;
++  if (!prepared) {
++    await repository.createFreshDirectory({ run_id: runId });
++    const bootstrap = renderSemanticBootstrap(bundle, invocation);
++    prepared = await repository.writePrepared({
++      bundle,
++      invocation,
++      bootstrap_markdown: bootstrap,
++    });
++  }
+   const runtime = await createKernelRuntime({
+     command,
+     task_id: taskId,
+@@ -127,15 +148,6 @@ async function executeKernelPacket(
+     fresh.repository_fingerprint !== workOrder.canonical_binding?.repository_fingerprint
+   )
+     throw new Error("Canonical managed dispatch state changed during preparation");
+-  // A lost launch response never permits another process with this episode identity.
+-  const ownsDispatch = await writeKernelArtifact(directory, "managed-dispatch.json", {
+-    work_order_id: workOrder.work_order_id,
+-    run_id: runId,
+-  });
+-  if (!ownsDispatch)
+-    throw new Error(
+-      "Canonical managed dispatch already claimed; inspect the existing run before recovery",
+-    );
+   const capture = async () => {
+     const current = await runtime.adapter.read(taskId);
+     if (current.kind !== "canonical") throw new Error("Canonical run state unavailable");
+@@ -149,62 +161,242 @@ async function executeKernelPacket(
+           : null,
+     });
+   };
+-  const before = await capture();
+-  const diagnostic = evaluateStateFingerprintPrecondition({
+-    expected: workOrder.state_fingerprint,
+-    current: before,
+-    policy: workOrder.state_fingerprint_policy,
+-  });
+-  if (diagnostic.status === "stale" || diagnostic.status === "blocked")
+-    throw new Error("Canonical managed state precondition failed");
+-  const stateFingerprint: RunnerStateFingerprintRecord = {
+-    schema_version: 1,
+-    kind: "runner_state_fingerprint_record",
+-    outcome: "effect_started",
+-    precondition_fingerprint: workOrder.state_fingerprint,
+-    precondition_policy: workOrder.state_fingerprint_policy,
+-    state_before: before,
+-    state_after: null,
+-    precondition: diagnostic,
+-    effect_applied: null,
+-    post_state_reason_code: null,
+-  };
+-  await repository.writeState({
+-    ...prepared,
+-    updated_at: new Date().toISOString(),
+-    state_fingerprint: stateFingerprint,
+-  });
+-  const result = await adapter.execute(invocation);
+-  const observed = await repository.readState();
+-  if (!observed) throw new Error("Canonical managed run evidence is unavailable");
+-  await repository.writeState({
+-    ...observed,
+-    state_fingerprint: {
+-      ...stateFingerprint,
+-      outcome: "accepted",
+-      state_after: await capture(),
+-      effect_applied: true,
+-    },
+-  });
+-  if (
+-    result.status !== "success" ||
+-    result.execution_receipt?.verification_state !== "observed_success"
+-  )
+-    return {
+-      schema_version: 1,
+-      task_id: taskId,
+-      action: { kind: "human_required", reason: "canonical_runner_receipt_not_successful" },
+-      run_id: runId,
+-      status: result.status,
+-    };
+-  const semantic = AGENT_SEMANTIC_RESULT_ZOD_SCHEMA.parse(result.semantic_result?.value);
+-  await writeKernelArtifact(directory, "result.json", semantic);
+-  return advanceCanonicalTask({
+-    command,
++  const opened = await openSupervisorExecutionEpisode({
++    git_root: command.resolvedProject.gitRoot,
++    common_git_dir: await resolveCommandGitCommonDir(command),
+     task_id: taskId,
+-    transport: "managed",
+-    result_path: packet.exchange.result_path,
++    task_revision: workOrder.task.revision,
++    state_fingerprint_digest: workOrder.state_fingerprint.digest,
+   });
++  const lease = await tryAcquireSupervisorExecutionLease({ journal_path: opened.journal_path });
++  if (!lease) throw new Error("Another supervisor owns the canonical managed provider window");
++  try {
++    let journal = opened.journal;
++    const workOrderRef = path.join(directory, "work-order.json");
++    const latest = journal.operations.at(-1);
++    const sameOperation =
++      latest?.role === workOrder.role &&
++      latest.work_order_ref === workOrderRef &&
++      latest.effect_ref === invocation.result_path;
++    let result = existing?.result ?? null;
++
++    if (result && sameOperation && latest?.status === "intent") {
++      if (journal.status === "stopped" && journal.stop?.reason === "effect_in_doubt") {
++        const reopened = reopenSupervisorExecutionEpisodeAfterEffectEvidence({
++          journal,
++          operation_key: latest.operation_key,
++        });
++        if (!(await opened.store.compareAndSwap(journal.digest, reopened))) {
++          throw new Error("Canonical managed journal changed during result recovery");
++        }
++        journal = reopened;
++      }
++      if (journal.status !== "running" || journal.cursor.phase !== "intent_recorded") {
++        throw new Error("Canonical managed result cannot complete its recorded operation");
++      }
++      const provider = readCodexProviderUsageForResult(result);
++      const completed = completeSupervisorExecutionEpisode({
++        journal,
++        operation_key: latest.operation_key,
++        result: {
++          run_id: runId,
++          work_order_id: workOrder.work_order_id,
++          status: result.status,
++        },
++        usage: provider ?? {},
++        provider_usage: {
++          provider: invocation.adapter_id,
++          run_id: invocation.run_id,
++          work_order_id: invocation.work_order_id,
++          thread_id: provider?.thread_id ?? null,
++          turn_id: provider?.turn_id ?? null,
++        },
++        failed: result.status !== "success",
++      });
++      if (!(await opened.store.compareAndSwap(journal.digest, completed))) {
++        throw new Error("Canonical managed journal changed while applying a saved result");
++      }
++      journal = completed;
++    } else if (result && !(sameOperation && latest?.status === "completed")) {
++      throw new Error("Canonical managed saved result has no matching journal operation");
++    } else if (!result) {
++      if (journal.status === "running" && journal.cursor.phase === "completed") {
++        const advanced = advanceSupervisorExecutionEpisodeState({
++          journal,
++          state_fingerprint_digest: workOrder.state_fingerprint.digest,
++          route_observation: { transport: "managed", work_order_id: workOrder.work_order_id },
++        });
++        if (!(await opened.store.compareAndSwap(journal.digest, advanced))) {
++          throw new Error("Canonical managed journal changed before route advancement");
++        }
++        journal = advanced;
++      }
++      if (journal.status !== "running" || journal.cursor.phase !== "ready") {
++        throw new Error(
++          `Canonical managed supervisor is stopped (${journal.stop?.reason ?? journal.cursor.phase})`,
++        );
++      }
++      const started = startSupervisorExecutionEpisode({
++        journal,
++        role: workOrder.role,
++        kind: workOrder.role === "EVALUATOR" ? "evaluator_episode" : "agent_episode",
++        operation_identity: {
++          transport: "managed",
++          task_id: taskId,
++          work_order_id: workOrder.work_order_id,
++        },
++        precondition_fingerprint_digest: workOrder.state_fingerprint.digest,
++        authority_ref: `kernel-managed:${taskId}:${workOrder.work_order_id}`,
++        authority_digest: workOrder.state_fingerprint.digest,
++        work_order_ref: workOrderRef,
++        effect_ref: invocation.result_path,
++      });
++      if (started.status !== "started") {
++        await opened.store.write(started.journal);
++        throw new Error(`Canonical managed episode could not start (${started.status})`);
++      }
++      if (!(await opened.store.compareAndSwap(journal.digest, started.journal))) {
++        throw new Error("Canonical managed journal changed before provider dispatch");
++      }
++      journal = started.journal;
++      // A lost launch response never permits another process with this episode identity.
++      const ownsDispatch = await writeKernelArtifact(directory, "managed-dispatch.json", {
++        work_order_id: workOrder.work_order_id,
++        run_id: runId,
++      });
++      if (!ownsDispatch) {
++        throw new Error(
++          "Canonical managed dispatch already claimed without a durable saved result",
++        );
++      }
++      const before = await capture();
++      const diagnostic = evaluateStateFingerprintPrecondition({
++        expected: workOrder.state_fingerprint,
++        current: before,
++        policy: workOrder.state_fingerprint_policy,
++      });
++      if (diagnostic.status === "stale" || diagnostic.status === "blocked")
++        throw new Error("Canonical managed state precondition failed");
++      const stateFingerprint: RunnerStateFingerprintRecord = {
++        schema_version: 1,
++        kind: "runner_state_fingerprint_record",
++        outcome: "effect_started",
++        precondition_fingerprint: workOrder.state_fingerprint,
++        precondition_policy: workOrder.state_fingerprint_policy,
++        state_before: before,
++        state_after: null,
++        precondition: diagnostic,
++        effect_applied: null,
++        post_state_reason_code: null,
++      };
++      await repository.writeState({
++        ...prepared,
++        updated_at: new Date().toISOString(),
++        state_fingerprint: stateFingerprint,
++      });
++      const dispatchStartedAt = performance.now();
++      const timing = (endedAt: number, firstMutation: boolean) =>
++        buildMonotonicLifecycleTiming({
++          root_span_id: started.operation_key,
++          started_ms: dispatchStartedAt,
++          ended_ms: endedAt,
++          spans: [
++            {
++              span_id: `${started.operation_key}:semantic_dispatch`,
++              parent_span_id: started.operation_key,
++              stage: workOrder.role === "EVALUATOR" ? "review" : "semantic_dispatch",
++              category: "external_wait",
++              started_ms: dispatchStartedAt,
++              ended_ms: endedAt,
++            },
++            ...(firstMutation
++              ? [
++                  {
++                    span_id: `${started.operation_key}:first_scoped_mutation`,
++                    parent_span_id: started.operation_key,
++                    stage: "first_scoped_mutation" as const,
++                    category: "local_work" as const,
++                    started_ms: endedAt,
++                    ended_ms: endedAt,
++                  },
++                ]
++              : []),
++          ],
++        });
++      try {
++        result = await adapter.execute(invocation);
++      } catch (error) {
++        const failed = completeSupervisorExecutionEpisode({
++          journal,
++          operation_key: started.operation_key,
++          result: { error: error instanceof Error ? error.name : "unknown_error" },
++          lifecycle_timing: timing(performance.now(), false),
++          failed: true,
++        });
++        await opened.store.compareAndSwap(journal.digest, failed);
++        throw error;
++      }
++      const observed = await repository.readState();
++      if (!observed) throw new Error("Canonical managed run evidence is unavailable");
++      await repository.writeState({
++        ...observed,
++        result,
++        state_fingerprint: {
++          ...stateFingerprint,
++          outcome: "accepted",
++          state_after: await capture(),
++          effect_applied: true,
++        },
++      });
++      const provider = readCodexProviderUsageForResult(result);
++      const dispatchEndedAt = performance.now();
++      const completed = completeSupervisorExecutionEpisode({
++        journal,
++        operation_key: started.operation_key,
++        result: {
++          run_id: runId,
++          work_order_id: workOrder.work_order_id,
++          status: result.status,
++        },
++        usage: provider ?? {},
++        provider_usage: {
++          provider: invocation.adapter_id,
++          run_id: invocation.run_id,
++          work_order_id: invocation.work_order_id,
++          thread_id: provider?.thread_id ?? null,
++          turn_id: provider?.turn_id ?? null,
++        },
++        lifecycle_timing: timing(dispatchEndedAt, (result.evidence?.files_changed_count ?? 0) > 0),
++        failed: result.status !== "success",
++      });
++      if (!(await opened.store.compareAndSwap(journal.digest, completed))) {
++        throw new Error("Canonical managed journal changed while recording provider usage");
++      }
++      journal = completed;
++    }
++
++    if (
++      result.status !== "success" ||
++      result.execution_receipt?.verification_state !== "observed_success"
++    )
++      return {
++        schema_version: 1,
++        task_id: taskId,
++        action: { kind: "human_required", reason: "canonical_runner_receipt_not_successful" },
++        run_id: runId,
++        status: result.status,
++      };
++    const semantic = AGENT_SEMANTIC_RESULT_ZOD_SCHEMA.parse(result.semantic_result?.value);
++    await writeKernelArtifact(directory, "result.json", semantic);
++    return advanceCanonicalTask({
++      command,
++      task_id: taskId,
++      transport: "managed",
++      result_path: packet.exchange.result_path,
++    });
++  } finally {
++    await lease.release();
++  }
+ }
+ 
+ export async function runCanonicalTask(opts: {
+diff --git a/packages/agentplane/src/commands/task/roadmap-external-accounting.test.ts b/packages/agentplane/src/commands/task/roadmap-external-accounting.test.ts
+new file mode 100644
+index 000000000..1e940cb7f
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/roadmap-external-accounting.test.ts
+@@ -0,0 +1,116 @@
++import { describe, expect, it } from "vitest";
++
++import {
++  AGENT_WORK_ORDER_V2_VALID_FIXTURE,
++  buildAgentSemanticResultV2ValidFixtures,
++} from "@agentplaneorg/core/schemas";
++
++import {
++  externalAgentUsageAccounting,
++  validateExternalAgentResultEnvelope,
++  type ExternalAgentExchange,
++} from "./external-agent-exchange.js";
++
++function exchange(): ExternalAgentExchange {
++  const order = AGENT_WORK_ORDER_V2_VALID_FIXTURE;
++  return {
++    schema_version: 1,
++    kind: "external_agent_exchange",
++    status: "issued",
++    issue_digest_version: 2,
++    result_format: "semantic_payload_v1",
++    task_id: order.task.id,
++    transition_id: `tr_${"b".repeat(32)}`,
++    state_fingerprint: order.state_fingerprint.digest,
++    role: order.role,
++    purpose: "implementation",
++    checkout: "/repo",
++    work_order_id: order.work_order_id,
++    work_order_ref: "/repo/work-order.json",
++    result_schema_ref: "/repo/result-schema.json",
++    result_ref: "/repo/result.json",
++    evaluator_work_order_ref: null,
++    baseline: { head: null, changed_paths: [] },
++    result_digest: null,
++    result: null,
++    postcondition_fingerprint: null,
++    created_at: "2026-09-12T00:00:00.000Z",
++    updated_at: "2026-09-12T00:00:00.000Z",
++  };
++}
++
++describe("roadmap external accounting", () => {
++  it("keeps a shared host turn explicitly unallocatable", () => {
++    const current = exchange();
++    current.host_usage = {
++      schema_version: 1,
++      observed_by: "host_transport",
++      state: "unallocatable",
++      reason: "external_host_turn_not_task_attributable",
++      provider_usage: null,
++      usage: null,
++    };
++
++    expect(externalAgentUsageAccounting({ exchange: current })).toEqual({
++      usage: {},
++      usage_attribution: {
++        state: "unallocatable",
++        reason: "external_host_turn_not_task_attributable",
++      },
++    });
++  });
++
++  it("accepts identity-bound host observations and rejects cross-work-order attribution", () => {
++    const current = exchange();
++    current.host_usage = {
++      schema_version: 1,
++      observed_by: "host_transport",
++      state: "observed",
++      reason: null,
++      provider_usage: {
++        provider: "codex",
++        run_id: "run-host",
++        work_order_id: current.work_order_id,
++        thread_id: "thread-host",
++        turn_id: "turn-host",
++      },
++      usage: { input_tokens: 20, output_tokens: 5, total_tokens: 25 },
++    };
++
++    expect(externalAgentUsageAccounting({ exchange: current })).toMatchObject({
++      usage: { input_tokens: 20, output_tokens: 5, total_tokens: 25 },
++      provider_usage: {
++        provider: "codex",
++        run_id: "run-host",
++        work_order_id: current.work_order_id,
++      },
++      usage_attribution: { state: "observed", reason: null },
++    });
++    current.host_usage.provider_usage!.work_order_id = "foreign-work-order";
++    expect(() => externalAgentUsageAccounting({ exchange: current })).toThrow(
++      "does not match the exchange",
++    );
++  });
++
++  it("does not accept model-supplied token claims as observed usage", () => {
++    const order = AGENT_WORK_ORDER_V2_VALID_FIXTURE;
++    const current = exchange();
++    const result = buildAgentSemanticResultV2ValidFixtures(order.work_order_id).completed;
++    const { schema_version: _version, kind: _kind, ...payload } = result;
++
++    expect(() =>
++      validateExternalAgentResultEnvelope({
++        raw: { ...payload, usage: { input_tokens: 1, output_tokens: 1, total_tokens: 2 } },
++        exchange: current,
++        work_order: order,
++      }),
++    ).toThrow("Invalid external-agent semantic result");
++    expect(externalAgentUsageAccounting({ exchange: current })).toMatchObject({
++      usage: {},
++      usage_attribution: {
++        state: "unavailable",
++        reason: "legacy_external_host_usage_unavailable",
++      },
++    });
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/roadmap-stage-timing.test.ts b/packages/agentplane/src/commands/task/roadmap-stage-timing.test.ts
+new file mode 100644
+index 000000000..3a9b2e36c
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/roadmap-stage-timing.test.ts
+@@ -0,0 +1,128 @@
++import { describe, expect, it } from "vitest";
++
++import {
++  completeSupervisorExecutionEpisode,
++  createSupervisorExecutionEpisodeJournal,
++  startSupervisorExecutionEpisode,
++} from "@agentplaneorg/core/schemas";
++
++import {
++  buildMonotonicLifecycleTiming,
++  type MonotonicStageObservation,
++} from "../shared/lifecycle-stage-timing.js";
++
++const digest = `sha256:${"a".repeat(64)}`;
++const span = (
++  span_id: string,
++  stage: MonotonicStageObservation["stage"],
++  category: MonotonicStageObservation["category"],
++  started_ms: number,
++  ended_ms: number,
++): MonotonicStageObservation => ({
++  span_id,
++  parent_span_id: "lifecycle-1",
++  stage,
++  category,
++  started_ms,
++  ended_ms,
++});
++
++describe("roadmap lifecycle stage timing", () => {
++  it("partitions bounded monotonic stages without overlap double counting", () => {
++    const timing = buildMonotonicLifecycleTiming({
++      root_span_id: "lifecycle-1",
++      started_ms: 0,
++      ended_ms: 1000,
++      spans: [
++        span("prepare", "preparation", "local_work", 0, 100),
++        span("dispatch", "semantic_dispatch", "external_wait", 100, 400),
++        span("mutation", "first_scoped_mutation", "local_work", 400, 400),
++        span("verify", "native_verification", "local_work", 400, 550),
++        span("review", "review", "external_wait", 550, 700),
++        span("provider", "provider_or_integration", "external_wait", 700, 800),
++        span("verified", "verified_state", "local_work", 800, 800),
++        span("close", "closure", "local_work", 800, 900),
++        span("user", "lifecycle", "user_wait", 900, 950),
++        span("external", "lifecycle", "external_wait", 950, 1000),
++      ],
++    });
++
++    expect(timing.elapsed_ms).toBe(1000);
++    expect(timing.partitioned_ms).toEqual({
++      local_work: 350,
++      user_wait: 50,
++      external_wait: 600,
++    });
++    expect(Object.values(timing.partitioned_ms).reduce((sum, value) => sum + value, 0)).toBe(
++      timing.elapsed_ms,
++    );
++    expect(timing.spans.every((span) => span.elapsed_ms >= 0)).toBe(true);
++    expect(timing.spans.slice(1).every((span) => span.parent_span_id === "lifecycle-1")).toBe(true);
++  });
++
++  it("uses monotonic samples so a backward wall clock cannot create negative elapsed time", () => {
++    const timing = buildMonotonicLifecycleTiming({
++      root_span_id: "lifecycle-clock",
++      started_ms: 100,
++      ended_ms: 90,
++    });
++
++    expect(timing.elapsed_ms).toBe(0);
++    expect(timing.partitioned_ms).toEqual({
++      local_work: 0,
++      user_wait: 0,
++      external_wait: 0,
++    });
++  });
++
++  it("persists timing on the existing journal operation instead of a second aggregate", () => {
++    const journal = createSupervisorExecutionEpisodeJournal({
++      task_id: "202609130000-TIMING",
++      task_revision: 1,
++      state_fingerprint_digest: digest,
++      budget: {
++        max_episodes: 5,
++        max_agent_runs: 5,
++        max_input_tokens: null,
++        max_output_tokens: null,
++        max_total_tokens: null,
++        max_wall_time_ms: null,
++        max_changed_files: null,
++        max_diff_lines: null,
++        max_no_progress_episodes: null,
++      },
++    });
++    const started = startSupervisorExecutionEpisode({
++      journal,
++      role: "EXECUTOR",
++      kind: "agent_episode",
++      operation_identity: { attempt: 1 },
++      precondition_fingerprint_digest: digest,
++    });
++    if (started.status !== "started") throw new Error("timing fixture did not start");
++    const timing = buildMonotonicLifecycleTiming({
++      root_span_id: started.operation_key,
++      started_ms: 10,
++      ended_ms: 35,
++      spans: [
++        {
++          span_id: `${started.operation_key}:semantic_dispatch`,
++          parent_span_id: started.operation_key,
++          stage: "semantic_dispatch",
++          category: "external_wait",
++          started_ms: 10,
++          ended_ms: 35,
++        },
++      ],
++    });
++    const completed = completeSupervisorExecutionEpisode({
++      journal: started.journal,
++      operation_key: started.operation_key,
++      result: { status: "completed" },
++      lifecycle_timing: timing,
++    });
++
++    expect(completed.operations).toHaveLength(1);
++    expect(completed.operations[0]?.lifecycle_timing).toEqual(timing);
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/task-token-usage.ts b/packages/agentplane/src/commands/task/task-token-usage.ts
+index 41358acf3..5b033aca7 100644
+--- a/packages/agentplane/src/commands/task/task-token-usage.ts
++++ b/packages/agentplane/src/commands/task/task-token-usage.ts
+@@ -39,6 +39,9 @@ export function projectTaskTokenUsage(opts: {
+ }): TaskTokenUsage {
+   const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
+   const usage = journal.usage;
++  const hasUnallocatableRun = journal.operations.some(
++    (operation) => operation.usage_attribution?.state === "unallocatable",
++  );
+   const updatedAt = opts.updated_at ?? new Date().toISOString();
+   if (usage.agent_runs === 0) {
+     return unavailableTaskTokenUsage({
+@@ -53,7 +56,9 @@ export function projectTaskTokenUsage(opts: {
+     (usage.input_tokens > 0 || usage.output_tokens > 0 || usage.total_tokens > 0 ? 1 : 0);
+   if (observedAgentRuns === 0) {
+     return unavailableTaskTokenUsage({
+-      reason: "provider_token_telemetry_unavailable",
++      reason: hasUnallocatableRun
++        ? "external_host_turn_unallocatable"
++        : "provider_token_telemetry_unavailable",
+       updated_at: updatedAt,
+       journal,
+     });
+@@ -88,7 +93,9 @@ export function projectTaskTokenUsage(opts: {
+         ? usage.output_breakdown_observed_agent_runs === undefined
+           ? "legacy_journal_lacks_output_reasoning_breakdown_provenance"
+           : "some_agent_runs_lack_output_reasoning_breakdown"
+-        : "some_agent_runs_lack_provider_token_telemetry",
++        : hasUnallocatableRun
++          ? "some_agent_runs_unallocatable"
++          : "some_agent_runs_lack_provider_token_telemetry",
+     updated_at: updatedAt,
+   };
+ }
+diff --git a/packages/agentplane/src/runner/adapters/codex-result-transport.ts b/packages/agentplane/src/runner/adapters/codex-result-transport.ts
+index 4b0bc1ad1..6fb1360f2 100644
+--- a/packages/agentplane/src/runner/adapters/codex-result-transport.ts
++++ b/packages/agentplane/src/runner/adapters/codex-result-transport.ts
+@@ -236,6 +236,7 @@ export type CodexResultEventCollector = {
+   observeStdoutLine(rawLine: string): void;
+   readLastAgentMessage(): string | null;
+   readUsage(): CodexProviderUsage | null;
++  readUsageObservation(): CodexProviderUsageObservation;
+ };
+ 
+ export type CodexProviderUsage = {
+@@ -251,9 +252,16 @@ export type CodexProviderUsage = {
+   turn_id?: string;
+ };
+ 
+-// Provider usage is process-local supervisor evidence. It deliberately stays
+-// outside RunnerResult, receipts, and task projections so existing machine
+-// contracts do not start retaining a provider-specific telemetry field.
++export type CodexProviderUsageObservation = {
++  status: "observed" | "partial" | "unavailable";
++  usage: CodexProviderUsage | null;
++  thread_id: string | null;
++  turn_id: string | null;
++};
++
++// This process-local association remains a compatibility convenience. Durable
++// accounting uses the supervisor-owned usage observation event written by the
++// Codex adapter before semantic materialization.
+ const CODEX_PROVIDER_USAGE_BY_RESULT = new WeakMap<object, CodexProviderUsage>();
+ 
+ export function recordCodexProviderUsageForResult(result: object, usage: CodexProviderUsage): void {
+@@ -314,7 +322,11 @@ function readCodexProviderUsage(providerEvent: Record<string, unknown>): CodexPr
+  * trace redaction or retention. The collector intentionally retains only the
+  * latest agent message and protocol state, never the full provider stream.
+  */
+-export function createCodexResultEventCollector(): CodexResultEventCollector {
++export function createCodexResultEventCollector(
++  opts: {
++    onUsageObserved?: (observation: CodexProviderUsageObservation) => void;
++  } = {},
++): CodexResultEventCollector {
+   let lastMessage: string | null = null;
+   let usage: CodexProviderUsage | null = null;
+   let turnCompleted = false;
+@@ -322,6 +334,19 @@ export function createCodexResultEventCollector(): CodexResultEventCollector {
+   let usageError: Error | null = null;
+   let threadId: string | undefined;
+   let turnId: string | undefined;
++  let completionObserved = false;
++  let usageObservationEmitted = false;
++  const usageObservation = (): CodexProviderUsageObservation => ({
++    status:
++      usage && threadId && turnId
++        ? "observed"
++        : usage || completionObserved || threadId || turnId
++          ? "partial"
++          : "unavailable",
++    usage,
++    thread_id: threadId ?? null,
++    turn_id: turnId ?? null,
++  });
+   return {
+     observeStdoutLine(rawLine) {
+       const trimmed = rawLine.trim();
+@@ -346,6 +371,7 @@ export function createCodexResultEventCollector(): CodexResultEventCollector {
+         return;
+       }
+       if (parsed.type === "turn.completed") {
++        completionObserved = true;
+         try {
+           const observed = readCodexProviderUsage(parsed);
+           const completedTurn =
+@@ -353,6 +379,7 @@ export function createCodexResultEventCollector(): CodexResultEventCollector {
+           if (turnId && completedTurn !== turnId) {
+             throw new Error("Codex turn completion changed provider turn identity.");
+           }
++          if (!turnId && completedTurn) turnId = completedTurn;
+           const next =
+             observed === null
+               ? null
+@@ -372,6 +399,10 @@ export function createCodexResultEventCollector(): CodexResultEventCollector {
+           }
+           usage = next;
+           turnCompleted = true;
++          if (usage && !usageObservationEmitted) {
++            usageObservationEmitted = true;
++            opts.onUsageObserved?.(usageObservation());
++          }
+         } catch (error) {
+           usageError = error instanceof Error ? error : new Error(String(error));
+           protocolError = usageError;
+@@ -408,6 +439,9 @@ export function createCodexResultEventCollector(): CodexResultEventCollector {
+       }
+       return usage;
+     },
++    readUsageObservation() {
++      return usageObservation();
++    },
+   };
+ }
+ 
+diff --git a/packages/agentplane/src/runner/adapters/codex.ts b/packages/agentplane/src/runner/adapters/codex.ts
+index e5908b640..0e61eb0bc 100644
+--- a/packages/agentplane/src/runner/adapters/codex.ts
++++ b/packages/agentplane/src/runner/adapters/codex.ts
+@@ -33,9 +33,12 @@ import {
+   materializeCodexResultTransport,
+   recordCodexProviderUsageForResult,
+   renderCodexResultOutputSchemaJson,
+-  type CodexProviderUsage,
+ } from "./codex-result-transport.js";
+ import { readValidatedPreparedRunnerStdin } from "./prepared-input.js";
++import {
++  appendRunnerProviderUsageObservation,
++  type RunnerProviderUsageObservation,
++} from "../artifacts.js";
+ 
+ function byteLength(text: string | null | undefined): number {
+   return Buffer.byteLength(text ?? "", "utf8");
+@@ -51,14 +54,36 @@ function readOptionalCodexAgentMessage(
+   }
+ }
+ 
+-function readOptionalCodexUsage(
+-  collector: ReturnType<typeof createCodexResultEventCollector>,
+-): CodexProviderUsage | null {
+-  try {
+-    return collector.readUsage();
+-  } catch {
+-    return null;
++function durableUsageObservation(opts: {
++  invocation: RunnerInvocation;
++  observation: ReturnType<
++    ReturnType<typeof createCodexResultEventCollector>["readUsageObservation"]
++  >;
++  prepared_context_bytes?: number;
++}): RunnerProviderUsageObservation {
++  let usage: Record<string, number> | null = null;
++  if (opts.observation.usage) {
++    const { thread_id: _threadId, turn_id: _turnId, ...tokenUsage } = opts.observation.usage;
++    usage = {
++      ...tokenUsage,
++      ...(opts.prepared_context_bytes === undefined
++        ? {}
++        : { prepared_context_bytes: opts.prepared_context_bytes }),
++    };
+   }
++  return {
++    schema_version: 1,
++    kind: "runner_provider_usage_observation",
++    provider: "codex",
++    status: opts.observation.status,
++    dispatch_id: `dispatch:${opts.invocation.work_order_id}`,
++    run_id: opts.invocation.run_id,
++    work_order_id: opts.invocation.work_order_id,
++    thread_id: opts.observation.thread_id,
++    turn_id: opts.observation.turn_id,
++    usage,
++    observed_at: new Date().toISOString(),
++  };
+ }
+ 
+ function buildCodexArtifacts(
+@@ -161,8 +186,41 @@ export class CodexRunnerAdapter implements RunnerAdapter {
+ 
+   async execute(invocation: RunnerInvocation): Promise<RunnerResult> {
+     const executionInvocation = structuredClone(invocation);
+-    const resultEventCollector = createCodexResultEventCollector();
+     let preparedContextBytes: number | undefined;
++    let usagePersistence: Promise<void> | null = null;
++    let usagePersistenceStarted = false;
++    let usageFinalizedBeforeSemantic = false;
++    const persistUsage = (
++      observation: ReturnType<
++        ReturnType<typeof createCodexResultEventCollector>["readUsageObservation"]
++      >,
++    ): Promise<void> => {
++      if (!usagePersistenceStarted) {
++        usagePersistenceStarted = true;
++        usagePersistence = appendRunnerProviderUsageObservation({
++          events_path: executionInvocation.events_path,
++          observation: durableUsageObservation({
++            invocation: executionInvocation,
++            observation,
++            ...(preparedContextBytes === undefined
++              ? {}
++              : { prepared_context_bytes: preparedContextBytes }),
++          }),
++        });
++        void usagePersistence.catch(() => {
++          // Awaited below before semantic materialization; this prevents an early unhandled rejection.
++        });
++      }
++      return usagePersistence ?? Promise.resolve();
++    };
++    const resultEventCollector = createCodexResultEventCollector({
++      onUsageObserved: (observation) => {
++        void persistUsage(observation);
++      },
++    });
++    const finalizeUsage = async (): Promise<void> => {
++      await persistUsage(resultEventCollector.readUsageObservation());
++    };
+     const result = await executeSupervisedRunnerAdapter({
+       invocation: executionInvocation,
+       assertInvocation: assertCodexInvocation,
+@@ -185,6 +243,8 @@ export class CodexRunnerAdapter implements RunnerAdapter {
+         return stdin;
+       },
+       materializeResult: async ({ invocation: input, processResult }) => {
++        usageFinalizedBeforeSemantic = true;
++        await finalizeUsage();
+         if (
+           processResult.exit_code !== 0 ||
+           processResult.timeout_reason !== null ||
+@@ -288,7 +348,8 @@ export class CodexRunnerAdapter implements RunnerAdapter {
+         };
+       },
+     });
+-    const providerUsage = readOptionalCodexUsage(resultEventCollector);
++    if (!usageFinalizedBeforeSemantic) await finalizeUsage();
++    const providerUsage = resultEventCollector.readUsageObservation().usage;
+     if (providerUsage)
+       recordCodexProviderUsageForResult(result, {
+         ...providerUsage,
+diff --git a/packages/agentplane/src/runner/adapters/roadmap-usage-durability.test.ts b/packages/agentplane/src/runner/adapters/roadmap-usage-durability.test.ts
+new file mode 100644
+index 000000000..ddd3a78d5
+--- /dev/null
++++ b/packages/agentplane/src/runner/adapters/roadmap-usage-durability.test.ts
+@@ -0,0 +1,159 @@
++import { mkdtemp, readFile, rm } from "node:fs/promises";
++import os from "node:os";
++import path from "node:path";
++
++import { defaultConfig } from "@agentplaneorg/core/config";
++import { execFileAsync } from "@agentplaneorg/core/process";
++import {
++  makeRunnerContextBundle,
++  setRunnerBundleRunDir,
++  writeRunnerExecutable,
++} from "@agentplane/testkit/runner";
++import { afterEach, describe, expect, it } from "vitest";
++
++import { writePreparedRunnerArtifacts } from "../artifacts.js";
++import type { RunnerEvent } from "../types.js";
++import { createRunnerAdapter } from "./index.js";
++
++const tempRoots: string[] = [];
++
++afterEach(async () => {
++  await Promise.all(
++    tempRoots.splice(0).map(async (root) => await rm(root, { recursive: true, force: true })),
++  );
++});
++
++function semanticEvent(workOrderId: string, text = "not valid semantic JSON"): string {
++  return JSON.stringify({
++    type: "item.completed",
++    item: { type: "agent_message", text },
++    work_order_id: workOrderId,
++  });
++}
++
++async function executeFakeCodex(lines: string[]) {
++  const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-usage-durability-"));
++  tempRoots.push(root);
++  await execFileAsync("git", ["init", "--quiet"], { cwd: root });
++  const adapter = createRunnerAdapter(defaultConfig());
++  const bundle = makeRunnerContextBundle({
++    adapterId: "codex",
++    gitRoot: root,
++    mode: "execute",
++    runId: "run-usage",
++    taskId: "202609120000-USAGE1",
++  });
++  setRunnerBundleRunDir(bundle, path.join(root, "runs", "run-usage"));
++  await writeRunnerExecutable(root, "codex", [
++    [
++      "#!/bin/sh",
++      'while [ "$#" -gt 0 ]; do',
++      '  case "$1" in',
++      "    -C|-s|-a|--output-schema)",
++      "      shift 2",
++      "      ;;",
++      "    *)",
++      "      shift",
++      "      ;;",
++      "  esac",
++      "done",
++      "cat >/dev/null",
++      ...lines.map((line) => `printf '%s\\n' '${line}'`),
++      "exit 0",
++    ].join("\n"),
++  ]);
++  const invocation = await adapter.prepare(bundle);
++  invocation.env.PATH = `${path.join(root, "bin")}:${process.env.PATH ?? ""}`;
++  await writePreparedRunnerArtifacts({
++    bundle,
++    bootstrap_markdown: "Return the structured semantic result.\n",
++    invocation,
++  });
++  const result = await adapter.execute(invocation);
++  const eventsText = await readFile(invocation.events_path, "utf8");
++  const events = eventsText
++    .trim()
++    .split("\n")
++    .map((line) => JSON.parse(line) as RunnerEvent);
++  return {
++    result,
++    events,
++    usageEvents: events.filter((event) => event.type === "runner_provider_usage_observation"),
++  };
++}
++
++describe("Codex provider usage durability", () => {
++  it("persists one identity-bound charge before malformed semantic output is rejected", async () => {
++    const completion = JSON.stringify({
++      type: "turn.completed",
++      turn_id: "turn-usage",
++      usage: {
++        input_tokens: 100,
++        cached_input_tokens: 60,
++        output_tokens: 30,
++        reasoning_output_tokens: 20,
++      },
++    });
++    const executed = await executeFakeCodex([
++      JSON.stringify({ type: "thread.started", thread_id: "thread-usage" }),
++      JSON.stringify({ type: "turn.started", turn_id: "turn-usage" }),
++      semanticEvent("run-usage"),
++      completion,
++      completion,
++    ]);
++
++    expect(executed.result.status).toBe("failed");
++    expect(executed.usageEvents).toHaveLength(1);
++    expect(executed.events.indexOf(executed.usageEvents[0]!)).toBeLessThan(
++      executed.events.findIndex((event) => event.type === "runner_execute_error"),
++    );
++    expect(executed.usageEvents[0]?.data).toMatchObject({
++      schema_version: 1,
++      kind: "runner_provider_usage_observation",
++      provider: "codex",
++      status: "observed",
++      dispatch_id: "dispatch:run-usage",
++      run_id: "run-usage",
++      work_order_id: "run-usage",
++      thread_id: "thread-usage",
++      turn_id: "turn-usage",
++      usage: {
++        input_tokens: 100,
++        cached_input_tokens: 60,
++        output_tokens: 30,
++        total_tokens: 130,
++        visible_output_tokens: 10,
++        reasoning_tokens: 20,
++      },
++    });
++  });
++
++  it.each([
++    {
++      label: "partial identity",
++      lines: [
++        JSON.stringify({ type: "thread.started", thread_id: "thread-partial" }),
++        semanticEvent("run-usage"),
++      ],
++      expectedStatus: "partial",
++      expectedThreadId: "thread-partial",
++    },
++    {
++      label: "no provider telemetry",
++      lines: [semanticEvent("run-usage")],
++      expectedStatus: "unavailable",
++      expectedThreadId: null,
++    },
++  ])("records $label without manufacturing zero usage", async (fixture) => {
++    const executed = await executeFakeCodex(fixture.lines);
++
++    expect(executed.result.status).toBe("failed");
++    expect(executed.usageEvents).toHaveLength(1);
++    expect(executed.usageEvents[0]?.data).toMatchObject({
++      status: fixture.expectedStatus,
++      thread_id: fixture.expectedThreadId,
++      turn_id: null,
++      usage: null,
++    });
++  });
++});
+diff --git a/packages/agentplane/src/runner/artifacts.ts b/packages/agentplane/src/runner/artifacts.ts
+index eff38fec1..36ca6136a 100644
+--- a/packages/agentplane/src/runner/artifacts.ts
++++ b/packages/agentplane/src/runner/artifacts.ts
+@@ -24,6 +24,20 @@ import type {
+   RunnerSupervisionState,
+ } from "./types.js";
+ 
++export type RunnerProviderUsageObservation = {
++  schema_version: 1;
++  kind: "runner_provider_usage_observation";
++  provider: string;
++  status: "observed" | "partial" | "unavailable";
++  dispatch_id: string;
++  run_id: string;
++  work_order_id: string;
++  thread_id: string | null;
++  turn_id: string | null;
++  usage: Record<string, number> | null;
++  observed_at: string;
++};
++
+ function sha256(text: string): string {
+   return createHash("sha256").update(text).digest("hex");
+ }
+@@ -263,6 +277,21 @@ export async function appendRunnerEvent(opts: {
+   );
+ }
+ 
++export async function appendRunnerProviderUsageObservation(opts: {
++  events_path: string;
++  observation: RunnerProviderUsageObservation;
++}): Promise<void> {
++  await appendRunnerEvent({
++    events_path: opts.events_path,
++    event: {
++      at: opts.observation.observed_at,
++      type: "runner_provider_usage_observation",
++      message: `runner provider usage is ${opts.observation.status}`,
++      data: { ...opts.observation },
++    },
++  });
++}
++
+ export async function readRunnerRunState(
+   state_path: string,
+   options: RunnerRunStateParseOptions = {},
+diff --git a/packages/core/src/runner/supervisor-execution-episode-timing.test.ts b/packages/core/src/runner/supervisor-execution-episode-timing.test.ts
+new file mode 100644
+index 000000000..630808abb
+--- /dev/null
++++ b/packages/core/src/runner/supervisor-execution-episode-timing.test.ts
+@@ -0,0 +1,116 @@
++import { describe, expect, it } from "vitest";
++
++import {
++  completeSupervisorExecutionEpisode,
++  createSupervisorExecutionEpisodeJournal,
++  startSupervisorExecutionEpisode,
++} from "./supervisor-execution-episode.js";
++
++const digest = `sha256:${"a".repeat(64)}`;
++
++function completeWithTiming(spans: Record<string, unknown>[]): void {
++  const journal = createSupervisorExecutionEpisodeJournal({
++    task_id: "T-TIMING",
++    task_revision: 1,
++    state_fingerprint_digest: digest,
++    budget: {
++      max_episodes: 2,
++      max_agent_runs: 2,
++      max_input_tokens: 100,
++      max_output_tokens: 100,
++      max_total_tokens: 200,
++      max_wall_time_ms: 1000,
++      max_changed_files: 10,
++      max_diff_lines: null,
++      max_no_progress_episodes: 2,
++    },
++  });
++  const started = startSupervisorExecutionEpisode({
++    journal,
++    role: "EXECUTOR",
++    kind: "agent_episode",
++    operation_identity: { test: "timing" },
++    precondition_fingerprint_digest: digest,
++    authority_ref: null,
++    authority_digest: null,
++    work_order_ref: null,
++    effect_ref: null,
++  });
++  if (started.status !== "started") throw new Error("fixture did not start");
++  completeSupervisorExecutionEpisode({
++    journal: started.journal,
++    operation_key: started.operation_key,
++    result: { ok: true },
++    lifecycle_timing: {
++      schema_version: 1,
++      clock: "monotonic",
++      root_span_id: "root",
++      elapsed_ms: 10,
++      partitioned_ms: { local_work: 10, user_wait: 0, external_wait: 0 },
++      spans,
++    } as never,
++  });
++}
++
++const root = {
++  span_id: "root",
++  parent_span_id: null,
++  stage: "lifecycle",
++  category: "local_work",
++  offset_ms: 0,
++  elapsed_ms: 10,
++};
++
++describe("supervisor lifecycle timing validation", () => {
++  it.each([
++    [
++      "overlapping siblings",
++      [
++        root,
++        { ...root, span_id: "a", parent_span_id: "root", stage: "preparation", elapsed_ms: 8 },
++        {
++          ...root,
++          span_id: "b",
++          parent_span_id: "root",
++          stage: "review",
++          offset_ms: 2,
++          elapsed_ms: 8,
++        },
++      ],
++    ],
++    [
++      "overlapping siblings before a root-last span",
++      [
++        { ...root, span_id: "a", parent_span_id: "root", elapsed_ms: 8 },
++        {
++          ...root,
++          span_id: "b",
++          parent_span_id: "root",
++          stage: "review",
++          offset_ms: 2,
++          elapsed_ms: 8,
++        },
++        root,
++      ],
++    ],
++    ["partial root coverage", [{ ...root, elapsed_ms: 9 }]],
++    [
++      "a parent cycle",
++      [
++        root,
++        { ...root, span_id: "a", parent_span_id: "b", elapsed_ms: 5 },
++        { ...root, span_id: "b", parent_span_id: "a", elapsed_ms: 5 },
++      ],
++    ],
++    [
++      "a child outside its parent",
++      [
++        root,
++        { ...root, span_id: "parent", parent_span_id: "root", elapsed_ms: 5 },
++        { ...root, span_id: "child", parent_span_id: "parent", offset_ms: 4, elapsed_ms: 2 },
++      ],
++    ],
++  ])("rejects %s", (_label, spans) => {
++    expect(() => completeWithTiming(spans)).toThrow(/Lifecycle timing/u);
++  });
++});
+diff --git a/packages/core/src/runner/supervisor-execution-episode.test.ts b/packages/core/src/runner/supervisor-execution-episode.test.ts
+index a90f7b989..b1035039a 100644
+--- a/packages/core/src/runner/supervisor-execution-episode.test.ts
++++ b/packages/core/src/runner/supervisor-execution-episode.test.ts
+@@ -29,9 +29,9 @@ function budget(overrides: Partial<SupervisorExecutionBudget> = {}): SupervisorE
+   return {
+     max_episodes: 3,
+     max_agent_runs: 2,
+-    max_input_tokens: 100,
+-    max_output_tokens: 100,
+-    max_total_tokens: 200,
++    max_input_tokens: null,
++    max_output_tokens: null,
++    max_total_tokens: null,
+     max_wall_time_ms: 10_000,
+     max_changed_files: 4,
+     max_diff_lines: 40,
+diff --git a/packages/core/src/runner/supervisor-execution-episode.ts b/packages/core/src/runner/supervisor-execution-episode.ts
+index e0fd19987..cea0a1c52 100644
+--- a/packages/core/src/runner/supervisor-execution-episode.ts
++++ b/packages/core/src/runner/supervisor-execution-episode.ts
+@@ -29,6 +29,22 @@ export const SUPERVISOR_EPISODE_OPERATION_STATUS_VALUES = [
+   "failed",
+ ] as const;
+ export const SUPERVISOR_EPISODE_STATUS_VALUES = ["running", "stopped"] as const;
++export const SUPERVISOR_LIFECYCLE_STAGE_VALUES = [
++  "lifecycle",
++  "preparation",
++  "semantic_dispatch",
++  "first_scoped_mutation",
++  "native_verification",
++  "review",
++  "provider_or_integration",
++  "verified_state",
++  "closure",
++] as const;
++export const SUPERVISOR_LIFECYCLE_TIME_CATEGORY_VALUES = [
++  "local_work",
++  "user_wait",
++  "external_wait",
++] as const;
+ export const SUPERVISOR_EPISODE_STOP_REASON_VALUES = [
+   "budget_exhausted",
+   "completed",
+@@ -165,6 +181,132 @@ const SUPERVISOR_EPISODE_RECOVERY_ZOD_SCHEMA = z
+   })
+   .strict();
+ 
++const SUPERVISOR_EPISODE_USAGE_ATTRIBUTION_ZOD_SCHEMA = z
++  .object({
++    state: z.enum(["observed", "partial", "unavailable", "unallocatable"]),
++    reason: NON_EMPTY_STRING.nullable(),
++  })
++  .strict();
++
++const SUPERVISOR_LIFECYCLE_TIMING_ZOD_SCHEMA = z
++  .object({
++    schema_version: z.literal(1),
++    clock: z.literal("monotonic"),
++    root_span_id: NON_EMPTY_STRING,
++    elapsed_ms: NON_NEGATIVE_INTEGER,
++    partitioned_ms: z
++      .object({
++        local_work: NON_NEGATIVE_INTEGER,
++        user_wait: NON_NEGATIVE_INTEGER,
++        external_wait: NON_NEGATIVE_INTEGER,
++      })
++      .strict(),
++    spans: z.array(
++      z
++        .object({
++          span_id: NON_EMPTY_STRING,
++          parent_span_id: NON_EMPTY_STRING.nullable(),
++          stage: z.enum(SUPERVISOR_LIFECYCLE_STAGE_VALUES),
++          category: z.enum(SUPERVISOR_LIFECYCLE_TIME_CATEGORY_VALUES),
++          offset_ms: NON_NEGATIVE_INTEGER,
++          elapsed_ms: NON_NEGATIVE_INTEGER,
++        })
++        .strict(),
++    ),
++  })
++  .strict()
++  .superRefine((timing, ctx) => {
++    const partitioned = Object.values(timing.partitioned_ms).reduce((sum, value) => sum + value, 0);
++    if (partitioned !== timing.elapsed_ms) {
++      ctx.addIssue({
++        code: "custom",
++        message: "Lifecycle timing partitions must reconcile to elapsed_ms without overlap.",
++      });
++    }
++    const ids = new Set(timing.spans.map((span) => span.span_id));
++    if (ids.size !== timing.spans.length || !ids.has(timing.root_span_id)) {
++      ctx.addIssue({ code: "custom", message: "Lifecycle timing span identities must be unique." });
++      return;
++    }
++    const byId = new Map(timing.spans.map((span) => [span.span_id, span]));
++    const root = byId.get(timing.root_span_id)!;
++    if (
++      root.parent_span_id !== null ||
++      root.stage !== "lifecycle" ||
++      root.offset_ms !== 0 ||
++      root.elapsed_ms !== timing.elapsed_ms
++    ) {
++      ctx.addIssue({
++        code: "custom",
++        message: "Lifecycle timing root span must cover the full lifecycle interval.",
++      });
++    }
++    const ancestors = new Map<string, Set<string>>();
++    let hierarchyIsValid = true;
++    for (const span of timing.spans) {
++      if (span.offset_ms + span.elapsed_ms > timing.elapsed_ms) {
++        ctx.addIssue({ code: "custom", message: "Lifecycle timing spans must stay in the root." });
++        hierarchyIsValid = false;
++      }
++      if (span.parent_span_id !== null && !ids.has(span.parent_span_id)) {
++        ctx.addIssue({ code: "custom", message: "Lifecycle timing parent span is missing." });
++        hierarchyIsValid = false;
++      }
++      if (span.span_id !== timing.root_span_id && span.parent_span_id === null) {
++        ctx.addIssue({
++          code: "custom",
++          message: "Lifecycle timing contains a second root span.",
++        });
++        hierarchyIsValid = false;
++      }
++      const lineage = new Set<string>();
++      let current = span;
++      while (current.parent_span_id !== null) {
++        if (lineage.has(current.parent_span_id)) {
++          ctx.addIssue({ code: "custom", message: "Lifecycle timing contains a parent cycle." });
++          hierarchyIsValid = false;
++          break;
++        }
++        lineage.add(current.parent_span_id);
++        const parent = byId.get(current.parent_span_id);
++        if (!parent) break;
++        if (
++          current.offset_ms < parent.offset_ms ||
++          current.offset_ms + current.elapsed_ms > parent.offset_ms + parent.elapsed_ms
++        ) {
++          ctx.addIssue({
++            code: "custom",
++            message: "Lifecycle timing child span must stay inside its parent.",
++          });
++          hierarchyIsValid = false;
++        }
++        current = parent;
++      }
++      if (current.span_id !== timing.root_span_id) hierarchyIsValid = false;
++      ancestors.set(span.span_id, lineage);
++    }
++    if (!hierarchyIsValid) return;
++    const nonRootSpans = timing.spans.filter((span) => span.span_id !== timing.root_span_id);
++    for (let left = 0; left < nonRootSpans.length; left += 1) {
++      for (let right = left + 1; right < nonRootSpans.length; right += 1) {
++        const a = nonRootSpans[left]!;
++        const b = nonRootSpans[right]!;
++        const overlap =
++          a.offset_ms < b.offset_ms + b.elapsed_ms && b.offset_ms < a.offset_ms + a.elapsed_ms;
++        const nested = [
++          ancestors.get(a.span_id)?.has(b.span_id),
++          ancestors.get(b.span_id)?.has(a.span_id),
++        ].some(Boolean);
++        if (overlap && !nested) {
++          ctx.addIssue({
++            code: "custom",
++            message: "Lifecycle timing sibling spans must not overlap.",
++          });
++        }
++      }
++    }
++  });
++
+ const SUPERVISOR_EPISODE_OPERATION_ZOD_SCHEMA = z
+   .object({
+     sequence: POSITIVE_INTEGER,
+@@ -190,6 +332,8 @@ const SUPERVISOR_EPISODE_OPERATION_ZOD_SCHEMA = z
+       })
+       .strict()
+       .optional(),
++    usage_attribution: SUPERVISOR_EPISODE_USAGE_ATTRIBUTION_ZOD_SCHEMA.optional(),
++    lifecycle_timing: SUPERVISOR_LIFECYCLE_TIMING_ZOD_SCHEMA.optional(),
+     usage: z
+       .object({
+         input_tokens: NON_NEGATIVE_INTEGER.optional(),
+@@ -321,10 +465,22 @@ function isAgentOperation(kind: SupervisorEpisodeOperationKind): boolean {
+ function exhaustedDimensions(opts: {
+   budget: SupervisorExecutionBudget;
+   usage: SupervisorExecutionUsage;
++  operations?: SupervisorExecutionEpisodeJournal["operations"];
+   next_kind?: SupervisorEpisodeOperationKind;
+ }): string[] {
+   const { budget, usage } = opts;
+   const dimensions: string[] = [];
++  const nextIsPaidAgent = isAgentOperation(opts.next_kind ?? "cli_operation");
++  const tokenCoverageUnknown =
++    nextIsPaidAgent &&
++    (opts.operations ?? []).some(
++      (operation) =>
++        isAgentOperation(operation.kind) &&
++        operation.provider_usage !== undefined &&
++        (operation.usage?.input_tokens === undefined ||
++          operation.usage.output_tokens === undefined ||
++          operation.usage.total_tokens === undefined),
++    );
+   if (usage.episodes >= budget.max_episodes) dimensions.push("episodes");
+   if (
+     isAgentOperation(opts.next_kind ?? "cli_operation") &&
+@@ -342,6 +498,11 @@ function exhaustedDimensions(opts: {
+   if (budget.max_total_tokens !== null && usage.total_tokens >= budget.max_total_tokens) {
+     dimensions.push("total_tokens");
+   }
++  if (tokenCoverageUnknown) {
++    if (budget.max_input_tokens !== null) dimensions.push("input_tokens_telemetry");
++    if (budget.max_output_tokens !== null) dimensions.push("output_tokens_telemetry");
++    if (budget.max_total_tokens !== null) dimensions.push("total_tokens_telemetry");
++  }
+   if (budget.max_wall_time_ms !== null && usage.wall_time_ms >= budget.max_wall_time_ms) {
+     dimensions.push("wall_time_ms");
+   }
+@@ -684,6 +845,7 @@ export function startSupervisorExecutionEpisode(opts: {
+   const exhausted = exhaustedDimensions({
+     budget: journal.budget,
+     usage: journal.usage,
++    operations: journal.operations,
+     next_kind: opts.kind,
+   });
+   if (exhausted.length > 0) {
+@@ -736,6 +898,14 @@ export function startSupervisorExecutionEpisode(opts: {
+     effect_ref: opts.effect_ref?.trim() ?? null,
+     ...replacementBinding,
+     ...recoveryBinding,
++    ...(isAgentOperation(opts.kind)
++      ? {
++          usage_attribution: {
++            state: "unavailable" as const,
++            reason: "provider_result_not_observed",
++          },
++        }
++      : {}),
+     status: "intent" as const,
+     result_digest: null,
+     postcondition_fingerprint_digest: null,
+@@ -765,6 +935,8 @@ export function completeSupervisorExecutionEpisode(opts: {
+   result: unknown;
+   usage?: Partial<Omit<SupervisorExecutionUsage, "episodes" | "agent_runs">>;
+   provider_usage?: SupervisorExecutionEpisodeJournal["operations"][number]["provider_usage"];
++  usage_attribution?: SupervisorExecutionEpisodeJournal["operations"][number]["usage_attribution"];
++  lifecycle_timing?: SupervisorExecutionEpisodeJournal["operations"][number]["lifecycle_timing"];
+   progress?: unknown;
+   bounded_feedback?: unknown;
+   failed?: boolean;
+@@ -814,6 +986,21 @@ export function completeSupervisorExecutionEpisode(opts: {
+     Number.isSafeInteger(usageInput.reasoning_tokens) &&
+     Number(usageInput.visible_output_tokens) >= 0 &&
+     Number(usageInput.reasoning_tokens) >= 0;
++  const observedTokenFields = [
++    usageInput.input_tokens,
++    usageInput.output_tokens,
++    usageInput.total_tokens,
++  ].filter((value) => Number.isSafeInteger(value) && Number(value) >= 0).length;
++  const usageAttribution = isAgentOperation(last.kind)
++    ? (opts.usage_attribution ??
++      (tokenUsageObserved
++        ? { state: "observed" as const, reason: null }
++        : observedTokenFields > 0
++          ? { state: "partial" as const, reason: "partial_provider_token_telemetry" }
++          : providerUsage
++            ? { state: "unavailable" as const, reason: "provider_token_telemetry_unavailable" }
++            : { state: "unavailable" as const, reason: "provider_identity_unavailable" }))
++    : undefined;
+   const previousProgress = journal.operations.findLast(
+     (operation) => operation.progress_digest !== null,
+   )?.progress_digest;
+@@ -862,6 +1049,8 @@ export function completeSupervisorExecutionEpisode(opts: {
+   const operation = {
+     ...last,
+     ...(providerUsage ? { provider_usage: providerUsage } : {}),
++    ...(usageAttribution ? { usage_attribution: usageAttribution } : {}),
++    ...(opts.lifecycle_timing ? { lifecycle_timing: opts.lifecycle_timing } : {}),
+     usage: Object.fromEntries(
+       [
+         "input_tokens",
+@@ -902,6 +1091,7 @@ export function completeSupervisorExecutionEpisode(opts: {
+   const exhausted = exhaustedDimensions({
+     budget: completed.budget,
+     usage: completed.usage,
++    operations: completed.operations,
+   });
+   return exhausted.length > 0
+     ? stoppedJournal({
+@@ -946,8 +1136,9 @@ export function retryFailedSupervisorExecutionEpisode(opts: {
+   const exhausted = exhaustedDimensions({
+     budget: journal.budget,
+     usage: journal.usage,
++    operations: journal.operations,
+     next_kind: opts.next_kind,
+-  });
++  }).filter((dimension) => !dimension.endsWith("_telemetry"));
+   if (exhausted.length > 0) {
+     return stoppedJournal({
+       journal,
+@@ -983,12 +1174,12 @@ export function advanceSupervisorExecutionEpisodeState(opts: {
+   const last = journal.operations.at(-1);
+   const completedRunningOperation =
+     journal.status === "running" && journal.cursor.phase === "completed";
+-  const completedBudgetStoppedOperation =
++  const completedStoppedOperation =
+     journal.status === "stopped" &&
+-    journal.stop?.reason === "budget_exhausted" &&
++    (journal.stop?.reason === "budget_exhausted" || journal.stop?.reason === "human_review") &&
+     journal.cursor.phase === "stopped" &&
+     journal.stop.operation_key === last?.operation_key;
+-  if (!completedRunningOperation && !completedBudgetStoppedOperation) {
++  if (!completedRunningOperation && !completedStoppedOperation) {
+     throw new Error(
+       "Supervisor episode state advance requires a completed running operation or budget-stopped completed operation.",
+     );
+@@ -1006,12 +1197,12 @@ export function advanceSupervisorExecutionEpisodeState(opts: {
+   const next: Omit<SupervisorExecutionEpisodeJournal, "digest"> = {
+     ...journal,
+     state_fingerprint_digest: opts.state_fingerprint_digest,
+-    cursor: completedBudgetStoppedOperation
++    cursor: completedStoppedOperation
+       ? journal.cursor
+       : { episode: journal.cursor.episode, phase: "ready", operation_key: null },
+     operations: [...journal.operations.slice(0, -1), operation],
+-    status: completedBudgetStoppedOperation ? "stopped" : "running",
+-    stop: completedBudgetStoppedOperation ? journal.stop : null,
++    status: completedStoppedOperation ? "stopped" : "running",
++    stop: completedStoppedOperation ? journal.stop : null,
+     updated_at: now,
+     previous_digest: journal.digest,
+   };
+@@ -1120,8 +1311,9 @@ export function prepareReplacementSupervisorExecutionEpisodeAfterFailure(opts: {
+   const exhausted = exhaustedDimensions({
+     budget: journal.budget,
+     usage: journal.usage,
++    operations: journal.operations,
+     next_kind: last.kind,
+-  });
++  }).filter((dimension) => !dimension.endsWith("_telemetry"));
+   if (exhausted.length > 0) {
+     throw new Error(
+       `Supervisor episode replacement requires remaining budget; exhausted: ${exhausted.join(", ")}.`,
+diff --git a/scripts/bench/task-cost-rollup.test.mjs b/scripts/bench/task-cost-rollup.test.mjs
+new file mode 100644
+index 000000000..7cde57651
+--- /dev/null
++++ b/scripts/bench/task-cost-rollup.test.mjs
+@@ -0,0 +1,192 @@
++import assert from "node:assert/strict";
++import test from "node:test";
++
++import { rollupTaskCostFromSupervisorJournal } from "../lib/agent-efficiency-repository-snapshot.mjs";
++
++const operation = ({
++  sequence,
++  role,
++  status = "completed",
++  attribution,
++  usage = {},
++  providerRun,
++  kind = role === "EVALUATOR" ? "evaluator_episode" : "agent_episode",
++}) => ({
++  sequence,
++  episode: sequence,
++  role,
++  kind,
++  operation_key: `sha256:${String(sequence).padStart(64, "0")}`,
++  status,
++  usage_attribution: attribution,
++  usage,
++  ...(providerRun
++    ? {
++        provider_usage: {
++          provider: "codex",
++          run_id: providerRun,
++          work_order_id: `work-order-${String(sequence)}`,
++          thread_id: null,
++          turn_id: null,
++        },
++      }
++    : {}),
++});
++
++const journal = (operations) => ({
++  schema_version: 1,
++  kind: "supervisor_execution_episode",
++  task_id: "202609130000-COSTS",
++  operations,
++});
++
++test("reconciles unique observed, partial, unavailable, and failed semantic attempts", () => {
++  const rollup = rollupTaskCostFromSupervisorJournal(
++    journal([
++      operation({
++        sequence: 1,
++        role: "PLANNER",
++        providerRun: "run-planner",
++        attribution: { state: "observed", reason: null },
++        usage: {
++          input_tokens: 10,
++          output_tokens: 5,
++          total_tokens: 15,
++          cached_input_tokens: 4,
++          reasoning_tokens: 2,
++        },
++      }),
++      operation({
++        sequence: 2,
++        role: "EXECUTOR",
++        status: "failed",
++        providerRun: "run-executor",
++        attribution: { state: "partial", reason: "partial_provider_token_telemetry" },
++        usage: { output_tokens: 7, reasoning_tokens: 3 },
++      }),
++      operation({
++        sequence: 3,
++        role: "CURATOR",
++        attribution: { state: "unallocatable", reason: "shared_host_turn" },
++      }),
++      operation({
++        sequence: 4,
++        role: "EVALUATOR",
++        status: "intent",
++        attribution: { state: "unavailable", reason: "provider_result_not_observed" },
++      }),
++      operation({ sequence: 5, role: "EXECUTOR", kind: "cli_operation" }),
++    ]),
++  );
++
++  assert.deepEqual(
++    {
++      dispatched: rollup.coverage.dispatched,
++      observed: rollup.coverage.observed,
++      partial: rollup.coverage.partial,
++      unavailable: rollup.coverage.unavailable,
++      unallocatable: rollup.coverage.unallocatable,
++      failed: rollup.coverage.failed,
++    },
++    { dispatched: 4, observed: 1, partial: 1, unavailable: 1, unallocatable: 1, failed: 1 },
++  );
++  assert.equal(rollup.coverage.by_role.EXECUTOR.failed, 1);
++  assert.equal(rollup.coverage.by_role.EXECUTOR.dispatched, 1);
++  assert.deepEqual(
++    rollup.coverage.attempts.map(({ attempt, role }) => [role, attempt]),
++    [
++      ["PLANNER", 1],
++      ["EXECUTOR", 1],
++      ["CURATOR", 1],
++      ["EVALUATOR", 1],
++    ],
++  );
++  assert.deepEqual(rollup.tokens.observed_subtotal, {
++    input_tokens: 10,
++    output_tokens: 12,
++    total_tokens: 15,
++  });
++  assert.deepEqual(rollup.tokens.cached_input_subset, {
++    observed_subtotal: 4,
++    observed_attempts: 1,
++    complete: false,
++  });
++  assert.deepEqual(rollup.tokens.reasoning_output_subset, {
++    observed_subtotal: 5,
++    observed_attempts: 2,
++    complete: false,
++  });
++  assert.equal(rollup.tokens.state, "partial");
++  assert.equal(rollup.tokens.complete, false);
++});
++
++test("renders complete totals only when every dispatched attempt is observed", () => {
++  const rollup = rollupTaskCostFromSupervisorJournal(
++    journal([
++      operation({
++        sequence: 1,
++        role: "EXECUTOR",
++        providerRun: "run-1",
++        attribution: { state: "observed", reason: null },
++        usage: {
++          input_tokens: 8,
++          output_tokens: 4,
++          total_tokens: 12,
++          cached_input_tokens: 2,
++          reasoning_tokens: 1,
++        },
++      }),
++      operation({
++        sequence: 2,
++        role: "EXECUTOR",
++        providerRun: "run-2",
++        attribution: { state: "observed", reason: null },
++        usage: {
++          input_tokens: 6,
++          output_tokens: 3,
++          total_tokens: 9,
++          cached_input_tokens: 1,
++          reasoning_tokens: 2,
++        },
++      }),
++    ]),
++  );
++
++  assert.equal(rollup.tokens.state, "observed");
++  assert.equal(rollup.tokens.complete, true);
++  assert.deepEqual(rollup.tokens.observed_subtotal, {
++    input_tokens: 14,
++    output_tokens: 7,
++    total_tokens: 21,
++  });
++  assert.equal(rollup.tokens.cached_input_subset.complete, true);
++  assert.equal(rollup.tokens.reasoning_output_subset.complete, true);
++  assert.deepEqual(
++    rollup.coverage.attempts.map(({ attempt }) => attempt),
++    [1, 2],
++  );
++});
++
++test("rejects a provider observation bound to more than one operation", () => {
++  const duplicate = journal([
++    operation({
++      sequence: 1,
++      role: "EXECUTOR",
++      providerRun: "run-replayed",
++      attribution: { state: "observed", reason: null },
++      usage: { input_tokens: 5, output_tokens: 2, total_tokens: 7 },
++    }),
++    operation({
++      sequence: 2,
++      role: "EVALUATOR",
++      providerRun: "run-replayed",
++      attribution: { state: "observed", reason: null },
++      usage: { input_tokens: 5, output_tokens: 2, total_tokens: 7 },
++    }),
++  ]);
++
++  assert.throws(
++    () => rollupTaskCostFromSupervisorJournal(duplicate),
++    /provider observation bound more than once/u,
++  );
++});
+diff --git a/scripts/lib/agent-efficiency-repository-snapshot.mjs b/scripts/lib/agent-efficiency-repository-snapshot.mjs
+index acefe544c..7e5241975 100644
+--- a/scripts/lib/agent-efficiency-repository-snapshot.mjs
++++ b/scripts/lib/agent-efficiency-repository-snapshot.mjs
+@@ -8,6 +8,173 @@ const requireFromCore = createRequire(new URL("../../packages/core/package.json"
+ const { parse: parseYaml } = requireFromCore("yaml");
+ const digest = (value) => `sha256:${createHash("sha256").update(value).digest("hex")}`;
+ 
++const TASK_COST_ROLES = Object.freeze(["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]);
++const TASK_COST_STATES = Object.freeze(["observed", "partial", "unavailable", "unallocatable"]);
++const TASK_COST_USAGE_FIELDS = Object.freeze([
++  "input_tokens",
++  "output_tokens",
++  "total_tokens",
++  "cached_input_tokens",
++  "visible_output_tokens",
++  "reasoning_tokens",
++  "prepared_context_bytes",
++]);
++
++function emptyTaskCostCoverage() {
++  return {
++    dispatched: 0,
++    observed: 0,
++    partial: 0,
++    unavailable: 0,
++    unallocatable: 0,
++    failed: 0,
++  };
++}
++
++function isRecord(value) {
++  return value !== null && typeof value === "object" && !Array.isArray(value);
++}
++
++function taskCostAttribution(operation, usage) {
++  if (operation.usage_attribution !== undefined) {
++    const attribution = operation.usage_attribution;
++    if (
++      !attribution ||
++      !TASK_COST_STATES.includes(attribution.state) ||
++      !(
++        attribution.reason === null ||
++        (typeof attribution.reason === "string" && attribution.reason.trim().length > 0)
++      )
++    ) {
++      throw new Error("Supervisor journal operation has invalid usage attribution.");
++    }
++    return attribution;
++  }
++  const observedFields = [usage.input_tokens, usage.output_tokens, usage.total_tokens].filter(
++    (value) => Number.isSafeInteger(value),
++  ).length;
++  if (observedFields === 3) return { state: "observed", reason: null };
++  if (observedFields > 0)
++    return { state: "partial", reason: "legacy_partial_provider_token_telemetry" };
++  return { state: "unavailable", reason: "legacy_provider_token_telemetry_unavailable" };
++}
++
++/**
++ * Derive a read-only task cost diagnostic from one latest supervisor journal.
++ * Token values remain labelled observed subtotals unless all dispatches are observed.
++ */
++export function rollupTaskCostFromSupervisorJournal(journal) {
++  if (
++    !journal ||
++    journal.kind !== "supervisor_execution_episode" ||
++    typeof journal.task_id !== "string" ||
++    journal.task_id.trim().length === 0 ||
++    !Array.isArray(journal.operations)
++  ) {
++    throw new Error("Task cost rollup requires a supervisor execution episode journal.");
++  }
++  const coverage = emptyTaskCostCoverage();
++  const byRole = Object.fromEntries(TASK_COST_ROLES.map((role) => [role, emptyTaskCostCoverage()]));
++  const attempts = [];
++  const roleAttempts = Object.fromEntries(TASK_COST_ROLES.map((role) => [role, 0]));
++  const observedSubtotal = { input_tokens: 0, output_tokens: 0, total_tokens: 0 };
++  let cachedInputSubtotal = 0;
++  let cachedInputObservedAttempts = 0;
++  let reasoningOutputSubtotal = 0;
++  let reasoningOutputObservedAttempts = 0;
++  const operationKeys = new Set();
++  const providerRuns = new Set();
++
++  for (const operation of journal.operations) {
++    if (operation.kind !== "agent_episode" && operation.kind !== "evaluator_episode") continue;
++    if (typeof operation.operation_key !== "string" || operationKeys.has(operation.operation_key)) {
++      throw new Error("Task cost rollup requires unique supervisor operation identities.");
++    }
++    operationKeys.add(operation.operation_key);
++    if (!TASK_COST_ROLES.includes(operation.role)) {
++      throw new Error("Supervisor journal operation has an invalid semantic role.");
++    }
++    if (operation.provider_usage) {
++      const providerRun = `${operation.provider_usage.provider}\0${operation.provider_usage.run_id}`;
++      if (providerRuns.has(providerRun)) {
++        throw new Error("Task cost rollup found a provider observation bound more than once.");
++      }
++      providerRuns.add(providerRun);
++    }
++    const usage = operation.usage ?? {};
++    if (
++      !isRecord(usage) ||
++      Object.keys(usage).some((key) => !TASK_COST_USAGE_FIELDS.includes(key)) ||
++      Object.values(usage).some((value) => !Number.isSafeInteger(value) || value < 0)
++    ) {
++      throw new Error("Supervisor journal operation has invalid normalized usage.");
++    }
++    const attribution = taskCostAttribution(operation, usage);
++    const completeTokens =
++      Number.isSafeInteger(usage.input_tokens) &&
++      Number.isSafeInteger(usage.output_tokens) &&
++      Number.isSafeInteger(usage.total_tokens);
++    if (attribution.state === "observed" && !completeTokens) {
++      throw new Error("Observed task cost attribution requires complete token telemetry.");
++    }
++
++    const roleCoverage = byRole[operation.role];
++    roleAttempts[operation.role] += 1;
++    coverage.dispatched += 1;
++    roleCoverage.dispatched += 1;
++    coverage[attribution.state] += 1;
++    roleCoverage[attribution.state] += 1;
++    if (operation.status === "failed") {
++      coverage.failed += 1;
++      roleCoverage.failed += 1;
++    }
++    attempts.push({
++      attempt: roleAttempts[operation.role],
++      sequence: operation.sequence,
++      episode: operation.episode,
++      role: operation.role,
++      status: operation.status,
++      attribution: attribution.state,
++      reason: attribution.reason,
++    });
++    observedSubtotal.input_tokens += usage.input_tokens ?? 0;
++    observedSubtotal.output_tokens += usage.output_tokens ?? 0;
++    observedSubtotal.total_tokens += usage.total_tokens ?? 0;
++    if (usage.cached_input_tokens !== undefined) {
++      cachedInputSubtotal += usage.cached_input_tokens;
++      cachedInputObservedAttempts += 1;
++    }
++    if (usage.reasoning_tokens !== undefined) {
++      reasoningOutputSubtotal += usage.reasoning_tokens;
++      reasoningOutputObservedAttempts += 1;
++    }
++  }
++
++  const complete = coverage.dispatched > 0 && coverage.observed === coverage.dispatched;
++  const hasObservedTokens = coverage.observed + coverage.partial > 0;
++  return {
++    schema_version: 1,
++    kind: "supervisor_task_cost_rollup",
++    task_id: journal.task_id,
++    coverage: { ...coverage, by_role: byRole, attempts },
++    tokens: {
++      state: complete ? "observed" : hasObservedTokens ? "partial" : "unavailable",
++      complete,
++      observed_subtotal: observedSubtotal,
++      cached_input_subset: {
++        observed_subtotal: cachedInputSubtotal,
++        observed_attempts: cachedInputObservedAttempts,
++        complete: complete && cachedInputObservedAttempts === coverage.dispatched,
++      },
++      reasoning_output_subset: {
++        observed_subtotal: reasoningOutputSubtotal,
++        observed_attempts: reasoningOutputObservedAttempts,
++        complete: complete && reasoningOutputObservedAttempts === coverage.dispatched,
++      },
++    },
++  };
++}
++
+ // Git objects bind this sample to an immutable tree. Working files and runtime journals
+ // can change concurrently and are deliberately not substituted for committed evidence.
+ export function measureRepositoryEfficiency({
+diff --git a/scripts/lib/test-route-registry.mjs b/scripts/lib/test-route-registry.mjs
+index 0d5a6818c..a06aae99e 100644
+--- a/scripts/lib/test-route-registry.mjs
++++ b/scripts/lib/test-route-registry.mjs
+@@ -391,6 +391,7 @@ const V07_SUPERVISOR_FILES = [
+   "packages/agentplane/src/commands/task/direct-task-supervisor.test.ts",
+   "packages/agentplane/src/commands/task/branch-task-supervisor.test.ts",
+   "packages/agentplane/src/commands/task/agent-action-packet.test.ts",
++  "packages/agentplane/src/commands/task/roadmap-stage-timing.test.ts",
+   "packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts",
+   "packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts",
+   "packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts",
