@@ -6,7 +6,7 @@ Created: 2026-09-12T20:52:29.086Z
 
 - Task: `202609121424-T83XJA`
 - Title: Implement durable 0.7.9 usage, cost, and latency accounting for ST-08 through ST-13 and ST-17
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609121424-T83XJA/implement-durable-0-7-9-usage-cost-and-latency-a`
 - Canonical task record: `.agentplane/tasks/202609121424-T83XJA/README.md`
 
