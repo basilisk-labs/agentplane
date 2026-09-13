@@ -13,7 +13,7 @@ Created: 2026-09-13T09:03:04.106Z
 ## Verification
 
 - State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -36,13 +36,15 @@ Created: 2026-09-13T09:03:04.106Z
  .../supervisor-execution-budget-renewal.test.ts    | 296 ++++++++++++++++++++
  .../supervisor-execution-default-budget.test.ts    |  28 ++
  .../shared/supervisor-execution-episode.ts         |  14 +-
+ .../external-agent-implementation-recovery.test.ts |  23 +-
+ .../task/external-agent-implementation-recovery.ts |  13 +-
  .../task/scope-extend-legacy-compat.test.ts        | 220 +++++++++++++++
  .../agentplane/src/commands/task/scope-extend.ts   |  36 ++-
  .../task/supervisor-budget-epoch.command.ts        | 229 +++++++++++++++
  .../src/runner/supervisor-execution-episode.ts     | 311 +++++++++++++++++++--
  packages/core/src/schemas/index.ts                 |   3 +
  scripts/lib/test-route-registry.mjs                |   2 +-
- 13 files changed, 1407 insertions(+), 34 deletions(-)
+ 15 files changed, 1441 insertions(+), 36 deletions(-)
 ```
 
 </details>
