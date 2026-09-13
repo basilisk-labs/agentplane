@@ -78,6 +78,21 @@ describe("supervisor lifecycle timing validation", () => {
         },
       ],
     ],
+    [
+      "overlapping siblings before a root-last span",
+      [
+        { ...root, span_id: "a", parent_span_id: "root", elapsed_ms: 8 },
+        {
+          ...root,
+          span_id: "b",
+          parent_span_id: "root",
+          stage: "review",
+          offset_ms: 2,
+          elapsed_ms: 8,
+        },
+        root,
+      ],
+    ],
     ["partial root coverage", [{ ...root, elapsed_ms: 9 }]],
     [
       "a parent cycle",
