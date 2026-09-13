@@ -35,8 +35,8 @@ Created: 2026-09-13T20:08:45.624Z
  .../src/runner/supervisor-execution-episode.ts     | 261 +++++++++------------
  packages/core/src/schemas/index.ts                 |   3 +
  scripts/bench/paired-production-driver.mjs         |  15 --
- scripts/bench/paired-production-driver.test.mjs    |   2 +-
- 7 files changed, 246 insertions(+), 199 deletions(-)
+ scripts/bench/paired-production-driver.test.mjs    |   8 +-
+ 7 files changed, 252 insertions(+), 199 deletions(-)
 ```
 
 </details>

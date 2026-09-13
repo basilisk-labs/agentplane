@@ -175,6 +175,12 @@ test("runs the pinned three-arm task entrypoints offline and keeps transports st
   );
   assert.deepEqual(evidence.claim_policy, manifest.claim_policy);
   assert.equal("maximum_authorized_spend" in manifest.constants, false);
+  const legacyManifest = structuredClone(manifest);
+  legacyManifest.constants.maximum_authorized_spend = -1;
+  assert.equal(
+    "maximum_authorized_spend" in validatePairedCampaignManifest(legacyManifest).constants,
+    false,
+  );
   const report = buildPairedResultReport(evidence);
   assert.equal(report.numeric_cost_claim_complete, true);
   assert.deepEqual(Object.keys(report.strata).toSorted(), ["external", "managed"]);

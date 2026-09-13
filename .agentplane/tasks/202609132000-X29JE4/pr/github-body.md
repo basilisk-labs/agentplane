@@ -33,8 +33,8 @@ Remove active supervisor token, monetary, wall-time, changed-file, diff-line, ag
  .../src/runner/supervisor-execution-episode.ts     | 261 +++++++++------------
  packages/core/src/schemas/index.ts                 |   3 +
  scripts/bench/paired-production-driver.mjs         |  15 --
- scripts/bench/paired-production-driver.test.mjs    |   2 +-
- 7 files changed, 246 insertions(+), 199 deletions(-)
+ scripts/bench/paired-production-driver.test.mjs    |   8 +-
+ 7 files changed, 252 insertions(+), 199 deletions(-)
 ```
 
 </details>
