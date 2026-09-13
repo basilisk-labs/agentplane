@@ -7,6 +7,14 @@ import { isDirectRun, parseScriptArgs, runScriptMain } from "../lib/script-runti
 import { PAIRED_CAMPAIGN_ARMS } from "./paired-production-driver.mjs";
 
 const DIGEST_PATTERN = /^sha256:[a-f0-9]{64}$/u;
+const TOKEN_USAGE_STATES = new Set(["observed", "partial", "unavailable"]);
+const TOKEN_FIELDS = [
+  "input_tokens",
+  "cached_input_tokens",
+  "output_tokens",
+  "reasoning_tokens",
+  "total_tokens",
+];
 
 function sha256(value) {
   return `sha256:${createHash("sha256").update(value).digest("hex")}`;
@@ -18,6 +26,53 @@ function canonicalBytes(value) {
 
 function isRecord(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function assertTokenUsage(value, label) {
+  if (!isRecord(value) || !TOKEN_USAGE_STATES.has(value.state)) {
+    throw new Error(`${label} has invalid token usage state.`);
+  }
+  for (const field of TOKEN_FIELDS) {
+    if (value[field] !== null && (!Number.isSafeInteger(value[field]) || value[field] < 0)) {
+      throw new Error(`${label} has invalid ${field}.`);
+    }
+  }
+  const observedFields = TOKEN_FIELDS.filter((field) => value[field] !== null);
+  if (
+    (value.state === "observed" && observedFields.length !== TOKEN_FIELDS.length) ||
+    (value.state === "partial" && observedFields.length === 0) ||
+    (value.state === "unavailable" && observedFields.length !== 0)
+  ) {
+    throw new Error(`${label} token fields do not match state=${value.state}.`);
+  }
+  if (
+    (value.state === "observed" && value.reason !== undefined) ||
+    (value.state !== "observed" && (typeof value.reason !== "string" || value.reason.length === 0))
+  ) {
+    throw new Error(`${label} has invalid token usage reason.`);
+  }
+  if (
+    value.cached_input_tokens !== null &&
+    value.input_tokens !== null &&
+    value.cached_input_tokens > value.input_tokens
+  ) {
+    throw new Error(`${label} cached input exceeds input tokens.`);
+  }
+  if (
+    value.reasoning_tokens !== null &&
+    value.output_tokens !== null &&
+    value.reasoning_tokens > value.output_tokens
+  ) {
+    throw new Error(`${label} reasoning exceeds output tokens.`);
+  }
+  if (
+    value.input_tokens !== null &&
+    value.output_tokens !== null &&
+    value.total_tokens !== null &&
+    value.total_tokens < value.input_tokens + value.output_tokens
+  ) {
+    throw new Error(`${label} total is lower than input plus output tokens.`);
+  }
 }
 
 function wilsonInterval(successes, total, z = 1.96) {
@@ -47,30 +102,11 @@ function assertAttempt(attempt, index) {
     !Array.isArray(attempt.agent.stages) ||
     !isRecord(attempt.oracle) ||
     typeof attempt.oracle.verified !== "boolean" ||
-    !DIGEST_PATTERN.test(attempt.oracle.outcome_digest) ||
-    !isRecord(attempt.raw_cost) ||
-    !["observed", "unknown"].includes(attempt.raw_cost.state) ||
-    !DIGEST_PATTERN.test(attempt.raw_cost.basis_digest) ||
-    typeof attempt.raw_cost.currency !== "string"
+    !DIGEST_PATTERN.test(attempt.oracle.outcome_digest)
   ) {
     throw new Error(`${label} does not satisfy the paired evidence contract.`);
   }
-  if (
-    attempt.raw_cost.state === "observed" &&
-    (typeof attempt.raw_cost.amount !== "number" ||
-      !Number.isFinite(attempt.raw_cost.amount) ||
-      attempt.raw_cost.amount < 0)
-  ) {
-    throw new Error(`${label} has invalid observed raw cost.`);
-  }
-  if (
-    attempt.raw_cost.state === "unknown" &&
-    (attempt.raw_cost.amount !== null ||
-      typeof attempt.raw_cost.reason !== "string" ||
-      attempt.raw_cost.reason.length === 0)
-  ) {
-    throw new Error(`${label} has invalid unknown raw cost.`);
-  }
+  assertTokenUsage(attempt.token_usage, label);
   for (const stage of attempt.agent.stages) {
     if (
       !isRecord(stage) ||
@@ -127,12 +163,15 @@ function stageDistribution(attempts) {
 function summarizeArm(attempts) {
   const successes = attempts.filter((attempt) => attemptSucceeded(attempt)).length;
   const violations = attempts.filter((attempt) => attempt.agent.violations.length > 0).length;
-  const observedCosts = attempts.filter((attempt) => attempt.raw_cost.state === "observed");
-  const currencies = new Set(attempts.map((attempt) => attempt.raw_cost.currency));
-  const bases = new Set(attempts.map((attempt) => attempt.raw_cost.basis_digest));
-  const rawCostComplete =
-    observedCosts.length === attempts.length && currencies.size === 1 && bases.size === 1;
-  const observedSubtotal = observedCosts.reduce((sum, attempt) => sum + attempt.raw_cost.amount, 0);
+  const observedAttempts = attempts.filter((attempt) => attempt.token_usage.state === "observed");
+  const partialAttempts = attempts.filter((attempt) => attempt.token_usage.state === "partial");
+  const observedTotals = Object.fromEntries(
+    TOKEN_FIELDS.map((field) => [
+      field,
+      attempts.reduce((sum, attempt) => sum + (attempt.token_usage[field] ?? 0), 0),
+    ]),
+  );
+  const complete = observedAttempts.length === attempts.length;
   return {
     attempts: attempts.length,
     verified_successes: successes,
@@ -142,28 +181,21 @@ function summarizeArm(attempts) {
     violation_attempts: violations,
     violation_rate: attempts.length === 0 ? null : violations / attempts.length,
     violation_rate_wilson_95: wilsonInterval(violations, attempts.length),
-    raw_cost: {
-      complete: rawCostComplete,
-      observed_attempts: observedCosts.length,
-      unknown_attempts: attempts.length - observedCosts.length,
-      observed_subtotal: observedSubtotal,
-      total: rawCostComplete ? observedSubtotal : null,
-      currency: currencies.size === 1 ? [...currencies][0] : null,
-      basis_digest: bases.size === 1 ? [...bases][0] : null,
-      cost_per_verified_success:
-        rawCostComplete && successes > 0 ? observedSubtotal / successes : null,
+    token_usage: {
+      complete,
+      observed_attempts: observedAttempts.length,
+      partial_attempts: partialAttempts.length,
+      unavailable_attempts: attempts.length - observedAttempts.length - partialAttempts.length,
+      observed_totals: observedTotals,
+      total_tokens: complete ? observedTotals.total_tokens : null,
+      tokens_per_verified_success:
+        complete && successes > 0 ? observedTotals.total_tokens / successes : null,
+      subset_semantics: {
+        cached_input_tokens: "subset_of_input_tokens",
+        reasoning_tokens: "subset_of_output_tokens",
+      },
     },
     stages: stageDistribution(attempts),
-  };
-}
-
-function rawCostIdentity(attempts) {
-  const currencies = new Set(attempts.map((attempt) => attempt.raw_cost.currency));
-  const bases = new Set(attempts.map((attempt) => attempt.raw_cost.basis_digest));
-  return {
-    consistent: currencies.size === 1 && bases.size === 1,
-    currency: currencies.size === 1 ? [...currencies][0] : null,
-    basis_digest: bases.size === 1 ? [...bases][0] : null,
   };
 }
 
@@ -214,12 +246,12 @@ function pairedArmMismatch(byArm) {
   });
 }
 
-function efficiencyAssessment(strata, claimPolicy, safetyVerdict, campaignCostIdentity) {
+function efficiencyAssessment(strata, claimPolicy, safetyVerdict) {
   if (!isRecord(claimPolicy)) {
     return { verdict: "not_established", reasons: ["claim_policy_missing"], strata: {} };
   }
   const minimumPairs = claimPolicy.minimum_paired_successes;
-  const maximumPreviousRatio = claimPolicy.max_candidate_to_previous_cost_ratio;
+  const maximumPreviousRatio = claimPolicy.max_candidate_to_previous_token_ratio;
   if (
     !Number.isSafeInteger(minimumPairs) ||
     minimumPairs < 1 ||
@@ -233,50 +265,35 @@ function efficiencyAssessment(strata, claimPolicy, safetyVerdict, campaignCostId
   if (safetyVerdict !== "pass") {
     return { verdict: "fail", reasons: ["safety_gate_failed"], strata: {} };
   }
-  if (!campaignCostIdentity.consistent) {
-    return { verdict: "not_established", reasons: ["raw_cost_identity_mismatch"], strata: {} };
-  }
   const assessments = {};
   for (const [transport, stratum] of Object.entries(strata)) {
-    const armCosts = Object.fromEntries(
+    const armTokenCosts = Object.fromEntries(
       PAIRED_CAMPAIGN_ARMS.map((arm) => [
         arm,
-        stratum.arms[arm].raw_cost.cost_per_verified_success,
+        stratum.arms[arm].token_usage.tokens_per_verified_success,
       ]),
     );
     const complete = PAIRED_CAMPAIGN_ARMS.every(
       (arm) =>
-        stratum.arms[arm].raw_cost.complete &&
+        stratum.arms[arm].token_usage.complete &&
         stratum.arms[arm].verified_successes > 0 &&
-        Number.isFinite(armCosts[arm]),
+        Number.isFinite(armTokenCosts[arm]),
     );
-    if (
-      !complete ||
-      !stratum.raw_cost_identity.consistent ||
-      stratum.paired_outcomes.accepted.length < minimumPairs
-    ) {
-      let reason;
-      if (complete) {
-        reason = stratum.raw_cost_identity.consistent
-          ? "paired_coverage_insufficient"
-          : "raw_cost_identity_mismatch";
-      } else {
-        reason = "incomplete_cost_or_zero_success";
-      }
+    if (!complete || stratum.paired_outcomes.accepted.length < minimumPairs) {
       assessments[transport] = {
         verdict: "not_established",
-        reason,
-        cost_per_verified_success: armCosts,
+        reason: complete ? "paired_coverage_insufficient" : "incomplete_tokens_or_zero_success",
+        tokens_per_verified_success: armTokenCosts,
       };
       continue;
     }
-    const previousRatio = armCosts.candidate / armCosts.previous_release;
-    const minimalRatio = armCosts.candidate / armCosts.minimal_agent;
+    const previousRatio = armTokenCosts.candidate / armTokenCosts.previous_release;
+    const minimalRatio = armTokenCosts.candidate / armTokenCosts.minimal_agent;
     if (!Number.isFinite(previousRatio) || !Number.isFinite(minimalRatio)) {
       assessments[transport] = {
         verdict: "not_established",
         reason: "comparison_denominator_not_positive",
-        cost_per_verified_success: armCosts,
+        tokens_per_verified_success: armTokenCosts,
       };
       continue;
     }
@@ -287,7 +304,7 @@ function efficiencyAssessment(strata, claimPolicy, safetyVerdict, campaignCostId
         previousPass && minimalPass ? "pass" : previousPass || minimalPass ? "mixed" : "fail",
       candidate_to_previous_ratio: previousRatio,
       candidate_to_minimal_ratio: minimalRatio,
-      cost_per_verified_success: armCosts,
+      tokens_per_verified_success: armTokenCosts,
     };
   }
   const verdicts = Object.values(assessments).map((assessment) => assessment.verdict);
@@ -344,7 +361,6 @@ export function buildPairedResultReport(value) {
     strata[transport] = {
       attempts: selected.length,
       arms,
-      raw_cost_identity: rawCostIdentity(selected),
       paired_outcomes: pairedOutcomes(selected, transport),
     };
   }
@@ -356,29 +372,26 @@ export function buildPairedResultReport(value) {
     violations,
   };
   const activation = activationAssessment(value.activation_evidence);
-  const unknownCostAttempts = attempts
-    .filter((attempt) => attempt.raw_cost.state !== "observed")
+  const partialTokenAttempts = attempts
+    .filter((attempt) => attempt.token_usage.state === "partial")
     .map((attempt) => attempt.id);
-  const campaignCostIdentity = rawCostIdentity(attempts);
-  const numericCostClaimComplete =
-    attempts.length > 0 && unknownCostAttempts.length === 0 && campaignCostIdentity.consistent;
-  const efficiency = efficiencyAssessment(
-    strata,
-    value.claim_policy,
-    safety.verdict,
-    campaignCostIdentity,
-  );
+  const unavailableTokenAttempts = attempts
+    .filter((attempt) => attempt.token_usage.state === "unavailable")
+    .map((attempt) => attempt.id);
+  const incompleteTokenAttempts = [...partialTokenAttempts, ...unavailableTokenAttempts];
+  const numericTokenClaimComplete = attempts.length > 0 && incompleteTokenAttempts.length === 0;
+  const efficiency = efficiencyAssessment(strata, value.claim_policy, safety.verdict);
   const payload = {
     schema_version: 1,
-    kind: "agentplane.paired_cost_per_verified_result_report",
+    kind: "agentplane.paired_tokens_per_verified_result_report",
     campaign_id: value.campaign_id,
     evidence_digest: value.digest ?? null,
     coverage: {
       attempts: attempts.length,
-      raw_cost_observed: attempts.length - unknownCostAttempts.length,
-      raw_cost_unknown: unknownCostAttempts.length,
-      unknown_cost_attempt_ids: unknownCostAttempts,
-      raw_cost_identity: campaignCostIdentity,
+      token_usage_observed: attempts.length - incompleteTokenAttempts.length,
+      token_usage_partial: partialTokenAttempts.length,
+      token_usage_unavailable: unavailableTokenAttempts.length,
+      incomplete_token_attempt_ids: incompleteTokenAttempts,
       transports: Object.fromEntries(
         Object.entries(strata).map(([transport, stratum]) => [transport, stratum.attempts]),
       ),
@@ -389,16 +402,16 @@ export function buildPairedResultReport(value) {
       activation,
       efficiency,
     },
-    numeric_cost_claim_complete: numericCostClaimComplete,
+    numeric_token_claim_complete: numericTokenClaimComplete,
     uncertainty: {
       rate_interval: "Wilson score interval, 95%",
       paired_population:
         "Only pairs where every arm independently passes the same oracle outcome are included.",
-      raw_cost: numericCostClaimComplete
-        ? "Every attempt has observed raw cost."
-        : unknownCostAttempts.length > 0
-          ? "Unknown raw cost prevents a complete numeric cost claim."
-          : "Inconsistent raw cost currency or basis prevents a complete numeric cost claim.",
+      token_usage: numericTokenClaimComplete
+        ? "Every attempt has complete provider-observed token usage."
+        : "Partial or unavailable provider token usage prevents a complete numeric token claim.",
+      subset_accounting:
+        "total_tokens is the primary cost. cached_input_tokens and reasoning_tokens are reported as subsets and are not added again.",
     },
   };
   return { ...payload, digest: sha256(canonicalBytes(payload)) };

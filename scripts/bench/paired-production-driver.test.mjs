@@ -56,7 +56,7 @@ function fixture() {
     'if (process.argv.slice(2).join(" ") !== "task new paired-objective") process.exit(12);',
     'mkdirSync("work", { recursive: true });',
     'writeFileSync("work/result.txt", "VERIFIED\\n");',
-    `process.stdout.write(JSON.stringify({ status: "completed", result_digest: "${DIGEST}", violations: [], stages: [{ id: "task_entrypoint", duration_ms: 2 }], raw_cost: { state: "observed", amount: 1, currency: process.env.AGENTPLANE_PAIRED_RAW_COST_CURRENCY, basis_digest: process.env.AGENTPLANE_PAIRED_RAW_COST_BASIS_DIGEST }, observed_identity: { adapter: process.env.AGENTPLANE_PAIRED_ADAPTER, model: process.env.AGENTPLANE_PAIRED_MODEL, reasoning_effort: process.env.AGENTPLANE_PAIRED_REASONING_EFFORT, authority_digest: process.env.AGENTPLANE_PAIRED_AUTHORITY_DIGEST, check_ids: JSON.parse(process.env.AGENTPLANE_PAIRED_CHECK_IDS), retry_limit: Number(process.env.AGENTPLANE_PAIRED_RETRY_LIMIT), runtime_profile: JSON.parse(process.env.AGENTPLANE_PAIRED_RUNTIME_PROFILE) } }));`,
+    `process.stdout.write(JSON.stringify({ status: "completed", result_digest: "${DIGEST}", violations: [], stages: [{ id: "task_entrypoint", duration_ms: 2 }], token_usage: { state: "observed", input_tokens: 10, cached_input_tokens: 4, output_tokens: 5, reasoning_tokens: 2, total_tokens: 15 }, observed_identity: { adapter: process.env.AGENTPLANE_PAIRED_ADAPTER, model: process.env.AGENTPLANE_PAIRED_MODEL, reasoning_effort: process.env.AGENTPLANE_PAIRED_REASONING_EFFORT, authority_digest: process.env.AGENTPLANE_PAIRED_AUTHORITY_DIGEST, check_ids: JSON.parse(process.env.AGENTPLANE_PAIRED_CHECK_IDS), retry_limit: Number(process.env.AGENTPLANE_PAIRED_RETRY_LIMIT), runtime_profile: JSON.parse(process.env.AGENTPLANE_PAIRED_RUNTIME_PROFILE) } }));`,
     "",
   ].join("\n");
   const products = Object.fromEntries(
@@ -96,9 +96,6 @@ function fixture() {
     session_policy: "isolated",
     sandbox: "workspace-write",
     network: "deny",
-    raw_cost_basis_digest: DIGEST,
-    raw_cost_currency: "USD",
-    maximum_authorized_spend: { amount: 100, currency: "USD" },
   };
   const runs = [];
   let order = 0;
@@ -139,7 +136,7 @@ function fixture() {
     products,
     claim_policy: {
       minimum_paired_successes: 1,
-      max_candidate_to_previous_cost_ratio: 1.05,
+      max_candidate_to_previous_token_ratio: 1.05,
       require_candidate_better_than_minimal: true,
     },
     constants,
@@ -175,8 +172,18 @@ test("runs the pinned three-arm task entrypoints offline and keeps transports st
     ),
   );
   assert.deepEqual(evidence.claim_policy, manifest.claim_policy);
+  assert.equal(Object.hasOwn(evidence.constants, "maximum_authorized_spend"), false);
+  assert.equal(Object.hasOwn(evidence.constants, "raw_cost_currency"), false);
   const report = buildPairedResultReport(evidence);
-  assert.equal(report.numeric_cost_claim_complete, true);
+  assert.equal(report.numeric_token_claim_complete, true);
+  assert.deepEqual(report.strata.managed.arms.candidate.token_usage.observed_totals, {
+    input_tokens: 10,
+    cached_input_tokens: 4,
+    output_tokens: 5,
+    reasoning_tokens: 2,
+    total_tokens: 15,
+  });
+  assert.equal(report.strata.managed.arms.candidate.token_usage.tokens_per_verified_success, 15);
   assert.deepEqual(Object.keys(report.strata).toSorted(), ["external", "managed"]);
 });
 
@@ -206,15 +213,32 @@ test("rejects every mismatched run identity field", () => {
   }
 });
 
-test("rejects missing or mismatched observed raw cost", async () => {
+test("rejects missing or malformed token usage", async () => {
   const { manifest, root } = fixture();
-  for (const [label, rawCost] of [
+  for (const [label, tokenUsage] of [
     ["missing", undefined],
     [
-      "basis mismatch",
-      { state: "observed", amount: 1, currency: "USD", basis_digest: `sha256:${"b".repeat(64)}` },
+      "cached subset overflow",
+      {
+        state: "observed",
+        input_tokens: 10,
+        cached_input_tokens: 11,
+        output_tokens: 5,
+        reasoning_tokens: 2,
+        total_tokens: 15,
+      },
     ],
-    ["currency mismatch", { state: "observed", amount: 1, currency: "EUR", basis_digest: DIGEST }],
+    [
+      "incomplete observed fields",
+      {
+        state: "observed",
+        input_tokens: 10,
+        cached_input_tokens: 4,
+        output_tokens: 5,
+        reasoning_tokens: null,
+        total_tokens: 15,
+      },
+    ],
   ]) {
     await assert.rejects(
       () =>
@@ -227,7 +251,7 @@ test("rejects missing or mismatched observed raw cost", async () => {
               result_digest: DIGEST,
               violations: [],
               stages: [],
-              raw_cost: rawCost,
+              token_usage: tokenUsage,
               observed_identity: {
                 adapter: manifest.constants.adapter,
                 model: manifest.constants.model,
@@ -271,11 +295,13 @@ test("rejects an observed execution identity that differs from the campaign", as
             result_digest: DIGEST,
             violations: [],
             stages: [],
-            raw_cost: {
+            token_usage: {
               state: "observed",
-              amount: 1,
-              currency: manifest.constants.raw_cost_currency,
-              basis_digest: manifest.constants.raw_cost_basis_digest,
+              input_tokens: 10,
+              cached_input_tokens: 4,
+              output_tokens: 5,
+              reasoning_tokens: 2,
+              total_tokens: 15,
             },
             observed_identity: {
               adapter: manifest.constants.adapter,

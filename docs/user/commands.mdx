@@ -255,8 +255,11 @@ task lifecycle evidence. `finish` refreshes the task-local ACR automatically whe
 derived projection, not a second source of truth. Completed tasks expose provider token usage as
 `token_usage` in the task README, task JSON/brief projections, and
 `extensions["agentplane.token-usage"]` in the ACR. The state is `observed`, `partial`, or
-`unavailable`; an unavailable provider signal is never serialized as zero. `acr validate --mode schema` checks only JSON
-shape; `acr check --mode ci` enforces merge-ready semantics. See
+`unavailable`; an unavailable provider signal is never serialized as zero. This informational
+telemetry does not depend on whether the user authenticates through a subscription or provider
+billing account. Token caps are disabled by default and require a separate explicit user action;
+the supervisor's non-token safety limits remain active. `acr validate --mode schema` checks only
+JSON shape; `acr check --mode ci` enforces merge-ready semantics. See
 [Agent Change Records](../reference/acr).
 
 ## Local context

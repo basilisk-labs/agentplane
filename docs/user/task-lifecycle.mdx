@@ -164,6 +164,9 @@ process, Git, filesystem, artifact, provider, and check facts.
 
 - Agent-reported checks are not persisted as observed verification without supervisor evidence.
 - Managed provider token usage is counted exactly once from observed receipts.
+- Provider token usage is informational for every user and is independent of subscription or
+  provider-billing authentication. Token caps default to disabled and require an explicit user
+  action; episode, agent-run, wall-time, changed-file, and no-progress safety limits stay active.
 - External, malformed, legacy, or partially observed usage stays `partial` or `unavailable`; the CLI
   does not accept model-supplied token totals or fabricate zeroes.
 - Independent evaluator evidence stays distinct from executor claims.
