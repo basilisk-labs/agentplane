@@ -1,10 +1,11 @@
 ---
 id: "202609121424-ZEJ656"
 title: "Conserve 0.7.9 semantic requirements and managed output parity for ST-06 and ST-07"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on:
@@ -58,6 +59,22 @@ quality_review:
     - "The frozen diff preserves process-repair requirements only under the existing explicit authority marker, keeps ordinary lifecycle instructions filtered, derives managed result schemas from the issued role and phase, injects the issued WorkOrder identity, and rejects foreign identity, cross-role, lifecycle, and stale canonical-binding fields."
     - "Supervisor-observed verification passed both focused suites with nonzero discovery, the related context and adapter suites, typecheck, schema and agent asset checks, and ci:local:full."
     - "Residual risk: The branch still requires hosted CI before integration."
+token_usage:
+  agent_runs: 9
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:cecf3c75b43c1d075f00a2efb1c3fb1bf2a02b28377957dc3dc6fa4492cb4ac4"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-09-13T17:44:47.925Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -300,8 +317,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "086025d419444b01aaf1f4e2b58bb6fce25ff662"
-  message: "🚧 ZEJ656 task: apply external agent result"
+  hash: "9e3b50cbccbc4ddce78b4e39ba0af0d83239efe5"
+  message: "🚧 ZEJ656 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -321,6 +338,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 086025d41944. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -381,9 +401,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-13T17:44:47.925Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "9e3b50cbccbc4ddce78b4e39ba0af0d83239efe5"
 doc_version: 3
-doc_updated_at: "2026-09-13T17:42:49.687Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-13T17:44:47.925Z"
+doc_updated_by: "CODER"
 description: "Source contract: agentplane-roadmap-r2 cards ST-06 and ST-07. Preserve required objective, scope, outputs, checks, constraints, stop rules, WorkItem and WorkOrder identity across prompt compaction and role-specific projection. Repair managed semantic-result transport so completed, blocked, needs_context, and failed outcomes retain permitted typed fields without adapter loss. Do not add a second Plan or lifecycle format, and do not expose secrets. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: focused requirement-conservation and adapter output-parity tests with nonzero discovery, related transport/context critical suites, typecheck, schema/mirror checks."
 sections:
   Summary: |-
@@ -879,7 +907,89 @@ extensions:
       schema_version: 1
       task_id: "202609121424-ZEJ656"
     event_cursor: 18
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609121424-ZEJ656"
+            - "git:086025d419444b01aaf1f4e2b58bb6fce25ff662"
+          check_id: "requirement_conservation"
+          command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-13T17:42:48.617Z"
+          repository_snapshot_digest: "sha256:47f5cd81165ecf0f2fb321a765f9dfd7d3709c70285dfbe78024cfb565fe6515"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-ZEJ656"
+            - "git:086025d419444b01aaf1f4e2b58bb6fce25ff662"
+          check_id: "output_parity"
+          command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-13T17:42:48.617Z"
+          repository_snapshot_digest: "sha256:47f5cd81165ecf0f2fb321a765f9dfd7d3709c70285dfbe78024cfb565fe6515"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-ZEJ656"
+            - "git:086025d419444b01aaf1f4e2b58bb6fce25ff662"
+          check_id: "related_context_transport"
+          command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context packages/agentplane/src/runner/adapters"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-13T17:42:48.617Z"
+          repository_snapshot_digest: "sha256:47f5cd81165ecf0f2fb321a765f9dfd7d3709c70285dfbe78024cfb565fe6515"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-ZEJ656"
+            - "git:086025d419444b01aaf1f4e2b58bb6fce25ff662"
+          check_id: "typecheck"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-13T17:42:48.617Z"
+          repository_snapshot_digest: "sha256:47f5cd81165ecf0f2fb321a765f9dfd7d3709c70285dfbe78024cfb565fe6515"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-ZEJ656"
+            - "git:086025d419444b01aaf1f4e2b58bb6fce25ff662"
+          check_id: "schema_mirrors"
+          command_identity: "bun run schemas:check && bun run agents:check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-13T17:42:48.617Z"
+          repository_snapshot_digest: "sha256:47f5cd81165ecf0f2fb321a765f9dfd7d3709c70285dfbe78024cfb565fe6515"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-ZEJ656"
+            - "git:086025d419444b01aaf1f4e2b58bb6fce25ff662"
+          check_id: "scope_hygiene"
+          command_identity: "task.verify"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-13T17:42:48.617Z"
+          repository_snapshot_digest: "sha256:47f5cd81165ecf0f2fb321a765f9dfd7d3709c70285dfbe78024cfb565fe6515"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-ZEJ656"
+            - "git:086025d419444b01aaf1f4e2b58bb6fce25ff662"
+          check_id: "hosted_integration"
+          command_identity: "task.verify"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-13T17:42:48.617Z"
+          repository_snapshot_digest: "sha256:47f5cd81165ecf0f2fb321a765f9dfd7d3709c70285dfbe78024cfb565fe6515"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609121424-ZEJ656"
     intent:
       acceptance_criteria:
@@ -900,7 +1010,7 @@ extensions:
 
         Source contract: agentplane-roadmap-r2 cards ST-06 and ST-07. Preserve required objective, scope, outputs, checks, constraints, stop rules, WorkItem and WorkOrder identity across prompt compaction and role-specific projection. Repair managed semantic-result transport so completed, blocked, needs_context, and failed outcomes retain permitted typed fields without adapter loss. Do not add a second Plan or lifecycle format, and do not expose secrets. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: focused requirement-conservation and adapter output-parity tests with nonzero discovery, related transport/context critical suites, typecheck, schema/mirror checks.
       task_id: "202609121424-ZEJ656"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -1339,9 +1449,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121424-ZEJ656"
-    revision: 27
+    revision: 28
     schema_version: 1
-    updated_at: "2026-09-13T17:42:49.687Z"
+    updated_at: "2026-09-13T17:44:47.925Z"
     work_items:
       validate_existing_implementation:
         attempt: 1
@@ -2060,6 +2170,31 @@ extensions:
         previous_revision: 12
         schema_version: 1
         task_id: "202609121424-ZEJ656"
+      legacy-finish:202609121424-ZEJ656:2026-09-13T17:42:48.617Z:086025d419444b01aaf1f4e2b58bb6fce25ff662:
+        aggregate_digest: "sha256:e80405db320e23df7b91a9d208e2e4ff1fa94c491ea9546974ca18a7e6769c88"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-13T17:44:47.925Z"
+          cause_refs:
+            - "task-verification:202609121424-ZEJ656"
+            - "git:086025d419444b01aaf1f4e2b58bb6fce25ff662"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_70553454ef25054e3d3a4f7e"
+          mutation_id: "legacy-finish:202609121424-ZEJ656:2026-09-13T17:42:48.617Z:086025d419444b01aaf1f4e2b58bb6fce25ff662"
+          plan_digest: "sha256:6cfcdb60047f6021f1f8c7a6f4fa3d300d878b6545b029bd41f4c4553e77e321"
+          plan_revision: 2
+          repository_fingerprint: "sha256:47f5cd81165ecf0f2fb321a765f9dfd7d3709c70285dfbe78024cfb565fe6515"
+          schema_version: 1
+          task_id: "202609121424-ZEJ656"
+          task_revision: 27
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609121424-ZEJ656:2026-09-13T17:42:48.617Z:086025d419444b01aaf1f4e2b58bb6fce25ff662"
+        next_revision: 28
+        previous_revision: 27
+        schema_version: 1
+        task_id: "202609121424-ZEJ656"
       plan-refinement:work-order-202609121424-ZEJ656-executor-fea9a43658c9e544a5eabaad:
         aggregate_digest: "sha256:1be3160ed1dcf959eb490008d0c7c2a21daffb68f7d4fbffa1dfdf0fcb30acd9"
         event:
@@ -2089,6 +2224,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "086025d419444b01aaf1f4e2b58bb6fce25ff662"
+    message: "🚧 ZEJ656 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "d03a5e786db57136bf7f6c4661b148bcf97cfaf1"
@@ -2351,3 +2487,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/9` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:cecf3c75b43c1d075f00a2efb1c3fb1bf2a02b28377957dc3dc6fa4492cb4ac4`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-09-13T17:44:47.925Z`
