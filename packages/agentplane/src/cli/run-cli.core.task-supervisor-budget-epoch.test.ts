@@ -144,9 +144,13 @@ async function authorize(opts: {
   fingerprint: string;
   journalDigest: string;
   by?: string;
+  disableTokenLimits?: boolean;
 }) {
   const io = captureStdIO();
   try {
+    const tokenArgs = opts.disableTokenLimits
+      ? ["--disable-token-limits"]
+      : ["--max-input-tokens", "1000", "--max-output-tokens", "500", "--max-total-tokens", "1500"];
     const code = await runCli([
       "task",
       "supervisor",
@@ -156,12 +160,7 @@ async function authorize(opts: {
       opts.journalDigest,
       "--state-fingerprint",
       opts.fingerprint,
-      "--max-input-tokens",
-      "1000",
-      "--max-output-tokens",
-      "500",
-      "--max-total-tokens",
-      "1500",
+      ...tokenArgs,
       "--by",
       opts.by ?? "USER",
       "--json",
@@ -257,5 +256,23 @@ describe("runCli task supervisor budget-epoch", { timeout: 60_000 }, () => {
     expect(validateSupervisorExecutionEpisodeJournal(await current.store.read()).digest).toBe(
       current.stopped.digest,
     );
+  });
+
+  it("disables unobservable token caps while retaining measurable limits", async () => {
+    const current = await fixture();
+    const result = await authorize({
+      root: current.root,
+      taskId: current.taskId,
+      fingerprint: current.fingerprint,
+      journalDigest: current.stopped.digest,
+      disableTokenLimits: true,
+    });
+
+    expect(result.code, result.stderr).toBe(0);
+    const persisted = validateSupervisorExecutionEpisodeJournal(await current.store.read());
+    expect(persisted.operations.at(-1)?.recovery?.context).toMatchObject({
+      budget: { max_input_tokens: null, max_output_tokens: null, max_total_tokens: null },
+    });
+    expect(persisted.budget).toMatchObject({ max_episodes: 20, max_agent_runs: 10 });
   });
 });

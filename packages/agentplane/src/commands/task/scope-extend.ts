@@ -2,6 +2,7 @@ import {
   computeLogicalCompletionContractDigest,
   EXECUTION_GRANT_EXTENSION_KEY,
   executionGrantForContextFromExtensions,
+  isExecutionGrantActive,
   rebaseExecutionGrantScope,
   taskCentricAggregateFromExtensions,
   type TaskRepositoryEffect,
@@ -61,6 +62,15 @@ function hasExactSchedulableWorkItemScopeDelta(opts: {
   )
     return false;
   return opts.scope_roots.some((root) => !workItem.scope_roots.includes(root));
+}
+
+function approvedWorkItemScopeRoots(task: TaskData, workItemId: string | null): string[] {
+  if (!workItemId) return [];
+  const plan = taskCentricAggregateFromExtensions(task.extensions)?.current_plan;
+  if (plan?.approval.state !== "approved" || plan.approval.approved_digest !== plan.digest)
+    return [];
+  const workItem = plan.proposal.work_items.work_items.find((item) => item.id === workItemId);
+  return uniqueSorted((workItem?.scope_roots ?? []).map((root) => normalizeTaskScopeRoot(root)));
 }
 
 export function extendBlockedTaskExecutionContract(opts: {
@@ -128,7 +138,15 @@ export function extendBlockedTaskExecutionContract(opts: {
       message: "Task execution scope extension must exactly match the pending structured request.",
     });
   }
-  const scopeRoots = uniqueSorted([...current.declaration.scope_roots, ...addedRoots]);
+  const inheritedApprovedRoots =
+    current.declaration.scope_roots.length === 0
+      ? approvedWorkItemScopeRoots(opts.task, pending.work_item_id)
+      : [];
+  const scopeRoots = uniqueSorted([
+    ...current.declaration.scope_roots,
+    ...inheritedApprovedRoots,
+    ...addedRoots,
+  ]);
   const repositoryEffects = uniqueSorted([
     ...current.declaration.repository_effects,
     ...opts.repository_effects,
@@ -161,6 +179,9 @@ export function extendBlockedTaskExecutionContract(opts: {
     repository_effects: repositoryEffects,
     rationale: uniqueSorted([
       ...current.declaration.rationale,
+      ...(inheritedApprovedRoots.length > 0
+        ? ["Migrated approved WorkItem scope for a legacy rootless execution contract."]
+        : []),
       `USER-approved blocked-result scope extension: ${extensionSummary}`,
     ]),
   };
@@ -188,6 +209,19 @@ export function taskWithRebasedExecutionGrant(opts: {
     execution_contract: opts.task.execution_contract,
   });
   if (!executionGrant) return opts.task;
+  if (
+    !isExecutionGrantActive({
+      grant: executionGrant,
+      task_id: opts.task.id,
+      plan: opts.task.sections?.Plan ?? "",
+      execution_contract: opts.task.execution_contract,
+      repository_identity: opts.repository_identity,
+    })
+  ) {
+    const extensions = { ...(opts.task.extensions ?? {}) };
+    delete extensions[EXECUTION_GRANT_EXTENSION_KEY];
+    return { ...opts.task, extensions };
+  }
   if (
     computeLogicalCompletionContractDigest(opts.task.execution_contract) !==
     computeLogicalCompletionContractDigest(opts.execution_contract)
