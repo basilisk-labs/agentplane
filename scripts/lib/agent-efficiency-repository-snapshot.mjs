@@ -216,7 +216,10 @@ function readCommitPath(repoRoot, commit, filePath) {
 function withoutTaskProjectionTimestamps(value) {
   if (value === null) return null;
   const timestampField = TASK_TIMESTAMP_FIELDS.join("|");
-  return value.replace(new RegExp(`^(\\s*(?:${timestampField}):\\s*).+$`, "gmu"), "$1<TIMESTAMP>");
+  return value.replaceAll(
+    new RegExp(`^(\\s*(?:${timestampField}):\\s*).+$`, "gmu"),
+    "$1<TIMESTAMP>",
+  );
 }
 
 function classifyMarginalCommit(repoRoot, sha) {

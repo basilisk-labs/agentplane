@@ -29,11 +29,11 @@ Source contract: agentplane-roadmap-r2 cards ST-14, ST-15, and ST-16. Measure ma
 ```text
  scripts/bench/paired-production-driver.mjs         | 607 +++++++++++++++++++++
  scripts/bench/paired-production-driver.test.mjs    | 289 ++++++++++
- scripts/bench/paired-result-report.mjs             | 428 +++++++++++++++
+ scripts/bench/paired-result-report.mjs             | 432 +++++++++++++++
  scripts/bench/paired-result-report.test.mjs        | 207 +++++++
  scripts/bench/task-marginal-cost.test.mjs          | 104 ++++
- .../lib/agent-efficiency-repository-snapshot.mjs   | 195 +++++++
- 6 files changed, 1830 insertions(+)
+ .../lib/agent-efficiency-repository-snapshot.mjs   | 198 +++++++
+ 6 files changed, 1837 insertions(+)
 ```
 
 </details>

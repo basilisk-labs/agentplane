@@ -105,7 +105,7 @@ function validateRawCost(value, label) {
 }
 
 function validateCommand(value, label) {
-  return exactStringArray(value, label).map((part) => String(part));
+  return exactStringArray(value, label).map(String);
 }
 
 function validateClaimPolicy(value) {
@@ -392,14 +392,14 @@ function validateAgentEvidence(value, run, constants) {
   if (!same(value.observed_identity, expectedIdentity)) {
     throw new Error(`Run ${run.id} observed identity does not match the fixed campaign identity.`);
   }
-  const rawCost = validateRawCost(value.raw_cost, `Run ${run.id}`);
+  const { raw_cost: rawCost, ...agent } = value;
+  validateRawCost(rawCost, `Run ${run.id}`);
   if (
     rawCost.basis_digest !== constants.raw_cost_basis_digest ||
     rawCost.currency !== constants.raw_cost_currency
   ) {
     throw new Error(`Run ${run.id} raw cost does not match the fixed campaign identity.`);
   }
-  const { raw_cost: _rawCost, ...agent } = value;
   return { agent, rawCost };
 }
 
@@ -525,7 +525,7 @@ export async function runPairedProductionCampaign(value, options = {}, dependenc
   }
   if (mode === "live") {
     if (typeof dependencies.assertLiveAuthority !== "function") {
-      throw new Error("Live paired campaigns require a trusted external authority check.");
+      throw new TypeError("Live paired campaigns require a trusted external authority check.");
     }
     await dependencies.assertLiveAuthority(manifest);
   }
