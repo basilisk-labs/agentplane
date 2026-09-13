@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202609132330-RP315R/repair-task-state-validation-for-immutable-quali",
+  "created_at": "2026-09-13T23:35:19.456Z",
+  "diffstat_sha256": "sha256:12c905f0991b4c219b99e71bae7800925b939b4d92325db005251a085b80c55e",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202609132330-RP315R",
+  "updated_at": "2026-09-13T23:35:19.456Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
