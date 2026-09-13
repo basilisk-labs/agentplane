@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 54
+revision: 57
 origin:
   system: "manual"
 depends_on:
@@ -26,36 +26,37 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-09-13T02:21:02.845Z"
+  updated_at: "2026-09-13T02:44:48.095Z"
   updated_by: "TESTER"
-  note: "Verified current HEAD 0bf6c6336: full local CI and focused telemetry regression tests passed."
+  note: "Verified current HEAD d233b5762: full local CI, Knip, typecheck, and focused telemetry regression tests passed."
   attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-13T02:24:49.031Z"
+  updated_at: "2026-09-13T02:45:45.450Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "0bf6c6336db55f3494d6cc05cbb261482a59da3b"
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  evaluated_sha: "d233b5762ac3b0430cdeb924b024cc70e3d613c6"
   blueprint_digest: "a0606595992db659882c934dc9224bb4e23891d77af067972ab0b021db13f8c1"
   evidence_refs:
-    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-022448773-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-022448773-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/a8ee2dd6830197de3a7449926b3014f49d695081074a5cf2294bd286d6f90be9.md"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-022448773-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-022448773-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-022448773-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-024545184-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-024545184-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/2a3221f0b720f8f75b8c167d5bed30377de3ca044179f441c38728169843c07c.md"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-024545184-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-024545184-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-024545184-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609121424-T83XJA/README.md"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/03e4d0deb5d600ca2d915d1462d553280d6152b484d5907d8ef28c8839a14371.patch"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/bb65078b7e5d1b5c076be4bd7205b2daf4c292e4a892917cb70c9ad094807e06.json"
-    - ".agentplane/tasks/202609121424-T83XJA/verification/20260913022102845-bc539048309e8b4b.json"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/b8601846ba48e21b9e4ce38621b684783f21bcbe010e544f300c506242269ff8.patch"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/2cd447419d5d2b4f6e7b98995717462b1c841357015bfb24872ede96c485c607.json"
+    - ".agentplane/tasks/202609121424-T83XJA/verification/20260913024448095-5fb0e10903a98369.json"
     - ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/8c7f73798b088adea69ca9b36d786e09a83742e28743c3425f571fbeb19021b1.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "No remaining code-quality blocker was found: unknown telemetry blocks further paid dispatch, managed recovery reads durable runner events, failed evaluator receipts recover their recorded charge, and affected fixtures now provide explicit accounting context."
+    - "The only delta after the prior verified head removes three unused export modifiers while retaining the same internal constants and types."
+    - "Full local CI, Knip exact budgets, typecheck, and 38 focused telemetry tests pass at d233b5762."
 token_usage:
   agent_runs: 20
   cached_input_observed_agent_runs: 1
@@ -71,7 +72,7 @@ token_usage:
   state: "partial"
   total_tokens: 711978
   unavailable_reason: "some_agent_runs_unallocatable"
-  updated_at: "2026-09-13T02:25:47.669Z"
+  updated_at: "2026-09-13T02:48:07.454Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -545,8 +546,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "0bf6c6336db55f3494d6cc05cbb261482a59da3b"
-  message: "🧪 T83XJA quality: align telemetry fixtures"
+  hash: "d233b5762ac3b0430cdeb924b024cc70e3d613c6"
+  message: "🧹 T83XJA quality: keep accounting constants internal"
 comments:
   -
     author: "CODER"
@@ -599,6 +600,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: current HEAD d233b5762 passed full local CI, focused telemetry tests, Knip, typecheck, and independent quality review; the pre-merge closure packet is ready for hosted verification."
 events:
   -
     type: "status"
@@ -760,8 +764,22 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "0bf6c6336db55f3494d6cc05cbb261482a59da3b"
+  -
+    type: "verify"
+    at: "2026-09-13T02:44:48.095Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified current HEAD d233b5762: full local CI, Knip, typecheck, and focused telemetry regression tests passed."
+  -
+    type: "status"
+    at: "2026-09-13T02:48:07.454Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: current HEAD d233b5762 passed full local CI, focused telemetry tests, Knip, typecheck, and independent quality review; the pre-merge closure packet is ready for hosted verification."
+    commit: "d233b5762ac3b0430cdeb924b024cc70e3d613c6"
 doc_version: 3
-doc_updated_at: "2026-09-13T02:25:47.682Z"
+doc_updated_at: "2026-09-13T02:48:07.468Z"
 doc_updated_by: "CODER"
 description: "Source contract: agentplane-roadmap-r2 cards ST-08, ST-09, ST-10, ST-11, ST-12, ST-13, and ST-17. Capture Codex usage durably before semantic-result validation, preserve evaluator charges on failure, connect managed observations to the existing journal, account for external episodes without trusting self-reported tokens, roll up task cost from source observations, partition lifecycle latency without double counting, and separate missing telemetry from semantic quality and further-spend admission. Missing usage is unknown, never zero. A valid saved verdict is reused, while unknown budget blocks additional paid dispatch. Preserve I01-I12 and C01-C08. Do not create a second accounting store or trust model-supplied usage. The roadmap directory is source-only and must never be committed. Required checks: the focused ST-08 through ST-13 and ST-17 test commands, related runner/evaluator/task critical suites, typecheck, schema/mirror checks."
 sections:
@@ -2181,6 +2199,66 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-09-13T02:44:48.095Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified current HEAD d233b5762: full local CI, Knip, typecheck, and focused telemetry regression tests passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:47b7def428d877601b2b150f350d4b26cdcd9ee2f6b9e7aee315eb10145204de, input_digest=sha256:290abb3636f017aed829eb801359c51c5c04788ffcef0f133bc17fad0fe51a88
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun x vitest run packages/agentplane/src/commands/task/external-agent-report-result.test.ts packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts packages/agentplane/src/commands/evaluator/roadmap-telemetry-disposition.test.ts packages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts packages/agentplane/src/commands/task/roadmap-external-accounting.test.ts packages/agentplane/src/commands/task/roadmap-stage-timing.test.ts packages/agentplane/src/runner/adapters/roadmap-usage-durability.test.ts
+    Result: pass
+    Evidence: 8 test files passed; 38 tests passed.
+    Scope: Host-observed usage, evaluator failure/reuse, managed and external accounting, and lifecycle timing.
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: full-fast ok=true; build, runtime, core, CLI, Windows platform-critical, and coverage groups passed.
+    Scope: Critical authority, recovery, evaluator, runner, task, and platform behavior.
+
+    Check: docs_contract
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: docs-schema, docs site, workflow lint, schema sync, generated references, and design checks passed.
+    Scope: Documentation, schemas, workflows, and generated artifacts.
+
+    Check: full_regression
+    Command: bun run ci:local:full && bun run knip:check && bun run typecheck
+    Result: pass
+    Evidence: Full local CI passed; Knip exact budgets passed for agentplane 0/0 and core 21/21; typecheck passed.
+    Scope: Full repository regression and unused export contract at HEAD d233b5762.
+
+    Check: task_outcome
+    Command: git status --short --untracked-files=all
+    Result: pass
+    Evidence: Empty output before verification; committed implementation HEAD was d233b5762.
+    Scope: Approved task worktree was clean and contained only intended changes.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-T83XJA-implement-durable-0-7-9-usage-cost-and-latency-a/.agentplane/tasks/202609121424-T83XJA/blueprint/resolved-snapshot.json
+    - old_digest: a0606595992db659882c934dc9224bb4e23891d77af067972ab0b021db13f8c1
+    - current_digest: a0606595992db659882c934dc9224bb4e23891d77af067972ab0b021db13f8c1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609121424-T83XJA
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -2975,7 +3053,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609121424-T83XJA"
-    event_cursor: 41
+    event_cursor: 44
     final_validation:
       evidence:
         -
@@ -3874,9 +3952,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121424-T83XJA"
-    revision: 54
+    revision: 57
     schema_version: 1
-    updated_at: "2026-09-13T02:25:47.669Z"
+    updated_at: "2026-09-13T02:48:07.454Z"
     work_items:
       ST-08:
         attempt: 1
@@ -4342,6 +4420,30 @@ extensions:
         work_item_id: "ST-13"
     leases: []
     mutation_receipts:
+      compatibility:sha256:08b76e8c6951c07ee4b1ef9a5dd75aefc343009561d204ed03bdb56b0416a383:
+        aggregate_digest: "sha256:3eec8fc871271762e6990d886992d63048c071442309e7d778d9420e6a14ae63"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T02:44:52.027Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_68f2b5f2d64bd41a53fd589b"
+          mutation_id: "compatibility:sha256:08b76e8c6951c07ee4b1ef9a5dd75aefc343009561d204ed03bdb56b0416a383"
+          plan_digest: "sha256:47ee22d77ca7385f412a8a1da0d53ac32e469d13030f22fdc8fc03c8804e40a4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-T83XJA"
+          task_revision: 54
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:08b76e8c6951c07ee4b1ef9a5dd75aefc343009561d204ed03bdb56b0416a383"
+        next_revision: 55
+        previous_revision: 54
+        schema_version: 1
+        task_id: "202609121424-T83XJA"
       compatibility:sha256:0cfa5707f6ab3eb1a9a83611e8fc7183b3ee3bf0ac4374abd6f2c051454339e9:
         aggregate_digest: "sha256:b0393870720e4b6ab8562e84296186d770fac4aa649ab6aec21858e306292d25"
         event:
@@ -5204,6 +5306,54 @@ extensions:
         mutation_id: "compatibility:sha256:d95a0c8561aac0771109e94bdef0a3bf4d233b6e7e1487e601764fea14a9cf7c"
         next_revision: 36
         previous_revision: 35
+        schema_version: 1
+        task_id: "202609121424-T83XJA"
+      compatibility:sha256:d9c1d53e77ef82da3e7d9745c8760412c853110daeff619c4d6fe159fcadee43:
+        aggregate_digest: "sha256:3be5c48f3ba33998077b982a8b63d9d8ffdf489346097d4737bc36186d7c45cb"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T02:48:07.454Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_acf1d4f5fa7f7c75482aa19f"
+          mutation_id: "compatibility:sha256:d9c1d53e77ef82da3e7d9745c8760412c853110daeff619c4d6fe159fcadee43"
+          plan_digest: "sha256:47ee22d77ca7385f412a8a1da0d53ac32e469d13030f22fdc8fc03c8804e40a4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-T83XJA"
+          task_revision: 56
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:d9c1d53e77ef82da3e7d9745c8760412c853110daeff619c4d6fe159fcadee43"
+        next_revision: 57
+        previous_revision: 56
+        schema_version: 1
+        task_id: "202609121424-T83XJA"
+      compatibility:sha256:e0dde64af06284fb43feab8305b4a9445ae4597ae046d21752824527beb53080:
+        aggregate_digest: "sha256:a69ab87f71dae922042d46afce63c2cf7be516574c3e12b29cd000d0ea735933"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T02:44:52.034Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_5e0a94cb03b5ee0517faa8cf"
+          mutation_id: "compatibility:sha256:e0dde64af06284fb43feab8305b4a9445ae4597ae046d21752824527beb53080"
+          plan_digest: "sha256:47ee22d77ca7385f412a8a1da0d53ac32e469d13030f22fdc8fc03c8804e40a4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-T83XJA"
+          task_revision: 55
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:e0dde64af06284fb43feab8305b4a9445ae4597ae046d21752824527beb53080"
+        next_revision: 56
+        previous_revision: 55
         schema_version: 1
         task_id: "202609121424-T83XJA"
       compatibility:sha256:e196c30f7bab790e78d61ebdd034b07dd2ab43f53bf287976fd41e5bb70cb24a:
@@ -7000,6 +7150,66 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-09-13T02:44:48.095Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified current HEAD d233b5762: full local CI, Knip, typecheck, and focused telemetry regression tests passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:47b7def428d877601b2b150f350d4b26cdcd9ee2f6b9e7aee315eb10145204de, input_digest=sha256:290abb3636f017aed829eb801359c51c5c04788ffcef0f133bc17fad0fe51a88
+
+Details:
+
+Check: affected_unit_integration
+Command: bun x vitest run packages/agentplane/src/commands/task/external-agent-report-result.test.ts packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts packages/agentplane/src/commands/evaluator/roadmap-telemetry-disposition.test.ts packages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts packages/agentplane/src/commands/task/roadmap-external-accounting.test.ts packages/agentplane/src/commands/task/roadmap-stage-timing.test.ts packages/agentplane/src/runner/adapters/roadmap-usage-durability.test.ts
+Result: pass
+Evidence: 8 test files passed; 38 tests passed.
+Scope: Host-observed usage, evaluator failure/reuse, managed and external accounting, and lifecycle timing.
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: full-fast ok=true; build, runtime, core, CLI, Windows platform-critical, and coverage groups passed.
+Scope: Critical authority, recovery, evaluator, runner, task, and platform behavior.
+
+Check: docs_contract
+Command: bun run ci:local:full
+Result: pass
+Evidence: docs-schema, docs site, workflow lint, schema sync, generated references, and design checks passed.
+Scope: Documentation, schemas, workflows, and generated artifacts.
+
+Check: full_regression
+Command: bun run ci:local:full && bun run knip:check && bun run typecheck
+Result: pass
+Evidence: Full local CI passed; Knip exact budgets passed for agentplane 0/0 and core 21/21; typecheck passed.
+Scope: Full repository regression and unused export contract at HEAD d233b5762.
+
+Check: task_outcome
+Command: git status --short --untracked-files=all
+Result: pass
+Evidence: Empty output before verification; committed implementation HEAD was d233b5762.
+Scope: Approved task worktree was clean and contained only intended changes.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-T83XJA-implement-durable-0-7-9-usage-cost-and-latency-a/.agentplane/tasks/202609121424-T83XJA/blueprint/resolved-snapshot.json
+- old_digest: a0606595992db659882c934dc9224bb4e23891d77af067972ab0b021db13f8c1
+- current_digest: a0606595992db659882c934dc9224bb4e23891d77af067972ab0b021db13f8c1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609121424-T83XJA
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -7020,4 +7230,4 @@ DecisionContextRef:
 - Provenance: `supervisor_journal/agentplane`
 - Journal digest: `sha256:3f5744e524c4e1e532ae181d5f97c40cd00d4dba96a2c639c220caed216776a1`
 - Unavailable reason: `some_agent_runs_unallocatable`
-- Updated at: `2026-09-13T02:25:47.669Z`
+- Updated at: `2026-09-13T02:48:07.454Z`

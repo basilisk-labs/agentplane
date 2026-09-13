@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202609121424-T83XJA",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-13T02:45:45.450Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "d233b5762ac3b0430cdeb924b024cc70e3d613c6",
+  "blueprint_digest": "a0606595992db659882c934dc9224bb4e23891d77af067972ab0b021db13f8c1",
+  "findings": [
+    "The only delta after the prior verified head removes three unused export modifiers while retaining the same internal constants and types.",
+    "Full local CI, Knip exact budgets, typecheck, and 38 focused telemetry tests pass at d233b5762."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/b8601846ba48e21b9e4ce38621b684783f21bcbe010e544f300c506242269ff8.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

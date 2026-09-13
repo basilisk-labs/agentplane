@@ -16,7 +16,7 @@ Source contract: agentplane-roadmap-r2 cards ST-08, ST-09, ST-10, ST-11, ST-12, 
 ## Verification
 
 - State: ok
-- Note: Verified current HEAD 0bf6c6336: full local CI and focused telemetry regression tests passed.
+- Note: Verified current HEAD d233b5762: full local CI, Knip, typecheck, and focused telemetry regression tests passed.
 - Canonical workflow state lives in the task README.
 
 <details>

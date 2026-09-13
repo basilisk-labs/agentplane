@@ -13,7 +13,7 @@ Created: 2026-09-12T20:52:29.086Z
 ## Verification
 
 - State: ok
-- Note: Verified current HEAD 0bf6c6336: full local CI and focused telemetry regression tests passed.
+- Note: Verified current HEAD d233b5762: full local CI, Knip, typecheck, and focused telemetry regression tests passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
