@@ -4,7 +4,7 @@ title: "Add an explicit USER-approved supervisor budget epoch for unknown token 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -29,9 +29,9 @@ plan_approval:
   note: "User explicitly authorized the bounded budget-epoch repair in this conversation."
 verification:
   state: "pending"
-  updated_at: "2026-09-13T10:15:05.865Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
+  updated_at: null
+  updated_by: null
+  note: null
   attempts: 0
 execution_route:
   frozen: true
@@ -246,9 +246,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "acdefe5e2777725e94470b2842688e1c8f825cf0"
-  message: "🚧 RMHWQ5 task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -820,22 +818,152 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 14
+    revision: 15
     schema_version: 1
-    updated_at: "2026-09-13T10:41:26.463Z"
+    updated_at: "2026-09-13T10:41:30.378Z"
     work_items:
       budget-epoch-repair:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "budget-epoch-repair"
-        last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        last_failure:
+          cause_refs:
+            - "c-authorized-epoch"
+            - "c-preserve-unknown"
+            - "c-fail-closed"
+            - "c-release-safe"
+          code: "validation_failed"
+          kind: "validation"
+          message: "Implemented durable USER-authorized supervisor token budget epochs, including an explicit token-limit disable mode for transports without attributable telemetry, and repaired the legacy scope-extension recovery path required to complete this task."
+          retryable: true
+        output_manifests:
+          -
+            digest: "sha256:fdf0cf13c282828b6f7d642970c188d5856ae0beafb0f19a6b9051c772ab068e"
+            id: "Durable budget epoch state that preserves lifetime unknown usage"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609130858-RMHWQ5"
+              work_item_id: "budget-epoch-repair"
+            provenance:
+              - "sha256:0e2cbdbf92568408e95716cf7b9d4e26524550b4c3a3e9305d587077ef4b3ea5"
+              - ".agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:d6c46297dcb41de6c8203f2fb43fd0ff585ceb0b90e63947fa141ac54a170f1f"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:acdf60d2ff6c80b7b4d67e0b25a1b02b360bfa3dd0b65b5f047f379767f5b9a7"
+            id: "State-bound USER-only operator authorization path"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609130858-RMHWQ5"
+              work_item_id: "budget-epoch-repair"
+            provenance:
+              - "sha256:0e2cbdbf92568408e95716cf7b9d4e26524550b4c3a3e9305d587077ef4b3ea5"
+              - ".agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:d6c46297dcb41de6c8203f2fb43fd0ff585ceb0b90e63947fa141ac54a170f1f"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:996ea2c07c0a1d9906fddb5c52859b55fd3446ed3e0a4b4634671f60277f3dc7"
+            id: "Focused core and CLI regression coverage"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609130858-RMHWQ5"
+              work_item_id: "budget-epoch-repair"
+            provenance:
+              - "sha256:0e2cbdbf92568408e95716cf7b9d4e26524550b4c3a3e9305d587077ef4b3ea5"
+              - ".agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:d6c46297dcb41de6c8203f2fb43fd0ff585ceb0b90e63947fa141ac54a170f1f"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "REWORK_READY"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json"
+              check_id: "focused-core"
+              command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts"
+              detail: "Declared check failed: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts"
+              exit_code: 0
+              observed_at: "2026-09-13T10:41:30.372Z"
+              repository_snapshot_digest: "sha256:d6c46297dcb41de6c8203f2fb43fd0ff585ceb0b90e63947fa141ac54a170f1f"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json"
+              check_id: "focused-cli"
+              command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts"
+              detail: "Declared check failed: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts"
+              exit_code: 1
+              observed_at: "2026-09-13T10:41:30.372Z"
+              repository_snapshot_digest: "sha256:d6c46297dcb41de6c8203f2fb43fd0ff585ceb0b90e63947fa141ac54a170f1f"
+              status: "failed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json"
+              check_id: "typecheck"
+              command_identity: "bun run typecheck"
+              detail: "Declared validation command bun run typecheck was not observed by AgentPlane."
+              exit_code: null
+              observed_at: "2026-09-13T10:41:30.372Z"
+              repository_snapshot_digest: "sha256:d6c46297dcb41de6c8203f2fb43fd0ff585ceb0b90e63947fa141ac54a170f1f"
+              status: "unsupported"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json"
+              check_id: "critical"
+              command_identity: "bun run test:critical"
+              detail: "Declared validation command bun run test:critical was not observed by AgentPlane."
+              exit_code: null
+              observed_at: "2026-09-13T10:41:30.372Z"
+              repository_snapshot_digest: "sha256:d6c46297dcb41de6c8203f2fb43fd0ff585ceb0b90e63947fa141ac54a170f1f"
+              status: "unsupported"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json"
+              check_id: "full-ci"
+              command_identity: "bun run ci:local:full"
+              detail: "Declared validation command bun run ci:local:full was not observed by AgentPlane."
+              exit_code: null
+              observed_at: "2026-09-13T10:41:30.372Z"
+              repository_snapshot_digest: "sha256:d6c46297dcb41de6c8203f2fb43fd0ff585ceb0b90e63947fa141ac54a170f1f"
+              status: "unsupported"
+          schema_version: 1
+          stale_evidence: []
+          status: "blocked"
+          unsatisfied_criteria:
+            - "c-authorized-epoch"
+            - "c-preserve-unknown"
+            - "c-fail-closed"
+            - "c-release-safe"
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-13T10:41:30.378Z"
+        from: "READY"
+        to: "REWORK_READY"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:508e8b57cc11161aa5ffd03d1bfdf3c3a03d32d04ec0a56a80e03c4b244623a0"
+        entity: "work_item"
+        id: "event_eb8bdbf7579f5dd6295a7bb5"
+        mutation_id: "external-result:work-order-202609130858-RMHWQ5-executor-f76ce492284cb11a93eaf99f"
+        plan_digest: "sha256:3b2ab083f74f5f1d1ff6d3c474e99753a1139bdcb65f1105aa2d8b8c816083b8"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609130858-RMHWQ5"
+        task_revision: 14
+        work_item_id: "budget-epoch-repair"
     leases: []
     mutation_receipts:
       compatibility:sha256:19680a2c852d6c81dcbebebb67931ba2e11d8395df79a615903d0b5bfb1489b0:
@@ -1124,6 +1252,30 @@ extensions:
         mutation_id: "compatibility:sha256:df27a90fa9d5ca0ede6b9192ab51667faf57cfdebaed1fe5d92977f382af54de"
         next_revision: 13
         previous_revision: 12
+        schema_version: 1
+        task_id: "202609130858-RMHWQ5"
+      external-result:work-order-202609130858-RMHWQ5-executor-f76ce492284cb11a93eaf99f:
+        aggregate_digest: "sha256:2b3394817d5c31d51bebd12ffc8b47ef0d2d91ae1ffd640abbc966285f446240"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T10:41:30.378Z"
+          cause_refs:
+            - "semantic-result:sha256:508e8b57cc11161aa5ffd03d1bfdf3c3a03d32d04ec0a56a80e03c4b244623a0"
+          entity: "work_item"
+          from: "READY"
+          id: "event_eb8bdbf7579f5dd6295a7bb5"
+          mutation_id: "external-result:work-order-202609130858-RMHWQ5-executor-f76ce492284cb11a93eaf99f"
+          plan_digest: "sha256:3b2ab083f74f5f1d1ff6d3c474e99753a1139bdcb65f1105aa2d8b8c816083b8"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609130858-RMHWQ5"
+          task_revision: 14
+          to: "REWORK_READY"
+          work_item_id: "budget-epoch-repair"
+        mutation_id: "external-result:work-order-202609130858-RMHWQ5-executor-f76ce492284cb11a93eaf99f"
+        next_revision: 15
+        previous_revision: 14
         schema_version: 1
         task_id: "202609130858-RMHWQ5"
     pending_effects: []
