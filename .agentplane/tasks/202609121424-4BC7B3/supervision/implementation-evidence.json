@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check c37d4da284813bc9c2cfd09defa6629e9df4b0c3..0b8e70ef0ebce357a71eded9628f4264d5dd1b4d",
+      "command": "git diff --check ad57d58af002174e7855046b5df1e80bc7c75e50..9777074e0a925b369988eae8b309c729166b04e5",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,17 +13,18 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB c37d4da284813bc9c2cfd09defa6629e9df4b0c3..0b8e70ef0ebce357a71eded9628f4264d5dd1b4d",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB ad57d58af002174e7855046b5df1e80bc7c75e50..9777074e0a925b369988eae8b309c729166b04e5",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "M\t.agentplane/tasks/202609121424-4BC7B3/README.md",
         "M\t.agentplane/tasks/202609121424-4BC7B3/pr/diffstat.txt",
         "M\t.agentplane/tasks/202609121424-4BC7B3/pr/github-body.md",
         "M\t.agentplane/tasks/202609121424-4BC7B3/pr/meta.json",
         "M\t.agentplane/tasks/202609121424-4BC7B3/pr/review.md",
-        "M\t.agentplane/tasks/202609121424-4BC7B3/supervision/implementation-evidence.json",
-        "M\tscripts/baselines/m01-0.7.9-token-pilot-v2/disposition.json"
+        "M\tdocs/developer/blueprints.mdx",
+        "M\tdocs/internal/v0.7-agent-efficiency-baseline.md",
+        "M\tdocs/user/workflow.mdx",
+        "M\tscripts/baselines/v0.7.9-stabilization-candidate.json"
       ]
     },
     {
@@ -33,30 +34,15 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "c37d4da284813bc9c2cfd09defa6629e9df4b0c3",
-  "implementation_commit": "0b8e70ef0ebce357a71eded9628f4264d5dd1b4d",
+  "execution_base_commit": "ad57d58af002174e7855046b5df1e80bc7c75e50",
+  "implementation_commit": "9777074e0a925b369988eae8b309c729166b04e5",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [
-      " M .agentplane/tasks/202609121424-4BC7B3/README.md",
-      " M .agentplane/tasks/202609121424-4BC7B3/supervision/implementation-evidence.json"
-    ],
-    "classification": [
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202609121424-4BC7B3/README.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202609121424-4BC7B3/supervision/implementation-evidence.json"
-      }
-    ],
+    "baseline": [],
+    "classification": [],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [
-      " M .agentplane/tasks/202609121424-4BC7B3/README.md",
-      " M .agentplane/tasks/202609121424-4BC7B3/supervision/implementation-evidence.json"
-    ],
+    "removed_after_execution_baseline": [],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,

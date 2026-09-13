@@ -4,7 +4,7 @@ title: "Qualify and document the 0.7.9 stabilization candidate for ST-18 through
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 29
+revision: 31
 origin:
   system: "manual"
 depends_on:
@@ -141,8 +141,11 @@ execution_contract:
       - "docs"
       - "scripts"
     changed_paths:
+      - "docs/developer/blueprints.mdx"
+      - "docs/internal/v0.7-agent-efficiency-baseline.md"
       - "docs/user/commands.mdx"
       - "docs/user/task-lifecycle.mdx"
+      - "docs/user/workflow.mdx"
       - "scripts/baselines/m01-0.7.9-token-pilot-v1/authority.json"
       - "scripts/baselines/m01-0.7.9-token-pilot-v1/campaign.lock.json"
       - "scripts/baselines/m01-0.7.9-token-pilot-v1/evidence.json"
@@ -163,6 +166,7 @@ execution_contract:
       - "scripts/baselines/m01-0.7.9-token-pilot-v2/product-previous_release.json"
       - "scripts/baselines/m01-0.7.9-token-pilot-v2/report.json"
       - "scripts/baselines/m01-0.7.9-token-pilot-v2/target.bundle"
+      - "scripts/baselines/v0.7.9-stabilization-candidate.json"
       - "scripts/bench/paired-live-codex-launcher.mjs"
       - "scripts/bench/paired-live-codex-launcher.test.mjs"
       - "scripts/bench/paired-m01-materialize.mjs"
@@ -245,7 +249,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:bab2623c9d169a51abe6bb5dfdbf80d9942956e9139f2130c98c1aa22b4371c2"
+      digest: "sha256:c09f692f7aa7072d7fda175fd506d8878479200d5765bda954bf749172ea094f"
       escalation_reasons:
         - "central_component:package.json"
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts"
@@ -273,6 +277,7 @@ execution_contract:
         - "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v2/product-previous_release.json"
         - "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v2/report.json"
         - "unknown_path:scripts/baselines/m01-0.7.9-token-pilot-v2/target.bundle"
+        - "unknown_path:scripts/baselines/v0.7.9-stabilization-candidate.json"
       execution_groups:
         - "docs-schema"
         - "core"
@@ -283,8 +288,11 @@ execution_contract:
           - "docs"
           - "scripts"
         changed_files:
+          - "docs/developer/blueprints.mdx"
+          - "docs/internal/v0.7-agent-efficiency-baseline.md"
           - "docs/user/commands.mdx"
           - "docs/user/task-lifecycle.mdx"
+          - "docs/user/workflow.mdx"
           - "scripts/baselines/m01-0.7.9-token-pilot-v1/authority.json"
           - "scripts/baselines/m01-0.7.9-token-pilot-v1/campaign.lock.json"
           - "scripts/baselines/m01-0.7.9-token-pilot-v1/evidence.json"
@@ -305,6 +313,7 @@ execution_contract:
           - "scripts/baselines/m01-0.7.9-token-pilot-v2/product-previous_release.json"
           - "scripts/baselines/m01-0.7.9-token-pilot-v2/report.json"
           - "scripts/baselines/m01-0.7.9-token-pilot-v2/target.bundle"
+          - "scripts/baselines/v0.7.9-stabilization-candidate.json"
           - "scripts/bench/paired-live-codex-launcher.mjs"
           - "scripts/bench/paired-live-codex-launcher.test.mjs"
           - "scripts/bench/paired-m01-materialize.mjs"
@@ -360,7 +369,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "9777074e0a925b369988eae8b309c729166b04e5"
+  message: "🚧 4BC7B3 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -398,6 +409,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 0b8e70ef0ebc. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 9777074e0a92. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -480,8 +494,16 @@ events:
     to: "DOING"
     note: "Implementation committed: 0b8e70ef0ebc. CLI accepted one state-bound external-agent semantic result."
     commit: "0b8e70ef0ebce357a71eded9628f4264d5dd1b4d"
+  -
+    type: "status"
+    at: "2026-09-13T21:45:48.028Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 9777074e0a92. CLI accepted one state-bound external-agent semantic result."
+    commit: "9777074e0a925b369988eae8b309c729166b04e5"
 doc_version: 3
-doc_updated_at: "2026-09-13T21:36:59.100Z"
+doc_updated_at: "2026-09-13T21:45:48.028Z"
 doc_updated_by: "SUPERVISOR"
 description: "Source contract: agentplane-roadmap-r2 cards ST-18, ST-19, and ST-20. Build the exact clean installed candidate and run the frozen direct, branch, recovery, old-record, required PLANNER, and required EVALUATOR corpus. Then, under the user-approved spend and sandbox authority, execute the preregistered M01 paired pilot with complete all-attempt raw evidence and expand only by its fixed uncertainty rule; report NOT ESTABLISHED when coverage is insufficient. Record exact product and target SHAs separately. Finally document only observed 0.7.9 behavior and measurements and the 0.7.10 through 0.7.14 boundary. Do not weaken golden outcomes, disable Blueprint writers, omit required stages, rerun until green, or claim unsupported efficiency. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: package tarball check, local install smoke, release critical suite, benchmark check and replay check, documentation bootstrap and onboarding checks, plus exact evidence review."
 sections:
@@ -1102,7 +1124,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609121424-4BC7B3"
-    event_cursor: 22
+    event_cursor: 24
     final_validation: null
     id: "202609121424-4BC7B3"
     intent:
@@ -2267,9 +2289,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609121424-4BC7B3"
-    revision: 29
+    revision: 31
     schema_version: 1
-    updated_at: "2026-09-13T21:37:05.014Z"
+    updated_at: "2026-09-13T21:45:48.028Z"
     work_items:
       align-token-measurement-contract:
         attempt: 1
@@ -2676,6 +2698,30 @@ extensions:
         previous_revision: 3
         schema_version: 1
         task_id: "202609121424-4BC7B3"
+      compatibility:sha256:25bb7652ee3761858c486c3994667226450b2411ef9f58be7459107cd91b2bc3:
+        aggregate_digest: "sha256:fe5ccb832e0bfb495083aaf1a9ab05fac2eff11d2c0728acab93d49c6492441c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T21:45:48.028Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_f11a6072189b922048f70c12"
+          mutation_id: "compatibility:sha256:25bb7652ee3761858c486c3994667226450b2411ef9f58be7459107cd91b2bc3"
+          plan_digest: "sha256:8a1ce7a2f7c1bd5543bab4cf019887053321288654bc3dbf4761cc511f44fd52"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-4BC7B3"
+          task_revision: 29
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:25bb7652ee3761858c486c3994667226450b2411ef9f58be7459107cd91b2bc3"
+        next_revision: 30
+        previous_revision: 29
+        schema_version: 1
+        task_id: "202609121424-4BC7B3"
       compatibility:sha256:28f59ba66aab4504c0a75b088f7c2e9aef9a27e81d1895090be8c0d07d36930c:
         aggregate_digest: "sha256:eaac87cbcf350a40e8e610636686b66c2a49afede34ee5e7c6eb289999354391"
         event:
@@ -2914,6 +2960,30 @@ extensions:
         mutation_id: "compatibility:sha256:8413aa3500735aa998fdd8c5168bc1d7163ede37c202ddd343dbfb7ad98ede81"
         next_revision: 6
         previous_revision: 5
+        schema_version: 1
+        task_id: "202609121424-4BC7B3"
+      compatibility:sha256:9b3fa7242b1fc67128e7a361703c14295310c9d45ce4cb93bc7f340c67470faf:
+        aggregate_digest: "sha256:98f05bcf7ad7f7f3632f25f5cc3e1fb036fb7844da0725f87a96637da7d6d776"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T21:45:48.028Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_1696ad38b08438ed767782c3"
+          mutation_id: "compatibility:sha256:9b3fa7242b1fc67128e7a361703c14295310c9d45ce4cb93bc7f340c67470faf"
+          plan_digest: "sha256:8a1ce7a2f7c1bd5543bab4cf019887053321288654bc3dbf4761cc511f44fd52"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-4BC7B3"
+          task_revision: 30
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:9b3fa7242b1fc67128e7a361703c14295310c9d45ce4cb93bc7f340c67470faf"
+        next_revision: 31
+        previous_revision: 30
         schema_version: 1
         task_id: "202609121424-4BC7B3"
       compatibility:sha256:9d2cf6ca4181886cf111370c3fd170a50bc384e1b1dd1b2143e25364b0e96a5c:
@@ -3208,7 +3278,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "0b8e70ef0ebce357a71eded9628f4264d5dd1b4d"
+    hash: "9777074e0a925b369988eae8b309c729166b04e5"
   task_execution_context:
     base_ref: "main"
     base_sha: "58dbda0d5f88c8a83802c5aee3a9380d001dd4b2"
