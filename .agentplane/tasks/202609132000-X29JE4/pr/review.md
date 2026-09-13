@@ -55,9 +55,11 @@ Created: 2026-09-13T20:08:45.624Z
  .../runner/supervisor-execution-episode.test.ts    | 259 ++++++++---
  .../src/runner/supervisor-execution-episode.ts     | 478 +++++----------------
  packages/core/src/schemas/index.ts                 |   7 +-
+ .../baselines/v0.7-compatibility-candidate.json    | 180 +-------
  scripts/bench/paired-production-driver.mjs         |  15 -
  scripts/bench/paired-production-driver.test.mjs    |   8 +-
- 28 files changed, 622 insertions(+), 1579 deletions(-)
+ .../check-compatibility-contract-baseline.mjs      | 120 ------
+ 30 files changed, 632 insertions(+), 1869 deletions(-)
 ```
 
 </details>
