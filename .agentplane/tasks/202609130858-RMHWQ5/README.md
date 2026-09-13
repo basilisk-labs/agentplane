@@ -2,10 +2,10 @@
 id: "202609130858-RMHWQ5"
 title: "Add an explicit USER-approved supervisor budget epoch for unknown token telemetry"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 29
+revision: 31
 origin:
   system: "manual"
 depends_on: []
@@ -328,6 +328,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: scripts/baselines/v0.7-compatibility-candidate.json; repository effects: unchanged."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. Regenerating the reviewed candidate exposes a second fail-closed boundary: the validator does not yet recognize the new CLI command and provenance. Recommended action: Authorize scripts/checks/check-compatibility-contract-baseline.mjs, add the exact new command and option provenance for task 202609130858-RMHWQ5, regenerate the candidate, and rerun both compatibility checks. Requested scope: roots=scripts/checks/check-compatibility-contract-baseline.mjs; repository effects=unchanged; request digest=sha256:2e3752be9ac1d134dbe9e9e9a28bd4830c7223457d6c6ccb78eb4871263945d4. Agentplane receipt: external-agent-blocker/tr_da117c5ec9fd5f725882b08132264375/sha256:182504389fec874c3e4a899020a0bc6c2a46608655d1ad79b1e8821c3896b10e/sha256:2e3752be9ac1d134dbe9e9e9a28bd4830c7223457d6c6ccb78eb4871263945d4."
 events:
   -
     type: "status"
@@ -396,8 +399,15 @@ events:
     from: "DONE"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. Hosted verify-contract fails because the reviewed compatibility candidate is stale after the approved CLI and schema surface changes. Recommended action: Authorize the exact compatibility candidate path, regenerate it with bun run bench:compatibility:candidate:capture -- --package-source-task 202609130858-RMHWQ5, and rerun the compatibility checks. Requested scope: roots=scripts/baselines/v0.7-compatibility-candidate.json; repository effects=unchanged; request digest=sha256:813118b0f1b3d425c3b235e7978641a8ee9a69e927779b6e8711384d4db15a18. Agentplane receipt: external-agent-blocker/tr_9829077f1717844e7f0ab2db59dd39d7/sha256:c7c71650d7b035241b69c105debc2b9de237e74dc51175c03bdfbc798795e90f/sha256:813118b0f1b3d425c3b235e7978641a8ee9a69e927779b6e8711384d4db15a18."
+  -
+    type: "status"
+    at: "2026-09-13T14:46:14.067Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. Regenerating the reviewed candidate exposes a second fail-closed boundary: the validator does not yet recognize the new CLI command and provenance. Recommended action: Authorize scripts/checks/check-compatibility-contract-baseline.mjs, add the exact new command and option provenance for task 202609130858-RMHWQ5, regenerate the candidate, and rerun both compatibility checks. Requested scope: roots=scripts/checks/check-compatibility-contract-baseline.mjs; repository effects=unchanged; request digest=sha256:2e3752be9ac1d134dbe9e9e9a28bd4830c7223457d6c6ccb78eb4871263945d4. Agentplane receipt: external-agent-blocker/tr_da117c5ec9fd5f725882b08132264375/sha256:182504389fec874c3e4a899020a0bc6c2a46608655d1ad79b1e8821c3896b10e/sha256:2e3752be9ac1d134dbe9e9e9a28bd4830c7223457d6c6ccb78eb4871263945d4."
 doc_version: 3
-doc_updated_at: "2026-09-13T14:39:53.062Z"
+doc_updated_at: "2026-09-13T14:46:14.079Z"
 doc_updated_by: "SUPERVISOR"
 description: "When a supervisor episode stops because prior paid work has unavailable or unallocatable provider token telemetry, preserve that historical usage as unknown and continue to block automatic paid dispatch. Add a narrow operator command that accepts an explicit USER authorization, records durable state-bound provenance, and opens a new independently capped token budget epoch without rewriting prior operations or treating unknown usage as zero. Reject stale authorization, non-telemetry stops, missing active USER authority, replay with different parameters, and caps that are absent or invalid. The repaired ST-14 task must be able to resume through this command. Do not weaken actual human_review verdicts or automatic fail-closed admission."
 sections:
@@ -574,20 +584,18 @@ extensions:
     status: "active"
     task_id: "202609130858-RMHWQ5"
   agentplane.scope_extension_request:
-    applied_at: "2026-09-13T14:40:10.440Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:c7c71650d7b035241b69c105debc2b9de237e74dc51175c03bdfbc798795e90f"
+    blocker_state_fingerprint: "sha256:182504389fec874c3e4a899020a0bc6c2a46608655d1ad79b1e8821c3896b10e"
     kind: "task_scope_extension_request"
     request:
-      rationale: "Hosted CI requires the reviewed cumulative compatibility candidate to record this task's approved CLI and schema surface delta."
+      rationale: "The immutable baseline validator must explicitly review and bind the new CLI command and options before hosted CI can accept the candidate."
       repository_effects: []
       schema_version: 1
       scope_roots:
-        - "scripts/baselines/v0.7-compatibility-candidate.json"
-    request_digest: "sha256:813118b0f1b3d425c3b235e7978641a8ee9a69e927779b6e8711384d4db15a18"
+        - "scripts/checks/check-compatibility-contract-baseline.mjs"
+    request_digest: "sha256:2e3752be9ac1d134dbe9e9e9a28bd4830c7223457d6c6ccb78eb4871263945d4"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_9829077f1717844e7f0ab2db59dd39d7"
+    status: "pending"
+    transition_id: "tr_da117c5ec9fd5f725882b08132264375"
     work_item_id: null
   agentplane.task_centric:
     current_plan:
@@ -843,7 +851,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609130858-RMHWQ5"
-    event_cursor: 21
+    event_cursor: 23
     final_validation: null
     id: "202609130858-RMHWQ5"
     intent:
@@ -880,7 +888,7 @@ extensions:
 
         When a supervisor episode stops because prior paid work has unavailable or unallocatable provider token telemetry, preserve that historical usage as unknown and continue to block automatic paid dispatch. Add a narrow operator command that accepts an explicit USER authorization, records durable state-bound provenance, and opens a new independently capped token budget epoch without rewriting prior operations or treating unknown usage as zero. Reject stale authorization, non-telemetry stops, missing active USER authority, replay with different parameters, and caps that are absent or invalid. The repaired ST-14 task must be able to resume through this command. Do not weaken actual human_review verdicts or automatic fail-closed admission.
       task_id: "202609130858-RMHWQ5"
-    lifecycle: "ACTIVE"
+    lifecycle: "BLOCKED"
     plan_amendments: []
     plan_history:
       -
@@ -1321,9 +1329,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609130858-RMHWQ5"
-    revision: 29
+    revision: 31
     schema_version: 1
-    updated_at: "2026-09-13T14:39:53.062Z"
+    updated_at: "2026-09-13T14:46:14.079Z"
     work_items:
       budget-epoch-repair:
         attempt: 1
@@ -1675,6 +1683,30 @@ extensions:
         previous_revision: 26
         schema_version: 1
         task_id: "202609130858-RMHWQ5"
+      compatibility:sha256:3e504c3be50b6632e50562a61872773d15771af5adabf4e5a75640b9cb12b3f8:
+        aggregate_digest: "sha256:21ff97f08102ef1a86ee83d2c3baca0e292b0f50ec3bb7b88c7c44b7c85453a5"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T14:46:14.079Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_85778787d818bdbca1ed717d"
+          mutation_id: "compatibility:sha256:3e504c3be50b6632e50562a61872773d15771af5adabf4e5a75640b9cb12b3f8"
+          plan_digest: "sha256:3240f151dc9d04408ae11cf18a19b0dfa42f0de9817ead8c7e11b81eb7599ac1"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609130858-RMHWQ5"
+          task_revision: 30
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:3e504c3be50b6632e50562a61872773d15771af5adabf4e5a75640b9cb12b3f8"
+        next_revision: 31
+        previous_revision: 30
+        schema_version: 1
+        task_id: "202609130858-RMHWQ5"
       compatibility:sha256:49d7c9d9288ec67890dd94a22aca7a476ec6e2707fe568d8987f933cd6e052d8:
         aggregate_digest: "sha256:eb8628e01281e2f0adb8be5cad55d023f0cd2cd00de7924ecfe5abe2ff92ed0a"
         event:
@@ -1841,6 +1873,30 @@ extensions:
         mutation_id: "compatibility:sha256:747bd6d15fddf308acd74c05b0d78fdc60b08d85e314bda6ce93355a63e3ea76"
         next_revision: 16
         previous_revision: 15
+        schema_version: 1
+        task_id: "202609130858-RMHWQ5"
+      compatibility:sha256:7d47721a76a9e91aa96eb9241c14ccae8a7f3f1ebc3d1f06cdbfe138c74d2a2c:
+        aggregate_digest: "sha256:e7be6f39c8b2dea075a6167ab842a0328903c46270f9e7602e75d81874112965"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T14:46:14.067Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_67296beb3156b69a4dbf1f30"
+          mutation_id: "compatibility:sha256:7d47721a76a9e91aa96eb9241c14ccae8a7f3f1ebc3d1f06cdbfe138c74d2a2c"
+          plan_digest: "sha256:3240f151dc9d04408ae11cf18a19b0dfa42f0de9817ead8c7e11b81eb7599ac1"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609130858-RMHWQ5"
+          task_revision: 29
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:7d47721a76a9e91aa96eb9241c14ccae8a7f3f1ebc3d1f06cdbfe138c74d2a2c"
+        next_revision: 30
+        previous_revision: 29
         schema_version: 1
         task_id: "202609130858-RMHWQ5"
       compatibility:sha256:9140dafec235afa6872e8faa8ceeaeac326383ea86a09fdee99a3095dac3cfd3:
