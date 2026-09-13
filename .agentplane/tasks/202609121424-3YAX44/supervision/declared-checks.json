@@ -2,10 +2,10 @@
   "checks": [
     {
       "check_ids": [
-        "check-marginal-cost"
+        "check-paired-driver"
       ],
-      "command": "node --test scripts/bench/task-marginal-cost.test.mjs",
-      "duration_ms": 605,
+      "command": "node --test scripts/bench/paired-production-driver.test.mjs",
+      "duration_ms": 1539,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
@@ -16,7 +16,7 @@
       },
       "script": null,
       "stderr_tail": "",
-      "stdout_tail": "✔ measures one new task without charging duplicate or preexisting blobs twice (278.565958ms)\n✔ rejects a task that existed before the requested measurement boundary (79.73275ms)\nℹ tests 2\nℹ suites 0\nℹ pass 2\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 405.003583\n"
+      "stdout_tail": "✔ runs the pinned three-arm task entrypoints offline and keeps transports stratified (973.812583ms)\n✔ rejects every mismatched run identity field (45.193583ms)\n✔ rejects missing or mismatched observed raw cost (173.899666ms)\n✔ requires a trusted authority callback before live execution (41.248375ms)\n✔ rejects an observed execution identity that differs from the campaign (85.668209ms)\nℹ tests 5\nℹ suites 0\nℹ pass 5\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1360.513958\n"
     }
   ],
   "kind": "direct_task_declared_checks",
