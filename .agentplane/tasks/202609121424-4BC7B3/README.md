@@ -1,10 +1,10 @@
 ---
 id: "202609121424-4BC7B3"
 title: "Qualify and document the 0.7.9 stabilization candidate for ST-18 through ST-20"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 23
 origin:
   system: "manual"
 depends_on:
@@ -306,6 +306,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 4cd87b37e73f. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The live M01 campaign cannot be executed reproducibly from the current scoped surface. ChatGPT-authenticated Codex is available, but the repository has neither an immutable M01 manifest nor a trusted live launcher that can supply authority and provider-attempt callbacks to the paired driver. Recommended action: Split the work at the measurement-tool boundary. Add and test a trusted ChatGPT-authenticated live launcher that binds the recorded user authority, executes the minimal-agent, v0.7.8, and exact-candidate artifacts against one fixed target and oracle, and converts Codex JSONL usage into the typed token_usage contract. Materialize and review the 15-attempt randomized manifest before dispatch. Then execute it once and retain all outcomes. If the release should not wait for that implementation, change the release acceptance to Q02 NOT ESTABLISHED and record explicit release-owner acceptance of the measurement debt. Requested scope: roots=docs/internal/v0.7-agent-efficiency-baseline.md,scripts/baselines,scripts/bench; repository effects=documentation,source_code,tests; request digest=sha256:dccc59c448e3628824e2eac935490d1294b0abdbe1371ab8b7e48b91e087e27f. Agentplane receipt: external-agent-blocker/tr_aef08c1c2c9042f4bf60e458d905fff9/sha256:ce6b89008e02fa60f96cc7cc3dddde2089bc0628006d1c719735241e3d4643f2/sha256:dccc59c448e3628824e2eac935490d1294b0abdbe1371ab8b7e48b91e087e27f."
 events:
   -
     type: "status"
@@ -365,8 +368,15 @@ events:
     to: "DOING"
     note: "Implementation committed: 4cd87b37e73f. CLI accepted one state-bound external-agent semantic result."
     commit: "4cd87b37e73f91597a296eb33abbfd286d6b7cb0"
+  -
+    type: "status"
+    at: "2026-09-13T19:38:04.383Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The live M01 campaign cannot be executed reproducibly from the current scoped surface. ChatGPT-authenticated Codex is available, but the repository has neither an immutable M01 manifest nor a trusted live launcher that can supply authority and provider-attempt callbacks to the paired driver. Recommended action: Split the work at the measurement-tool boundary. Add and test a trusted ChatGPT-authenticated live launcher that binds the recorded user authority, executes the minimal-agent, v0.7.8, and exact-candidate artifacts against one fixed target and oracle, and converts Codex JSONL usage into the typed token_usage contract. Materialize and review the 15-attempt randomized manifest before dispatch. Then execute it once and retain all outcomes. If the release should not wait for that implementation, change the release acceptance to Q02 NOT ESTABLISHED and record explicit release-owner acceptance of the measurement debt. Requested scope: roots=docs/internal/v0.7-agent-efficiency-baseline.md,scripts/baselines,scripts/bench; repository effects=documentation,source_code,tests; request digest=sha256:dccc59c448e3628824e2eac935490d1294b0abdbe1371ab8b7e48b91e087e27f. Agentplane receipt: external-agent-blocker/tr_aef08c1c2c9042f4bf60e458d905fff9/sha256:ce6b89008e02fa60f96cc7cc3dddde2089bc0628006d1c719735241e3d4643f2/sha256:dccc59c448e3628824e2eac935490d1294b0abdbe1371ab8b7e48b91e087e27f."
 doc_version: 3
-doc_updated_at: "2026-09-13T19:32:11.006Z"
+doc_updated_at: "2026-09-13T19:38:04.383Z"
 doc_updated_by: "SUPERVISOR"
 description: "Source contract: agentplane-roadmap-r2 cards ST-18, ST-19, and ST-20. Build the exact clean installed candidate and run the frozen direct, branch, recovery, old-record, required PLANNER, and required EVALUATOR corpus. Then, under the user-approved spend and sandbox authority, execute the preregistered M01 paired pilot with complete all-attempt raw evidence and expand only by its fixed uncertainty rule; report NOT ESTABLISHED when coverage is insufficient. Record exact product and target SHAs separately. Finally document only observed 0.7.9 behavior and measurements and the 0.7.10 through 0.7.14 boundary. Do not weaken golden outcomes, disable Blueprint writers, omit required stages, rerun until green, or claim unsupported efficiency. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: package tarball check, local install smoke, release critical suite, benchmark check and replay check, documentation bootstrap and onboarding checks, plus exact evidence review."
 sections:
@@ -417,6 +427,25 @@ extensions:
     scope_digest: "sha256:99b2097c821f7fe115c5e0b644883ef2ef491aaae91ee487d2ae6eb4f84fc3c4"
     status: "active"
     task_id: "202609121424-4BC7B3"
+  agentplane.scope_extension_request:
+    blocker_state_fingerprint: "sha256:ce6b89008e02fa60f96cc7cc3dddde2089bc0628006d1c719735241e3d4643f2"
+    kind: "task_scope_extension_request"
+    request:
+      rationale: "The paired driver intentionally requires injected live authority, while the repository has no production caller or provider token adapter. A reproducible M01 cannot be created only as baseline data."
+      repository_effects:
+        - "documentation"
+        - "source_code"
+        - "tests"
+      schema_version: 1
+      scope_roots:
+        - "docs/internal/v0.7-agent-efficiency-baseline.md"
+        - "scripts/baselines"
+        - "scripts/bench"
+    request_digest: "sha256:dccc59c448e3628824e2eac935490d1294b0abdbe1371ab8b7e48b91e087e27f"
+    schema_version: 1
+    status: "pending"
+    transition_id: "tr_aef08c1c2c9042f4bf60e458d905fff9"
+    work_item_id: "run-token-measured-m01"
   agentplane.task_centric:
     current_plan:
       approval:
@@ -953,7 +982,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609121424-4BC7B3"
-    event_cursor: 15
+    event_cursor: 17
     final_validation: null
     id: "202609121424-4BC7B3"
     intent:
@@ -1000,7 +1029,7 @@ extensions:
 
         Source contract: agentplane-roadmap-r2 cards ST-18, ST-19, and ST-20. Build the exact clean installed candidate and run the frozen direct, branch, recovery, old-record, required PLANNER, and required EVALUATOR corpus. Then, under the user-approved spend and sandbox authority, execute the preregistered M01 paired pilot with complete all-attempt raw evidence and expand only by its fixed uncertainty rule; report NOT ESTABLISHED when coverage is insufficient. Record exact product and target SHAs separately. Finally document only observed 0.7.9 behavior and measurements and the 0.7.10 through 0.7.14 boundary. Do not weaken golden outcomes, disable Blueprint writers, omit required stages, rerun until green, or claim unsupported efficiency. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: package tarball check, local install smoke, release critical suite, benchmark check and replay check, documentation bootstrap and onboarding checks, plus exact evidence review.
       task_id: "202609121424-4BC7B3"
-    lifecycle: "ACTIVE"
+    lifecycle: "BLOCKED"
     plan_amendments: []
     plan_history:
       -
@@ -1583,9 +1612,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121424-4BC7B3"
-    revision: 21
+    revision: 23
     schema_version: 1
-    updated_at: "2026-09-13T19:32:19.611Z"
+    updated_at: "2026-09-13T19:38:04.383Z"
     work_items:
       align-token-measurement-contract:
         attempt: 1
@@ -1831,6 +1860,30 @@ extensions:
         previous_revision: 3
         schema_version: 1
         task_id: "202609121424-4BC7B3"
+      compatibility:sha256:2d1c326da2259b9c3bedae51c02afe278e42d2c486904e54dbcd8014a76c9c0d:
+        aggregate_digest: "sha256:378bb6b296cbd499dc14caaf57b1205d8fd1dcb7d16f4224dad419db2391cb0b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T19:38:04.383Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_33e680a3516ae3a17dbfc108"
+          mutation_id: "compatibility:sha256:2d1c326da2259b9c3bedae51c02afe278e42d2c486904e54dbcd8014a76c9c0d"
+          plan_digest: "sha256:357491668d26fbe1b3a253b693c182f2430296031f26c670fb31d1a4e704c630"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-4BC7B3"
+          task_revision: 21
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:2d1c326da2259b9c3bedae51c02afe278e42d2c486904e54dbcd8014a76c9c0d"
+        next_revision: 22
+        previous_revision: 21
+        schema_version: 1
+        task_id: "202609121424-4BC7B3"
       compatibility:sha256:4bafb4926232233c9c00eb13a0641ad8ff388b7ebc39af21f077708f408ea08a:
         aggregate_digest: "sha256:21659b53ed96b6c473593ec8d80eb5489c670839626bf657c4b640c7a5d77f19"
         event:
@@ -1997,6 +2050,30 @@ extensions:
         mutation_id: "compatibility:sha256:8413aa3500735aa998fdd8c5168bc1d7163ede37c202ddd343dbfb7ad98ede81"
         next_revision: 6
         previous_revision: 5
+        schema_version: 1
+        task_id: "202609121424-4BC7B3"
+      compatibility:sha256:9d2cf6ca4181886cf111370c3fd170a50bc384e1b1dd1b2143e25364b0e96a5c:
+        aggregate_digest: "sha256:368f1a5ff0948cdd6345cd80c747954704a540ac47523ccbd2fc21b6d36bf30d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T19:38:04.383Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_d08c243858648022db7450ad"
+          mutation_id: "compatibility:sha256:9d2cf6ca4181886cf111370c3fd170a50bc384e1b1dd1b2143e25364b0e96a5c"
+          plan_digest: "sha256:357491668d26fbe1b3a253b693c182f2430296031f26c670fb31d1a4e704c630"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-4BC7B3"
+          task_revision: 22
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:9d2cf6ca4181886cf111370c3fd170a50bc384e1b1dd1b2143e25364b0e96a5c"
+        next_revision: 23
+        previous_revision: 22
         schema_version: 1
         task_id: "202609121424-4BC7B3"
       compatibility:sha256:a5ce0241ff0d18a4f449db79fa958a0f9bc04ae5681fbe008da240d2d2681499:
