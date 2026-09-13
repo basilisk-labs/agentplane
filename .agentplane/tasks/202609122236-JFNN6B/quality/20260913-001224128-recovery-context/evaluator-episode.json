@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202609122236-JFNN6B-4bf96c0acb85d16fcdebaf48",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609122236-JFNN6B-simplify-the-test-suite-without-weakening-safety",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609122236-JFNN6B-simplify-the-test-suite-without-weakening-safety/.agentplane/tasks/202609122236-JFNN6B/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json",
+    "-"
+  ],
+  "started_at": "2026-09-13T00:12:24.685Z",
+  "ended_at": "2026-09-13T00:13:44.874Z",
+  "stdout_bytes": 546526,
+  "stderr_bytes": 574,
+  "provider_usage": {
+    "cached_input_tokens": 254080,
+    "input_tokens": 316419,
+    "output_tokens": 1980,
+    "total_tokens": 318399,
+    "visible_output_tokens": 1922,
+    "reasoning_tokens": 58,
+    "thread_id": "01a0981b-abc3-7d32-9387-07b326ad9daf"
+  },
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:b787a6446c684749cb6616d857bae1d079e01dcce01db886449b92a1b84c5f35"
+}
