@@ -238,7 +238,7 @@ export function renderCodexResultOutputSchemaJson(workOrder?: AgentWorkOrderV2):
     schema.description =
       "Role-specific semantic payload. The AgentPlane supervisor supplies the issued WorkOrder identity and service fields.";
     if (Array.isArray(schema.examples)) {
-      schema.examples = schema.examples.map((example) => {
+      schema.examples = schema.examples.map((example: unknown) => {
         if (!isRecord(example)) return example;
         const { work_order_id: _workOrderId, ...rest } = example;
         return rest;

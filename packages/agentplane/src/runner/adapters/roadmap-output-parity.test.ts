@@ -344,25 +344,27 @@ describe("roadmap managed semantic output parity", () => {
       >;
       expect(normalized).toMatchObject(unchangedPayload);
       if (compactProposal) {
-        expect(normalized.task_plan_proposal).toMatchObject({
+        const normalizedPlan = normalized.task_plan_proposal!;
+        expect(normalizedPlan).toMatchObject({
           schema_version: 1,
           task_id: workOrder.task.id,
           assumptions: [],
           unresolved_questions: [],
-          work_items: {
-            schema_version: 1,
-            work_items: [
-              expect.objectContaining({
-                id: "build",
-                objective: "Preserve the payload.",
-                acceptance_criteria: [expect.objectContaining({ id: "criterion" })],
-                validation: expect.objectContaining({
-                  checks: [expect.objectContaining({ id: "check" })],
-                }),
-              }),
-            ],
-          },
         });
+        expect(normalizedPlan.work_items.schema_version).toBe(1);
+        expect(normalizedPlan.work_items.work_items).toHaveLength(1);
+        expect(normalizedPlan.work_items.work_items[0]).toMatchObject({
+          id: "build",
+          objective: "Preserve the payload.",
+        });
+        expect(
+          normalizedPlan.work_items.work_items[0]?.acceptance_criteria.map(
+            (criterion) => criterion.id,
+          ),
+        ).toContain("criterion");
+        expect(
+          normalizedPlan.work_items.work_items[0]?.validation.checks.map((check) => check.id),
+        ).toContain("check");
       }
       expect(normalized).toMatchObject({
         schema_version: 2,
@@ -370,9 +372,8 @@ describe("roadmap managed semantic output parity", () => {
         work_order_id: workOrder.work_order_id,
         ...(workOrder.canonical_binding ? { canonical_binding: workOrder.canonical_binding } : {}),
       });
-      expect(
-        (await readRunnerResultManifest(invocation.result_path))?.semantic_result.value,
-      ).toEqual(normalized);
+      const manifest = await readRunnerResultManifest(invocation.result_path);
+      expect(manifest?.semantic_result.value).toEqual(normalized);
     },
   );
 

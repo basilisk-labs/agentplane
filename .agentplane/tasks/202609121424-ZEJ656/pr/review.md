@@ -31,13 +31,13 @@ Created: 2026-09-13T03:15:59.993Z
 ```text
  .../src/runner/adapters/codex-result-transport.ts  |  46 ++-
  packages/agentplane/src/runner/adapters/codex.ts   |   7 +-
- .../runner/adapters/roadmap-output-parity.test.ts  | 426 +++++++++++++++++++++
+ .../runner/adapters/roadmap-output-parity.test.ts  | 427 +++++++++++++++++++++
  packages/agentplane/src/runner/artifacts.ts        |   2 +-
  .../roadmap-requirement-conservation.test.ts       |  67 ++++
  .../src/runner/usecases/task-run-bootstrap.ts      |  14 +-
  packages/core/src/runner/agent-work-order.ts       |  17 +-
  scripts/lib/test-route-registry.mjs                |   2 +
- 8 files changed, 575 insertions(+), 6 deletions(-)
+ 8 files changed, 576 insertions(+), 6 deletions(-)
 ```
 
 </details>
