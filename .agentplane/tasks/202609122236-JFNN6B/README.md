@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 40
+revision: 41
 origin:
   system: "manual"
 depends_on: []
@@ -60,9 +60,11 @@ quality_review:
     - "The rework removes a redundant internal re-export from model.ts while index.ts continues to export PROMPT_MODULE_CONTRACT_SCHEMA_VERSION directly from schema.ts, so it fixes the zero-unused-export Knip budget without reducing the public prompt-module surface."
     - "Residual risk: Hosted CI must rerun on the new implementation head before merge; the prior hosted failure covered the superseded head."
 token_usage:
-  agent_runs: 15
+  agent_runs: 21
+  cached_input_observed_agent_runs: 1
+  cached_input_tokens: 254080
   input_tokens: 316419
-  journal_digest: "sha256:24ce95c0985354f6d76518403cde2d2a7a5f3cc13716d131ab9966fa709242d2"
+  journal_digest: "sha256:fef301a129e80a34eec0ed578b006dadff5710277c7190c5ca2f26b78f03179f"
   observed_agent_runs: 1
   observed_by: "agentplane"
   output_tokens: null
@@ -72,7 +74,7 @@ token_usage:
   state: "partial"
   total_tokens: 318399
   unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
-  updated_at: "2026-09-13T00:13:59.590Z"
+  updated_at: "2026-09-13T00:47:10.166Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -401,8 +403,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "e39210b8d9e2763a7353bdf095036cc2483e8ed5"
-  message: "🧭 JFNN6B task: record evaluator verdict"
+  hash: "87ed5bd69257c28958b9fa1444ab60562c40693b"
+  message: "🚧 JFNN6B task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -440,6 +442,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (blocked): The intended Knip rework remains uncommitted because this conflict-resolution episode is read-only."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -549,9 +554,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-13T00:47:10.166Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "87ed5bd69257c28958b9fa1444ab60562c40693b"
 doc_version: 3
-doc_updated_at: "2026-09-13T00:46:42.408Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-13T00:47:10.179Z"
+doc_updated_by: "CODER"
 description: "Remove unused GPT-5.5/GPT-5.6 prompt diagnostic implementations and self-tests, retain the prompt module compiler and model-neutral behavioral contracts, remove the historical fixed-byte assertion while retaining semantic prompt assertions, remove the duplicate coverage-threshold configuration guard, and route agent-efficiency benchmark tests to a separate qualification suite instead of the normal critical CLI gate. Preserve exit-code, scope, symlink, protected-path, trust-boundary, task-centric, and context critical tests. Reduce critical suite process overhead only if the resulting suite passes repeatedly. Avoid files currently modified by tasks 202609080727-BAWTEE and 202609121424-T83XJA. Do not modify benchmark fixtures or semantic gateway implementation."
 sections:
   Summary: |-
@@ -1520,7 +1533,7 @@ extensions:
       revision: 4
       schema_version: 1
       task_id: "202609122236-JFNN6B"
-    event_cursor: 30
+    event_cursor: 31
     final_validation:
       evidence:
         -
@@ -3201,9 +3214,9 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202609122236-JFNN6B"
-    revision: 40
+    revision: 41
     schema_version: 1
-    updated_at: "2026-09-13T00:43:52.982Z"
+    updated_at: "2026-09-13T00:47:10.166Z"
     work_items:
       work-item-cleanup:
         attempt: 1
@@ -3985,6 +3998,30 @@ extensions:
         previous_revision: 26
         schema_version: 1
         task_id: "202609122236-JFNN6B"
+      compatibility:sha256:c893c6a2ddee1beffd8c7773d306f426c2e779828dbb08d532497cf6e87ee319:
+        aggregate_digest: "sha256:a6c134d5d08f61204b67ce731a1cd06780202be19dc42750b196cde863be8d55"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T00:47:10.166Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_ebbd4b32862efb47c9b257c1"
+          mutation_id: "compatibility:sha256:c893c6a2ddee1beffd8c7773d306f426c2e779828dbb08d532497cf6e87ee319"
+          plan_digest: "sha256:395e3263f50efcbc3a42c35b2389f51b3b009827549efdcdd70afb70473535f1"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609122236-JFNN6B"
+          task_revision: 40
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:c893c6a2ddee1beffd8c7773d306f426c2e779828dbb08d532497cf6e87ee319"
+        next_revision: 41
+        previous_revision: 40
+        schema_version: 1
+        task_id: "202609122236-JFNN6B"
       compatibility:sha256:d80d8ed0abe6e41bb9a2fdc4a2830180f91bd2daef6987c2114a55d940cd0c5a:
         aggregate_digest: "sha256:a77c9ba6c7ac7cf089ebfbdfd32673e0572b265e9b1778f0626b72aafdda76d0"
         event:
@@ -4302,8 +4339,8 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "eb6e3c0b6b971928f83e5d84ae8db31ef13ab7a1"
-    message: "Merge branch 'main' into task/202609122236-JFNN6B/simplify-the-test-suite-without-weakening-safety"
+    hash: "4ae8f226a69afecb99af84a8396d9b2fd90e2702"
+    message: "🚧 JFNN6B task: fix Knip drift after prompt cleanup"
   task_execution_context:
     base_ref: "main"
     base_sha: "58048a4e1ff97030d3fa86447c739397f0e0936b"
@@ -4821,12 +4858,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `partial`
-- Completeness: `1/15` agent runs
+- Completeness: `1/21` agent runs
 - Input tokens: `316419`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `318399`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:24ce95c0985354f6d76518403cde2d2a7a5f3cc13716d131ab9966fa709242d2`
+- Journal digest: `sha256:fef301a129e80a34eec0ed578b006dadff5710277c7190c5ca2f26b78f03179f`
 - Unavailable reason: `some_agent_runs_lack_provider_token_telemetry`
-- Updated at: `2026-09-13T00:13:59.590Z`
+- Updated at: `2026-09-13T00:47:10.166Z`
