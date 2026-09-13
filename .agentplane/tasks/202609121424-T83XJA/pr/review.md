@@ -32,8 +32,9 @@ Created: 2026-09-12T20:52:29.086Z
  .../src/cli/run-cli.critical.task-centric.test.ts  |  24 ++
  .../src/commands/evaluator/evaluator-episode.ts    | 236 ++++++++++++--
  .../evaluator-execute-subprocess.testkit.ts        |  72 +++++
- .../evaluator/evaluator-execute-supervisor.ts      | 276 ++++++++++++++--
+ .../evaluator/evaluator-execute-supervisor.ts      | 134 ++++++--
  .../evaluator/evaluator-execute.command.test.ts    | 142 ++++-----
+ .../evaluator/evaluator-failure-recovery.ts        | 157 +++++++++
  .../evaluator/roadmap-failed-usage.test.ts         | 249 +++++++++++++++
  .../roadmap-telemetry-disposition.test.ts          |  79 +++++
  .../src/commands/shared/lifecycle-stage-timing.ts  | 167 ++++++++++
@@ -55,7 +56,7 @@ Created: 2026-09-12T20:52:29.086Z
  .../src/runner/adapters/codex-result-transport.ts  |  42 ++-
  packages/agentplane/src/runner/adapters/codex.ts   |  81 ++++-
  .../adapters/roadmap-usage-durability.test.ts      | 176 +++++++++++
- packages/agentplane/src/runner/artifacts.ts        | 120 +++++++
+ packages/agentplane/src/runner/artifacts.ts        | 124 ++++++++
  ...r-execution-episode-telemetry-admission.test.ts |  74 +++++
  .../supervisor-execution-episode-timing.test.ts    | 129 ++++++++
  .../runner/supervisor-execution-episode.test.ts    |   6 +-
@@ -63,7 +64,7 @@ Created: 2026-09-12T20:52:29.086Z
  scripts/bench/task-cost-rollup.test.mjs            | 192 +++++++++++
  .../lib/agent-efficiency-repository-snapshot.mjs   | 167 ++++++++++
  scripts/lib/test-route-registry.mjs                |   1 +
- 34 files changed, 3459 insertions(+), 322 deletions(-)
+ 35 files changed, 3478 insertions(+), 322 deletions(-)
 ```
 
 </details>

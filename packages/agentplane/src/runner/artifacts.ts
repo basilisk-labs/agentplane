@@ -46,6 +46,14 @@ function byteLength(text: string): number {
   return Buffer.byteLength(text, "utf8");
 }
 
+function nonEmptyText(value: unknown): value is string {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+function nullableProviderIdentity(value: unknown): value is string | null {
+  return value === null || nonEmptyText(value);
+}
+
 function invocationSnapshotSha256(invocation: RunnerInvocation): string {
   return sha256(JSON.stringify(createRunnerInvocationSnapshot(invocation)));
 }
@@ -297,10 +305,6 @@ function parseRunnerProviderUsageObservation(value: unknown): RunnerProviderUsag
     throw new Error("Runner provider usage observation must be an object.");
   }
   const observation = value as Partial<RunnerProviderUsageObservation>;
-  const nonEmpty = (candidate: unknown): candidate is string =>
-    typeof candidate === "string" && candidate.trim().length > 0;
-  const nullableIdentity = (candidate: unknown): candidate is string | null =>
-    candidate === null || nonEmpty(candidate);
   const validStatus = ["observed", "partial", "unavailable"].includes(observation.status ?? "");
   const usage = observation.usage;
   const validUsage =
@@ -319,15 +323,15 @@ function parseRunnerProviderUsageObservation(value: unknown): RunnerProviderUsag
   if (
     observation.schema_version !== 1 ||
     observation.kind !== "runner_provider_usage_observation" ||
-    !nonEmpty(observation.provider) ||
+    !nonEmptyText(observation.provider) ||
     !validStatus ||
-    !nonEmpty(observation.dispatch_id) ||
-    !nonEmpty(observation.run_id) ||
-    !nonEmpty(observation.work_order_id) ||
-    !nullableIdentity(observation.thread_id) ||
-    !nullableIdentity(observation.turn_id) ||
+    !nonEmptyText(observation.dispatch_id) ||
+    !nonEmptyText(observation.run_id) ||
+    !nonEmptyText(observation.work_order_id) ||
+    !nullableProviderIdentity(observation.thread_id) ||
+    !nullableProviderIdentity(observation.turn_id) ||
     !validUsage ||
-    !nonEmpty(observation.observed_at)
+    !nonEmptyText(observation.observed_at)
   ) {
     throw new Error("Runner provider usage observation is invalid.");
   }
