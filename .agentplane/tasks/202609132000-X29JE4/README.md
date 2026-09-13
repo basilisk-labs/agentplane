@@ -4,7 +4,7 @@ title: "Remove supervisor spend limits and retain informational usage telemetry"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -244,9 +244,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "f027b970809e6508f586f311cecdb9a3b853c6c3"
-  message: "🚧 X29JE4 task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -1641,19 +1639,59 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609132000-X29JE4"
-    revision: 16
+    revision: 17
     schema_version: 1
-    updated_at: "2026-09-13T20:28:28.121Z"
+    updated_at: "2026-09-13T20:28:32.840Z"
     work_items:
       campaign-contract:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "campaign-contract"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:304995ec8cb852b2764626685b029d308e3d90be3b87309740da97e632e98980"
+            id: "campaign-contract-output"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609132000-X29JE4"
+              work_item_id: "campaign-contract"
+            provenance:
+              - "sha256:cfc1367cc334a53a0cff52ec664eae1c975aa5cbc4c5d767ce117ab571b92710"
+              - ".agentplane/tasks/202609132000-X29JE4/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:59c4eebe9d1aa12252047b85bd4755f14595183443f1f15d72b6242b4a8573ad"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609132000-X29JE4/supervision/declared-checks.json"
+              check_id: "benchmark-focused"
+              command_identity: "node --test scripts/bench/paired-production-driver.test.mjs scripts/bench/paired-result-report.test.mjs"
+              detail: "Observed by node --test scripts/bench/paired-production-driver.test.mjs scripts/bench/paired-result-report.test.mjs."
+              exit_code: 0
+              observed_at: "2026-09-13T20:28:32.827Z"
+              repository_snapshot_digest: "sha256:59c4eebe9d1aa12252047b85bd4755f14595183443f1f15d72b6242b4a8573ad"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609132000-X29JE4/supervision/declared-checks.json"
+              check_id: "diff-review"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-09-13T20:28:32.827Z"
+              repository_snapshot_digest: "sha256:59c4eebe9d1aa12252047b85bd4755f14595183443f1f15d72b6242b4a8573ad"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       compatibility-and-regression:
         attempt: 0
         claim_id: null
@@ -1728,6 +1766,23 @@ extensions:
         task_id: "202609132000-X29JE4"
         task_revision: 11
         work_item_id: null
+      -
+        at: "2026-09-13T20:28:32.840Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:68208f5f898412352e9efb22b1354580b18cde85d6aab6c7209b7fb692341405"
+        entity: "work_item"
+        id: "event_50acab7dc349c784ca826953"
+        mutation_id: "external-result:work-order-202609132000-X29JE4-executor-e041bb4ab4cab8049277ed69"
+        plan_digest: "sha256:2a0128895db157556120cf8c21fde4c1520781e16035ea18edc8e5784529479e"
+        plan_revision: 2
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609132000-X29JE4"
+        task_revision: 16
+        work_item_id: "campaign-contract"
     leases: []
     mutation_receipts:
       compatibility:sha256:0cb8a88a987a412aa563166a81ada75c02cc7fad5f9bbe62a84e52bb3b6472ce:
@@ -2016,6 +2071,30 @@ extensions:
         mutation_id: "external-result:work-order-202609132000-X29JE4-executor-d6d56105ae58fe45015d9d70"
         next_revision: 11
         previous_revision: 10
+        schema_version: 1
+        task_id: "202609132000-X29JE4"
+      external-result:work-order-202609132000-X29JE4-executor-e041bb4ab4cab8049277ed69:
+        aggregate_digest: "sha256:f1065da045e6c13345b11e7c0955f3bd5072cc34ea4468de7c87a9fbc80fb243"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T20:28:32.840Z"
+          cause_refs:
+            - "semantic-result:sha256:68208f5f898412352e9efb22b1354580b18cde85d6aab6c7209b7fb692341405"
+          entity: "work_item"
+          from: "READY"
+          id: "event_50acab7dc349c784ca826953"
+          mutation_id: "external-result:work-order-202609132000-X29JE4-executor-e041bb4ab4cab8049277ed69"
+          plan_digest: "sha256:2a0128895db157556120cf8c21fde4c1520781e16035ea18edc8e5784529479e"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609132000-X29JE4"
+          task_revision: 16
+          to: "COMPLETED"
+          work_item_id: "campaign-contract"
+        mutation_id: "external-result:work-order-202609132000-X29JE4-executor-e041bb4ab4cab8049277ed69"
+        next_revision: 17
+        previous_revision: 16
         schema_version: 1
         task_id: "202609132000-X29JE4"
       plan-refinement:work-order-202609132000-X29JE4-executor-1f3575b9b3d93fb9a1e93e64:

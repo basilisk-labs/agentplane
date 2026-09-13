@@ -2,26 +2,26 @@
   "checks": [
     {
       "check_ids": [
-        "supervisor-focused"
+        "benchmark-focused"
       ],
-      "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts",
-      "duration_ms": 2647,
-      "exit_code": 1,
+      "command": "node --test scripts/bench/paired-production-driver.test.mjs scripts/bench/paired-result-report.test.mjs",
+      "duration_ms": 1709,
+      "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
-        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "executable_digest": "sha256:ee6fb0e015284d83a91e8ec5213f43a157f8a392b58555301682892ba928c04a",
         "kind": "local_runtime_resolution",
         "status": "resolved",
         "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
       },
-      "script": "test:project",
-      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  |agentplane| packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts > persisted supervisor execution episodes > extends an episode-only budget stop through explicit replacement recovery\nAssertionError: expected 'not_failed' to be 'budget_extended' // Object.is equality\n\nExpected: \"budget_extended\"\nReceived: \"not_failed\"\n\n ❯ packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts:295:5\n    293|         state_fingerprint_digest: decision.workflowStep.preconditionFi…\n    294|       }),\n    295|     ).resolves.toBe(\"budget_extended\");\n       |     ^\n    296|     expect(await createSupervisorEpisodeStore(journalPath).read()).toM…\n    297|       status: \"running\",\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯\n\n FAIL  |agentplane| packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts > persisted supervisor execution episodes > recovers a persisted telemetry-only stop without changing budget or history\nAssertionError: expected 'not_failed' to be 'telemetry_recovered' // Object.is equality\n\nExpected: \"telemetry_recovered\"\nReceived: \"not_failed\"\n\n ❯ packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts:358:5\n    356|         budget_only: true,\n    357|       }),\n    358|     ).resolves.toBe(\"telemetry_recovered\");\n       |     ^\n    359|     expect(await createSupervisorEpisodeStore(journalPath).read()).toM…\n    360|       status: \"running\",\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯\n\n FAIL  |agentplane| packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts > persisted supervisor execution episodes > extends an agent-run budget only when an active grant authorizes autonomy\nError: expected stopped fixture episode\n ❯ packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts:417:47\n    415|       authority_digest: decision.workflowStep.preconditionFingerprint.…\n    416|     });\n    417|     if (exhausted.status !== \"stopped\") throw new Error(\"expected stop…\n       |                                               ^\n    418|     const journalPath = await resolveSupervisorExecutionEpisodePath({\n    419|       git_root: root,\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯\n\nerror: script \"test:project\" exited with code 1\n",
-      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609132000-X29JE4-remove-supervisor-spend-limits-and-retain-inform\n\n ❯ |agentplane| packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts (17 tests | 3 failed) 712ms\n     × extends an episode-only budget stop through explicit replacement recovery 36ms\n     × recovers a persisted telemetry-only stop without changing budget or history 41ms\n     × extends an agent-run budget only when an active grant authorizes autonomy 7ms\n\n Test Files  1 failed (1)\n      Tests  3 failed | 14 passed (17)\n   Start at  23:20:50\n   Duration  2.20s (transform 1.10s, setup 0ms, import 1.43s, tests 712ms, environment 0ms)\n\n"
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "✔ runs the pinned three-arm task entrypoints offline and keeps transports stratified (1138.424583ms)\n✔ rejects every mismatched run identity field (43.815375ms)\n✔ rejects missing or mismatched observed raw cost (169.39125ms)\n✔ requires a trusted authority callback before live execution (40.267041ms)\n✔ rejects an observed execution identity that differs from the campaign (81.678458ms)\n✔ keeps failed-attempt cost in the numerator and pairs only equivalent successes (5.825875ms)\n✔ unknown charge prevents a complete numeric claim (0.254542ms)\n✔ an all-failed arm has no finite successful-result score (0.160083ms)\n✔ mismatched raw cost identity prevents numeric and efficiency claims (0.169375ms)\n✔ rejects outcome-mismatched successes from the paired population (0.166916ms)\n✔ keeps safety, activation, and efficiency gates independent (0.122958ms)\nℹ tests 11\nℹ suites 0\nℹ pass 11\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1515.048208\n"
     }
   ],
   "kind": "direct_task_declared_checks",
-  "reason": "Declared check failed: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts",
+  "reason": null,
   "schema_version": 1,
-  "status": "failed",
+  "status": "passed",
   "task_id": "202609132000-X29JE4"
 }
