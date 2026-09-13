@@ -1,0 +1,4 @@
+ .../roadmap-requirement-conservation.test.ts       | 67 ++++++++++++++++++++++
+ .../src/runner/usecases/task-run-bootstrap.ts      | 14 ++++-
+ scripts/lib/test-route-registry.mjs                |  1 +
+ 3 files changed, 80 insertions(+), 2 deletions(-)

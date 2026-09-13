@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202609121424-ZEJ656/conserve-0-7-9-semantic-requirements-and-managed",
+  "created_at": "2026-09-13T03:15:59.993Z",
+  "diffstat_sha256": "sha256:75c3dd29aa423fbd534f9f9511d9752ce86dc3637e9552994b329d3c5b6dfa9b",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202609121424-ZEJ656",
+  "updated_at": "2026-09-13T03:15:59.993Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
