@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 50
+revision: 51
 origin:
   system: "manual"
 depends_on:
@@ -710,6 +710,9 @@ comments:
   -
     author: "CODER"
     body: "Start: address evaluator findings R1-R3 without replaying paid provider effects."
+  -
+    author: "CODER"
+    body: "Start: Resume verification rework after committed evaluator accounting repairs and request the exact critical-fixture scope required by fail-closed admission."
 events:
   -
     type: "status"
@@ -850,8 +853,15 @@ events:
     from: "DONE"
     to: "DOING"
     note: "Start: address evaluator findings R1-R3 without replaying paid provider effects."
+  -
+    type: "status"
+    at: "2026-09-13T01:44:37.969Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Start: Resume verification rework after committed evaluator accounting repairs and request the exact critical-fixture scope required by fail-closed admission."
 doc_version: 3
-doc_updated_at: "2026-09-13T01:23:58.820Z"
+doc_updated_at: "2026-09-13T01:44:37.996Z"
 doc_updated_by: "CODER"
 description: "Source contract: agentplane-roadmap-r2 cards ST-08, ST-09, ST-10, ST-11, ST-12, ST-13, and ST-17. Capture Codex usage durably before semantic-result validation, preserve evaluator charges on failure, connect managed observations to the existing journal, account for external episodes without trusting self-reported tokens, roll up task cost from source observations, partition lifecycle latency without double counting, and separate missing telemetry from semantic quality and further-spend admission. Missing usage is unknown, never zero. A valid saved verdict is reused, while unknown budget blocks additional paid dispatch. Preserve I01-I12 and C01-C08. Do not create a second accounting store or trust model-supplied usage. The roadmap directory is source-only and must never be committed. Required checks: the focused ST-08 through ST-13 and ST-17 test commands, related runner/evaluator/task critical suites, typecheck, schema/mirror checks."
 sections:
@@ -3005,7 +3015,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609121424-T83XJA"
-    event_cursor: 38
+    event_cursor: 39
     final_validation: null
     id: "202609121424-T83XJA"
     intent:
@@ -3767,9 +3777,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121424-T83XJA"
-    revision: 50
+    revision: 51
     schema_version: 1
-    updated_at: "2026-09-13T01:23:58.791Z"
+    updated_at: "2026-09-13T01:44:37.969Z"
     work_items:
       ST-08:
         attempt: 1
@@ -4235,6 +4245,30 @@ extensions:
         work_item_id: "ST-13"
     leases: []
     mutation_receipts:
+      compatibility:sha256:0cfa5707f6ab3eb1a9a83611e8fc7183b3ee3bf0ac4374abd6f2c051454339e9:
+        aggregate_digest: "sha256:b0393870720e4b6ab8562e84296186d770fac4aa649ab6aec21858e306292d25"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T01:44:37.969Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_9f21514359b7f67e3e8863dc"
+          mutation_id: "compatibility:sha256:0cfa5707f6ab3eb1a9a83611e8fc7183b3ee3bf0ac4374abd6f2c051454339e9"
+          plan_digest: "sha256:47ee22d77ca7385f412a8a1da0d53ac32e469d13030f22fdc8fc03c8804e40a4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-T83XJA"
+          task_revision: 50
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:0cfa5707f6ab3eb1a9a83611e8fc7183b3ee3bf0ac4374abd6f2c051454339e9"
+        next_revision: 51
+        previous_revision: 50
+        schema_version: 1
+        task_id: "202609121424-T83XJA"
       compatibility:sha256:15f8c56fcb2cee88e0167372ae52d87f8317f3df7c478d1261e8c0600196dccb:
         aggregate_digest: "sha256:f1425d0528ca92d0d35ae8329cc98a35b150c6f3c7ab8a840bcf81acc4c52dd7"
         event:

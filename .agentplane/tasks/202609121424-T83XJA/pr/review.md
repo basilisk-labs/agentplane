@@ -29,6 +29,7 @@ Created: 2026-09-12T20:52:29.086Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .../src/cli/run-cli.critical.task-centric.test.ts  |  24 ++
  .../src/commands/evaluator/evaluator-episode.ts    | 236 ++++++++++++--
  .../evaluator-execute-subprocess.testkit.ts        |  72 +++++
  .../evaluator/evaluator-execute-supervisor.ts      | 276 ++++++++++++++--
@@ -62,7 +63,7 @@ Created: 2026-09-12T20:52:29.086Z
  scripts/bench/task-cost-rollup.test.mjs            | 192 +++++++++++
  .../lib/agent-efficiency-repository-snapshot.mjs   | 167 ++++++++++
  scripts/lib/test-route-registry.mjs                |   1 +
- 33 files changed, 3435 insertions(+), 322 deletions(-)
+ 34 files changed, 3459 insertions(+), 322 deletions(-)
 ```
 
 </details>
