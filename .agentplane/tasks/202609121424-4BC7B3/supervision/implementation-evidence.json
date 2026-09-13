@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check ad57d58af002174e7855046b5df1e80bc7c75e50..9777074e0a925b369988eae8b309c729166b04e5",
+      "command": "git diff --check c2f3ff0d14faeecc6622a1cda4ac65f37858f372..b0f5f5dc961455109b187b605b7d753e9b3266e2",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB ad57d58af002174e7855046b5df1e80bc7c75e50..9777074e0a925b369988eae8b309c729166b04e5",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB c2f3ff0d14faeecc6622a1cda4ac65f37858f372..b0f5f5dc961455109b187b605b7d753e9b3266e2",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,10 +21,13 @@
         "M\t.agentplane/tasks/202609121424-4BC7B3/pr/github-body.md",
         "M\t.agentplane/tasks/202609121424-4BC7B3/pr/meta.json",
         "M\t.agentplane/tasks/202609121424-4BC7B3/pr/review.md",
-        "M\tdocs/developer/blueprints.mdx",
-        "M\tdocs/internal/v0.7-agent-efficiency-baseline.md",
-        "M\tdocs/user/workflow.mdx",
-        "M\tscripts/baselines/v0.7.9-stabilization-candidate.json"
+        "M\t.prettierignore",
+        "M\tscripts/bench/paired-live-codex-launcher.mjs",
+        "M\tscripts/bench/paired-live-codex-launcher.test.mjs",
+        "M\tscripts/bench/paired-m01-oracle.mjs",
+        "M\tscripts/bench/paired-production-driver.mjs",
+        "M\tscripts/bench/paired-result-report.mjs",
+        "M\twebsite/static/llms-full.txt"
       ]
     },
     {
@@ -34,15 +37,48 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "ad57d58af002174e7855046b5df1e80bc7c75e50",
-  "implementation_commit": "9777074e0a925b369988eae8b309c729166b04e5",
+  "execution_base_commit": "c2f3ff0d14faeecc6622a1cda4ac65f37858f372",
+  "implementation_commit": "b0f5f5dc961455109b187b605b7d753e9b3266e2",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [],
-    "classification": [],
+    "baseline": [
+      " M scripts/bench/paired-live-codex-launcher.mjs",
+      " M scripts/bench/paired-live-codex-launcher.test.mjs",
+      " M scripts/bench/paired-m01-oracle.mjs",
+      " M scripts/bench/paired-production-driver.mjs",
+      " M scripts/bench/paired-result-report.mjs"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M scripts/bench/paired-live-codex-launcher.mjs"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M scripts/bench/paired-live-codex-launcher.test.mjs"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M scripts/bench/paired-m01-oracle.mjs"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M scripts/bench/paired-production-driver.mjs"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M scripts/bench/paired-result-report.mjs"
+      }
+    ],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M scripts/bench/paired-live-codex-launcher.mjs",
+      " M scripts/bench/paired-live-codex-launcher.test.mjs",
+      " M scripts/bench/paired-m01-oracle.mjs",
+      " M scripts/bench/paired-production-driver.mjs",
+      " M scripts/bench/paired-result-report.mjs"
+    ],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
