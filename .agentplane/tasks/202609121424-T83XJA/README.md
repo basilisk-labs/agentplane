@@ -4,7 +4,7 @@ title: "Implement durable 0.7.9 usage, cost, and latency accounting for ST-08 th
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 36
+revision: 37
 origin:
   system: "manual"
 depends_on:
@@ -25,9 +25,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-09-12T23:58:08.962Z"
+  updated_at: "2026-09-13T00:36:19.890Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
   state: "rework"
@@ -561,8 +561,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 6b57e1dd7657. CLI accepted one state-bound external-agent semantic result."
     commit: "6b57e1dd765723656edb188c02193c11cdea9035"
+  -
+    type: "verify"
+    at: "2026-09-13T00:36:19.890Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-13T00:26:04.791Z"
+doc_updated_at: "2026-09-13T00:36:21.410Z"
 doc_updated_by: "SUPERVISOR"
 description: "Source contract: agentplane-roadmap-r2 cards ST-08, ST-09, ST-10, ST-11, ST-12, ST-13, and ST-17. Capture Codex usage durably before semantic-result validation, preserve evaluator charges on failure, connect managed observations to the existing journal, account for external episodes without trusting self-reported tokens, roll up task cost from source observations, partition lifecycle latency without double counting, and separate missing telemetry from semantic quality and further-spend admission. Missing usage is unknown, never zero. A valid saved verdict is reused, while unknown budget blocks additional paid dispatch. Preserve I01-I12 and C01-C08. Do not create a second accounting store or trust model-supplied usage. The roadmap directory is source-only and must never be committed. Required checks: the focused ST-08 through ST-13 and ST-17 test commands, related runner/evaluator/task critical suites, typecheck, schema/mirror checks."
 sections:
@@ -598,6 +604,258 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:47b7def428d877601b2b150f350d4b26cdcd9ee2f6b9e7aee315eb10145204de, input_digest=sha256:418fb357018a75920c74cf1e64e9b80d43d7c62ddbedb04c5326b7089c505856
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-usage-durability.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check affected_unit_integration (1/12)
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check affected_unit_integration (2/12)
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check affected_unit_integration (3/12)
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-external-accounting.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check affected_unit_integration (4/12)
+
+    Check: affected_unit_integration
+    Command: node --test scripts/bench/task-cost-rollup.test.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check affected_unit_integration (5/12)
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-stage-timing.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check affected_unit_integration (6/12)
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/evaluator/roadmap-telemetry-disposition.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check affected_unit_integration (7/12)
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check affected_unit_integration (8/12)
+
+    Check: affected_unit_integration
+    Command: bun run schemas:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check affected_unit_integration (9/12)
+
+    Check: affected_unit_integration
+    Command: bun run artifacts:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check affected_unit_integration (10/12)
+
+    Check: affected_unit_integration
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check affected_unit_integration (11/12)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-12
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check affected_unit_integration (12/12)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-usage-durability.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check critical_paths (1/12)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check critical_paths (2/12)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check critical_paths (3/12)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-external-accounting.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check critical_paths (4/12)
+
+    Check: critical_paths
+    Command: node --test scripts/bench/task-cost-rollup.test.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check critical_paths (5/12)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-stage-timing.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check critical_paths (6/12)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/evaluator/roadmap-telemetry-disposition.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check critical_paths (7/12)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check critical_paths (8/12)
+
+    Check: critical_paths
+    Command: bun run schemas:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check critical_paths (9/12)
+
+    Check: critical_paths
+    Command: bun run artifacts:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check critical_paths (10/12)
+
+    Check: critical_paths
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check critical_paths (11/12)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-12
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check critical_paths (12/12)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-12
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-usage-durability.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check task_outcome (1/12)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check task_outcome (2/12)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check task_outcome (3/12)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-external-accounting.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check task_outcome (4/12)
+
+    Check: task_outcome
+    Command: node --test scripts/bench/task-cost-rollup.test.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check task_outcome (5/12)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-stage-timing.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check task_outcome (6/12)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/evaluator/roadmap-telemetry-disposition.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check task_outcome (7/12)
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check task_outcome (8/12)
+
+    Check: task_outcome
+    Command: bun run schemas:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check task_outcome (9/12)
+
+    Check: task_outcome
+    Command: bun run artifacts:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check task_outcome (10/12)
+
+    Check: task_outcome
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check task_outcome (11/12)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-12
+    Scope: branch_pr task 202609121424-T83XJA Verification Contract check task_outcome (12/12)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-T83XJA-implement-durable-0-7-9-usage-cost-and-latency-a/.agentplane/tasks/202609121424-T83XJA/blueprint/resolved-snapshot.json
+    - old_digest: a0606595992db659882c934dc9224bb4e23891d77af067972ab0b021db13f8c1
+    - current_digest: a0606595992db659882c934dc9224bb4e23891d77af067972ab0b021db13f8c1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609121424-T83XJA
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609121424-T83XJA
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-13T00:36:19.890Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:47b7def428d877601b2b150f350d4b26cdcd9ee2f6b9e7aee315eb10145204de, input_digest=sha256:64570f62278d7c41c2ad8ec1da1d2847ddb6fe08a40e7673acb59d5d3ecf105e
 
     Details:
 
@@ -1636,7 +1894,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609121424-T83XJA"
-    event_cursor: 25
+    event_cursor: 26
     final_validation: null
     id: "202609121424-T83XJA"
     intent:
@@ -2398,9 +2656,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121424-T83XJA"
-    revision: 36
+    revision: 37
     schema_version: 1
-    updated_at: "2026-09-13T00:26:04.791Z"
+    updated_at: "2026-09-13T00:36:21.406Z"
     work_items:
       ST-08:
         attempt: 1
@@ -3106,6 +3364,30 @@ extensions:
         previous_revision: 3
         schema_version: 1
         task_id: "202609121424-T83XJA"
+      compatibility:sha256:6b6e5c5b318198862b826f87ba30c0bcd64e30c3a1ed42b8998f57f59e45d45d:
+        aggregate_digest: "sha256:5c7d48f8bf21513be097f999626f4f9353d0a9a56aa97db14514bbd320eb0060"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T00:36:21.406Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_7b6193f6adab6e98b870737d"
+          mutation_id: "compatibility:sha256:6b6e5c5b318198862b826f87ba30c0bcd64e30c3a1ed42b8998f57f59e45d45d"
+          plan_digest: "sha256:47ee22d77ca7385f412a8a1da0d53ac32e469d13030f22fdc8fc03c8804e40a4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-T83XJA"
+          task_revision: 36
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:6b6e5c5b318198862b826f87ba30c0bcd64e30c3a1ed42b8998f57f59e45d45d"
+        next_revision: 37
+        previous_revision: 36
+        schema_version: 1
+        task_id: "202609121424-T83XJA"
       compatibility:sha256:6da00f06f586e657faba8a4aa2109cff6e4989ae86fdd1a33afd7dfc4b35077a:
         aggregate_digest: "sha256:e9894f96a7ab64b28cdff12aea61d810aa967b5ae2c467604f16b68133aa4205"
         event:
@@ -3705,6 +3987,258 @@ Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review i
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:47b7def428d877601b2b150f350d4b26cdcd9ee2f6b9e7aee315eb10145204de, input_digest=sha256:418fb357018a75920c74cf1e64e9b80d43d7c62ddbedb04c5326b7089c505856
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-usage-durability.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check affected_unit_integration (1/12)
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check affected_unit_integration (2/12)
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check affected_unit_integration (3/12)
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-external-accounting.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check affected_unit_integration (4/12)
+
+Check: affected_unit_integration
+Command: node --test scripts/bench/task-cost-rollup.test.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check affected_unit_integration (5/12)
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-stage-timing.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check affected_unit_integration (6/12)
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/evaluator/roadmap-telemetry-disposition.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check affected_unit_integration (7/12)
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check affected_unit_integration (8/12)
+
+Check: affected_unit_integration
+Command: bun run schemas:check
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check affected_unit_integration (9/12)
+
+Check: affected_unit_integration
+Command: bun run artifacts:check
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check affected_unit_integration (10/12)
+
+Check: affected_unit_integration
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check affected_unit_integration (11/12)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-12
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check affected_unit_integration (12/12)
+
+Check: critical_paths
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-usage-durability.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check critical_paths (1/12)
+
+Check: critical_paths
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check critical_paths (2/12)
+
+Check: critical_paths
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check critical_paths (3/12)
+
+Check: critical_paths
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-external-accounting.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check critical_paths (4/12)
+
+Check: critical_paths
+Command: node --test scripts/bench/task-cost-rollup.test.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check critical_paths (5/12)
+
+Check: critical_paths
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-stage-timing.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check critical_paths (6/12)
+
+Check: critical_paths
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/evaluator/roadmap-telemetry-disposition.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check critical_paths (7/12)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check critical_paths (8/12)
+
+Check: critical_paths
+Command: bun run schemas:check
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check critical_paths (9/12)
+
+Check: critical_paths
+Command: bun run artifacts:check
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check critical_paths (10/12)
+
+Check: critical_paths
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check critical_paths (11/12)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-12
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check critical_paths (12/12)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-12
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-usage-durability.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check task_outcome (1/12)
+
+Check: task_outcome
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check task_outcome (2/12)
+
+Check: task_outcome
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check task_outcome (3/12)
+
+Check: task_outcome
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-external-accounting.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check task_outcome (4/12)
+
+Check: task_outcome
+Command: node --test scripts/bench/task-cost-rollup.test.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check task_outcome (5/12)
+
+Check: task_outcome
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-stage-timing.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check task_outcome (6/12)
+
+Check: task_outcome
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/evaluator/roadmap-telemetry-disposition.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check task_outcome (7/12)
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check task_outcome (8/12)
+
+Check: task_outcome
+Command: bun run schemas:check
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check task_outcome (9/12)
+
+Check: task_outcome
+Command: bun run artifacts:check
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check task_outcome (10/12)
+
+Check: task_outcome
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check task_outcome (11/12)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json#check-12
+Scope: branch_pr task 202609121424-T83XJA Verification Contract check task_outcome (12/12)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-T83XJA-implement-durable-0-7-9-usage-cost-and-latency-a/.agentplane/tasks/202609121424-T83XJA/blueprint/resolved-snapshot.json
+- old_digest: a0606595992db659882c934dc9224bb4e23891d77af067972ab0b021db13f8c1
+- current_digest: a0606595992db659882c934dc9224bb4e23891d77af067972ab0b021db13f8c1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609121424-T83XJA
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609121424-T83XJA
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-13T00:36:19.890Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:47b7def428d877601b2b150f350d4b26cdcd9ee2f6b9e7aee315eb10145204de, input_digest=sha256:64570f62278d7c41c2ad8ec1da1d2847ddb6fe08a40e7673acb59d5d3ecf105e
 
 Details:
 
