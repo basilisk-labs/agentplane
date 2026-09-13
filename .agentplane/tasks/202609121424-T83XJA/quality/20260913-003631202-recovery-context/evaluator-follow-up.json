@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202609121424-T83XJA-ce310778abf3b5c3a50bf16e",
+  "task_id": "202609121424-T83XJA",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Rework is still required because sibling-overlap validation depends on the root span being the first array element.",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "summary": "[P1] packages/core/src/runner/supervisor-execution-episode.ts starts pairwise overlap validation at array index 1 instead of excluding the span identified by root_span_id. A direct reproduction through completeSupervisorExecutionEpisode with sibling spans at indices 0 and 1 and the valid root at index 2 was accepted, even though the siblings cover [0,8] and [2,10]. The durable schema does not specify span ordering, so callers or persisted journals can bypass the ST-13 non-overlap invariant by placing the root anywhere except index 0. Iterate all unordered pairs and skip pairs containing root_span_id, or explicitly enforce root-first ordering; add a root-last regression case.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/d4e7310d448a9bad3d139cf158f5e810d45ac42709033c920852a2bb59d7a67b.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "summary": "Residual risk: Until overlap validation is order-independent, malformed, migrated, or future caller-generated timing can bypass the durable no-double-counting contract.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/d4e7310d448a9bad3d139cf158f5e810d45ac42709033c920852a2bb59d7a67b.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202609121424-T83XJA/quality/20260913-003631202-recovery-context/evaluator-result.json"
+}
