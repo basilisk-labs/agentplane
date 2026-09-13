@@ -2,31 +2,13 @@
   "checks": [
     {
       "check_ids": [
-        "token-contract-tests"
-      ],
-      "command": "bunx vitest run packages/agentplane/src/commands/shared/supervisor-execution-default-budget.test.ts packages/agentplane/src/commands/task/task-token-usage.test.ts packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts",
-      "duration_ms": 3292,
-      "exit_code": 0,
-      "runtime": {
-        "environment_digest": "sha256:e5be9d78f3d9bae7f401933eca9b9cd4297855a6df309bac94de6cfaeb8c4b13",
-        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
-        "kind": "local_runtime_resolution",
-        "status": "resolved",
-        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
-      },
-      "script": null,
-      "stderr_tail": "",
-      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can\n\n\n Test Files  3 passed (3)\n      Tests  13 passed (13)\n   Start at  22:32:14\n   Duration  2.84s (transform 2.86s, setup 0ms, import 3.28s, tests 1.37s, environment 0ms)\n\n"
-    },
-    {
-      "check_ids": [
         "paired-contract-tests"
       ],
       "command": "node --test scripts/bench/paired-production-driver.test.mjs scripts/bench/paired-result-report.test.mjs",
-      "duration_ms": 1690,
+      "duration_ms": 2170,
       "exit_code": 0,
       "runtime": {
-        "environment_digest": "sha256:e5be9d78f3d9bae7f401933eca9b9cd4297855a6df309bac94de6cfaeb8c4b13",
+        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
         "executable_digest": "sha256:ee6fb0e015284d83a91e8ec5213f43a157f8a392b58555301682892ba928c04a",
         "kind": "local_runtime_resolution",
         "status": "resolved",
@@ -34,17 +16,17 @@
       },
       "script": null,
       "stderr_tail": "",
-      "stdout_tail": "✔ runs the pinned three-arm task entrypoints offline and keeps transports stratified (1109.549625ms)\n✔ rejects every mismatched run identity field (47.365ms)\n✔ rejects missing or malformed token usage (180.231292ms)\n✔ requires a trusted authority callback before live execution (41.807375ms)\n✔ rejects an observed execution identity that differs from the campaign (85.693958ms)\n✔ keeps failed-attempt tokens in the numerator and pairs only equivalent successes (6.318542ms)\n✔ unavailable tokens prevent a complete numeric claim (0.242917ms)\n✔ partial tokens remain visible and prevent a complete numeric claim (0.188459ms)\n✔ an all-failed arm has no finite successful-result score (0.164291ms)\n✔ rejects token subset double-counting (0.172041ms)\n✔ rejects outcome-mismatched successes from the paired population (0.155834ms)\n✔ keeps safety, activation, and efficiency gates independent (0.146959ms)\nℹ tests 12\nℹ suites 0\nℹ pass 12\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1509.293083\n"
+      "stdout_tail": "✔ runs the pinned three-arm task entrypoints offline and keeps transports stratified (1485.749917ms)\n✔ rejects every mismatched run identity field (46.775292ms)\n✔ pins a product artifact separately from its executable launcher (41.249167ms)\n✔ rejects missing or malformed token usage (226.484125ms)\n✔ requires a trusted authority callback before live execution (42.685292ms)\n✔ rejects an observed execution identity that differs from the campaign (91.38525ms)\n✔ keeps failed-attempt tokens in the numerator and pairs only equivalent successes (5.952959ms)\n✔ unavailable tokens prevent a complete numeric claim (0.271125ms)\n✔ partial tokens remain visible and prevent a complete numeric claim (0.199625ms)\n✔ an all-failed arm has no finite successful-result score (0.165959ms)\n✔ rejects token subset double-counting (0.173875ms)\n✔ rejects outcome-mismatched successes from the paired population (0.183125ms)\n✔ keeps safety, activation, and efficiency gates independent (0.213291ms)\nℹ tests 13\nℹ suites 0\nℹ pass 13\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1976.867375\n"
     },
     {
       "check_ids": [
         "efficiency-baseline"
       ],
       "command": "bun run bench:agent-efficiency:check",
-      "duration_ms": 236,
+      "duration_ms": 252,
       "exit_code": 0,
       "runtime": {
-        "environment_digest": "sha256:e5be9d78f3d9bae7f401933eca9b9cd4297855a6df309bac94de6cfaeb8c4b13",
+        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
         "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
         "kind": "local_runtime_resolution",
         "status": "resolved",
@@ -59,10 +41,10 @@
         "efficiency-replay"
       ],
       "command": "bun run bench:agent-efficiency:replay:check",
-      "duration_ms": 257,
+      "duration_ms": 283,
       "exit_code": 0,
       "runtime": {
-        "environment_digest": "sha256:e5be9d78f3d9bae7f401933eca9b9cd4297855a6df309bac94de6cfaeb8c4b13",
+        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
         "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
         "kind": "local_runtime_resolution",
         "status": "resolved",
