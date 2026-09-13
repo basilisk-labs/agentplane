@@ -10,7 +10,7 @@
         "task_outcome"
       ],
       "command": "bunx vitest run packages/agentplane/src/commands/shared/supervisor-execution-default-budget.test.ts packages/agentplane/src/commands/task/task-token-usage.test.ts packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts",
-      "duration_ms": 3055,
+      "duration_ms": 3110,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
@@ -21,7 +21,7 @@
       },
       "script": null,
       "stderr_tail": "",
-      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can\n\n\n Test Files  3 passed (3)\n      Tests  13 passed (13)\n   Start at  00:47:52\n   Duration  2.72s (transform 2.73s, setup 0ms, import 3.09s, tests 1.32s, environment 0ms)\n\n"
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can\n\n\n Test Files  3 passed (3)\n      Tests  13 passed (13)\n   Start at  01:23:58\n   Duration  2.76s (transform 2.75s, setup 0ms, import 3.12s, tests 1.38s, environment 0ms)\n\n"
     },
     {
       "check_ids": [
@@ -33,7 +33,7 @@
         "task_outcome"
       ],
       "command": "node --test scripts/bench/paired-production-driver.test.mjs scripts/bench/paired-result-report.test.mjs",
-      "duration_ms": 1967,
+      "duration_ms": 2613,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
@@ -44,7 +44,7 @@
       },
       "script": null,
       "stderr_tail": "",
-      "stdout_tail": "✔ runs the pinned three-arm task entrypoints offline and keeps transports stratified (1328.947666ms)\n✔ rejects every mismatched run identity field (44.971583ms)\n✔ pins a product artifact separately from its executable launcher (42.118ms)\n✔ rejects missing or malformed token usage (217.700583ms)\n✔ requires a trusted authority callback before live execution (39.95275ms)\n✔ rejects an observed execution identity that differs from the campaign (81.088791ms)\n✔ keeps failed-attempt tokens in the numerator and pairs only equivalent successes (5.643791ms)\n✔ unavailable tokens prevent a complete numeric claim (0.235333ms)\n✔ partial tokens remain visible and prevent a complete numeric claim (0.18175ms)\n✔ an all-failed arm has no finite successful-result score (0.157042ms)\n✔ rejects token subset double-counting (0.163458ms)\n✔ rejects outcome-mismatched successes from the paired population (0.15575ms)\n✔ keeps safety, activation, and efficiency gates independent (0.145542ms)\nℹ tests 13\nℹ suites 0\nℹ pass 13\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1798.677292\n"
+      "stdout_tail": "✔ runs the pinned three-arm task entrypoints offline and keeps transports stratified (1923.571625ms)\n✔ rejects every mismatched run identity field (45.764708ms)\n✔ pins a product artifact separately from its executable launcher (39.6595ms)\n✔ rejects missing or malformed token usage (214.760541ms)\n✔ requires a trusted authority callback before live execution (40.179625ms)\n✔ rejects an observed execution identity that differs from the campaign (126.662041ms)\n✔ keeps failed-attempt tokens in the numerator and pairs only equivalent successes (5.78725ms)\n✔ unavailable tokens prevent a complete numeric claim (0.236416ms)\n✔ partial tokens remain visible and prevent a complete numeric claim (0.186209ms)\n✔ an all-failed arm has no finite successful-result score (0.160417ms)\n✔ rejects token subset double-counting (0.168625ms)\n✔ rejects outcome-mismatched successes from the paired population (0.155ms)\n✔ keeps safety, activation, and efficiency gates independent (0.14275ms)\nℹ tests 13\nℹ suites 0\nℹ pass 13\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 2433.702875\n"
     },
     {
       "check_ids": [
@@ -56,7 +56,7 @@
         "task_outcome"
       ],
       "command": "bun run package:tarball:check",
-      "duration_ms": 10109,
+      "duration_ms": 10786,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
@@ -79,7 +79,7 @@
         "task_outcome"
       ],
       "command": "bun run package:install-smoke",
-      "duration_ms": 42221,
+      "duration_ms": 44486,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
@@ -90,7 +90,7 @@
       },
       "script": "package:install-smoke",
       "stderr_tail": "$ node scripts/release/check-local-tarball-install-smoke.mjs\n",
-      "stdout_tail": "installed migration matrix OK (scenarios=8)\nlocal tarball install smoke OK (202609132148-BZH0KA)\n"
+      "stdout_tail": "installed migration matrix OK (scenarios=8)\nlocal tarball install smoke OK (202609132224-RK21MW)\n"
     },
     {
       "check_ids": [
@@ -102,7 +102,7 @@
         "task_outcome"
       ],
       "command": "bun run test:release:critical",
-      "duration_ms": 13260,
+      "duration_ms": 14319,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
@@ -113,7 +113,7 @@
       },
       "script": "test:release:critical",
       "stderr_tail": "$ node scripts/checks/run-vitest-suite.mjs release-critical\n",
-      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can\n\n\n Test Files  4 passed (4)\n      Tests  16 passed (16)\n   Start at  00:48:50\n   Duration  12.80s (transform 9.13s, setup 0ms, import 6.35s, tests 22.00s, environment 0ms)\n\n"
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can\n\n\n Test Files  4 passed (4)\n      Tests  16 passed (16)\n   Start at  01:24:59\n   Duration  13.80s (transform 9.12s, setup 0ms, import 6.38s, tests 23.55s, environment 0ms)\n\n"
     },
     {
       "check_ids": [
@@ -125,7 +125,7 @@
         "task_outcome"
       ],
       "command": "bun run bench:agent-efficiency:check",
-      "duration_ms": 232,
+      "duration_ms": 239,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
@@ -148,7 +148,7 @@
         "task_outcome"
       ],
       "command": "bun run bench:agent-efficiency:replay:check",
-      "duration_ms": 233,
+      "duration_ms": 241,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
@@ -171,7 +171,7 @@
         "task_outcome"
       ],
       "command": "bun run docs:bootstrap:check",
-      "duration_ms": 343,
+      "duration_ms": 349,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
@@ -182,7 +182,7 @@
       },
       "script": "docs:bootstrap:check",
       "stderr_tail": "$ node scripts/checks/check-agent-bootstrap-fresh.mjs\n",
-      "stdout_tail": "../../../../../../../var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-bootstrap-doc-j1lU1F/agent-bootstrap.generated.mdx 20ms\nok: bootstrap doc, startup command blocks, quickstart/roles, runtime docs, troubleshooting, and release recovery docs are aligned\n"
+      "stdout_tail": "../../../../../../../var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-bootstrap-doc-lkl8tH/agent-bootstrap.generated.mdx 22ms\nok: bootstrap doc, startup command blocks, quickstart/roles, runtime docs, troubleshooting, and release recovery docs are aligned\n"
     },
     {
       "check_ids": [
@@ -194,7 +194,7 @@
         "task_outcome"
       ],
       "command": "bun run docs:onboarding:check",
-      "duration_ms": 168,
+      "duration_ms": 169,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
@@ -217,7 +217,7 @@
         "task_outcome"
       ],
       "command": "git diff --check",
-      "duration_ms": 173,
+      "duration_ms": 174,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
@@ -240,8 +240,8 @@
         "task_outcome"
       ],
       "command": "bun run ci:local:full",
-      "duration_ms": 136536,
-      "exit_code": 1,
+      "duration_ms": 431368,
+      "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
         "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
@@ -250,13 +250,13 @@
         "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
       },
       "script": "ci:local:full",
-      "stderr_tail": "14)\n    at checkExecSyncError (node:child_process:925:11)\n    at execFileSync (node:child_process:961:15)\n    at run (file:///Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can/scripts/checks/run-local-ci-group.mjs:4:32)\n    at bunScript (file:///Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can/scripts/checks/run-local-ci-group.mjs:5:29)\n    at docs-schema (file:///Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can/scripts/checks/run-local-ci-group.mjs:24:7)\n    at file:///Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can/scripts/checks/run-local-ci-group.mjs:72:14\n    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)\n    at async node:internal/modules/esm/loader:643:26 {\n  status: 1,\n  signal: null,\n  output: [ null, null, null ],\n  pid: 79359,\n  stdout: null,\n  stderr: null\n}\n\nNode.js v24.18.0\n$ eslint packages scripts eslint.config.cjs vitest.config.ts\nerror: script \"lint:core\" exited with code 1\nnode:internal/errors:985\n  const err = new Error(message);\n              ^\n\nError: Command failed: bun run lint:core\n    at genericNodeError (node:internal/errors:985:15)\n    at wrappedFn (node:internal/errors:539:14)\n    at checkExecSyncError (node:child_process:925:11)\n    at execFileSync (node:child_process:961:15)\n    at run (file:///Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can/scripts/checks/run-local-ci-group.mjs:4:32)\n    at bunScript (file:///Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can/scripts/checks/run-local-ci-group.mjs:5:29)\n    at Object.core (file:///Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can/scripts/checks/run-local-ci-group.mjs:28:5)\n    at file:///Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can/scripts/checks/run-local-ci-group.mjs:72:14\n    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)\n    at async node:internal/modules/esm/loader:643:26 {\n  status: 1,\n  signal: null,\n  output: [ null, null, null ],\n  pid: 79385,\n  stdout: null,\n  stderr: null\n}\n\nNode.js v24.18.0\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic --timeout-ms 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":false,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":22730},{\"id\":\"docs-schema\",\"exit_code\":1,\"timed_out\":false,\"duration_ms\":15104},{\"id\":\"core\",\"exit_code\":1,\"timed_out\":false,\"duration_ms\":56321},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":37774}]}\nfile:///Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can/scripts/checks/run-local-ci.mjs:525\n  if (!ok) throw new Error(\"Full verification group failed.\");\n                 ^\n\nError: Full verification group failed.\n    at runFullFastPath (file:///Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can/scripts/checks/run-local-ci.mjs:525:18)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async file:///Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can/scripts/checks/run-local-ci.mjs:600:7\n\nNode.js v24.18.0\nerror: script \"ci:local:full\" exited with code 1\n",
-      "stdout_tail": "-0-7-9-stabilization-can/scripts/bench/paired-live-codex-launcher.mjs\n  328:32  error  Use `for…of` instead of `.forEach(…)`             unicorn/no-for-each\n  489:23  error  'product' is defined but never used               no-unused-vars\n  554:20  error  Move arrow function 'cleanup' to the outer scope  unicorn/consistent-function-scoping\n\n/Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can/scripts/bench/paired-m01-oracle.mjs\n  1:1  error  This file needs no shebang  n/hashbang\n\n/Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can/scripts/bench/paired-production-driver.mjs\n  109:40  error  Use `.length > 0` when checking length is not zero  unicorn/explicit-length-check\n\n/Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can/scripts/bench/paired-result-report.mjs\n  44:39  error  Use `.length > 0` when checking length is not zero  unicorn/explicit-length-check\n\n✖ 6 problems (6 errors, 0 warnings)\n  3 errors and 0 warnings potentially fixable with the `--fix` option.\n\n\n== cli (37774ms) ==\nCLI cold-start baseline OK using fixture local-basic (quickstart median=196.396ms (threshold=5000ms, p95=196.396ms); task_list median=223.836ms (threshold=10000ms, p95=223.836ms); task_search median=206.855ms (threshold=6000ms, p95=206.855ms); task_next median=202.749ms (threshold=8000ms, p95=202.749ms); preflight_quick median=222.035ms (threshold=6000ms, p95=222.035ms))\nVitest suite critical-cli: chunk 1/5 (2 files): packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts, packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts\nVitest suite critical-cli: chunk 1/5 passed in 7090ms (Test Files  2 passed (2); Tests  3 passed (3); Duration  6.86s (transform 3.56s, setup 0ms, import 2.96s, tests 6.48s, environment 0ms))\nVitest suite critical-cli: chunk 2/5 (2 files): packages/agentplane/src/cli/run-cli.critical.git-edge.test.ts, packages/agentplane/src/cli/run-cli.critical.protected-paths.test.ts\nVitest suite critical-cli: chunk 2/5 passed in 2981ms (Test Files  2 passed (2); Tests  5 passed (5); Duration  2.82s (transform 2.16s, setup 0ms, import 2.84s, tests 2.40s, environment 0ms))\nVitest suite critical-cli: chunk 3/5 (2 files): packages/agentplane/src/cli/run-cli.critical.scope-leak.test.ts, packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts\nVitest suite critical-cli: chunk 3/5 passed in 3168ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  3.01s (transform 2.13s, setup 0ms, import 2.80s, tests 2.58s, environment 0ms))\nVitest suite critical-cli: chunk 4/5 (2 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts, packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 4/5 passed in 17828ms (Test Files  2 passed (2); Tests  6 passed (6); Duration  17.65s (transform 3.18s, setup 0ms, import 2.71s, tests 16.48s, environment 0ms))\nVitest suite critical-cli: chunk 5/5 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 5/5 passed in 4988ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  4.83s (transform 1.14s, setup 0ms, import 1.37s, tests 3.41s, environment 0ms))\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":false,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":22730},{\"id\":\"docs-schema\",\"exit_code\":1,\"timed_out\":false,\"duration_ms\":15104},{\"id\":\"core\",\"exit_code\":1,\"timed_out\":false,\"duration_ms\":56321},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":37774}]}\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":136319,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":1,\"build_invocations\":1,\"ok\":false}\n"
+      "stderr_tail": "iled: Invalid input: expected string, received number at \"verify[1]\"; task README frontmatter schema validation failed: Too small: expected string to have >=1 characters at \"commit.hash\"; task README frontmatter schema validation failed: Too small: expected string to have >=1 characters at \"commit.message\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"description\"\n{\"ts\":\"2026-09-13T22:30:55.987Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-faO3KQ/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-faO3KQ/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-13T22:30:56.007Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-a0erpf/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-a0erpf/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-13T22:30:56.011Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-a0erpf/.agentplane/WORKFLOW.md\",\"from\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-a0erpf/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-13T22:30:56.018Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-JAtim3/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-JAtim3/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-13T22:30:56.022Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_failed\",\"code\":\"WF_UNSUPPORTED_VERSION\",\"details\":{\"reason\":\"Unsupported WORKFLOW version 3; supported versions: 1, 2.\"}}\n{\"ts\":\"2026-09-13T22:30:59.597Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-13T22:30:59.612Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":1}}\n{\"ts\":\"2026-09-13T22:30:59.613Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-13T22:30:59.616Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":2}}\n{\"ts\":\"2026-09-13T22:30:59.616Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-13T22:30:59.618Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic --timeout-ms 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n$ bun run docs:ia:check && bun run docs:site:generate:check && bun run docs:site:typecheck && bun run docs:site:build:check && bun run docs:site:check:design\n$ node scripts/checks/check-docs-ia.mjs\n$ node scripts/generate/generate-website-docs.mjs --check && node scripts/generate/generate-llms-full.mjs --check\n$ bun run --cwd website typecheck\n$ node ../scripts/checks/run-typescript-build.mjs -p tsconfig.json --noEmit\n$ bun run --cwd website build:check\n$ bun run check-content && bun run check-social-images && docusaurus build\n$ node scripts/check-site-content.mjs\n$ node scripts/generate-social-images.mjs --check\n$ node scripts/checks/check-design-language.mjs\n$ node scripts/workflow/run-workflows-lint.mjs && node scripts/checks/check-workflow-command-contract.mjs && bun scripts/checks/check-lifecycle-parity.ts && node scripts/checks/check-critical-test-route.mjs\n$ node scripts/checks/run-vitest-suite.mjs platform-critical\n$ node scripts/checks/check-significant-coverage.mjs\n",
+      "stdout_tail": "est.ts, packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts\nVitest suite critical-cli: chunk 3/5 passed in 3152ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  2.99s (transform 2.17s, setup 0ms, import 2.85s, tests 2.53s, environment 0ms))\nVitest suite critical-cli: chunk 4/5 (2 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts, packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 4/5 passed in 18245ms (Test Files  2 passed (2); Tests  6 passed (6); Duration  18.06s (transform 3.24s, setup 0ms, import 2.78s, tests 16.86s, environment 0ms))\nVitest suite critical-cli: chunk 5/5 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 5/5 passed in 4991ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  4.83s (transform 1.13s, setup 0ms, import 1.36s, tests 3.41s, environment 0ms))\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":true,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":23326},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":16343},{\"id\":\"core\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":312443},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":37856}]}\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":394383,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":1,\"build_invocations\":1,\"ok\":true}\n\n== Docs site pipeline (generate + typecheck + build + design) ==\nok: docs IA, sidebar coverage, and current path references are aligned\nok: docs/reference/generated-reference.mdx is fresh\nok: website/static/llms-full.txt is fresh\n[site-content] ok\nchecked 234 docs social images\n\n ------------------------------------------------------------------------------                                                                                                         Update available 3.10.1 → 3.10.2                                                                                                                To upgrade Docusaurus packages with the latest version, run the                                       following command:                                           `npm i @docusaurus/core@latest @docusaurus/faster@latest                    @docusaurus/preset-classic@latest @docusaurus/theme-common@latest            @docusaurus/theme-mermaid@latest @docusaurus/module-type-aliases@latest                  @docusaurus/tsconfig@latest @docusaurus/types@latest`                                                                                               ------------------------------------------------------------------------------ \n\n[INFO] [en] Creating an optimized production build...\n[navigation-check] ok: checked 6 docs targets from website/build\n[SUCCESS] Generated static files in \"build\".\n[INFO] Use `npm run serve` command to test your build locally.\nDESIGN.md compliance check passed\n\n== Workflows lint (actionlint) ==\nworkflow and command guidance contract OK\nworkflow lifecycle parity OK\ncritical Vitest route OK\n\n== Windows platform-critical tests ==\n\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can\n\n\n Test Files  7 passed (7)\n      Tests  98 passed (98)\n   Start at  01:31:57\n   Duration  24.99s (transform 9.87s, setup 0ms, import 8.65s, tests 74.89s, environment 0ms)\n\n\n== Significant file coverage (guard) ==\n\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can\n      Coverage enabled with v8\n\n\n Test Files  8 passed (8)\n      Tests  101 passed (101)\n   Start at  01:32:22\n   Duration  3.14s (transform 3.99s, setup 0ms, import 4.41s, tests 2.95s, environment 0ms)\n\n\n== Coverage threshold (significant) ==\nSignificant suite contract OK (17 source targets).\n"
     }
   ],
   "kind": "direct_task_declared_checks",
-  "reason": "Declared check failed: bun run ci:local:full",
+  "reason": null,
   "schema_version": 1,
-  "status": "failed",
+  "status": "passed",
   "task_id": "202609121424-4BC7B3"
 }

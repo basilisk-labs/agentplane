@@ -15,8 +15,8 @@ Source contract: agentplane-roadmap-r2 cards ST-18, ST-19, and ST-20. Build the 
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
