@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check bbb38f1b62b207bf9f680a73c356adac6ef33367..e2bedfbf83b765e5a31831bbb2b2b2e40f312287",
+      "command": "git diff --check 41ce0900201f4607e3a1e1e42f485e204dd1edd4..9e32b1b8a9c75d1b20541637d2cdb3c9d7ec3b0a",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB bbb38f1b62b207bf9f680a73c356adac6ef33367..e2bedfbf83b765e5a31831bbb2b2b2e40f312287",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 41ce0900201f4607e3a1e1e42f485e204dd1edd4..9e32b1b8a9c75d1b20541637d2cdb3c9d7ec3b0a",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,7 +21,7 @@
         "M\t.agentplane/tasks/202609121424-3YAX44/pr/github-body.md",
         "M\t.agentplane/tasks/202609121424-3YAX44/pr/meta.json",
         "M\t.agentplane/tasks/202609121424-3YAX44/pr/review.md",
-        "M\tscripts/bench/paired-production-driver.test.mjs"
+        "M\tscripts/bench/paired-result-report.test.mjs"
       ]
     },
     {
@@ -31,8 +31,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "bbb38f1b62b207bf9f680a73c356adac6ef33367",
-  "implementation_commit": "e2bedfbf83b765e5a31831bbb2b2b2e40f312287",
+  "execution_base_commit": "41ce0900201f4607e3a1e1e42f485e204dd1edd4",
+  "implementation_commit": "9e32b1b8a9c75d1b20541637d2cdb3c9d7ec3b0a",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
