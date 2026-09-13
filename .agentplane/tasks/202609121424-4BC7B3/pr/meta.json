@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:2c5b9e751e3076db053224180c0f92d64583c54ce6b6230469fbfc5f82c46abc",
   "pr_number": 5949,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5949",
+  "pre_merge_closure": {
+    "basis_commit": "9c6dd3f23efedad8c8b648a3ad8770d75a4cd21b",
+    "branch": "task/202609121424-4BC7B3/qualify-and-document-the-0-7-9-stabilization-can",
+    "pr_number": 5949,
+    "recorded_at": "2026-09-13T22:34:04.628Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
