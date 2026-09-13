@@ -2,10 +2,10 @@
 id: "202609130858-RMHWQ5"
 title: "Add an explicit USER-approved supervisor budget epoch for unknown token telemetry"
 result_summary: "pre-merge closure"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on: []
@@ -29,10 +29,10 @@ plan_approval:
   updated_by: "HOST:local:USER"
   note: "host_user_decision=sha256:98741261b90825d30f097dc7a9293ef96786fc2f45d34bdfe7bcee9368e1c6d5"
 verification:
-  state: "ok"
-  updated_at: "2026-09-13T14:27:07.528Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  state: "pending"
+  updated_at: "2026-09-13T14:40:10.440Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 0
 quality_review:
   state: "pass"
@@ -114,6 +114,7 @@ execution_contract:
       - "packages/agentplane/src/commands/task"
       - "packages/core/src/runner/supervisor-execution-episode.ts"
       - "packages/core/src/schemas/index.ts"
+      - "scripts/baselines/v0.7-compatibility-candidate.json"
       - "scripts/lib/test-route-registry.mjs"
   declaration:
     external_effects: []
@@ -122,6 +123,7 @@ execution_contract:
     rationale:
       - "Migrated approved WorkItem scope for a legacy rootless execution contract."
       - "USER-approved blocked-result scope extension: repository_effects=schema,tests"
+      - "USER-approved blocked-result scope extension: roots=scripts/baselines/v0.7-compatibility-candidate.json"
       - "legacy structured task fields mapped to the execution contract"
     repository_effects:
       - "repository_write"
@@ -138,6 +140,7 @@ execution_contract:
       - "packages/agentplane/src/commands/task"
       - "packages/core/src/runner/supervisor-execution-episode.ts"
       - "packages/core/src/schemas/index.ts"
+      - "scripts/baselines/v0.7-compatibility-candidate.json"
       - "scripts/lib/test-route-registry.mjs"
   observed:
     authority_violations: []
@@ -167,58 +170,7 @@ execution_contract:
       - "schema"
       - "source_code"
       - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-10"
-        result: "pass"
-      -
-        id: "recorded-check-11"
-        result: "pass"
-      -
-        id: "recorded-check-12"
-        result: "pass"
-      -
-        id: "recorded-check-13"
-        result: "pass"
-      -
-        id: "recorded-check-14"
-        result: "pass"
-      -
-        id: "recorded-check-15"
-        result: "pass"
-      -
-        id: "recorded-check-16"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
-      -
-        id: "recorded-check-7"
-        result: "pass"
-      -
-        id: "recorded-check-8"
-        result: "pass"
-      -
-        id: "recorded-check-9"
-        result: "pass"
-      -
-        id: "verification-record"
-        result: "pass"
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_schema"
@@ -241,6 +193,7 @@ execution_contract:
           - "packages/agentplane/src/commands/task"
           - "packages/core/src/runner/supervisor-execution-episode.ts"
           - "packages/core/src/schemas/index.ts"
+          - "scripts/baselines/v0.7-compatibility-candidate.json"
           - "scripts/lib/test-route-registry.mjs"
         evidence_requirements:
           - "hosted_integration"
@@ -261,7 +214,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:1afc189b495def1c1563dcff8b45ac3a57b55725ca36893ef3397f5037d6fea9"
+      digest: "sha256:b93779e5a224570df3b78c8e9d187d06c97b1c027bf886462e0e0dcb16bb548d"
       escalation_reasons:
         - "central_component:packages/core/src/runner/supervisor-execution-episode.ts"
         - "central_component:packages/core/src/schemas/index.ts"
@@ -343,9 +296,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "5fc061999d3c77cac00a7820151f794890754b04"
-  message: "🚧 RMHWQ5 task: record external evaluator result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -374,6 +325,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. Hosted verify-contract fails because the reviewed compatibility candidate is stale after the approved CLI and schema surface changes. Recommended action: Authorize the exact compatibility candidate path, regenerate it with bun run bench:compatibility:candidate:capture -- --package-source-task 202609130858-RMHWQ5, and rerun the compatibility checks. Requested scope: roots=scripts/baselines/v0.7-compatibility-candidate.json; repository effects=unchanged; request digest=sha256:813118b0f1b3d425c3b235e7978641a8ee9a69e927779b6e8711384d4db15a18. Agentplane receipt: external-agent-blocker/tr_9829077f1717844e7f0ab2db59dd39d7/sha256:c7c71650d7b035241b69c105debc2b9de237e74dc51175c03bdfbc798795e90f/sha256:813118b0f1b3d425c3b235e7978641a8ee9a69e927779b6e8711384d4db15a18."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: scripts/baselines/v0.7-compatibility-candidate.json; repository effects: unchanged."
 events:
   -
     type: "status"
@@ -620,6 +574,8 @@ extensions:
     status: "active"
     task_id: "202609130858-RMHWQ5"
   agentplane.scope_extension_request:
+    applied_at: "2026-09-13T14:40:10.440Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:c7c71650d7b035241b69c105debc2b9de237e74dc51175c03bdfbc798795e90f"
     kind: "task_scope_extension_request"
     request:
@@ -630,7 +586,7 @@ extensions:
         - "scripts/baselines/v0.7-compatibility-candidate.json"
     request_digest: "sha256:813118b0f1b3d425c3b235e7978641a8ee9a69e927779b6e8711384d4db15a18"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_9829077f1717844e7f0ab2db59dd39d7"
     work_item_id: null
   agentplane.task_centric:
@@ -887,7 +843,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609130858-RMHWQ5"
-    event_cursor: 20
+    event_cursor: 21
     final_validation: null
     id: "202609130858-RMHWQ5"
     intent:
@@ -924,7 +880,7 @@ extensions:
 
         When a supervisor episode stops because prior paid work has unavailable or unallocatable provider token telemetry, preserve that historical usage as unknown and continue to block automatic paid dispatch. Add a narrow operator command that accepts an explicit USER authorization, records durable state-bound provenance, and opens a new independently capped token budget epoch without rewriting prior operations or treating unknown usage as zero. Reject stale authorization, non-telemetry stops, missing active USER authority, replay with different parameters, and caps that are absent or invalid. The repaired ST-14 task must be able to resume through this command. Do not weaken actual human_review verdicts or automatic fail-closed admission.
       task_id: "202609130858-RMHWQ5"
-    lifecycle: "BLOCKED"
+    lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history:
       -
@@ -1365,7 +1321,7 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609130858-RMHWQ5"
-    revision: 28
+    revision: 29
     schema_version: 1
     updated_at: "2026-09-13T14:39:53.062Z"
     work_items:
@@ -1621,6 +1577,30 @@ extensions:
         mutation_id: "compatibility:sha256:2700840116a771d4bbbc6a4c08d88a40a67bc5ec2f935f9889b13532cfabbd9c"
         next_revision: 4
         previous_revision: 3
+        schema_version: 1
+        task_id: "202609130858-RMHWQ5"
+      compatibility:sha256:2acd5ff626c8ce532676706d9eb6ccf5296e6458ec8d69d239b7e7846e34fa47:
+        aggregate_digest: "sha256:2ebef1368ac496fe48380897f8577b20fbb409a80ec28234c217bf6dee651682"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T14:39:53.062Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_2a5540672197add95a4fefc3"
+          mutation_id: "compatibility:sha256:2acd5ff626c8ce532676706d9eb6ccf5296e6458ec8d69d239b7e7846e34fa47"
+          plan_digest: "sha256:3240f151dc9d04408ae11cf18a19b0dfa42f0de9817ead8c7e11b81eb7599ac1"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609130858-RMHWQ5"
+          task_revision: 28
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:2acd5ff626c8ce532676706d9eb6ccf5296e6458ec8d69d239b7e7846e34fa47"
+        next_revision: 29
+        previous_revision: 28
         schema_version: 1
         task_id: "202609130858-RMHWQ5"
       compatibility:sha256:38c1caf69b85fe9747733842340e65ae9b48bc4804600429142358adba5b3105:
