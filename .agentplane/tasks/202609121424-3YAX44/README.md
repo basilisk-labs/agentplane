@@ -4,7 +4,7 @@ title: "Add the 0.7.9 marginal-cost and paired production benchmark harness for 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -204,8 +204,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "0cc76b3c323da62a9c18eb946438e49e5d6c204a"
-  message: "🧹 3YAX44 performance: satisfy benchmark lint contracts"
+  hash: "31a8959fee6aa84f518efb530adf85a04279d07b"
+  message: "🚧 3YAX44 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -213,6 +213,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation committed at 0cc76b3c323da62a9c18eb946438e49e5d6c204a after focused checks and full local CI passed."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 31a8959fee6a. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -235,9 +238,17 @@ events:
     to: "DOING"
     note: "Implementation committed at 0cc76b3c323da62a9c18eb946438e49e5d6c204a after focused checks and full local CI passed."
     commit: "0cc76b3c323da62a9c18eb946438e49e5d6c204a"
+  -
+    type: "status"
+    at: "2026-09-13T15:25:33.924Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 31a8959fee6a. CLI accepted one state-bound external-agent semantic result."
+    commit: "31a8959fee6aa84f518efb530adf85a04279d07b"
 doc_version: 3
-doc_updated_at: "2026-09-13T08:39:37.088Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-13T15:25:33.924Z"
+doc_updated_by: "SUPERVISOR"
 description: "Source contract: agentplane-roadmap-r2 cards ST-14, ST-15, and ST-16. Measure marginal Git and artifact cost in the existing fixture harness, add one production-path paired driver using current isolation and evidence utilities, and report all-attempt cost per independently verified success with paired outcomes, success and violation rates, stage distributions, coverage, and uncertainty. Enforce matched target tree, product artifacts, model, effort, authority, checks, retries, runtime profile, verifier, and raw cost. Managed and external modes remain stratified. Unknown charges prevent a complete numeric claim; all-failed arms yield no finite success score. Do not execute paid calls in this task and do not reinterpret historical baselines. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: node --test scripts/bench/task-marginal-cost.test.mjs; node --test scripts/bench/paired-production-driver.test.mjs; node --test scripts/bench/paired-result-report.test.mjs; existing benchmark replay checks and relevant release critical checks."
 sections:
   Summary: |-
@@ -890,7 +901,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609121424-3YAX44"
-    event_cursor: 6
+    event_cursor: 8
     final_validation: null
     id: "202609121424-3YAX44"
     intent:
@@ -920,9 +931,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 9
+    revision: 11
     schema_version: 1
-    updated_at: "2026-09-13T08:39:37.088Z"
+    updated_at: "2026-09-13T15:25:33.924Z"
     work_items:
       ST-14:
         attempt: 0
@@ -1052,6 +1063,54 @@ extensions:
         previous_revision: 8
         schema_version: 1
         task_id: "202609121424-3YAX44"
+      compatibility:sha256:bd2182a988abfc2929ce17b735f2cd540c8ff0eb15664a40bc9defefe60da644:
+        aggregate_digest: "sha256:eab8d04826f5d338e825c99fc221ce6bbce9019ada5b0b307ab699aee68817c0"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T15:25:33.924Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_09aba2a437064c05361fda9e"
+          mutation_id: "compatibility:sha256:bd2182a988abfc2929ce17b735f2cd540c8ff0eb15664a40bc9defefe60da644"
+          plan_digest: "sha256:9058c9f56183fcc658d347a916f3b9ee21711fabb6fc2f5125c6b3ed3f32004c"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-3YAX44"
+          task_revision: 10
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:bd2182a988abfc2929ce17b735f2cd540c8ff0eb15664a40bc9defefe60da644"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202609121424-3YAX44"
+      compatibility:sha256:c867d6c6ce8a6b7ed803af21fc965b64ff02de39eaf6f0314ad9a5d7e5ebaef1:
+        aggregate_digest: "sha256:3c299a20193cc1f42239f72b0690b733766e4c545ffbbdc3cb69bcdc23cfe9ce"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T15:25:33.924Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_09e4396b6abb6041bf145d04"
+          mutation_id: "compatibility:sha256:c867d6c6ce8a6b7ed803af21fc965b64ff02de39eaf6f0314ad9a5d7e5ebaef1"
+          plan_digest: "sha256:9058c9f56183fcc658d347a916f3b9ee21711fabb6fc2f5125c6b3ed3f32004c"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-3YAX44"
+          task_revision: 9
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:c867d6c6ce8a6b7ed803af21fc965b64ff02de39eaf6f0314ad9a5d7e5ebaef1"
+        next_revision: 10
+        previous_revision: 9
+        schema_version: 1
+        task_id: "202609121424-3YAX44"
       compatibility:sha256:d5ebe07ccc4cf2430d6ac75278cbe5e2259f78e57df1a0155e2292904d292062:
         aggregate_digest: "sha256:b9ba930018aee1650e7fbc82108e5fca638c8c257cce28bf5f5ef7d7e8ce91e8"
         event:
@@ -1103,6 +1162,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "31a8959fee6aa84f518efb530adf85a04279d07b"
   task_execution_context:
     base_ref: "main"
     base_sha: "d03a5e786db57136bf7f6c4661b148bcf97cfaf1"
