@@ -292,6 +292,97 @@ export async function appendRunnerProviderUsageObservation(opts: {
   });
 }
 
+function parseRunnerProviderUsageObservation(value: unknown): RunnerProviderUsageObservation {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new Error("Runner provider usage observation must be an object.");
+  }
+  const observation = value as Partial<RunnerProviderUsageObservation>;
+  const nonEmpty = (candidate: unknown): candidate is string =>
+    typeof candidate === "string" && candidate.trim().length > 0;
+  const nullableIdentity = (candidate: unknown): candidate is string | null =>
+    candidate === null || nonEmpty(candidate);
+  const validStatus = ["observed", "partial", "unavailable"].includes(observation.status ?? "");
+  const usage = observation.usage;
+  const validUsage =
+    usage === null ||
+    (!!usage &&
+      typeof usage === "object" &&
+      !Array.isArray(usage) &&
+      Object.values(usage).every(
+        (entry) => typeof entry === "number" && Number.isSafeInteger(entry) && entry >= 0,
+      ));
+  const observedTokenFields =
+    usage != null &&
+    [usage.input_tokens, usage.output_tokens, usage.total_tokens].every(
+      (entry) => typeof entry === "number" && Number.isSafeInteger(entry) && entry >= 0,
+    );
+  if (
+    observation.schema_version !== 1 ||
+    observation.kind !== "runner_provider_usage_observation" ||
+    !nonEmpty(observation.provider) ||
+    !validStatus ||
+    !nonEmpty(observation.dispatch_id) ||
+    !nonEmpty(observation.run_id) ||
+    !nonEmpty(observation.work_order_id) ||
+    !nullableIdentity(observation.thread_id) ||
+    !nullableIdentity(observation.turn_id) ||
+    !validUsage ||
+    !nonEmpty(observation.observed_at)
+  ) {
+    throw new Error("Runner provider usage observation is invalid.");
+  }
+  if (
+    observation.status === "observed" &&
+    (!observedTokenFields || observation.thread_id === null || observation.turn_id === null)
+  ) {
+    throw new Error("Observed runner provider usage requires token usage and provider identity.");
+  }
+  if (
+    observation.status === "unavailable" &&
+    (usage !== null || observation.thread_id !== null || observation.turn_id !== null)
+  ) {
+    throw new Error("Unavailable runner provider usage cannot contain usage or provider identity.");
+  }
+  return structuredClone(observation as RunnerProviderUsageObservation);
+}
+
+export async function readRunnerProviderUsageObservation(opts: {
+  events_path: string;
+  provider: string;
+  dispatch_id: string;
+  run_id: string;
+  work_order_id: string;
+}): Promise<RunnerProviderUsageObservation | null> {
+  const text = await readStableRegularTextNoFollow(opts.events_path, "runner events file", {
+    max_bytes: 16 * 1024 * 1024,
+  });
+  const observations: RunnerProviderUsageObservation[] = [];
+  for (const line of text.split("\n")) {
+    if (!line.trim()) continue;
+    const event = JSON.parse(line) as unknown;
+    if (!event || typeof event !== "object" || Array.isArray(event)) {
+      throw new Error("Runner event must be an object.");
+    }
+    const record = event as RunnerEvent;
+    if (record.type !== "runner_provider_usage_observation") continue;
+    observations.push(parseRunnerProviderUsageObservation(record.data));
+  }
+  if (observations.length === 0) return null;
+  if (observations.length !== 1) {
+    throw new Error("Runner events contain duplicate provider usage observations.");
+  }
+  const observation = observations[0]!;
+  if (
+    observation.provider !== opts.provider ||
+    observation.dispatch_id !== opts.dispatch_id ||
+    observation.run_id !== opts.run_id ||
+    observation.work_order_id !== opts.work_order_id
+  ) {
+    throw new Error("Runner provider usage observation does not match the managed dispatch.");
+  }
+  return observation;
+}
+
 export async function readRunnerRunState(
   state_path: string,
   options: RunnerRunStateParseOptions = {},

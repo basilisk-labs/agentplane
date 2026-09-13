@@ -11,7 +11,7 @@ import {
 } from "@agentplane/testkit/runner";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { writePreparedRunnerArtifacts } from "../artifacts.js";
+import { readRunnerProviderUsageObservation, writePreparedRunnerArtifacts } from "../artifacts.js";
 import type { RunnerEvent } from "../types.js";
 import { createRunnerAdapter } from "./index.js";
 
@@ -77,6 +77,7 @@ async function executeFakeCodex(lines: string[]) {
     .map((line) => JSON.parse(line) as RunnerEvent);
   return {
     result,
+    invocation,
     events,
     usageEvents: events.filter((event) => event.type === "runner_provider_usage_observation"),
   };
@@ -125,6 +126,22 @@ describe("Codex provider usage durability", () => {
         visible_output_tokens: 10,
         reasoning_tokens: 20,
       },
+    });
+    const deserializedResult = JSON.parse(JSON.stringify(executed.result)) as object;
+    expect(deserializedResult).not.toBe(executed.result);
+    await expect(
+      readRunnerProviderUsageObservation({
+        events_path: executed.invocation.events_path,
+        provider: executed.invocation.adapter_id,
+        dispatch_id: `dispatch:${executed.invocation.work_order_id}`,
+        run_id: executed.invocation.run_id,
+        work_order_id: executed.invocation.work_order_id,
+      }),
+    ).resolves.toMatchObject({
+      status: "observed",
+      thread_id: "thread-usage",
+      turn_id: "turn-usage",
+      usage: { input_tokens: 100, output_tokens: 30, total_tokens: 130 },
     });
   });
 

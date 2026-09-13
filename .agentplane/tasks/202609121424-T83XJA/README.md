@@ -2,10 +2,10 @@
 id: "202609121424-T83XJA"
 title: "Implement durable 0.7.9 usage, cost, and latency accounting for ST-08 through ST-13 and ST-17"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 49
+revision: 50
 origin:
   system: "manual"
 depends_on:
@@ -707,6 +707,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Start: address evaluator findings R1-R3 without replaying paid provider effects."
 events:
   -
     type: "status"
@@ -840,8 +843,15 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-13T01:23:58.791Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Start: address evaluator findings R1-R3 without replaying paid provider effects."
 doc_version: 3
-doc_updated_at: "2026-09-13T01:22:48.080Z"
+doc_updated_at: "2026-09-13T01:23:58.820Z"
 doc_updated_by: "CODER"
 description: "Source contract: agentplane-roadmap-r2 cards ST-08, ST-09, ST-10, ST-11, ST-12, ST-13, and ST-17. Capture Codex usage durably before semantic-result validation, preserve evaluator charges on failure, connect managed observations to the existing journal, account for external episodes without trusting self-reported tokens, roll up task cost from source observations, partition lifecycle latency without double counting, and separate missing telemetry from semantic quality and further-spend admission. Missing usage is unknown, never zero. A valid saved verdict is reused, while unknown budget blocks additional paid dispatch. Preserve I01-I12 and C01-C08. Do not create a second accounting store or trust model-supplied usage. The roadmap directory is source-only and must never be committed. Required checks: the focused ST-08 through ST-13 and ST-17 test commands, related runner/evaluator/task critical suites, typecheck, schema/mirror checks."
 sections:
@@ -2995,145 +3005,8 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609121424-T83XJA"
-    event_cursor: 37
-    final_validation:
-      evidence:
-        -
-          artifact_refs:
-            - "task-verification:202609121424-T83XJA"
-            - "git:44118fcf0d32825e963dc7db0504901753c4e9d5"
-          check_id: "check-usage-durability"
-          command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-usage-durability.test.ts"
-          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-          exit_code: 0
-          observed_at: "2026-09-13T01:07:00.093Z"
-          repository_snapshot_digest: "sha256:2a2e8fe8f52bfd618406e00a4046084daf98df22fa4c7485cd17934b8fa09a26"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609121424-T83XJA"
-            - "git:44118fcf0d32825e963dc7db0504901753c4e9d5"
-          check_id: "check-failed-usage"
-          command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts"
-          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-          exit_code: 0
-          observed_at: "2026-09-13T01:07:00.093Z"
-          repository_snapshot_digest: "sha256:2a2e8fe8f52bfd618406e00a4046084daf98df22fa4c7485cd17934b8fa09a26"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609121424-T83XJA"
-            - "git:44118fcf0d32825e963dc7db0504901753c4e9d5"
-          check_id: "check-managed-accounting"
-          command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts"
-          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-          exit_code: 0
-          observed_at: "2026-09-13T01:07:00.093Z"
-          repository_snapshot_digest: "sha256:2a2e8fe8f52bfd618406e00a4046084daf98df22fa4c7485cd17934b8fa09a26"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609121424-T83XJA"
-            - "git:44118fcf0d32825e963dc7db0504901753c4e9d5"
-          check_id: "check-external-accounting"
-          command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-external-accounting.test.ts"
-          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-          exit_code: 0
-          observed_at: "2026-09-13T01:07:00.093Z"
-          repository_snapshot_digest: "sha256:2a2e8fe8f52bfd618406e00a4046084daf98df22fa4c7485cd17934b8fa09a26"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609121424-T83XJA"
-            - "git:44118fcf0d32825e963dc7db0504901753c4e9d5"
-          check_id: "check-cost-rollup"
-          command_identity: "node --test scripts/bench/task-cost-rollup.test.mjs"
-          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-          exit_code: 0
-          observed_at: "2026-09-13T01:07:00.093Z"
-          repository_snapshot_digest: "sha256:2a2e8fe8f52bfd618406e00a4046084daf98df22fa4c7485cd17934b8fa09a26"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609121424-T83XJA"
-            - "git:44118fcf0d32825e963dc7db0504901753c4e9d5"
-          check_id: "check-stage-timing"
-          command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-stage-timing.test.ts"
-          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-          exit_code: 0
-          observed_at: "2026-09-13T01:07:00.093Z"
-          repository_snapshot_digest: "sha256:2a2e8fe8f52bfd618406e00a4046084daf98df22fa4c7485cd17934b8fa09a26"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609121424-T83XJA"
-            - "git:44118fcf0d32825e963dc7db0504901753c4e9d5"
-          check_id: "check-telemetry-disposition"
-          command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/evaluator/roadmap-telemetry-disposition.test.ts"
-          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-          exit_code: 0
-          observed_at: "2026-09-13T01:07:00.093Z"
-          repository_snapshot_digest: "sha256:2a2e8fe8f52bfd618406e00a4046084daf98df22fa4c7485cd17934b8fa09a26"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609121424-T83XJA"
-            - "git:44118fcf0d32825e963dc7db0504901753c4e9d5"
-          check_id: "check-typecheck"
-          command_identity: "bun run typecheck"
-          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-          exit_code: 0
-          observed_at: "2026-09-13T01:07:00.093Z"
-          repository_snapshot_digest: "sha256:2a2e8fe8f52bfd618406e00a4046084daf98df22fa4c7485cd17934b8fa09a26"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609121424-T83XJA"
-            - "git:44118fcf0d32825e963dc7db0504901753c4e9d5"
-          check_id: "check-schemas"
-          command_identity: "bun run schemas:check"
-          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-          exit_code: 0
-          observed_at: "2026-09-13T01:07:00.093Z"
-          repository_snapshot_digest: "sha256:2a2e8fe8f52bfd618406e00a4046084daf98df22fa4c7485cd17934b8fa09a26"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609121424-T83XJA"
-            - "git:44118fcf0d32825e963dc7db0504901753c4e9d5"
-          check_id: "check-artifacts"
-          command_identity: "bun run artifacts:check"
-          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-          exit_code: 0
-          observed_at: "2026-09-13T01:07:00.093Z"
-          repository_snapshot_digest: "sha256:2a2e8fe8f52bfd618406e00a4046084daf98df22fa4c7485cd17934b8fa09a26"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609121424-T83XJA"
-            - "git:44118fcf0d32825e963dc7db0504901753c4e9d5"
-          check_id: "check-critical"
-          command_identity: "bun run test:critical"
-          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-          exit_code: 0
-          observed_at: "2026-09-13T01:07:00.093Z"
-          repository_snapshot_digest: "sha256:2a2e8fe8f52bfd618406e00a4046084daf98df22fa4c7485cd17934b8fa09a26"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609121424-T83XJA"
-            - "git:44118fcf0d32825e963dc7db0504901753c4e9d5"
-          check_id: "check-full-ci"
-          command_identity: "bun run ci:local:full"
-          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-          exit_code: 0
-          observed_at: "2026-09-13T01:07:00.093Z"
-          repository_snapshot_digest: "sha256:2a2e8fe8f52bfd618406e00a4046084daf98df22fa4c7485cd17934b8fa09a26"
-          status: "passed"
-      schema_version: 1
-      stale_evidence: []
-      status: "passed"
-      unsatisfied_criteria: []
+    event_cursor: 38
+    final_validation: null
     id: "202609121424-T83XJA"
     intent:
       acceptance_criteria:
@@ -3149,7 +3022,7 @@ extensions:
 
         Source contract: agentplane-roadmap-r2 cards ST-08, ST-09, ST-10, ST-11, ST-12, ST-13, and ST-17. Capture Codex usage durably before semantic-result validation, preserve evaluator charges on failure, connect managed observations to the existing journal, account for external episodes without trusting self-reported tokens, roll up task cost from source observations, partition lifecycle latency without double counting, and separate missing telemetry from semantic quality and further-spend admission. Missing usage is unknown, never zero. A valid saved verdict is reused, while unknown budget blocks additional paid dispatch. Preserve I01-I12 and C01-C08. Do not create a second accounting store or trust model-supplied usage. The roadmap directory is source-only and must never be committed. Required checks: the focused ST-08 through ST-13 and ST-17 test commands, related runner/evaluator/task critical suites, typecheck, schema/mirror checks.
       task_id: "202609121424-T83XJA"
-    lifecycle: "COMPLETED"
+    lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history:
       -
@@ -3894,9 +3767,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121424-T83XJA"
-    revision: 49
+    revision: 50
     schema_version: 1
-    updated_at: "2026-09-13T01:20:10.154Z"
+    updated_at: "2026-09-13T01:23:58.791Z"
     work_items:
       ST-08:
         attempt: 1
@@ -4840,6 +4713,30 @@ extensions:
         mutation_id: "compatibility:sha256:8079be6bf15c813938fc9742a585af744b8bffe37671d5e9625eb0529b0b6b8f"
         next_revision: 18
         previous_revision: 17
+        schema_version: 1
+        task_id: "202609121424-T83XJA"
+      compatibility:sha256:84b701735b694fe2d43fc104c334a6584ce8abe3f9d81dd1dd918855b12b6d28:
+        aggregate_digest: "sha256:c4c7d256f129b32527468a36c71ee9760df754d154d68be040e803cf0f7e33f9"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T01:23:58.791Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_6ff01a7f8c5b302ba0951f15"
+          mutation_id: "compatibility:sha256:84b701735b694fe2d43fc104c334a6584ce8abe3f9d81dd1dd918855b12b6d28"
+          plan_digest: "sha256:47ee22d77ca7385f412a8a1da0d53ac32e469d13030f22fdc8fc03c8804e40a4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-T83XJA"
+          task_revision: 49
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:84b701735b694fe2d43fc104c334a6584ce8abe3f9d81dd1dd918855b12b6d28"
+        next_revision: 50
+        previous_revision: 49
         schema_version: 1
         task_id: "202609121424-T83XJA"
       compatibility:sha256:8f23fe98a504410b8e36a71fa3cf7fb2a6c5e5ecc138836495b48ada4bd04fc5:
