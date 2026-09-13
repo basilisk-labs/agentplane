@@ -4,7 +4,7 @@ title: "Add the 0.7.9 marginal-cost and paired production benchmark harness for 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -27,10 +27,10 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-09-13T08:39:05.585Z"
-  updated_by: "CODER"
-  note: "Verified committed implementation 0cc76b3c323d; all selected local checks passed and no paid provider call was executed."
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
   attempts: 0
 execution_route:
   frozen: true
@@ -203,9 +203,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "31a8959fee6aa84f518efb530adf85a04279d07b"
-  message: "🚧 3YAX44 task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -931,19 +929,64 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 11
+    revision: 12
     schema_version: 1
-    updated_at: "2026-09-13T15:25:33.924Z"
+    updated_at: "2026-09-13T15:25:37.558Z"
     work_items:
       ST-14:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "ST-14"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:bafb088cd1cc61ce99073b7f595dea50d3a9e3a57672dfea085f066299b799a0"
+            id: "marginal task cost measurement"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609121424-3YAX44"
+              work_item_id: "ST-14"
+            provenance:
+              - "sha256:3779dbbff23e3acc6c0ebf4c333d84018f46e345428d6de8851bcced23bd4b01"
+              - ".agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:cfc4d546527d49a3b575fbc30ee070464836c8353094a513820df4d571b44d77"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:dc15752dc03058549fb7b127f2b1675b9210d8c0476602f48b9c97af7adfc372"
+            id: "duplicate object and timestamp-only regressions"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609121424-3YAX44"
+              work_item_id: "ST-14"
+            provenance:
+              - "sha256:3779dbbff23e3acc6c0ebf4c333d84018f46e345428d6de8851bcced23bd4b01"
+              - ".agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:cfc4d546527d49a3b575fbc30ee070464836c8353094a513820df4d571b44d77"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-3YAX44/supervision/declared-checks.json"
+              check_id: "check-marginal-cost"
+              command_identity: "node --test scripts/bench/task-marginal-cost.test.mjs"
+              detail: "Observed by node --test scripts/bench/task-marginal-cost.test.mjs."
+              exit_code: 0
+              observed_at: "2026-09-13T15:25:37.552Z"
+              repository_snapshot_digest: "sha256:cfc4d546527d49a3b575fbc30ee070464836c8353094a513820df4d571b44d77"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       ST-15:
         attempt: 0
         claim_id: null
@@ -964,7 +1007,24 @@ extensions:
         validation_result: null
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-13T15:25:37.558Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:c952a57bfbfc7414eaafaebe1eea717d25e1d0a25ca0c1bf0c420921df60f763"
+        entity: "work_item"
+        id: "event_4575c94d945d9151068a114d"
+        mutation_id: "external-result:work-order-202609121424-3YAX44-executor-1821446152c6606af75ac3f3"
+        plan_digest: "sha256:9058c9f56183fcc658d347a916f3b9ee21711fabb6fc2f5125c6b3ed3f32004c"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609121424-3YAX44"
+        task_revision: 11
+        work_item_id: "ST-14"
     leases: []
     mutation_receipts:
       compatibility:sha256:4bf895105e92d6d504c3a3efa9d7a986c5129e8f7940f5c329acf23f736d0cd9:
@@ -1157,6 +1217,30 @@ extensions:
         mutation_id: "compatibility:sha256:d743f97fa4e985e329e53cb72e7e85671811e14a1c441bec464c5853c0b9bde3"
         next_revision: 6
         previous_revision: 5
+        schema_version: 1
+        task_id: "202609121424-3YAX44"
+      external-result:work-order-202609121424-3YAX44-executor-1821446152c6606af75ac3f3:
+        aggregate_digest: "sha256:fbd45e5d88a29bbfcd4fbfe386903e4acb99a24e766c22e35cfdc51a20108de0"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T15:25:37.558Z"
+          cause_refs:
+            - "semantic-result:sha256:c952a57bfbfc7414eaafaebe1eea717d25e1d0a25ca0c1bf0c420921df60f763"
+          entity: "work_item"
+          from: "READY"
+          id: "event_4575c94d945d9151068a114d"
+          mutation_id: "external-result:work-order-202609121424-3YAX44-executor-1821446152c6606af75ac3f3"
+          plan_digest: "sha256:9058c9f56183fcc658d347a916f3b9ee21711fabb6fc2f5125c6b3ed3f32004c"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-3YAX44"
+          task_revision: 11
+          to: "COMPLETED"
+          work_item_id: "ST-14"
+        mutation_id: "external-result:work-order-202609121424-3YAX44-executor-1821446152c6606af75ac3f3"
+        next_revision: 12
+        previous_revision: 11
         schema_version: 1
         task_id: "202609121424-3YAX44"
     pending_effects: []
