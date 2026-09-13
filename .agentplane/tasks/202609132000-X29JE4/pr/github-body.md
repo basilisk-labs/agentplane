@@ -27,9 +27,14 @@ Remove active supervisor token, monetary, wall-time, changed-file, diff-line, ag
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- scripts/bench/paired-production-driver.mjs      | 15 ---------------
- scripts/bench/paired-production-driver.test.mjs |  2 +-
- 2 files changed, 1 insertion(+), 16 deletions(-)
+ .../supervisor-execution-episode-migration.ts      |  17 +-
+ ...r-execution-episode-telemetry-admission.test.ts |  20 +-
+ .../runner/supervisor-execution-episode.test.ts    | 127 ++++++++--
+ .../src/runner/supervisor-execution-episode.ts     | 261 +++++++++------------
+ packages/core/src/schemas/index.ts                 |   3 +
+ scripts/bench/paired-production-driver.mjs         |  15 --
+ scripts/bench/paired-production-driver.test.mjs    |   2 +-
+ 7 files changed, 246 insertions(+), 199 deletions(-)
 ```
 
 </details>

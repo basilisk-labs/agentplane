@@ -163,6 +163,8 @@ export {
   recoverSupervisorExecutionEpisodeJournal,
   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
   reopenSupervisorExecutionEpisodeAfterEffectEvidence,
+  resumeSupervisorExecutionEpisodeAfterInternalAnomaly,
+  resumeSupervisorExecutionEpisodeAfterLegacyBudgetStop,
   retireSupervisorExecutionEpisodeIntentAfterStateDrift,
   retryFailedSupervisorExecutionEpisode,
   stopSupervisorExecutionEpisode,
@@ -176,6 +178,7 @@ export {
   type SupervisorExecutionBudget,
   type SupervisorExecutionEpisodeJournal,
   type SupervisorExecutionUsage,
+  type SupervisorInternalAnomalyDiagnostic,
   type SupervisorTokenBudgetEpoch,
 } from "../runner/supervisor-execution-episode.js";
 
