@@ -2,57 +2,111 @@
   "checks": [
     {
       "check_ids": [
-        "paired-contract-tests"
+        "package-tarball"
       ],
-      "command": "node --test scripts/bench/paired-production-driver.test.mjs scripts/bench/paired-result-report.test.mjs",
-      "duration_ms": 2170,
+      "command": "bun run package:tarball:check",
+      "duration_ms": 10583,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
-        "executable_digest": "sha256:ee6fb0e015284d83a91e8ec5213f43a157f8a392b58555301682892ba928c04a",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "package:tarball:check",
+      "stderr_tail": "$ node scripts/release/check-package-tarball.mjs\n",
+      "stdout_tail": "package tarball policy OK (@agentplaneorg/core=127, @agentplaneorg/recipes=21, agentplane=59)\n"
+    },
+    {
+      "check_ids": [
+        "package-install-smoke"
+      ],
+      "command": "bun run package:install-smoke",
+      "duration_ms": 43762,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "package:install-smoke",
+      "stderr_tail": "$ node scripts/release/check-local-tarball-install-smoke.mjs\n",
+      "stdout_tail": "installed migration matrix OK (scenarios=8)\nlocal tarball install smoke OK (202609132146-Q04EPX)\n"
+    },
+    {
+      "check_ids": [
+        "release-critical"
+      ],
+      "command": "bun run test:release:critical",
+      "duration_ms": 13944,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "test:release:critical",
+      "stderr_tail": "$ node scripts/checks/run-vitest-suite.mjs release-critical\n",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can\n\n\n Test Files  4 passed (4)\n      Tests  16 passed (16)\n   Start at  00:46:45\n   Duration  13.40s (transform 9.13s, setup 0ms, import 6.40s, tests 22.75s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "docs-bootstrap"
+      ],
+      "command": "bun run docs:bootstrap:check",
+      "duration_ms": 356,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "docs:bootstrap:check",
+      "stderr_tail": "$ node scripts/checks/check-agent-bootstrap-fresh.mjs\n",
+      "stdout_tail": "../../../../../../../var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-bootstrap-doc-7oPvRe/agent-bootstrap.generated.mdx 22ms\nok: bootstrap doc, startup command blocks, quickstart/roles, runtime docs, troubleshooting, and release recovery docs are aligned\n"
+    },
+    {
+      "check_ids": [
+        "docs-onboarding"
+      ],
+      "command": "bun run docs:onboarding:check",
+      "duration_ms": 172,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "docs:onboarding:check",
+      "stderr_tail": "$ node scripts/checks/check-agent-onboarding-scenario.mjs\n",
+      "stdout_tail": "ok: agent onboarding scenario surfaces are aligned\n"
+    },
+    {
+      "check_ids": [
+        "diff-check"
+      ],
+      "command": "git diff --check",
+      "duration_ms": 174,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
+        "executable_digest": "sha256:9b19807c702934b8c51fd2da8c2d38053bd7328536546e5a47eb3914dcc7bcde",
         "kind": "local_runtime_resolution",
         "status": "resolved",
         "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
       },
       "script": null,
       "stderr_tail": "",
-      "stdout_tail": "✔ runs the pinned three-arm task entrypoints offline and keeps transports stratified (1485.749917ms)\n✔ rejects every mismatched run identity field (46.775292ms)\n✔ pins a product artifact separately from its executable launcher (41.249167ms)\n✔ rejects missing or malformed token usage (226.484125ms)\n✔ requires a trusted authority callback before live execution (42.685292ms)\n✔ rejects an observed execution identity that differs from the campaign (91.38525ms)\n✔ keeps failed-attempt tokens in the numerator and pairs only equivalent successes (5.952959ms)\n✔ unavailable tokens prevent a complete numeric claim (0.271125ms)\n✔ partial tokens remain visible and prevent a complete numeric claim (0.199625ms)\n✔ an all-failed arm has no finite successful-result score (0.165959ms)\n✔ rejects token subset double-counting (0.173875ms)\n✔ rejects outcome-mismatched successes from the paired population (0.183125ms)\n✔ keeps safety, activation, and efficiency gates independent (0.213291ms)\nℹ tests 13\nℹ suites 0\nℹ pass 13\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1976.867375\n"
-    },
-    {
-      "check_ids": [
-        "efficiency-baseline"
-      ],
-      "command": "bun run bench:agent-efficiency:check",
-      "duration_ms": 252,
-      "exit_code": 0,
-      "runtime": {
-        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
-        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
-        "kind": "local_runtime_resolution",
-        "status": "resolved",
-        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
-      },
-      "script": "bench:agent-efficiency:check",
-      "stderr_tail": "$ node scripts/checks/check-agent-efficiency-baseline.mjs\n",
-      "stdout_tail": "Agent-efficiency baseline OK (10 RF-04 scenarios; 10 measured cost metrics; structural_sha256=sha256:a9b855c5887f697c21690d7386c627c555f8d46d7b083cab8c54636411e47351; timing_compared=false; summaries=0)\n"
-    },
-    {
-      "check_ids": [
-        "efficiency-replay"
-      ],
-      "command": "bun run bench:agent-efficiency:replay:check",
-      "duration_ms": 283,
-      "exit_code": 0,
-      "runtime": {
-        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
-        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
-        "kind": "local_runtime_resolution",
-        "status": "resolved",
-        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
-      },
-      "script": "bench:agent-efficiency:replay:check",
-      "stderr_tail": "$ node scripts/checks/check-agent-efficiency-replay.mjs\n",
-      "stdout_tail": "RF-04 replay baseline OK (50 runs; 70/70 outcomes; 27/27 provider token cells; 170/170 scalar cells; structural_sha256=sha256:006ddc6d2b8e8c350a879edeb7140d36dbbd31c0c745b96f57792871b9099ee4; diagnostics_sha256=sha256:01c7b81828826b44d18d0b6a26288ac62b031cf4e30242a421f77ec37b2ca44e)\n"
+      "stdout_tail": ""
     }
   ],
   "kind": "direct_task_declared_checks",
