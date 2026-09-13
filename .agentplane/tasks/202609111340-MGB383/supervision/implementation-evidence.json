@@ -1,0 +1,48 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 2fa4c538aa40fcdf2b5b467ae07126a19cb13562..ab800d228f1a8ad14f0fe44654dbcddcf1266cfa",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 2fa4c538aa40fcdf2b5b467ae07126a19cb13562..ab800d228f1a8ad14f0fe44654dbcddcf1266cfa",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202609111340-MGB383/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609111340-MGB383/pr/github-body.md",
+        "M\t.agentplane/tasks/202609111340-MGB383/pr/meta.json",
+        "M\t.agentplane/tasks/202609111340-MGB383/pr/review.md",
+        "M\t.github/workflows/publish.yml",
+        "M\tpackages/agentplane/src/commands/release/publish-workflow-contract.test.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "2fa4c538aa40fcdf2b5b467ae07126a19cb13562",
+  "implementation_commit": "ab800d228f1a8ad14f0fe44654dbcddcf1266cfa",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [],
+    "classification": [],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609111340-MGB383"
+}

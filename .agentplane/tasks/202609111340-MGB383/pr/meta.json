@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202609111340-MGB383/harden-the-post-release-evidence-close-tail-unde",
+  "created_at": "2026-09-11T18:45:55.843Z",
+  "diffstat_sha256": "sha256:2bb16c25f782885477a0d6ce50c013c326290e2fa891362c0968cd8cfc2201c8",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202609111340-MGB383",
+  "updated_at": "2026-09-11T18:45:55.843Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
