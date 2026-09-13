@@ -93,6 +93,19 @@ describe("supervisor lifecycle timing validation", () => {
         root,
       ],
     ],
+    [
+      "partition totals assigned to the wrong category",
+      [
+        root,
+        {
+          ...root,
+          span_id: "dispatch",
+          parent_span_id: "root",
+          stage: "semantic_dispatch",
+          category: "external_wait",
+        },
+      ],
+    ],
     ["partial root coverage", [{ ...root, elapsed_ms: 9 }]],
     [
       "a parent cycle",
