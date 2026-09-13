@@ -6,7 +6,7 @@ Created: 2026-09-13T03:15:59.993Z
 
 - Task: `202609121424-ZEJ656`
 - Title: Conserve 0.7.9 semantic requirements and managed output parity for ST-06 and ST-07
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609121424-ZEJ656/conserve-0-7-9-semantic-requirements-and-managed`
 - Canonical task record: `.agentplane/tasks/202609121424-ZEJ656/README.md`
 
