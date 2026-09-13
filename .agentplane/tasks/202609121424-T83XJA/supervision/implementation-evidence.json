@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 5468ffce522cfdab7332ddbae6b092fd9b549733..6b57e1dd765723656edb188c02193c11cdea9035",
+      "command": "git diff --check dc603dde6302d6951527865e4958cd2a55644244..16f5015cf8cdd1e3b116721d79d0625dcc558ef3",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 5468ffce522cfdab7332ddbae6b092fd9b549733..6b57e1dd765723656edb188c02193c11cdea9035",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB dc603dde6302d6951527865e4958cd2a55644244..16f5015cf8cdd1e3b116721d79d0625dcc558ef3",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,7 +21,7 @@
         "M\t.agentplane/tasks/202609121424-T83XJA/pr/github-body.md",
         "M\t.agentplane/tasks/202609121424-T83XJA/pr/meta.json",
         "M\t.agentplane/tasks/202609121424-T83XJA/pr/review.md",
-        "A\tpackages/core/src/runner/supervisor-execution-episode-timing.test.ts",
+        "M\tpackages/core/src/runner/supervisor-execution-episode-timing.test.ts",
         "M\tpackages/core/src/runner/supervisor-execution-episode.ts"
       ]
     },
@@ -32,8 +32,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "5468ffce522cfdab7332ddbae6b092fd9b549733",
-  "implementation_commit": "6b57e1dd765723656edb188c02193c11cdea9035",
+  "execution_base_commit": "dc603dde6302d6951527865e4958cd2a55644244",
+  "implementation_commit": "16f5015cf8cdd1e3b116721d79d0625dcc558ef3",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
