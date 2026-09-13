@@ -29,7 +29,8 @@ Created: 2026-09-13T18:34:45.448Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../baselines/v0.7.9-stabilization-candidate.json  | 55 ++++++++++++++++++++++
+ 1 file changed, 55 insertions(+)
 ```
 
 </details>
