@@ -171,6 +171,7 @@ import {
 import { defaultConfig } from "../../cli/core-imports.js";
 import { loadCommandContext } from "../shared/task-backend.js";
 import { ensureRuntimeGitignore } from "../../runtime/shared/runtime-gitignore.js";
+import { acceptExternalAgentResult } from "./external-agent-supervisor.js";
 import * as reportResults from "./external-agent-report-result.js";
 
 installRunCliIntegrationHarness();
@@ -188,6 +189,33 @@ async function resume(root: string, p: Packet) {
   const result = await invoke(root, p.exchange.resume_argv.slice(1));
   expect(result.code, result.stderr).toBe(0);
   return JSON.parse(result.stdout) as Packet;
+}
+async function observeHostUsage(p: Packet) {
+  const workOrder = await order(p);
+  const exchangePath = path.join(p.exchange.directory, "exchange.json");
+  const exchange = JSON.parse(await readFile(exchangePath, "utf8")) as Record<string, unknown>;
+  exchange.host_usage = {
+    schema_version: 1,
+    observed_by: "host_transport",
+    state: "observed",
+    reason: null,
+    provider_usage: {
+      provider: "report-result-test",
+      run_id: `run:${p.transition_id}`,
+      work_order_id: workOrder.work_order_id,
+      thread_id: `thread:${p.transition_id}`,
+      turn_id: `turn:${p.transition_id}`,
+    },
+    usage: {
+      input_tokens: 1,
+      output_tokens: 1,
+      total_tokens: 2,
+      visible_output_tokens: 1,
+      reasoning_tokens: 0,
+      cached_input_tokens: 0,
+    },
+  };
+  await writeFile(exchangePath, `${JSON.stringify(exchange, null, 2)}\n`, "utf8");
 }
 async function commitFixture(root: string, message: string) {
   await git("git", ["add", ".agentplane", "package.json", ".gitignore"], { cwd: root });
@@ -262,6 +290,7 @@ async function implementationFixture() {
       work_items: { ...proposal.work_items, work_items: [source, reportItem] },
     };
   }
+  await observeHostUsage(planning);
   await report(planning, "Recover only the exact approved implementation.", {
     task_intent: {
       task_kind: "code",
@@ -307,23 +336,21 @@ async function implementationFixture() {
   let implementationOrder = await order(implementation);
   const checkout = implementationOrder.state_fingerprint.worktree;
   {
+    await writeFile(path.join(checkout, "source.ts"), "export const observed = true;\n");
+    await observeHostUsage(implementation);
+    await report(implementation, "Implemented source before report-only review.");
+    const command = await loadCommandContext({ cwd: checkout, rootOverride: checkout });
+    await acceptExternalAgentResult({
+      ctx: { cwd: checkout, rootOverride: checkout },
+      command,
+      task_id: taskId,
+      result_path: implementation.exchange.result_path,
+      include_remote: false,
+    });
     const metaPath = path.join(checkout, ".agentplane/tasks", taskId, "pr/meta.json");
     const meta = JSON.parse(await readFile(metaPath, "utf8")) as Record<string, unknown>;
     await writeFile(metaPath, JSON.stringify({ ...meta, status: "OPEN", pr_number: 123 }));
-    const stale = await invoke(checkout, ["task", "advance", taskId, "--agent-json"]);
-    expect(stale.code).not.toBe(0);
-    const replacement = await invoke(checkout, [
-      "task",
-      "advance",
-      taskId,
-      "--replacement",
-      "--agent-json",
-    ]);
-    expect(replacement.code, replacement.stderr).toBe(0);
-    implementation = JSON.parse(replacement.stdout) as Packet;
-    await writeFile(path.join(checkout, "source.ts"), "export const observed = true;\n");
-    await report(implementation, "Implemented source before report-only review.");
-    implementation = await resume(checkout, implementation);
+    implementation = await packet(checkout, taskId);
     implementationOrder = await order(implementation);
     expect(implementationOrder.task.work_item_id).toBe("report-only");
   }
@@ -335,6 +362,7 @@ describe("report-only WorkItem application", { timeout: 180_000 }, () => {
     "persists report-only WorkItem output and replays once (interrupt=%s)",
     async (interrupt) => {
       const f = await implementationFixture();
+      await observeHostUsage(f.implementation);
       await report(f.implementation, "Reviewed all alerts; unresolved risks remain.", {
         findings: ["The report is the approved output."],
         uncertainty: ["No alerts were dismissed."],
