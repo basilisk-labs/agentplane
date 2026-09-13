@@ -1,10 +1,10 @@
 ---
 id: "202609121424-4BC7B3"
 title: "Qualify and document the 0.7.9 stabilization candidate for ST-18 through ST-20"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -236,6 +236,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 1d38fc3e503b. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. M01 cannot be materialized or executed from the issued packet because required campaign identities and trusted live authority are absent. Recommended action: Split the work at the authority boundary. First, have the operator pin the numeric USD limit, cost basis, model and effort, exact three-task corpus and oracle, three immutable product artifacts, transport allocation, randomized pilot order, and fixed confirmation rule. Then issue a fresh WorkOrder with provider dispatch and credential authority and either a trusted launcher dependency or authority service. Execute each planned attempt once, retain failures, and report NOT ESTABLISHED whenever coverage remains insufficient. Agentplane receipt: external-agent-blocker/tr_54e19a92f915fd9bed95c10a755afc0c/sha256:e0032486587be5f54acc3aaf6d2de7d3f62460c2d6069d8df93f6e8c5a6a809b."
 events:
   -
     type: "status"
@@ -266,8 +269,15 @@ events:
     to: "DOING"
     note: "Implementation committed: 1d38fc3e503b. CLI accepted one state-bound external-agent semantic result."
     commit: "1d38fc3e503b4e2a6d84c17817b82a09ab1fbe8e"
+  -
+    type: "status"
+    at: "2026-09-13T18:48:19.729Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. M01 cannot be materialized or executed from the issued packet because required campaign identities and trusted live authority are absent. Recommended action: Split the work at the authority boundary. First, have the operator pin the numeric USD limit, cost basis, model and effort, exact three-task corpus and oracle, three immutable product artifacts, transport allocation, randomized pilot order, and fixed confirmation rule. Then issue a fresh WorkOrder with provider dispatch and credential authority and either a trusted launcher dependency or authority service. Execute each planned attempt once, retain failures, and report NOT ESTABLISHED whenever coverage remains insufficient. Agentplane receipt: external-agent-blocker/tr_54e19a92f915fd9bed95c10a755afc0c/sha256:e0032486587be5f54acc3aaf6d2de7d3f62460c2d6069d8df93f6e8c5a6a809b."
 doc_version: 3
-doc_updated_at: "2026-09-13T18:42:58.465Z"
+doc_updated_at: "2026-09-13T18:48:19.729Z"
 doc_updated_by: "SUPERVISOR"
 description: "Source contract: agentplane-roadmap-r2 cards ST-18, ST-19, and ST-20. Build the exact clean installed candidate and run the frozen direct, branch, recovery, old-record, required PLANNER, and required EVALUATOR corpus. Then, under the user-approved spend and sandbox authority, execute the preregistered M01 paired pilot with complete all-attempt raw evidence and expand only by its fixed uncertainty rule; report NOT ESTABLISHED when coverage is insufficient. Record exact product and target SHAs separately. Finally document only observed 0.7.9 behavior and measurements and the 0.7.10 through 0.7.14 boundary. Do not weaken golden outcomes, disable Blueprint writers, omit required stages, rerun until green, or claim unsupported efficiency. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: package tarball check, local install smoke, release critical suite, benchmark check and replay check, documentation bootstrap and onboarding checks, plus exact evidence review."
 sections:
@@ -899,7 +909,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609121424-4BC7B3"
-    event_cursor: 8
+    event_cursor: 9
     final_validation: null
     id: "202609121424-4BC7B3"
     intent:
@@ -946,12 +956,12 @@ extensions:
 
         Source contract: agentplane-roadmap-r2 cards ST-18, ST-19, and ST-20. Build the exact clean installed candidate and run the frozen direct, branch, recovery, old-record, required PLANNER, and required EVALUATOR corpus. Then, under the user-approved spend and sandbox authority, execute the preregistered M01 paired pilot with complete all-attempt raw evidence and expand only by its fixed uncertainty rule; report NOT ESTABLISHED when coverage is insufficient. Record exact product and target SHAs separately. Finally document only observed 0.7.9 behavior and measurements and the 0.7.10 through 0.7.14 boundary. Do not weaken golden outcomes, disable Blueprint writers, omit required stages, rerun until green, or claim unsupported efficiency. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: package tarball check, local install smoke, release critical suite, benchmark check and replay check, documentation bootstrap and onboarding checks, plus exact evidence review.
       task_id: "202609121424-4BC7B3"
-    lifecycle: "ACTIVE"
+    lifecycle: "BLOCKED"
     plan_amendments: []
     plan_history: []
-    revision: 12
+    revision: 13
     schema_version: 1
-    updated_at: "2026-09-13T18:44:10.887Z"
+    updated_at: "2026-09-13T18:48:19.729Z"
     work_items:
       document-stabilization-boundary:
         attempt: 0
@@ -1287,6 +1297,30 @@ extensions:
         mutation_id: "compatibility:sha256:e36635b19930b3f093b5e235aada2613356d81133a57c7cd2ad03f2f0c0506e6"
         next_revision: 8
         previous_revision: 7
+        schema_version: 1
+        task_id: "202609121424-4BC7B3"
+      compatibility:sha256:f47a5f1babbf2237bdc5b1bbbc9908707f31c9028d1fc4ba1fc244fe1257f717:
+        aggregate_digest: "sha256:8b7a31dfa28f7bcd7beeb1eb23ea514bc453652e6e9fdab5c2c705b472b23250"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T18:48:19.729Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_85793a484fcd5cc97a676c6c"
+          mutation_id: "compatibility:sha256:f47a5f1babbf2237bdc5b1bbbc9908707f31c9028d1fc4ba1fc244fe1257f717"
+          plan_digest: "sha256:d6f15a7814a25b8ee8680aed0f2a48ed6eccdb956ce2d2b288ef2a573eb22190"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-4BC7B3"
+          task_revision: 12
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:f47a5f1babbf2237bdc5b1bbbc9908707f31c9028d1fc4ba1fc244fe1257f717"
+        next_revision: 13
+        previous_revision: 12
         schema_version: 1
         task_id: "202609121424-4BC7B3"
       external-result:work-order-202609121424-4BC7B3-executor-19aeac4acd405b02f1906430:
