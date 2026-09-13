@@ -11,7 +11,7 @@ import {
   startSupervisorExecutionEpisode,
 } from "@agentplaneorg/core/schemas";
 import { createRunnerAdapter } from "../../runner/adapters/index.js";
-import { readCodexProviderUsageForResult } from "../../runner/adapters/codex-result-transport.js";
+import { readRunnerProviderUsageObservation } from "../../runner/artifacts.js";
 import { RunnerRunRepository } from "../../runner/run-repository.js";
 import { resolveSupervisorTaskRunnerPaths } from "../../runner/task-run-paths.js";
 import { buildRunnerPolicyDecision } from "../../runner/policy-decision.js";
@@ -31,6 +31,40 @@ import { writeKernelArtifact } from "./kernel-exchange.js";
 import { createKernelRuntime } from "./kernel-runtime-context.js";
 
 type Packet = Awaited<ReturnType<typeof advanceCanonicalTask>>;
+
+async function readManagedProviderAccounting(invocation: {
+  adapter_id: string;
+  run_id: string;
+  work_order_id: string;
+  events_path: string;
+}) {
+  const observation = await readRunnerProviderUsageObservation({
+    events_path: invocation.events_path,
+    provider: invocation.adapter_id,
+    dispatch_id: `dispatch:${invocation.work_order_id}`,
+    run_id: invocation.run_id,
+    work_order_id: invocation.work_order_id,
+  });
+  if (!observation) {
+    throw new Error("Canonical managed provider usage observation is unavailable");
+  }
+  return {
+    usage: observation.usage ?? {},
+    provider_usage: {
+      provider: observation.provider,
+      run_id: observation.run_id,
+      work_order_id: observation.work_order_id,
+      thread_id: observation.thread_id,
+      turn_id: observation.turn_id,
+    },
+    usage_attribution:
+      observation.status === "observed"
+        ? ({ state: "observed", reason: null } as const)
+        : observation.status === "partial"
+          ? ({ state: "partial", reason: "partial_provider_token_telemetry" } as const)
+          : ({ state: "unavailable", reason: "provider_token_telemetry_unavailable" } as const),
+  };
+}
 
 async function executeKernelPacket(
   command: CommandContext,
@@ -194,7 +228,7 @@ async function executeKernelPacket(
       if (journal.status !== "running" || journal.cursor.phase !== "intent_recorded") {
         throw new Error("Canonical managed result cannot complete its recorded operation");
       }
-      const provider = readCodexProviderUsageForResult(result);
+      const accounting = await readManagedProviderAccounting(invocation);
       const completed = completeSupervisorExecutionEpisode({
         journal,
         operation_key: latest.operation_key,
@@ -203,14 +237,7 @@ async function executeKernelPacket(
           work_order_id: workOrder.work_order_id,
           status: result.status,
         },
-        usage: provider ?? {},
-        provider_usage: {
-          provider: invocation.adapter_id,
-          run_id: invocation.run_id,
-          work_order_id: invocation.work_order_id,
-          thread_id: provider?.thread_id ?? null,
-          turn_id: provider?.turn_id ?? null,
-        },
+        ...accounting,
         failed: result.status !== "success",
       });
       if (!(await opened.store.compareAndSwap(journal.digest, completed))) {
@@ -348,7 +375,7 @@ async function executeKernelPacket(
           effect_applied: true,
         },
       });
-      const provider = readCodexProviderUsageForResult(result);
+      const accounting = await readManagedProviderAccounting(invocation);
       const dispatchEndedAt = performance.now();
       const completed = completeSupervisorExecutionEpisode({
         journal,
@@ -358,14 +385,7 @@ async function executeKernelPacket(
           work_order_id: workOrder.work_order_id,
           status: result.status,
         },
-        usage: provider ?? {},
-        provider_usage: {
-          provider: invocation.adapter_id,
-          run_id: invocation.run_id,
-          work_order_id: invocation.work_order_id,
-          thread_id: provider?.thread_id ?? null,
-          turn_id: provider?.turn_id ?? null,
-        },
+        ...accounting,
         lifecycle_timing: timing(dispatchEndedAt, (result.evidence?.files_changed_count ?? 0) > 0),
         failed: result.status !== "success",
       });

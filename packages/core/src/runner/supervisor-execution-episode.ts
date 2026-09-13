@@ -503,7 +503,9 @@ function exhaustedDimensions(opts: {
     (opts.operations ?? []).some(
       (operation) =>
         isAgentOperation(operation.kind) &&
-        operation.provider_usage !== undefined &&
+        (operation.provider_usage !== undefined ||
+          (operation.usage_attribution !== undefined &&
+            operation.usage_attribution.reason !== "legacy_external_host_usage_unavailable")) &&
         (operation.usage?.input_tokens === undefined ||
           operation.usage.output_tokens === undefined ||
           operation.usage.total_tokens === undefined),
