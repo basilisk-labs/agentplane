@@ -15,6 +15,12 @@
     "No v2 pair has equivalent independently verified outcomes across all three arms.",
     "Further attempts would require a newly preregistered campaign and are not justified by the fixed pilot rule."
   ],
+  "future_campaign_requirements": [
+    "The AgentPlane arms must enter the fixed implementation episode instead of stopping after the PLANNER bootstrap.",
+    "The launcher and oracle must parse the two-character porcelain status column before normalizing the tracked path.",
+    "The corrected launcher, oracle, campaign order, and claim policy must be pinned before any new provider attempt.",
+    "A future campaign must use a new campaign identity and must not replace, omit, or retry any v1 or v2 attempt."
+  ],
   "evidence": {
     "v1": {
       "evidence_digest": "sha256:804cc51f855da09a83ca7fff483aa6a373cd690c7c0a9fa955af2b6ba0cc28a6",
