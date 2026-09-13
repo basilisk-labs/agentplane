@@ -15,14 +15,14 @@ When a supervisor episode stops because prior paid work has unavailable or unall
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-13T09:03:04.106Z
+- Updated: 2026-09-13T14:18:44.390Z
 - Branch: task/202609130858-RMHWQ5/add-an-explicit-user-approved-supervisor-budget
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
