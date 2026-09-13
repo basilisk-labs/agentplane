@@ -1,10 +1,10 @@
 ---
 id: "202609121424-4BC7B3"
 title: "Qualify and document the 0.7.9 stabilization candidate for ST-18 through ST-20"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on:
@@ -37,9 +37,9 @@ plan_approval:
   note: "host_user_decision=sha256:2baf501f688c40a1f9e656db7b6c8f3740c13e01cca5f467688bb095a6353b13"
 verification:
   state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  updated_at: "2026-09-13T19:38:13.148Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 0
 execution_route:
   frozen: true
@@ -89,6 +89,7 @@ execution_contract:
       - "packages/agentplane/src/commands/task/task-token-usage.test.ts"
       - "packages/agentplane/src/commands/task/task-token-usage.ts"
       - "scripts/baselines"
+      - "scripts/bench"
       - "scripts/bench/paired-production-driver.mjs"
       - "scripts/bench/paired-production-driver.test.mjs"
       - "scripts/bench/paired-result-report.mjs"
@@ -104,6 +105,7 @@ execution_contract:
       - "M01 must stop treating a subscription-backed Codex run as a monetary purchase and instead compare provider-observed token totals for every assigned attempt."
       - "Publication remains an operator-owned action after implementation, verification, hosted integration, and exact release evidence."
       - "The product contract must remain independent of user billing route: telemetry is always projected, while token-limit enforcement is opt-in and defaults to disabled."
+      - "USER-approved blocked-result scope extension: roots=docs/internal/v0.7-agent-efficiency-baseline.md,scripts/baselines,scripts/bench; repository_effects=documentation,source_code,tests"
     repository_effects:
       - "documentation"
       - "release_metadata"
@@ -126,6 +128,7 @@ execution_contract:
       - "packages/agentplane/src/commands/task/task-token-usage.test.ts"
       - "packages/agentplane/src/commands/task/task-token-usage.ts"
       - "scripts/baselines"
+      - "scripts/bench"
       - "scripts/bench/paired-production-driver.mjs"
       - "scripts/bench/paired-production-driver.test.mjs"
       - "scripts/bench/paired-result-report.mjs"
@@ -182,6 +185,7 @@ execution_contract:
           - "packages/agentplane/src/commands/task/task-token-usage.test.ts"
           - "packages/agentplane/src/commands/task/task-token-usage.ts"
           - "scripts/baselines"
+          - "scripts/bench"
           - "scripts/bench/paired-production-driver.mjs"
           - "scripts/bench/paired-production-driver.test.mjs"
           - "scripts/bench/paired-result-report.mjs"
@@ -211,7 +215,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:b82127b838f4fda962ef8a0a811aee4c0951a9ce2af81e606b275315196b390b"
+      digest: "sha256:c5456a12c8bcc521e3a880d610261d84604bf2d9b1c8a2403dd4c3e21a59d9e3"
       escalation_reasons:
         - "central_component:package.json"
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts"
@@ -309,6 +313,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The live M01 campaign cannot be executed reproducibly from the current scoped surface. ChatGPT-authenticated Codex is available, but the repository has neither an immutable M01 manifest nor a trusted live launcher that can supply authority and provider-attempt callbacks to the paired driver. Recommended action: Split the work at the measurement-tool boundary. Add and test a trusted ChatGPT-authenticated live launcher that binds the recorded user authority, executes the minimal-agent, v0.7.8, and exact-candidate artifacts against one fixed target and oracle, and converts Codex JSONL usage into the typed token_usage contract. Materialize and review the 15-attempt randomized manifest before dispatch. Then execute it once and retain all outcomes. If the release should not wait for that implementation, change the release acceptance to Q02 NOT ESTABLISHED and record explicit release-owner acceptance of the measurement debt. Requested scope: roots=docs/internal/v0.7-agent-efficiency-baseline.md,scripts/baselines,scripts/bench; repository effects=documentation,source_code,tests; request digest=sha256:dccc59c448e3628824e2eac935490d1294b0abdbe1371ab8b7e48b91e087e27f. Agentplane receipt: external-agent-blocker/tr_aef08c1c2c9042f4bf60e458d905fff9/sha256:ce6b89008e02fa60f96cc7cc3dddde2089bc0628006d1c719735241e3d4643f2/sha256:dccc59c448e3628824e2eac935490d1294b0abdbe1371ab8b7e48b91e087e27f."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: docs/internal/v0.7-agent-efficiency-baseline.md, scripts/baselines, scripts/bench; repository effects: documentation, source_code, tests."
 events:
   -
     type: "status"
@@ -428,6 +435,8 @@ extensions:
     status: "active"
     task_id: "202609121424-4BC7B3"
   agentplane.scope_extension_request:
+    applied_at: "2026-09-13T19:38:13.148Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:ce6b89008e02fa60f96cc7cc3dddde2089bc0628006d1c719735241e3d4643f2"
     kind: "task_scope_extension_request"
     request:
@@ -443,20 +452,20 @@ extensions:
         - "scripts/bench"
     request_digest: "sha256:dccc59c448e3628824e2eac935490d1294b0abdbe1371ab8b7e48b91e087e27f"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_aef08c1c2c9042f4bf60e458d905fff9"
     work_item_id: "run-token-measured-m01"
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-13T19:22:13.757Z"
-        approved_by: "HOST:codex:USER"
-        approved_digest: "sha256:357491668d26fbe1b3a253b693c182f2430296031f26c670fb31d1a4e704c630"
+        approved_at: "2026-09-13T19:38:13.148Z"
+        approved_by: "USER"
+        approved_digest: "sha256:8a1ce7a2f7c1bd5543bab4cf019887053321288654bc3dbf4761cc511f44fd52"
         policy_facts:
-          - "host_user_decision"
+          - "state_bound_scope_extension:sha256:dccc59c448e3628824e2eac935490d1294b0abdbe1371ab8b7e48b91e087e27f"
         state: "approved"
-      created_at: "2026-09-13T19:19:14.927Z"
-      digest: "sha256:357491668d26fbe1b3a253b693c182f2430296031f26c670fb31d1a4e704c630"
+      created_at: "2026-09-13T19:38:13.148Z"
+      digest: "sha256:8a1ce7a2f7c1bd5543bab4cf019887053321288654bc3dbf4761cc511f44fd52"
       proposal:
         assumptions:
           - "The release owner's latest instruction supersedes the roadmap's monetary-spend wording for 0.7.9 while preserving actual-token measurement, all-attempt accounting, independent verification, and uncertainty rules."
@@ -779,10 +788,23 @@ extensions:
                   kind: "workspace"
                   mode: "write"
                   resource: "task-worktree"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "docs/internal/v0.7-agent-efficiency-baseline.md"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "scripts/baselines"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "scripts/bench"
               risk: "high"
               scope_roots:
-                - "scripts/baselines"
                 - "docs/internal/v0.7-agent-efficiency-baseline.md"
+                - "scripts/baselines"
+                - "scripts/bench"
               validation:
                 checks:
                   -
@@ -979,10 +1001,10 @@ extensions:
                     required: true
                 evidence_fingerprint: "sha256:d096f3eff5e6679a97757a1f464df2e99ab89b7f88373534626c546eec6e3e47"
                 schema_version: 1
-      revision: 2
+      revision: 3
       schema_version: 1
       task_id: "202609121424-4BC7B3"
-    event_cursor: 17
+    event_cursor: 18
     final_validation: null
     id: "202609121424-4BC7B3"
     intent:
@@ -1029,7 +1051,7 @@ extensions:
 
         Source contract: agentplane-roadmap-r2 cards ST-18, ST-19, and ST-20. Build the exact clean installed candidate and run the frozen direct, branch, recovery, old-record, required PLANNER, and required EVALUATOR corpus. Then, under the user-approved spend and sandbox authority, execute the preregistered M01 paired pilot with complete all-attempt raw evidence and expand only by its fixed uncertainty rule; report NOT ESTABLISHED when coverage is insufficient. Record exact product and target SHAs separately. Finally document only observed 0.7.9 behavior and measurements and the 0.7.10 through 0.7.14 boundary. Do not weaken golden outcomes, disable Blueprint writers, omit required stages, rerun until green, or claim unsupported efficiency. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: package tarball check, local install smoke, release critical suite, benchmark check and replay check, documentation bootstrap and onboarding checks, plus exact evidence review.
       task_id: "202609121424-4BC7B3"
-    lifecycle: "BLOCKED"
+    lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history:
       -
@@ -1612,7 +1634,542 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121424-4BC7B3"
-    revision: 23
+      -
+        approval:
+          approved_at: "2026-09-13T19:22:13.757Z"
+          approved_by: "HOST:codex:USER"
+          approved_digest: "sha256:357491668d26fbe1b3a253b693c182f2430296031f26c670fb31d1a4e704c630"
+          policy_facts:
+            - "host_user_decision"
+          state: "approved"
+        created_at: "2026-09-13T19:19:14.927Z"
+        digest: "sha256:357491668d26fbe1b3a253b693c182f2430296031f26c670fb31d1a4e704c630"
+        proposal:
+          assumptions:
+            - "The release owner's latest instruction supersedes the roadmap's monetary-spend wording for 0.7.9 while preserving actual-token measurement, all-attempt accounting, independent verification, and uncertainty rules."
+            - "Existing ChatGPT subscription authentication may be used for the authorized M01 provider calls without requiring an API key, credit purchase, or monetary budget."
+            - "Token limits remain opt-in; the M01 run will not enable them, but existing non-token safety limits remain active."
+            - "Release publication is a later operator-owned action and proceeds only after the final task head passes local checks, hosted integration, and exact distribution gates."
+          planning_baseline:
+            captured_at: "2026-09-13T19:06:55.629Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:d096f3eff5e6679a97757a1f464df2e99ab89b7f88373534626c546eec6e3e47"
+            dirty_paths:
+              - ".agentplane/tasks/202609121424-4BC7B3/README.md"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "94a114ea288a7ac608d9f42359ba26c3e5012f00"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:16"
+          schema_version: 1
+          task_id: "202609121424-4BC7B3"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bunx vitest run packages/agentplane/src/commands/shared/supervisor-execution-default-budget.test.ts packages/agentplane/src/commands/task/task-token-usage.test.ts packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts"
+                id: "token-contract-tests"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "node --test scripts/bench/paired-production-driver.test.mjs scripts/bench/paired-result-report.test.mjs"
+                id: "paired-contract-tests"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "bun run package:tarball:check"
+                id: "package-tarball"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                command: "bun run package:install-smoke"
+                id: "package-install-smoke"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                command: "bun run test:release:critical"
+                id: "release-critical"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1800000
+              -
+                capability: "task.verify"
+                command: "bun run bench:agent-efficiency:check"
+                id: "efficiency-baseline"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                command: "bun run bench:agent-efficiency:replay:check"
+                id: "efficiency-replay"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                command: "bun run docs:bootstrap:check"
+                id: "docs-bootstrap"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                command: "bun run docs:onboarding:check"
+                id: "docs-onboarding"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                command: "git diff --check"
+                id: "diff-check"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 120000
+              -
+                capability: "task.verify"
+                id: "exact-evidence-review"
+                kind: "semantic"
+                required: true
+              -
+                capability: "task.verify"
+                id: "hosted-integration"
+                kind: "provider"
+                required: true
+            criteria:
+              -
+                check_ids:
+                  - "token-contract-tests"
+                  - "exact-evidence-review"
+                description: "Every completed AgentPlane task exposes provider token usage or an explicit partial/unavailable state independently of the user's authentication or billing route; token caps are null by default and can be enabled only by an explicit user action, while non-token safety limits remain active."
+                id: "informational-token-contract"
+                required: true
+              -
+                check_ids:
+                  - "paired-contract-tests"
+                  - "efficiency-baseline"
+                  - "efficiency-replay"
+                  - "exact-evidence-review"
+                description: "The paired campaign records actual input, cached-input, output, reasoning, and total token usage for every attempt, computes token cost per independently verified result without double-counting subsets, and has no required currency, price basis, purchase, credit, monetary spend, or default token cap."
+                id: "m01-token-evidence"
+                required: true
+              -
+                check_ids:
+                  - "package-tarball"
+                  - "package-install-smoke"
+                  - "release-critical"
+                description: "The final exact 0.7.9 candidate is qualified through installed-package and release-critical checks without weakening golden outcomes or disabling Blueprint writers."
+                id: "candidate-qualified"
+                required: true
+              -
+                check_ids:
+                  - "docs-bootstrap"
+                  - "docs-onboarding"
+                  - "exact-evidence-review"
+                description: "Documentation states the informational token contract, the observed M01 result or honest NOT ESTABLISHED disposition, and the exact deferred 0.7.10 through 0.7.14 boundary without monetary-account assumptions."
+                id: "observed-documentation"
+                required: true
+              -
+                check_ids:
+                  - "diff-check"
+                  - "exact-evidence-review"
+                  - "hosted-integration"
+                description: "The final diff is scoped, preserves I01-I12 and C01-C08, excludes agentplane-roadmap-r2, and has verified hosted integration before publication."
+                id: "release-ready-diff"
+                required: true
+            evidence_fingerprint: "sha256:d096f3eff5e6679a97757a1f464df2e99ab89b7f88373534626c546eec6e3e47"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "token-contract-tests"
+                      - "exact-evidence-review"
+                    description: "Every completed AgentPlane task exposes provider token usage or an explicit partial/unavailable state independently of the user's authentication or billing route; token caps are null by default and can be enabled only by an explicit user action, while non-token safety limits remain active."
+                    id: "informational-token-contract"
+                    required: true
+                  -
+                    check_ids:
+                      - "paired-contract-tests"
+                      - "efficiency-baseline"
+                      - "efficiency-replay"
+                      - "exact-evidence-review"
+                    description: "The paired campaign records actual input, cached-input, output, reasoning, and total token usage for every attempt, computes token cost per independently verified result without double-counting subsets, and has no required currency, price basis, purchase, credit, monetary spend, or default token cap."
+                    id: "m01-token-evidence"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 180000
+                  optional_sources:
+                    - "docs/user/commands.mdx"
+                    - "docs/user/task-lifecycle.mdx"
+                  required_sources:
+                    - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+                    - "packages/agentplane/src/commands/task/task-token-usage.ts"
+                    - "packages/agentplane/src/runner/adapters/codex-result-transport.ts"
+                    - "scripts/bench/paired-production-driver.mjs"
+                    - "scripts/bench/paired-result-report.mjs"
+                  symbol_hints:
+                    - "DEFAULT_SUPERVISOR_EXECUTION_BUDGET"
+                    - "projectTaskTokenUsage"
+                    - "input_tokens"
+                    - "cached_input_tokens"
+                    - "output_tokens"
+                    - "reasoning_tokens"
+                    - "total_tokens"
+                depends_on: []
+                expected_outputs:
+                  - "paired attempt token-usage contract"
+                  - "token cost-per-verified-result report"
+                  - "no monetary spend or billing-account dependency"
+                  - "default-disabled token-cap evidence"
+                  - "account-independent task telemetry evidence"
+                id: "align-token-measurement-contract"
+                objective: "Make the M01 measurement contract use provider-observed token usage instead of monetary raw cost and prove that task token telemetry is account-independent information while token caps remain disabled by default."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "write"
+                    resource: "task-worktree"
+                risk: "medium"
+                scope_roots:
+                  - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+                  - "packages/agentplane/src/commands/shared/supervisor-execution-default-budget.test.ts"
+                  - "packages/agentplane/src/commands/task/task-token-usage.ts"
+                  - "packages/agentplane/src/commands/task/task-token-usage.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts"
+                  - "scripts/bench/paired-production-driver.mjs"
+                  - "scripts/bench/paired-production-driver.test.mjs"
+                  - "scripts/bench/paired-result-report.mjs"
+                  - "scripts/bench/paired-result-report.test.mjs"
+                  - "docs/user/commands.mdx"
+                  - "docs/user/task-lifecycle.mdx"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bunx vitest run packages/agentplane/src/commands/shared/supervisor-execution-default-budget.test.ts packages/agentplane/src/commands/task/task-token-usage.test.ts packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts"
+                      id: "token-contract-tests"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                    -
+                      capability: "task.verify"
+                      command: "node --test scripts/bench/paired-production-driver.test.mjs scripts/bench/paired-result-report.test.mjs"
+                      id: "paired-contract-tests"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                    -
+                      capability: "task.verify"
+                      command: "bun run bench:agent-efficiency:check"
+                      id: "efficiency-baseline"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                    -
+                      capability: "task.verify"
+                      command: "bun run bench:agent-efficiency:replay:check"
+                      id: "efficiency-replay"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                    -
+                      capability: "task.verify"
+                      id: "exact-evidence-review"
+                      kind: "semantic"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "token-contract-tests"
+                        - "exact-evidence-review"
+                      description: "Every completed AgentPlane task exposes provider token usage or an explicit partial/unavailable state independently of the user's authentication or billing route; token caps are null by default and can be enabled only by an explicit user action, while non-token safety limits remain active."
+                      id: "informational-token-contract"
+                      required: true
+                    -
+                      check_ids:
+                        - "paired-contract-tests"
+                        - "efficiency-baseline"
+                        - "efficiency-replay"
+                        - "exact-evidence-review"
+                      description: "The paired campaign records actual input, cached-input, output, reasoning, and total token usage for every attempt, computes token cost per independently verified result without double-counting subsets, and has no required currency, price basis, purchase, credit, monetary spend, or default token cap."
+                      id: "m01-token-evidence"
+                      required: true
+                  evidence_fingerprint: "sha256:d096f3eff5e6679a97757a1f464df2e99ab89b7f88373534626c546eec6e3e47"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "paired-contract-tests"
+                      - "efficiency-baseline"
+                      - "efficiency-replay"
+                      - "exact-evidence-review"
+                    description: "The paired campaign records actual input, cached-input, output, reasoning, and total token usage for every attempt, computes token cost per independently verified result without double-counting subsets, and has no required currency, price basis, purchase, credit, monetary spend, or default token cap."
+                    id: "m01-token-evidence"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 200000
+                  optional_sources:
+                    - "agentplane-roadmap-r2/tasks/ST-19.md"
+                    - "agentplane-roadmap-r2/EXECUTION-CHARTER.md"
+                  required_sources:
+                    - "scripts/bench/paired-production-driver.mjs"
+                    - "scripts/bench/paired-result-report.mjs"
+                    - "scripts/bench/internal/agent-efficiency-codex-runtime.mjs"
+                    - "scripts/bench/run-agent-efficiency-codex-replay.mjs"
+                  symbol_hints:
+                    - "M01"
+                    - "PAIRED_CAMPAIGN_ARMS"
+                    - "provider_usage"
+                    - "minimum_paired_successes"
+                    - "uncertainty_expansion"
+                depends_on:
+                  - "align-token-measurement-contract"
+                expected_outputs:
+                  - "immutable token-based campaign manifest"
+                  - "all-attempt provider token evidence"
+                  - "paired token-per-verified-result report"
+                  - "fixed expansion decision"
+                  - "observed efficiency result or honest NOT ESTABLISHED disposition"
+                id: "run-token-measured-m01"
+                objective: "Execute the preregistered paired pilot through the existing ChatGPT-authenticated Codex runtime with token caps disabled, retain every assigned attempt, and report only provider-observed token measurements and independently verified outcomes."
+                optional: false
+                priority: 2
+                required_inputs:
+                  - "paired attempt token-usage contract"
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "write"
+                    resource: "task-worktree"
+                risk: "high"
+                scope_roots:
+                  - "scripts/baselines"
+                  - "docs/internal/v0.7-agent-efficiency-baseline.md"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "node --test scripts/bench/paired-production-driver.test.mjs scripts/bench/paired-result-report.test.mjs"
+                      id: "paired-contract-tests"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                    -
+                      capability: "task.verify"
+                      command: "bun run bench:agent-efficiency:check"
+                      id: "efficiency-baseline"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                    -
+                      capability: "task.verify"
+                      command: "bun run bench:agent-efficiency:replay:check"
+                      id: "efficiency-replay"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                    -
+                      capability: "task.verify"
+                      id: "exact-evidence-review"
+                      kind: "semantic"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "paired-contract-tests"
+                        - "efficiency-baseline"
+                        - "efficiency-replay"
+                        - "exact-evidence-review"
+                      description: "The paired campaign records actual input, cached-input, output, reasoning, and total token usage for every attempt, computes token cost per independently verified result without double-counting subsets, and has no required currency, price basis, purchase, credit, monetary spend, or default token cap."
+                      id: "m01-token-evidence"
+                      required: true
+                  evidence_fingerprint: "sha256:d096f3eff5e6679a97757a1f464df2e99ab89b7f88373534626c546eec6e3e47"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "package-tarball"
+                      - "package-install-smoke"
+                      - "release-critical"
+                    description: "The final exact 0.7.9 candidate is qualified through installed-package and release-critical checks without weakening golden outcomes or disabling Blueprint writers."
+                    id: "candidate-qualified"
+                    required: true
+                  -
+                    check_ids:
+                      - "docs-bootstrap"
+                      - "docs-onboarding"
+                      - "exact-evidence-review"
+                    description: "Documentation states the informational token contract, the observed M01 result or honest NOT ESTABLISHED disposition, and the exact deferred 0.7.10 through 0.7.14 boundary without monetary-account assumptions."
+                    id: "observed-documentation"
+                    required: true
+                  -
+                    check_ids:
+                      - "diff-check"
+                      - "exact-evidence-review"
+                      - "hosted-integration"
+                    description: "The final diff is scoped, preserves I01-I12 and C01-C08, excludes agentplane-roadmap-r2, and has verified hosted integration before publication."
+                    id: "release-ready-diff"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 180000
+                  optional_sources:
+                    - "agentplane-roadmap-r2/tasks/ST-20.md"
+                    - "agentplane-roadmap-r2/releases/0.7.10.md"
+                    - "agentplane-roadmap-r2/releases/0.7.11.md"
+                    - "agentplane-roadmap-r2/releases/0.7.12.md"
+                    - "agentplane-roadmap-r2/releases/0.7.13.md"
+                    - "agentplane-roadmap-r2/releases/0.7.14.md"
+                  required_sources:
+                    - "scripts/baselines/v0.7.9-stabilization-candidate.json"
+                    - "docs/internal/v0.7-agent-efficiency-baseline.md"
+                    - "docs/user/workflow.mdx"
+                    - "docs/developer/blueprints.mdx"
+                  symbol_hints:
+                    - "candidate"
+                    - "M01"
+                    - "Q02"
+                    - "0.7.10"
+                    - "0.7.14"
+                depends_on:
+                  - "run-token-measured-m01"
+                expected_outputs:
+                  - "final exact candidate identity"
+                  - "installed-package qualification evidence"
+                  - "observed 0.7.9 documentation"
+                  - "release readiness evidence"
+                id: "qualify-and-document-final-candidate"
+                objective: "Qualify the final exact 0.7.9 candidate after the token-contract change and document only observed behavior, measurements, uncertainty, and the deferred 0.7.10 through 0.7.14 boundary."
+                optional: false
+                priority: 3
+                required_inputs:
+                  - "all-attempt provider token evidence"
+                  - "paired token-per-verified-result report"
+                  - "observed efficiency result or honest NOT ESTABLISHED disposition"
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "write"
+                    resource: "task-worktree"
+                risk: "medium"
+                scope_roots:
+                  - "scripts/baselines/v0.7.9-stabilization-candidate.json"
+                  - "docs/internal/v0.7-agent-efficiency-baseline.md"
+                  - "docs/user/workflow.mdx"
+                  - "docs/developer/blueprints.mdx"
+                  - "package.json"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run package:tarball:check"
+                      id: "package-tarball"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                    -
+                      capability: "task.verify"
+                      command: "bun run package:install-smoke"
+                      id: "package-install-smoke"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:release:critical"
+                      id: "release-critical"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1800000
+                    -
+                      capability: "task.verify"
+                      command: "bun run docs:bootstrap:check"
+                      id: "docs-bootstrap"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                    -
+                      capability: "task.verify"
+                      command: "bun run docs:onboarding:check"
+                      id: "docs-onboarding"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                    -
+                      capability: "task.verify"
+                      command: "git diff --check"
+                      id: "diff-check"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 120000
+                    -
+                      capability: "task.verify"
+                      id: "exact-evidence-review"
+                      kind: "semantic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      id: "hosted-integration"
+                      kind: "provider"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "package-tarball"
+                        - "package-install-smoke"
+                        - "release-critical"
+                      description: "The final exact 0.7.9 candidate is qualified through installed-package and release-critical checks without weakening golden outcomes or disabling Blueprint writers."
+                      id: "candidate-qualified"
+                      required: true
+                    -
+                      check_ids:
+                        - "docs-bootstrap"
+                        - "docs-onboarding"
+                        - "exact-evidence-review"
+                      description: "Documentation states the informational token contract, the observed M01 result or honest NOT ESTABLISHED disposition, and the exact deferred 0.7.10 through 0.7.14 boundary without monetary-account assumptions."
+                      id: "observed-documentation"
+                      required: true
+                    -
+                      check_ids:
+                        - "diff-check"
+                        - "exact-evidence-review"
+                        - "hosted-integration"
+                      description: "The final diff is scoped, preserves I01-I12 and C01-C08, excludes agentplane-roadmap-r2, and has verified hosted integration before publication."
+                      id: "release-ready-diff"
+                      required: true
+                  evidence_fingerprint: "sha256:d096f3eff5e6679a97757a1f464df2e99ab89b7f88373534626c546eec6e3e47"
+                  schema_version: 1
+        revision: 2
+        schema_version: 1
+        task_id: "202609121424-4BC7B3"
+    revision: 24
     schema_version: 1
     updated_at: "2026-09-13T19:38:04.383Z"
     work_items:
@@ -1812,6 +2369,30 @@ extensions:
         work_item_id: "align-token-measurement-contract"
     leases: []
     mutation_receipts:
+      compatibility:sha256:0dddf989b0454ad8f05959a2f65d97cb039ebcdf0465feabfe1ba8424ffe8c6b:
+        aggregate_digest: "sha256:6a457561e12bc59ff9a08141ef882a3b3e818f33644ba2efacef2cf66c333e47"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T19:38:04.383Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_c3f6187194f647cfdb5f57c1"
+          mutation_id: "compatibility:sha256:0dddf989b0454ad8f05959a2f65d97cb039ebcdf0465feabfe1ba8424ffe8c6b"
+          plan_digest: "sha256:357491668d26fbe1b3a253b693c182f2430296031f26c670fb31d1a4e704c630"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-4BC7B3"
+          task_revision: 23
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:0dddf989b0454ad8f05959a2f65d97cb039ebcdf0465feabfe1ba8424ffe8c6b"
+        next_revision: 24
+        previous_revision: 23
+        schema_version: 1
+        task_id: "202609121424-4BC7B3"
       compatibility:sha256:0fa9aaba0913cdfb37cac6f6019915bc1c80a2252e4f616765179f811a12f17f:
         aggregate_digest: "sha256:0af9ef26903a9b610dbed0f626e6fb453b8b686a019229209807d49c1e3aa346"
         event:
