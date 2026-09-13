@@ -397,11 +397,13 @@ const V07_CONTEXT_FILES = [
   "packages/agentplane/src/commands/context/search.fts5.unit.test.ts",
   "packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts",
   "packages/agentplane/src/runner/context/task-context.test.ts",
+  "packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts",
   "packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts",
 ];
 
 const V07_SUPERVISOR_FILES = [
   "packages/core/src/runner/supervisor-execution-episode.test.ts",
+  "packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts",
   "packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts",
   "packages/agentplane/src/commands/shared/workflow-supervisor.test.ts",
   "packages/agentplane/src/commands/shared/workflow-step.test.ts",

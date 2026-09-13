@@ -1,0 +1,718 @@
+diff --git a/packages/agentplane/src/runner/adapters/codex-result-transport.ts b/packages/agentplane/src/runner/adapters/codex-result-transport.ts
+index 6fb1360f2..5b2d5bece 100644
+--- a/packages/agentplane/src/runner/adapters/codex-result-transport.ts
++++ b/packages/agentplane/src/runner/adapters/codex-result-transport.ts
+@@ -7,8 +7,12 @@ import {
+   KNOWLEDGE_REQUEST_KIND,
+   KNOWLEDGE_REQUEST_SCHEMA_VERSION,
+   KNOWLEDGE_REQUEST_SCOPE_VALUES,
++  renderAgentSemanticResultSchemaJson,
+   validateAgentSemanticResult,
++  validateAgentSemanticResultForWorkOrder,
++  validateAgentWorkOrderV2,
+   type AgentSemanticResult,
++  type AgentWorkOrderV2,
+ } from "@agentplaneorg/core/schemas";
+ import { atomicWriteFile } from "@agentplaneorg/core/fs";
+ import path from "node:path";
+@@ -218,7 +222,32 @@ export function resolveCodexResultTransportPaths(runDir: string): {
+   };
+ }
+ 
+-export function renderCodexResultOutputSchemaJson(): string {
++export function renderCodexResultOutputSchemaJson(workOrder?: AgentWorkOrderV2): string {
++  if (workOrder) {
++    const issued = validateAgentWorkOrderV2(workOrder);
++    const schema = JSON.parse(
++      renderAgentSemanticResultSchemaJson({
++        role: issued.role,
++        ...(issued.canonical_binding ? { phase: issued.canonical_binding.phase } : {}),
++      }),
++    ) as Record<string, unknown>;
++    if (isRecord(schema.properties)) delete schema.properties.work_order_id;
++    if (Array.isArray(schema.required)) {
++      schema.required = schema.required.filter((field) => field !== "work_order_id");
++    }
++    schema.description =
++      "Role-specific semantic payload. The AgentPlane supervisor supplies the issued WorkOrder identity and service fields.";
++    if (Array.isArray(schema.examples)) {
++      schema.examples = schema.examples.map((example: unknown) => {
++        if (!isRecord(example)) return example;
++        const { work_order_id: _workOrderId, ...rest } = example;
++        return rest;
++      });
++    }
++    return `${JSON.stringify(schema, null, 2)}\n`;
++  }
++  // Work-order-free recipe runs retain the legacy transport until they have a
++  // supervisor-issued role contract of their own.
+   return `${JSON.stringify(CODEX_RESULT_OUTPUT_SCHEMA, null, 2)}\n`;
+ }
+ 
+@@ -449,6 +478,7 @@ export async function materializeCodexResultTransport(opts: {
+   raw_text: string | null;
+   result_path: string;
+   work_order_id: string;
++  work_order?: AgentWorkOrderV2;
+ }): Promise<AgentSemanticResult> {
+   if (opts.raw_text === null) {
+     throw new Error("Codex JSONL event stream did not contain a structured agent message.");
+@@ -457,6 +487,20 @@ export async function materializeCodexResultTransport(opts: {
+   if (!isRecord(raw)) {
+     throw new Error("Codex structured semantic output must contain a JSON object.");
+   }
++  if (opts.work_order) {
++    const normalized = validateAgentSemanticResultForWorkOrder({
++      work_order: opts.work_order,
++      semantic_result: raw,
++      format: "semantic_payload_v1",
++    });
++    if (normalized.work_order_id !== opts.work_order_id) {
++      throw new Error(
++        `Codex structured semantic output work_order_id mismatch (${JSON.stringify(normalized.work_order_id)} != ${JSON.stringify(opts.work_order_id)}).`,
++      );
++    }
++    await atomicWriteFile(opts.result_path, `${JSON.stringify(normalized, null, 2)}\n`, "utf8");
++    return normalized;
++  }
+   assertExactKeys(raw, CODEX_RESULT_TRANSPORT_KEYS, "root");
+   const blocker = nullableRecord(raw.blocker, "blocker", CODEX_BLOCKER_TRANSPORT_KEYS);
+   const knowledgeRequest = nullableRecord(
+diff --git a/packages/agentplane/src/runner/adapters/codex.ts b/packages/agentplane/src/runner/adapters/codex.ts
+index 0e61eb0bc..f131280a1 100644
+--- a/packages/agentplane/src/runner/adapters/codex.ts
++++ b/packages/agentplane/src/runner/adapters/codex.ts
+@@ -234,7 +234,9 @@ export class CodexRunnerAdapter implements RunnerAdapter {
+                 {
+                   path: input.output_schema_path,
+                   label: "runner prepared Codex output schema",
+-                  expected_text: renderCodexResultOutputSchemaJson(),
++                  expected_text: renderCodexResultOutputSchemaJson(
++                    input.supervisor_prepared_input?.bundle.work_order,
++                  ),
+                 },
+               ]
+             : [],
+@@ -267,6 +269,9 @@ export class CodexRunnerAdapter implements RunnerAdapter {
+           raw_text: resultEventCollector.readLastAgentMessage(),
+           result_path: input.result_path,
+           work_order_id: input.work_order_id,
++          ...(input.supervisor_prepared_input?.bundle.work_order
++            ? { work_order: input.supervisor_prepared_input.bundle.work_order }
++            : {}),
+         });
+       },
+       startMessage: "codex exec started",
+diff --git a/packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts b/packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts
+new file mode 100644
+index 000000000..58ebe716c
+--- /dev/null
++++ b/packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts
+@@ -0,0 +1,427 @@
++import { mkdtemp, readFile, rm } from "node:fs/promises";
++import os from "node:os";
++import path from "node:path";
++
++import { defaultConfig } from "@agentplaneorg/core/config";
++import {
++  AGENT_WORK_ORDER_V2_VALID_FIXTURE,
++  validateAgentWorkOrderV2,
++  type AgentWorkOrderV2,
++} from "@agentplaneorg/core/schemas";
++import { createRepositorySnapshot, taskCentricDigest } from "@agentplaneorg/core/tasks";
++import { makeRunnerContextBundle, setRunnerBundleRunDir } from "@agentplane/testkit/runner";
++import { afterEach, describe, expect, it } from "vitest";
++
++import { writePreparedRunnerArtifacts } from "../artifacts.js";
++import { readRunnerResultManifest } from "../result-manifest.js";
++import { createRunnerAdapter } from "./index.js";
++import {
++  createCodexResultEventCollector,
++  materializeCodexResultTransport,
++  renderCodexResultOutputSchemaJson,
++} from "./codex-result-transport.js";
++
++const tempRoots: string[] = [];
++const digest = `sha256:${"a".repeat(64)}`;
++
++afterEach(async () => {
++  await Promise.all(
++    tempRoots.splice(0).map(async (root) => await rm(root, { recursive: true, force: true })),
++  );
++});
++
++function buildWorkOrder(
++  role: AgentWorkOrderV2["role"],
++  phase?: "planning" | "implementation" | "inspection",
++): AgentWorkOrderV2 {
++  const order = structuredClone(AGENT_WORK_ORDER_V2_VALID_FIXTURE);
++  order.work_order_id = `managed-${role.toLowerCase()}-${phase ?? "ordinary"}`;
++  order.role = role;
++  order.prepared_evidence = order.prepared_evidence.map((prepared) => ({ ...prepared, role }));
++  if (role === "PLANNER") {
++    const repositorySnapshot = createRepositorySnapshot({
++      git: { kind: "commit", sha: "1".repeat(40), ref: "refs/heads/main" },
++      dirty_paths: [],
++      policy_digest: digest,
++      config_digest: digest,
++      context_digest: digest,
++      task_history_cursor: null,
++      captured_at: "2026-09-13T00:00:00.000Z",
++    });
++    const planningContext = {
++      schema_version: 1 as const,
++      repository_snapshot: repositorySnapshot,
++      retrievals: [],
++    };
++    order.planning_context = {
++      ...planningContext,
++      digest: taskCentricDigest(planningContext),
++    };
++  }
++  if (phase) {
++    const common = {
++      phase,
++      task_id: order.task.id,
++      repository_identity: digest,
++      repository_fingerprint: digest,
++      plan_revision: 1,
++      plan_digest: digest,
++    } as const;
++    if (phase === "planning") {
++      order.canonical_binding = common;
++    } else {
++      order.task.work_item_id = "build";
++      order.canonical_binding = {
++        ...common,
++        work_item_id: "build",
++        attempt: 1,
++        claim_id: "claim-1",
++        contract_digest: digest,
++        authority_digest: digest,
++        ...(phase === "inspection" ? { result_digest: digest } : {}),
++      };
++    }
++  }
++  if (phase === "inspection") {
++    order.authority = {
++      ...order.authority,
++      mutation_scope: "none",
++      writable_roots: [],
++    };
++  }
++  return validateAgentWorkOrderV2(order);
++}
++
++const basePayload = {
++  status: "completed",
++  summary: "Managed semantic transport preserved the typed payload.",
++  findings: ["Typed payload reached the acceptance boundary."],
++  uncertainty: [],
++  claimed_checks: [
++    { check: "transport", claimed_status: "passed", details: "Agent-reported only." },
++  ],
++} as const;
++
++const compactPlan = {
++  schema_version: 2,
++  criteria: [
++    { id: "criterion", description: "Preserve the payload.", required: true, check_ids: ["check"] },
++  ],
++  checks: [{ id: "check", kind: "deterministic", required: true, capability: "run_checks" }],
++  work_items: [
++    {
++      id: "build",
++      objective: "Preserve the payload.",
++      depends_on: [],
++      required_inputs: [],
++      expected_outputs: ["source"],
++      scope_roots: ["packages/agentplane"],
++      context: { required_sources: [], optional_sources: [], symbol_hints: [], max_bytes: 4096 },
++      risk: "low",
++      capabilities: ["repository_write"],
++      resource_claims: [],
++      optional: false,
++      priority: 1,
++    },
++  ],
++  assumptions: [],
++  unresolved_questions: [],
++} as const;
++
++const canonicalPlan = {
++  work_items: [
++    {
++      id: "build",
++      depends_on: [],
++      required_inputs: [],
++      expected_outputs: ["source"],
++      execution_requirements: {
++        scope_roots: ["packages/agentplane"],
++        repository_effects: ["source_code"],
++        external_effects: [],
++        capabilities: ["repository_write"],
++        resources: [],
++      },
++      optional: false,
++      contract: {
++        objective: "Preserve the payload.",
++        acceptance_criteria: ["The typed payload is retained."],
++        verification_commands: ["bun run typecheck"],
++        role: "EXECUTOR",
++      },
++    },
++  ],
++} as const;
++
++const cases = [
++  {
++    label: "ordinary PLANNER",
++    workOrder: buildWorkOrder("PLANNER"),
++    roleField: "task_plan_proposal",
++    payload: {
++      ...basePayload,
++      task_intent: {
++        task_kind: "code",
++        mutation_scope: "code",
++        risk_flags: ["security"],
++        tags: ["transport"],
++        blueprint_request: "code.direct",
++        execution: {
++          schema_version: 2,
++          preferred_mode: "direct",
++          scope_roots: ["packages/agentplane"],
++          repository_effects: ["source_code", "tests"],
++          external_effects: [],
++          reversibility: "reversible",
++          rationale: ["The change is locally verifiable."],
++          requirements_uncertainty: "bounded",
++          implementation_uncertainty: "bounded",
++        },
++      },
++      task_plan_proposal: compactPlan,
++    },
++  },
++  {
++    label: "ordinary EXECUTOR",
++    workOrder: buildWorkOrder("EXECUTOR"),
++    roleField: "plan_refinement",
++    payload: {
++      ...basePayload,
++      plan_refinement: {
++        description: "Add the missing transport regression.",
++        scope_roots_added: [],
++        outputs_added: ["transport regression"],
++        acceptance_changed: false,
++        risk_changed: false,
++        external_effects_added: [],
++        dependencies_changed: false,
++        architecture_constraints_changed: false,
++        operations: ["add_test"],
++      },
++    },
++  },
++  {
++    label: "blocked EXECUTOR",
++    workOrder: buildWorkOrder("EXECUTOR"),
++    roleField: "blocker",
++    payload: {
++      ...basePayload,
++      status: "blocked",
++      summary: "Managed execution stopped at a semantic blocker.",
++      blocker: {
++        summary: "The required input is unavailable.",
++        recommended_action: "Supply the missing bounded input.",
++      },
++    },
++  },
++  {
++    label: "failed EXECUTOR",
++    workOrder: buildWorkOrder("EXECUTOR"),
++    roleField: "claimed_checks",
++    payload: {
++      ...basePayload,
++      status: "failed",
++      summary: "Managed execution reported a semantic failure.",
++      findings: ["The typed failure reached the acceptance boundary."],
++    },
++  },
++  {
++    label: "ordinary EVALUATOR",
++    workOrder: buildWorkOrder("EVALUATOR"),
++    roleField: "review",
++    payload: {
++      ...basePayload,
++      review: {
++        verdict: "pass",
++        missing_tests: [],
++        hidden_assumptions: [],
++        residual_risks: [],
++      },
++    },
++  },
++  {
++    label: "context CURATOR",
++    workOrder: buildWorkOrder("CURATOR"),
++    roleField: "knowledge_request",
++    payload: {
++      ...basePayload,
++      status: "needs_context",
++      blocker: {
++        summary: "A source is missing.",
++        recommended_action: "Retrieve the bounded source.",
++        scope_extension_request: {
++          schema_version: 1,
++          scope_roots: ["context/wiki"],
++          repository_effects: [],
++          rationale: "The source is required by the WorkOrder.",
++        },
++      },
++      knowledge_request: {
++        schema_version: 1,
++        kind: "knowledge_request",
++        query: "Find the required contract.",
++        reason: "The current context does not contain it.",
++        desired_kind: "source",
++        scope: "task_context",
++        blocking: true,
++      },
++    },
++  },
++  {
++    label: "canonical PLANNER",
++    workOrder: buildWorkOrder("PLANNER", "planning"),
++    roleField: "canonical_plan",
++    payload: { ...basePayload, canonical_plan: canonicalPlan },
++  },
++  {
++    label: "canonical EXECUTOR",
++    workOrder: buildWorkOrder("EXECUTOR", "implementation"),
++    roleField: "canonical_outputs",
++    payload: {
++      ...basePayload,
++      canonical_outputs: [{ id: "source", kind: "source", digest }],
++    },
++  },
++  {
++    label: "canonical EVALUATOR",
++    workOrder: buildWorkOrder("EVALUATOR", "inspection"),
++    roleField: "review",
++    payload: {
++      ...basePayload,
++      review: {
++        verdict: "pass",
++        missing_tests: [],
++        hidden_assumptions: [],
++        residual_risks: [],
++      },
++    },
++  },
++] as const;
++
++describe("roadmap managed semantic output parity", () => {
++  it.each(cases)(
++    "preserves every typed field for $label",
++    async ({ workOrder, roleField, payload }) => {
++      const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-roadmap-output-parity-"));
++      tempRoots.push(root);
++      const bundle = makeRunnerContextBundle({ gitRoot: root, mode: "execute" });
++      bundle.work_order = workOrder;
++      setRunnerBundleRunDir(bundle, path.join(root, "runs", workOrder.work_order_id));
++      const invocation = await createRunnerAdapter(defaultConfig()).prepare(bundle);
++      await writePreparedRunnerArtifacts({
++        bundle,
++        bootstrap_markdown: "Return the typed semantic payload.\n",
++        invocation,
++      });
++
++      const schemaText = await readFile(invocation.output_schema_path!, "utf8");
++      expect(schemaText).toBe(renderCodexResultOutputSchemaJson(workOrder));
++      const schema = JSON.parse(schemaText) as { properties?: Record<string, unknown> };
++      expect(schema.properties).toHaveProperty(roleField);
++      expect(schema.properties).not.toHaveProperty("canonical_binding");
++      expect(schema.properties).not.toHaveProperty("schema_version");
++      expect(schema.properties).not.toHaveProperty("kind");
++      expect(schema.properties).not.toHaveProperty("work_order_id");
++
++      const collector = createCodexResultEventCollector();
++      collector.observeStdoutLine(
++        JSON.stringify({
++          type: "item.completed",
++          item: { type: "agent_message", text: JSON.stringify(payload) },
++        }),
++      );
++      collector.observeStdoutLine(JSON.stringify({ type: "turn.completed" }));
++      const normalized = await materializeCodexResultTransport({
++        raw_text: collector.readLastAgentMessage(),
++        result_path: invocation.result_path,
++        work_order_id: invocation.work_order_id,
++        work_order: workOrder,
++      });
++
++      const { task_plan_proposal: compactProposal, ...unchangedPayload } = payload as Record<
++        string,
++        unknown
++      >;
++      expect(normalized).toMatchObject(unchangedPayload);
++      if (compactProposal) {
++        const normalizedPlan = normalized.task_plan_proposal!;
++        expect(normalizedPlan).toMatchObject({
++          schema_version: 1,
++          task_id: workOrder.task.id,
++          assumptions: [],
++          unresolved_questions: [],
++        });
++        expect(normalizedPlan.work_items.schema_version).toBe(1);
++        expect(normalizedPlan.work_items.work_items).toHaveLength(1);
++        expect(normalizedPlan.work_items.work_items[0]).toMatchObject({
++          id: "build",
++          objective: "Preserve the payload.",
++        });
++        expect(
++          normalizedPlan.work_items.work_items[0]?.acceptance_criteria.map(
++            (criterion) => criterion.id,
++          ),
++        ).toContain("criterion");
++        expect(
++          normalizedPlan.work_items.work_items[0]?.validation.checks.map((check) => check.id),
++        ).toContain("check");
++      }
++      expect(normalized).toMatchObject({
++        schema_version: 2,
++        kind: "agent_semantic_result",
++        work_order_id: workOrder.work_order_id,
++        ...(workOrder.canonical_binding ? { canonical_binding: workOrder.canonical_binding } : {}),
++      });
++      const manifest = await readRunnerResultManifest(invocation.result_path);
++      expect(manifest?.semantic_result.value).toEqual(normalized);
++    },
++  );
++
++  it("rejects cross-role, lifecycle-injection, and wrong-work-order payloads", async () => {
++    const resultPath = path.join(
++      await mkdtemp(path.join(os.tmpdir(), "agentplane-roadmap-output-negative-")),
++      "result.json",
++    );
++    tempRoots.push(path.dirname(resultPath));
++    const workOrder = buildWorkOrder("EXECUTOR", "implementation");
++    const materialize = async (payload: Record<string, unknown>) =>
++      await materializeCodexResultTransport({
++        raw_text: JSON.stringify(payload),
++        result_path: resultPath,
++        work_order_id: workOrder.work_order_id,
++        work_order: workOrder,
++      });
++
++    await expect(
++      materialize({
++        ...basePayload,
++        canonical_outputs: [{ id: "source", kind: "source", digest }],
++        review: { verdict: "pass", missing_tests: [], hidden_assumptions: [], residual_risks: [] },
++      }),
++    ).rejects.toThrow();
++    await expect(
++      materialize({
++        ...basePayload,
++        canonical_outputs: [{ id: "source", kind: "source", digest }],
++        approval: { approved_by: "USER" },
++      }),
++    ).rejects.toThrow();
++    await expect(
++      materialize({
++        ...basePayload,
++        work_order_id: "stale-or-foreign-work-order",
++        canonical_outputs: [{ id: "source", kind: "source", digest }],
++      }),
++    ).rejects.toThrow(/work_order_id/u);
++    await expect(
++      materialize({
++        ...basePayload,
++        canonical_outputs: [{ id: "source", kind: "source", digest }],
++        canonical_binding: {
++          ...workOrder.canonical_binding,
++          repository_fingerprint: `sha256:${"b".repeat(64)}`,
++        },
++      }),
++    ).rejects.toThrow();
++  });
++});
+diff --git a/packages/agentplane/src/runner/artifacts.ts b/packages/agentplane/src/runner/artifacts.ts
+index cadc75f03..fb9250124 100644
+--- a/packages/agentplane/src/runner/artifacts.ts
++++ b/packages/agentplane/src/runner/artifacts.ts
+@@ -233,7 +233,7 @@ export async function writePreparedRunnerArtifacts(opts: {
+     }
+     await writePreparedFile(
+       schemaPath,
+-      renderCodexResultOutputSchemaJson(),
++      renderCodexResultOutputSchemaJson(opts.bundle.work_order),
+       "runner prepared output schema",
+     );
+   }
+diff --git a/packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts b/packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts
+new file mode 100644
+index 000000000..a1008827d
+--- /dev/null
++++ b/packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts
+@@ -0,0 +1,67 @@
++import { buildAgentWorkOrderV2ValidFixture } from "@agentplaneorg/core/schemas";
++import { makeRunnerContextBundle } from "@agentplane/testkit/runner";
++import { describe, expect, it } from "vitest";
++
++import { renderTaskRunnerBootstrap } from "../usecases/task-run.js";
++
++describe("roadmap semantic requirement conservation", () => {
++  it("preserves mandatory process-repair requirements without granting lifecycle authority", () => {
++    const bundle = makeRunnerContextBundle({ runId: "roadmap-requirement-conservation" });
++    const workOrder = buildAgentWorkOrderV2ValidFixture("roadmap-requirement-conservation");
++    workOrder.task.work_item_id = "conserve_requirements";
++    const acceptance =
++      "Repair `agentplane task verify TASK-1` and `agentplane finish TASK-1` handling without executing either command.";
++    const check =
++      "Confirm `agentplane task verify TASK-1` remains task-owned input rather than supervisor authority.";
++    const stop =
++      "Stop before `agentplane finish TASK-1` if the required prompt would exceed its byte budget.";
++    workOrder.task.acceptance_criteria = [
++      { id: "required-process-repair", description: acceptance, required: true },
++    ];
++    workOrder.verification_intent.requirements = [
++      {
++        id: "required-process-check",
++        description: check,
++        required: true,
++        observed_by: "agentplane",
++      },
++    ];
++    workOrder.stop_rules = [stop];
++    bundle.work_order = workOrder;
++    bundle.execution.write_scope = {
++      ...bundle.execution.write_scope!,
++      writable_roots: [...workOrder.authority.writable_roots],
++    };
++    bundle.task!.metadata.tags = [...bundle.task!.metadata.tags, "process-mechanism-repair"];
++    bundle.task!.narrative.description =
++      "Repair lifecycle process choreography projection without granting lifecycle authority.";
++
++    const bootstrap = renderTaskRunnerBootstrap(bundle);
++
++    expect(bootstrap).toContain(workOrder.work_order_id);
++    expect(bootstrap).toContain(workOrder.task.objective);
++    expect(bootstrap).toContain(workOrder.task.work_item_id!);
++    expect(bootstrap).toContain(acceptance);
++    expect(bootstrap).toContain(check);
++    expect(bootstrap).toContain(stop);
++    for (const output of workOrder.required_outputs) expect(bootstrap).toContain(output.id);
++    for (const root of workOrder.authority.writable_roots) expect(bootstrap).toContain(root);
++    expect(bootstrap).toContain(workOrder.authority.network);
++    expect(bootstrap).toContain("Return one typed semantic result");
++  });
++
++  it("keeps supervisor commands out of ordinary semantic work orders", () => {
++    const bundle = makeRunnerContextBundle({ runId: "ordinary-requirement-filter" });
++    const workOrder = buildAgentWorkOrderV2ValidFixture("ordinary-requirement-filter");
++    workOrder.task.acceptance_criteria = [
++      {
++        id: "supervisor-command",
++        description: "Run agentplane task verify TASK-1 before implementation.",
++        required: true,
++      },
++    ];
++    bundle.work_order = workOrder;
++
++    expect(renderTaskRunnerBootstrap(bundle)).not.toContain("agentplane task verify TASK-1");
++  });
++});
+diff --git a/packages/agentplane/src/runner/usecases/task-run-bootstrap.ts b/packages/agentplane/src/runner/usecases/task-run-bootstrap.ts
+index 85d905cbf..bb0a5d69c 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-bootstrap.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-bootstrap.ts
+@@ -10,6 +10,7 @@ import {
+ 
+ import {
+   AGENT_INSTRUCTION_LANGUAGE,
++  hasExplicitProcessMechanismRepairAuthority,
+   semanticTextHasProcessChoreography,
+ } from "../context/semantic-prompt-projection.js";
+ import type { RunnerContextBundle, RunnerInvocation } from "../types.js";
+@@ -180,11 +181,19 @@ function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string
+       selected.has(`/prepared_evidence/${index}`),
+     ),
+   };
++  const preserveProcessRepairRequirements = hasExplicitProcessMechanismRepairAuthority(bundle.task);
+   const semanticAcceptanceCriteria = workOrder.task.acceptance_criteria.filter(
+-    (criterion) => !semanticTextHasProcessChoreography(criterion.description),
++    (criterion) =>
++      preserveProcessRepairRequirements ||
++      !semanticTextHasProcessChoreography(criterion.description),
+   );
+   const semanticVerificationRequirements = workOrder.verification_intent.requirements.filter(
+-    (requirement) => !semanticTextHasProcessChoreography(requirement.description),
++    (requirement) =>
++      preserveProcessRepairRequirements ||
++      !semanticTextHasProcessChoreography(requirement.description),
++  );
++  const semanticStopRules = workOrder.stop_rules.filter(
++    (rule) => preserveProcessRepairRequirements || !semanticTextHasProcessChoreography(rule),
+   );
+   const requiredInputs = workOrder.required_inputs.filter((input) => {
+     if (!input.required) return false;
+@@ -247,6 +256,7 @@ function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string
+     })),
+     semantic_result_schema: workOrder.semantic_result_schema,
+     stop_rules: [
++      ...semanticStopRules,
+       "Stop and return a blocked semantic result when required context is missing or stale.",
+       "Stop before exceeding the granted authority, writable roots, network policy, or protected paths.",
+       "Return one typed semantic result when the objective is satisfied or blocked.",
+diff --git a/packages/core/src/runner/agent-work-order.ts b/packages/core/src/runner/agent-work-order.ts
+index 0971a8d00..1de82b117 100644
+--- a/packages/core/src/runner/agent-work-order.ts
++++ b/packages/core/src/runner/agent-work-order.ts
+@@ -499,13 +499,28 @@ export function validateAgentSemanticResultForWorkOrder(opts: {
+   format?: "semantic_payload_v1";
+ }): AgentSemanticResult {
+   const workOrder = validateAgentWorkOrderV2(opts.work_order);
++  const compactResult =
++    opts.format === "semantic_payload_v1" &&
++    opts.semantic_result !== null &&
++    typeof opts.semantic_result === "object" &&
++    !Array.isArray(opts.semantic_result)
++      ? {
++          ...(opts.semantic_result as Record<string, unknown>),
++          work_order_id:
++            (opts.semantic_result as Record<string, unknown>).work_order_id ??
++            workOrder.work_order_id,
++        }
++      : opts.semantic_result;
+   const payload =
+     opts.format === "semantic_payload_v1"
+       ? buildAgentSemanticPayloadSchema({
+           role: workOrder.role,
+           phase: workOrder.canonical_binding?.phase,
+-        }).parse(opts.semantic_result)
++        }).parse(compactResult)
+       : null;
++  if (payload?.work_order_id && payload.work_order_id !== workOrder.work_order_id) {
++    throw new Error("Agent semantic result work_order_id must match the prepared AgentWorkOrder.");
++  }
+   const proposal = payload?.task_plan_proposal;
+   if (
+     proposal &&
+diff --git a/scripts/lib/test-route-registry.mjs b/scripts/lib/test-route-registry.mjs
+index 59adbc2ca..813f62019 100644
+--- a/scripts/lib/test-route-registry.mjs
++++ b/scripts/lib/test-route-registry.mjs
+@@ -397,11 +397,13 @@ const V07_CONTEXT_FILES = [
+   "packages/agentplane/src/commands/context/search.fts5.unit.test.ts",
+   "packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts",
+   "packages/agentplane/src/runner/context/task-context.test.ts",
++  "packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts",
+   "packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts",
+ ];
+ 
+ const V07_SUPERVISOR_FILES = [
+   "packages/core/src/runner/supervisor-execution-episode.test.ts",
++  "packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts",
+   "packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts",
+   "packages/agentplane/src/commands/shared/workflow-supervisor.test.ts",
+   "packages/agentplane/src/commands/shared/workflow-step.test.ts",

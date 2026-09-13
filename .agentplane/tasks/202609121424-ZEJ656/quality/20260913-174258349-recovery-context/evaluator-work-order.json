@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609121424-ZEJ656-710bf4abb6d7532b89e23fb2",
+  "prepared_at": "2026-09-13T17:42:58.349Z",
+  "task": {
+    "id": "202609121424-ZEJ656",
+    "revision": 26,
+    "objective": "Conserve 0.7.9 semantic requirements and managed output parity for ST-06 and ST-07\n\nSource contract: agentplane-roadmap-r2 cards ST-06 and ST-07. Preserve required objective, scope, outputs, checks, constraints, stop rules, WorkItem and WorkOrder identity across prompt compaction and role-specific projection. Repair managed semantic-result transport so completed, blocked, needs_context, and failed outcomes retain permitted typed fields without adapter loss. Do not add a second Plan or lifecycle format, and do not expose secrets. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: focused requirement-conservation and adapter output-parity tests with nonzero discovery, related transport/context critical suites, typecheck, schema/mirror checks.",
+    "acceptance_criteria": [
+      "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts",
+      "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts",
+      "- In scope: Source contract: agentplane-roadmap-r2 cards ST-06 and ST-07. Preserve required objective, scope, outputs, checks, constraints, stop rules, WorkItem and WorkOrder identity across prompt compaction and role-specific projection. Repair managed semantic-result transport so completed, blocked, needs_context, and failed outcomes retain permitted typed fields without adapter loss. Do not add a second Plan or lifecycle format, and do not expose secrets. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: focused requirement-conservation and adapter output-parity tests with nonzero discovery, related transport/context critical suites, typecheck, schema/mirror checks.\n- Out of scope: unrelated refactors not required for \"Conserve 0.7.9 semantic requirements and managed output parity for ST-06 and ST-07\".",
+      "Replanned the already implemented task around one validation work item with repository-defined schema and agent-template commands.",
+      "1. Run `bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts`. Expected: mandatory objective, criteria, scope, checks, outputs, constraints, stop rules, WorkItem identity, and WorkOrder identity survive prompt projection; lifecycle authority is unchanged; budget overflow stops explicitly.\n2. Run `bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts`. Expected: supported PLANNER, EXECUTOR, EVALUATOR, and context-role fields survive real prepare/schema/JSONL/normalization/acceptance transport; wrong-work-order, stale, cross-role, and lifecycle-injection results fail closed.\n3. Run `bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context packages/agentplane/src/runner/adapters`. Expected: related context and transport suites pass with nonzero test discovery.\n4. Run `bun run typecheck`, `bun run check:schemas`, and `bun run check:agent-assets`. Expected: type, schema, and mirrored asset contracts remain synchronized.\n5. Review the final diff and hosted CI. Expected: changes stay inside the approved task scope, `agentplane-roadmap-r2/` remains untracked, all required checks pass, and any residual limitation is recorded in Findings."
+    ]
+  },
+  "evaluated_sha": "086025d419444b01aaf1f4e2b58bb6fce25ff662",
+  "diff_base_sha": "d03a5e786db57136bf7f6c4661b148bcf97cfaf1",
+  "blueprint_digest": "e062431b59acd88978a3a9654d5feb31dc03e5953e9b7fbffbba3560975757da",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609121424-ZEJ656/quality/20260913-174258349-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:d25849afc724f04e0444247fde650efdf7b01f4239698a5bbb4383fb72e0798c",
+    "prompt_path": ".agentplane/tasks/202609121424-ZEJ656/quality/objects/sha256/2d96a0a1b65b6eb63d63ca65f5579c5bcd837911a14fae3454151c4600379c6f.md",
+    "result_schema_path": ".agentplane/tasks/202609121424-ZEJ656/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609121424-ZEJ656/README.md",
+      "sha256": "sha256:966119b53457c1f019b8a0bbdb977930e83e88b8f3bae83ad766c81c5d85c116",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609121424-ZEJ656/quality/objects/sha256/e250ba6eed9dac39f1d34ea4b79b5cd1af5ddbd4db9feb0eb9ca79a288d5146d.patch",
+      "sha256": "sha256:e250ba6eed9dac39f1d34ea4b79b5cd1af5ddbd4db9feb0eb9ca79a288d5146d",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609121424-ZEJ656/quality/objects/sha256/02e06f7837d90b8c1a4c80a067029b3d4f4802a7788db19bfb920cae2eb47960.json",
+      "sha256": "sha256:02e06f7837d90b8c1a4c80a067029b3d4f4802a7788db19bfb920cae2eb47960",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609121424-ZEJ656/verification/20260913174248617-5e2c7c1b546c9adf.json",
+      "sha256": "sha256:952e505ff88dd0c4a0a4385c990c2c61266ed9ed7da020837564ce1585e45732",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609121424-ZEJ656/quality/objects/sha256/645bd8fc3172665facd7fa060bd2449d0d6807e403d60fbba893f576d782aa48.json",
+      "sha256": "sha256:645bd8fc3172665facd7fa060bd2449d0d6807e403d60fbba893f576d782aa48",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

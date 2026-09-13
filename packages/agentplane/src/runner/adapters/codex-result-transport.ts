@@ -7,8 +7,12 @@ import {
   KNOWLEDGE_REQUEST_KIND,
   KNOWLEDGE_REQUEST_SCHEMA_VERSION,
   KNOWLEDGE_REQUEST_SCOPE_VALUES,
+  renderAgentSemanticResultSchemaJson,
   validateAgentSemanticResult,
+  validateAgentSemanticResultForWorkOrder,
+  validateAgentWorkOrderV2,
   type AgentSemanticResult,
+  type AgentWorkOrderV2,
 } from "@agentplaneorg/core/schemas";
 import { atomicWriteFile } from "@agentplaneorg/core/fs";
 import path from "node:path";
@@ -218,7 +222,32 @@ export function resolveCodexResultTransportPaths(runDir: string): {
   };
 }
 
-export function renderCodexResultOutputSchemaJson(): string {
+export function renderCodexResultOutputSchemaJson(workOrder?: AgentWorkOrderV2): string {
+  if (workOrder) {
+    const issued = validateAgentWorkOrderV2(workOrder);
+    const schema = JSON.parse(
+      renderAgentSemanticResultSchemaJson({
+        role: issued.role,
+        ...(issued.canonical_binding ? { phase: issued.canonical_binding.phase } : {}),
+      }),
+    ) as Record<string, unknown>;
+    if (isRecord(schema.properties)) delete schema.properties.work_order_id;
+    if (Array.isArray(schema.required)) {
+      schema.required = schema.required.filter((field) => field !== "work_order_id");
+    }
+    schema.description =
+      "Role-specific semantic payload. The AgentPlane supervisor supplies the issued WorkOrder identity and service fields.";
+    if (Array.isArray(schema.examples)) {
+      schema.examples = schema.examples.map((example: unknown) => {
+        if (!isRecord(example)) return example;
+        const { work_order_id: _workOrderId, ...rest } = example;
+        return rest;
+      });
+    }
+    return `${JSON.stringify(schema, null, 2)}\n`;
+  }
+  // Work-order-free recipe runs retain the legacy transport until they have a
+  // supervisor-issued role contract of their own.
   return `${JSON.stringify(CODEX_RESULT_OUTPUT_SCHEMA, null, 2)}\n`;
 }
 
@@ -449,6 +478,7 @@ export async function materializeCodexResultTransport(opts: {
   raw_text: string | null;
   result_path: string;
   work_order_id: string;
+  work_order?: AgentWorkOrderV2;
 }): Promise<AgentSemanticResult> {
   if (opts.raw_text === null) {
     throw new Error("Codex JSONL event stream did not contain a structured agent message.");
@@ -456,6 +486,20 @@ export async function materializeCodexResultTransport(opts: {
   const raw = JSON.parse(opts.raw_text) as unknown;
   if (!isRecord(raw)) {
     throw new Error("Codex structured semantic output must contain a JSON object.");
+  }
+  if (opts.work_order) {
+    const normalized = validateAgentSemanticResultForWorkOrder({
+      work_order: opts.work_order,
+      semantic_result: raw,
+      format: "semantic_payload_v1",
+    });
+    if (normalized.work_order_id !== opts.work_order_id) {
+      throw new Error(
+        `Codex structured semantic output work_order_id mismatch (${JSON.stringify(normalized.work_order_id)} != ${JSON.stringify(opts.work_order_id)}).`,
+      );
+    }
+    await atomicWriteFile(opts.result_path, `${JSON.stringify(normalized, null, 2)}\n`, "utf8");
+    return normalized;
   }
   assertExactKeys(raw, CODEX_RESULT_TRANSPORT_KEYS, "root");
   const blocker = nullableRecord(raw.blocker, "blocker", CODEX_BLOCKER_TRANSPORT_KEYS);
