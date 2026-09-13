@@ -4,7 +4,7 @@ title: "Qualify and document the 0.7.9 stabilization candidate for ST-18 through
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -111,10 +111,13 @@ execution_contract:
       - "scripts/release"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "scripts"
+    changed_paths:
+      - "scripts/baselines/v0.7.9-stabilization-candidate.json"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -165,22 +168,26 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:bc80c55aa6bc7747244298c59250b21065b879f2c8c8b6735bb2bbd2def71b07"
+      digest: "sha256:386e0feeb3aa001a909e59557e998c529332d3171ba3ff9f520585ff464dffa6"
       escalation_reasons:
         - "central_component:package.json"
         - "effect_release_metadata"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
+        - "unknown_path:scripts/baselines/v0.7.9-stabilization-candidate.json"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "scripts"
+        changed_files:
+          - "scripts/baselines/v0.7.9-stabilization-candidate.json"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -215,7 +222,9 @@ execution_contract:
       - "repository_effect:release_metadata"
       - "repository_effect:repository_write"
       - "task_outcome"
-commit: null
+commit:
+  hash: "1d38fc3e503b4e2a6d84c17817b82a09ab1fbe8e"
+  message: "🚧 4BC7B3 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -226,6 +235,9 @@ comments:
   -
     author: "CODER"
     body: "Start: User authorized resuming the release qualification without SSH or known_hosts access; continue from the passed local checks."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 1d38fc3e503b. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -248,9 +260,17 @@ events:
     from: "BLOCKED"
     to: "DOING"
     note: "Start: User authorized resuming the release qualification without SSH or known_hosts access; continue from the passed local checks."
+  -
+    type: "status"
+    at: "2026-09-13T18:42:58.465Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 1d38fc3e503b. CLI accepted one state-bound external-agent semantic result."
+    commit: "1d38fc3e503b4e2a6d84c17817b82a09ab1fbe8e"
 doc_version: 3
-doc_updated_at: "2026-09-13T18:40:46.850Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-13T18:42:58.465Z"
+doc_updated_by: "SUPERVISOR"
 description: "Source contract: agentplane-roadmap-r2 cards ST-18, ST-19, and ST-20. Build the exact clean installed candidate and run the frozen direct, branch, recovery, old-record, required PLANNER, and required EVALUATOR corpus. Then, under the user-approved spend and sandbox authority, execute the preregistered M01 paired pilot with complete all-attempt raw evidence and expand only by its fixed uncertainty rule; report NOT ESTABLISHED when coverage is insufficient. Record exact product and target SHAs separately. Finally document only observed 0.7.9 behavior and measurements and the 0.7.10 through 0.7.14 boundary. Do not weaken golden outcomes, disable Blueprint writers, omit required stages, rerun until green, or claim unsupported efficiency. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: package tarball check, local install smoke, release critical suite, benchmark check and replay check, documentation bootstrap and onboarding checks, plus exact evidence review."
 sections:
   Summary: |-
@@ -881,7 +901,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609121424-4BC7B3"
-    event_cursor: 6
+    event_cursor: 8
     final_validation: null
     id: "202609121424-4BC7B3"
     intent:
@@ -931,9 +951,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 9
+    revision: 11
     schema_version: 1
-    updated_at: "2026-09-13T18:40:46.850Z"
+    updated_at: "2026-09-13T18:42:58.465Z"
     work_items:
       document-stabilization-boundary:
         attempt: 0
@@ -967,6 +987,30 @@ extensions:
     events: []
     leases: []
     mutation_receipts:
+      compatibility:sha256:0fa9aaba0913cdfb37cac6f6019915bc1c80a2252e4f616765179f811a12f17f:
+        aggregate_digest: "sha256:0af9ef26903a9b610dbed0f626e6fb453b8b686a019229209807d49c1e3aa346"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T18:42:58.465Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_6fc7f43c9e4d409dcdcec981"
+          mutation_id: "compatibility:sha256:0fa9aaba0913cdfb37cac6f6019915bc1c80a2252e4f616765179f811a12f17f"
+          plan_digest: "sha256:d6f15a7814a25b8ee8680aed0f2a48ed6eccdb956ce2d2b288ef2a573eb22190"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-4BC7B3"
+          task_revision: 10
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:0fa9aaba0913cdfb37cac6f6019915bc1c80a2252e4f616765179f811a12f17f"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202609121424-4BC7B3"
       compatibility:sha256:227d351dedad36f32574e51784f3ded3e8cc92957227cdcf652a75b3e36c70e4:
         aggregate_digest: "sha256:37cf07aba4070711fddba4a0dfab4842ff97c37450daa4349d98e747f65e6e5b"
         event:
@@ -989,6 +1033,30 @@ extensions:
         mutation_id: "compatibility:sha256:227d351dedad36f32574e51784f3ded3e8cc92957227cdcf652a75b3e36c70e4"
         next_revision: 4
         previous_revision: 3
+        schema_version: 1
+        task_id: "202609121424-4BC7B3"
+      compatibility:sha256:5fcbe832331168f57d987324bb117d7fad864698335d83fc6492d4cdcad4b0a9:
+        aggregate_digest: "sha256:f7b2a336b7833f274310337505d0f347d112b86ef81b137c6054f3f677df01e7"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T18:42:58.465Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_71d8f70719f168490f944ca6"
+          mutation_id: "compatibility:sha256:5fcbe832331168f57d987324bb117d7fad864698335d83fc6492d4cdcad4b0a9"
+          plan_digest: "sha256:d6f15a7814a25b8ee8680aed0f2a48ed6eccdb956ce2d2b288ef2a573eb22190"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-4BC7B3"
+          task_revision: 9
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:5fcbe832331168f57d987324bb117d7fad864698335d83fc6492d4cdcad4b0a9"
+        next_revision: 10
+        previous_revision: 9
         schema_version: 1
         task_id: "202609121424-4BC7B3"
       compatibility:sha256:66eaee600704f66dac2eb8f24f9f953b2a09e427e86a50813c38da6a5c556170:
@@ -1114,6 +1182,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "1d38fc3e503b4e2a6d84c17817b82a09ab1fbe8e"
   task_execution_context:
     base_ref: "main"
     base_sha: "58dbda0d5f88c8a83802c5aee3a9380d001dd4b2"
