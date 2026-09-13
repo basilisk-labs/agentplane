@@ -4,7 +4,7 @@ title: "Qualify and document the 0.7.9 stabilization candidate for ST-18 through
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 32
+revision: 33
 origin:
   system: "manual"
 depends_on:
@@ -36,11 +36,11 @@ plan_approval:
   updated_by: "HOST:codex:USER"
   note: "host_user_decision=sha256:2baf501f688c40a1f9e656db7b6c8f3740c13e01cca5f467688bb095a6353b13"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-09-13T21:51:24.170Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bun run ci:local:full"
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -137,6 +137,8 @@ execution_contract:
   observed:
     authority_violations:
       - "repository_effect:dependencies"
+      - "verification:recorded-check-11:fail"
+      - "verification:verification-record:fail"
     changed_components:
       - "docs"
       - "scripts"
@@ -183,7 +185,43 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "fail"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_credentials"
@@ -369,9 +407,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "9777074e0a925b369988eae8b309c729166b04e5"
-  message: "🚧 4BC7B3 task: apply external agent result"
+      - "verification_recovery:recorded-check-11"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -502,8 +540,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 9777074e0a92. CLI accepted one state-bound external-agent semantic result."
     commit: "9777074e0a925b369988eae8b309c729166b04e5"
+  -
+    type: "verify"
+    at: "2026-09-13T21:51:24.170Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-13T21:45:48.028Z"
+doc_updated_at: "2026-09-13T21:51:25.420Z"
 doc_updated_by: "SUPERVISOR"
 description: "Source contract: agentplane-roadmap-r2 cards ST-18, ST-19, and ST-20. Build the exact clean installed candidate and run the frozen direct, branch, recovery, old-record, required PLANNER, and required EVALUATOR corpus. Then, under the user-approved spend and sandbox authority, execute the preregistered M01 paired pilot with complete all-attempt raw evidence and expand only by its fixed uncertainty rule; report NOT ESTABLISHED when coverage is insufficient. Record exact product and target SHAs separately. Finally document only observed 0.7.9 behavior and measurements and the 0.7.10 through 0.7.14 boundary. Do not weaken golden outcomes, disable Blueprint writers, omit required stages, rerun until green, or claim unsupported efficiency. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: package tarball check, local install smoke, release critical suite, benchmark check and replay check, documentation bootstrap and onboarding checks, plus exact evidence review."
 sections:
@@ -525,6 +569,91 @@ sections:
     7. Review `git diff --check`, the exact task diff, final status, and hosted integration for the accepted head. Expected: I01-I12 and C01-C08 remain conserved, publication is absent, and `agentplane-roadmap-r2` is not committed.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-13T21:51:24.170Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:84ebb72486f4ea2a9ffe75b61a54b3fa1629db460ce93c2c5b98dee49f967795, input_digest=sha256:e0df2d119577ffee54a234f9ea612a8442b7fbcf970e8e4db425944e83cbe183
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/commands/shared/supervisor-execution-default-budget.test.ts packages/agentplane/src/commands/task/task-token-usage.test.ts packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121424-4BC7B3 declared verification
+
+    Command: node --test scripts/bench/paired-production-driver.test.mjs scripts/bench/paired-result-report.test.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121424-4BC7B3 declared verification
+
+    Command: bun run package:tarball:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609121424-4BC7B3 declared verification
+
+    Command: bun run package:install-smoke
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609121424-4BC7B3 declared verification
+
+    Command: bun run test:release:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609121424-4BC7B3 declared verification
+
+    Command: bun run bench:agent-efficiency:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609121424-4BC7B3 declared verification
+
+    Command: bun run bench:agent-efficiency:replay:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609121424-4BC7B3 declared verification
+
+    Command: bun run docs:bootstrap:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609121424-4BC7B3 declared verification
+
+    Command: bun run docs:onboarding:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202609121424-4BC7B3 declared verification
+
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202609121424-4BC7B3 declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202609121424-4BC7B3 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can/.agentplane/tasks/202609121424-4BC7B3/blueprint/resolved-snapshot.json
+    - old_digest: 0ed189bbde8e28a6717a705c84b96f4f99c526db0386072d4b664c8114696afd
+    - current_digest: 0ed189bbde8e28a6717a705c84b96f4f99c526db0386072d4b664c8114696afd
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609121424-4BC7B3
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609121424-4BC7B3
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -1124,7 +1253,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609121424-4BC7B3"
-    event_cursor: 24
+    event_cursor: 25
     final_validation: null
     id: "202609121424-4BC7B3"
     intent:
@@ -2289,9 +2418,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609121424-4BC7B3"
-    revision: 32
+    revision: 33
     schema_version: 1
-    updated_at: "2026-09-13T21:47:00.164Z"
+    updated_at: "2026-09-13T21:51:25.416Z"
     work_items:
       align-token-measurement-contract:
         attempt: 1
@@ -3196,6 +3325,30 @@ extensions:
         previous_revision: 19
         schema_version: 1
         task_id: "202609121424-4BC7B3"
+      compatibility:sha256:b30413b01c4cf424ee1962750fc7e4c92515019f8e523de3d8be01e93e129918:
+        aggregate_digest: "sha256:25471c7c45836d7b02ba7f8b49da159fb1ef8f2c2e26ab2be8dc2766bc7e0f6f"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T21:51:25.416Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_5bfb39d7149cf09b1e2c7285"
+          mutation_id: "compatibility:sha256:b30413b01c4cf424ee1962750fc7e4c92515019f8e523de3d8be01e93e129918"
+          plan_digest: "sha256:8a1ce7a2f7c1bd5543bab4cf019887053321288654bc3dbf4761cc511f44fd52"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-4BC7B3"
+          task_revision: 32
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b30413b01c4cf424ee1962750fc7e4c92515019f8e523de3d8be01e93e129918"
+        next_revision: 33
+        previous_revision: 32
+        schema_version: 1
+        task_id: "202609121424-4BC7B3"
       compatibility:sha256:b9dcc6f4aa5c8a487dc71b3b7541f7306f3a7d278d2175881ecaf2b38a26a0ae:
         aggregate_digest: "sha256:f21ce875ab32d613fa0ce85461b483894bcae13e9a8b501c24ddd0311d2d1877"
         event:
@@ -3463,8 +3616,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "9777074e0a925b369988eae8b309c729166b04e5"
   task_execution_context:
     base_ref: "main"
     base_sha: "58dbda0d5f88c8a83802c5aee3a9380d001dd4b2"
@@ -3517,6 +3668,91 @@ Prepared a revised 0.7.9 plan that treats provider token usage as account-indepe
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-13T21:51:24.170Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:84ebb72486f4ea2a9ffe75b61a54b3fa1629db460ce93c2c5b98dee49f967795, input_digest=sha256:e0df2d119577ffee54a234f9ea612a8442b7fbcf970e8e4db425944e83cbe183
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/commands/shared/supervisor-execution-default-budget.test.ts packages/agentplane/src/commands/task/task-token-usage.test.ts packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121424-4BC7B3 declared verification
+
+Command: node --test scripts/bench/paired-production-driver.test.mjs scripts/bench/paired-result-report.test.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121424-4BC7B3 declared verification
+
+Command: bun run package:tarball:check
+Result: pass
+Evidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609121424-4BC7B3 declared verification
+
+Command: bun run package:install-smoke
+Result: pass
+Evidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609121424-4BC7B3 declared verification
+
+Command: bun run test:release:critical
+Result: pass
+Evidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609121424-4BC7B3 declared verification
+
+Command: bun run bench:agent-efficiency:check
+Result: pass
+Evidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609121424-4BC7B3 declared verification
+
+Command: bun run bench:agent-efficiency:replay:check
+Result: pass
+Evidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609121424-4BC7B3 declared verification
+
+Command: bun run docs:bootstrap:check
+Result: pass
+Evidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609121424-4BC7B3 declared verification
+
+Command: bun run docs:onboarding:check
+Result: pass
+Evidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202609121424-4BC7B3 declared verification
+
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202609121424-4BC7B3 declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609121424-4BC7B3/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202609121424-4BC7B3 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can/.agentplane/tasks/202609121424-4BC7B3/blueprint/resolved-snapshot.json
+- old_digest: 0ed189bbde8e28a6717a705c84b96f4f99c526db0386072d4b664c8114696afd
+- current_digest: 0ed189bbde8e28a6717a705c84b96f4f99c526db0386072d4b664c8114696afd
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609121424-4BC7B3
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609121424-4BC7B3
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
