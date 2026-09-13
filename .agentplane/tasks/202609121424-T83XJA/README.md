@@ -2,10 +2,10 @@
 id: "202609121424-T83XJA"
 title: "Implement durable 0.7.9 usage, cost, and latency accounting for ST-08 through ST-13 and ST-17"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 51
+revision: 54
 origin:
   system: "manual"
 depends_on:
@@ -26,53 +26,52 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-09-13T01:20:05.778Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  updated_at: "2026-09-13T02:21:02.845Z"
+  updated_by: "TESTER"
+  note: "Verified current HEAD 0bf6c6336: full local CI and focused telemetry regression tests passed."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-13T01:22:48.049Z"
+  updated_at: "2026-09-13T02:24:49.031Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 3 typed finding(s)."
-  evaluated_sha: "919e5af29cd55e2440c7fe7f023a996a2f247e61"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "0bf6c6336db55f3494d6cc05cbb261482a59da3b"
   blueprint_digest: "a0606595992db659882c934dc9224bb4e23891d77af067972ab0b021db13f8c1"
   evidence_refs:
-    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-012029153-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-012029153-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/88f020e94fd95186a13b6b6064ff5a6f0eea5ed843345ecabe2a822eb52e3331.md"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-012029153-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-012029153-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-012029153-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-012029153-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-022448773-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-022448773-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/a8ee2dd6830197de3a7449926b3014f49d695081074a5cf2294bd286d6f90be9.md"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-022448773-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-022448773-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-022448773-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609121424-T83XJA/README.md"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/d878ded673bee0d3e92acec00a58b3e4abf398657b1af8c6d7acc0581a600eca.patch"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/d8780224ae6e27e7e690c2b9af37df10889c6d9f7c94998d1901ecf2aa1c8489.json"
-    - ".agentplane/tasks/202609121424-T83XJA/verification/20260913012005778-95316adc92df4839.json"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/03e4d0deb5d600ca2d915d1462d553280d6152b484d5907d8ef28c8839a14371.patch"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/bb65078b7e5d1b5c076be4bd7205b2daf4c292e4a892917cb70c9ad094807e06.json"
+    - ".agentplane/tasks/202609121424-T83XJA/verification/20260913022102845-bc539048309e8b4b.json"
     - ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/8c7f73798b088adea69ca9b36d786e09a83742e28743c3425f571fbeb19021b1.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Unknown usage permits further paid dispatch when provider identity is absent. A read-only reproduction completed an unallocatable external episode under finite token budgets; the next evaluator episode returned started with zero charged tokens."
-    - "Managed restart recovery reads usage from a process-local WeakMap using a deserialized saved result. That lookup returns null, so recovery records unavailable usage despite an existing durable provider observation."
-    - "An interruption after persisting an evaluator failure receipt but before journal completion leaves its charge unreconciled. Restart recovery requires a successful typed result and success receipt; a saved failure receipt instead leads to effect_in_doubt."
+    - "No remaining code-quality blocker was found: unknown telemetry blocks further paid dispatch, managed recovery reads durable runner events, failed evaluator receipts recover their recorded charge, and affected fixtures now provide explicit accounting context."
 token_usage:
-  agent_runs: 17
-  input_tokens: null
-  journal_digest: "sha256:a3a9c7e5da5ff485dce069f426c7fbaa3f5143fb81ad64d2952596dc446246ad"
-  observed_agent_runs: 0
+  agent_runs: 20
+  cached_input_observed_agent_runs: 1
+  cached_input_tokens: 609792
+  input_tokens: 708590
+  journal_digest: "sha256:3f5744e524c4e1e532ae181d5f97c40cd00d4dba96a2c639c220caed216776a1"
+  observed_agent_runs: 1
   observed_by: "agentplane"
   output_tokens: null
   reasoning_tokens: null
   schema_version: 1
   source: "supervisor_journal"
-  state: "unavailable"
-  total_tokens: null
-  unavailable_reason: "external_host_turn_unallocatable"
-  updated_at: "2026-09-13T01:09:07.116Z"
+  state: "partial"
+  total_tokens: 711978
+  unavailable_reason: "some_agent_runs_unallocatable"
+  updated_at: "2026-09-13T02:25:47.669Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -147,16 +146,21 @@ execution_contract:
       - "scripts/lib/test-route-registry.mjs"
       - "scripts/lib/test-route-registry.test.mjs"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "writable_scope:packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts"
+      - "writable_scope:packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts"
     changed_components:
       - "packages/agentplane"
       - "packages/core"
       - "scripts"
     changed_paths:
+      - "packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts"
+      - "packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts"
       - "packages/agentplane/src/commands/evaluator/evaluator-episode.ts"
       - "packages/agentplane/src/commands/evaluator/evaluator-execute-subprocess.testkit.ts"
       - "packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts"
       - "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-failure-recovery.ts"
       - "packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts"
       - "packages/agentplane/src/commands/evaluator/roadmap-telemetry-disposition.test.ts"
       - "packages/agentplane/src/commands/shared/lifecycle-stage-timing.ts"
@@ -170,6 +174,7 @@ execution_contract:
       - "packages/agentplane/src/commands/task/branch-task-supervisor-usage.ts"
       - "packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts"
       - "packages/agentplane/src/commands/task/external-agent-exchange.ts"
+      - "packages/agentplane/src/commands/task/external-agent-report-result.test.ts"
       - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
       - "packages/agentplane/src/commands/task/kernel-run.ts"
       - "packages/agentplane/src/commands/task/roadmap-external-accounting.test.ts"
@@ -179,6 +184,7 @@ execution_contract:
       - "packages/agentplane/src/runner/adapters/codex.ts"
       - "packages/agentplane/src/runner/adapters/roadmap-usage-durability.test.ts"
       - "packages/agentplane/src/runner/artifacts.ts"
+      - "packages/core/src/runner/supervisor-execution-episode-telemetry-admission.test.ts"
       - "packages/core/src/runner/supervisor-execution-episode-timing.test.ts"
       - "packages/core/src/runner/supervisor-execution-episode.test.ts"
       - "packages/core/src/runner/supervisor-execution-episode.ts"
@@ -195,148 +201,16 @@ execution_contract:
         id: "recorded-check-1"
         result: "pass"
       -
-        id: "recorded-check-10"
-        result: "pass"
-      -
-        id: "recorded-check-11"
-        result: "pass"
-      -
-        id: "recorded-check-12"
-        result: "pass"
-      -
-        id: "recorded-check-13"
-        result: "pass"
-      -
-        id: "recorded-check-14"
-        result: "pass"
-      -
-        id: "recorded-check-15"
-        result: "pass"
-      -
-        id: "recorded-check-16"
-        result: "pass"
-      -
-        id: "recorded-check-17"
-        result: "pass"
-      -
-        id: "recorded-check-18"
-        result: "pass"
-      -
-        id: "recorded-check-19"
-        result: "pass"
-      -
         id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-20"
-        result: "pass"
-      -
-        id: "recorded-check-21"
-        result: "pass"
-      -
-        id: "recorded-check-22"
-        result: "pass"
-      -
-        id: "recorded-check-23"
-        result: "pass"
-      -
-        id: "recorded-check-24"
-        result: "pass"
-      -
-        id: "recorded-check-25"
-        result: "pass"
-      -
-        id: "recorded-check-26"
-        result: "pass"
-      -
-        id: "recorded-check-27"
-        result: "pass"
-      -
-        id: "recorded-check-28"
-        result: "pass"
-      -
-        id: "recorded-check-29"
         result: "pass"
       -
         id: "recorded-check-3"
         result: "pass"
       -
-        id: "recorded-check-30"
-        result: "pass"
-      -
-        id: "recorded-check-31"
-        result: "pass"
-      -
-        id: "recorded-check-32"
-        result: "pass"
-      -
-        id: "recorded-check-33"
-        result: "pass"
-      -
-        id: "recorded-check-34"
-        result: "pass"
-      -
-        id: "recorded-check-35"
-        result: "pass"
-      -
-        id: "recorded-check-36"
-        result: "pass"
-      -
-        id: "recorded-check-37"
-        result: "pass"
-      -
-        id: "recorded-check-38"
-        result: "pass"
-      -
-        id: "recorded-check-39"
-        result: "pass"
-      -
         id: "recorded-check-4"
         result: "pass"
       -
-        id: "recorded-check-40"
-        result: "pass"
-      -
-        id: "recorded-check-41"
-        result: "pass"
-      -
-        id: "recorded-check-42"
-        result: "pass"
-      -
-        id: "recorded-check-43"
-        result: "pass"
-      -
-        id: "recorded-check-44"
-        result: "pass"
-      -
-        id: "recorded-check-45"
-        result: "pass"
-      -
-        id: "recorded-check-46"
-        result: "pass"
-      -
-        id: "recorded-check-47"
-        result: "pass"
-      -
-        id: "recorded-check-48"
-        result: "pass"
-      -
-        id: "recorded-check-49"
-        result: "pass"
-      -
         id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
-      -
-        id: "recorded-check-7"
-        result: "pass"
-      -
-        id: "recorded-check-8"
-        result: "pass"
-      -
-        id: "recorded-check-9"
         result: "pass"
       -
         id: "verification-record"
@@ -346,6 +220,8 @@ execution_contract:
     - "effect_ci"
     - "effect_public_api"
     - "effect_schema"
+    - "observed_path_outside_scope:packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts"
+    - "observed_path_outside_scope:packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts"
     - "repository_branch_pr_floor"
   repository_mode: "branch_pr"
   safety:
@@ -391,7 +267,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:f2bce201cc3cc0a21ecd8fa9536a8f0f59157a2d8df7fb20dddcfb88cdc11d56"
+      digest: "sha256:aa1a5987dae5045c5893a86508ffecdbe2a7752f1b2730a8c57ae0ef8b1e6889"
       escalation_reasons:
         - "central_component:packages/core/src/runner"
         - "central_component:scripts/lib/agent-efficiency-repository-snapshot.mjs"
@@ -399,12 +275,14 @@ execution_contract:
         - "central_component:scripts/lib/test-route-registry.test.mjs"
         - "central_path:package.json"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/lifecycle-stage-timing.ts"
         - "central_path:packages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.ts"
         - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
         - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-observation.ts"
+        - "central_path:packages/core/src/runner/supervisor-execution-episode-telemetry-admission.test.ts"
         - "central_path:packages/core/src/runner/supervisor-execution-episode-timing.test.ts"
         - "central_path:packages/core/src/runner/supervisor-execution-episode.test.ts"
         - "central_path:packages/core/src/runner/supervisor-execution-episode.ts"
@@ -571,11 +449,14 @@ execution_contract:
           - ".agentplane/tasks/202609122236-JFNN6B/verification/20260913004348447-e0a20fe5276be03a.json"
           - "package.json"
           - "packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
+          - "packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts"
           - "packages/agentplane/src/commands/branch/work-resume-planning-base.ts"
+          - "packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts"
           - "packages/agentplane/src/commands/evaluator/evaluator-episode.ts"
           - "packages/agentplane/src/commands/evaluator/evaluator-execute-subprocess.testkit.ts"
           - "packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts"
           - "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-failure-recovery.ts"
           - "packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts"
           - "packages/agentplane/src/commands/evaluator/roadmap-telemetry-disposition.test.ts"
           - "packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts"
@@ -592,6 +473,7 @@ execution_contract:
           - "packages/agentplane/src/commands/task/branch-task-supervisor-usage.ts"
           - "packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts"
           - "packages/agentplane/src/commands/task/external-agent-exchange.ts"
+          - "packages/agentplane/src/commands/task/external-agent-report-result.test.ts"
           - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
           - "packages/agentplane/src/commands/task/kernel-run.ts"
           - "packages/agentplane/src/commands/task/roadmap-external-accounting.test.ts"
@@ -608,6 +490,7 @@ execution_contract:
           - "packages/agentplane/src/runtime/prompt-modules/gpt56-contract.ts"
           - "packages/agentplane/src/runtime/prompt-modules/index.ts"
           - "packages/agentplane/src/runtime/prompt-modules/model.ts"
+          - "packages/core/src/runner/supervisor-execution-episode-telemetry-admission.test.ts"
           - "packages/core/src/runner/supervisor-execution-episode-timing.test.ts"
           - "packages/core/src/runner/supervisor-execution-episode.test.ts"
           - "packages/core/src/runner/supervisor-execution-episode.ts"
@@ -662,8 +545,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "894c242253482f1e9c6a0007573a605deae6b45a"
-  message: "🚧 T83XJA task: record external evaluator result"
+  hash: "0bf6c6336db55f3494d6cc05cbb261482a59da3b"
+  message: "🧪 T83XJA quality: align telemetry fixtures"
 comments:
   -
     author: "CODER"
@@ -713,6 +596,9 @@ comments:
   -
     author: "CODER"
     body: "Start: Resume verification rework after committed evaluator accounting repairs and request the exact critical-fixture scope required by fail-closed admission."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -860,8 +746,22 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Start: Resume verification rework after committed evaluator accounting repairs and request the exact critical-fixture scope required by fail-closed admission."
+  -
+    type: "verify"
+    at: "2026-09-13T02:21:02.845Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified current HEAD 0bf6c6336: full local CI and focused telemetry regression tests passed."
+  -
+    type: "status"
+    at: "2026-09-13T02:25:47.669Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "0bf6c6336db55f3494d6cc05cbb261482a59da3b"
 doc_version: 3
-doc_updated_at: "2026-09-13T01:44:37.996Z"
+doc_updated_at: "2026-09-13T02:25:47.682Z"
 doc_updated_by: "CODER"
 description: "Source contract: agentplane-roadmap-r2 cards ST-08, ST-09, ST-10, ST-11, ST-12, ST-13, and ST-17. Capture Codex usage durably before semantic-result validation, preserve evaluator charges on failure, connect managed observations to the existing journal, account for external episodes without trusting self-reported tokens, roll up task cost from source observations, partition lifecycle latency without double counting, and separate missing telemetry from semantic quality and further-spend admission. Missing usage is unknown, never zero. A valid saved verdict is reused, while unknown budget blocks additional paid dispatch. Preserve I01-I12 and C01-C08. Do not create a second accounting store or trust model-supplied usage. The roadmap directory is source-only and must never be committed. Required checks: the focused ST-08 through ST-13 and ST-17 test commands, related runner/evaluator/task critical suites, typecheck, schema/mirror checks."
 sections:
@@ -2221,6 +2121,66 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-09-13T02:21:02.845Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified current HEAD 0bf6c6336: full local CI and focused telemetry regression tests passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:47b7def428d877601b2b150f350d4b26cdcd9ee2f6b9e7aee315eb10145204de, input_digest=sha256:7c818bdf9a283fcac5e352c086c0e57b3cf3c86886a23ce266a51f9cbd47bd43
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun x vitest run packages/agentplane/src/commands/task/external-agent-report-result.test.ts packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts
+    Result: pass
+    Evidence: 2 test files passed; 30 tests passed.
+    Scope: Host-observed report-result fixtures and independent episode/no-progress budgets.
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: Runtime, core, CLI, Windows platform-critical, and significant coverage groups passed.
+    Scope: Critical authority, recovery, evaluator, runner, task, and platform behavior.
+
+    Check: docs_contract
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: docs-schema, docs site, workflow lint, schema sync, generated references, and design checks passed.
+    Scope: Documentation, schemas, workflows, and generated artifacts.
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: full-fast ok=true; all selected groups completed successfully.
+    Scope: Full repository local CI route at HEAD 0bf6c6336.
+
+    Check: task_outcome
+    Command: git status --short --untracked-files=all
+    Result: pass
+    Evidence: Empty output after verification; committed HEAD is 0bf6c6336.
+    Scope: Approved task worktree is clean and contains only intended changes.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-T83XJA-implement-durable-0-7-9-usage-cost-and-latency-a/.agentplane/tasks/202609121424-T83XJA/blueprint/resolved-snapshot.json
+    - old_digest: a0606595992db659882c934dc9224bb4e23891d77af067972ab0b021db13f8c1
+    - current_digest: a0606595992db659882c934dc9224bb4e23891d77af067972ab0b021db13f8c1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609121424-T83XJA
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609121424-T83XJA
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -3015,8 +2975,145 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609121424-T83XJA"
-    event_cursor: 39
-    final_validation: null
+    event_cursor: 41
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609121424-T83XJA"
+            - "git:0bf6c6336db55f3494d6cc05cbb261482a59da3b"
+          check_id: "check-usage-durability"
+          command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-usage-durability.test.ts"
+          detail: "Verified current HEAD 0bf6c6336: full local CI and focused telemetry regression tests passed."
+          exit_code: 0
+          observed_at: "2026-09-13T02:21:02.845Z"
+          repository_snapshot_digest: "sha256:714341b1eb35e48b893ec3ecebea10aff22db081b8b992a05399c25fccda671a"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-T83XJA"
+            - "git:0bf6c6336db55f3494d6cc05cbb261482a59da3b"
+          check_id: "check-failed-usage"
+          command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts"
+          detail: "Verified current HEAD 0bf6c6336: full local CI and focused telemetry regression tests passed."
+          exit_code: 0
+          observed_at: "2026-09-13T02:21:02.845Z"
+          repository_snapshot_digest: "sha256:714341b1eb35e48b893ec3ecebea10aff22db081b8b992a05399c25fccda671a"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-T83XJA"
+            - "git:0bf6c6336db55f3494d6cc05cbb261482a59da3b"
+          check_id: "check-managed-accounting"
+          command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts"
+          detail: "Verified current HEAD 0bf6c6336: full local CI and focused telemetry regression tests passed."
+          exit_code: 0
+          observed_at: "2026-09-13T02:21:02.845Z"
+          repository_snapshot_digest: "sha256:714341b1eb35e48b893ec3ecebea10aff22db081b8b992a05399c25fccda671a"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-T83XJA"
+            - "git:0bf6c6336db55f3494d6cc05cbb261482a59da3b"
+          check_id: "check-external-accounting"
+          command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-external-accounting.test.ts"
+          detail: "Verified current HEAD 0bf6c6336: full local CI and focused telemetry regression tests passed."
+          exit_code: 0
+          observed_at: "2026-09-13T02:21:02.845Z"
+          repository_snapshot_digest: "sha256:714341b1eb35e48b893ec3ecebea10aff22db081b8b992a05399c25fccda671a"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-T83XJA"
+            - "git:0bf6c6336db55f3494d6cc05cbb261482a59da3b"
+          check_id: "check-cost-rollup"
+          command_identity: "node --test scripts/bench/task-cost-rollup.test.mjs"
+          detail: "Verified current HEAD 0bf6c6336: full local CI and focused telemetry regression tests passed."
+          exit_code: 0
+          observed_at: "2026-09-13T02:21:02.845Z"
+          repository_snapshot_digest: "sha256:714341b1eb35e48b893ec3ecebea10aff22db081b8b992a05399c25fccda671a"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-T83XJA"
+            - "git:0bf6c6336db55f3494d6cc05cbb261482a59da3b"
+          check_id: "check-stage-timing"
+          command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-stage-timing.test.ts"
+          detail: "Verified current HEAD 0bf6c6336: full local CI and focused telemetry regression tests passed."
+          exit_code: 0
+          observed_at: "2026-09-13T02:21:02.845Z"
+          repository_snapshot_digest: "sha256:714341b1eb35e48b893ec3ecebea10aff22db081b8b992a05399c25fccda671a"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-T83XJA"
+            - "git:0bf6c6336db55f3494d6cc05cbb261482a59da3b"
+          check_id: "check-telemetry-disposition"
+          command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/evaluator/roadmap-telemetry-disposition.test.ts"
+          detail: "Verified current HEAD 0bf6c6336: full local CI and focused telemetry regression tests passed."
+          exit_code: 0
+          observed_at: "2026-09-13T02:21:02.845Z"
+          repository_snapshot_digest: "sha256:714341b1eb35e48b893ec3ecebea10aff22db081b8b992a05399c25fccda671a"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-T83XJA"
+            - "git:0bf6c6336db55f3494d6cc05cbb261482a59da3b"
+          check_id: "check-typecheck"
+          command_identity: "bun run typecheck"
+          detail: "Verified current HEAD 0bf6c6336: full local CI and focused telemetry regression tests passed."
+          exit_code: 0
+          observed_at: "2026-09-13T02:21:02.845Z"
+          repository_snapshot_digest: "sha256:714341b1eb35e48b893ec3ecebea10aff22db081b8b992a05399c25fccda671a"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-T83XJA"
+            - "git:0bf6c6336db55f3494d6cc05cbb261482a59da3b"
+          check_id: "check-schemas"
+          command_identity: "bun run schemas:check"
+          detail: "Verified current HEAD 0bf6c6336: full local CI and focused telemetry regression tests passed."
+          exit_code: 0
+          observed_at: "2026-09-13T02:21:02.845Z"
+          repository_snapshot_digest: "sha256:714341b1eb35e48b893ec3ecebea10aff22db081b8b992a05399c25fccda671a"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-T83XJA"
+            - "git:0bf6c6336db55f3494d6cc05cbb261482a59da3b"
+          check_id: "check-artifacts"
+          command_identity: "bun run artifacts:check"
+          detail: "Verified current HEAD 0bf6c6336: full local CI and focused telemetry regression tests passed."
+          exit_code: 0
+          observed_at: "2026-09-13T02:21:02.845Z"
+          repository_snapshot_digest: "sha256:714341b1eb35e48b893ec3ecebea10aff22db081b8b992a05399c25fccda671a"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-T83XJA"
+            - "git:0bf6c6336db55f3494d6cc05cbb261482a59da3b"
+          check_id: "check-critical"
+          command_identity: "bun run test:critical"
+          detail: "Verified current HEAD 0bf6c6336: full local CI and focused telemetry regression tests passed."
+          exit_code: 0
+          observed_at: "2026-09-13T02:21:02.845Z"
+          repository_snapshot_digest: "sha256:714341b1eb35e48b893ec3ecebea10aff22db081b8b992a05399c25fccda671a"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-T83XJA"
+            - "git:0bf6c6336db55f3494d6cc05cbb261482a59da3b"
+          check_id: "check-full-ci"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified current HEAD 0bf6c6336: full local CI and focused telemetry regression tests passed."
+          exit_code: 0
+          observed_at: "2026-09-13T02:21:02.845Z"
+          repository_snapshot_digest: "sha256:714341b1eb35e48b893ec3ecebea10aff22db081b8b992a05399c25fccda671a"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609121424-T83XJA"
     intent:
       acceptance_criteria:
@@ -3032,7 +3129,7 @@ extensions:
 
         Source contract: agentplane-roadmap-r2 cards ST-08, ST-09, ST-10, ST-11, ST-12, ST-13, and ST-17. Capture Codex usage durably before semantic-result validation, preserve evaluator charges on failure, connect managed observations to the existing journal, account for external episodes without trusting self-reported tokens, roll up task cost from source observations, partition lifecycle latency without double counting, and separate missing telemetry from semantic quality and further-spend admission. Missing usage is unknown, never zero. A valid saved verdict is reused, while unknown budget blocks additional paid dispatch. Preserve I01-I12 and C01-C08. Do not create a second accounting store or trust model-supplied usage. The roadmap directory is source-only and must never be committed. Required checks: the focused ST-08 through ST-13 and ST-17 test commands, related runner/evaluator/task critical suites, typecheck, schema/mirror checks.
       task_id: "202609121424-T83XJA"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -3777,9 +3874,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121424-T83XJA"
-    revision: 51
+    revision: 54
     schema_version: 1
-    updated_at: "2026-09-13T01:44:37.969Z"
+    updated_at: "2026-09-13T02:25:47.669Z"
     work_items:
       ST-08:
         attempt: 1
@@ -4989,6 +5086,30 @@ extensions:
         previous_revision: 39
         schema_version: 1
         task_id: "202609121424-T83XJA"
+      compatibility:sha256:c3e8d8de37faf5e4343fcd1c01ebc22b098001b83293a82153d167dea45430da:
+        aggregate_digest: "sha256:9e21bf91c5f50b7af98a95f9dc2b141465f9e62b91c276d0b29733a364f9ffe8"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T02:21:04.059Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_1458aa92111c8190237c872b"
+          mutation_id: "compatibility:sha256:c3e8d8de37faf5e4343fcd1c01ebc22b098001b83293a82153d167dea45430da"
+          plan_digest: "sha256:47ee22d77ca7385f412a8a1da0d53ac32e469d13030f22fdc8fc03c8804e40a4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-T83XJA"
+          task_revision: 52
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:c3e8d8de37faf5e4343fcd1c01ebc22b098001b83293a82153d167dea45430da"
+        next_revision: 53
+        previous_revision: 52
+        schema_version: 1
+        task_id: "202609121424-T83XJA"
       compatibility:sha256:cc2841a32e108d9364d74de0d444e5630850597a0da5ec88d5d830ee850c2bac:
         aggregate_digest: "sha256:d38cbe336dc6f9da420081d3340d50534a4b9d0199d3ef11a2dd1dc14ae0bfaf"
         event:
@@ -5107,6 +5228,30 @@ extensions:
         mutation_id: "compatibility:sha256:e196c30f7bab790e78d61ebdd034b07dd2ab43f53bf287976fd41e5bb70cb24a"
         next_revision: 19
         previous_revision: 18
+        schema_version: 1
+        task_id: "202609121424-T83XJA"
+      compatibility:sha256:e602e27946362a8615f69383883ecd6219ee54bf76b767495f57ae53ea5189e7:
+        aggregate_digest: "sha256:38f137ba51bc7c48fc33d711c6ffc3833eba8f89fa7060f8ffc5d56c7de4ecf9"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T02:21:04.054Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_ed0f8a7429e5a273369ae8d9"
+          mutation_id: "compatibility:sha256:e602e27946362a8615f69383883ecd6219ee54bf76b767495f57ae53ea5189e7"
+          plan_digest: "sha256:47ee22d77ca7385f412a8a1da0d53ac32e469d13030f22fdc8fc03c8804e40a4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-T83XJA"
+          task_revision: 51
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:e602e27946362a8615f69383883ecd6219ee54bf76b767495f57ae53ea5189e7"
+        next_revision: 52
+        previous_revision: 51
         schema_version: 1
         task_id: "202609121424-T83XJA"
       compatibility:sha256:f8b5d4517e4d07b36165caab592c7815c8ea3834fc0369384f140d2bedb25638:
@@ -5372,6 +5517,31 @@ extensions:
         mutation_id: "legacy-finish:202609121424-T83XJA:2026-09-13T01:07:00.093Z:44118fcf0d32825e963dc7db0504901753c4e9d5"
         next_revision: 47
         previous_revision: 46
+        schema_version: 1
+        task_id: "202609121424-T83XJA"
+      legacy-finish:202609121424-T83XJA:2026-09-13T02:21:02.845Z:0bf6c6336db55f3494d6cc05cbb261482a59da3b:
+        aggregate_digest: "sha256:3930ef663301023296f200d3afef30834dd490035b43d338c13d7cc4be1473f3"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-13T02:25:47.669Z"
+          cause_refs:
+            - "task-verification:202609121424-T83XJA"
+            - "git:0bf6c6336db55f3494d6cc05cbb261482a59da3b"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_5cb1ac373f91868b67d95902"
+          mutation_id: "legacy-finish:202609121424-T83XJA:2026-09-13T02:21:02.845Z:0bf6c6336db55f3494d6cc05cbb261482a59da3b"
+          plan_digest: "sha256:47ee22d77ca7385f412a8a1da0d53ac32e469d13030f22fdc8fc03c8804e40a4"
+          plan_revision: 2
+          repository_fingerprint: "sha256:714341b1eb35e48b893ec3ecebea10aff22db081b8b992a05399c25fccda671a"
+          schema_version: 1
+          task_id: "202609121424-T83XJA"
+          task_revision: 53
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609121424-T83XJA:2026-09-13T02:21:02.845Z:0bf6c6336db55f3494d6cc05cbb261482a59da3b"
+        next_revision: 54
+        previous_revision: 53
         schema_version: 1
         task_id: "202609121424-T83XJA"
     pending_effects: []
@@ -6770,6 +6940,66 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-09-13T02:21:02.845Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified current HEAD 0bf6c6336: full local CI and focused telemetry regression tests passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:47b7def428d877601b2b150f350d4b26cdcd9ee2f6b9e7aee315eb10145204de, input_digest=sha256:7c818bdf9a283fcac5e352c086c0e57b3cf3c86886a23ce266a51f9cbd47bd43
+
+Details:
+
+Check: affected_unit_integration
+Command: bun x vitest run packages/agentplane/src/commands/task/external-agent-report-result.test.ts packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts
+Result: pass
+Evidence: 2 test files passed; 30 tests passed.
+Scope: Host-observed report-result fixtures and independent episode/no-progress budgets.
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: Runtime, core, CLI, Windows platform-critical, and significant coverage groups passed.
+Scope: Critical authority, recovery, evaluator, runner, task, and platform behavior.
+
+Check: docs_contract
+Command: bun run ci:local:full
+Result: pass
+Evidence: docs-schema, docs site, workflow lint, schema sync, generated references, and design checks passed.
+Scope: Documentation, schemas, workflows, and generated artifacts.
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: full-fast ok=true; all selected groups completed successfully.
+Scope: Full repository local CI route at HEAD 0bf6c6336.
+
+Check: task_outcome
+Command: git status --short --untracked-files=all
+Result: pass
+Evidence: Empty output after verification; committed HEAD is 0bf6c6336.
+Scope: Approved task worktree is clean and contains only intended changes.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-T83XJA-implement-durable-0-7-9-usage-cost-and-latency-a/.agentplane/tasks/202609121424-T83XJA/blueprint/resolved-snapshot.json
+- old_digest: a0606595992db659882c934dc9224bb4e23891d77af067972ab0b021db13f8c1
+- current_digest: a0606595992db659882c934dc9224bb4e23891d77af067972ab0b021db13f8c1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609121424-T83XJA
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609121424-T83XJA
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -6781,13 +7011,13 @@ DecisionContextRef:
 
 ## Token Usage
 
-- State: `unavailable`
-- Completeness: `0/17` agent runs
-- Input tokens: `unavailable`
+- State: `partial`
+- Completeness: `1/20` agent runs
+- Input tokens: `708590`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
-- Total tokens: `unavailable`
+- Total tokens: `711978`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:a3a9c7e5da5ff485dce069f426c7fbaa3f5143fb81ad64d2952596dc446246ad`
-- Unavailable reason: `external_host_turn_unallocatable`
-- Updated at: `2026-09-13T01:09:07.116Z`
+- Journal digest: `sha256:3f5744e524c4e1e532ae181d5f97c40cd00d4dba96a2c639c220caed216776a1`
+- Unavailable reason: `some_agent_runs_unallocatable`
+- Updated at: `2026-09-13T02:25:47.669Z`
