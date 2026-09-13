@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202609130858-RMHWQ5/add-an-explicit-user-approved-supervisor-budget",
+  "created_at": "2026-09-13T09:03:04.106Z",
+  "diffstat_sha256": "sha256:2d1c6e3deebe5c4e0b7b76ae2ddb8a298faa4916996707352454b48d762a747f",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202609130858-RMHWQ5",
+  "updated_at": "2026-09-13T09:03:04.106Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
