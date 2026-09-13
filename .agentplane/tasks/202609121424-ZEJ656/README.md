@@ -4,7 +4,7 @@ title: "Conserve 0.7.9 semantic requirements and managed output parity for ST-06
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on:
@@ -30,6 +30,34 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-13T17:44:41.476Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  evaluated_sha: "086025d419444b01aaf1f4e2b58bb6fce25ff662"
+  blueprint_digest: "e062431b59acd88978a3a9654d5feb31dc03e5953e9b7fbffbba3560975757da"
+  evidence_refs:
+    - ".agentplane/tasks/202609121424-ZEJ656/quality/20260913-174258349-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609121424-ZEJ656/quality/20260913-174258349-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609121424-ZEJ656/quality/objects/sha256/2d96a0a1b65b6eb63d63ca65f5579c5bcd837911a14fae3454151c4600379c6f.md"
+    - ".agentplane/tasks/202609121424-ZEJ656/quality/20260913-174258349-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609121424-ZEJ656/quality/20260913-174258349-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609121424-ZEJ656/quality/20260913-174258349-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609121424-ZEJ656/README.md"
+    - ".agentplane/tasks/202609121424-ZEJ656/quality/objects/sha256/e250ba6eed9dac39f1d34ea4b79b5cd1af5ddbd4db9feb0eb9ca79a288d5146d.patch"
+    - ".agentplane/tasks/202609121424-ZEJ656/quality/objects/sha256/02e06f7837d90b8c1a4c80a067029b3d4f4802a7788db19bfb920cae2eb47960.json"
+    - ".agentplane/tasks/202609121424-ZEJ656/verification/20260913174248617-5e2c7c1b546c9adf.json"
+    - ".agentplane/tasks/202609121424-ZEJ656/quality/objects/sha256/645bd8fc3172665facd7fa060bd2449d0d6807e403d60fbba893f576d782aa48.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The frozen diff preserves process-repair requirements only under the existing explicit authority marker, keeps ordinary lifecycle instructions filtered, derives managed result schemas from the issued role and phase, injects the issued WorkOrder identity, and rejects foreign identity, cross-role, lifecycle, and stale canonical-binding fields."
+    - "Supervisor-observed verification passed both focused suites with nonzero discovery, the related context and adapter suites, typecheck, schema and agent asset checks, and ci:local:full."
+    - "Residual risk: The branch still requires hosted CI before integration."
 execution_route:
   frozen: true
   reason_codes:
@@ -850,7 +878,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609121424-ZEJ656"
-    event_cursor: 17
+    event_cursor: 18
     final_validation: null
     id: "202609121424-ZEJ656"
     intent:
@@ -1311,9 +1339,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121424-ZEJ656"
-    revision: 26
+    revision: 27
     schema_version: 1
-    updated_at: "2026-09-13T17:42:49.685Z"
+    updated_at: "2026-09-13T17:42:49.687Z"
     work_items:
       validate_existing_implementation:
         attempt: 1
@@ -1622,6 +1650,30 @@ extensions:
         mutation_id: "compatibility:sha256:55df508e65c566fc8b85f4b490e6f5ed44967090e17a46eb950725eb32da9f5e"
         next_revision: 7
         previous_revision: 6
+        schema_version: 1
+        task_id: "202609121424-ZEJ656"
+      compatibility:sha256:5720828473324971a6e61093bb30934f1cb3fcd5ccce5fa7d1d17983fbc92731:
+        aggregate_digest: "sha256:6d537b9f891971e841552f3c6b418ce5e344c1114ea9f5a8843564ace7e35402"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T17:42:49.687Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_f10da45fc8bc92b0fba740e5"
+          mutation_id: "compatibility:sha256:5720828473324971a6e61093bb30934f1cb3fcd5ccce5fa7d1d17983fbc92731"
+          plan_digest: "sha256:6cfcdb60047f6021f1f8c7a6f4fa3d300d878b6545b029bd41f4c4553e77e321"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-ZEJ656"
+          task_revision: 26
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:5720828473324971a6e61093bb30934f1cb3fcd5ccce5fa7d1d17983fbc92731"
+        next_revision: 27
+        previous_revision: 26
         schema_version: 1
         task_id: "202609121424-ZEJ656"
       compatibility:sha256:608c4be7360e65cd21f8db939c4980c7bc533d756b05eb0b9cfe260e26dd3821:
