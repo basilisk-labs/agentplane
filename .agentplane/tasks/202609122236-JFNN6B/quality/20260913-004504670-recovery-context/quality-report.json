@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202609122236-JFNN6B",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-13T00:46:42.373Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "4ae8f226a69afecb99af84a8396d9b2fd90e2702",
+  "blueprint_digest": "ca972e9d6960b8448cbddbc38dfa12ba169f4bacda7ac2e4c57410397cf1c585",
+  "findings": [
+    "The final diff removes only the model-specific prompt diagnostics, their self-tests, the fixed-byte assertion, and the duplicate threshold guard; it preserves model-neutral prompt compiler and validation behavior, retains all nine non-benchmark critical CLI files, and moves exactly five agent-efficiency files into the explicit qualification suite.",
+    "The rework removes a redundant internal re-export from model.ts while index.ts continues to export PROMPT_MODULE_CONTRACT_SCHEMA_VERSION directly from schema.ts, so it fixes the zero-unused-export Knip budget without reducing the public prompt-module surface.",
+    "Residual risk: Hosted CI must rerun on the new implementation head before merge; the prior hosted failure covered the superseded head."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609122236-JFNN6B/quality/objects/sha256/37a7c521cb68ab65ad7dd31265013466c270b018ae485ee98350cc44a6d3dfb3.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

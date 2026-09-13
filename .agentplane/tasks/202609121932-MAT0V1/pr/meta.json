@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202609121932-MAT0V1/fix-branch-pr-dependency-readiness-after-a-depen",
+  "created_at": "2026-09-12T19:35:46.087Z",
+  "diffstat_sha256": "sha256:0ed416152d5585f19ecfb783fa01e7929dbe6773791809a07ddb03d60b25c2a0",
+  "last_verified_at": "2026-09-12T20:31:20.576Z",
+  "last_verified_diffstat_sha256": "sha256:0ed416152d5585f19ecfb783fa01e7929dbe6773791809a07ddb03d60b25c2a0",
+  "pr_number": 5939,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5939",
+  "pre_merge_closure": {
+    "basis_commit": "dab868b7c05a786494ca79734a768ab959c2bc2c",
+    "branch": "task/202609121932-MAT0V1/fix-branch-pr-dependency-readiness-after-a-depen",
+    "pr_number": 5939,
+    "recorded_at": "2026-09-12T20:33:32.582Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202609121932-MAT0V1",
+  "updated_at": "2026-09-12T20:21:12.655Z",
+  "verify": {
+    "status": "pass"
+  }
+}

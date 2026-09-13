@@ -1,0 +1,43 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 7f4f41290eba98d1d333955613203c07e7f28cb1..3dde6bc3b2297caa1615cc9e7d476fe17ebc4656",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 7f4f41290eba98d1d333955613203c07e7f28cb1..3dde6bc3b2297caa1615cc9e7d476fe17ebc4656",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202609122236-JFNN6B/semantic-report-3fb932a4f0a1b18ec08a4d24e18329028eabb5a3a65864e06d6bb32b044d38f7.json"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "7f4f41290eba98d1d333955613203c07e7f28cb1",
+  "implementation_commit": "3dde6bc3b2297caa1615cc9e7d476fe17ebc4656",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [],
+    "classification": [],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609122236-JFNN6B"
+}

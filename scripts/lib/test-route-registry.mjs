@@ -336,12 +336,31 @@ const RELEASE_CI_BASE_FILES = discoverTests(["packages"], (filePath) => {
   ].some((pattern) => pattern.test(filePath));
 });
 
+const AGENT_EFFICIENCY_QUALIFICATION_PATTERN =
+  /^packages\/agentplane\/src\/cli\/run-cli\.critical\.agent-efficiency-.+\.test\.ts$/;
+
+const ALL_CRITICAL_CLI_FILES = discoverTestFiles(
+  ["packages/agentplane/src/cli"],
+  [/^packages\/agentplane\/src\/cli\/run-cli\.critical\..+\.test\.ts$/],
+);
+
 const CRITICAL_CLI_SUITE = {
+  chunkSize: 2,
+  config: "vitest.config.ts",
+  files: ALL_CRITICAL_CLI_FILES.filter(
+    (filePath) => !AGENT_EFFICIENCY_QUALIFICATION_PATTERN.test(filePath),
+  ),
+  maxWorkers: "4",
+  pool: "forks",
+  testTimeout: "120000",
+  hookTimeout: "120000",
+};
+
+const AGENT_EFFICIENCY_QUALIFICATION_SUITE = {
   chunkSize: 1,
   config: "vitest.config.ts",
-  files: discoverTestFiles(
-    ["packages/agentplane/src/cli"],
-    [/^packages\/agentplane\/src\/cli\/run-cli\.critical\..+\.test\.ts$/],
+  files: ALL_CRITICAL_CLI_FILES.filter((filePath) =>
+    AGENT_EFFICIENCY_QUALIFICATION_PATTERN.test(filePath),
   ),
   maxWorkers: "4",
   pool: "forks",
@@ -424,6 +443,7 @@ const V07_HOSTED_FILES = [
 ];
 
 export const VITEST_SUITES = {
+  "agent-efficiency-qualification": AGENT_EFFICIENCY_QUALIFICATION_SUITE,
   "backend-critical": {
     files: BACKEND_CRITICAL_FILES,
     maxWorkers: "4",
@@ -698,7 +718,6 @@ const PROMPT_MODULES_TEST_FILES = [
   "packages/agentplane/src/runtime/prompt-modules/model.test.ts",
   "packages/agentplane/src/runtime/prompt-modules/mutations.test.ts",
   "packages/agentplane/src/runtime/prompt-modules/registry.test.ts",
-  "packages/agentplane/src/runtime/prompt-modules/gpt55-contract.test.ts",
 ];
 
 const EVALUATOR_TEST_FILES = [
