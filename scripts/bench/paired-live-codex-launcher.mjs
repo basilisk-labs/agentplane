@@ -325,9 +325,9 @@ export function resolveM01Products(manifest, cacheRoot) {
       if (!Array.isArray(artifact.runtime.closure) || artifact.runtime.closure.length === 0) {
         throw new Error("Candidate arm must pin its runtime closure.");
       }
-      artifact.runtime.closure.forEach((entry, index) =>
-        verifiedRuntimeFile(entry, `candidate runtime closure[${index}]`),
-      );
+      for (const [index, entry] of artifact.runtime.closure.entries()) {
+        verifiedRuntimeFile(entry, `candidate runtime closure[${index}]`);
+      }
       continue;
     }
     if (arm !== "previous_release" || artifact.runtime.type !== "npm_package") {
@@ -479,14 +479,19 @@ function resultDigest(fixtureRoot) {
 }
 
 function changedPaths(fixtureRoot) {
-  return git(fixtureRoot, ["status", "--porcelain=v1", "--untracked-files=all"])
-    .split("\n")
-    .filter(Boolean)
-    .map((line) => line.slice(3));
+  const tracked = execFileSync("git", ["diff", "--name-only", "-z", "HEAD"], {
+    cwd: fixtureRoot,
+    encoding: "utf8",
+  });
+  const untracked = execFileSync("git", ["ls-files", "--others", "--exclude-standard", "-z"], {
+    cwd: fixtureRoot,
+    encoding: "utf8",
+  });
+  return [...new Set(`${tracked}${untracked}`.split("\0").filter(Boolean))].toSorted();
 }
 
 function executeAttemptFactory(products) {
-  return ({ manifest, product, run: runIdentity, fixtureRoot }) => {
+  return ({ manifest, run: runIdentity, fixtureRoot }) => {
     const preparationStartedAt = performance.now();
     try {
       const schemaPath = path.join(fixtureRoot, ".m01-final.schema.json");
@@ -548,10 +553,12 @@ function executeAttemptFactory(products) {
   };
 }
 
+const noop = () => {};
+
 export async function runM01LiveCampaign(manifestValue, options) {
   const manifest = validatePairedCampaignManifest(manifestValue);
   const runtimeRoot = mkdtempSync(path.join(path.dirname(options.outputPath), ".m01-runtime-"));
-  let cleanup = () => {};
+  let cleanup = noop;
   try {
     const products = resolveM01Products(manifest, runtimeRoot);
     cleanup = products.cleanup;

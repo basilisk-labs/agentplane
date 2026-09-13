@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
@@ -12,13 +11,13 @@ try {
 } catch {
   // The typed result below records the missing outcome.
 }
-const paths = execFileSync("git", ["status", "--porcelain=v1", "--untracked-files=all"], {
+const tracked = execFileSync("git", ["diff", "--name-only", "-z", "HEAD"], {
   encoding: "utf8",
-})
-  .trim()
-  .split("\n")
-  .filter(Boolean)
-  .map((line) => line.slice(3));
+});
+const untracked = execFileSync("git", ["ls-files", "--others", "--exclude-standard", "-z"], {
+  encoding: "utf8",
+});
+const paths = [...new Set(`${tracked}${untracked}`.split("\0").filter(Boolean))].toSorted();
 const verified = actual === expected && paths.length === 1 && paths[0] === "work/result.txt";
 const outcome = JSON.stringify({ content: actual, path: "work/result.txt", verified });
 process.stdout.write(

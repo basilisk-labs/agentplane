@@ -15,3 +15,7 @@ website/build
 scripts/baselines/agent-efficiency-pre-v0.7-replay.json
 scripts/bench/agent-efficiency-replay-envelopes
 scripts/bench/agent-efficiency-replay-evidence
+
+# Immutable content-addressed M01 campaign captures; formatting would invalidate hashes.
+scripts/baselines/m01-0.7.9-token-pilot-v1
+scripts/baselines/m01-0.7.9-token-pilot-v2

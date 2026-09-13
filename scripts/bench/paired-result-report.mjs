@@ -41,7 +41,7 @@ function assertTokenUsage(value, label) {
   if (
     (value.state === "observed" && observedFields.length !== TOKEN_FIELDS.length) ||
     (value.state === "partial" && observedFields.length === 0) ||
-    (value.state === "unavailable" && observedFields.length !== 0)
+    (value.state === "unavailable" && observedFields.length > 0)
   ) {
     throw new Error(`${label} token fields do not match state=${value.state}.`);
   }
