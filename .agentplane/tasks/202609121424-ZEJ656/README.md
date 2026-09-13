@@ -4,7 +4,7 @@ title: "Conserve 0.7.9 semantic requirements and managed output parity for ST-06
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -211,9 +211,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "46a2ea5b10a9f98c0f4b5b89f9b1894f5ad906eb"
-  message: "🚧 ZEJ656 task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -760,9 +758,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 12
+    revision: 13
     schema_version: 1
-    updated_at: "2026-09-13T16:18:04.684Z"
+    updated_at: "2026-09-13T16:18:39.855Z"
     work_items:
       conserve_requirements:
         attempt: 1
@@ -829,14 +827,116 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       preserve_typed_results:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "preserve_typed_results"
-        last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        last_failure:
+          cause_refs:
+            - "repository_contracts_green"
+          code: "validation_failed"
+          kind: "validation"
+          message: "Preserved role-specific managed semantic payloads through prepared schema, JSONL collection, normalization, and result persistence with fail-closed identity and role validation."
+          retryable: true
+        output_manifests:
+          -
+            digest: "sha256:bb7722ab8bac15515fc63732045d78bfac52a829088631b3eca20f0ffe535da2"
+            id: "managed_output_parity_contract"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609121424-ZEJ656"
+              work_item_id: "preserve_typed_results"
+            provenance:
+              - "sha256:0bd605ba831b179248db2d823ba2961461d929b2a84dc4abd102fd8430f05e8d"
+              - ".agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:4a3cc7c4f77df37fe183a56269e4fc82abd2184c434ecf36a6b856f47f9e5a32"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:2731f61a699a3c181eca4729d07660e763c07de2edc35321f5e254a4fb852f32"
+            id: "fail_closed_transport_regressions"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609121424-ZEJ656"
+              work_item_id: "preserve_typed_results"
+            provenance:
+              - "sha256:0bd605ba831b179248db2d823ba2961461d929b2a84dc4abd102fd8430f05e8d"
+              - ".agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:4a3cc7c4f77df37fe183a56269e4fc82abd2184c434ecf36a6b856f47f9e5a32"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "REWORK_READY"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
+              check_id: "output_parity"
+              command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts"
+              detail: "Declared check failed: bun run check:schemas && bun run check:agent-assets"
+              exit_code: 0
+              observed_at: "2026-09-13T16:18:39.849Z"
+              repository_snapshot_digest: "sha256:4a3cc7c4f77df37fe183a56269e4fc82abd2184c434ecf36a6b856f47f9e5a32"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
+              check_id: "related_context_transport"
+              command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context packages/agentplane/src/runner/adapters"
+              detail: "Declared check failed: bun run check:schemas && bun run check:agent-assets"
+              exit_code: 0
+              observed_at: "2026-09-13T16:18:39.849Z"
+              repository_snapshot_digest: "sha256:4a3cc7c4f77df37fe183a56269e4fc82abd2184c434ecf36a6b856f47f9e5a32"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
+              check_id: "typecheck"
+              command_identity: "bun run typecheck"
+              detail: "Declared check failed: bun run check:schemas && bun run check:agent-assets"
+              exit_code: 0
+              observed_at: "2026-09-13T16:18:39.849Z"
+              repository_snapshot_digest: "sha256:4a3cc7c4f77df37fe183a56269e4fc82abd2184c434ecf36a6b856f47f9e5a32"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
+              check_id: "schema_mirrors"
+              command_identity: "bun run check:schemas && bun run check:agent-assets"
+              detail: "Declared check failed: bun run check:schemas && bun run check:agent-assets"
+              exit_code: 1
+              observed_at: "2026-09-13T16:18:39.849Z"
+              repository_snapshot_digest: "sha256:4a3cc7c4f77df37fe183a56269e4fc82abd2184c434ecf36a6b856f47f9e5a32"
+              status: "failed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
+              check_id: "scope_hygiene"
+              command_identity: "task.verify"
+              detail: "Declared check failed: bun run check:schemas && bun run check:agent-assets"
+              exit_code: 1
+              observed_at: "2026-09-13T16:18:39.849Z"
+              repository_snapshot_digest: "sha256:4a3cc7c4f77df37fe183a56269e4fc82abd2184c434ecf36a6b856f47f9e5a32"
+              status: "failed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
+              check_id: "hosted_integration"
+              command_identity: "task.verify"
+              detail: "Declared check failed: bun run check:schemas && bun run check:agent-assets"
+              exit_code: 1
+              observed_at: "2026-09-13T16:18:39.849Z"
+              repository_snapshot_digest: "sha256:4a3cc7c4f77df37fe183a56269e4fc82abd2184c434ecf36a6b856f47f9e5a32"
+              status: "failed"
+          schema_version: 1
+          stale_evidence: []
+          status: "failed"
+          unsatisfied_criteria:
+            - "repository_contracts_green"
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -857,6 +957,23 @@ extensions:
         task_id: "202609121424-ZEJ656"
         task_revision: 9
         work_item_id: "conserve_requirements"
+      -
+        at: "2026-09-13T16:18:39.855Z"
+        from: "PLANNED"
+        to: "REWORK_READY"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:7cdedb3cb90995d7dbd294b0ea509a53d14b1d532c3dc926e05bd86f1dcc3898"
+        entity: "work_item"
+        id: "event_bbd5b27e54f1dab41c6f489c"
+        mutation_id: "external-result:work-order-202609121424-ZEJ656-executor-dc52ce006ffa4182306fba90"
+        plan_digest: "sha256:e836cd4203509fd333b08434d284d133bf9c903d28fd4d3515a4a195c6e6768e"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609121424-ZEJ656"
+        task_revision: 12
+        work_item_id: "preserve_typed_results"
     leases: []
     mutation_receipts:
       compatibility:sha256:0ebea7e602d3a13fb1b5cac2af0b63da9614b3e798081a64f9e1faecc915efb2:
@@ -1073,6 +1190,30 @@ extensions:
         mutation_id: "external-result:work-order-202609121424-ZEJ656-executor-c184d6d5c47df912b009505d"
         next_revision: 10
         previous_revision: 9
+        schema_version: 1
+        task_id: "202609121424-ZEJ656"
+      external-result:work-order-202609121424-ZEJ656-executor-dc52ce006ffa4182306fba90:
+        aggregate_digest: "sha256:c69c02aadd612fc2a16ddee72880cd14061cebf338a8928f2f926ac1df8b0a79"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T16:18:39.855Z"
+          cause_refs:
+            - "semantic-result:sha256:7cdedb3cb90995d7dbd294b0ea509a53d14b1d532c3dc926e05bd86f1dcc3898"
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_bbd5b27e54f1dab41c6f489c"
+          mutation_id: "external-result:work-order-202609121424-ZEJ656-executor-dc52ce006ffa4182306fba90"
+          plan_digest: "sha256:e836cd4203509fd333b08434d284d133bf9c903d28fd4d3515a4a195c6e6768e"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-ZEJ656"
+          task_revision: 12
+          to: "REWORK_READY"
+          work_item_id: "preserve_typed_results"
+        mutation_id: "external-result:work-order-202609121424-ZEJ656-executor-dc52ce006ffa4182306fba90"
+        next_revision: 13
+        previous_revision: 12
         schema_version: 1
         task_id: "202609121424-ZEJ656"
     pending_effects: []

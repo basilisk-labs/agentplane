@@ -201,6 +201,31 @@ const cases = [
     },
   },
   {
+    label: "blocked EXECUTOR",
+    workOrder: buildWorkOrder("EXECUTOR"),
+    roleField: "blocker",
+    payload: {
+      ...basePayload,
+      status: "blocked",
+      summary: "Managed execution stopped at a semantic blocker.",
+      blocker: {
+        summary: "The required input is unavailable.",
+        recommended_action: "Supply the missing bounded input.",
+      },
+    },
+  },
+  {
+    label: "failed EXECUTOR",
+    workOrder: buildWorkOrder("EXECUTOR"),
+    roleField: "claimed_checks",
+    payload: {
+      ...basePayload,
+      status: "failed",
+      summary: "Managed execution reported a semantic failure.",
+      findings: ["The typed failure reached the acceptance boundary."],
+    },
+  },
+  {
     label: "ordinary EVALUATOR",
     workOrder: buildWorkOrder("EVALUATOR"),
     roleField: "review",
