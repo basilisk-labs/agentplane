@@ -4,7 +4,7 @@ import { z } from "zod";
 
 export const SUPERVISOR_EXECUTION_EPISODE_SCHEMA_VERSION = 1 as const;
 export const SUPERVISOR_EXECUTION_EPISODE_KIND = "supervisor_execution_episode" as const;
-export const SUPERVISOR_TOKEN_BUDGET_EPOCH_KIND = "supervisor_token_budget_epoch" as const;
+const LEGACY_SUPERVISOR_TOKEN_BUDGET_EPOCH_KIND = "supervisor_token_budget_epoch" as const;
 
 export const SUPERVISOR_EPISODE_ROLE_VALUES = [
   "PLANNER",
@@ -67,7 +67,7 @@ const NULLABLE_LIMIT_SCHEMA = z.number().int().positive().nullable();
 const SUPERVISOR_TOKEN_BUDGET_EPOCH_ZOD_SCHEMA = z
   .object({
     schema_version: z.literal(1),
-    kind: z.literal(SUPERVISOR_TOKEN_BUDGET_EPOCH_KIND),
+    kind: z.literal(LEGACY_SUPERVISOR_TOKEN_BUDGET_EPOCH_KIND),
     prior_journal_digest: SHA256_DIGEST_SCHEMA,
     stopped_state_fingerprint_digest: SHA256_DIGEST_SCHEMA,
     authorized_state_fingerprint_digest: SHA256_DIGEST_SCHEMA,
@@ -99,7 +99,7 @@ const SUPERVISOR_TOKEN_BUDGET_EPOCH_ZOD_SCHEMA = z
   })
   .strict();
 
-export type SupervisorTokenBudgetEpoch = z.infer<typeof SUPERVISOR_TOKEN_BUDGET_EPOCH_ZOD_SCHEMA>;
+type LegacySupervisorTokenBudgetEpoch = z.infer<typeof SUPERVISOR_TOKEN_BUDGET_EPOCH_ZOD_SCHEMA>;
 
 export const SUPERVISOR_EXECUTION_BUDGET_ZOD_SCHEMA = z
   .object({
@@ -560,13 +560,13 @@ function isAgentOperation(kind: SupervisorEpisodeOperationKind): boolean {
 
 function tokenBudgetEpochFromOperation(
   operation: SupervisorExecutionEpisodeJournal["operations"][number],
-): SupervisorTokenBudgetEpoch | null {
+): LegacySupervisorTokenBudgetEpoch | null {
   const context = operation.recovery?.context;
   if (
     typeof context !== "object" ||
     context === null ||
     !("kind" in context) ||
-    context.kind !== SUPERVISOR_TOKEN_BUDGET_EPOCH_KIND
+    context.kind !== LEGACY_SUPERVISOR_TOKEN_BUDGET_EPOCH_KIND
   ) {
     return null;
   }
@@ -584,16 +584,6 @@ function tokenBudgetEpochFromOperation(
     throw new Error("Supervisor token budget epoch does not match its operation authority.");
   }
   return parsed;
-}
-
-function currentTokenBudgetEpoch(
-  operations: SupervisorExecutionEpisodeJournal["operations"],
-): SupervisorTokenBudgetEpoch | null {
-  for (let index = operations.length - 1; index >= 0; index -= 1) {
-    const epoch = tokenBudgetEpochFromOperation(operations[index]!);
-    if (epoch) return epoch;
-  }
-  return null;
 }
 
 function stoppedJournal(opts: {
@@ -641,160 +631,6 @@ export function stopSupervisorExecutionEpisode(opts: {
     exhausted_dimensions: opts.exhausted_dimensions,
     diagnostic: opts.diagnostic,
     at: opts.now ?? new Date().toISOString(),
-  });
-}
-
-function sameTokenBudgetEpochAuthorization(
-  left: SupervisorTokenBudgetEpoch,
-  right: Omit<
-    SupervisorTokenBudgetEpoch,
-    "authorized_at" | "starts_after_operation_sequence" | "baseline_usage"
-  >,
-): boolean {
-  return (
-    left.schema_version === right.schema_version &&
-    left.kind === right.kind &&
-    left.prior_journal_digest === right.prior_journal_digest &&
-    left.stopped_state_fingerprint_digest === right.stopped_state_fingerprint_digest &&
-    left.authorized_state_fingerprint_digest === right.authorized_state_fingerprint_digest &&
-    left.authorized_by === right.authorized_by &&
-    left.authority_ref === right.authority_ref &&
-    left.authority_digest === right.authority_digest &&
-    left.budget.max_input_tokens === right.budget.max_input_tokens &&
-    left.budget.max_output_tokens === right.budget.max_output_tokens &&
-    left.budget.max_total_tokens === right.budget.max_total_tokens
-  );
-}
-
-/**
- * Open a new independently capped token-admission epoch after an explicit USER
- * decision. Historical operations and lifetime usage remain unchanged.
- */
-export function authorizeSupervisorTokenBudgetEpoch(opts: {
-  journal: SupervisorExecutionEpisodeJournal;
-  expected_journal_digest: string;
-  authorized_state_fingerprint_digest: string;
-  authorized_by: string;
-  authority_ref: string;
-  authority_digest: string;
-  budget: {
-    max_input_tokens: number | null;
-    max_output_tokens: number | null;
-    max_total_tokens: number | null;
-  };
-  now?: string;
-}): SupervisorExecutionEpisodeJournal {
-  const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
-  const priorEpoch = currentTokenBudgetEpoch(journal.operations);
-  const stoppedStateFingerprint =
-    journal.digest === opts.expected_journal_digest
-      ? journal.state_fingerprint_digest
-      : (priorEpoch?.stopped_state_fingerprint_digest ?? journal.state_fingerprint_digest);
-  const authorization = {
-    schema_version: 1 as const,
-    kind: SUPERVISOR_TOKEN_BUDGET_EPOCH_KIND,
-    prior_journal_digest: opts.expected_journal_digest,
-    stopped_state_fingerprint_digest: stoppedStateFingerprint,
-    authorized_state_fingerprint_digest: opts.authorized_state_fingerprint_digest,
-    authorized_by: opts.authorized_by,
-    authority_ref: opts.authority_ref,
-    authority_digest: opts.authority_digest,
-    budget: opts.budget,
-  };
-  const parsedAuthorization = SUPERVISOR_TOKEN_BUDGET_EPOCH_ZOD_SCHEMA.omit({
-    authorized_at: true,
-    starts_after_operation_sequence: true,
-    baseline_usage: true,
-  }).parse(authorization);
-  if (journal.digest !== opts.expected_journal_digest) {
-    if (
-      priorEpoch?.prior_journal_digest === opts.expected_journal_digest &&
-      sameTokenBudgetEpochAuthorization(priorEpoch, parsedAuthorization)
-    ) {
-      return journal;
-    }
-    throw new Error(
-      "Supervisor token budget epoch authorization is stale or conflicts with replay.",
-    );
-  }
-  const exhausted = journal.stop?.exhausted_dimensions ?? [];
-  if (
-    journal.status !== "stopped" ||
-    journal.cursor.phase !== "stopped" ||
-    journal.stop?.reason !== "budget_exhausted" ||
-    exhausted.length === 0 ||
-    exhausted.some(
-      (dimension) =>
-        dimension !== "input_tokens_telemetry" &&
-        dimension !== "output_tokens_telemetry" &&
-        dimension !== "total_tokens_telemetry",
-    )
-  ) {
-    throw new Error("Supervisor token budget epoch requires a telemetry-only budget stop.");
-  }
-  const last = journal.operations.at(-1);
-  if (
-    (last?.status !== "completed" && last?.status !== "failed") ||
-    (journal.stop.operation_key !== null && journal.stop.operation_key !== last.operation_key)
-  ) {
-    throw new Error("Supervisor token budget epoch requires a durably recorded prior operation.");
-  }
-  const now = opts.now ?? new Date().toISOString();
-  const epoch = SUPERVISOR_TOKEN_BUDGET_EPOCH_ZOD_SCHEMA.parse({
-    ...parsedAuthorization,
-    starts_after_operation_sequence: last.sequence,
-    baseline_usage: {
-      input_tokens: journal.usage.input_tokens,
-      output_tokens: journal.usage.output_tokens,
-      total_tokens: journal.usage.total_tokens,
-    },
-    authorized_at: now,
-  });
-  const recovery = { operation_identity: parsedAuthorization, context: epoch };
-  const operationKey = digestSupervisorEpisodeValue({
-    task_id: journal.task_id,
-    episode: journal.usage.episodes + 1,
-    role: "EXECUTOR",
-    kind: "cli_operation",
-    operation_identity: parsedAuthorization,
-    precondition_fingerprint_digest: epoch.stopped_state_fingerprint_digest,
-    authority_ref: epoch.authority_ref,
-    authority_digest: epoch.authority_digest,
-    work_order_ref: null,
-    effect_ref: null,
-    recovery,
-  });
-  const operation: SupervisorExecutionEpisodeJournal["operations"][number] = {
-    sequence: journal.operations.length + 1,
-    episode: journal.usage.episodes + 1,
-    role: "EXECUTOR",
-    kind: "cli_operation",
-    operation_key: operationKey,
-    precondition_fingerprint_digest: epoch.stopped_state_fingerprint_digest,
-    authority_ref: epoch.authority_ref,
-    authority_digest: epoch.authority_digest,
-    work_order_ref: null,
-    effect_ref: null,
-    recovery,
-    status: "completed",
-    usage: {},
-    result_digest: digestSupervisorEpisodeValue(epoch),
-    postcondition_fingerprint_digest: epoch.authorized_state_fingerprint_digest,
-    feedback_digest: null,
-    progress_digest: null,
-    started_at: now,
-    completed_at: now,
-  };
-  return createJournal({
-    ...journal,
-    state_fingerprint_digest: epoch.authorized_state_fingerprint_digest,
-    usage: { ...journal.usage, episodes: operation.episode },
-    cursor: { episode: operation.episode, phase: "ready", operation_key: null },
-    operations: [...journal.operations, operation],
-    status: "running",
-    stop: null,
-    updated_at: now,
-    previous_digest: journal.digest,
   });
 }
 
@@ -1577,51 +1413,6 @@ export function prepareReplacementSupervisorExecutionEpisodeAfterFailure(opts: {
       operation_key: null,
       replacement_of_operation_key: last.operation_key,
     },
-    status: "running",
-    stop: null,
-    updated_at: now,
-    previous_digest: journal.digest,
-  };
-  return createJournal(next);
-}
-
-/**
- * Continue a long-running control flow after only its episode-count budget was exhausted.
- * Resource budgets remain terminal; callers must explicitly supply a larger monotonic episode cap.
- */
-export function continueSupervisorExecutionEpisodeAfterEpisodeBudget(opts: {
-  journal: SupervisorExecutionEpisodeJournal;
-  state_fingerprint_digest: string;
-  max_episodes: number;
-  now?: string;
-}): SupervisorExecutionEpisodeJournal {
-  const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
-  const now = opts.now ?? new Date().toISOString();
-  const last = journal.operations.at(-1);
-  const exhausted = journal.stop?.exhausted_dimensions ?? [];
-  if (
-    journal.status !== "stopped" ||
-    journal.stop?.reason !== "budget_exhausted" ||
-    journal.cursor.phase !== "stopped" ||
-    last?.status !== "completed" ||
-    journal.stop.operation_key !== last.operation_key ||
-    exhausted.length !== 1 ||
-    exhausted[0] !== "episodes"
-  ) {
-    throw new Error(
-      "Supervisor episode continuation requires a completed stop caused only by the episode-count budget.",
-    );
-  }
-  if (!Number.isInteger(opts.max_episodes) || opts.max_episodes <= journal.budget.max_episodes) {
-    throw new Error(
-      "Supervisor episode continuation requires a larger integer max_episodes budget.",
-    );
-  }
-  const next: Omit<SupervisorExecutionEpisodeJournal, "digest"> = {
-    ...journal,
-    state_fingerprint_digest: opts.state_fingerprint_digest,
-    budget: { ...journal.budget, max_episodes: opts.max_episodes },
-    cursor: { episode: journal.cursor.episode, phase: "ready", operation_key: null },
     status: "running",
     stop: null,
     updated_at: now,

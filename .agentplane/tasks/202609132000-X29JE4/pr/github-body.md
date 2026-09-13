@@ -27,14 +27,35 @@ Remove active supervisor token, monetary, wall-time, changed-file, diff-line, ag
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .../src/cli/run-cli.core.kernel-transport.test.ts  |   8 +-
+ ...n-cli.core.task-supervisor-budget-epoch.test.ts | 275 +-----------
+ .../cli/run-cli/command-catalog/task-supervisor.ts |  15 +-
+ .../src/cli/run-cli/command-loaders/task.ts        |   8 -
+ .../evaluator/evaluator-execute-supervisor.ts      |   2 +-
+ .../evaluator/evaluator-execute.command.test.ts    |  24 +-
+ .../supervisor-execution-budget-renewal.test.ts    | 296 -------------
+ .../shared/supervisor-execution-budget-renewal.ts  | 114 -----
+ .../supervisor-execution-default-budget.test.ts    |  15 +-
+ .../shared/supervisor-execution-episode.test.ts    | 120 ++++--
+ .../shared/supervisor-execution-episode.ts         |  89 +---
+ .../shared/supervisor-execution-observation.ts     |  17 +-
+ .../src/commands/task/advance.command.ts           |  38 +-
+ .../src/commands/task/agent-action-packet.ts       |   1 -
+ .../src/commands/task/branch-task-supervisor.ts    |  58 ++-
+ .../task/external-agent-exchange-authority.ts      |  10 +-
+ .../src/commands/task/external-agent-supervisor.ts |   7 +-
+ .../agentplane/src/commands/task/kernel-advance.ts |  54 ++-
+ .../agentplane/src/commands/task/kernel-run.ts     |  15 +-
+ .../task/supervision-outcome-disposition.ts        |   2 +-
+ .../task/supervisor-budget-epoch.command.ts        | 229 ----------
  .../supervisor-execution-episode-migration.ts      |  17 +-
  ...r-execution-episode-telemetry-admission.test.ts |  20 +-
- .../runner/supervisor-execution-episode.test.ts    | 127 ++++++++--
- .../src/runner/supervisor-execution-episode.ts     | 261 +++++++++------------
- packages/core/src/schemas/index.ts                 |   3 +
- scripts/bench/paired-production-driver.mjs         |  15 --
+ .../runner/supervisor-execution-episode.test.ts    | 259 ++++++++---
+ .../src/runner/supervisor-execution-episode.ts     | 478 +++++----------------
+ packages/core/src/schemas/index.ts                 |   7 +-
+ scripts/bench/paired-production-driver.mjs         |  15 -
  scripts/bench/paired-production-driver.test.mjs    |   8 +-
- 7 files changed, 252 insertions(+), 199 deletions(-)
+ 28 files changed, 622 insertions(+), 1579 deletions(-)
 ```
 
 </details>

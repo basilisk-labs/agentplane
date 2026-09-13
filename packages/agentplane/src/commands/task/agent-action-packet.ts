@@ -96,7 +96,6 @@ export type AgentActionPacket = {
   recovery?: {
     reason:
       | "effect_in_doubt"
-      | "budget_exhausted"
       | "concurrent_execution"
       | "completed_operation"
       | "stale_state"

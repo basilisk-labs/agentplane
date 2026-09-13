@@ -36,8 +36,10 @@ import {
 import { reconcileIntegrationEffect } from "./external-agent-workflow-recovery.js";
 import { recoverPendingExternalAgentResult } from "./external-agent-supervisor-recovery.js";
 import { executeExternalAgentVerification } from "./external-agent-verification.js";
-import { activeExecutionGrantForTask, resolveConfiguredAuthority } from "./configured-authority.js";
+import { resolveConfiguredAuthority } from "./configured-authority.js";
 import type { TaskAdvanceParsed } from "./advance.spec.js";
+
+const INTERNAL_ORCHESTRATOR_OPERATION_FUSE = 1000;
 
 export function makeRunTaskAdvanceHandler(deps: {
   getContext: (command: string, options: { includeRemote: boolean }) => Promise<CommandContext>;
@@ -153,47 +155,29 @@ export function makeRunTaskAdvanceHandler(deps: {
             }),
         })) ?? routed;
     }
-    const authorityTask = await loadTaskFromContext({
-      ctx: command,
-      taskId: parsed.taskId,
-      preferBranchSnapshot: current.workflowMode === "branch_pr",
-    });
-    const activeExecutionGrant = await activeExecutionGrantForTask({
-      command,
-      task: authorityTask,
-    });
-    if (!parsed.replacement && activeExecutionGrant) {
-      const continuation = await preparePersistedSupervisorReplacementAfterFailure({
-        git_root: command.resolvedProject.gitRoot,
-        task_id: parsed.taskId,
-        state_fingerprint_digest: current.workflowStep.preconditionFingerprint.digest,
-        allow_agent_run_budget_extension: true,
-        budget_only: true,
-      });
-      if (continuation === "budget_extended" || continuation === "telemetry_recovered") {
-        current = await decide(true);
-      }
-    }
     let replacementPrepared = false;
     if (parsed.replacement) {
       const replacement = await preparePersistedSupervisorReplacementAfterFailure({
         git_root: command.resolvedProject.gitRoot,
         task_id: parsed.taskId,
         state_fingerprint_digest: current.workflowStep.preconditionFingerprint.digest,
-        allow_agent_run_budget_extension: activeExecutionGrant !== null,
       });
       if (replacement === "not_failed") {
         throw new CliError({
           code: "E_USAGE",
           message:
-            "task advance --replacement requires a terminal failed operation or a renewable budget stop authorized by the active execution grant.",
+            "task advance --replacement requires a terminal failed operation or a diagnosed internal anomaly.",
         });
       }
       replacementPrepared = true;
     }
     let recovery: Parameters<typeof buildAgentActionPacket>[0]["recovery"];
     let verificationAttempted = false;
-    for (let operationCount = 0; operationCount < 32; operationCount += 1) {
+    for (
+      let operationCount = 0;
+      operationCount < INTERNAL_ORCHESTRATOR_OPERATION_FUSE;
+      operationCount += 1
+    ) {
       const step = current.workflowStep;
       if (step.kind === "approval") {
         // Repository authority is policy, so it must come from the trusted base checkout.
@@ -299,7 +283,7 @@ export function makeRunTaskAdvanceHandler(deps: {
       if (!execution.executable || execution.stop_reason !== null) {
         const journalReason = persisted.journal.stop?.reason;
         const reason =
-          journalReason === "effect_in_doubt" || journalReason === "budget_exhausted"
+          journalReason === "effect_in_doubt"
             ? journalReason
             : execution.stop_reason?.includes("already completed")
               ? "completed_operation"
@@ -337,7 +321,7 @@ export function makeRunTaskAdvanceHandler(deps: {
       if (!isExpectedBoundary) {
         throw new CliError({
           code: "E_RUNTIME",
-          message: "Task advance exceeded its bounded deterministic transition budget.",
+          message: "Task advance triggered its internal tight-loop anomaly fuse.",
           context: {
             task_id: parsed.taskId,
             step_id: current.workflowStep.id,

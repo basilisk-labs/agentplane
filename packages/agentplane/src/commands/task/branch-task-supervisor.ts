@@ -19,7 +19,7 @@ import type { JournalProjection } from "./direct-task-supervisor-result.js";
 import { journalProjection } from "./direct-task-supervisor-result.js";
 
 const BRANCH_TASK_SUPERVISION_SCHEMA = "agentplane.branch_pr_task_supervision.v1" as const;
-const MAX_BRANCH_SUPERVISOR_STEPS = 32;
+const INTERNAL_BRANCH_ORCHESTRATOR_FUSE = 1000;
 
 export type BranchTaskSupervisorStopCode =
   | "approval_required"
@@ -27,7 +27,7 @@ export type BranchTaskSupervisorStopCode =
   | "human_input_required"
   | "wait_required"
   | "terminal_attention"
-  | "step_budget_exhausted"
+  | "internal_anomaly"
   | "unsupported_agent_episode"
   | "operation_failed"
   | "route_refresh_failed"
@@ -54,6 +54,13 @@ type BranchTaskSupervisorStop = {
   reason: string;
   route_step_id: string;
   operation_id: string | null;
+  diagnostic?: {
+    code: "orchestrator_tight_loop";
+    semantic_state_digest: string;
+    repetition_count: number;
+    exhausted_recovery_strategies: readonly string[];
+    resume_hint: string;
+  };
 };
 
 type BranchWorkflowOperationReceipt = {
@@ -405,8 +412,8 @@ async function executeOperation(opts: {
 }
 
 /**
- * Bounded decide/execute/refresh loop for branch_pr. Semantic work remains in
- * role-specific episode ports; mechanical operations use durable idempotency.
+ * Decide/execute/refresh loop for branch_pr. Semantic work remains in
+ * role-specific episode ports; a high internal fuse catches orchestrator bugs.
  */
 export async function superviseBranchTaskRunWithPorts(
   ports: BranchTaskSupervisorPorts,
@@ -427,10 +434,40 @@ export async function superviseBranchTaskRunWithPorts(
     provider_episodes: 0,
     executor_lifecycle_event_delta: null,
   };
+  const semanticStateVisits = new Map<string, number>();
 
-  for (let stepCount = 0; stepCount < MAX_BRANCH_SUPERVISOR_STEPS; stepCount += 1) {
+  for (let stepCount = 0; stepCount < INTERNAL_BRANCH_ORCHESTRATOR_FUSE; stepCount += 1) {
     const recovery = await ports.recover_episode?.({ decision: current, decide: ports.decide });
     const step = current.workflowStep;
+    if (!recovery) {
+      const semanticStateDigest = step.preconditionFingerprint.digest;
+      const semanticStateKey = `${step.id}:${semanticStateDigest}`;
+      const repetitionCount = (semanticStateVisits.get(semanticStateKey) ?? 0) + 1;
+      semanticStateVisits.set(semanticStateKey, repetitionCount);
+      if (repetitionCount === 2) {
+        current = await ports.decide();
+        continue;
+      }
+      if (repetitionCount > 2) {
+        return stopResult(
+          current,
+          {
+            code: "internal_anomaly",
+            reason: "The branch semantic state repeated after every applicable recovery.",
+            route_step_id: step.id,
+            operation_id: operationId(current),
+            diagnostic: {
+              code: "orchestrator_tight_loop",
+              semantic_state_digest: semanticStateDigest,
+              repetition_count: repetitionCount,
+              exhausted_recovery_strategies: ["route_refresh", "episode_recovery"],
+              resume_hint: "Inspect the route and episode journal, then rerun task run.",
+            },
+          },
+          progress,
+        );
+      }
+    }
     if (!recovery && step.kind === "cli_operation") {
       const outcome = await executeOperation({ ports, current, progress });
       if ("result" in outcome) return outcome.result;
@@ -477,10 +514,17 @@ export async function superviseBranchTaskRunWithPorts(
   return stopResult(
     current,
     {
-      code: "step_budget_exhausted",
-      reason: `Branch supervisor exceeded ${MAX_BRANCH_SUPERVISOR_STEPS} route steps.`,
+      code: "internal_anomaly",
+      reason: "Branch orchestration triggered its internal tight-loop anomaly fuse.",
       route_step_id: current.workflowStep.id,
       operation_id: operationId(current),
+      diagnostic: {
+        code: "orchestrator_tight_loop",
+        semantic_state_digest: current.workflowStep.preconditionFingerprint.digest,
+        repetition_count: INTERNAL_BRANCH_ORCHESTRATOR_FUSE,
+        exhausted_recovery_strategies: ["route_refresh", "episode_recovery"],
+        resume_hint: "Inspect the route and episode journal, then rerun task run.",
+      },
     },
     progress,
   );

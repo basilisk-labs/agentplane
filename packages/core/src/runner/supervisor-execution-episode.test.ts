@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest";
 import {
   completeSupervisorExecutionEpisode,
   digestSupervisorEpisodeValue,
-  continueSupervisorExecutionEpisodeAfterEpisodeBudget,
   createSupervisorExecutionEpisodeJournal,
   advanceSupervisorExecutionEpisodeState,
   prepareReplacementSupervisorExecutionEpisodeAfterFailure,
@@ -156,40 +155,28 @@ describe("SupervisorExecutionEpisodeJournal", () => {
       stop: { reason: "budget_exhausted", exhausted_dimensions: ["episodes"] },
     });
 
-    const continued = continueSupervisorExecutionEpisodeAfterEpisodeBudget({
-      journal: current,
-      state_fingerprint_digest: NEXT_FINGERPRINT,
-      max_episodes: 51,
-      now: NOW,
-    });
-
-    expect(continued).toMatchObject({
-      status: "running",
-      stop: null,
-      budget: { max_episodes: 51 },
-      usage: { episodes: 1 },
-      cursor: { episode: 1, phase: "ready", operation_key: null },
-      state_fingerprint_digest: NEXT_FINGERPRINT,
-      previous_digest: current.digest,
-    });
-  });
-
-  it("does not continue resource-budget exhaustion as an episode extension", () => {
-    const stopped = stopSupervisorExecutionEpisode({
-      journal: journal(),
-      reason: "budget_exhausted",
-      exhausted_dimensions: ["wall_time_ms"],
-      now: NOW,
-    });
-
-    expect(() =>
-      continueSupervisorExecutionEpisodeAfterEpisodeBudget({
-        journal: stopped,
+    const migrated = migrateSupervisorExecutionEpisodeJournal({
+      input: current,
+      create: {
+        task_id: current.task_id,
+        task_revision: current.task_revision,
         state_fingerprint_digest: NEXT_FINGERPRINT,
-        max_episodes: 51,
-        now: NOW,
-      }),
-    ).toThrow(/caused only by the episode-count budget/u);
+        budget: budget(),
+      },
+    });
+
+    expect(migrated).toMatchObject({
+      source: "legacy_budget_v1",
+      migrated: true,
+      journal: {
+        status: "running",
+        stop: null,
+        budget: { max_episodes: 1 },
+        usage: { episodes: 1 },
+        cursor: { episode: 1, phase: "ready", operation_key: null },
+        previous_digest: current.digest,
+      },
+    });
   });
   it("is canonical and binds the task state to its digest", () => {
     const first = journal();
@@ -267,6 +254,87 @@ describe("SupervisorExecutionEpisodeJournal", () => {
         previous_digest: stopped.digest,
       },
     });
+  });
+
+  it("cold-reads a legacy token-budget epoch without exposing renewal behavior", () => {
+    const original = journal();
+    const authorization = {
+      schema_version: 1 as const,
+      kind: "supervisor_token_budget_epoch" as const,
+      prior_journal_digest: original.digest,
+      stopped_state_fingerprint_digest: FINGERPRINT,
+      authorized_state_fingerprint_digest: NEXT_FINGERPRINT,
+      authorized_by: "USER" as const,
+      authority_ref: "user:T-episode:legacy-token-budget-epoch",
+      authority_digest: FINGERPRINT,
+      budget: { max_input_tokens: 100, max_output_tokens: 100, max_total_tokens: 200 },
+    };
+    const epoch = {
+      ...authorization,
+      starts_after_operation_sequence: 0,
+      baseline_usage: { input_tokens: 0, output_tokens: 0, total_tokens: 0 },
+      authorized_at: NOW,
+    };
+    const recovery = { operation_identity: authorization, context: epoch };
+    const operationKey = digestSupervisorEpisodeValue({
+      task_id: original.task_id,
+      episode: 1,
+      role: "EXECUTOR",
+      kind: "cli_operation",
+      operation_identity: authorization,
+      precondition_fingerprint_digest: FINGERPRINT,
+      authority_ref: authorization.authority_ref,
+      authority_digest: authorization.authority_digest,
+      work_order_ref: null,
+      effect_ref: null,
+      recovery,
+    });
+    const { digest: _digest, ...base } = original;
+    const payload = {
+      ...base,
+      state_fingerprint_digest: NEXT_FINGERPRINT,
+      usage: { ...original.usage, episodes: 1 },
+      cursor: { episode: 1, phase: "ready" as const, operation_key: null },
+      operations: [
+        {
+          sequence: 1,
+          episode: 1,
+          role: "EXECUTOR" as const,
+          kind: "cli_operation" as const,
+          operation_key: operationKey,
+          precondition_fingerprint_digest: FINGERPRINT,
+          authority_ref: authorization.authority_ref,
+          authority_digest: authorization.authority_digest,
+          work_order_ref: null,
+          effect_ref: null,
+          recovery,
+          status: "completed" as const,
+          usage: {},
+          result_digest: digestSupervisorEpisodeValue(epoch),
+          postcondition_fingerprint_digest: NEXT_FINGERPRINT,
+          feedback_digest: null,
+          progress_digest: null,
+          started_at: NOW,
+          completed_at: NOW,
+        },
+      ],
+      updated_at: NOW,
+      previous_digest: original.digest,
+    };
+    const legacy = { ...payload, digest: digestSupervisorEpisodeValue(payload) };
+
+    expect(validateSupervisorExecutionEpisodeJournal(legacy)).toEqual(legacy);
+    expect(
+      migrateSupervisorExecutionEpisodeJournal({
+        input: legacy,
+        create: {
+          task_id: original.task_id,
+          task_revision: original.task_revision,
+          state_fingerprint_digest: NEXT_FINGERPRINT,
+          budget: budget(),
+        },
+      }),
+    ).toEqual({ journal: legacy, source: "current", migrated: false });
   });
 
   it("records episode and agent-run usage without using legacy limits for admission", () => {
