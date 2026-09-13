@@ -16,7 +16,7 @@ Release operator task after all 0.7.9 stabilization dependencies are integrated.
 ## Verification
 
 - State: pending
-- Note: Not recorded yet.
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
