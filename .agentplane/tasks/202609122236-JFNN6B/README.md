@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 35
+revision: 36
 origin:
   system: "manual"
 depends_on: []
@@ -59,8 +59,6 @@ quality_review:
     - "The reviewed change matches the approved cleanup scope: model-specific diagnostics are removed, semantic prompt assertions remain, all nine safety-critical CLI files remain in the critical route, and all five benchmark files move to qualification. Frozen verification records report passing required checks and repeated critical runs."
 token_usage:
   agent_runs: 15
-  cached_input_observed_agent_runs: 1
-  cached_input_tokens: 254080
   input_tokens: 316419
   journal_digest: "sha256:24ce95c0985354f6d76518403cde2d2a7a5f3cc13716d131ab9966fa709242d2"
   observed_agent_runs: 1
@@ -429,6 +427,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The sole uncommitted change is the intended scoped Knip rework and does not conflict with another process."
 events:
   -
     type: "status"
@@ -517,9 +518,14 @@ events:
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "e39210b8d9e2763a7353bdf095036cc2483e8ed5"
+  -
+    type: "comment"
+    at: "2026-09-13T00:29:48.345Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The sole uncommitted change is the intended scoped Knip rework and does not conflict with another process."
 doc_version: 3
-doc_updated_at: "2026-09-13T00:13:59.600Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-13T00:29:48.383Z"
+doc_updated_by: "SUPERVISOR"
 description: "Remove unused GPT-5.5/GPT-5.6 prompt diagnostic implementations and self-tests, retain the prompt module compiler and model-neutral behavioral contracts, remove the historical fixed-byte assertion while retaining semantic prompt assertions, remove the duplicate coverage-threshold configuration guard, and route agent-efficiency benchmark tests to a separate qualification suite instead of the normal critical CLI gate. Preserve exit-code, scope, symlink, protected-path, trust-boundary, task-centric, and context critical tests. Reduce critical suite process overhead only if the resulting suite passes repeatedly. Avoid files currently modified by tasks 202609080727-BAWTEE and 202609121424-T83XJA. Do not modify benchmark fixtures or semantic gateway implementation."
 sections:
   Summary: |-
@@ -1332,7 +1338,7 @@ extensions:
       revision: 4
       schema_version: 1
       task_id: "202609122236-JFNN6B"
-    event_cursor: 25
+    event_cursor: 26
     final_validation:
       evidence:
         -
@@ -3013,9 +3019,9 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202609122236-JFNN6B"
-    revision: 35
+    revision: 36
     schema_version: 1
-    updated_at: "2026-09-13T00:13:59.590Z"
+    updated_at: "2026-09-13T00:29:48.345Z"
     work_items:
       work-item-cleanup:
         attempt: 1
@@ -3627,6 +3633,30 @@ extensions:
         mutation_id: "compatibility:sha256:b1c0d18932612eceab44f85c4a55bad490216f534aa02a945da21e1de67ac537"
         next_revision: 13
         previous_revision: 12
+        schema_version: 1
+        task_id: "202609122236-JFNN6B"
+      compatibility:sha256:b2ea6371c492ba35b8015cd1556259bf7461c4160de137f98307e281407969cc:
+        aggregate_digest: "sha256:f7e5ab31e92b816a3415cdd8231a54948b1f5f637b7d7822592e4063f2166f13"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T00:29:48.345Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_cbd959b653bb2ee21d926c2b"
+          mutation_id: "compatibility:sha256:b2ea6371c492ba35b8015cd1556259bf7461c4160de137f98307e281407969cc"
+          plan_digest: "sha256:395e3263f50efcbc3a42c35b2389f51b3b009827549efdcdd70afb70473535f1"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609122236-JFNN6B"
+          task_revision: 35
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b2ea6371c492ba35b8015cd1556259bf7461c4160de137f98307e281407969cc"
+        next_revision: 36
+        previous_revision: 35
         schema_version: 1
         task_id: "202609122236-JFNN6B"
       compatibility:sha256:b570a6a861cb1d5221056cec4c158513a3c8400a8e33c5cfc49c9e624539d8ca:
