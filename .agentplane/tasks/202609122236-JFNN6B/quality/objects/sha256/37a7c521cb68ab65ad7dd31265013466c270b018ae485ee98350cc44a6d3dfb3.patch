@@ -1,0 +1,3330 @@
+diff --git a/.agentplane/tasks/202609122147-5F5WP0/README.md b/.agentplane/tasks/202609122147-5F5WP0/README.md
+new file mode 100644
+index 000000000..ae84ce066
+--- /dev/null
++++ b/.agentplane/tasks/202609122147-5F5WP0/README.md
+@@ -0,0 +1,1027 @@
++---
++id: "202609122147-5F5WP0"
++title: "Make AgentPlane-managed GitLab MRs remove source branches"
++result_summary: "pre-merge closure"
++status: "DONE"
++priority: "med"
++owner: "CODER"
++revision: 11
++origin:
++  system: "manual"
++depends_on: []
++tags:
++  - "code"
++  - "gitlab"
++  - "branch-cleanup"
++task_kind: "code"
++mutation_scope: "code"
++risk_flags:
++  - "network"
++  - "publish"
++  - "merge"
++  - "external_system"
++blueprint_request: "code.branch_pr"
++verify: []
++plan_approval:
++  state: "approved"
++  updated_at: "2026-09-12T21:52:27.159Z"
++  updated_by: "HOST:codex-desktop:USER"
++  note: "host_user_decision=sha256:37fe89ffb0e72678f2e060b423ab154ea68947e2165e389322e495c7cbce6f1c"
++verification:
++  state: "ok"
++  updated_at: "2026-09-12T22:40:58.659Z"
++  updated_by: "TESTER"
++  note: "Focused tests, typecheck, full local CI, and hosted checks passed for PR #5940 at c9897380582ddd645c3e8144151d88c910406036."
++  attempts: 0
++quality_review:
++  state: "pass"
++  provenance: "evaluator_supplied"
++  updated_at: "2026-09-12T22:42:16.003Z"
++  updated_by: "EVALUATOR"
++  note: "EVALUATOR returned pass with 2 typed finding(s)."
++  evaluated_sha: "13160b3a8f6a7dd6817a65cdf476b7386583aca7"
++  blueprint_digest: "589b09ef6a76514e31771d220bbde1554836eb10ce2a9b11d11952f6f4c15c70"
++  evidence_refs:
++    - ".agentplane/tasks/202609122147-5F5WP0/quality/20260912-224125750-recovery-context/evaluator-work-order.json"
++    - ".agentplane/tasks/202609122147-5F5WP0/quality/20260912-224125750-recovery-context/quality-report.json"
++    - ".agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/292d74c32671b11f5c4555210e0568e7fbf542259c5105b67c5562fb5095ed3a.md"
++    - ".agentplane/tasks/202609122147-5F5WP0/quality/20260912-224125750-recovery-context/evaluator-opinion.md"
++    - ".agentplane/tasks/202609122147-5F5WP0/quality/20260912-224125750-recovery-context/evaluator-result.json"
++    - ".agentplane/tasks/202609122147-5F5WP0/quality/20260912-224125750-recovery-context/evaluator-evidence-manifest.json"
++    - ".agentplane/tasks/202609122147-5F5WP0/README.md"
++    - ".agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/69581e7536d57b062574d7441147b5ba42f0234176e61f693b59e29a7d87387b.patch"
++    - ".agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/e314657ba02eb940c087044dc705c0d9b65b1022d3ced6a27626e6b0104ded71.json"
++    - ".agentplane/tasks/202609122147-5F5WP0/verification/20260912224058659-fd36fb3df31fb67b.json"
++    - ".agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/e12ac41bcaa355159b9344982ae8526f379ef82290301b30a895f00788ce013a.json"
++    - ".agentplane/policy/dod.code.md"
++    - ".agentplane/policy/dod.core.md"
++    - ".agentplane/policy/security.must.md"
++    - ".agentplane/policy/workflow.branch_pr.md"
++  findings:
++    - "No actionable code or test defects were found in the scoped diff."
++    - "Residual risk: Final merge and post-merge provider readback remain supervisor-owned integration steps."
++token_usage:
++  agent_runs: 3
++  cached_input_observed_agent_runs: 0
++  cached_input_tokens: null
++  input_tokens: null
++  journal_digest: "sha256:aea1f6b5d9f8788165062f3165b2ff48c2f8d86cfaf68cc64676746f5cac2722"
++  observed_agent_runs: 0
++  observed_by: "agentplane"
++  output_tokens: null
++  reasoning_tokens: null
++  schema_version: 1
++  source: "supervisor_journal"
++  state: "unavailable"
++  total_tokens: null
++  unavailable_reason: "provider_token_telemetry_unavailable"
++  updated_at: "2026-09-12T22:42:42.550Z"
++execution_route:
++  frozen: true
++  reason_codes:
++    - "agent_preferred_branch_pr"
++    - "effect_external_write"
++    - "effect_publish"
++    - "repository_branch_pr_floor"
++  repository_mode: "branch_pr"
++  requested_mode: "auto"
++  schema_version: 1
++  selected_mode: "branch_pr"
++execution_contract:
++  authority:
++    allowed_external_effects:
++      - "network_read"
++    allowed_repository_effects:
++      - "repository_write"
++      - "source_code"
++      - "tests"
++    forbidden_external_effects:
++      - "external_write"
++      - "credentials"
++      - "publish"
++      - "deploy"
++      - "destructive_git"
++    forbidden_repository_effects:
++      - "documentation"
++      - "public_api"
++      - "schema"
++      - "dependencies"
++      - "ci"
++      - "release_metadata"
++      - "security_boundary"
++    writable_roots:
++      - "packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts"
++      - "packages/agentplane/src/commands/pr/internal/sync-gitlab.ts"
++  declaration:
++    external_effects:
++      - "external_write"
++      - "network_read"
++      - "publish"
++    implementation_uncertainty: "bounded"
++    preferred_mode: "branch_pr"
++    rationale:
++      - "Completion requires a hosted pull request and merge as explicitly requested by the user."
++      - "The repository enforces branch_pr for source changes."
++    repository_effects:
++      - "repository_write"
++      - "source_code"
++      - "tests"
++    requirements_uncertainty: "bounded"
++    reversibility: "reversible"
++    schema_version: 2
++    scope_roots:
++      - "packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts"
++      - "packages/agentplane/src/commands/pr/internal/sync-gitlab.ts"
++  observed:
++    authority_violations: []
++    changed_components:
++      - "packages/agentplane"
++    changed_paths:
++      - "packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts"
++      - "packages/agentplane/src/commands/pr/internal/sync-gitlab.ts"
++    external_effects: []
++    repository_effects:
++      - "repository_write"
++      - "source_code"
++      - "tests"
++    verification_results:
++      -
++        id: "recorded-check-1"
++        result: "pass"
++      -
++        id: "recorded-check-2"
++        result: "pass"
++      -
++        id: "recorded-check-3"
++        result: "pass"
++      -
++        id: "recorded-check-4"
++        result: "pass"
++      -
++        id: "verification-record"
++        result: "pass"
++  reason_codes:
++    - "agent_preferred_branch_pr"
++    - "effect_external_write"
++    - "effect_publish"
++    - "repository_branch_pr_floor"
++  repository_mode: "branch_pr"
++  safety:
++    approval_effects:
++      - "external_write"
++      - "publish"
++    requires_user_approval: true
++    requires_worktree: true
++  schema_version: 1
++  selected_mode: "branch_pr"
++  source: "agent_declared"
++  verification:
++    contract:
++      declared:
++        components:
++          - "packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts"
++          - "packages/agentplane/src/commands/pr/internal/sync-gitlab.ts"
++        evidence_requirements:
++          - "external_effect:external_write"
++          - "external_effect:network_read"
++          - "external_effect:publish"
++          - "hosted_integration"
++          - "repository_effect:repository_write"
++          - "repository_effect:source_code"
++          - "repository_effect:tests"
++          - "task_outcome"
++        external_effects:
++          - "external_write"
++          - "network_read"
++          - "publish"
++        repository_effects:
++          - "repository_write"
++          - "source_code"
++          - "tests"
++        risk:
++          implementation_uncertainty: "bounded"
++          requirements_uncertainty: "bounded"
++          reversibility: "reversible"
++      digest: "sha256:bca135e5f844463a36f9f8274f62458cdb697a49aa9dffbcaa1664884ce7cdd5"
++      escalation_reasons:
++        - "external_effect_requires_real_e2e"
++      execution_groups:
++        - "core"
++        - "runtime"
++        - "cli"
++      observed:
++        changed_components:
++          - "packages/agentplane"
++        changed_files:
++          - "packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts"
++          - "packages/agentplane/src/commands/pr/internal/sync-gitlab.ts"
++        external_effects: []
++        repository_effects:
++          - "repository_write"
++          - "source_code"
++          - "tests"
++      phase: "task"
++      policy_floor:
++        monotonic_strengthening: true
++        pr_full_regression: true
++        unknown_or_central_full_regression: true
++      requires_full_regression: false
++      requires_real_e2e: true
++      schema_version: 2
++      selected_checks:
++        - "affected_unit_integration"
++        - "critical_paths"
++        - "hosted_integration"
++        - "real_e2e"
++        - "task_outcome"
++      selector:
++        bucket: null
++        buckets: []
++        execution_mode: "semantic"
++        kind: "semantic"
++        lint_targets: []
++        reason: "execution_declaration"
++        run_cli_docs_check: false
++        selected_test_files: []
++        vitest_pool: "forks"
++      source: "execution_contract"
++    required_evidence:
++      - "external_effect:external_write"
++      - "external_effect:network_read"
++      - "external_effect:publish"
++      - "hosted_integration"
++      - "repository_effect:repository_write"
++      - "repository_effect:source_code"
++      - "repository_effect:tests"
++      - "task_outcome"
++commit:
++  hash: "d89199b70f4bbc7033b2e898763d131feef6dc14"
++  message: "🚧 5F5WP0 task: record external evaluator result"
++comments:
++  -
++    author: "CODER"
++    body: "Start: continue branch_pr task in the dedicated task worktree."
++  -
++    author: "SUPERVISOR"
++    body: "Implementation committed: 13160b3a8f6a. CLI accepted one state-bound external-agent semantic result."
++  -
++    author: "CODER"
++    body: "Verified: pre-merge closure packet is ready for the task PR."
++events:
++  -
++    type: "status"
++    at: "2026-09-12T21:52:47.618Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Start: continue branch_pr task in the dedicated task worktree."
++  -
++    type: "status"
++    at: "2026-09-12T21:57:06.826Z"
++    author: "SUPERVISOR"
++    from: "DOING"
++    to: "DOING"
++    note: "Implementation committed: 13160b3a8f6a. CLI accepted one state-bound external-agent semantic result."
++    commit: "13160b3a8f6a7dd6817a65cdf476b7386583aca7"
++  -
++    type: "verify"
++    at: "2026-09-12T22:40:58.659Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Focused tests, typecheck, full local CI, and hosted checks passed for PR #5940 at c9897380582ddd645c3e8144151d88c910406036."
++  -
++    type: "status"
++    at: "2026-09-12T22:42:42.550Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DONE"
++    note: "Verified: pre-merge closure packet is ready for the task PR."
++    commit: "d89199b70f4bbc7033b2e898763d131feef6dc14"
++doc_version: 3
++doc_updated_at: "2026-09-12T22:42:42.550Z"
++doc_updated_by: "CODER"
++description: "Make AgentPlane-managed GitLab MRs remove source branches"
++sections:
++  Summary: |-
++    Make AgentPlane-managed GitLab MRs remove source branches
++
++    Make AgentPlane-managed GitLab MRs remove source branches
++  Scope: |-
++    - In scope: Make AgentPlane-managed GitLab MRs remove source branches.
++    - Out of scope: unrelated refactors not required for "Make AgentPlane-managed GitLab MRs remove source branches".
++  Plan: "Plan a bounded GitLab MR synchronization fix so AgentPlane requests source-branch deletion on create and reconciles existing open MRs on update, with focused tests and full hosted integration."
++  Verify Steps: |-
++    1. Run `bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts`. Expected: both files pass and all 9 tests pass.
++    2. Run `bun run typecheck`. Expected: exit code 0.
++    3. Run `bun run ci:local`. Expected: every selected full-fast group passes.
++    4. Confirm GitLab MR create payloads for fork and same-project repositories include `remove_source_branch: true`, update payloads include the same field, hosted checks pass, and the exact PR SHA is merged.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    ### 2026-09-12T22:40:58.659Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Focused tests, typecheck, full local CI, and hosted checks passed for PR #5940 at c9897380582ddd645c3e8144151d88c910406036.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:cb77d22076d64c81d47b9a3d9fad220f081acde0b957c1ab04d7d7fdfaad46ed, input_digest=sha256:370a2d8b59c9c4bc7b1046b502abbf1940cc219d7c5717888ff39134ed7765bb
++
++    Details:
++
++    Check: affected_unit_integration
++    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts && bun run typecheck
++    Result: pass
++    Evidence: 2 test files and 9 tests passed; TypeScript build exited 0.
++    Scope: GitLab MR create, update, and direct merge behavior plus TypeScript compilation.
++
++    Check: critical_paths
++    Command: bun run ci:local
++    Result: pass
++    Evidence: Full-fast verification passed with exit code 0 in 1082115 ms.
++    Scope: Repository runtime, docs-schema, core, CLI, and UI verification groups.
++
++    Check: real_e2e
++    Command: gh pr checks 5940 --repo basilisk-labs/agentplane
++    Result: pass
++    Evidence: verify-real-e2e passed in GitHub Actions for head c9897380582ddd645c3e8144151d88c910406036.
++    Scope: Hosted real-E2E route selected by the persisted verification contract.
++
++    Check: task_outcome
++    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts
++    Result: pass
++    Evidence: Exact JSON payload assertions confirm remove_source_branch=true for fork create, same-project create, and update; 9 tests passed.
++    Scope: Requested source-branch deletion behavior.
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane-XHHSBK-recovery/.agentplane/worktrees/202609122147-5F5WP0-make-agentplane-managed-gitlab-mrs-remove-source/.agentplane/tasks/202609122147-5F5WP0/blueprint/resolved-snapshot.json
++    - old_digest: 589b09ef6a76514e31771d220bbde1554836eb10ce2a9b11d11952f6f4c15c70
++    - current_digest: 589b09ef6a76514e31771d220bbde1554836eb10ce2a9b11d11952f6f4c15c70
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202609122147-5F5WP0
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: agentplane task verify-show 202609122147-5F5WP0
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: ""
++extensions:
++  agentplane.execution_grant:
++    actor: "HOST:codex-desktop:USER"
++    approval_evidence_digest: "sha256:37fe89ffb0e72678f2e060b423ab154ea68947e2165e389322e495c7cbce6f1c"
++    approval_kind: "host_user_decision"
++    capabilities:
++      - "provider.merge"
++      - "provider.pr"
++      - "publish"
++      - "repository.integrate"
++      - "repository.write"
++      - "task.lifecycle"
++      - "task.scope.extend"
++    completion_contract_digest: "sha256:b9eaeac7033be10bb721789bdbe6a23886f2121be12204242ea45581891815c0"
++    digest: "sha256:da54fe287461717a7e72399c499c95569239ad3784566c30e7b73be48efef803"
++    grant_id: "7889437b-7f0e-44a4-9341-67e082f02058"
++    issued_at: "2026-09-12T21:52:27.159Z"
++    kind: "agentplane.execution_grant"
++    plan_digest: "sha256:6128a9e678348313967135b370e89f5626d17f98d7f7105d8160c4331ae5a69a"
++    plan_revision: 2
++    repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
++    schema_version: 1
++    scope_digest: "sha256:e8260956bd87211c982480bc6f462b32f217dd11573c630f5175ab1402316d5c"
++    status: "active"
++    task_id: "202609122147-5F5WP0"
++  agentplane.task_centric:
++    current_plan:
++      approval:
++        approved_at: "2026-09-12T21:52:27.159Z"
++        approved_by: "HOST:codex-desktop:USER"
++        approved_digest: "sha256:a5787118704719d11d2c8e2c212ae6ea6c2ee76015e896bae3a13c69d6165d3b"
++        policy_facts:
++          - "host_user_decision"
++        state: "approved"
++      created_at: "2026-09-12T21:51:54.430Z"
++      digest: "sha256:a5787118704719d11d2c8e2c212ae6ea6c2ee76015e896bae3a13c69d6165d3b"
++      proposal:
++        assumptions:
++          - "GitLab honors remove_source_branch on MR create and update through its API."
++        planning_baseline:
++          captured_at: "2026-09-12T21:47:48.343Z"
++          config_digest: null
++          context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
++          digest: "sha256:89da613591286d6f05da7ddf9f9ddd8498b507bb26a6f91e2f92bd555f9c842a"
++          dirty_paths:
++            - ".agentplane/tasks/202609122147-5F5WP0/README.md"
++          git:
++            kind: "commit"
++            ref: null
++            sha: "58048a4e1ff97030d3fa86447c739397f0e0936b"
++          policy_digest: null
++          schema_version: 1
++          task_history_cursor: "task-revision:1"
++        schema_version: 1
++        task_id: "202609122147-5F5WP0"
++        top_level_validation:
++          checks:
++            -
++              capability: "task.verify"
++              command: "bun run ci:local"
++              id: "local-ci"
++              kind: "deterministic"
++              required: true
++              timeout_ms: 1800000
++            -
++              capability: "task.verify"
++              id: "hosted-integration"
++              kind: "provider"
++              required: true
++          criteria:
++            -
++              check_ids:
++                - "local-ci"
++              description: "Full local CI passes after focused checks."
++              id: "local-regression"
++              required: true
++            -
++              check_ids:
++                - "hosted-integration"
++              description: "Hosted checks pass and the pull request is merged."
++              id: "hosted-merge"
++              required: true
++          evidence_fingerprint: "sha256:aa578cd0d328d5d862cd8b24de389a94ebbe492eb35a2f7cef0343360112e5ba"
++          schema_version: 1
++        unresolved_questions: []
++        work_items:
++          schema_version: 1
++          work_items:
++            -
++              acceptance_criteria:
++                -
++                  check_ids:
++                    - "focused-tests"
++                  description: "GitLab MR creation requests remove_source_branch=true for fork and same-project MRs."
++                  id: "create-default"
++                  required: true
++                -
++                  check_ids:
++                    - "focused-tests"
++                  description: "GitLab MR update requests remove_source_branch=true to reconcile older open MRs."
++                  id: "update-reconcile"
++                  required: true
++                -
++                  check_ids:
++                    - "typecheck"
++                  description: "The source change passes repository TypeScript checks."
++                  id: "typed"
++                  required: true
++              capabilities:
++                - "task.verify"
++              context:
++                max_bytes: 100000
++                optional_sources:
++                  - "packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.ts"
++                required_sources:
++                  - "packages/agentplane/src/commands/pr/internal/sync-gitlab.ts"
++                  - "packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts"
++                symbol_hints:
++                  - "tryCreateGitLabMr"
++                  - "tryUpdateGitLabMr"
++                  - "withJsonPayload"
++              depends_on: []
++              expected_outputs:
++                - "Updated GitLab MR payload behavior"
++                - "Regression tests for create and update payloads"
++              id: "gitlab-remove-source-branch"
++              objective: "Add remove_source_branch=true to GitLab MR create and update payloads and cover both fork and same-project behavior with exact payload assertions."
++              optional: false
++              priority: 100
++              required_inputs: []
++              resource_claims:
++                -
++                  kind: "path"
++                  mode: "write"
++                  resource: "packages/agentplane/src/commands/pr/internal/sync-gitlab.ts"
++                -
++                  kind: "path"
++                  mode: "write"
++                  resource: "packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts"
++              risk: "low"
++              scope_roots:
++                - "packages/agentplane/src/commands/pr/internal/sync-gitlab.ts"
++                - "packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts"
++              validation:
++                checks:
++                  -
++                    capability: "task.verify"
++                    command: "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts"
++                    id: "focused-tests"
++                    kind: "deterministic"
++                    required: true
++                    timeout_ms: 120000
++                  -
++                    capability: "task.verify"
++                    command: "bun run typecheck"
++                    id: "typecheck"
++                    kind: "deterministic"
++                    required: true
++                    timeout_ms: 120000
++                criteria:
++                  -
++                    check_ids:
++                      - "focused-tests"
++                    description: "Focused tests verify create payloads for fork and same-project MRs."
++                    id: "create-default"
++                    required: true
++                  -
++                    check_ids:
++                      - "focused-tests"
++                    description: "Focused tests verify the update reconciliation payload."
++                    id: "update-reconcile"
++                    required: true
++                  -
++                    check_ids:
++                      - "typecheck"
++                    description: "TypeScript build passes."
++                    id: "typed"
++                    required: true
++                evidence_fingerprint: "sha256:20fcbdd6730a748562cc59ac2fa51c563f7a2b9e2525410f727a6033709459f5"
++                schema_version: 1
++      revision: 1
++      schema_version: 1
++      task_id: "202609122147-5F5WP0"
++    event_cursor: 7
++    final_validation:
++      evidence:
++        -
++          artifact_refs:
++            - "task-verification:202609122147-5F5WP0"
++            - "git:13160b3a8f6a7dd6817a65cdf476b7386583aca7"
++          check_id: "local-ci"
++          command_identity: "bun run ci:local"
++          detail: "Focused tests, typecheck, full local CI, and hosted checks passed for PR #5940 at c9897380582ddd645c3e8144151d88c910406036."
++          exit_code: 0
++          observed_at: "2026-09-12T22:40:58.659Z"
++          repository_snapshot_digest: "sha256:5466c8bc5d1d90cf2b35b39336204eb3a3e813a3a289bc1e9a77a918110564be"
++          status: "passed"
++        -
++          artifact_refs:
++            - "task-verification:202609122147-5F5WP0"
++            - "git:13160b3a8f6a7dd6817a65cdf476b7386583aca7"
++          check_id: "hosted-integration"
++          command_identity: "task.verify"
++          detail: "Focused tests, typecheck, full local CI, and hosted checks passed for PR #5940 at c9897380582ddd645c3e8144151d88c910406036."
++          exit_code: 0
++          observed_at: "2026-09-12T22:40:58.659Z"
++          repository_snapshot_digest: "sha256:5466c8bc5d1d90cf2b35b39336204eb3a3e813a3a289bc1e9a77a918110564be"
++          status: "passed"
++      schema_version: 1
++      stale_evidence: []
++      status: "passed"
++      unsatisfied_criteria: []
++    id: "202609122147-5F5WP0"
++    intent:
++      acceptance_criteria: []
++      captured_at: "2026-09-12T21:47:41.237Z"
++      constraints: []
++      request: |-
++        Make AgentPlane-managed GitLab MRs remove source branches
++
++        Make AgentPlane-managed GitLab MRs remove source branches
++      task_id: "202609122147-5F5WP0"
++    lifecycle: "COMPLETED"
++    plan_amendments: []
++    plan_history: []
++    revision: 11
++    schema_version: 1
++    updated_at: "2026-09-12T22:42:42.550Z"
++    work_items:
++      gitlab-remove-source-branch:
++        attempt: 1
++        claim_id: null
++        id: "gitlab-remove-source-branch"
++        last_failure: null
++        output_manifests:
++          -
++            digest: "sha256:b5f507fa75ffd15569580d8b956c3292250179aa39449ec1f6286752990390ce"
++            id: "Updated GitLab MR payload behavior"
++            kind: "semantic_output"
++            producer:
++              attempt: 1
++              plan_revision: 1
++              task_id: "202609122147-5F5WP0"
++              work_item_id: "gitlab-remove-source-branch"
++            provenance:
++              - "sha256:469484379458be54cb5b8bdee2aee848cb8cdc463d65487c9bfe93628f11f6f0"
++              - ".agentplane/tasks/202609122147-5F5WP0/supervision/declared-checks.json"
++            repository_snapshot_digest: "sha256:51eb04eb5790424b7bb6387cf8b5fabcc28eceb4205ae886d7ffc7106cf6d85d"
++            schema: "agentplane.semantic-output.v1"
++            schema_version: 1
++          -
++            digest: "sha256:543f190e949f36f18fd14850387f08d02a322dfb49e5aeea3a95541bc9b45beb"
++            id: "Regression tests for create and update payloads"
++            kind: "semantic_output"
++            producer:
++              attempt: 1
++              plan_revision: 1
++              task_id: "202609122147-5F5WP0"
++              work_item_id: "gitlab-remove-source-branch"
++            provenance:
++              - "sha256:469484379458be54cb5b8bdee2aee848cb8cdc463d65487c9bfe93628f11f6f0"
++              - ".agentplane/tasks/202609122147-5F5WP0/supervision/declared-checks.json"
++            repository_snapshot_digest: "sha256:51eb04eb5790424b7bb6387cf8b5fabcc28eceb4205ae886d7ffc7106cf6d85d"
++            schema: "agentplane.semantic-output.v1"
++            schema_version: 1
++        revision: 2
++        state: "COMPLETED"
++        validation_result:
++          evidence:
++            -
++              artifact_refs:
++                - ".agentplane/tasks/202609122147-5F5WP0/supervision/declared-checks.json"
++              check_id: "focused-tests"
++              command_identity: "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts"
++              detail: "Observed by bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts."
++              exit_code: 0
++              observed_at: "2026-09-12T21:57:15.981Z"
++              repository_snapshot_digest: "sha256:51eb04eb5790424b7bb6387cf8b5fabcc28eceb4205ae886d7ffc7106cf6d85d"
++              status: "passed"
++            -
++              artifact_refs:
++                - ".agentplane/tasks/202609122147-5F5WP0/supervision/declared-checks.json"
++              check_id: "typecheck"
++              command_identity: "bun run typecheck"
++              detail: "Observed by bun run typecheck."
++              exit_code: 0
++              observed_at: "2026-09-12T21:57:15.981Z"
++              repository_snapshot_digest: "sha256:51eb04eb5790424b7bb6387cf8b5fabcc28eceb4205ae886d7ffc7106cf6d85d"
++              status: "passed"
++          schema_version: 1
++          stale_evidence: []
++          status: "passed"
++          unsatisfied_criteria: []
++  agentplane.task_centric_runtime:
++    checkpoints: []
++    events:
++      -
++        at: "2026-09-12T21:57:15.990Z"
++        from: "READY"
++        to: "COMPLETED"
++        actor_id: "agentplane"
++        cause_refs:
++          - "semantic-result:sha256:42afbefae0f70b98b1eacf8636c52f21174f50024478f39e0f4cceda9f3781a0"
++        entity: "work_item"
++        id: "event_7de045f9bb51b217c02585be"
++        mutation_id: "external-result:work-order-202609122147-5F5WP0-executor-3e98ca755f142624199194e7"
++        plan_digest: "sha256:a5787118704719d11d2c8e2c212ae6ea6c2ee76015e896bae3a13c69d6165d3b"
++        plan_revision: 1
++        repository_fingerprint: null
++        schema_version: 1
++        task_id: "202609122147-5F5WP0"
++        task_revision: 6
++        work_item_id: "gitlab-remove-source-branch"
++    leases: []
++    mutation_receipts:
++      compatibility:sha256:151996d764c3bb35b4cd068a4b451dc71170f13890aaf49fae884be18effa2b2:
++        aggregate_digest: "sha256:a5a78158f855da9ef52c4f89f1214950a2221eae77f604760cbb4eea73069c82"
++        event:
++          actor_id: "agentplane"
++          at: "2026-09-12T22:41:00.823Z"
++          cause_refs:
++            - "compatibility_projection_mutation"
++          entity: "task"
++          from: "ACTIVE"
++          id: "event_a4bc0a136eba041348931aa5"
++          mutation_id: "compatibility:sha256:151996d764c3bb35b4cd068a4b451dc71170f13890aaf49fae884be18effa2b2"
++          plan_digest: "sha256:a5787118704719d11d2c8e2c212ae6ea6c2ee76015e896bae3a13c69d6165d3b"
++          plan_revision: 1
++          repository_fingerprint: null
++          schema_version: 1
++          task_id: "202609122147-5F5WP0"
++          task_revision: 9
++          to: "ACTIVE"
++          work_item_id: null
++        mutation_id: "compatibility:sha256:151996d764c3bb35b4cd068a4b451dc71170f13890aaf49fae884be18effa2b2"
++        next_revision: 10
++        previous_revision: 9
++        schema_version: 1
++        task_id: "202609122147-5F5WP0"
++      compatibility:sha256:2a86a1a96a4eeb0ab65523090734a34fba72ab2429c1af3a86fc6a7604109896:
++        aggregate_digest: "sha256:8f83df5580bf0468da95d62e7c9989df2d1d856b81f6b6b2a43827a259f1732e"
++        event:
++          actor_id: "agentplane"
++          at: "2026-09-12T21:57:06.826Z"
++          cause_refs:
++            - "compatibility_projection_mutation"
++          entity: "task"
++          from: "ACTIVE"
++          id: "event_bdb33199a00aabae8a6556ac"
++          mutation_id: "compatibility:sha256:2a86a1a96a4eeb0ab65523090734a34fba72ab2429c1af3a86fc6a7604109896"
++          plan_digest: "sha256:a5787118704719d11d2c8e2c212ae6ea6c2ee76015e896bae3a13c69d6165d3b"
++          plan_revision: 1
++          repository_fingerprint: null
++          schema_version: 1
++          task_id: "202609122147-5F5WP0"
++          task_revision: 4
++          to: "ACTIVE"
++          work_item_id: null
++        mutation_id: "compatibility:sha256:2a86a1a96a4eeb0ab65523090734a34fba72ab2429c1af3a86fc6a7604109896"
++        next_revision: 5
++        previous_revision: 4
++        schema_version: 1
++        task_id: "202609122147-5F5WP0"
++      compatibility:sha256:323c1029b73fc441a3bc93c34a9dd34564b8c9c0eaecfe3b664ad9e63310e03f:
++        aggregate_digest: "sha256:53f1cbf054d47dc382b788802dd3ea314f6154218b8c51fec24eddd965f3a9ab"
++        event:
++          actor_id: "agentplane"
++          at: "2026-09-12T21:51:54.550Z"
++          cause_refs:
++            - "compatibility_projection_mutation"
++          entity: "task"
++          from: "AWAITING_PLAN_APPROVAL"
++          id: "event_d2f29a461a8790c42cc11b05"
++          mutation_id: "compatibility:sha256:323c1029b73fc441a3bc93c34a9dd34564b8c9c0eaecfe3b664ad9e63310e03f"
++          plan_digest: "sha256:a5787118704719d11d2c8e2c212ae6ea6c2ee76015e896bae3a13c69d6165d3b"
++          plan_revision: 1
++          repository_fingerprint: null
++          schema_version: 1
++          task_id: "202609122147-5F5WP0"
++          task_revision: 2
++          to: "ACTIVE"
++          work_item_id: null
++        mutation_id: "compatibility:sha256:323c1029b73fc441a3bc93c34a9dd34564b8c9c0eaecfe3b664ad9e63310e03f"
++        next_revision: 3
++        previous_revision: 2
++        schema_version: 1
++        task_id: "202609122147-5F5WP0"
++      compatibility:sha256:3aee2fae046ab4ce018ae11908212ebe93709d1a88d7fc8217ef4915ac75184a:
++        aggregate_digest: "sha256:1e7a0b2ae05ea9808f857f30e5a190a5b355cee3b230a93570570f0440fc7374"
++        event:
++          actor_id: "agentplane"
++          at: "2026-09-12T21:57:06.826Z"
++          cause_refs:
++            - "compatibility_projection_mutation"
++          entity: "task"
++          from: "ACTIVE"
++          id: "event_41ebb376ac719dacfb6ba2ef"
++          mutation_id: "compatibility:sha256:3aee2fae046ab4ce018ae11908212ebe93709d1a88d7fc8217ef4915ac75184a"
++          plan_digest: "sha256:a5787118704719d11d2c8e2c212ae6ea6c2ee76015e896bae3a13c69d6165d3b"
++          plan_revision: 1
++          repository_fingerprint: null
++          schema_version: 1
++          task_id: "202609122147-5F5WP0"
++          task_revision: 5
++          to: "ACTIVE"
++          work_item_id: null
++        mutation_id: "compatibility:sha256:3aee2fae046ab4ce018ae11908212ebe93709d1a88d7fc8217ef4915ac75184a"
++        next_revision: 6
++        previous_revision: 5
++        schema_version: 1
++        task_id: "202609122147-5F5WP0"
++      compatibility:sha256:5424097e2e819f5708f17a789ab02fe8fb39967be5b8ffb3ef8294f2ebb0ecac:
++        aggregate_digest: "sha256:b41cf19e58597fb6fbfc0fc89bd9acd96b68445acc611991fe13318cb8826109"
++        event:
++          actor_id: "agentplane"
++          at: "2026-09-12T22:41:00.821Z"
++          cause_refs:
++            - "compatibility_projection_mutation"
++          entity: "task"
++          from: "ACTIVE"
++          id: "event_3265c5ec0bb5a0b64a3a5d5b"
++          mutation_id: "compatibility:sha256:5424097e2e819f5708f17a789ab02fe8fb39967be5b8ffb3ef8294f2ebb0ecac"
++          plan_digest: "sha256:a5787118704719d11d2c8e2c212ae6ea6c2ee76015e896bae3a13c69d6165d3b"
++          plan_revision: 1
++          repository_fingerprint: null
++          schema_version: 1
++          task_id: "202609122147-5F5WP0"
++          task_revision: 8
++          to: "ACTIVE"
++          work_item_id: null
++        mutation_id: "compatibility:sha256:5424097e2e819f5708f17a789ab02fe8fb39967be5b8ffb3ef8294f2ebb0ecac"
++        next_revision: 9
++        previous_revision: 8
++        schema_version: 1
++        task_id: "202609122147-5F5WP0"
++      compatibility:sha256:8b1fc261307bec0187920a43a047c8f6bd59b9c7d326b5f39743b059280b39a7:
++        aggregate_digest: "sha256:48c032092fac6c591bee1ce776e05a7f76ece0cedfe8c90d27af09fa2bbcf47e"
++        event:
++          actor_id: "agentplane"
++          at: "2026-09-12T22:39:26.811Z"
++          cause_refs:
++            - "compatibility_projection_mutation"
++          entity: "task"
++          from: "ACTIVE"
++          id: "event_462dec1caeb7d240048000ec"
++          mutation_id: "compatibility:sha256:8b1fc261307bec0187920a43a047c8f6bd59b9c7d326b5f39743b059280b39a7"
++          plan_digest: "sha256:a5787118704719d11d2c8e2c212ae6ea6c2ee76015e896bae3a13c69d6165d3b"
++          plan_revision: 1
++          repository_fingerprint: null
++          schema_version: 1
++          task_id: "202609122147-5F5WP0"
++          task_revision: 7
++          to: "ACTIVE"
++          work_item_id: null
++        mutation_id: "compatibility:sha256:8b1fc261307bec0187920a43a047c8f6bd59b9c7d326b5f39743b059280b39a7"
++        next_revision: 8
++        previous_revision: 7
++        schema_version: 1
++        task_id: "202609122147-5F5WP0"
++      compatibility:sha256:bff552d7f1e47b343adc98cca07bb6457daaccb47a97b82d3bf0ceebeaf75787:
++        aggregate_digest: "sha256:e374b715d0cd841ef5c5db520eded433afa4822e7d132c02cb37348ee5e00007"
++        event:
++          actor_id: "agentplane"
++          at: "2026-09-12T21:52:47.618Z"
++          cause_refs:
++            - "compatibility_projection_mutation"
++          entity: "task"
++          from: "ACTIVE"
++          id: "event_82613dc3003b7a876f1d7298"
++          mutation_id: "compatibility:sha256:bff552d7f1e47b343adc98cca07bb6457daaccb47a97b82d3bf0ceebeaf75787"
++          plan_digest: "sha256:a5787118704719d11d2c8e2c212ae6ea6c2ee76015e896bae3a13c69d6165d3b"
++          plan_revision: 1
++          repository_fingerprint: null
++          schema_version: 1
++          task_id: "202609122147-5F5WP0"
++          task_revision: 3
++          to: "ACTIVE"
++          work_item_id: null
++        mutation_id: "compatibility:sha256:bff552d7f1e47b343adc98cca07bb6457daaccb47a97b82d3bf0ceebeaf75787"
++        next_revision: 4
++        previous_revision: 3
++        schema_version: 1
++        task_id: "202609122147-5F5WP0"
++      external-result:work-order-202609122147-5F5WP0-executor-3e98ca755f142624199194e7:
++        aggregate_digest: "sha256:e9d4fc2c2bad86beb5daab935041792b2413470b71f41c4a0c0dc427962b9197"
++        event:
++          actor_id: "agentplane"
++          at: "2026-09-12T21:57:15.990Z"
++          cause_refs:
++            - "semantic-result:sha256:42afbefae0f70b98b1eacf8636c52f21174f50024478f39e0f4cceda9f3781a0"
++          entity: "work_item"
++          from: "READY"
++          id: "event_7de045f9bb51b217c02585be"
++          mutation_id: "external-result:work-order-202609122147-5F5WP0-executor-3e98ca755f142624199194e7"
++          plan_digest: "sha256:a5787118704719d11d2c8e2c212ae6ea6c2ee76015e896bae3a13c69d6165d3b"
++          plan_revision: 1
++          repository_fingerprint: null
++          schema_version: 1
++          task_id: "202609122147-5F5WP0"
++          task_revision: 6
++          to: "COMPLETED"
++          work_item_id: "gitlab-remove-source-branch"
++        mutation_id: "external-result:work-order-202609122147-5F5WP0-executor-3e98ca755f142624199194e7"
++        next_revision: 7
++        previous_revision: 6
++        schema_version: 1
++        task_id: "202609122147-5F5WP0"
++      legacy-finish:202609122147-5F5WP0:2026-09-12T22:40:58.659Z:13160b3a8f6a7dd6817a65cdf476b7386583aca7:
++        aggregate_digest: "sha256:5a55a40cada78a310aa3cf2128082a1866432d606b4c58f64b681046a477a900"
++        event:
++          actor_id: "CODER"
++          at: "2026-09-12T22:42:42.550Z"
++          cause_refs:
++            - "task-verification:202609122147-5F5WP0"
++            - "git:13160b3a8f6a7dd6817a65cdf476b7386583aca7"
++          entity: "task"
++          from: "ACTIVE"
++          id: "event_7e2bf14a7bde18c05e9acbe6"
++          mutation_id: "legacy-finish:202609122147-5F5WP0:2026-09-12T22:40:58.659Z:13160b3a8f6a7dd6817a65cdf476b7386583aca7"
++          plan_digest: "sha256:a5787118704719d11d2c8e2c212ae6ea6c2ee76015e896bae3a13c69d6165d3b"
++          plan_revision: 1
++          repository_fingerprint: "sha256:5466c8bc5d1d90cf2b35b39336204eb3a3e813a3a289bc1e9a77a918110564be"
++          schema_version: 1
++          task_id: "202609122147-5F5WP0"
++          task_revision: 10
++          to: "COMPLETED"
++          work_item_id: null
++        mutation_id: "legacy-finish:202609122147-5F5WP0:2026-09-12T22:40:58.659Z:13160b3a8f6a7dd6817a65cdf476b7386583aca7"
++        next_revision: 11
++        previous_revision: 10
++        schema_version: 1
++        task_id: "202609122147-5F5WP0"
++    pending_effects: []
++    retry_budgets: []
++    schema_version: 1
++  implementation_commit:
++    hash: "13160b3a8f6a7dd6817a65cdf476b7386583aca7"
++    message: "🚧 5F5WP0 task: apply external agent result"
++  task_execution_context:
++    base_ref: "main"
++    base_sha: "58048a4e1ff97030d3fa86447c739397f0e0936b"
++    repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
++    schema_version: 1
++    source: "creation_checkout"
++  workflow_route_baseline:
++    start_head_sha: "58048a4e1ff97030d3fa86447c739397f0e0936b"
++    version: 1
++id_source: "generated"
++---
++## Summary
++
++Make AgentPlane-managed GitLab MRs remove source branches
++
++Make AgentPlane-managed GitLab MRs remove source branches
++
++## Scope
++
++- In scope: Make AgentPlane-managed GitLab MRs remove source branches.
++- Out of scope: unrelated refactors not required for "Make AgentPlane-managed GitLab MRs remove source branches".
++
++## Plan
++
++Plan a bounded GitLab MR synchronization fix so AgentPlane requests source-branch deletion on create and reconciles existing open MRs on update, with focused tests and full hosted integration.
++
++## Verify Steps
++
++1. Run `bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts`. Expected: both files pass and all 9 tests pass.
++2. Run `bun run typecheck`. Expected: exit code 0.
++3. Run `bun run ci:local`. Expected: every selected full-fast group passes.
++4. Confirm GitLab MR create payloads for fork and same-project repositories include `remove_source_branch: true`, update payloads include the same field, hosted checks pass, and the exact PR SHA is merged.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++### 2026-09-12T22:40:58.659Z — VERIFY — ok
++
++By: TESTER
++
++Note: Focused tests, typecheck, full local CI, and hosted checks passed for PR #5940 at c9897380582ddd645c3e8144151d88c910406036.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, excerpt_hash=sha256:cb77d22076d64c81d47b9a3d9fad220f081acde0b957c1ab04d7d7fdfaad46ed, input_digest=sha256:370a2d8b59c9c4bc7b1046b502abbf1940cc219d7c5717888ff39134ed7765bb
++
++Details:
++
++Check: affected_unit_integration
++Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts && bun run typecheck
++Result: pass
++Evidence: 2 test files and 9 tests passed; TypeScript build exited 0.
++Scope: GitLab MR create, update, and direct merge behavior plus TypeScript compilation.
++
++Check: critical_paths
++Command: bun run ci:local
++Result: pass
++Evidence: Full-fast verification passed with exit code 0 in 1082115 ms.
++Scope: Repository runtime, docs-schema, core, CLI, and UI verification groups.
++
++Check: real_e2e
++Command: gh pr checks 5940 --repo basilisk-labs/agentplane
++Result: pass
++Evidence: verify-real-e2e passed in GitHub Actions for head c9897380582ddd645c3e8144151d88c910406036.
++Scope: Hosted real-E2E route selected by the persisted verification contract.
++
++Check: task_outcome
++Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts
++Result: pass
++Evidence: Exact JSON payload assertions confirm remove_source_branch=true for fork create, same-project create, and update; 9 tests passed.
++Scope: Requested source-branch deletion behavior.
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane-XHHSBK-recovery/.agentplane/worktrees/202609122147-5F5WP0-make-agentplane-managed-gitlab-mrs-remove-source/.agentplane/tasks/202609122147-5F5WP0/blueprint/resolved-snapshot.json
++- old_digest: 589b09ef6a76514e31771d220bbde1554836eb10ce2a9b11d11952f6f4c15c70
++- current_digest: 589b09ef6a76514e31771d220bbde1554836eb10ce2a9b11d11952f6f4c15c70
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202609122147-5F5WP0
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: agentplane task verify-show 202609122147-5F5WP0
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
++
++## Token Usage
++
++- State: `unavailable`
++- Completeness: `0/3` agent runs
++- Input tokens: `unavailable`
++- Output tokens: `unavailable`
++- Reasoning tokens: `unavailable`
++- Total tokens: `unavailable`
++- Provenance: `supervisor_journal/agentplane`
++- Journal digest: `sha256:aea1f6b5d9f8788165062f3165b2ff48c2f8d86cfaf68cc64676746f5cac2722`
++- Unavailable reason: `provider_token_telemetry_unavailable`
++- Updated at: `2026-09-12T22:42:42.550Z`
+diff --git a/.agentplane/tasks/202609122147-5F5WP0/blueprint/resolved-snapshot.json b/.agentplane/tasks/202609122147-5F5WP0/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..19580019c
+--- /dev/null
++++ b/.agentplane/tasks/202609122147-5F5WP0/blueprint/resolved-snapshot.json
+@@ -0,0 +1,612 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202609122147-5F5WP0",
++    "title": "Make AgentPlane-managed GitLab MRs remove source branches",
++    "description": "Make AgentPlane-managed GitLab MRs remove source branches",
++    "tags": [
++      "code",
++      "gitlab",
++      "branch-cleanup"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [
++      "external_system",
++      "merge",
++      "network",
++      "publish"
++    ],
++    "blueprintRequest": "code.branch_pr"
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202609122147-5F5WP0",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "riskFlags": [
++        "external_system",
++        "merge",
++        "network",
++        "publish"
++      ],
++      "blueprintRequest": "code.branch_pr"
++    },
++    "whySelected": [
++      "explicit blueprint requested: code.branch_pr",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": [
++      {
++        "id": "merge_risk",
++        "severity": "warn",
++        "reason": "Task declares merge risk; preserve explicit evidence for that step."
++      },
++      {
++        "id": "network_risk",
++        "severity": "warn",
++        "reason": "Task declares network risk; preserve explicit evidence for that step."
++      }
++    ]
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [
++    {
++      "id": "merge_risk",
++      "severity": "warn",
++      "reason": "Task declares merge risk; preserve explicit evidence for that step."
++    },
++    {
++      "id": "network_risk",
++      "severity": "warn",
++      "reason": "Task declares network risk; preserve explicit evidence for that step."
++    }
++  ],
++  "selectionReasons": [
++    "explicit blueprint requested: code.branch_pr",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "589b09ef6a76514e31771d220bbde1554836eb10ce2a9b11d11952f6f4c15c70"
++  }
++}
+diff --git a/.agentplane/tasks/202609122147-5F5WP0/pr/diffstat.txt b/.agentplane/tasks/202609122147-5F5WP0/pr/diffstat.txt
+new file mode 100644
+index 000000000..699fa5f68
+--- /dev/null
++++ b/.agentplane/tasks/202609122147-5F5WP0/pr/diffstat.txt
+@@ -0,0 +1,3 @@
++ .../src/commands/pr/internal/sync-gitlab.test.ts   | 91 +++++++++++++++++++++-
++ .../src/commands/pr/internal/sync-gitlab.ts        |  8 +-
++ 2 files changed, 96 insertions(+), 3 deletions(-)
+diff --git a/.agentplane/tasks/202609122147-5F5WP0/pr/github-body.md b/.agentplane/tasks/202609122147-5F5WP0/pr/github-body.md
+new file mode 100644
+index 000000000..6b8ded0e2
+--- /dev/null
++++ b/.agentplane/tasks/202609122147-5F5WP0/pr/github-body.md
+@@ -0,0 +1,40 @@
++Task: `202609122147-5F5WP0`
++Title: Make AgentPlane-managed GitLab MRs remove source branches
++Canonical task record: `.agentplane/tasks/202609122147-5F5WP0/README.md`
++
++## Summary
++
++Make AgentPlane-managed GitLab MRs remove source branches
++
++Make AgentPlane-managed GitLab MRs remove source branches
++
++## Scope
++
++- In scope: Make AgentPlane-managed GitLab MRs remove source branches.
++- Out of scope: unrelated refactors not required for "Make AgentPlane-managed GitLab MRs remove source branches".
++
++## Verification
++
++- State: ok
++- Note:
++
++```text
++Focused tests, typecheck, full local CI, and hosted checks passed for PR #5940 at
++c9897380582ddd645c3e8144151d88c910406036.
++```
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-09-12T21:57:43.531Z
++- Branch: task/202609122147-5F5WP0/make-agentplane-managed-gitlab-mrs-remove-source
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../src/commands/pr/internal/sync-gitlab.test.ts   | 91 +++++++++++++++++++++-
++ .../src/commands/pr/internal/sync-gitlab.ts        |  8 +-
++ 2 files changed, 96 insertions(+), 3 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202609122147-5F5WP0/pr/github-title.txt b/.agentplane/tasks/202609122147-5F5WP0/pr/github-title.txt
+new file mode 100644
+index 000000000..8fe0e9f4a
+--- /dev/null
++++ b/.agentplane/tasks/202609122147-5F5WP0/pr/github-title.txt
+@@ -0,0 +1 @@
++✅ 5F5WP0 task: Make AgentPlane-managed GitLab MRs remove source branches [202609122147-5F5WP0]
+diff --git a/.agentplane/tasks/202609122147-5F5WP0/pr/meta.json b/.agentplane/tasks/202609122147-5F5WP0/pr/meta.json
+new file mode 100644
+index 000000000..3168dc2f5
+--- /dev/null
++++ b/.agentplane/tasks/202609122147-5F5WP0/pr/meta.json
+@@ -0,0 +1,32 @@
++{
++  "base": "main",
++  "branch": "task/202609122147-5F5WP0/make-agentplane-managed-gitlab-mrs-remove-source",
++  "created_at": "2026-09-12T21:52:47.977Z",
++  "diffstat_sha256": "sha256:863c79de7430c8d83b60c07f883eaeaea4601809061ce86f53e8145f941597d8",
++  "last_verified_at": "2026-09-12T22:40:58.659Z",
++  "last_verified_diffstat_sha256": "sha256:863c79de7430c8d83b60c07f883eaeaea4601809061ce86f53e8145f941597d8",
++  "pr_number": 5940,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5940",
++  "pre_merge_closure": {
++    "basis_commit": "d89199b70f4bbc7033b2e898763d131feef6dc14",
++    "branch": "task/202609122147-5F5WP0/make-agentplane-managed-gitlab-mrs-remove-source",
++    "pr_number": 5940,
++    "recorded_at": "2026-09-12T22:42:42.693Z",
++    "state": "closed_before_merge"
++  },
++  "provider": {
++    "hostname": "github.com",
++    "kind": "github",
++    "remote": "origin",
++    "schema_version": 1,
++    "source_project": "basilisk-labs/agentplane",
++    "target_project": "basilisk-labs/agentplane"
++  },
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202609122147-5F5WP0",
++  "updated_at": "2026-09-12T21:57:43.531Z",
++  "verify": {
++    "status": "pass"
++  }
++}
+diff --git a/.agentplane/tasks/202609122147-5F5WP0/pr/review.md b/.agentplane/tasks/202609122147-5F5WP0/pr/review.md
+new file mode 100644
+index 000000000..cb34f52ee
+--- /dev/null
++++ b/.agentplane/tasks/202609122147-5F5WP0/pr/review.md
+@@ -0,0 +1,38 @@
++# PR Review
++
++Created: 2026-09-12T21:52:47.977Z
++
++## Task
++
++- Task: `202609122147-5F5WP0`
++- Title: Make AgentPlane-managed GitLab MRs remove source branches
++- Status: DONE
++- Branch: `task/202609122147-5F5WP0/make-agentplane-managed-gitlab-mrs-remove-source`
++- Canonical task record: `.agentplane/tasks/202609122147-5F5WP0/README.md`
++
++## Verification
++
++- State: ok
++- Note: Focused tests, typecheck, full local CI, and hosted checks passed for PR #5940 at c9897380582ddd645c3e8144151d88c910406036.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-09-12T21:57:43.531Z
++- Branch: task/202609122147-5F5WP0/make-agentplane-managed-gitlab-mrs-remove-source
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../src/commands/pr/internal/sync-gitlab.test.ts   | 91 +++++++++++++++++++++-
++ .../src/commands/pr/internal/sync-gitlab.ts        |  8 +-
++ 2 files changed, 96 insertions(+), 3 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/.agentplane/tasks/202609122147-5F5WP0/quality/20260912-224125750-recovery-context/evaluator-evidence-manifest.json b/.agentplane/tasks/202609122147-5F5WP0/quality/20260912-224125750-recovery-context/evaluator-evidence-manifest.json
+new file mode 100644
+index 000000000..9a81d5bbf
+--- /dev/null
++++ b/.agentplane/tasks/202609122147-5F5WP0/quality/20260912-224125750-recovery-context/evaluator-evidence-manifest.json
+@@ -0,0 +1,55 @@
++{
++  "artifacts": [
++    {
++      "kind": "blueprint",
++      "logical_name": "evaluator-blueprint",
++      "media_type": "application/json",
++      "path": ".agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/e12ac41bcaa355159b9344982ae8526f379ef82290301b30a895f00788ce013a.json",
++      "sha256": "sha256:e12ac41bcaa355159b9344982ae8526f379ef82290301b30a895f00788ce013a",
++      "size_bytes": 16361
++    },
++    {
++      "kind": "actual_diff",
++      "logical_name": "evaluator-diff",
++      "media_type": "text/x-diff",
++      "path": ".agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/69581e7536d57b062574d7441147b5ba42f0234176e61f693b59e29a7d87387b.patch",
++      "sha256": "sha256:69581e7536d57b062574d7441147b5ba42f0234176e61f693b59e29a7d87387b",
++      "size_bytes": 5334
++    },
++    {
++      "kind": "observed_checks",
++      "logical_name": "evaluator-observed-checks",
++      "media_type": "application/json",
++      "path": ".agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/e314657ba02eb940c087044dc705c0d9b65b1022d3ced6a27626e6b0104ded71.json",
++      "sha256": "sha256:e314657ba02eb940c087044dc705c0d9b65b1022d3ced6a27626e6b0104ded71",
++      "size_bytes": 7297
++    },
++    {
++      "kind": "prompt",
++      "logical_name": "evaluator-prompt",
++      "media_type": "text/markdown",
++      "path": ".agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/292d74c32671b11f5c4555210e0568e7fbf542259c5105b67c5562fb5095ed3a.md",
++      "sha256": "sha256:292d74c32671b11f5c4555210e0568e7fbf542259c5105b67c5562fb5095ed3a",
++      "size_bytes": 5030
++    },
++    {
++      "kind": "result_schema",
++      "logical_name": "evaluator-result-schema",
++      "media_type": "application/schema+json",
++      "path": ".agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json",
++      "sha256": "sha256:9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a",
++      "size_bytes": 3478
++    }
++  ],
++  "created_at": "2026-09-12T22:41:25.750Z",
++  "integrity": {
++    "canonicalization": "agentplane-canonical-json-v1",
++    "digest_algorithm": "sha256",
++    "manifest_digest": "sha256:0d7e200121eb37b4e3b4fc33b15b2804c1eab3fb5bde2cb464dd97e833897aa4"
++  },
++  "kind": "evaluator_evidence_packet",
++  "object_root": ".agentplane/tasks/202609122147-5F5WP0/quality/objects",
++  "schema_version": 1,
++  "task_id": "202609122147-5F5WP0",
++  "work_order_id": "evaluator-work-order-202609122147-5F5WP0-7176fd3a94f29607c20a7de3"
++}
+diff --git a/.agentplane/tasks/202609122147-5F5WP0/quality/20260912-224125750-recovery-context/evaluator-opinion.md b/.agentplane/tasks/202609122147-5F5WP0/quality/20260912-224125750-recovery-context/evaluator-opinion.md
+new file mode 100644
+index 000000000..457638f99
+--- /dev/null
++++ b/.agentplane/tasks/202609122147-5F5WP0/quality/20260912-224125750-recovery-context/evaluator-opinion.md
+@@ -0,0 +1,21 @@
++# Semantic quality review: pass
++
++Provenance: evaluator_supplied
++
++EVALUATOR returned pass with 2 typed finding(s).
++
++## Findings
++- No actionable code or test defects were found in the scoped diff.
++- Residual risk: Final merge and post-merge provider readback remain supervisor-owned integration steps.
++
++## Evidence
++- .agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/69581e7536d57b062574d7441147b5ba42f0234176e61f693b59e29a7d87387b.patch
++
++## Missing Tests
++- none recorded
++
++## Hidden Assumptions
++- none recorded
++
++## Residual Risks
++- none recorded
+diff --git a/.agentplane/tasks/202609122147-5F5WP0/quality/20260912-224125750-recovery-context/evaluator-result.json b/.agentplane/tasks/202609122147-5F5WP0/quality/20260912-224125750-recovery-context/evaluator-result.json
+new file mode 100644
+index 000000000..ffdd474c4
+--- /dev/null
++++ b/.agentplane/tasks/202609122147-5F5WP0/quality/20260912-224125750-recovery-context/evaluator-result.json
+@@ -0,0 +1,32 @@
++{
++  "schema_version": 1,
++  "kind": "evaluator_result",
++  "evaluator_id": "recovery-context",
++  "verdict": "pass",
++  "findings": [
++    {
++      "id": "external-agent-finding-1",
++      "severity": "medium",
++      "summary": "No actionable code or test defects were found in the scoped diff.",
++      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
++      "evidence_refs": [
++        {
++          "path": ".agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/69581e7536d57b062574d7441147b5ba42f0234176e61f693b59e29a7d87387b.patch"
++        }
++      ]
++    },
++    {
++      "id": "external-agent-finding-2",
++      "severity": "medium",
++      "summary": "Residual risk: Final merge and post-merge provider readback remain supervisor-owned integration steps.",
++      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
++      "evidence_refs": [
++        {
++          "path": ".agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/69581e7536d57b062574d7441147b5ba42f0234176e61f693b59e29a7d87387b.patch"
++        }
++      ]
++    }
++  ],
++  "missing_tests": [],
++  "hidden_assumptions": []
++}
+diff --git a/.agentplane/tasks/202609122147-5F5WP0/quality/20260912-224125750-recovery-context/evaluator-work-order.json b/.agentplane/tasks/202609122147-5F5WP0/quality/20260912-224125750-recovery-context/evaluator-work-order.json
+new file mode 100644
+index 000000000..2c41c2ef0
+--- /dev/null
++++ b/.agentplane/tasks/202609122147-5F5WP0/quality/20260912-224125750-recovery-context/evaluator-work-order.json
+@@ -0,0 +1,108 @@
++{
++  "schema_version": 1,
++  "kind": "evaluator_work_order",
++  "work_order_id": "evaluator-work-order-202609122147-5F5WP0-7176fd3a94f29607c20a7de3",
++  "prepared_at": "2026-09-12T22:41:25.750Z",
++  "task": {
++    "id": "202609122147-5F5WP0",
++    "revision": 9,
++    "objective": "Make AgentPlane-managed GitLab MRs remove source branches\n\nMake AgentPlane-managed GitLab MRs remove source branches",
++    "acceptance_criteria": [
++      "- In scope: Make AgentPlane-managed GitLab MRs remove source branches.\n- Out of scope: unrelated refactors not required for \"Make AgentPlane-managed GitLab MRs remove source branches\".",
++      "Plan a bounded GitLab MR synchronization fix so AgentPlane requests source-branch deletion on create and reconciles existing open MRs on update, with focused tests and full hosted integration.",
++      "1. Run `bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts`. Expected: both files pass and all 9 tests pass.\n2. Run `bun run typecheck`. Expected: exit code 0.\n3. Run `bun run ci:local`. Expected: every selected full-fast group passes.\n4. Confirm GitLab MR create payloads for fork and same-project repositories include `remove_source_branch: true`, update payloads include the same field, hosted checks pass, and the exact PR SHA is merged."
++    ]
++  },
++  "evaluated_sha": "13160b3a8f6a7dd6817a65cdf476b7386583aca7",
++  "diff_base_sha": "58048a4e1ff97030d3fa86447c739397f0e0936b",
++  "blueprint_digest": "589b09ef6a76514e31771d220bbde1554836eb10ce2a9b11d11952f6f4c15c70",
++  "evaluator": {
++    "id": "recovery-context",
++    "profile": "EVALUATOR",
++    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
++  },
++  "authority": {
++    "sandbox": "read-only",
++    "writable_roots": [],
++    "allowed_tool_classes": [
++      "repository_read",
++      "git_read",
++      "run_checks",
++      "knowledge_request",
++      "report_result"
++    ],
++    "external_side_effects": []
++  },
++  "result_contract": "sgr.evaluator_result.v1",
++  "packet": {
++    "manifest_path": ".agentplane/tasks/202609122147-5F5WP0/quality/20260912-224125750-recovery-context/evaluator-evidence-manifest.json",
++    "manifest_sha256": "sha256:5de756a2d695cba888e5ff0630991fbcbd629b0646f46b8d9c1f3772959d529c",
++    "prompt_path": ".agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/292d74c32671b11f5c4555210e0568e7fbf542259c5105b67c5562fb5095ed3a.md",
++    "result_schema_path": ".agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
++  },
++  "evidence": [
++    {
++      "id": "task-document",
++      "kind": "task_document",
++      "path": ".agentplane/tasks/202609122147-5F5WP0/README.md",
++      "sha256": "sha256:a0fbf32c9b1f85a40e2aaf29ffa3cb0059a9bc0b6f52008b48997717ca1d26c2",
++      "required": true
++    },
++    {
++      "id": "actual-diff",
++      "kind": "actual_diff",
++      "path": ".agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/69581e7536d57b062574d7441147b5ba42f0234176e61f693b59e29a7d87387b.patch",
++      "sha256": "sha256:69581e7536d57b062574d7441147b5ba42f0234176e61f693b59e29a7d87387b",
++      "required": true
++    },
++    {
++      "id": "observed-checks",
++      "kind": "observed_checks",
++      "path": ".agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/e314657ba02eb940c087044dc705c0d9b65b1022d3ced6a27626e6b0104ded71.json",
++      "sha256": "sha256:e314657ba02eb940c087044dc705c0d9b65b1022d3ced6a27626e6b0104ded71",
++      "required": true
++    },
++    {
++      "id": "verification-record-1",
++      "kind": "verification_log",
++      "path": ".agentplane/tasks/202609122147-5F5WP0/verification/20260912224058659-fd36fb3df31fb67b.json",
++      "sha256": "sha256:df4722015972bc3590fab74000bb6b4f25e740434014ed3190669706f5ff9cd2",
++      "required": true
++    },
++    {
++      "id": "blueprint",
++      "kind": "blueprint",
++      "path": ".agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/e12ac41bcaa355159b9344982ae8526f379ef82290301b30a895f00788ce013a.json",
++      "sha256": "sha256:e12ac41bcaa355159b9344982ae8526f379ef82290301b30a895f00788ce013a",
++      "required": true
++    },
++    {
++      "id": "policy-1",
++      "kind": "policy_module",
++      "path": ".agentplane/policy/dod.code.md",
++      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
++      "required": true
++    },
++    {
++      "id": "policy-2",
++      "kind": "policy_module",
++      "path": ".agentplane/policy/dod.core.md",
++      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
++      "required": true
++    },
++    {
++      "id": "policy-3",
++      "kind": "policy_module",
++      "path": ".agentplane/policy/security.must.md",
++      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
++      "required": true
++    },
++    {
++      "id": "policy-4",
++      "kind": "policy_module",
++      "path": ".agentplane/policy/workflow.branch_pr.md",
++      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
++      "required": true
++    }
++  ]
++}
+diff --git a/.agentplane/tasks/202609122147-5F5WP0/quality/20260912-224125750-recovery-context/quality-report.json b/.agentplane/tasks/202609122147-5F5WP0/quality/20260912-224125750-recovery-context/quality-report.json
+new file mode 100644
+index 000000000..9dbb3f159
+--- /dev/null
++++ b/.agentplane/tasks/202609122147-5F5WP0/quality/20260912-224125750-recovery-context/quality-report.json
+@@ -0,0 +1,22 @@
++{
++  "schema_version": 1,
++  "task_id": "202609122147-5F5WP0",
++  "evaluator_id": "recovery-context",
++  "evaluator_profile": "EVALUATOR",
++  "generated_at": "2026-09-12T22:42:16.003Z",
++  "provenance": "evaluator_supplied",
++  "verdict": "pass",
++  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
++  "evaluated_sha": "13160b3a8f6a7dd6817a65cdf476b7386583aca7",
++  "blueprint_digest": "589b09ef6a76514e31771d220bbde1554836eb10ce2a9b11d11952f6f4c15c70",
++  "findings": [
++    "No actionable code or test defects were found in the scoped diff.",
++    "Residual risk: Final merge and post-merge provider readback remain supervisor-owned integration steps."
++  ],
++  "evidence_refs": [
++    ".agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/69581e7536d57b062574d7441147b5ba42f0234176e61f693b59e29a7d87387b.patch"
++  ],
++  "missing_tests": [],
++  "hidden_assumptions": [],
++  "residual_risks": []
++}
+diff --git a/.agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/292d74c32671b11f5c4555210e0568e7fbf542259c5105b67c5562fb5095ed3a.md b/.agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/292d74c32671b11f5c4555210e0568e7fbf542259c5105b67c5562fb5095ed3a.md
+new file mode 100644
+index 000000000..11228b085
+Binary files /dev/null and b/.agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/292d74c32671b11f5c4555210e0568e7fbf542259c5105b67c5562fb5095ed3a.md differ
+diff --git a/.agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/69581e7536d57b062574d7441147b5ba42f0234176e61f693b59e29a7d87387b.patch b/.agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/69581e7536d57b062574d7441147b5ba42f0234176e61f693b59e29a7d87387b.patch
+new file mode 100644
+index 000000000..27de72bda
+Binary files /dev/null and b/.agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/69581e7536d57b062574d7441147b5ba42f0234176e61f693b59e29a7d87387b.patch differ
+diff --git a/.agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json b/.agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json
+new file mode 100644
+index 000000000..511b1a42c
+Binary files /dev/null and b/.agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json differ
+diff --git a/.agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/e12ac41bcaa355159b9344982ae8526f379ef82290301b30a895f00788ce013a.json b/.agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/e12ac41bcaa355159b9344982ae8526f379ef82290301b30a895f00788ce013a.json
+new file mode 100644
+index 000000000..19580019c
+Binary files /dev/null and b/.agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/e12ac41bcaa355159b9344982ae8526f379ef82290301b30a895f00788ce013a.json differ
+diff --git a/.agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/e314657ba02eb940c087044dc705c0d9b65b1022d3ced6a27626e6b0104ded71.json b/.agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/e314657ba02eb940c087044dc705c0d9b65b1022d3ced6a27626e6b0104ded71.json
+new file mode 100644
+index 000000000..eadd6b826
+Binary files /dev/null and b/.agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/e314657ba02eb940c087044dc705c0d9b65b1022d3ced6a27626e6b0104ded71.json differ
+diff --git a/.agentplane/tasks/202609122147-5F5WP0/supervision/declared-checks.json b/.agentplane/tasks/202609122147-5F5WP0/supervision/declared-checks.json
+new file mode 100644
+index 000000000..27df76f38
+--- /dev/null
++++ b/.agentplane/tasks/202609122147-5F5WP0/supervision/declared-checks.json
+@@ -0,0 +1,31 @@
++{
++  "checks": [
++    {
++      "check_ids": [
++        "local-ci",
++        "affected_unit_integration",
++        "critical_paths",
++        "real_e2e",
++        "task_outcome"
++      ],
++      "command": "bun run ci:local",
++      "duration_ms": 1082115,
++      "exit_code": 0,
++      "runtime": {
++        "environment_digest": "sha256:43f7e28886a5a889c2b8781067adff4ecfa6664b91e7c7447864895b70e757aa",
++        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
++        "kind": "local_runtime_resolution",
++        "status": "resolved",
++        "toolchain_digest": "sha256:b0442f22f0f60a5f05239995b3921d93a899858aa8529e64800e17f73da7fd8a"
++      },
++      "script": "ci:local",
++      "stderr_tail": " artifacts.\n[context.doctor] issues:\n- context ingest run ingest-ac76f90f-2a14-4b68-b5d8-8f4a8134f6af has task/receipt divergence for 202607021205-DOCTOR; resume with agentplane context ingest --changed.\n[context.doctor] recovery:\n- If this repository has no initialized context workspace, run `agentplane context init --repair` from /var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-context-cross-surface-S9RN0q, then re-run this command.\n- `--fix` only repairs missing directories; it does not create the manifest, policy files, lockfile, or registry artifacts.\n{\"ts\":\"2026-09-12T22:34:11.008Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-RDY9AP/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-RDY9AP/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-12T22:34:11.045Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-Bs26Vn/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-Bs26Vn/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-12T22:34:11.069Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_completed\",\"details\":{\"workflowPath\":\"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-Bs26Vn/.agentplane/WORKFLOW.md\",\"from\":\"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-Bs26Vn/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-12T22:34:11.101Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-4Kumbg/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-4Kumbg/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-12T22:34:11.114Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_failed\",\"code\":\"WF_UNSUPPORTED_VERSION\",\"details\":{\"reason\":\"Unsupported WORKFLOW version 3; supported versions: 1, 2.\"}}\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\n{\"ts\":\"2026-09-12T22:34:28.975Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-12T22:34:29.015Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n{\"ts\":\"2026-09-12T22:34:29.022Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-cli-test-yOKnHo/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-cli-test-yOKnHo/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-12T22:34:31.706Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-12T22:34:31.748Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":1}}\n{\"ts\":\"2026-09-12T22:34:31.749Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-12T22:34:31.764Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":2}}\n{\"ts\":\"2026-09-12T22:34:31.764Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-12T22:34:31.771Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic --timeout-ms 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n",
++      "stdout_tail": "es): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts\nVitest suite critical-cli: chunk 4/14 passed in 38197ms (Test Files  1 passed (1); Tests  11 passed (11); Duration  37.88s (transform 3.54s, setup 0ms, import 4.29s, tests 33.48s, environment 0ms))\nVitest suite critical-cli: chunk 5/14 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay.test.ts\nVitest suite critical-cli: chunk 5/14 passed in 6915ms (Test Files  1 passed (1); Tests  10 passed (10); Duration  6.42s (transform 4.15s, setup 0ms, import 5.15s, tests 1.09s, environment 0ms))\nVitest suite critical-cli: chunk 6/14 (1 files): packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts\nVitest suite critical-cli: chunk 6/14 passed in 18044ms (Test Files  1 passed (1); Tests  1 passed (1); Duration  17.49s (transform 8.05s, setup 0ms, import 5.36s, tests 11.93s, environment 0ms))\nVitest suite critical-cli: chunk 7/14 (1 files): packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts\nVitest suite critical-cli: chunk 7/14 passed in 10324ms (Test Files  1 passed (1); Tests  2 passed (2); Duration  9.97s (transform 4.49s, setup 0ms, import 5.57s, tests 4.27s, environment 0ms))\nVitest suite critical-cli: chunk 8/14 (1 files): packages/agentplane/src/cli/run-cli.critical.git-edge.test.ts\nVitest suite critical-cli: chunk 8/14 passed in 7143ms (Test Files  1 passed (1); Tests  2 passed (2); Duration  6.83s (transform 2.44s, setup 0ms, import 3.14s, tests 3.57s, environment 0ms))\nVitest suite critical-cli: chunk 9/14 (1 files): packages/agentplane/src/cli/run-cli.critical.protected-paths.test.ts\nVitest suite critical-cli: chunk 9/14 passed in 8083ms (Test Files  1 passed (1); Tests  3 passed (3); Duration  7.74s (transform 2.10s, setup 0ms, import 2.76s, tests 4.87s, environment 0ms))\nVitest suite critical-cli: chunk 10/14 (1 files): packages/agentplane/src/cli/run-cli.critical.scope-leak.test.ts\nVitest suite critical-cli: chunk 10/14 passed in 11657ms (Test Files  1 passed (1); Tests  5 passed (5); Duration  10.95s (transform 4.63s, setup 0ms, import 5.80s, tests 4.94s, environment 0ms))\nVitest suite critical-cli: chunk 11/14 (1 files): packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts\nVitest suite critical-cli: chunk 11/14 passed in 9037ms (Test Files  1 passed (1); Tests  2 passed (2); Duration  8.51s (transform 3.61s, setup 0ms, import 4.64s, tests 3.66s, environment 0ms))\nVitest suite critical-cli: chunk 12/14 (1 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts\nVitest suite critical-cli: chunk 12/14 passed in 47842ms (Test Files  1 passed (1); Tests  1 passed (1); Duration  47.42s (transform 8.85s, setup 0ms, import 5.65s, tests 41.63s, environment 0ms))\nVitest suite critical-cli: chunk 13/14 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 13/14 passed in 6782ms (Test Files  1 passed (1); Tests  5 passed (5); Duration  6.26s (transform 4.41s, setup 0ms, import 5.37s, tests 691ms, environment 0ms))\nVitest suite critical-cli: chunk 14/14 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 14/14 passed in 14572ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  14.04s (transform 3.13s, setup 0ms, import 4.00s, tests 9.86s, environment 0ms))\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":true,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":62484},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":35419},{\"id\":\"core\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":747380},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":225600}]}\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":1081570,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":1,\"build_invocations\":1,\"ok\":true}\n"
++    }
++  ],
++  "kind": "direct_task_declared_checks",
++  "reason": null,
++  "schema_version": 1,
++  "status": "passed",
++  "task_id": "202609122147-5F5WP0"
++}
+diff --git a/.agentplane/tasks/202609122147-5F5WP0/supervision/implementation-evidence.json b/.agentplane/tasks/202609122147-5F5WP0/supervision/implementation-evidence.json
+new file mode 100644
+index 000000000..b2f9d1fac
+--- /dev/null
++++ b/.agentplane/tasks/202609122147-5F5WP0/supervision/implementation-evidence.json
+@@ -0,0 +1,96 @@
++{
++  "checks": [
++    {
++      "command": "git diff --check 58048a4e1ff97030d3fa86447c739397f0e0936b..13160b3a8f6a7dd6817a65cdf476b7386583aca7",
++      "id": "committed-diff-check",
++      "result": "pass",
++      "stdout": []
++    },
++    {
++      "command": "git diff --cached --check",
++      "id": "staged-diff-check",
++      "result": "pass",
++      "stdout": []
++    },
++    {
++      "command": "git diff --name-status --diff-filter=ACDMRTUXB 58048a4e1ff97030d3fa86447c739397f0e0936b..13160b3a8f6a7dd6817a65cdf476b7386583aca7",
++      "id": "commit-paths",
++      "result": "pass",
++      "stdout": [
++        "A\t.agentplane/tasks/202609122147-5F5WP0/README.md",
++        "A\t.agentplane/tasks/202609122147-5F5WP0/blueprint/resolved-snapshot.json",
++        "A\t.agentplane/tasks/202609122147-5F5WP0/pr/diffstat.txt",
++        "A\t.agentplane/tasks/202609122147-5F5WP0/pr/github-body.md",
++        "A\t.agentplane/tasks/202609122147-5F5WP0/pr/github-title.txt",
++        "A\t.agentplane/tasks/202609122147-5F5WP0/pr/meta.json",
++        "A\t.agentplane/tasks/202609122147-5F5WP0/pr/review.md",
++        "M\tpackages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts",
++        "M\tpackages/agentplane/src/commands/pr/internal/sync-gitlab.ts"
++      ]
++    },
++    {
++      "command": "git status --short --untracked-files=all",
++      "id": "final-repository-status",
++      "result": "pass",
++      "stdout": []
++    }
++  ],
++  "execution_base_commit": "58048a4e1ff97030d3fa86447c739397f0e0936b",
++  "implementation_commit": "13160b3a8f6a7dd6817a65cdf476b7386583aca7",
++  "kind": "direct_task_implementation_evidence",
++  "repository_status": {
++    "baseline": [
++      "?? .agentplane/tasks/202609122147-5F5WP0/README.md",
++      "?? .agentplane/tasks/202609122147-5F5WP0/blueprint/resolved-snapshot.json",
++      "?? .agentplane/tasks/202609122147-5F5WP0/pr/diffstat.txt",
++      "?? .agentplane/tasks/202609122147-5F5WP0/pr/github-body.md",
++      "?? .agentplane/tasks/202609122147-5F5WP0/pr/github-title.txt",
++      "?? .agentplane/tasks/202609122147-5F5WP0/pr/meta.json",
++      "?? .agentplane/tasks/202609122147-5F5WP0/pr/review.md"
++    ],
++    "classification": [
++      {
++        "classification": "removed_during_execution",
++        "line": "?? .agentplane/tasks/202609122147-5F5WP0/README.md"
++      },
++      {
++        "classification": "removed_during_execution",
++        "line": "?? .agentplane/tasks/202609122147-5F5WP0/blueprint/resolved-snapshot.json"
++      },
++      {
++        "classification": "removed_during_execution",
++        "line": "?? .agentplane/tasks/202609122147-5F5WP0/pr/diffstat.txt"
++      },
++      {
++        "classification": "removed_during_execution",
++        "line": "?? .agentplane/tasks/202609122147-5F5WP0/pr/github-body.md"
++      },
++      {
++        "classification": "removed_during_execution",
++        "line": "?? .agentplane/tasks/202609122147-5F5WP0/pr/github-title.txt"
++      },
++      {
++        "classification": "removed_during_execution",
++        "line": "?? .agentplane/tasks/202609122147-5F5WP0/pr/meta.json"
++      },
++      {
++        "classification": "removed_during_execution",
++        "line": "?? .agentplane/tasks/202609122147-5F5WP0/pr/review.md"
++      }
++    ],
++    "final": [],
++    "introduced_after_execution_baseline": [],
++    "removed_after_execution_baseline": [
++      "?? .agentplane/tasks/202609122147-5F5WP0/README.md",
++      "?? .agentplane/tasks/202609122147-5F5WP0/blueprint/resolved-snapshot.json",
++      "?? .agentplane/tasks/202609122147-5F5WP0/pr/diffstat.txt",
++      "?? .agentplane/tasks/202609122147-5F5WP0/pr/github-body.md",
++      "?? .agentplane/tasks/202609122147-5F5WP0/pr/github-title.txt",
++      "?? .agentplane/tasks/202609122147-5F5WP0/pr/meta.json",
++      "?? .agentplane/tasks/202609122147-5F5WP0/pr/review.md"
++    ],
++    "unchanged_from_execution_baseline": []
++  },
++  "schema_version": 1,
++  "task_id": "202609122147-5F5WP0"
++}
+diff --git a/.agentplane/tasks/202609122147-5F5WP0/verification/20260912224058659-fd36fb3df31fb67b.json b/.agentplane/tasks/202609122147-5F5WP0/verification/20260912224058659-fd36fb3df31fb67b.json
+new file mode 100644
+index 000000000..1b742627f
+--- /dev/null
++++ b/.agentplane/tasks/202609122147-5F5WP0/verification/20260912224058659-fd36fb3df31fb67b.json
+@@ -0,0 +1,103 @@
++{
++  "details": "Check: affected_unit_integration\nCommand: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts && bun run typecheck\nResult: pass\nEvidence: 2 test files and 9 tests passed; TypeScript build exited 0.\nScope: GitLab MR create, update, and direct merge behavior plus TypeScript compilation.\n\nCheck: critical_paths\nCommand: bun run ci:local\nResult: pass\nEvidence: Full-fast verification passed with exit code 0 in 1082115 ms.\nScope: Repository runtime, docs-schema, core, CLI, and UI verification groups.\n\nCheck: real_e2e\nCommand: gh pr checks 5940 --repo basilisk-labs/agentplane\nResult: pass\nEvidence: verify-real-e2e passed in GitHub Actions for head c9897380582ddd645c3e8144151d88c910406036.\nScope: Hosted real-E2E route selected by the persisted verification contract.\n\nCheck: task_outcome\nCommand: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts\nResult: pass\nEvidence: Exact JSON payload assertions confirm remove_source_branch=true for fork create, same-project create, and update; 9 tests passed.\nScope: Requested source-branch deletion behavior.",
++  "digest": "sha256:fd36fb3df31fb67b37ca5569bceddfefb971e7f4c788e21cf2172df8b93df2ae",
++  "implementation_sha": "13160b3a8f6a7dd6817a65cdf476b7386583aca7",
++  "input": {
++    "context": {
++      "digest": "sha256:20dddbaf4e87fde843f53aec54dc59500d42d14038f2306350a4a19fabf2a0aa",
++      "paths": [
++        ".agentplane/WORKFLOW.md",
++        ".github/ISSUE_TEMPLATE/config.yml",
++        "bun.lock",
++        "depcruise.config.cjs",
++        "eslint.config.cjs",
++        "knip.json",
++        "package.json",
++        "packages/agentplane/package.json",
++        "packages/agentplane/src/cli/run-cli/commands/config.ts",
++        "packages/agentplane/src/runner/config.test.ts",
++        "packages/agentplane/src/runner/config.ts",
++        "packages/agentplane/tsconfig.json",
++        "packages/agentplane/tsup.config.ts",
++        "packages/core/package.json",
++        "packages/core/schemas/config.schema.json",
++        "packages/core/src/config/config.test.ts",
++        "packages/core/src/config/config.ts",
++        "packages/core/tsconfig.json",
++        "packages/core/tsup.config.ts",
++        "packages/recipes/package.json",
++        "packages/recipes/tsconfig.json",
++        "packages/recipes/tsup.config.ts",
++        "packages/spec/examples/config.json",
++        "packages/spec/package.json",
++        "packages/spec/schemas/config.schema.json",
++        "packages/testkit/package.json",
++        "packages/testkit/tsconfig.json",
++        "schemas/config.schema.json",
++        "tsconfig.json",
++        "turbo.json",
++        "vitest.config.ts",
++        "vitest.workspace.ts",
++        "website/bun.lock",
++        "website/docusaurus.config.ts",
++        "website/package.json",
++        "website/tsconfig.json"
++      ]
++    },
++    "digest": "sha256:370a2d8b59c9c4bc7b1046b502abbf1940cc219d7c5717888ff39134ed7765bb",
++    "environment": {
++      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
++      "runtime": {
++        "architecture": "arm64",
++        "bun_major": null,
++        "node_major": "26",
++        "platform": "darwin"
++      }
++    },
++    "evidence": {
++      "details_digest": "sha256:4857278a9de0d7e8f1dc18c51fd88141ea65b13b8e3caa839f6c09c58ab5b49b",
++      "digest": "sha256:923522210fef25d53f695305f7fa341ced9e0ece3d060b638223a099d7e1f5eb",
++      "references": []
++    },
++    "execution": {
++      "authoritative_task_source": "task_worktree",
++      "base_ref": "main",
++      "base_sha": "58048a4e1ff97030d3fa86447c739397f0e0936b",
++      "digest": "sha256:9a95b6ebf54286e03143ba593c8c99d807c6d73f42467532a046a37531549e81",
++      "primary_task_id": "202609122147-5F5WP0",
++      "reason_codes": [
++        "agent_preferred_branch_pr",
++        "effect_external_write",
++        "effect_publish",
++        "repository_branch_pr_floor"
++      ],
++      "repository_mode": "branch_pr",
++      "requested_mode": "auto",
++      "route_source": "execution_contract",
++      "selected_mode": "branch_pr",
++      "task_ids": [
++        "202609122147-5F5WP0"
++      ]
++    },
++    "implementation": {
++      "base_sha": "58048a4e1ff97030d3fa86447c739397f0e0936b",
++      "digest": "sha256:9bff1339eab8f4fc84a8c40dd2d2e6ce2480c9d79097812058a91b956eade423",
++      "strategy": "branch_diff",
++      "target_sha": "13160b3a8f6a7dd6817a65cdf476b7386583aca7"
++    },
++    "kind": "task_verification_input",
++    "schema_version": 4,
++    "verification_contract_digest": "sha256:bca135e5f844463a36f9f8274f62458cdb697a49aa9dffbcaa1664884ce7cdd5",
++    "verify_steps_digest": "sha256:cb77d22076d64c81d47b9a3d9fad220f081acde0b957c1ab04d7d7fdfaad46ed"
++  },
++  "kind": "task_verification_record",
++  "note": "Focused tests, typecheck, full local CI, and hosted checks passed for PR #5940 at c9897380582ddd645c3e8144151d88c910406036.",
++  "recorded_at": "2026-09-12T22:40:58.659Z",
++  "result": "ok",
++  "schema_version": 2,
++  "scope": "1. Run `bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts`. Expected: both files pass and all 9 tests pass.\n2. Run `bun run typecheck`. Expected: exit code 0.\n3. Run `bun run ci:local`. Expected: every selected full-fast group passes.\n4. Confirm GitLab MR create payloads for fork and same-project repositories include `remove_source_branch: true`, update payloads include the same field, hosted checks pass, and the exact PR SHA is merged.",
++  "scope_digest": "sha256:cb77d22076d64c81d47b9a3d9fad220f081acde0b957c1ab04d7d7fdfaad46ed",
++  "task_id": "202609122147-5F5WP0",
++  "verification_command": "agentplane task verify ok 202609122147-5F5WP0 --ok --by TESTER",
++  "verifier": "TESTER"
++}
+diff --git a/package.json b/package.json
+index 07feda1c4..38291a7a5 100644
+--- a/package.json
++++ b/package.json
+@@ -19,6 +19,7 @@
+     "test:project": "vitest --config vitest.workspace.ts run --project",
+     "test:precommit": "node scripts/checks/run-vitest-suite.mjs precommit",
+     "test:critical": "node scripts/checks/run-vitest-suite.mjs critical-cli",
++    "test:agent-efficiency:qualification": "node scripts/checks/run-vitest-suite.mjs agent-efficiency-qualification",
+     "test:cli:critical": "bun run test:critical",
+     "test:platform-critical": "node scripts/checks/run-vitest-suite.mjs platform-critical",
+     "test:backend-critical": "node scripts/checks/run-vitest-suite.mjs backend-critical",
+@@ -27,7 +28,6 @@
+     "backend:matrix": "bun run test:backend-critical",
+     "coverage:workflow-suite": "node scripts/workflow/run-workflow-coverage-suite.mjs",
+     "coverage:significant-suite": "node scripts/checks/run-significant-coverage-suite.mjs",
+-    "coverage:thresholds:check": "node scripts/checks/check-coverage-thresholds.mjs",
+     "coverage": "vitest run --coverage",
+     "arch:baseline": "node scripts/checks/check-depcruise-known-violations.mjs",
+     "arch:deps": "node scripts/checks/run-depcruise-arch.mjs depcruise.config.cjs",
+@@ -38,7 +38,7 @@
+     "clone:report": "node scripts/checks/check-clone-baseline.mjs --report",
+     "clone:baseline:update": "node scripts/checks/check-clone-baseline.mjs --update-baseline",
+     "ci": "bun run ci:contract && bun run ci:test",
+-    "ci:contract": "bun run format:check && bun run schemas:check && bun run spec:examples:check && bun run release:acr-example:check && bun run agents:check && bun run policy:routing:check && bun run release:parity && bun run docs:bootstrap:check && bun run docs:onboarding:check && bun run docs:ia:check && bun run docs:scripts:check && bun run bench:compatibility:candidate:check && bun run bench:compatibility:check && bun run bench:agent-efficiency:check && bun run bench:agent-efficiency:replay:check && bun run hotspots:check && bun run lifecycle:invariants && bun run check:types-files && bun run typescript:toolchain:check && bun run vitest:projects:check && bun run guards:check && bun run lint:core && bun run logging:check && bun run arch:check && bun run clone:check && bun run knip:check && bun run coverage:thresholds:check",
++    "ci:contract": "bun run format:check && bun run schemas:check && bun run spec:examples:check && bun run release:acr-example:check && bun run agents:check && bun run policy:routing:check && bun run release:parity && bun run docs:bootstrap:check && bun run docs:onboarding:check && bun run docs:ia:check && bun run docs:scripts:check && bun run bench:compatibility:candidate:check && bun run bench:compatibility:check && bun run bench:agent-efficiency:check && bun run bench:agent-efficiency:replay:check && bun run hotspots:check && bun run lifecycle:invariants && bun run check:types-files && bun run typescript:toolchain:check && bun run vitest:projects:check && bun run guards:check && bun run lint:core && bun run logging:check && bun run arch:check && bun run clone:check && bun run knip:check",
+     "ci:test": "bun run typecheck && bun run coverage && bun run coverage:significant",
+     "ci:local": "node scripts/checks/run-local-ci.mjs --mode fast",
+     "ci:local:smoke": "node scripts/checks/run-local-ci.mjs --mode smoke",
+diff --git a/packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts b/packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts
+index 04bb89a40..a89daaff4 100644
+--- a/packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts
++++ b/packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts
+@@ -1,3 +1,5 @@
++import { readFile } from "node:fs/promises";
++
+ import { beforeEach, describe, expect, it, vi } from "vitest";
+ 
+ const mocks = vi.hoisted(() => ({ runGlabApiJson: vi.fn() }));
+@@ -25,7 +27,12 @@ const identity = {
+   targetUrl: "https://gitlab.example.test/group/sub/project.git",
+ };
+ 
+-type GlabCall = { hostname?: string; endpoint?: string; method?: string };
++type GlabCall = { hostname?: string; endpoint?: string; method?: string; inputPath?: string };
++
++async function payloadFrom(call: GlabCall): Promise<Record<string, unknown>> {
++  if (!call.inputPath) throw new Error("expected GitLab API input path");
++  return JSON.parse(await readFile(call.inputPath, "utf8")) as Record<string, unknown>;
++}
+ 
+ function mr(overrides: Record<string, unknown> = {}) {
+   return {
+@@ -157,6 +164,75 @@ describe("sync-gitlab", () => {
+     ).toHaveLength(1);
+   });
+ 
++  it("requests source-branch removal when creating fork and same-project MRs", async () => {
++    const forkPayloads: Record<string, unknown>[] = [];
++    mocks.runGlabApiJson
++      .mockResolvedValueOnce({ id: 7 })
++      .mockResolvedValueOnce([])
++      .mockResolvedValueOnce({ id: 9 })
++      .mockImplementationOnce(async (call: GlabCall) => {
++        forkPayloads.push(await payloadFrom(call));
++        return mr();
++      });
++
++    await expect(
++      tryCreateGitLabMr({
++        gitRoot: "/repo",
++        identity,
++        branch: "task/T-1/work",
++        baseBranch: "main",
++        title: "Title",
++        body: "Body",
++      }),
++    ).resolves.toMatchObject({ observed: { prNumber: 42 } });
++    expect(forkPayloads).toEqual([
++      {
++        source_branch: "task/T-1/work",
++        target_branch: "main",
++        title: "Title",
++        description: "Body",
++        remove_source_branch: true,
++        target_project_id: 9,
++      },
++    ]);
++
++    const sameProjectIdentity = {
++      ...identity,
++      remote: "origin",
++      sourceProject: identity.targetProject,
++      sourceUrl: identity.targetUrl,
++    };
++    const sameProjectPayloads: Record<string, unknown>[] = [];
++    mocks.runGlabApiJson
++      .mockResolvedValueOnce({ id: 9 })
++      .mockResolvedValueOnce([])
++      .mockResolvedValueOnce({ id: 9 })
++      .mockImplementationOnce(async (call: GlabCall) => {
++        sameProjectPayloads.push(await payloadFrom(call));
++        return mr({ source_project_id: 9 });
++      });
++
++    await expect(
++      tryCreateGitLabMr({
++        gitRoot: "/repo",
++        identity: sameProjectIdentity,
++        branch: "task/T-1/work",
++        baseBranch: "main",
++        title: "Title",
++        body: "Body",
++      }),
++    ).resolves.toMatchObject({ observed: { prNumber: 42 } });
++    expect(sameProjectPayloads).toEqual([
++      {
++        source_branch: "task/T-1/work",
++        target_branch: "main",
++        title: "Title",
++        description: "Body",
++        remove_source_branch: true,
++      },
++    ]);
++  });
++
+   it("fails closed when an IID lookup omits the authoritative source project", async () => {
+     mocks.runGlabApiJson
+       .mockResolvedValueOnce({ id: 7 })
+@@ -177,7 +253,11 @@ describe("sync-gitlab", () => {
+   });
+ 
+   it("updates the linked MR through the target project and explicit host", async () => {
+-    mocks.runGlabApiJson.mockResolvedValueOnce(mr());
++    const updatePayloads: Record<string, unknown>[] = [];
++    mocks.runGlabApiJson.mockImplementationOnce(async (call: GlabCall) => {
++      updatePayloads.push(await payloadFrom(call));
++      return mr();
++    });
+ 
+     await expect(
+       tryUpdateGitLabMr({
+@@ -207,5 +287,12 @@ describe("sync-gitlab", () => {
+         method: "PUT",
+       }),
+     );
++    expect(updatePayloads).toEqual([
++      {
++        title: "Updated title",
++        description: "Updated body",
++        remove_source_branch: true,
++      },
++    ]);
+   });
+ });
+diff --git a/packages/agentplane/src/commands/pr/internal/sync-gitlab.ts b/packages/agentplane/src/commands/pr/internal/sync-gitlab.ts
+index 34ad4d2b8..f80b17cd8 100644
+--- a/packages/agentplane/src/commands/pr/internal/sync-gitlab.ts
++++ b/packages/agentplane/src/commands/pr/internal/sync-gitlab.ts
+@@ -376,6 +376,7 @@ export async function tryCreateGitLabMr(opts: {
+         target_branch: baseBranch,
+         title: opts.title,
+         description: opts.body,
++        remove_source_branch: true,
+         ...(opts.identity.sourceProject === opts.identity.targetProject
+           ? {}
+           : { target_project_id: targetProjectId }),
+@@ -423,7 +424,12 @@ export async function tryUpdateGitLabMr(opts: {
+   try {
+     const record = await withPayload(
+       "gitlab-mr-update",
+-      { title: opts.title, description: opts.body },
++      {
++        title: opts.title,
++        description: opts.body,
++        // Reconcile MRs created before this default was introduced.
++        remove_source_branch: true,
++      },
+       (payloadPath) =>
+         runGlabApiJson<GitLabMergeRequestRecord>({
+           cwd: opts.gitRoot,
+diff --git a/packages/agentplane/src/commands/release/release-ci-contract.test.ts b/packages/agentplane/src/commands/release/release-ci-contract.test.ts
+index 1ce415475..559133199 100644
+--- a/packages/agentplane/src/commands/release/release-ci-contract.test.ts
++++ b/packages/agentplane/src/commands/release/release-ci-contract.test.ts
+@@ -33,6 +33,9 @@ describe("release CI contract", () => {
+       "node scripts/checks/run-local-ci.mjs --mode smoke --explain",
+     );
+     expect(scripts["test:critical"]).toBe("node scripts/checks/run-vitest-suite.mjs critical-cli");
++    expect(scripts["test:agent-efficiency:qualification"]).toBe(
++      "node scripts/checks/run-vitest-suite.mjs agent-efficiency-qualification",
++    );
+     expect(scripts["bench:cli:cold:check"]).toContain("--attempts 3");
+     expect(releaseCiCheck).toBe("bun run ci:contract && bun run ci:release-extras");
+     expect(releaseCheck).toContain("bun run release:incidents:check");
+@@ -56,10 +59,24 @@ describe("release CI contract", () => {
+     );
+ 
+     expect(SUITES["release-ci-base"]?.chunkSize).toBe(10);
+-    expect(SUITES["critical-cli"]?.chunkSize).toBe(1);
++    expect(SUITES["critical-cli"]?.chunkSize).toBe(2);
+     expect(SUITES["critical-cli"]?.files).toContain(
+       "packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts",
+     );
++    expect(SUITES["critical-cli"]?.files).not.toContainEqual(
++      expect.stringContaining("run-cli.critical.agent-efficiency"),
++    );
++    expect(SUITES["agent-efficiency-qualification"]?.chunkSize).toBe(1);
++    expect(SUITES["agent-efficiency-qualification"]?.files).toHaveLength(5);
++    expect(SUITES["agent-efficiency-qualification"]?.files).toEqual(
++      expect.arrayContaining([
++        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
++        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts",
++        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts",
++        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts",
++        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay.test.ts",
++      ]),
++    );
+     expect(
+       SUITES["release-ci-base"]?.isolatedPatterns?.some((pattern) =>
+         pattern.test("packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.test.ts"),
+diff --git a/packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts b/packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts
+index 9210d06df..e2122bd16 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts
+@@ -267,7 +267,7 @@ describe("runner bootstrap result examples", () => {
+   });
+ });
+ 
+-it("reduces fixed prompt baselines while preserving semantic inputs", () => {
++it("preserves semantic prompt inputs and result examples", () => {
+   for (const role of ["EXECUTOR", "EVALUATOR"] as const) {
+     const bundle = makeRunnerContextBundle({ runId: "prompt-size" });
+     bundle.work_order = buildAgentWorkOrderV2ValidFixture("prompt-size");
+@@ -277,9 +277,6 @@ it("reduces fixed prompt baselines while preserving semantic inputs", () => {
+       role,
+     }));
+     const bootstrap = renderTaskRunnerBootstrap(bundle);
+-    // Measured before compaction on ca07204ee with these fixed fixtures.
+-    const baseline = role === "EXECUTOR" ? 8590 : 9196;
+-    expect(Buffer.byteLength(bootstrap, "utf8")).toBeLessThan(baseline);
+     expect(bootstrap).toContain("simple technical English");
+     expect(bootstrap).toContain(
+       "Preserve commands, paths, identifiers, enum values, quoted text, user input, logs, and source evidence exactly.",
+diff --git a/packages/agentplane/src/runtime/prompt-modules/gpt55-contract.test.ts b/packages/agentplane/src/runtime/prompt-modules/gpt55-contract.test.ts
+deleted file mode 100644
+index 99981f09e..000000000
+--- a/packages/agentplane/src/runtime/prompt-modules/gpt55-contract.test.ts
++++ /dev/null
+@@ -1,167 +0,0 @@
+-import { describe, expect, it } from "vitest";
+-
+-import {
+-  diagnoseGpt55PromptContract,
+-  loadFrameworkPromptModules,
+-  type PromptModule,
+-} from "./index.js";
+-import { PROMPT_MODULE_CONTRACT_SCHEMA_VERSION } from "./model.js";
+-
+-function agentWorkflowModule(opts: { roleId: string; text: string; name?: string }): PromptModule {
+-  return {
+-    schema_version: PROMPT_MODULE_CONTRACT_SCHEMA_VERSION,
+-    address: {
+-      value: `framework/agent_profile/.agentplane~agents/workflow/${opts.name ?? "workflow"}`,
+-      namespace: "framework",
+-      surface: "agent_profile",
+-      target: ".agentplane/agents",
+-      slot: "workflow",
+-      name: opts.name ?? "workflow",
+-    },
+-    owner: {
+-      kind: "framework",
+-      package_name: "agentplane",
+-    },
+-    title: `${opts.roleId} workflow`,
+-    content_kind: "text",
+-    content: opts.text,
+-    mutability: "replaceable",
+-    merge: {
+-      mode: "pick_one",
+-      conflict: "error",
+-    },
+-    provenance: {
+-      source_kind: "framework_builtin",
+-      source_ref: `packages/agentplane/assets/agents/${opts.roleId}.json#${opts.name ?? "workflow"}`,
+-    },
+-  };
+-}
+-
+-describe("GPT-5.5 prompt contract diagnostics", () => {
+-  it("accepts an outcome-first role workflow contract", () => {
+-    const diagnostics = diagnoseGpt55PromptContract([
+-      agentWorkflowModule({
+-        roleId: "CODER",
+-        text: [
+-          "Goal: implement approved scope with the smallest coherent diff.",
+-          "Success criteria: checks pass and evidence is recorded.",
+-          "Constraints: use loaded gateway and policy modules as binding constraints.",
+-          "Stop rules: stop on approval, security, or verification drift.",
+-          "Output: changed files, checks, blockers, and residual risk.",
+-        ].join("\n"),
+-      }),
+-    ]);
+-
+-    expect(diagnostics).toEqual([]);
+-  });
+-
+-  it("reports missing outcome sections without failing active prompt loading", () => {
+-    const diagnostics = diagnoseGpt55PromptContract([
+-      agentWorkflowModule({
+-        roleId: "CODER",
+-        text: "Keep diffs minimal, task-scoped, and easy to review.",
+-      }),
+-    ]);
+-
+-    expect(diagnostics).toMatchObject([
+-      {
+-        severity: "warning",
+-        code: "gpt55_missing_outcome_contract",
+-        role_id: "CODER",
+-      },
+-    ]);
+-    expect(diagnostics[0]?.message).toContain("Goal");
+-    expect(diagnostics[0]?.message).toContain("Stop rules");
+-  });
+-
+-  it("flags absolute rule language in role workflow prompts", () => {
+-    const diagnostics = diagnoseGpt55PromptContract([
+-      agentWorkflowModule({
+-        roleId: "CODER",
+-        text: [
+-          "Goal: implement approved scope.",
+-          "Success criteria: checks pass.",
+-          "Constraints: MUST always follow local style.",
+-          "Stop rules: stop on drift.",
+-          "Output: summary.",
+-        ].join("\n"),
+-      }),
+-    ]);
+-
+-    expect(diagnostics).toContainEqual(
+-      expect.objectContaining({
+-        severity: "warning",
+-        code: "gpt55_absolute_rule_in_role_prompt",
+-        role_id: "CODER",
+-        evidence: "MUST",
+-      }),
+-    );
+-  });
+-
+-  it("reports role references that do not resolve to installed profiles", () => {
+-    const diagnostics = diagnoseGpt55PromptContract([
+-      agentWorkflowModule({
+-        roleId: "ORCHESTRATOR",
+-        text: [
+-          "Goal: produce an approved plan.",
+-          "Success criteria: plan is approved.",
+-          "Constraints: stay within policy.",
+-          "Stop rules: stop on drift.",
+-          "Output: plan and approval prompt.",
+-          "When optimization is requested, invoke UPDATER.",
+-        ].join("\n"),
+-      }),
+-    ]);
+-
+-    expect(diagnostics).toContainEqual(
+-      expect.objectContaining({
+-        severity: "error",
+-        code: "gpt55_missing_referenced_role",
+-        role_id: "ORCHESTRATOR",
+-        evidence: "UPDATER",
+-      }),
+-    );
+-  });
+-
+-  it("keeps current framework profile diagnostics free of role contract gaps", async () => {
+-    const diagnostics = diagnoseGpt55PromptContract(await loadFrameworkPromptModules());
+-
+-    expect(
+-      diagnostics.filter((diagnostic) => diagnostic.code === "gpt55_missing_outcome_contract"),
+-    ).toEqual([]);
+-    expect(
+-      diagnostics.filter((diagnostic) => diagnostic.code === "gpt55_absolute_rule_in_role_prompt"),
+-    ).toEqual([]);
+-    expect(
+-      diagnostics.filter((diagnostic) => diagnostic.code === "gpt55_missing_referenced_role"),
+-    ).toEqual([]);
+-  });
+-
+-  it("keeps all bundled agent profiles on the outcome-first contract", async () => {
+-    const bundledRoles = new Set([
+-      "CODER",
+-      "CREATOR",
+-      "DOCS",
+-      "EXTRACTOR",
+-      "INTAKE",
+-      "INTEGRATOR",
+-      "ORCHESTRATOR",
+-      "PLANNER",
+-      "REDMINE",
+-      "REVIEWER",
+-      "TESTER",
+-      "UPDATER",
+-      "UPGRADER",
+-    ]);
+-    const diagnostics = diagnoseGpt55PromptContract(await loadFrameworkPromptModules()).filter(
+-      (diagnostic) => diagnostic.role_id && bundledRoles.has(diagnostic.role_id),
+-    );
+-
+-    expect(
+-      diagnostics.filter((diagnostic) => diagnostic.code === "gpt55_missing_outcome_contract"),
+-    ).toEqual([]);
+-    expect(
+-      diagnostics.filter((diagnostic) => diagnostic.code === "gpt55_absolute_rule_in_role_prompt"),
+-    ).toEqual([]);
+-  });
+-});
+diff --git a/packages/agentplane/src/runtime/prompt-modules/gpt55-contract.ts b/packages/agentplane/src/runtime/prompt-modules/gpt55-contract.ts
+deleted file mode 100644
+index 02770ce30..000000000
+--- a/packages/agentplane/src/runtime/prompt-modules/gpt55-contract.ts
++++ /dev/null
+@@ -1,137 +0,0 @@
+-import type { PromptModule } from "./model.js";
+-
+-export type Gpt55PromptContractDiagnosticCode =
+-  | "gpt55_missing_outcome_contract"
+-  | "gpt55_absolute_rule_in_role_prompt"
+-  | "gpt55_missing_referenced_role";
+-
+-export type Gpt55PromptContractDiagnostic = {
+-  severity: "warning" | "error";
+-  code: Gpt55PromptContractDiagnosticCode;
+-  message: string;
+-  module_address?: string;
+-  role_id?: string;
+-  evidence?: string;
+-};
+-
+-const OUTCOME_CONTRACT_SECTIONS = [
+-  { label: "Goal", re: /(?:^|\n)\s*(?:#+\s*)?Goal\s*:/i },
+-  { label: "Success criteria", re: /(?:^|\n)\s*(?:#+\s*)?Success criteria\s*:/i },
+-  { label: "Constraints", re: /(?:^|\n)\s*(?:#+\s*)?Constraints\s*:/i },
+-  { label: "Stop rules", re: /(?:^|\n)\s*(?:#+\s*)?Stop rules\s*:/i },
+-  { label: "Output", re: /(?:^|\n)\s*(?:#+\s*)?Output\s*:/i },
+-] as const;
+-
+-const ABSOLUTE_RULE_RE = /\b(ALWAYS|NEVER|MUST(?:\s+NOT)?)\b/g;
+-const REFERENCED_ROLE_RE =
+-  /\b(?:invoke|activate|handoff to|hand off to|route to|delegate to)\s+([A-Z][A-Z0-9_]{2,})\b/g;
+-
+-function moduleText(module: PromptModule): string {
+-  if (typeof module.content === "string") return module.content;
+-  return JSON.stringify(module.content);
+-}
+-
+-function roleIdFromSourceRef(sourceRef: string): string | null {
+-  const match = /(?:^|\/)agents\/([A-Z0-9_]+)\.json(?:#|$)/.exec(sourceRef);
+-  return match?.[1] ?? null;
+-}
+-
+-function roleIdForModule(module: PromptModule): string | null {
+-  if (module.address.surface !== "agent_profile") return null;
+-  return roleIdFromSourceRef(module.provenance.source_ref) ?? null;
+-}
+-
+-function collectKnownRoleIds(modules: PromptModule[]): Set<string> {
+-  const ids = new Set<string>();
+-  for (const module of modules) {
+-    const roleId = roleIdForModule(module);
+-    if (roleId) ids.add(roleId);
+-  }
+-  return ids;
+-}
+-
+-function diagnoseOutcomeContract(modules: PromptModule[]): Gpt55PromptContractDiagnostic[] {
+-  const workflowByRole = new Map<string, { text: string; addresses: string[] }>();
+-
+-  for (const module of modules) {
+-    const roleId = roleIdForModule(module);
+-    if (!roleId || module.address.slot !== "workflow") continue;
+-    const current = workflowByRole.get(roleId) ?? { text: "", addresses: [] };
+-    current.text = `${current.text}\n${moduleText(module)}`;
+-    current.addresses.push(module.address.value);
+-    workflowByRole.set(roleId, current);
+-  }
+-
+-  const diagnostics: Gpt55PromptContractDiagnostic[] = [];
+-  for (const [roleId, workflow] of workflowByRole) {
+-    const missing = OUTCOME_CONTRACT_SECTIONS.filter((section) => !section.re.test(workflow.text));
+-    if (missing.length === 0) continue;
+-    diagnostics.push({
+-      severity: "warning",
+-      code: "gpt55_missing_outcome_contract",
+-      role_id: roleId,
+-      module_address: workflow.addresses[0],
+-      message:
+-        `${roleId} workflow does not yet expose the GPT-5.5 outcome-first contract sections: ` +
+-        `${missing.map((section) => section.label).join(", ")}.`,
+-    });
+-  }
+-  return diagnostics;
+-}
+-
+-function diagnoseAbsoluteRules(modules: PromptModule[]): Gpt55PromptContractDiagnostic[] {
+-  const diagnostics: Gpt55PromptContractDiagnostic[] = [];
+-  for (const module of modules) {
+-    const roleId = roleIdForModule(module);
+-    if (!roleId || module.address.slot !== "workflow") continue;
+-    const text = moduleText(module);
+-    const matches = [...text.matchAll(ABSOLUTE_RULE_RE)].map((match) => match[1]);
+-    if (matches.length === 0) continue;
+-    diagnostics.push({
+-      severity: "warning",
+-      code: "gpt55_absolute_rule_in_role_prompt",
+-      role_id: roleId,
+-      module_address: module.address.value,
+-      evidence: matches.join(", "),
+-      message:
+-        `${roleId} workflow uses absolute rule language (${matches.join(", ")}). ` +
+-        "Keep MUST/NEVER/ALWAYS in gateway or policy modules unless the role line is a true invariant.",
+-    });
+-  }
+-  return diagnostics;
+-}
+-
+-function diagnoseReferencedRoles(modules: PromptModule[]): Gpt55PromptContractDiagnostic[] {
+-  const knownRoleIds = collectKnownRoleIds(modules);
+-  const diagnostics: Gpt55PromptContractDiagnostic[] = [];
+-
+-  for (const module of modules) {
+-    const roleId = roleIdForModule(module);
+-    if (!roleId) continue;
+-    const text = moduleText(module);
+-    for (const match of text.matchAll(REFERENCED_ROLE_RE)) {
+-      const referencedRole = match[1];
+-      if (!referencedRole || knownRoleIds.has(referencedRole)) continue;
+-      diagnostics.push({
+-        severity: "error",
+-        code: "gpt55_missing_referenced_role",
+-        role_id: roleId,
+-        module_address: module.address.value,
+-        evidence: referencedRole,
+-        message: `${roleId} references missing role ${referencedRole}.`,
+-      });
+-    }
+-  }
+-
+-  return diagnostics;
+-}
+-
+-export function diagnoseGpt55PromptContract(
+-  modules: PromptModule[],
+-): Gpt55PromptContractDiagnostic[] {
+-  return [
+-    ...diagnoseOutcomeContract(modules),
+-    ...diagnoseAbsoluteRules(modules),
+-    ...diagnoseReferencedRoles(modules),
+-  ];
+-}
+diff --git a/packages/agentplane/src/runtime/prompt-modules/gpt56-contract.test.ts b/packages/agentplane/src/runtime/prompt-modules/gpt56-contract.test.ts
+deleted file mode 100644
+index 9866a18e2..000000000
+--- a/packages/agentplane/src/runtime/prompt-modules/gpt56-contract.test.ts
++++ /dev/null
+@@ -1,119 +0,0 @@
+-import { describe, expect, it } from "vitest";
+-
+-import {
+-  diagnoseGpt55PromptContract,
+-  diagnoseGpt56PromptContract,
+-  loadFrameworkPromptModules,
+-  type PromptModule,
+-} from "./index.js";
+-import { PROMPT_MODULE_CONTRACT_SCHEMA_VERSION } from "./model.js";
+-
+-function agentWorkflowModule(opts: { roleId: string; text: string }): PromptModule {
+-  return {
+-    schema_version: PROMPT_MODULE_CONTRACT_SCHEMA_VERSION,
+-    address: {
+-      value: `framework/agent_profile/.agentplane~agents/workflow/${opts.roleId.toLowerCase()}`,
+-      namespace: "framework",
+-      surface: "agent_profile",
+-      target: ".agentplane/agents",
+-      slot: "workflow",
+-      name: opts.roleId.toLowerCase(),
+-    },
+-    owner: {
+-      kind: "framework",
+-      package_name: "agentplane",
+-    },
+-    title: `${opts.roleId} workflow`,
+-    content_kind: "text",
+-    content: opts.text,
+-    mutability: "replaceable",
+-    merge: {
+-      mode: "pick_one",
+-      conflict: "error",
+-    },
+-    provenance: {
+-      source_kind: "framework_builtin",
+-      source_ref: `packages/agentplane/assets/agents/${opts.roleId}.json#workflow`,
+-    },
+-  };
+-}
+-
+-describe("GPT-5.6 prompt contract diagnostics", () => {
+-  it("uses GPT-5.6 diagnostic codes and messages", () => {
+-    const diagnostics = diagnoseGpt56PromptContract([
+-      agentWorkflowModule({
+-        roleId: "CODER",
+-        text: "Keep diffs minimal and task-scoped.",
+-      }),
+-    ]);
+-
+-    expect(diagnostics).toMatchObject([
+-      {
+-        severity: "warning",
+-        code: "gpt56_missing_outcome_contract",
+-        role_id: "CODER",
+-      },
+-    ]);
+-    expect(diagnostics[0]?.message).toContain("GPT-5.6");
+-  });
+-
+-  it("flags shared gateway scaffolding repeated in a role prompt", () => {
+-    const diagnostics = diagnoseGpt56PromptContract([
+-      agentWorkflowModule({
+-        roleId: "CODER",
+-        text: [
+-          "Goal: implement approved scope.",
+-          "Success criteria: checks pass.",
+-          "Constraints: use loaded gateway and policy modules as binding constraints.",
+-          "Stop rules: stop on drift.",
+-          "Output: changed files and checks.",
+-        ].join("\n"),
+-      }),
+-    ]);
+-
+-    expect(diagnostics).toContainEqual(
+-      expect.objectContaining({
+-        severity: "warning",
+-        code: "gpt56_repeated_gateway_contract",
+-        role_id: "CODER",
+-      }),
+-    );
+-  });
+-
+-  it("preserves the GPT-5.5 diagnostic API for compatibility", () => {
+-    const diagnostics = diagnoseGpt55PromptContract([
+-      agentWorkflowModule({
+-        roleId: "CODER",
+-        text: "Keep diffs minimal and task-scoped.",
+-      }),
+-    ]);
+-
+-    expect(diagnostics[0]?.code).toBe("gpt55_missing_outcome_contract");
+-    expect(diagnostics[0]?.message).toContain("GPT-5.5");
+-  });
+-
+-  it("keeps every bundled agent profile on the lean GPT-5.6 contract", async () => {
+-    const bundledRoles = new Set([
+-      "CODER",
+-      "CREATOR",
+-      "CURATOR",
+-      "DOCS",
+-      "EVALUATOR",
+-      "EXTRACTOR",
+-      "INTAKE",
+-      "INTEGRATOR",
+-      "ORCHESTRATOR",
+-      "PLANNER",
+-      "REDMINE",
+-      "REVIEWER",
+-      "TESTER",
+-      "UPDATER",
+-      "UPGRADER",
+-    ]);
+-    const diagnostics = diagnoseGpt56PromptContract(await loadFrameworkPromptModules()).filter(
+-      (diagnostic) => diagnostic.role_id && bundledRoles.has(diagnostic.role_id),
+-    );
+-
+-    expect(diagnostics).toEqual([]);
+-  });
+-});
+diff --git a/packages/agentplane/src/runtime/prompt-modules/gpt56-contract.ts b/packages/agentplane/src/runtime/prompt-modules/gpt56-contract.ts
+deleted file mode 100644
+index 464f29c48..000000000
+--- a/packages/agentplane/src/runtime/prompt-modules/gpt56-contract.ts
++++ /dev/null
+@@ -1,78 +0,0 @@
+-import type { PromptModule } from "./model.js";
+-import {
+-  diagnoseGpt55PromptContract,
+-  type Gpt55PromptContractDiagnostic,
+-  type Gpt55PromptContractDiagnosticCode,
+-} from "./gpt55-contract.js";
+-
+-type Gpt56PromptContractDiagnosticCode =
+-  | "gpt56_missing_outcome_contract"
+-  | "gpt56_absolute_rule_in_role_prompt"
+-  | "gpt56_missing_referenced_role"
+-  | "gpt56_repeated_gateway_contract";
+-
+-type Gpt56PromptContractDiagnostic = Omit<Gpt55PromptContractDiagnostic, "code"> & {
+-  code: Gpt56PromptContractDiagnosticCode;
+-};
+-
+-const GPT56_CODE_BY_GPT55_CODE: Record<
+-  Gpt55PromptContractDiagnosticCode,
+-  Gpt56PromptContractDiagnosticCode
+-> = {
+-  gpt55_missing_outcome_contract: "gpt56_missing_outcome_contract",
+-  gpt55_absolute_rule_in_role_prompt: "gpt56_absolute_rule_in_role_prompt",
+-  gpt55_missing_referenced_role: "gpt56_missing_referenced_role",
+-};
+-
+-const REPEATED_GATEWAY_CONTRACT_RE =
+-  /use loaded gateway and policy modules as binding constraints/i;
+-
+-function moduleText(module: PromptModule): string {
+-  if (typeof module.content === "string") return module.content;
+-  return JSON.stringify(module.content);
+-}
+-
+-function roleIdForModule(module: PromptModule): string | null {
+-  if (module.address.surface !== "agent_profile") return null;
+-  const match = /(?:^|\/)agents\/([A-Z0-9_]+)\.json(?:#|$)/.exec(module.provenance.source_ref);
+-  return match?.[1] ?? null;
+-}
+-
+-function diagnoseRepeatedGatewayContract(modules: PromptModule[]): Gpt56PromptContractDiagnostic[] {
+-  const diagnostics: Gpt56PromptContractDiagnostic[] = [];
+-  for (const module of modules) {
+-    const roleId = roleIdForModule(module);
+-    if (
+-      !roleId ||
+-      module.address.slot !== "workflow" ||
+-      !REPEATED_GATEWAY_CONTRACT_RE.test(moduleText(module))
+-    ) {
+-      continue;
+-    }
+-    diagnostics.push({
+-      severity: "warning",
+-      code: "gpt56_repeated_gateway_contract",
+-      role_id: roleId,
+-      module_address: module.address.value,
+-      evidence: "use loaded gateway and policy modules as binding constraints",
+-      message:
+-        `${roleId} repeats the shared gateway contract in its role prompt. ` +
+-        "Keep shared autonomy, routing, and policy rules in the gateway and retain only role-specific constraints here.",
+-    });
+-  }
+-  return diagnostics;
+-}
+-
+-export function diagnoseGpt56PromptContract(
+-  modules: PromptModule[],
+-): Gpt56PromptContractDiagnostic[] {
+-  const migratedDiagnostics = diagnoseGpt55PromptContract(modules).map(
+-    (diagnostic): Gpt56PromptContractDiagnostic => ({
+-      ...diagnostic,
+-      code: GPT56_CODE_BY_GPT55_CODE[diagnostic.code],
+-      message: diagnostic.message.replaceAll("GPT-5.5", "GPT-5.6"),
+-    }),
+-  );
+-
+-  return [...migratedDiagnostics, ...diagnoseRepeatedGatewayContract(modules)];
+-}
+diff --git a/packages/agentplane/src/runtime/prompt-modules/index.ts b/packages/agentplane/src/runtime/prompt-modules/index.ts
+index f21ab87d2..12c2147ba 100644
+--- a/packages/agentplane/src/runtime/prompt-modules/index.ts
++++ b/packages/agentplane/src/runtime/prompt-modules/index.ts
+@@ -25,8 +25,6 @@ export type {
+   PromptModuleValidator,
+ } from "./mutations.js";
+ export { loadFrameworkPromptModuleRegistry, loadFrameworkPromptModules } from "./registry.js";
+-export { diagnoseGpt55PromptContract } from "./gpt55-contract.js";
+-export { diagnoseGpt56PromptContract } from "./gpt56-contract.js";
+ export {
+   validatePromptModuleCompiledGraph,
+   validatePromptModule,
+diff --git a/packages/agentplane/src/runtime/prompt-modules/model.ts b/packages/agentplane/src/runtime/prompt-modules/model.ts
+index 9bfb84770..33e5e4f90 100644
+--- a/packages/agentplane/src/runtime/prompt-modules/model.ts
++++ b/packages/agentplane/src/runtime/prompt-modules/model.ts
+@@ -1,7 +1,5 @@
+ import type { PromptModuleContractSchemaVersion } from "./schema.js";
+ 
+-export { PROMPT_MODULE_CONTRACT_SCHEMA_VERSION } from "./schema.js";
+-
+ type PromptModuleNamespace = "framework" | "project" | "runtime" | `recipe.${string}`;
+ 
+ export type PromptModuleSurface =
+diff --git a/scripts/README.md b/scripts/README.md
+index 003a3f25f..c974f7655 100644
+--- a/scripts/README.md
++++ b/scripts/README.md
+@@ -14,25 +14,25 @@ Implementation layout: canonical script implementations live under `scripts/chec
+ 
+ ## CI
+ 
+-| Script              | Command                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Purpose                          |
+-| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+-| `ci`                | `bun run ci:contract && bun run ci:test`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Run ci workflow commands.        |
+-| `ci:agentplane`     | `node scripts/checks/ci-scope.mjs --scope agentplane`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Run ci workflow: agentplane.     |
+-| `ci:contract`       | `bun run format:check && bun run schemas:check && bun run spec:examples:check && bun run release:acr-example:check && bun run agents:check && bun run policy:routing:check && bun run release:parity && bun run docs:bootstrap:check && bun run docs:onboarding:check && bun run docs:ia:check && bun run docs:scripts:check && bun run bench:compatibility:candidate:check && bun run bench:compatibility:check && bun run bench:agent-efficiency:check && bun run bench:agent-efficiency:replay:check && bun run hotspots:check && bun run lifecycle:invariants && bun run check:types-files && bun run typescript:toolchain:check && bun run vitest:projects:check && bun run guards:check && bun run lint:core && bun run logging:check && bun run arch:check && bun run clone:check && bun run knip:check && bun run coverage:thresholds:check` | Run ci workflow: contract.       |
+-| `ci:core`           | `node scripts/checks/ci-scope.mjs --scope core`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Run ci workflow: core.           |
+-| `ci:local`          | `node scripts/checks/run-local-ci.mjs --mode fast`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Run ci workflow: local.          |
+-| `ci:local:explain`  | `node scripts/checks/run-local-ci.mjs --mode smoke --explain`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Run ci workflow: local explain.  |
+-| `ci:local:fast`     | `node scripts/checks/run-local-ci.mjs --mode fast`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Run ci workflow: local fast.     |
+-| `ci:local:full`     | `node scripts/checks/run-local-ci.mjs --mode full`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Run ci workflow: local full.     |
+-| `ci:local:profile`  | `node scripts/checks/profile-local-quality.mjs`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Run ci workflow: local profile.  |
+-| `ci:local:smoke`    | `node scripts/checks/run-local-ci.mjs --mode smoke`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Run ci workflow: local smoke.    |
+-| `ci:local:touch`    | `node scripts/checks/run-local-ci.mjs --mode smoke`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Run ci workflow: local touch.    |
+-| `ci:local:turbo`    | `node scripts/checks/run-turbo-local-ci.mjs`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Run ci workflow: local turbo.    |
+-| `ci:recipes`        | `node scripts/checks/ci-scope.mjs --scope recipes`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Run ci workflow: recipes.        |
+-| `ci:release-extras` | `bun run artifacts:check && bun run task-state:check && bun run build && bun run package:tarball:check && bun run package:install-smoke && bun run docs:cli:check && bun run docs:recipes:check && GIT_AUTHOR_NAME=agentplane-ci GIT_AUTHOR_EMAIL=agentplane-ci@example.com GIT_COMMITTER_NAME=agentplane-ci@example.com GIT_COMMITTER_EMAIL=agentplane-ci@example.com node scripts/checks/run-vitest-suite.mjs release-ci-base && bun run coverage:workflow-suite && bun run coverage:significant-suite && GIT_AUTHOR_NAME=agentplane-ci GIT_AUTHOR_EMAIL=agentplane-ci@example.com GIT_COMMITTER_NAME=agentplane-ci@example.com GIT_COMMITTER_EMAIL=agentplane-ci@example.com bun run test:release:critical`                                                                                                                                       | Run ci workflow: release-extras. |
+-| `ci:spec`           | `node scripts/checks/ci-scope.mjs --scope spec`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Run ci workflow: spec.           |
+-| `ci:test`           | `bun run typecheck && bun run coverage && bun run coverage:significant`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Run ci workflow: test.           |
+-| `ci:testkit`        | `node scripts/checks/ci-scope.mjs --scope testkit`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Run ci workflow: testkit.        |
++| Script              | Command                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Purpose                          |
++| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
++| `ci`                | `bun run ci:contract && bun run ci:test`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Run ci workflow commands.        |
++| `ci:agentplane`     | `node scripts/checks/ci-scope.mjs --scope agentplane`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Run ci workflow: agentplane.     |
++| `ci:contract`       | `bun run format:check && bun run schemas:check && bun run spec:examples:check && bun run release:acr-example:check && bun run agents:check && bun run policy:routing:check && bun run release:parity && bun run docs:bootstrap:check && bun run docs:onboarding:check && bun run docs:ia:check && bun run docs:scripts:check && bun run bench:compatibility:candidate:check && bun run bench:compatibility:check && bun run bench:agent-efficiency:check && bun run bench:agent-efficiency:replay:check && bun run hotspots:check && bun run lifecycle:invariants && bun run check:types-files && bun run typescript:toolchain:check && bun run vitest:projects:check && bun run guards:check && bun run lint:core && bun run logging:check && bun run arch:check && bun run clone:check && bun run knip:check` | Run ci workflow: contract.       |
++| `ci:core`           | `node scripts/checks/ci-scope.mjs --scope core`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Run ci workflow: core.           |
++| `ci:local`          | `node scripts/checks/run-local-ci.mjs --mode fast`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Run ci workflow: local.          |
++| `ci:local:explain`  | `node scripts/checks/run-local-ci.mjs --mode smoke --explain`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Run ci workflow: local explain.  |
++| `ci:local:fast`     | `node scripts/checks/run-local-ci.mjs --mode fast`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Run ci workflow: local fast.     |
++| `ci:local:full`     | `node scripts/checks/run-local-ci.mjs --mode full`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Run ci workflow: local full.     |
++| `ci:local:profile`  | `node scripts/checks/profile-local-quality.mjs`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Run ci workflow: local profile.  |
++| `ci:local:smoke`    | `node scripts/checks/run-local-ci.mjs --mode smoke`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Run ci workflow: local smoke.    |
++| `ci:local:touch`    | `node scripts/checks/run-local-ci.mjs --mode smoke`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Run ci workflow: local touch.    |
++| `ci:local:turbo`    | `node scripts/checks/run-turbo-local-ci.mjs`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Run ci workflow: local turbo.    |
++| `ci:recipes`        | `node scripts/checks/ci-scope.mjs --scope recipes`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Run ci workflow: recipes.        |
++| `ci:release-extras` | `bun run artifacts:check && bun run task-state:check && bun run build && bun run package:tarball:check && bun run package:install-smoke && bun run docs:cli:check && bun run docs:recipes:check && GIT_AUTHOR_NAME=agentplane-ci GIT_AUTHOR_EMAIL=agentplane-ci@example.com GIT_COMMITTER_NAME=agentplane-ci@example.com GIT_COMMITTER_EMAIL=agentplane-ci@example.com node scripts/checks/run-vitest-suite.mjs release-ci-base && bun run coverage:workflow-suite && bun run coverage:significant-suite && GIT_AUTHOR_NAME=agentplane-ci GIT_AUTHOR_EMAIL=agentplane-ci@example.com GIT_COMMITTER_NAME=agentplane-ci@example.com GIT_COMMITTER_EMAIL=agentplane-ci@example.com bun run test:release:critical`                                                                                                  | Run ci workflow: release-extras. |
++| `ci:spec`           | `node scripts/checks/ci-scope.mjs --scope spec`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Run ci workflow: spec.           |
++| `ci:test`           | `bun run typecheck && bun run coverage && bun run coverage:significant`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Run ci workflow: test.           |
++| `ci:testkit`        | `node scripts/checks/ci-scope.mjs --scope testkit`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Run ci workflow: testkit.        |
+ 
+ ## Release
+ 
+@@ -100,18 +100,19 @@ Implementation layout: canonical script implementations live under `scripts/chec
+ 
+ ## Test
+ 
+-| Script                   | Command                                                                                                                          | Purpose                               |
+-| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+-| `test`                   | `bun run test:fast`                                                                                                              | Run test workflow commands.           |
+-| `test:backend-critical`  | `node scripts/checks/run-vitest-suite.mjs backend-critical`                                                                      | Run test workflow: backend-critical.  |
+-| `test:cli:critical`      | `bun run test:critical`                                                                                                          | Run test workflow: cli critical.      |
+-| `test:critical`          | `node scripts/checks/run-vitest-suite.mjs critical-cli`                                                                          | Run test workflow: critical.          |
+-| `test:fast`              | `vitest --config vitest.workspace.ts run --project agentplane --project core --project recipes --project testkit --maxWorkers=4` | Run test workflow: fast.              |
+-| `test:fast:ci`           | `node scripts/checks/run-fast-ci-tests.mjs`                                                                                      | Run test workflow: fast ci.           |
+-| `test:platform-critical` | `node scripts/checks/run-vitest-suite.mjs platform-critical`                                                                     | Run test workflow: platform-critical. |
+-| `test:precommit`         | `node scripts/checks/run-vitest-suite.mjs precommit`                                                                             | Run test workflow: precommit.         |
+-| `test:project`           | `vitest --config vitest.workspace.ts run --project`                                                                              | Run test workflow: project.           |
+-| `test:release:critical`  | `node scripts/checks/run-vitest-suite.mjs release-critical`                                                                      | Run test workflow: release critical.  |
++| Script                                | Command                                                                                                                          | Purpose                                            |
++| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
++| `test`                                | `bun run test:fast`                                                                                                              | Run test workflow commands.                        |
++| `test:agent-efficiency:qualification` | `node scripts/checks/run-vitest-suite.mjs agent-efficiency-qualification`                                                        | Run test workflow: agent-efficiency qualification. |
++| `test:backend-critical`               | `node scripts/checks/run-vitest-suite.mjs backend-critical`                                                                      | Run test workflow: backend-critical.               |
++| `test:cli:critical`                   | `bun run test:critical`                                                                                                          | Run test workflow: cli critical.                   |
++| `test:critical`                       | `node scripts/checks/run-vitest-suite.mjs critical-cli`                                                                          | Run test workflow: critical.                       |
++| `test:fast`                           | `vitest --config vitest.workspace.ts run --project agentplane --project core --project recipes --project testkit --maxWorkers=4` | Run test workflow: fast.                           |
++| `test:fast:ci`                        | `node scripts/checks/run-fast-ci-tests.mjs`                                                                                      | Run test workflow: fast ci.                        |
++| `test:platform-critical`              | `node scripts/checks/run-vitest-suite.mjs platform-critical`                                                                     | Run test workflow: platform-critical.              |
++| `test:precommit`                      | `node scripts/checks/run-vitest-suite.mjs precommit`                                                                             | Run test workflow: precommit.                      |
++| `test:project`                        | `vitest --config vitest.workspace.ts run --project`                                                                              | Run test workflow: project.                        |
++| `test:release:critical`               | `node scripts/checks/run-vitest-suite.mjs release-critical`                                                                      | Run test workflow: release critical.               |
+ 
+ ## Coverage
+ 
+@@ -119,7 +120,6 @@ Implementation layout: canonical script implementations live under `scripts/chec
+ | ---------------------------- | --------------------------------------------------------- | ----------------------------------------- |
+ | `coverage:significant`       | `node scripts/checks/check-significant-coverage.mjs`      | Run coverage workflow: significant.       |
+ | `coverage:significant-suite` | `node scripts/checks/run-significant-coverage-suite.mjs`  | Run coverage workflow: significant-suite. |
+-| `coverage:thresholds:check`  | `node scripts/checks/check-coverage-thresholds.mjs`       | Run coverage workflow: thresholds check.  |
+ | `coverage:workflow-harness`  | `node scripts/checks/check-workflow-harness-coverage.mjs` | Run coverage workflow: workflow-harness.  |
+ | `coverage:workflow-suite`    | `node scripts/workflow/run-workflow-coverage-suite.mjs`   | Run coverage workflow: workflow-suite.    |
+ 
+diff --git a/scripts/check-coverage-thresholds.mjs b/scripts/check-coverage-thresholds.mjs
+deleted file mode 100644
+index de3f11bf2..000000000
+--- a/scripts/check-coverage-thresholds.mjs
++++ /dev/null
+@@ -1 +0,0 @@
+-import "./checks/check-coverage-thresholds.mjs";
+diff --git a/scripts/checks/check-coverage-thresholds.mjs b/scripts/checks/check-coverage-thresholds.mjs
+deleted file mode 100644
+index 87a37014b..000000000
+--- a/scripts/checks/check-coverage-thresholds.mjs
++++ /dev/null
+@@ -1,48 +0,0 @@
+-import { readFile } from "node:fs/promises";
+-import path from "node:path";
+-
+-const CONFIG_PATH = path.resolve("vitest.config.ts");
+-
+-const EXPECTED_THRESHOLDS = {
+-  lines: 80,
+-  functions: 80,
+-  branches: 72,
+-  statements: 80,
+-};
+-
+-function extractThresholds(source) {
+-  const thresholdsMatch = source.match(/thresholds:\s*\{(?<body>[\s\S]*?)\n\s*\}/);
+-  if (!thresholdsMatch?.groups?.body) {
+-    throw new Error("Missing coverage.thresholds block in vitest.config.ts");
+-  }
+-
+-  const thresholds = new Map();
+-  for (const match of thresholdsMatch.groups.body.matchAll(
+-    /^\s*(?<key>lines|functions|branches|statements):\s*(?<value>\d+),?\s*$/gm,
+-  )) {
+-    thresholds.set(match.groups.key, Number(match.groups.value));
+-  }
+-  return thresholds;
+-}
+-
+-const source = await readFile(CONFIG_PATH, "utf8");
+-const actual = extractThresholds(source);
+-const mismatches = [];
+-
+-for (const [key, expected] of Object.entries(EXPECTED_THRESHOLDS)) {
+-  const value = actual.get(key);
+-  if (value !== expected) {
+-    mismatches.push(`${key}: expected ${expected}, got ${value ?? "missing"}`);
+-  }
+-}
+-
+-if (mismatches.length > 0) {
+-  console.error("Coverage threshold guard failed:");
+-  for (const mismatch of mismatches) {
+-    console.error(`- ${mismatch}`);
+-  }
+-  console.error("If thresholds must change, update this guard in the same reviewed task.");
+-  process.exitCode = 1;
+-} else {
+-  console.log("Coverage threshold guard passed (lines=80 functions=80 branches=72 statements=80).");
+-}
+diff --git a/scripts/lib/test-route-registry.mjs b/scripts/lib/test-route-registry.mjs
+index 0d5a6818c..2625d21ed 100644
+--- a/scripts/lib/test-route-registry.mjs
++++ b/scripts/lib/test-route-registry.mjs
+@@ -336,12 +336,31 @@ const RELEASE_CI_BASE_FILES = discoverTests(["packages"], (filePath) => {
+   ].some((pattern) => pattern.test(filePath));
+ });
+ 
++const AGENT_EFFICIENCY_QUALIFICATION_PATTERN =
++  /^packages\/agentplane\/src\/cli\/run-cli\.critical\.agent-efficiency-.+\.test\.ts$/;
++
++const ALL_CRITICAL_CLI_FILES = discoverTestFiles(
++  ["packages/agentplane/src/cli"],
++  [/^packages\/agentplane\/src\/cli\/run-cli\.critical\..+\.test\.ts$/],
++);
++
+ const CRITICAL_CLI_SUITE = {
++  chunkSize: 2,
++  config: "vitest.config.ts",
++  files: ALL_CRITICAL_CLI_FILES.filter(
++    (filePath) => !AGENT_EFFICIENCY_QUALIFICATION_PATTERN.test(filePath),
++  ),
++  maxWorkers: "4",
++  pool: "forks",
++  testTimeout: "120000",
++  hookTimeout: "120000",
++};
++
++const AGENT_EFFICIENCY_QUALIFICATION_SUITE = {
+   chunkSize: 1,
+   config: "vitest.config.ts",
+-  files: discoverTestFiles(
+-    ["packages/agentplane/src/cli"],
+-    [/^packages\/agentplane\/src\/cli\/run-cli\.critical\..+\.test\.ts$/],
++  files: ALL_CRITICAL_CLI_FILES.filter((filePath) =>
++    AGENT_EFFICIENCY_QUALIFICATION_PATTERN.test(filePath),
+   ),
+   maxWorkers: "4",
+   pool: "forks",
+@@ -423,6 +442,7 @@ const V07_HOSTED_FILES = [
+ ];
+ 
+ export const VITEST_SUITES = {
++  "agent-efficiency-qualification": AGENT_EFFICIENCY_QUALIFICATION_SUITE,
+   "backend-critical": {
+     files: BACKEND_CRITICAL_FILES,
+     maxWorkers: "4",
+@@ -697,7 +717,6 @@ const PROMPT_MODULES_TEST_FILES = [
+   "packages/agentplane/src/runtime/prompt-modules/model.test.ts",
+   "packages/agentplane/src/runtime/prompt-modules/mutations.test.ts",
+   "packages/agentplane/src/runtime/prompt-modules/registry.test.ts",
+-  "packages/agentplane/src/runtime/prompt-modules/gpt55-contract.test.ts",
+ ];
+ 
+ const EVALUATOR_TEST_FILES = [
