@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The canonical lifecycle timing validator now enforces root identity and coverage, rooted acyclic containment, order-independent sibling non-overlap, and category partition reconciliation from deepest active spans.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/acb5e13f22c5dfbd9ff3ef3ce69937520740933a85fb9a42a2af768300cd1951.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Direct boundary reproductions accept valid gapped, nested, and root-last-adjacent timing while rejecting contradictory category totals.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/acb5e13f22c5dfbd9ff3ef3ce69937520740933a85fb9a42a2af768300cd1951.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "AgentPlane recorded all 12 required focused, schema, artifact, critical, type, and full local CI checks as passed for the evaluated implementation SHA.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/acb5e13f22c5dfbd9ff3ef3ce69937520740933a85fb9a42a2af768300cd1951.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The frozen branch diff contains no source roadmap path or raw provider result payload.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/acb5e13f22c5dfbd9ff3ef3ce69937520740933a85fb9a42a2af768300cd1951.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted CI and provider integration must still pass against the published PR head before merge.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/acb5e13f22c5dfbd9ff3ef3ce69937520740933a85fb9a42a2af768300cd1951.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
