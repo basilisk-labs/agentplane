@@ -4,7 +4,7 @@ title: "Add an explicit USER-approved supervisor budget epoch for unknown token 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -33,6 +33,33 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-13T14:31:08.799Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  evaluated_sha: "ee342a5ddee6ab220c45d270e09921a5abbd2614"
+  blueprint_digest: "979e174d7c1f997ad18f1545c2840858bef2d19ec272d7309270fdcc2a2b6df5"
+  evidence_refs:
+    - ".agentplane/tasks/202609130858-RMHWQ5/quality/20260913-142716889-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609130858-RMHWQ5/quality/20260913-142716889-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609130858-RMHWQ5/quality/objects/sha256/e0deb27cae8c572563358e6c8ded60ab87cdf064a709c4a9524925b6740eabd6.md"
+    - ".agentplane/tasks/202609130858-RMHWQ5/quality/20260913-142716889-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609130858-RMHWQ5/quality/20260913-142716889-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609130858-RMHWQ5/quality/20260913-142716889-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609130858-RMHWQ5/README.md"
+    - ".agentplane/tasks/202609130858-RMHWQ5/quality/objects/sha256/43ad1d40294d9235ab5cc9e8ce118fe219ad9c316e6130e58de3b15928f4a2a2.patch"
+    - ".agentplane/tasks/202609130858-RMHWQ5/quality/objects/sha256/3c34c6464fdfcd5edd5f0c210376a46ad2cc3a8d9f00faebd016678d01ba910d.json"
+    - ".agentplane/tasks/202609130858-RMHWQ5/verification/20260913142707528-4ce03ab15a211569.json"
+    - ".agentplane/tasks/202609130858-RMHWQ5/quality/objects/sha256/8022af9497f1bba25b539636d41e70d97be32d8d38de688376c2c00b9c7a910c.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The evaluated change preserves lifetime usage, limits renewal to telemetry-only stops with USER-bound journal and state provenance, rejects stale or conflicting authorization, and covers recovery and regression paths."
+    - "Residual risk: When token limits are explicitly disabled because provider telemetry is unavailable, token spend remains unmetered inside the epoch; measurable episode, agent-run, wall-time, changed-file, and no-progress limits remain active."
 execution_route:
   frozen: true
   reason_codes:
@@ -827,7 +854,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609130858-RMHWQ5"
-    event_cursor: 17
+    event_cursor: 18
     final_validation: null
     id: "202609130858-RMHWQ5"
     intent:
@@ -1305,9 +1332,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609130858-RMHWQ5"
-    revision: 24
+    revision: 25
     schema_version: 1
-    updated_at: "2026-09-13T14:27:08.642Z"
+    updated_at: "2026-09-13T14:27:08.644Z"
     work_items:
       budget-epoch-repair:
         attempt: 1
@@ -1825,6 +1852,30 @@ extensions:
         mutation_id: "compatibility:sha256:b9a661cdb439fed484e24dc9728910458d98af7d05beb634144beebf5c6f7a44"
         next_revision: 5
         previous_revision: 4
+        schema_version: 1
+        task_id: "202609130858-RMHWQ5"
+      compatibility:sha256:bb91f2fc7e0a9158639e1f4fe309d39c34a9e772e1cc072ab4a78b9fd90e57e0:
+        aggregate_digest: "sha256:9a44bf55da75d759eec15f48772e6d8808b9c5750bde78a6a376caf87601d7d4"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T14:27:08.644Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_844309469328d24ae6b399e9"
+          mutation_id: "compatibility:sha256:bb91f2fc7e0a9158639e1f4fe309d39c34a9e772e1cc072ab4a78b9fd90e57e0"
+          plan_digest: "sha256:3240f151dc9d04408ae11cf18a19b0dfa42f0de9817ead8c7e11b81eb7599ac1"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609130858-RMHWQ5"
+          task_revision: 24
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:bb91f2fc7e0a9158639e1f4fe309d39c34a9e772e1cc072ab4a78b9fd90e57e0"
+        next_revision: 25
+        previous_revision: 24
         schema_version: 1
         task_id: "202609130858-RMHWQ5"
       compatibility:sha256:ca7c449cede95343bdb029439414ca0b14597ce1657a5b26e8d9ffba1e72f250:
