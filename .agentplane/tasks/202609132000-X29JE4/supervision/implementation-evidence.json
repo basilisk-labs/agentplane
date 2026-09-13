@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 36917f12d3939c8672d67daf2f5f54e42ba9e4c6..78593a2476daf9eed6d71b249ac29376d59847c1",
+      "command": "git diff --check 914845c05cfd2cb31ef67415573c916ec9da0de7..6993b00ef9ed91b58925e640ff6823890c54902a",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 36917f12d3939c8672d67daf2f5f54e42ba9e4c6..78593a2476daf9eed6d71b249ac29376d59847c1",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 914845c05cfd2cb31ef67415573c916ec9da0de7..6993b00ef9ed91b58925e640ff6823890c54902a",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,30 +21,8 @@
         "M\t.agentplane/tasks/202609132000-X29JE4/pr/github-body.md",
         "M\t.agentplane/tasks/202609132000-X29JE4/pr/meta.json",
         "M\t.agentplane/tasks/202609132000-X29JE4/pr/review.md",
-        "M\tpackages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts",
-        "M\tpackages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts",
-        "M\tpackages/agentplane/src/cli/run-cli/command-catalog/task-supervisor.ts",
-        "M\tpackages/agentplane/src/cli/run-cli/command-loaders/task.ts",
-        "M\tpackages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts",
-        "M\tpackages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts",
-        "D\tpackages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts",
-        "D\tpackages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.ts",
-        "M\tpackages/agentplane/src/commands/shared/supervisor-execution-default-budget.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
-        "M\tpackages/agentplane/src/commands/shared/supervisor-execution-observation.ts",
-        "M\tpackages/agentplane/src/commands/task/advance.command.ts",
-        "M\tpackages/agentplane/src/commands/task/agent-action-packet.ts",
-        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-exchange-authority.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-supervisor.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-advance.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-run.ts",
-        "M\tpackages/agentplane/src/commands/task/supervision-outcome-disposition.ts",
-        "D\tpackages/agentplane/src/commands/task/supervisor-budget-epoch.command.ts",
-        "M\tpackages/core/src/runner/supervisor-execution-episode.test.ts",
-        "M\tpackages/core/src/runner/supervisor-execution-episode.ts",
-        "M\tpackages/core/src/schemas/index.ts"
+        "M\tscripts/baselines/v0.7-compatibility-candidate.json",
+        "M\tscripts/checks/check-compatibility-contract-baseline.mjs"
       ]
     },
     {
@@ -54,8 +32,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "36917f12d3939c8672d67daf2f5f54e42ba9e4c6",
-  "implementation_commit": "78593a2476daf9eed6d71b249ac29376d59847c1",
+  "execution_base_commit": "914845c05cfd2cb31ef67415573c916ec9da0de7",
+  "implementation_commit": "6993b00ef9ed91b58925e640ff6823890c54902a",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],

@@ -4,7 +4,7 @@ title: "Remove supervisor spend limits and retain informational usage telemetry"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -137,8 +137,10 @@ execution_contract:
       - "packages/core/src/runner/supervisor-execution-episode.test.ts"
       - "packages/core/src/runner/supervisor-execution-episode.ts"
       - "packages/core/src/schemas/index.ts"
+      - "scripts/baselines/v0.7-compatibility-candidate.json"
       - "scripts/bench/paired-production-driver.mjs"
       - "scripts/bench/paired-production-driver.test.mjs"
+      - "scripts/checks/check-compatibility-contract-baseline.mjs"
     external_effects: []
     repository_effects:
       - "repository_write"
@@ -194,7 +196,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:37b737dc1e5c79a4ab12a2c6baa5a44d47198bee3cbb67f307d9cc43840bd701"
+      digest: "sha256:3c36b7970004486d3a9bed4ab4b2f7d8baaf1b6e6576fbb8f66104f2dbf62d5e"
       escalation_reasons:
         - "central_component:packages/core/src/runner"
         - "central_component:packages/core/src/schemas"
@@ -213,11 +215,13 @@ execution_contract:
         - "central_path:packages/core/src/runner/supervisor-execution-episode.test.ts"
         - "central_path:packages/core/src/runner/supervisor-execution-episode.ts"
         - "central_path:packages/core/src/schemas/index.ts"
+        - "central_path:scripts/checks/check-compatibility-contract-baseline.mjs"
         - "effect_public_api"
         - "effect_schema"
         - "effect_security_boundary"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
+        - "unknown_path:scripts/baselines/v0.7-compatibility-candidate.json"
       execution_groups:
         - "docs-schema"
         - "core"
@@ -255,8 +259,10 @@ execution_contract:
           - "packages/core/src/runner/supervisor-execution-episode.test.ts"
           - "packages/core/src/runner/supervisor-execution-episode.ts"
           - "packages/core/src/schemas/index.ts"
+          - "scripts/baselines/v0.7-compatibility-candidate.json"
           - "scripts/bench/paired-production-driver.mjs"
           - "scripts/bench/paired-production-driver.test.mjs"
+          - "scripts/checks/check-compatibility-contract-baseline.mjs"
         external_effects: []
         repository_effects:
           - "repository_write"
@@ -298,7 +304,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "6993b00ef9ed91b58925e640ff6823890c54902a"
+  message: "🚧 X29JE4 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -315,6 +323,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 78593a2476da. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 6993b00ef9ed. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -355,8 +366,16 @@ events:
     to: "DOING"
     note: "Implementation committed: 78593a2476da. CLI accepted one state-bound external-agent semantic result."
     commit: "78593a2476daf9eed6d71b249ac29376d59847c1"
+  -
+    type: "status"
+    at: "2026-09-13T20:59:34.982Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 6993b00ef9ed. CLI accepted one state-bound external-agent semantic result."
+    commit: "6993b00ef9ed91b58925e640ff6823890c54902a"
 doc_version: 3
-doc_updated_at: "2026-09-13T20:52:46.160Z"
+doc_updated_at: "2026-09-13T20:59:34.982Z"
 doc_updated_by: "SUPERVISOR"
 description: "Remove active supervisor token, monetary, wall-time, changed-file, diff-line, agent-run, and routine episode budget enforcement. Remove the task supervisor budget-epoch command and token-budget renewal path. Keep provider token usage as informational evaluation telemetry. Retain only a high internal orchestrator anomaly fuse that pauses resumably on a probable tight loop. Detect cycles from repeated canonical semantic state and exhausted recovery strategies, and return a concrete diagnostic without treating the task as budget-exhausted. Preserve cold decoding of existing persisted journals without continuing legacy spend enforcement. Do not change release or publication state."
 sections:
@@ -893,7 +912,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609132000-X29JE4"
-    event_cursor: 12
+    event_cursor: 14
     final_validation: null
     id: "202609132000-X29JE4"
     intent:
@@ -1704,9 +1723,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609132000-X29JE4"
-    revision: 20
+    revision: 22
     schema_version: 1
-    updated_at: "2026-09-13T20:52:54.377Z"
+    updated_at: "2026-09-13T20:59:34.982Z"
     work_items:
       campaign-contract:
         attempt: 1
@@ -2037,6 +2056,54 @@ extensions:
         previous_revision: 9
         schema_version: 1
         task_id: "202609132000-X29JE4"
+      compatibility:sha256:6e01aeb710cf91f5278255beb9f9f3a424139e8a1e838feab07b7024167345d7:
+        aggregate_digest: "sha256:57ea82c22a97394581f961d40438b1dd71d83ecb54fbf2ce6e647e271652e480"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T20:59:34.982Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_3f8635a3dbd9e445938c0f1d"
+          mutation_id: "compatibility:sha256:6e01aeb710cf91f5278255beb9f9f3a424139e8a1e838feab07b7024167345d7"
+          plan_digest: "sha256:2a0128895db157556120cf8c21fde4c1520781e16035ea18edc8e5784529479e"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609132000-X29JE4"
+          task_revision: 20
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:6e01aeb710cf91f5278255beb9f9f3a424139e8a1e838feab07b7024167345d7"
+        next_revision: 21
+        previous_revision: 20
+        schema_version: 1
+        task_id: "202609132000-X29JE4"
+      compatibility:sha256:774d7e861f9ffbe48501be46e8056cf474bbcc905b210b4b954ac50283612339:
+        aggregate_digest: "sha256:80fccfcb0501a8ca49ca667c2de0eaeeb768fa0d22af195b3c2e709d8072f0cd"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T20:59:34.982Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_b27a06ff521f46e849c0e304"
+          mutation_id: "compatibility:sha256:774d7e861f9ffbe48501be46e8056cf474bbcc905b210b4b954ac50283612339"
+          plan_digest: "sha256:2a0128895db157556120cf8c21fde4c1520781e16035ea18edc8e5784529479e"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609132000-X29JE4"
+          task_revision: 21
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:774d7e861f9ffbe48501be46e8056cf474bbcc905b210b4b954ac50283612339"
+        next_revision: 22
+        previous_revision: 21
+        schema_version: 1
+        task_id: "202609132000-X29JE4"
       compatibility:sha256:88bbfd8d677a189444bfe2a876d0635d36cad528ccd730a8111023fe4f0514b7:
         aggregate_digest: "sha256:bc5a920e17ed05001fbe0420a1419a83e83540d16ae8cb4925ed6263e15d975a"
         event:
@@ -2331,7 +2398,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "78593a2476daf9eed6d71b249ac29376d59847c1"
+    hash: "6993b00ef9ed91b58925e640ff6823890c54902a"
   task_execution_context:
     base_ref: "main"
     base_sha: "58dbda0d5f88c8a83802c5aee3a9380d001dd4b2"
