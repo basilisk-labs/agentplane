@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202609121424-4BC7B3/qualify-and-document-the-0-7-9-stabilization-can",
   "created_at": "2026-09-13T18:34:45.448Z",
-  "diffstat_sha256": "sha256:7aa243b8ca556006eac83eaf3aabcdc87da88dbbea592e4edbe112e2732a9aa8",
+  "diffstat_sha256": "sha256:c09a46fc004992211c4622addacaabce8e11e7409d14022b711d22e535b21a8c",
   "last_verified_at": null,
   "provider": {
     "hostname": "github.com",
