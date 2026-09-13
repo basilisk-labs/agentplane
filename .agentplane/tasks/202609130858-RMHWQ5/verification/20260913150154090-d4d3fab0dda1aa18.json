@@ -1,0 +1,139 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609130858-RMHWQ5 Verification Contract check affected_unit_integration (1/5)\n\nCheck: affected_unit_integration\nCommand: bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609130858-RMHWQ5 Verification Contract check affected_unit_integration (2/5)\n\nCheck: affected_unit_integration\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609130858-RMHWQ5 Verification Contract check affected_unit_integration (3/5)\n\nCheck: affected_unit_integration\nCommand: bun run test:critical\nResult: pass\nEvidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-4\nScope: branch_pr task 202609130858-RMHWQ5 Verification Contract check affected_unit_integration (4/5)\n\nCheck: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-5\nScope: branch_pr task 202609130858-RMHWQ5 Verification Contract check affected_unit_integration (5/5)\n\nCheck: critical_paths\nCommand: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609130858-RMHWQ5 Verification Contract check critical_paths (1/5)\n\nCheck: critical_paths\nCommand: bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609130858-RMHWQ5 Verification Contract check critical_paths (2/5)\n\nCheck: critical_paths\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609130858-RMHWQ5 Verification Contract check critical_paths (3/5)\n\nCheck: critical_paths\nCommand: bun run test:critical\nResult: pass\nEvidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-4\nScope: branch_pr task 202609130858-RMHWQ5 Verification Contract check critical_paths (4/5)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-5\nScope: branch_pr task 202609130858-RMHWQ5 Verification Contract check critical_paths (5/5)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-5\nScope: branch_pr task 202609130858-RMHWQ5 Verification Contract check full_regression\n\nCheck: task_outcome\nCommand: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609130858-RMHWQ5 Verification Contract check task_outcome (1/5)\n\nCheck: task_outcome\nCommand: bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609130858-RMHWQ5 Verification Contract check task_outcome (2/5)\n\nCheck: task_outcome\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609130858-RMHWQ5 Verification Contract check task_outcome (3/5)\n\nCheck: task_outcome\nCommand: bun run test:critical\nResult: pass\nEvidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-4\nScope: branch_pr task 202609130858-RMHWQ5 Verification Contract check task_outcome (4/5)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-5\nScope: branch_pr task 202609130858-RMHWQ5 Verification Contract check task_outcome (5/5)",
+  "digest": "sha256:d4d3fab0dda1aa18d4c65bb4d35961aac88db445094671b131f31f6d59a545ab",
+  "implementation_sha": "37ad5b999eed8154a0aa28027c58cdb94690756b",
+  "input": {
+    "context": {
+      "digest": "sha256:45ee344941f379a9d4696a9ccbbe7e795ad57ce6e2dfde08c2a623e9e2528cb7",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:03f9e7dbadf5afc52fc276819d9b88e227f01d1aecfd7098bea602b2e189271e",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:b2c7a3bfbd4ddc3bd6d72e0f36bccf04bfa1463d7c730c0ea1c010e8e8b7454a",
+      "digest": "sha256:84c0944770ec3ff48701f75ff32267faf3e26b25c47163567f173112ca85a0ae",
+      "references": [
+        {
+          "digest": "sha256:04382f6efe3f1fd882abe97ace6a0a5f2c6bd58e60228320da30968e09f1b26a",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:04382f6efe3f1fd882abe97ace6a0a5f2c6bd58e60228320da30968e09f1b26a",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:04382f6efe3f1fd882abe97ace6a0a5f2c6bd58e60228320da30968e09f1b26a",
+          "fragment": "check-3",
+          "path": ".agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-3",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:04382f6efe3f1fd882abe97ace6a0a5f2c6bd58e60228320da30968e09f1b26a",
+          "fragment": "check-4",
+          "path": ".agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-4",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:04382f6efe3f1fd882abe97ace6a0a5f2c6bd58e60228320da30968e09f1b26a",
+          "fragment": "check-5",
+          "path": ".agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609130858-RMHWQ5/supervision/declared-checks.json#check-5",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "d03a5e786db57136bf7f6c4661b148bcf97cfaf1",
+      "digest": "sha256:066419da44254147d7be618fcfa2a337121be554c2eb32eb91a62f603aac6ecb",
+      "primary_task_id": "202609130858-RMHWQ5",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_schema",
+        "effect_security_boundary",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609130858-RMHWQ5"
+      ]
+    },
+    "implementation": {
+      "base_sha": "d03a5e786db57136bf7f6c4661b148bcf97cfaf1",
+      "digest": "sha256:82c28c6d1051b4f973fa9d8a7d11e32bdd3ba30b1ce8ecabc067d1fcf48fe647",
+      "strategy": "branch_diff",
+      "target_sha": "37ad5b999eed8154a0aa28027c58cdb94690756b"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:184ecc7ed4eccd967ee98cc1a64a068abbc031ef3eec83686096b401708180ea",
+    "verify_steps_digest": "sha256:a6421c05f45ced225553bec304a98dd48400a47fe0bbfc3ad8edab8e8ae3d32d"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-09-13T15:01:54.090Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run `bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts`. Require USER-bound epoch creation, independent caps, preserved lifetime unknown usage, deterministic replay, and unchanged journals on rejection.\n2. Run `bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts`. Require the operator command to reject stale fingerprints, non-telemetry stops, non-USER actors, invalid caps, and conflicting replay, and to resume the exact stopped task only after valid authorization across route drift.\n3. Run `bun run typecheck`. Require success.\n4. Run `bun run test:critical`. Require existing authority, human_review, telemetry, and supervisor fail-closed behavior to remain green.\n5. Run `bun run ci:local:full`. Require the full local CI route and generated artifacts to pass.\n6. Review `git diff` and `git status --short --untracked-files=all`. Require only planned implementation, tests, generated artifacts, and task-owned evidence; preserve unrelated main-checkout work and exclude `agentplane-roadmap-r2`.",
+  "scope_digest": "sha256:a6421c05f45ced225553bec304a98dd48400a47fe0bbfc3ad8edab8e8ae3d32d",
+  "task_id": "202609130858-RMHWQ5",
+  "verification_command": "agentplane verify 202609130858-RMHWQ5 --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
