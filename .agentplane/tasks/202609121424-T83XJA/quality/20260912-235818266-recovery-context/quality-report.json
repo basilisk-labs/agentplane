@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202609121424-T83XJA",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-13T00:02:55.300Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 2 typed finding(s).",
+  "evaluated_sha": "bd379a43584c154e42589150d7307547179124f0",
+  "blueprint_digest": "a0606595992db659882c934dc9224bb4e23891d77af067972ab0b021db13f8c1",
+  "findings": [
+    "[P1] packages/core/src/runner/supervisor-execution-episode.ts validates timing totals, identities, parent existence, and root bounds, but it does not reject overlapping non-ancestor spans. A direct reproduction through completeSupervisorExecutionEpisode persisted sibling spans [0,8] and [2,10] while partitioned_ms still claimed a reconciled total of 10. The local builder rejects this shape, but the canonical journal is a persisted trust boundary and its public completion API accepts caller-supplied lifecycle_timing. Add schema-level hierarchy, root, cycle, and sibling-overlap validation plus a negative core test so malformed or migrated journals cannot violate ST-13 acceptance.",
+    "Residual risk: Without schema-level structural validation, corrupted, historical, or future caller-generated timing can claim reconciled partitions while its spans overlap, undermining cost and latency analysis."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/1a97cd233f305b740f12f26776deecf8a06c0e9bd64a878412f1ba2d89204faa.patch"
+  ],
+  "missing_tests": [
+    "A core negative test must prove that the canonical journal validator rejects overlapping sibling lifecycle spans, invalid root coverage, cycles, and invalid nesting independently of the local timing builder."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes every lifecycle_timing value reaches the journal through buildMonotonicLifecycleTiming, although completeSupervisorExecutionEpisode exposes lifecycle_timing as caller-supplied input and persisted journals are independently validated."
+  ],
+  "residual_risks": [
+    "Rework is required because the durable lifecycle timing schema does not enforce its non-overlap invariant."
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609121424-T83XJA-fa4a926f24f61d13e8289d9a",
+  "prepared_at": "2026-09-12T23:58:18.266Z",
+  "task": {
+    "id": "202609121424-T83XJA",
+    "revision": 33,
+    "objective": "Implement durable 0.7.9 usage, cost, and latency accounting for ST-08 through ST-13 and ST-17\n\nSource contract: agentplane-roadmap-r2 cards ST-08, ST-09, ST-10, ST-11, ST-12, ST-13, and ST-17. Capture Codex usage durably before semantic-result validation, preserve evaluator charges on failure, connect managed observations to the existing journal, account for external episodes without trusting self-reported tokens, roll up task cost from source observations, partition lifecycle latency without double counting, and separate missing telemetry from semantic quality and further-spend admission. Missing usage is unknown, never zero. A valid saved verdict is reused, while unknown budget blocks additional paid dispatch. Preserve I01-I12 and C01-C08. Do not create a second accounting store or trust model-supplied usage. The roadmap directory is source-only and must never be committed. Required checks: the focused ST-08 through ST-13 and ST-17 test commands, related runner/evaluator/task critical suites, typecheck, schema/mirror checks.",
+    "acceptance_criteria": [
+      "node --test scripts/bench/task-cost-rollup.test.mjs",
+      "- In scope: Source contract: agentplane-roadmap-r2 cards ST-08, ST-09, ST-10, ST-11, ST-12, ST-13, and ST-17. Capture Codex usage durably before semantic-result validation, preserve evaluator charges on failure, connect managed observations to the existing journal, account for external episodes without trusting self-reported tokens, roll up task cost from source observations, partition lifecycle latency without double counting, and separate missing telemetry from semantic quality and further-spend admission. Missing usage is unknown, never zero. A valid saved verdict is reused, while unknown budget blocks additional paid dispatch. Preserve I01-I12 and C01-C08. Do not create a second accounting store or trust model-supplied usage. The roadmap directory is source-only and must never be committed. Required checks: the focused ST-08 through ST-13 and ST-17 test commands, related runner/evaluator/task critical suites, typecheck, schema/mirror checks.\n- Out of scope: unrelated refactors not required for \"Implement durable 0.7.9 usage, cost, and latency accounting for ST-08 through ST-13 and ST-17\".",
+      "Defined five dependency-ordered WorkItems for durable usage, accounting, cost rollup, latency, and spend admission.",
+      "1. Run `bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-usage-durability.test.ts`; require durable identity-bound provider usage before semantic validation, deduplication, and partial or unavailable coverage instead of implicit zero.\n2. Run `bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts`; require observed evaluator charges to survive timeout, nonzero exit, malformed results, and recovery.\n3. Run `bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts`; require all managed roles and attempts to use the existing journal exactly once without classifying CLI operations as billable dispatches.\n4. Run `bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-external-accounting.test.ts`; require external role coverage, idempotent replay, rejection of model-supplied token claims, and explicit unavailable or unallocatable attribution.\n5. Run `node --test scripts/bench/task-cost-rollup.test.mjs`; require nonzero test discovery and exact reconciliation of unique observed, partial, unavailable, failed, role, and attempt records without adding cache or reasoning subsets twice.\n6. Run `bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-stage-timing.test.ts`; require monotonic parent and child stage spans, separate local, USER-wait, and external-wait time, no overlap double count, and no negative elapsed duration.\n7. Run `bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/evaluator/roadmap-telemetry-disposition.test.ts`; require saved valid verdict reuse, a hard stop before unproven further paid spend, and unchanged actual human_review semantics.\n8. Run `bun run typecheck`; require success.\n9. Run `bun run schemas:check`; require persisted and public schema mirrors to be current.\n10. Run `bun run artifacts:check`; require generated artifacts to be current.\n11. Run `bun run test:critical`; require existing authority, stale-state, recovery, evaluator, runner, and task negative cases to remain green.\n12. Run `bun run ci:local:full`; require the full local CI route to pass.\n13. Review `git diff` and `git status --short --untracked-files=all`; require no roadmap file, raw provider payload, secret, second accounting store, unrelated task artifact, generated drift, or unintended path in the task change."
+    ]
+  },
+  "evaluated_sha": "bd379a43584c154e42589150d7307547179124f0",
+  "diff_base_sha": "1f8b58d52ade59dd6185af72b00f70bb6194bdb0",
+  "blueprint_digest": "a0606595992db659882c934dc9224bb4e23891d77af067972ab0b021db13f8c1",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609121424-T83XJA/quality/20260912-235818266-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:451970a9414c5eac3f3e72f07ac04453a058146c99c41eebdd55df41b19ebfa5",
+    "prompt_path": ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/071421ac5ed381e9fa630c98eba2a0ac082af3df1b67e63493bddd992e76b9d3.md",
+    "result_schema_path": ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609121424-T83XJA/README.md",
+      "sha256": "sha256:469839b7f79bc7e5506e60f90a071e75b4ba2bd63ea2aa426210a7002d1eb3a4",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/1a97cd233f305b740f12f26776deecf8a06c0e9bd64a878412f1ba2d89204faa.patch",
+      "sha256": "sha256:1a97cd233f305b740f12f26776deecf8a06c0e9bd64a878412f1ba2d89204faa",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/bac8b18c13630e3e94e99875f6aa192223a12fdf379af46a68a911ce7872fe99.json",
+      "sha256": "sha256:bac8b18c13630e3e94e99875f6aa192223a12fdf379af46a68a911ce7872fe99",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609121424-T83XJA/verification/20260912235808962-d24b6391461802ed.json",
+      "sha256": "sha256:0c7b2d5d699f9e05d871ad8155f54224a49138f65a70a7a5c71d99c093503fd6",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/8c7f73798b088adea69ca9b36d786e09a83742e28743c3425f571fbeb19021b1.json",
+      "sha256": "sha256:8c7f73798b088adea69ca9b36d786e09a83742e28743c3425f571fbeb19021b1",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
