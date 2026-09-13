@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 34
+revision: 35
 origin:
   system: "manual"
 depends_on: []
@@ -58,19 +58,21 @@ quality_review:
   findings:
     - "The reviewed change matches the approved cleanup scope: model-specific diagnostics are removed, semantic prompt assertions remain, all nine safety-critical CLI files remain in the critical route, and all five benchmark files move to qualification. Frozen verification records report passing required checks and repeated critical runs."
 token_usage:
-  agent_runs: 14
-  input_tokens: null
-  journal_digest: "sha256:665ea18dbdfa2dec00bf5f52862a2495b21689fc33e0bf73093c7aa21205a009"
-  observed_agent_runs: 0
+  agent_runs: 15
+  cached_input_observed_agent_runs: 1
+  cached_input_tokens: 254080
+  input_tokens: 316419
+  journal_digest: "sha256:24ce95c0985354f6d76518403cde2d2a7a5f3cc13716d131ab9966fa709242d2"
+  observed_agent_runs: 1
   observed_by: "agentplane"
   output_tokens: null
   reasoning_tokens: null
   schema_version: 1
   source: "supervisor_journal"
-  state: "unavailable"
-  total_tokens: null
-  unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-09-12T23:38:53.265Z"
+  state: "partial"
+  total_tokens: 318399
+  unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
+  updated_at: "2026-09-13T00:13:59.590Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -397,8 +399,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "89f2f1c91f1de2bd7bafc65abc607eb6ef4d7aae"
-  message: "🚧 JFNN6B task: record external evaluator result"
+  hash: "e39210b8d9e2763a7353bdf095036cc2483e8ed5"
+  message: "🧭 JFNN6B task: record evaluator verdict"
 comments:
   -
     author: "CODER"
@@ -424,6 +426,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -504,8 +509,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-13T00:13:59.590Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "e39210b8d9e2763a7353bdf095036cc2483e8ed5"
 doc_version: 3
-doc_updated_at: "2026-09-13T00:13:45.331Z"
+doc_updated_at: "2026-09-13T00:13:59.600Z"
 doc_updated_by: "CODER"
 description: "Remove unused GPT-5.5/GPT-5.6 prompt diagnostic implementations and self-tests, retain the prompt module compiler and model-neutral behavioral contracts, remove the historical fixed-byte assertion while retaining semantic prompt assertions, remove the duplicate coverage-threshold configuration guard, and route agent-efficiency benchmark tests to a separate qualification suite instead of the normal critical CLI gate. Preserve exit-code, scope, symlink, protected-path, trust-boundary, task-centric, and context critical tests. Reduce critical suite process overhead only if the resulting suite passes repeatedly. Avoid files currently modified by tasks 202609080727-BAWTEE and 202609121424-T83XJA. Do not modify benchmark fixtures or semantic gateway implementation."
 sections:
@@ -1319,7 +1332,7 @@ extensions:
       revision: 4
       schema_version: 1
       task_id: "202609122236-JFNN6B"
-    event_cursor: 24
+    event_cursor: 25
     final_validation:
       evidence:
         -
@@ -3000,9 +3013,9 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202609122236-JFNN6B"
-    revision: 34
+    revision: 35
     schema_version: 1
-    updated_at: "2026-09-13T00:07:49.669Z"
+    updated_at: "2026-09-13T00:13:59.590Z"
     work_items:
       work-item-cleanup:
         attempt: 1
@@ -3760,6 +3773,30 @@ extensions:
         previous_revision: 16
         schema_version: 1
         task_id: "202609122236-JFNN6B"
+      compatibility:sha256:e7ffc341c3b99a34892785cd9fa8f1348df2f2a728ce53ad56ee0381de293e0e:
+        aggregate_digest: "sha256:2f5eb10b5bcd4a9fcffe5d1e9d237bf4e9ea40040909e8199760b6d3c0c9d61c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T00:13:59.590Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_d5df869397d494f9855ca42b"
+          mutation_id: "compatibility:sha256:e7ffc341c3b99a34892785cd9fa8f1348df2f2a728ce53ad56ee0381de293e0e"
+          plan_digest: "sha256:395e3263f50efcbc3a42c35b2389f51b3b009827549efdcdd70afb70473535f1"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609122236-JFNN6B"
+          task_revision: 34
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:e7ffc341c3b99a34892785cd9fa8f1348df2f2a728ce53ad56ee0381de293e0e"
+        next_revision: 35
+        previous_revision: 34
+        schema_version: 1
+        task_id: "202609122236-JFNN6B"
       compatibility:sha256:f0d1a076ff96dd84335c9de6b87c311063c9e5c072d4574192231d44f10f0da2:
         aggregate_digest: "sha256:eb27889d68a5af196b1c955e81c7ba6e917f1ef649362a4fe949905b0ec278e2"
         event:
@@ -3957,8 +3994,8 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "dcf9451c10d6690c92589e711ea4cba0bd4c0957"
-    message: "🚧 JFNN6B task: apply external agent result"
+    hash: "eb6e3c0b6b971928f83e5d84ae8db31ef13ab7a1"
+    message: "Merge branch 'main' into task/202609122236-JFNN6B/simplify-the-test-suite-without-weakening-safety"
   task_execution_context:
     base_ref: "main"
     base_sha: "58048a4e1ff97030d3fa86447c739397f0e0936b"
@@ -4319,13 +4356,13 @@ DecisionContextRef:
 
 ## Token Usage
 
-- State: `unavailable`
-- Completeness: `0/14` agent runs
-- Input tokens: `unavailable`
+- State: `partial`
+- Completeness: `1/15` agent runs
+- Input tokens: `316419`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
-- Total tokens: `unavailable`
+- Total tokens: `318399`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:665ea18dbdfa2dec00bf5f52862a2495b21689fc33e0bf73093c7aa21205a009`
-- Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-09-12T23:38:53.265Z`
+- Journal digest: `sha256:24ce95c0985354f6d76518403cde2d2a7a5f3cc13716d131ab9966fa709242d2`
+- Unavailable reason: `some_agent_runs_lack_provider_token_telemetry`
+- Updated at: `2026-09-13T00:13:59.590Z`

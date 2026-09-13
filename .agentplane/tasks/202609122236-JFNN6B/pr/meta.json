@@ -8,10 +8,10 @@
   "pr_number": 5943,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5943",
   "pre_merge_closure": {
-    "basis_commit": "89f2f1c91f1de2bd7bafc65abc607eb6ef4d7aae",
+    "basis_commit": "e39210b8d9e2763a7353bdf095036cc2483e8ed5",
     "branch": "task/202609122236-JFNN6B/simplify-the-test-suite-without-weakening-safety",
     "pr_number": 5943,
-    "recorded_at": "2026-09-12T23:38:53.402Z",
+    "recorded_at": "2026-09-13T00:13:59.732Z",
     "state": "closed_before_merge"
   },
   "provider": {
