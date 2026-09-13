@@ -4,7 +4,7 @@ title: "Qualify and document the 0.7.9 stabilization candidate for ST-18 through
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 28
 origin:
   system: "manual"
 depends_on:
@@ -361,7 +361,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "c37d4da284813bc9c2cfd09defa6629e9df4b0c3"
+  hash: "0b8e70ef0ebce357a71eded9628f4264d5dd1b4d"
   message: "🚧 4BC7B3 task: apply external agent result"
 comments:
   -
@@ -397,6 +397,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: c37d4da28481. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 0b8e70ef0ebc. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -471,8 +474,16 @@ events:
     to: "DOING"
     note: "Implementation committed: c37d4da28481. CLI accepted one state-bound external-agent semantic result."
     commit: "c37d4da284813bc9c2cfd09defa6629e9df4b0c3"
+  -
+    type: "status"
+    at: "2026-09-13T21:36:59.100Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 0b8e70ef0ebc. CLI accepted one state-bound external-agent semantic result."
+    commit: "0b8e70ef0ebce357a71eded9628f4264d5dd1b4d"
 doc_version: 3
-doc_updated_at: "2026-09-13T21:34:12.843Z"
+doc_updated_at: "2026-09-13T21:36:59.100Z"
 doc_updated_by: "SUPERVISOR"
 description: "Source contract: agentplane-roadmap-r2 cards ST-18, ST-19, and ST-20. Build the exact clean installed candidate and run the frozen direct, branch, recovery, old-record, required PLANNER, and required EVALUATOR corpus. Then, under the user-approved spend and sandbox authority, execute the preregistered M01 paired pilot with complete all-attempt raw evidence and expand only by its fixed uncertainty rule; report NOT ESTABLISHED when coverage is insufficient. Record exact product and target SHAs separately. Finally document only observed 0.7.9 behavior and measurements and the 0.7.10 through 0.7.14 boundary. Do not weaken golden outcomes, disable Blueprint writers, omit required stages, rerun until green, or claim unsupported efficiency. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: package tarball check, local install smoke, release critical suite, benchmark check and replay check, documentation bootstrap and onboarding checks, plus exact evidence review."
 sections:
@@ -1093,7 +1104,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609121424-4BC7B3"
-    event_cursor: 20
+    event_cursor: 22
     final_validation: null
     id: "202609121424-4BC7B3"
     intent:
@@ -2258,9 +2269,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609121424-4BC7B3"
-    revision: 26
+    revision: 28
     schema_version: 1
-    updated_at: "2026-09-13T21:34:12.843Z"
+    updated_at: "2026-09-13T21:36:59.100Z"
     work_items:
       align-token-measurement-contract:
         attempt: 1
@@ -2626,6 +2637,30 @@ extensions:
         previous_revision: 9
         schema_version: 1
         task_id: "202609121424-4BC7B3"
+      compatibility:sha256:61adaadfe3fa61a154edea8b046e6743df0ad489f967acccfdc212bbea82cace:
+        aggregate_digest: "sha256:5ff70bfd76616336ef4cf01fba498ac03e2e3db6753b09cac4af6cb4f9101eab"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T21:36:59.100Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_905042a7f9b405a0e7859e40"
+          mutation_id: "compatibility:sha256:61adaadfe3fa61a154edea8b046e6743df0ad489f967acccfdc212bbea82cace"
+          plan_digest: "sha256:8a1ce7a2f7c1bd5543bab4cf019887053321288654bc3dbf4761cc511f44fd52"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-4BC7B3"
+          task_revision: 26
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:61adaadfe3fa61a154edea8b046e6743df0ad489f967acccfdc212bbea82cace"
+        next_revision: 27
+        previous_revision: 26
+        schema_version: 1
+        task_id: "202609121424-4BC7B3"
       compatibility:sha256:62ad2bafed44c3b78de28e359f74272b713dea66e5c4bda4e435477e3a630095:
         aggregate_digest: "sha256:600877520eb836aab7a95fabf365021f9196db111df271ab766d1b3866636caa"
         event:
@@ -2792,6 +2827,30 @@ extensions:
         mutation_id: "compatibility:sha256:a5ce0241ff0d18a4f449db79fa958a0f9bc04ae5681fbe008da240d2d2681499"
         next_revision: 20
         previous_revision: 19
+        schema_version: 1
+        task_id: "202609121424-4BC7B3"
+      compatibility:sha256:b9dcc6f4aa5c8a487dc71b3b7541f7306f3a7d278d2175881ecaf2b38a26a0ae:
+        aggregate_digest: "sha256:f21ce875ab32d613fa0ce85461b483894bcae13e9a8b501c24ddd0311d2d1877"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T21:36:59.100Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_c77a28706ab24255c923c7c3"
+          mutation_id: "compatibility:sha256:b9dcc6f4aa5c8a487dc71b3b7541f7306f3a7d278d2175881ecaf2b38a26a0ae"
+          plan_digest: "sha256:8a1ce7a2f7c1bd5543bab4cf019887053321288654bc3dbf4761cc511f44fd52"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-4BC7B3"
+          task_revision: 27
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b9dcc6f4aa5c8a487dc71b3b7541f7306f3a7d278d2175881ecaf2b38a26a0ae"
+        next_revision: 28
+        previous_revision: 27
         schema_version: 1
         task_id: "202609121424-4BC7B3"
       compatibility:sha256:c99a0dc1a8f9e9467aec4cd14a1916611bc60598220945e41274159d73e78e4a:
@@ -2990,7 +3049,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "c37d4da284813bc9c2cfd09defa6629e9df4b0c3"
+    hash: "0b8e70ef0ebce357a71eded9628f4264d5dd1b4d"
   task_execution_context:
     base_ref: "main"
     base_sha: "58dbda0d5f88c8a83802c5aee3a9380d001dd4b2"
