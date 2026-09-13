@@ -412,5 +412,15 @@ describe("roadmap managed semantic output parity", () => {
         canonical_outputs: [{ id: "source", kind: "source", digest }],
       }),
     ).rejects.toThrow(/work_order_id/u);
+    await expect(
+      materialize({
+        ...basePayload,
+        canonical_outputs: [{ id: "source", kind: "source", digest }],
+        canonical_binding: {
+          ...workOrder.canonical_binding,
+          repository_fingerprint: `sha256:${"b".repeat(64)}`,
+        },
+      }),
+    ).rejects.toThrow();
   });
 });

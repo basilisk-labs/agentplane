@@ -29,13 +29,13 @@ Source contract: agentplane-roadmap-r2 cards ST-06 and ST-07. Preserve required 
 ```text
  .../src/runner/adapters/codex-result-transport.ts  |  46 ++-
  packages/agentplane/src/runner/adapters/codex.ts   |   7 +-
- .../runner/adapters/roadmap-output-parity.test.ts  | 416 +++++++++++++++++++++
+ .../runner/adapters/roadmap-output-parity.test.ts  | 426 +++++++++++++++++++++
  packages/agentplane/src/runner/artifacts.ts        |   2 +-
  .../roadmap-requirement-conservation.test.ts       |  67 ++++
  .../src/runner/usecases/task-run-bootstrap.ts      |  14 +-
  packages/core/src/runner/agent-work-order.ts       |  17 +-
  scripts/lib/test-route-registry.mjs                |   2 +
- 8 files changed, 565 insertions(+), 6 deletions(-)
+ 8 files changed, 575 insertions(+), 6 deletions(-)
 ```
 
 </details>

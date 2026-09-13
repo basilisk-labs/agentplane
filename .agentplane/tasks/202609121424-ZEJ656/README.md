@@ -4,7 +4,7 @@ title: "Conserve 0.7.9 semantic requirements and managed output parity for ST-06
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 19
 origin:
   system: "manual"
 depends_on:
@@ -21,9 +21,9 @@ verify:
   - "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts"
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-13T03:14:07.445Z"
+  updated_at: "2026-09-13T17:24:31.079Z"
   updated_by: "HOST:codex:USER"
-  note: "host_user_decision=sha256:cb105a4becf7e877714c51f3efcfe0a2915c32697a5913133abd77f5910b028b"
+  note: "host_user_decision=sha256:dd58ed194d6d04b319bce4c64fcc3ce4818712567d8b846d06d45f233b22793f"
 verification:
   state: "pending"
   updated_at: null
@@ -74,9 +74,9 @@ execution_contract:
     implementation_uncertainty: "bounded"
     preferred_mode: "branch_pr"
     rationale:
-      - "Focused regression tests must prove required-field conservation, typed output parity, and fail-closed identity checks."
-      - "Repository policy requires protected branch and pull request integration for code changes."
-      - "The task changes semantic prompt projection and managed result transport behavior."
+      - "Protected branch integration still requires hosted verification."
+      - "The corrected validation commands are the canonical scripts exposed by the repository."
+      - "The task branch already contains the scoped semantic projection and managed result transport implementation."
     repository_effects:
       - "repository_write"
       - "source_code"
@@ -94,24 +94,10 @@ execution_contract:
       - "scripts/lib/test-route-registry.mjs"
   observed:
     authority_violations: []
-    changed_components:
-      - "packages/agentplane"
-      - "packages/core"
-      - "scripts"
-    changed_paths:
-      - "packages/agentplane/src/runner/adapters/codex-result-transport.ts"
-      - "packages/agentplane/src/runner/adapters/codex.ts"
-      - "packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts"
-      - "packages/agentplane/src/runner/artifacts.ts"
-      - "packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts"
-      - "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
-      - "packages/core/src/runner/agent-work-order.ts"
-      - "scripts/lib/test-route-registry.mjs"
+    changed_components: []
+    changed_paths: []
     external_effects: []
-    repository_effects:
-      - "repository_write"
-      - "source_code"
-      - "tests"
+    repository_effects: []
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -150,36 +136,20 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:010bcd40df7208dd3d1348947543798218bec85341976276d87f1b39b8c0356f"
+      digest: "sha256:3cd46491b29fa27b6f7aadcd70b1a9a854f40ca940810815d308ca88dcad7233"
       escalation_reasons:
         - "central_component:packages/core/src/runner/agent-work-order.ts"
         - "central_component:scripts/lib/test-route-registry.mjs"
-        - "central_path:packages/core/src/runner/agent-work-order.ts"
-        - "central_path:scripts/lib/test-route-registry.mjs"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components:
-          - "packages/agentplane"
-          - "packages/core"
-          - "scripts"
-        changed_files:
-          - "packages/agentplane/src/runner/adapters/codex-result-transport.ts"
-          - "packages/agentplane/src/runner/adapters/codex.ts"
-          - "packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts"
-          - "packages/agentplane/src/runner/artifacts.ts"
-          - "packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts"
-          - "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
-          - "packages/core/src/runner/agent-work-order.ts"
-          - "scripts/lib/test-route-registry.mjs"
+        changed_components: []
+        changed_files: []
         external_effects: []
-        repository_effects:
-          - "repository_write"
-          - "source_code"
-          - "tests"
+        repository_effects: []
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -211,9 +181,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "1701d84884996c6c7390aa25f6ca9235f6632dc6"
-  message: "🚧 ZEJ656 task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -260,7 +228,7 @@ events:
     note: "Implementation committed: 1701d8488499. CLI accepted one state-bound external-agent semantic result."
     commit: "1701d84884996c6c7390aa25f6ca9235f6632dc6"
 doc_version: 3
-doc_updated_at: "2026-09-13T16:20:19.273Z"
+doc_updated_at: "2026-09-13T16:26:53.983Z"
 doc_updated_by: "SUPERVISOR"
 description: "Source contract: agentplane-roadmap-r2 cards ST-06 and ST-07. Preserve required objective, scope, outputs, checks, constraints, stop rules, WorkItem and WorkOrder identity across prompt compaction and role-specific projection. Repair managed semantic-result transport so completed, blocked, needs_context, and failed outcomes retain permitted typed fields without adapter loss. Do not add a second Plan or lifecycle format, and do not expose secrets. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: focused requirement-conservation and adapter output-parity tests with nonzero discovery, related transport/context critical suites, typecheck, schema/mirror checks."
 sections:
@@ -271,7 +239,7 @@ sections:
   Scope: |-
     - In scope: Source contract: agentplane-roadmap-r2 cards ST-06 and ST-07. Preserve required objective, scope, outputs, checks, constraints, stop rules, WorkItem and WorkOrder identity across prompt compaction and role-specific projection. Repair managed semantic-result transport so completed, blocked, needs_context, and failed outcomes retain permitted typed fields without adapter loss. Do not add a second Plan or lifecycle format, and do not expose secrets. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: focused requirement-conservation and adapter output-parity tests with nonzero discovery, related transport/context critical suites, typecheck, schema/mirror checks.
     - Out of scope: unrelated refactors not required for "Conserve 0.7.9 semantic requirements and managed output parity for ST-06 and ST-07".
-  Plan: "Planned requirement conservation and managed semantic output parity as two bounded implementation work items."
+  Plan: "Replanned the already implemented task around one validation work item with repository-defined schema and agent-template commands."
   Verify Steps: |-
     1. Run `bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts`. Expected: mandatory objective, criteria, scope, checks, outputs, constraints, stop rules, WorkItem identity, and WorkOrder identity survive prompt projection; lifecycle authority is unchanged; budget overflow stops explicitly.
     2. Run `bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts`. Expected: supported PLANNER, EXECUTOR, EVALUATOR, and context-role fields survive real prepare/schema/JSONL/normalization/acceptance transport; wrong-work-order, stale, cross-role, and lifecycle-injection results fail closed.
@@ -288,7 +256,7 @@ sections:
 extensions:
   agentplane.execution_grant:
     actor: "HOST:codex:USER"
-    approval_evidence_digest: "sha256:cb105a4becf7e877714c51f3efcfe0a2915c32697a5913133abd77f5910b028b"
+    approval_evidence_digest: "sha256:dd58ed194d6d04b319bce4c64fcc3ce4818712567d8b846d06d45f233b22793f"
     approval_kind: "host_user_decision"
     capabilities:
       - "provider.merge"
@@ -298,12 +266,12 @@ extensions:
       - "task.lifecycle"
       - "task.scope.extend"
     completion_contract_digest: "sha256:a18e1366f802e14001cd307a12aee83912fec47feade8d43d32d55353fdc8510"
-    digest: "sha256:b753feee76a35bb40f4eb7264e44d55d1432a8e562c1572a63d97db5446e64e8"
-    grant_id: "da6bee5f-f2c8-468d-8d2d-4b5e26d659a4"
-    issued_at: "2026-09-13T03:14:07.445Z"
+    digest: "sha256:0f63f50ef854e89c72cdd5f6f30d772de4959deef2bf0cbfbfaa69f9fd90737d"
+    grant_id: "68bf1a77-5819-45db-80fe-88a45b98f874"
+    issued_at: "2026-09-13T17:24:31.079Z"
     kind: "agentplane.execution_grant"
-    plan_digest: "sha256:a97367ff75ecb65dd3eb94433e45100966c751e2be4a6d157fa5b5f70528efff"
-    plan_revision: 4
+    plan_digest: "sha256:b96de236a038365ee457aa240e278e1b663bcb9684f2c852af4be10cfa3eab87"
+    plan_revision: 18
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
     scope_digest: "sha256:65f818387fe18e2395974d2c9ba0010295d3db8f70b3a9a513cccae132b1d575"
@@ -312,175 +280,32 @@ extensions:
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-13T03:14:07.445Z"
+        approved_at: "2026-09-13T17:24:31.079Z"
         approved_by: "HOST:codex:USER"
-        approved_digest: "sha256:e836cd4203509fd333b08434d284d133bf9c903d28fd4d3515a4a195c6e6768e"
+        approved_digest: "sha256:6cfcdb60047f6021f1f8c7a6f4fa3d300d878b6545b029bd41f4c4553e77e321"
         policy_facts:
           - "host_user_decision"
         state: "approved"
-      created_at: "2026-09-13T03:13:19.324Z"
-      digest: "sha256:e836cd4203509fd333b08434d284d133bf9c903d28fd4d3515a4a195c6e6768e"
+      created_at: "2026-09-13T16:26:53.973Z"
+      digest: "sha256:6cfcdb60047f6021f1f8c7a6f4fa3d300d878b6545b029bd41f4c4553e77e321"
       proposal:
         assumptions:
-          - "The current task-centric schema and role-specific semantic payload builders remain the canonical representations."
-          - "The executor may replace proposed test file names with equivalent registered focused tests only when nonzero discovery is proven."
+          - "The current task-branch implementation commits remain the candidate being validated."
         planning_baseline:
-          captured_at: "2026-09-13T03:11:41.977Z"
+          captured_at: "2026-09-13T16:24:15.279Z"
           config_digest: null
           context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
-          digest: "sha256:628e42c9653eecb354284453aa12761715376c818a62c99ee3d6321d18505c18"
+          digest: "sha256:0f0f0977ae3e7b92249e8dc6f6977451521e97d3a39f1fb8797e5c442250e019"
           dirty_paths:
-            - ".agentplane/tasks/202609072121-9VEHKH/README.md"
-            - ".agentplane/tasks/202609080727-BAWTEE/README.md"
-            - ".agentplane/tasks/202609121424-3YAX44/README.md"
-            - ".agentplane/tasks/202609121424-49XXT3/README.md"
-            - ".agentplane/tasks/202609121424-4BC7B3/README.md"
             - ".agentplane/tasks/202609121424-ZEJ656/README.md"
-            - ".agentplane/tasks/202609130146-7AZ4T4/README.md"
-            - "agentplane-roadmap-r2/AGENT-START.md"
-            - "agentplane-roadmap-r2/EXECUTION-CHARTER.md"
-            - "agentplane-roadmap-r2/README.md"
-            - "agentplane-roadmap-r2/agentplane-0.7.9-0.7.14-roadmap-r2.md"
-            - "agentplane-roadmap-r2/checksums.json"
-            - "agentplane-roadmap-r2/coverage-and-gap-audit.md"
-            - "agentplane-roadmap-r2/coverage-map.json"
-            - "agentplane-roadmap-r2/dependency-graph.json"
-            - "agentplane-roadmap-r2/experiment-requirements.json"
-            - "agentplane-roadmap-r2/releases/0.7.10.md"
-            - "agentplane-roadmap-r2/releases/0.7.11.md"
-            - "agentplane-roadmap-r2/releases/0.7.12.md"
-            - "agentplane-roadmap-r2/releases/0.7.13.md"
-            - "agentplane-roadmap-r2/releases/0.7.14.md"
-            - "agentplane-roadmap-r2/releases/0.7.9.md"
-            - "agentplane-roadmap-r2/source-evidence.json"
-            - "agentplane-roadmap-r2/tasks.json"
-            - "agentplane-roadmap-r2/tasks/BP-01.md"
-            - "agentplane-roadmap-r2/tasks/BP-02.md"
-            - "agentplane-roadmap-r2/tasks/BP-03.md"
-            - "agentplane-roadmap-r2/tasks/BP-04.md"
-            - "agentplane-roadmap-r2/tasks/BP-05.md"
-            - "agentplane-roadmap-r2/tasks/BP-06.md"
-            - "agentplane-roadmap-r2/tasks/BP-07.md"
-            - "agentplane-roadmap-r2/tasks/BP-08.md"
-            - "agentplane-roadmap-r2/tasks/BP-09.md"
-            - "agentplane-roadmap-r2/tasks/BP-10.md"
-            - "agentplane-roadmap-r2/tasks/BP-11.md"
-            - "agentplane-roadmap-r2/tasks/BP-12.md"
-            - "agentplane-roadmap-r2/tasks/BP-13.md"
-            - "agentplane-roadmap-r2/tasks/BP-14.md"
-            - "agentplane-roadmap-r2/tasks/BP-15.md"
-            - "agentplane-roadmap-r2/tasks/BP-16.md"
-            - "agentplane-roadmap-r2/tasks/BP-17.md"
-            - "agentplane-roadmap-r2/tasks/BP-18.md"
-            - "agentplane-roadmap-r2/tasks/BP-19.md"
-            - "agentplane-roadmap-r2/tasks/BP-20.md"
-            - "agentplane-roadmap-r2/tasks/BP-21.md"
-            - "agentplane-roadmap-r2/tasks/BP-22.md"
-            - "agentplane-roadmap-r2/tasks/BP-23.md"
-            - "agentplane-roadmap-r2/tasks/BP-24.md"
-            - "agentplane-roadmap-r2/tasks/BP-25.md"
-            - "agentplane-roadmap-r2/tasks/BP-26.md"
-            - "agentplane-roadmap-r2/tasks/BP-27.md"
-            - "agentplane-roadmap-r2/tasks/BP-28.md"
-            - "agentplane-roadmap-r2/tasks/BP-29.md"
-            - "agentplane-roadmap-r2/tasks/BP-30.md"
-            - "agentplane-roadmap-r2/tasks/BP-31.md"
-            - "agentplane-roadmap-r2/tasks/EV-01.md"
-            - "agentplane-roadmap-r2/tasks/EV-02.md"
-            - "agentplane-roadmap-r2/tasks/EV-03.md"
-            - "agentplane-roadmap-r2/tasks/EV-04.md"
-            - "agentplane-roadmap-r2/tasks/EV-05.md"
-            - "agentplane-roadmap-r2/tasks/EV-06.md"
-            - "agentplane-roadmap-r2/tasks/EV-07.md"
-            - "agentplane-roadmap-r2/tasks/EV-08.md"
-            - "agentplane-roadmap-r2/tasks/EV-09.md"
-            - "agentplane-roadmap-r2/tasks/EV-10.md"
-            - "agentplane-roadmap-r2/tasks/EV-11.md"
-            - "agentplane-roadmap-r2/tasks/EV-12.md"
-            - "agentplane-roadmap-r2/tasks/EV-13.md"
-            - "agentplane-roadmap-r2/tasks/LC-01.md"
-            - "agentplane-roadmap-r2/tasks/LC-02.md"
-            - "agentplane-roadmap-r2/tasks/LC-03.md"
-            - "agentplane-roadmap-r2/tasks/LC-04.md"
-            - "agentplane-roadmap-r2/tasks/LC-05.md"
-            - "agentplane-roadmap-r2/tasks/LC-06.md"
-            - "agentplane-roadmap-r2/tasks/LC-07.md"
-            - "agentplane-roadmap-r2/tasks/LC-08.md"
-            - "agentplane-roadmap-r2/tasks/LC-09.md"
-            - "agentplane-roadmap-r2/tasks/LC-10.md"
-            - "agentplane-roadmap-r2/tasks/LC-11.md"
-            - "agentplane-roadmap-r2/tasks/LC-12.md"
-            - "agentplane-roadmap-r2/tasks/LC-13.md"
-            - "agentplane-roadmap-r2/tasks/LC-14.md"
-            - "agentplane-roadmap-r2/tasks/LC-15.md"
-            - "agentplane-roadmap-r2/tasks/LC-16.md"
-            - "agentplane-roadmap-r2/tasks/LC-17.md"
-            - "agentplane-roadmap-r2/tasks/LC-18.md"
-            - "agentplane-roadmap-r2/tasks/LC-19.md"
-            - "agentplane-roadmap-r2/tasks/LC-20.md"
-            - "agentplane-roadmap-r2/tasks/LC-21.md"
-            - "agentplane-roadmap-r2/tasks/LC-22.md"
-            - "agentplane-roadmap-r2/tasks/LC-23.md"
-            - "agentplane-roadmap-r2/tasks/PL-01.md"
-            - "agentplane-roadmap-r2/tasks/PL-02.md"
-            - "agentplane-roadmap-r2/tasks/PL-03.md"
-            - "agentplane-roadmap-r2/tasks/PL-04.md"
-            - "agentplane-roadmap-r2/tasks/PL-05.md"
-            - "agentplane-roadmap-r2/tasks/PL-06.md"
-            - "agentplane-roadmap-r2/tasks/PL-07.md"
-            - "agentplane-roadmap-r2/tasks/PL-08.md"
-            - "agentplane-roadmap-r2/tasks/PL-09.md"
-            - "agentplane-roadmap-r2/tasks/PL-10.md"
-            - "agentplane-roadmap-r2/tasks/PL-11.md"
-            - "agentplane-roadmap-r2/tasks/PL-12.md"
-            - "agentplane-roadmap-r2/tasks/RC-01.md"
-            - "agentplane-roadmap-r2/tasks/RC-02.md"
-            - "agentplane-roadmap-r2/tasks/RC-03.md"
-            - "agentplane-roadmap-r2/tasks/RC-04.md"
-            - "agentplane-roadmap-r2/tasks/RC-05.md"
-            - "agentplane-roadmap-r2/tasks/RC-06.md"
-            - "agentplane-roadmap-r2/tasks/RC-07.md"
-            - "agentplane-roadmap-r2/tasks/RC-08.md"
-            - "agentplane-roadmap-r2/tasks/RC-09.md"
-            - "agentplane-roadmap-r2/tasks/RC-10.md"
-            - "agentplane-roadmap-r2/tasks/RC-11.md"
-            - "agentplane-roadmap-r2/tasks/RC-12.md"
-            - "agentplane-roadmap-r2/tasks/RC-13.md"
-            - "agentplane-roadmap-r2/tasks/RC-14.md"
-            - "agentplane-roadmap-r2/tasks/RC-15.md"
-            - "agentplane-roadmap-r2/tasks/RC-16.md"
-            - "agentplane-roadmap-r2/tasks/RC-17.md"
-            - "agentplane-roadmap-r2/tasks/RC-18.md"
-            - "agentplane-roadmap-r2/tasks/ST-01.md"
-            - "agentplane-roadmap-r2/tasks/ST-02.md"
-            - "agentplane-roadmap-r2/tasks/ST-03.md"
-            - "agentplane-roadmap-r2/tasks/ST-04.md"
-            - "agentplane-roadmap-r2/tasks/ST-05.md"
-            - "agentplane-roadmap-r2/tasks/ST-06.md"
-            - "agentplane-roadmap-r2/tasks/ST-07.md"
-            - "agentplane-roadmap-r2/tasks/ST-08.md"
-            - "agentplane-roadmap-r2/tasks/ST-09.md"
-            - "agentplane-roadmap-r2/tasks/ST-10.md"
-            - "agentplane-roadmap-r2/tasks/ST-11.md"
-            - "agentplane-roadmap-r2/tasks/ST-12.md"
-            - "agentplane-roadmap-r2/tasks/ST-13.md"
-            - "agentplane-roadmap-r2/tasks/ST-14.md"
-            - "agentplane-roadmap-r2/tasks/ST-15.md"
-            - "agentplane-roadmap-r2/tasks/ST-16.md"
-            - "agentplane-roadmap-r2/tasks/ST-17.md"
-            - "agentplane-roadmap-r2/tasks/ST-18.md"
-            - "agentplane-roadmap-r2/tasks/ST-19.md"
-            - "agentplane-roadmap-r2/tasks/ST-20.md"
-            - "agentplane-roadmap-r2/tasks/ST-21.md"
-            - "agentplane-roadmap-r2/validate_roadmap.py"
-            - "agentplane-roadmap-r2/validation-report.json"
+            - ".agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
           git:
             kind: "commit"
             ref: null
-            sha: "d03a5e786db57136bf7f6c4661b148bcf97cfaf1"
+            sha: "b6c6d36234b083640fe9c7e1971120dc3cdf0d81"
           policy_digest: null
           schema_version: 1
-          task_history_cursor: "task-revision:2"
+          task_history_cursor: "task-revision:17"
         schema_version: 1
         task_id: "202609121424-ZEJ656"
         top_level_validation:
@@ -515,7 +340,7 @@ extensions:
               timeout_ms: 900000
             -
               capability: "task.verify"
-              command: "bun run check:schemas && bun run check:agent-assets"
+              command: "bun run schemas:check && bun run agents:check"
               id: "schema_mirrors"
               kind: "deterministic"
               required: true
@@ -535,14 +360,14 @@ extensions:
               check_ids:
                 - "requirement_conservation"
                 - "related_context_transport"
-              description: "Every mandatory objective, criterion, scope, check, output, constraint, stop rule, WorkItem identity, and WorkOrder identity retains a delivered prompt representation without granting lifecycle authority."
+              description: "Mandatory semantic requirements remain projected only under explicit process-mechanism-repair authority while ordinary lifecycle commands remain filtered."
               id: "requirements_conserved"
               required: true
             -
               check_ids:
                 - "output_parity"
                 - "related_context_transport"
-              description: "PLANNER, EXECUTOR, EVALUATOR, and supported context-role results preserve permitted typed fields through prepare, schema, JSONL, normalization, and acceptance while wrong-work-order, stale, cross-role, and lifecycle-injection results fail closed."
+              description: "Completed, blocked, needs_context, and failed results preserve permitted role-specific fields while stale identity, cross-role output, and lifecycle injection fail closed."
               id: "typed_outputs_preserved"
               required: true
             -
@@ -551,10 +376,10 @@ extensions:
                 - "schema_mirrors"
                 - "scope_hygiene"
                 - "hosted_integration"
-              description: "Type checking, schema and mirror validation, registered nonzero test discovery, scope hygiene, hosted CI, and final task outcome all pass."
+              description: "Type checking, schema and agent-template mirrors, scope hygiene, hosted integration, and final task outcome pass."
               id: "repository_contracts_green"
               required: true
-          evidence_fingerprint: "sha256:628e42c9653eecb354284453aa12761715376c818a62c99ee3d6321d18505c18"
+          evidence_fingerprint: "sha256:0f0f0977ae3e7b92249e8dc6f6977451521e97d3a39f1fb8797e5c442250e019"
           schema_version: 1
         unresolved_questions: []
         work_items:
@@ -566,41 +391,58 @@ extensions:
                   check_ids:
                     - "requirement_conservation"
                     - "related_context_transport"
-                  description: "Every mandatory objective, criterion, scope, check, output, constraint, stop rule, WorkItem identity, and WorkOrder identity retains a delivered prompt representation without granting lifecycle authority."
+                  description: "Mandatory semantic requirements remain projected only under explicit process-mechanism-repair authority while ordinary lifecycle commands remain filtered."
                   id: "requirements_conserved"
+                  required: true
+                -
+                  check_ids:
+                    - "output_parity"
+                    - "related_context_transport"
+                  description: "Completed, blocked, needs_context, and failed results preserve permitted role-specific fields while stale identity, cross-role output, and lifecycle injection fail closed."
+                  id: "typed_outputs_preserved"
+                  required: true
+                -
+                  check_ids:
+                    - "typecheck"
+                    - "schema_mirrors"
+                    - "scope_hygiene"
+                    - "hosted_integration"
+                  description: "Type checking, schema and agent-template mirrors, scope hygiene, hosted integration, and final task outcome pass."
+                  id: "repository_contracts_green"
                   required: true
               capabilities:
                 - "task.verify"
               context:
-                max_bytes: 800000
-                optional_sources:
-                  - "packages/core/src/tasks/task-centric/schema.ts"
+                max_bytes: 1000000
+                optional_sources: []
                 required_sources:
                   - ".agentplane/tasks/202609121424-ZEJ656/README.md"
-                  - "packages/agentplane/src/runner/context/semantic-prompt-projection.ts"
-                  - "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
+                  - "packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts"
+                  - "packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts"
                 symbol_hints:
-                  - "semantic prompt projection"
-                  - "mandatory requirements"
-                  - "process choreography"
+                  - "semantic requirement conservation"
+                  - "managed semantic output transport"
+                  - "WorkOrder identity"
               depends_on: []
               expected_outputs:
-                - "requirement_trace_contract"
-                - "requirement_conservation_regressions"
-              id: "conserve_requirements"
-              objective: "Trace every mandatory task requirement into semantic prompt projection and replace only proven destructive filtering while keeping supervisor lifecycle authority unchanged."
+                - "qualified_requirement_and_transport_implementation"
+              id: "validate_existing_implementation"
+              objective: "Validate the already committed requirement-conservation and managed-output implementation with the corrected repository commands and return its typed outcome evidence."
               optional: false
               priority: 1
               required_inputs: []
               resource_claims:
                 -
-                  kind: "path"
-                  mode: "write"
-                  resource: "packages/agentplane/src/runner/context"
+                  kind: "workspace"
+                  mode: "exclusive"
+                  resource: "semantic-transport-worktree"
               risk: "medium"
               scope_roots:
                 - "packages/agentplane/src/runner/context"
                 - "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
+                - "packages/agentplane/src/runner/adapters"
+                - "packages/agentplane/src/runner/artifacts.ts"
+                - "packages/core/src/runner/agent-work-order.ts"
                 - "scripts/lib/test-route-registry.mjs"
               validation:
                 checks:
@@ -611,81 +453,6 @@ extensions:
                     kind: "deterministic"
                     required: true
                     timeout_ms: 600000
-                  -
-                    capability: "task.verify"
-                    command: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context packages/agentplane/src/runner/adapters"
-                    id: "related_context_transport"
-                    kind: "deterministic"
-                    required: true
-                    timeout_ms: 900000
-                criteria:
-                  -
-                    check_ids:
-                      - "requirement_conservation"
-                      - "related_context_transport"
-                    description: "Every mandatory objective, criterion, scope, check, output, constraint, stop rule, WorkItem identity, and WorkOrder identity retains a delivered prompt representation without granting lifecycle authority."
-                    id: "requirements_conserved"
-                    required: true
-                evidence_fingerprint: "sha256:628e42c9653eecb354284453aa12761715376c818a62c99ee3d6321d18505c18"
-                schema_version: 1
-            -
-              acceptance_criteria:
-                -
-                  check_ids:
-                    - "output_parity"
-                    - "related_context_transport"
-                  description: "PLANNER, EXECUTOR, EVALUATOR, and supported context-role results preserve permitted typed fields through prepare, schema, JSONL, normalization, and acceptance while wrong-work-order, stale, cross-role, and lifecycle-injection results fail closed."
-                  id: "typed_outputs_preserved"
-                  required: true
-                -
-                  check_ids:
-                    - "typecheck"
-                    - "schema_mirrors"
-                    - "scope_hygiene"
-                    - "hosted_integration"
-                  description: "Type checking, schema and mirror validation, registered nonzero test discovery, scope hygiene, hosted CI, and final task outcome all pass."
-                  id: "repository_contracts_green"
-                  required: true
-              capabilities:
-                - "task.verify"
-              context:
-                max_bytes: 1000000
-                optional_sources:
-                  - "packages/core/src/tasks/kernel-semantic.ts"
-                required_sources:
-                  - ".agentplane/tasks/202609121424-ZEJ656/README.md"
-                  - "packages/agentplane/src/runner/adapters/codex-result-transport.ts"
-                  - "packages/agentplane/src/runner/adapters/prepared-input.ts"
-                  - "packages/agentplane/src/runner/artifacts.ts"
-                  - "packages/core/src/runner/agent-work-order.ts"
-                symbol_hints:
-                  - "role schema"
-                  - "WorkOrder identity"
-                  - "semantic result normalization"
-              depends_on:
-                - "conserve_requirements"
-              expected_outputs:
-                - "managed_output_parity_contract"
-                - "fail_closed_transport_regressions"
-              id: "preserve_typed_results"
-              objective: "Exercise the real managed output transport and reuse the existing role and phase schema builder to preserve permitted typed fields while rejecting stale identity, cross-role output, and lifecycle injection."
-              optional: false
-              priority: 2
-              required_inputs:
-                - "requirement_trace_contract"
-              resource_claims:
-                -
-                  kind: "workspace"
-                  mode: "exclusive"
-                  resource: "semantic-transport-worktree"
-              risk: "medium"
-              scope_roots:
-                - "packages/agentplane/src/runner/adapters"
-                - "packages/agentplane/src/runner/artifacts.ts"
-                - "packages/core/src/runner/agent-work-order.ts"
-                - "scripts/lib/test-route-registry.mjs"
-              validation:
-                checks:
                   -
                     capability: "task.verify"
                     command: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts"
@@ -709,7 +476,7 @@ extensions:
                     timeout_ms: 900000
                   -
                     capability: "task.verify"
-                    command: "bun run check:schemas && bun run check:agent-assets"
+                    command: "bun run schemas:check && bun run agents:check"
                     id: "schema_mirrors"
                     kind: "deterministic"
                     required: true
@@ -727,9 +494,16 @@ extensions:
                 criteria:
                   -
                     check_ids:
+                      - "requirement_conservation"
+                      - "related_context_transport"
+                    description: "Mandatory semantic requirements remain projected only under explicit process-mechanism-repair authority while ordinary lifecycle commands remain filtered."
+                    id: "requirements_conserved"
+                    required: true
+                  -
+                    check_ids:
                       - "output_parity"
                       - "related_context_transport"
-                    description: "PLANNER, EXECUTOR, EVALUATOR, and supported context-role results preserve permitted typed fields through prepare, schema, JSONL, normalization, and acceptance while wrong-work-order, stale, cross-role, and lifecycle-injection results fail closed."
+                    description: "Completed, blocked, needs_context, and failed results preserve permitted role-specific fields while stale identity, cross-role output, and lifecycle injection fail closed."
                     id: "typed_outputs_preserved"
                     required: true
                   -
@@ -738,15 +512,15 @@ extensions:
                       - "schema_mirrors"
                       - "scope_hygiene"
                       - "hosted_integration"
-                    description: "Type checking, schema and mirror validation, registered nonzero test discovery, scope hygiene, hosted CI, and final task outcome all pass."
+                    description: "Type checking, schema and agent-template mirrors, scope hygiene, hosted integration, and final task outcome pass."
                     id: "repository_contracts_green"
                     required: true
-                evidence_fingerprint: "sha256:628e42c9653eecb354284453aa12761715376c818a62c99ee3d6321d18505c18"
+                evidence_fingerprint: "sha256:0f0f0977ae3e7b92249e8dc6f6977451521e97d3a39f1fb8797e5c442250e019"
                 schema_version: 1
-      revision: 1
+      revision: 2
       schema_version: 1
       task_id: "202609121424-ZEJ656"
-    event_cursor: 10
+    event_cursor: 11
     final_validation: null
     id: "202609121424-ZEJ656"
     intent:
@@ -770,186 +544,456 @@ extensions:
       task_id: "202609121424-ZEJ656"
     lifecycle: "ACTIVE"
     plan_amendments: []
-    plan_history: []
-    revision: 15
+    plan_history:
+      -
+        approval:
+          approved_at: "2026-09-13T03:14:07.445Z"
+          approved_by: "HOST:codex:USER"
+          approved_digest: "sha256:e836cd4203509fd333b08434d284d133bf9c903d28fd4d3515a4a195c6e6768e"
+          policy_facts:
+            - "host_user_decision"
+          state: "approved"
+        created_at: "2026-09-13T03:13:19.324Z"
+        digest: "sha256:e836cd4203509fd333b08434d284d133bf9c903d28fd4d3515a4a195c6e6768e"
+        proposal:
+          assumptions:
+            - "The current task-centric schema and role-specific semantic payload builders remain the canonical representations."
+            - "The executor may replace proposed test file names with equivalent registered focused tests only when nonzero discovery is proven."
+          planning_baseline:
+            captured_at: "2026-09-13T03:11:41.977Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:628e42c9653eecb354284453aa12761715376c818a62c99ee3d6321d18505c18"
+            dirty_paths:
+              - ".agentplane/tasks/202609072121-9VEHKH/README.md"
+              - ".agentplane/tasks/202609080727-BAWTEE/README.md"
+              - ".agentplane/tasks/202609121424-3YAX44/README.md"
+              - ".agentplane/tasks/202609121424-49XXT3/README.md"
+              - ".agentplane/tasks/202609121424-4BC7B3/README.md"
+              - ".agentplane/tasks/202609121424-ZEJ656/README.md"
+              - ".agentplane/tasks/202609130146-7AZ4T4/README.md"
+              - "agentplane-roadmap-r2/AGENT-START.md"
+              - "agentplane-roadmap-r2/EXECUTION-CHARTER.md"
+              - "agentplane-roadmap-r2/README.md"
+              - "agentplane-roadmap-r2/agentplane-0.7.9-0.7.14-roadmap-r2.md"
+              - "agentplane-roadmap-r2/checksums.json"
+              - "agentplane-roadmap-r2/coverage-and-gap-audit.md"
+              - "agentplane-roadmap-r2/coverage-map.json"
+              - "agentplane-roadmap-r2/dependency-graph.json"
+              - "agentplane-roadmap-r2/experiment-requirements.json"
+              - "agentplane-roadmap-r2/releases/0.7.10.md"
+              - "agentplane-roadmap-r2/releases/0.7.11.md"
+              - "agentplane-roadmap-r2/releases/0.7.12.md"
+              - "agentplane-roadmap-r2/releases/0.7.13.md"
+              - "agentplane-roadmap-r2/releases/0.7.14.md"
+              - "agentplane-roadmap-r2/releases/0.7.9.md"
+              - "agentplane-roadmap-r2/source-evidence.json"
+              - "agentplane-roadmap-r2/tasks.json"
+              - "agentplane-roadmap-r2/tasks/BP-01.md"
+              - "agentplane-roadmap-r2/tasks/BP-02.md"
+              - "agentplane-roadmap-r2/tasks/BP-03.md"
+              - "agentplane-roadmap-r2/tasks/BP-04.md"
+              - "agentplane-roadmap-r2/tasks/BP-05.md"
+              - "agentplane-roadmap-r2/tasks/BP-06.md"
+              - "agentplane-roadmap-r2/tasks/BP-07.md"
+              - "agentplane-roadmap-r2/tasks/BP-08.md"
+              - "agentplane-roadmap-r2/tasks/BP-09.md"
+              - "agentplane-roadmap-r2/tasks/BP-10.md"
+              - "agentplane-roadmap-r2/tasks/BP-11.md"
+              - "agentplane-roadmap-r2/tasks/BP-12.md"
+              - "agentplane-roadmap-r2/tasks/BP-13.md"
+              - "agentplane-roadmap-r2/tasks/BP-14.md"
+              - "agentplane-roadmap-r2/tasks/BP-15.md"
+              - "agentplane-roadmap-r2/tasks/BP-16.md"
+              - "agentplane-roadmap-r2/tasks/BP-17.md"
+              - "agentplane-roadmap-r2/tasks/BP-18.md"
+              - "agentplane-roadmap-r2/tasks/BP-19.md"
+              - "agentplane-roadmap-r2/tasks/BP-20.md"
+              - "agentplane-roadmap-r2/tasks/BP-21.md"
+              - "agentplane-roadmap-r2/tasks/BP-22.md"
+              - "agentplane-roadmap-r2/tasks/BP-23.md"
+              - "agentplane-roadmap-r2/tasks/BP-24.md"
+              - "agentplane-roadmap-r2/tasks/BP-25.md"
+              - "agentplane-roadmap-r2/tasks/BP-26.md"
+              - "agentplane-roadmap-r2/tasks/BP-27.md"
+              - "agentplane-roadmap-r2/tasks/BP-28.md"
+              - "agentplane-roadmap-r2/tasks/BP-29.md"
+              - "agentplane-roadmap-r2/tasks/BP-30.md"
+              - "agentplane-roadmap-r2/tasks/BP-31.md"
+              - "agentplane-roadmap-r2/tasks/EV-01.md"
+              - "agentplane-roadmap-r2/tasks/EV-02.md"
+              - "agentplane-roadmap-r2/tasks/EV-03.md"
+              - "agentplane-roadmap-r2/tasks/EV-04.md"
+              - "agentplane-roadmap-r2/tasks/EV-05.md"
+              - "agentplane-roadmap-r2/tasks/EV-06.md"
+              - "agentplane-roadmap-r2/tasks/EV-07.md"
+              - "agentplane-roadmap-r2/tasks/EV-08.md"
+              - "agentplane-roadmap-r2/tasks/EV-09.md"
+              - "agentplane-roadmap-r2/tasks/EV-10.md"
+              - "agentplane-roadmap-r2/tasks/EV-11.md"
+              - "agentplane-roadmap-r2/tasks/EV-12.md"
+              - "agentplane-roadmap-r2/tasks/EV-13.md"
+              - "agentplane-roadmap-r2/tasks/LC-01.md"
+              - "agentplane-roadmap-r2/tasks/LC-02.md"
+              - "agentplane-roadmap-r2/tasks/LC-03.md"
+              - "agentplane-roadmap-r2/tasks/LC-04.md"
+              - "agentplane-roadmap-r2/tasks/LC-05.md"
+              - "agentplane-roadmap-r2/tasks/LC-06.md"
+              - "agentplane-roadmap-r2/tasks/LC-07.md"
+              - "agentplane-roadmap-r2/tasks/LC-08.md"
+              - "agentplane-roadmap-r2/tasks/LC-09.md"
+              - "agentplane-roadmap-r2/tasks/LC-10.md"
+              - "agentplane-roadmap-r2/tasks/LC-11.md"
+              - "agentplane-roadmap-r2/tasks/LC-12.md"
+              - "agentplane-roadmap-r2/tasks/LC-13.md"
+              - "agentplane-roadmap-r2/tasks/LC-14.md"
+              - "agentplane-roadmap-r2/tasks/LC-15.md"
+              - "agentplane-roadmap-r2/tasks/LC-16.md"
+              - "agentplane-roadmap-r2/tasks/LC-17.md"
+              - "agentplane-roadmap-r2/tasks/LC-18.md"
+              - "agentplane-roadmap-r2/tasks/LC-19.md"
+              - "agentplane-roadmap-r2/tasks/LC-20.md"
+              - "agentplane-roadmap-r2/tasks/LC-21.md"
+              - "agentplane-roadmap-r2/tasks/LC-22.md"
+              - "agentplane-roadmap-r2/tasks/LC-23.md"
+              - "agentplane-roadmap-r2/tasks/PL-01.md"
+              - "agentplane-roadmap-r2/tasks/PL-02.md"
+              - "agentplane-roadmap-r2/tasks/PL-03.md"
+              - "agentplane-roadmap-r2/tasks/PL-04.md"
+              - "agentplane-roadmap-r2/tasks/PL-05.md"
+              - "agentplane-roadmap-r2/tasks/PL-06.md"
+              - "agentplane-roadmap-r2/tasks/PL-07.md"
+              - "agentplane-roadmap-r2/tasks/PL-08.md"
+              - "agentplane-roadmap-r2/tasks/PL-09.md"
+              - "agentplane-roadmap-r2/tasks/PL-10.md"
+              - "agentplane-roadmap-r2/tasks/PL-11.md"
+              - "agentplane-roadmap-r2/tasks/PL-12.md"
+              - "agentplane-roadmap-r2/tasks/RC-01.md"
+              - "agentplane-roadmap-r2/tasks/RC-02.md"
+              - "agentplane-roadmap-r2/tasks/RC-03.md"
+              - "agentplane-roadmap-r2/tasks/RC-04.md"
+              - "agentplane-roadmap-r2/tasks/RC-05.md"
+              - "agentplane-roadmap-r2/tasks/RC-06.md"
+              - "agentplane-roadmap-r2/tasks/RC-07.md"
+              - "agentplane-roadmap-r2/tasks/RC-08.md"
+              - "agentplane-roadmap-r2/tasks/RC-09.md"
+              - "agentplane-roadmap-r2/tasks/RC-10.md"
+              - "agentplane-roadmap-r2/tasks/RC-11.md"
+              - "agentplane-roadmap-r2/tasks/RC-12.md"
+              - "agentplane-roadmap-r2/tasks/RC-13.md"
+              - "agentplane-roadmap-r2/tasks/RC-14.md"
+              - "agentplane-roadmap-r2/tasks/RC-15.md"
+              - "agentplane-roadmap-r2/tasks/RC-16.md"
+              - "agentplane-roadmap-r2/tasks/RC-17.md"
+              - "agentplane-roadmap-r2/tasks/RC-18.md"
+              - "agentplane-roadmap-r2/tasks/ST-01.md"
+              - "agentplane-roadmap-r2/tasks/ST-02.md"
+              - "agentplane-roadmap-r2/tasks/ST-03.md"
+              - "agentplane-roadmap-r2/tasks/ST-04.md"
+              - "agentplane-roadmap-r2/tasks/ST-05.md"
+              - "agentplane-roadmap-r2/tasks/ST-06.md"
+              - "agentplane-roadmap-r2/tasks/ST-07.md"
+              - "agentplane-roadmap-r2/tasks/ST-08.md"
+              - "agentplane-roadmap-r2/tasks/ST-09.md"
+              - "agentplane-roadmap-r2/tasks/ST-10.md"
+              - "agentplane-roadmap-r2/tasks/ST-11.md"
+              - "agentplane-roadmap-r2/tasks/ST-12.md"
+              - "agentplane-roadmap-r2/tasks/ST-13.md"
+              - "agentplane-roadmap-r2/tasks/ST-14.md"
+              - "agentplane-roadmap-r2/tasks/ST-15.md"
+              - "agentplane-roadmap-r2/tasks/ST-16.md"
+              - "agentplane-roadmap-r2/tasks/ST-17.md"
+              - "agentplane-roadmap-r2/tasks/ST-18.md"
+              - "agentplane-roadmap-r2/tasks/ST-19.md"
+              - "agentplane-roadmap-r2/tasks/ST-20.md"
+              - "agentplane-roadmap-r2/tasks/ST-21.md"
+              - "agentplane-roadmap-r2/validate_roadmap.py"
+              - "agentplane-roadmap-r2/validation-report.json"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "d03a5e786db57136bf7f6c4661b148bcf97cfaf1"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:2"
+          schema_version: 1
+          task_id: "202609121424-ZEJ656"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts"
+                id: "requirement_conservation"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 600000
+              -
+                capability: "task.verify"
+                command: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts"
+                id: "output_parity"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 600000
+              -
+                capability: "task.verify"
+                command: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context packages/agentplane/src/runner/adapters"
+                id: "related_context_transport"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                command: "bun run typecheck"
+                id: "typecheck"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                command: "bun run check:schemas && bun run check:agent-assets"
+                id: "schema_mirrors"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 600000
+              -
+                capability: "task.verify"
+                id: "scope_hygiene"
+                kind: "structural"
+                required: true
+              -
+                capability: "task.verify"
+                id: "hosted_integration"
+                kind: "provider"
+                required: true
+            criteria:
+              -
+                check_ids:
+                  - "requirement_conservation"
+                  - "related_context_transport"
+                description: "Every mandatory objective, criterion, scope, check, output, constraint, stop rule, WorkItem identity, and WorkOrder identity retains a delivered prompt representation without granting lifecycle authority."
+                id: "requirements_conserved"
+                required: true
+              -
+                check_ids:
+                  - "output_parity"
+                  - "related_context_transport"
+                description: "PLANNER, EXECUTOR, EVALUATOR, and supported context-role results preserve permitted typed fields through prepare, schema, JSONL, normalization, and acceptance while wrong-work-order, stale, cross-role, and lifecycle-injection results fail closed."
+                id: "typed_outputs_preserved"
+                required: true
+              -
+                check_ids:
+                  - "typecheck"
+                  - "schema_mirrors"
+                  - "scope_hygiene"
+                  - "hosted_integration"
+                description: "Type checking, schema and mirror validation, registered nonzero test discovery, scope hygiene, hosted CI, and final task outcome all pass."
+                id: "repository_contracts_green"
+                required: true
+            evidence_fingerprint: "sha256:628e42c9653eecb354284453aa12761715376c818a62c99ee3d6321d18505c18"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "requirement_conservation"
+                      - "related_context_transport"
+                    description: "Every mandatory objective, criterion, scope, check, output, constraint, stop rule, WorkItem identity, and WorkOrder identity retains a delivered prompt representation without granting lifecycle authority."
+                    id: "requirements_conserved"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 800000
+                  optional_sources:
+                    - "packages/core/src/tasks/task-centric/schema.ts"
+                  required_sources:
+                    - ".agentplane/tasks/202609121424-ZEJ656/README.md"
+                    - "packages/agentplane/src/runner/context/semantic-prompt-projection.ts"
+                    - "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
+                  symbol_hints:
+                    - "semantic prompt projection"
+                    - "mandatory requirements"
+                    - "process choreography"
+                depends_on: []
+                expected_outputs:
+                  - "requirement_trace_contract"
+                  - "requirement_conservation_regressions"
+                id: "conserve_requirements"
+                objective: "Trace every mandatory task requirement into semantic prompt projection and replace only proven destructive filtering while keeping supervisor lifecycle authority unchanged."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/runner/context"
+                risk: "medium"
+                scope_roots:
+                  - "packages/agentplane/src/runner/context"
+                  - "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
+                  - "scripts/lib/test-route-registry.mjs"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts"
+                      id: "requirement_conservation"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context packages/agentplane/src/runner/adapters"
+                      id: "related_context_transport"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                  criteria:
+                    -
+                      check_ids:
+                        - "requirement_conservation"
+                        - "related_context_transport"
+                      description: "Every mandatory objective, criterion, scope, check, output, constraint, stop rule, WorkItem identity, and WorkOrder identity retains a delivered prompt representation without granting lifecycle authority."
+                      id: "requirements_conserved"
+                      required: true
+                  evidence_fingerprint: "sha256:628e42c9653eecb354284453aa12761715376c818a62c99ee3d6321d18505c18"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "output_parity"
+                      - "related_context_transport"
+                    description: "PLANNER, EXECUTOR, EVALUATOR, and supported context-role results preserve permitted typed fields through prepare, schema, JSONL, normalization, and acceptance while wrong-work-order, stale, cross-role, and lifecycle-injection results fail closed."
+                    id: "typed_outputs_preserved"
+                    required: true
+                  -
+                    check_ids:
+                      - "typecheck"
+                      - "schema_mirrors"
+                      - "scope_hygiene"
+                      - "hosted_integration"
+                    description: "Type checking, schema and mirror validation, registered nonzero test discovery, scope hygiene, hosted CI, and final task outcome all pass."
+                    id: "repository_contracts_green"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 1000000
+                  optional_sources:
+                    - "packages/core/src/tasks/kernel-semantic.ts"
+                  required_sources:
+                    - ".agentplane/tasks/202609121424-ZEJ656/README.md"
+                    - "packages/agentplane/src/runner/adapters/codex-result-transport.ts"
+                    - "packages/agentplane/src/runner/adapters/prepared-input.ts"
+                    - "packages/agentplane/src/runner/artifacts.ts"
+                    - "packages/core/src/runner/agent-work-order.ts"
+                  symbol_hints:
+                    - "role schema"
+                    - "WorkOrder identity"
+                    - "semantic result normalization"
+                depends_on:
+                  - "conserve_requirements"
+                expected_outputs:
+                  - "managed_output_parity_contract"
+                  - "fail_closed_transport_regressions"
+                id: "preserve_typed_results"
+                objective: "Exercise the real managed output transport and reuse the existing role and phase schema builder to preserve permitted typed fields while rejecting stale identity, cross-role output, and lifecycle injection."
+                optional: false
+                priority: 2
+                required_inputs:
+                  - "requirement_trace_contract"
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "exclusive"
+                    resource: "semantic-transport-worktree"
+                risk: "medium"
+                scope_roots:
+                  - "packages/agentplane/src/runner/adapters"
+                  - "packages/agentplane/src/runner/artifacts.ts"
+                  - "packages/core/src/runner/agent-work-order.ts"
+                  - "scripts/lib/test-route-registry.mjs"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts"
+                      id: "output_parity"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context packages/agentplane/src/runner/adapters"
+                      id: "related_context_transport"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                    -
+                      capability: "task.verify"
+                      command: "bun run typecheck"
+                      id: "typecheck"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                    -
+                      capability: "task.verify"
+                      command: "bun run check:schemas && bun run check:agent-assets"
+                      id: "schema_mirrors"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                    -
+                      capability: "task.verify"
+                      id: "scope_hygiene"
+                      kind: "structural"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      id: "hosted_integration"
+                      kind: "provider"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "output_parity"
+                        - "related_context_transport"
+                      description: "PLANNER, EXECUTOR, EVALUATOR, and supported context-role results preserve permitted typed fields through prepare, schema, JSONL, normalization, and acceptance while wrong-work-order, stale, cross-role, and lifecycle-injection results fail closed."
+                      id: "typed_outputs_preserved"
+                      required: true
+                    -
+                      check_ids:
+                        - "typecheck"
+                        - "schema_mirrors"
+                        - "scope_hygiene"
+                        - "hosted_integration"
+                      description: "Type checking, schema and mirror validation, registered nonzero test discovery, scope hygiene, hosted CI, and final task outcome all pass."
+                      id: "repository_contracts_green"
+                      required: true
+                  evidence_fingerprint: "sha256:628e42c9653eecb354284453aa12761715376c818a62c99ee3d6321d18505c18"
+                  schema_version: 1
+        revision: 1
+        schema_version: 1
+        task_id: "202609121424-ZEJ656"
+    revision: 19
     schema_version: 1
-    updated_at: "2026-09-13T16:20:19.273Z"
+    updated_at: "2026-09-13T16:26:53.983Z"
     work_items:
-      conserve_requirements:
-        attempt: 1
+      validate_existing_implementation:
+        attempt: 0
         claim_id: null
-        id: "conserve_requirements"
+        id: "validate_existing_implementation"
         last_failure: null
-        output_manifests:
-          -
-            digest: "sha256:4ea0886009a0f330ad65d1807d3fc66da84ea2df483555b3a81d2aa576121261"
-            id: "requirement_trace_contract"
-            kind: "semantic_output"
-            producer:
-              attempt: 1
-              plan_revision: 1
-              task_id: "202609121424-ZEJ656"
-              work_item_id: "conserve_requirements"
-            provenance:
-              - "sha256:157921c7693a0fc448f94b01b09192a90012ae3ad16134c151d3ed797775badd"
-              - ".agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:398e81211596fd3e091aa8df54e4bdd197603909209b917745c3d79fb71b41b7"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-          -
-            digest: "sha256:febb4d8eba7d31729099d277e2425fecaf68e8fc9609e1163f1de1be736ffe12"
-            id: "requirement_conservation_regressions"
-            kind: "semantic_output"
-            producer:
-              attempt: 1
-              plan_revision: 1
-              task_id: "202609121424-ZEJ656"
-              work_item_id: "conserve_requirements"
-            provenance:
-              - "sha256:157921c7693a0fc448f94b01b09192a90012ae3ad16134c151d3ed797775badd"
-              - ".agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:398e81211596fd3e091aa8df54e4bdd197603909209b917745c3d79fb71b41b7"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-        revision: 2
-        state: "COMPLETED"
-        validation_result:
-          evidence:
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
-              check_id: "requirement_conservation"
-              command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts"
-              detail: "Observed by bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts."
-              exit_code: 0
-              observed_at: "2026-09-13T16:13:13.859Z"
-              repository_snapshot_digest: "sha256:398e81211596fd3e091aa8df54e4bdd197603909209b917745c3d79fb71b41b7"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
-              check_id: "related_context_transport"
-              command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context packages/agentplane/src/runner/adapters"
-              detail: "Observed by bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context packages/agentplane/src/runner/adapters."
-              exit_code: 0
-              observed_at: "2026-09-13T16:13:13.859Z"
-              repository_snapshot_digest: "sha256:398e81211596fd3e091aa8df54e4bdd197603909209b917745c3d79fb71b41b7"
-              status: "passed"
-          schema_version: 1
-          stale_evidence: []
-          status: "passed"
-          unsatisfied_criteria: []
-      preserve_typed_results:
-        attempt: 1
-        claim_id: null
-        id: "preserve_typed_results"
-        last_failure:
-          cause_refs:
-            - "repository_contracts_green"
-          code: "validation_failed"
-          kind: "validation"
-          message: "Preserved role-specific managed semantic payloads through prepared schema, JSONL collection, normalization, and result persistence with fail-closed identity and role validation."
-          retryable: true
-        output_manifests:
-          -
-            digest: "sha256:bb7722ab8bac15515fc63732045d78bfac52a829088631b3eca20f0ffe535da2"
-            id: "managed_output_parity_contract"
-            kind: "semantic_output"
-            producer:
-              attempt: 1
-              plan_revision: 1
-              task_id: "202609121424-ZEJ656"
-              work_item_id: "preserve_typed_results"
-            provenance:
-              - "sha256:0bd605ba831b179248db2d823ba2961461d929b2a84dc4abd102fd8430f05e8d"
-              - ".agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:4a3cc7c4f77df37fe183a56269e4fc82abd2184c434ecf36a6b856f47f9e5a32"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-          -
-            digest: "sha256:2731f61a699a3c181eca4729d07660e763c07de2edc35321f5e254a4fb852f32"
-            id: "fail_closed_transport_regressions"
-            kind: "semantic_output"
-            producer:
-              attempt: 1
-              plan_revision: 1
-              task_id: "202609121424-ZEJ656"
-              work_item_id: "preserve_typed_results"
-            provenance:
-              - "sha256:0bd605ba831b179248db2d823ba2961461d929b2a84dc4abd102fd8430f05e8d"
-              - ".agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:4a3cc7c4f77df37fe183a56269e4fc82abd2184c434ecf36a6b856f47f9e5a32"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-        revision: 2
-        state: "REWORK_READY"
-        validation_result:
-          evidence:
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
-              check_id: "output_parity"
-              command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts"
-              detail: "Declared check failed: bun run check:schemas && bun run check:agent-assets"
-              exit_code: 0
-              observed_at: "2026-09-13T16:18:39.849Z"
-              repository_snapshot_digest: "sha256:4a3cc7c4f77df37fe183a56269e4fc82abd2184c434ecf36a6b856f47f9e5a32"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
-              check_id: "related_context_transport"
-              command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context packages/agentplane/src/runner/adapters"
-              detail: "Declared check failed: bun run check:schemas && bun run check:agent-assets"
-              exit_code: 0
-              observed_at: "2026-09-13T16:18:39.849Z"
-              repository_snapshot_digest: "sha256:4a3cc7c4f77df37fe183a56269e4fc82abd2184c434ecf36a6b856f47f9e5a32"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
-              check_id: "typecheck"
-              command_identity: "bun run typecheck"
-              detail: "Declared check failed: bun run check:schemas && bun run check:agent-assets"
-              exit_code: 0
-              observed_at: "2026-09-13T16:18:39.849Z"
-              repository_snapshot_digest: "sha256:4a3cc7c4f77df37fe183a56269e4fc82abd2184c434ecf36a6b856f47f9e5a32"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
-              check_id: "schema_mirrors"
-              command_identity: "bun run check:schemas && bun run check:agent-assets"
-              detail: "Declared check failed: bun run check:schemas && bun run check:agent-assets"
-              exit_code: 1
-              observed_at: "2026-09-13T16:18:39.849Z"
-              repository_snapshot_digest: "sha256:4a3cc7c4f77df37fe183a56269e4fc82abd2184c434ecf36a6b856f47f9e5a32"
-              status: "failed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
-              check_id: "scope_hygiene"
-              command_identity: "task.verify"
-              detail: "Declared check failed: bun run check:schemas && bun run check:agent-assets"
-              exit_code: 1
-              observed_at: "2026-09-13T16:18:39.849Z"
-              repository_snapshot_digest: "sha256:4a3cc7c4f77df37fe183a56269e4fc82abd2184c434ecf36a6b856f47f9e5a32"
-              status: "failed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
-              check_id: "hosted_integration"
-              command_identity: "task.verify"
-              detail: "Declared check failed: bun run check:schemas && bun run check:agent-assets"
-              exit_code: 1
-              observed_at: "2026-09-13T16:18:39.849Z"
-              repository_snapshot_digest: "sha256:4a3cc7c4f77df37fe183a56269e4fc82abd2184c434ecf36a6b856f47f9e5a32"
-              status: "failed"
-          schema_version: 1
-          stale_evidence: []
-          status: "failed"
-          unsatisfied_criteria:
-            - "repository_contracts_green"
+        output_manifests: []
+        revision: 1
+        state: "READY"
+        validation_result: null
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -987,6 +1031,40 @@ extensions:
         task_id: "202609121424-ZEJ656"
         task_revision: 12
         work_item_id: "preserve_typed_results"
+      -
+        at: "2026-09-13T16:20:52.517Z"
+        from: "REWORK_READY"
+        to: "REWORK_READY"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:961073e9e3a98a9eb69b67d420605fdc7ccc972ab1807cc461bed9ce7e41cb42"
+        entity: "work_item"
+        id: "event_ae26b26f86bd59b4ecc72ebe"
+        mutation_id: "external-result:work-order-202609121424-ZEJ656-executor-d12172ce0f516d4d919af572"
+        plan_digest: "sha256:e836cd4203509fd333b08434d284d133bf9c903d28fd4d3515a4a195c6e6768e"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609121424-ZEJ656"
+        task_revision: 15
+        work_item_id: "preserve_typed_results"
+      -
+        at: "2026-09-13T16:24:13.732Z"
+        from: "ACTIVE"
+        to: "PLANNING"
+        actor_id: "external:EXECUTOR"
+        cause_refs:
+          - "acceptance_changed"
+        entity: "task"
+        id: "event_d61dba6f5029c48ff3e14655"
+        mutation_id: "plan-refinement:work-order-202609121424-ZEJ656-executor-fea9a43658c9e544a5eabaad"
+        plan_digest: "sha256:e836cd4203509fd333b08434d284d133bf9c903d28fd4d3515a4a195c6e6768e"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609121424-ZEJ656"
+        task_revision: 16
+        work_item_id: null
     leases: []
     mutation_receipts:
       compatibility:sha256:0ebea7e602d3a13fb1b5cac2af0b63da9614b3e798081a64f9e1faecc915efb2:
@@ -1157,6 +1235,30 @@ extensions:
         previous_revision: 10
         schema_version: 1
         task_id: "202609121424-ZEJ656"
+      compatibility:sha256:c6ca67b9aa74b08f6f6214aebef8895459c765f6e2f6ad9d4ded1b74d71c7e1e:
+        aggregate_digest: "sha256:7ec5025e065ac084262c0c620b33e9d6e85a5af77249fbe3d1f94c52c6f45104"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T16:26:53.983Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "AWAITING_PLAN_APPROVAL"
+          id: "event_bbd38c6402f4b68202f30e59"
+          mutation_id: "compatibility:sha256:c6ca67b9aa74b08f6f6214aebef8895459c765f6e2f6ad9d4ded1b74d71c7e1e"
+          plan_digest: "sha256:6cfcdb60047f6021f1f8c7a6f4fa3d300d878b6545b029bd41f4c4553e77e321"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-ZEJ656"
+          task_revision: 18
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:c6ca67b9aa74b08f6f6214aebef8895459c765f6e2f6ad9d4ded1b74d71c7e1e"
+        next_revision: 19
+        previous_revision: 18
+        schema_version: 1
+        task_id: "202609121424-ZEJ656"
       compatibility:sha256:cb0caa82a42d7b5c96e3763e8520a7f11c13ad383b8775b7ef4ab9ee5c1ab1b0:
         aggregate_digest: "sha256:4797bc15a84ba191a088419abf7ccd31ed471e8fedb7f3ad1392a66af4a0026c"
         event:
@@ -1253,6 +1355,30 @@ extensions:
         previous_revision: 9
         schema_version: 1
         task_id: "202609121424-ZEJ656"
+      external-result:work-order-202609121424-ZEJ656-executor-d12172ce0f516d4d919af572:
+        aggregate_digest: "sha256:9a594ac7c3d3e0e4f43010ebfb0f3a7d7157bb6ff8e3e040859235003d40f182"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T16:20:52.517Z"
+          cause_refs:
+            - "semantic-result:sha256:961073e9e3a98a9eb69b67d420605fdc7ccc972ab1807cc461bed9ce7e41cb42"
+          entity: "work_item"
+          from: "REWORK_READY"
+          id: "event_ae26b26f86bd59b4ecc72ebe"
+          mutation_id: "external-result:work-order-202609121424-ZEJ656-executor-d12172ce0f516d4d919af572"
+          plan_digest: "sha256:e836cd4203509fd333b08434d284d133bf9c903d28fd4d3515a4a195c6e6768e"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-ZEJ656"
+          task_revision: 15
+          to: "REWORK_READY"
+          work_item_id: "preserve_typed_results"
+        mutation_id: "external-result:work-order-202609121424-ZEJ656-executor-d12172ce0f516d4d919af572"
+        next_revision: 16
+        previous_revision: 15
+        schema_version: 1
+        task_id: "202609121424-ZEJ656"
       external-result:work-order-202609121424-ZEJ656-executor-dc52ce006ffa4182306fba90:
         aggregate_digest: "sha256:c69c02aadd612fc2a16ddee72880cd14061cebf338a8928f2f926ac1df8b0a79"
         event:
@@ -1275,6 +1401,30 @@ extensions:
         mutation_id: "external-result:work-order-202609121424-ZEJ656-executor-dc52ce006ffa4182306fba90"
         next_revision: 13
         previous_revision: 12
+        schema_version: 1
+        task_id: "202609121424-ZEJ656"
+      plan-refinement:work-order-202609121424-ZEJ656-executor-fea9a43658c9e544a5eabaad:
+        aggregate_digest: "sha256:1be3160ed1dcf959eb490008d0c7c2a21daffb68f7d4fbffa1dfdf0fcb30acd9"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-13T16:24:13.732Z"
+          cause_refs:
+            - "acceptance_changed"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_d61dba6f5029c48ff3e14655"
+          mutation_id: "plan-refinement:work-order-202609121424-ZEJ656-executor-fea9a43658c9e544a5eabaad"
+          plan_digest: "sha256:e836cd4203509fd333b08434d284d133bf9c903d28fd4d3515a4a195c6e6768e"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-ZEJ656"
+          task_revision: 16
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609121424-ZEJ656-executor-fea9a43658c9e544a5eabaad"
+        next_revision: 17
+        previous_revision: 16
         schema_version: 1
         task_id: "202609121424-ZEJ656"
     pending_effects: []
@@ -1319,7 +1469,7 @@ Source contract: agentplane-roadmap-r2 cards ST-06 and ST-07. Preserve required 
 
 ## Plan
 
-Planned requirement conservation and managed semantic output parity as two bounded implementation work items.
+Replanned the already implemented task around one validation work item with repository-defined schema and agent-template commands.
 
 ## Verify Steps
 
