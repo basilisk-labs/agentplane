@@ -15,8 +15,8 @@ When a supervisor episode stops because prior paid work has unavailable or unall
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -41,8 +41,10 @@ When a supervisor episode stops because prior paid work has unavailable or unall
  .../task/supervisor-budget-epoch.command.ts        | 229 +++++++++++++++
  .../src/runner/supervisor-execution-episode.ts     | 311 +++++++++++++++++++--
  packages/core/src/schemas/index.ts                 |   3 +
+ .../baselines/v0.7-compatibility-candidate.json    | 180 +++++++++++-
+ .../check-compatibility-contract-baseline.mjs      | 120 ++++++++
  scripts/lib/test-route-registry.mjs                |   2 +-
- 15 files changed, 1441 insertions(+), 36 deletions(-)
+ 17 files changed, 1731 insertions(+), 46 deletions(-)
 ```
 
 </details>
