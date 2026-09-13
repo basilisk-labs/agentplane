@@ -4,7 +4,7 @@ title: "Remove supervisor spend limits and retain informational usage telemetry"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -225,9 +225,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "42018380f7785ef4b04cf85520e022b8b8612fad"
-  message: "🚧 X29JE4 task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -1115,19 +1113,69 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 7
+    revision: 8
     schema_version: 1
-    updated_at: "2026-09-13T20:12:38.723Z"
+    updated_at: "2026-09-13T20:13:19.918Z"
     work_items:
       campaign-contract:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "campaign-contract"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:43fd9bfc143eb65ffccfe5178bfad53882e53702a006b6cbfbdf939a428f6ad6"
+            id: "campaign-contract-output"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609132000-X29JE4"
+              work_item_id: "campaign-contract"
+            provenance:
+              - "sha256:2ef13ebdbccf55d97ec7ab005a734195e7642f15d423535fe71166e91f135360"
+              - ".agentplane/tasks/202609132000-X29JE4/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:1b64a1070878a80649318d7118bbf7705f509739d7d44398f6939eb364786596"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609132000-X29JE4/supervision/declared-checks.json"
+              check_id: "benchmark-focused"
+              command_identity: "node --test scripts/bench/paired-production-driver.test.mjs scripts/bench/paired-result-report.test.mjs"
+              detail: "Observed by node --test scripts/bench/paired-production-driver.test.mjs scripts/bench/paired-result-report.test.mjs."
+              exit_code: 0
+              observed_at: "2026-09-13T20:13:19.911Z"
+              repository_snapshot_digest: "sha256:1b64a1070878a80649318d7118bbf7705f509739d7d44398f6939eb364786596"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609132000-X29JE4/supervision/declared-checks.json"
+              check_id: "critical"
+              command_identity: "bun run test:critical"
+              detail: "Observed by bun run test:critical."
+              exit_code: 0
+              observed_at: "2026-09-13T20:13:19.911Z"
+              repository_snapshot_digest: "sha256:1b64a1070878a80649318d7118bbf7705f509739d7d44398f6939eb364786596"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609132000-X29JE4/supervision/declared-checks.json"
+              check_id: "diff-review"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-09-13T20:13:19.911Z"
+              repository_snapshot_digest: "sha256:1b64a1070878a80649318d7118bbf7705f509739d7d44398f6939eb364786596"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       compatibility-and-regression:
         attempt: 0
         claim_id: null
@@ -1157,7 +1205,24 @@ extensions:
         validation_result: null
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-13T20:13:19.918Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:64a4bee571fd4f0c04e9e047a84987fc2f8510e3bbbb22d4f6bf8167ec69bb3c"
+        entity: "work_item"
+        id: "event_c86687bb5bde3f4116291647"
+        mutation_id: "external-result:work-order-202609132000-X29JE4-executor-baa76abec6ec3688b5f26a5d"
+        plan_digest: "sha256:c21ca9fb024d6c041175d789cd83b530decf10ee5907fff6d70dcdecc07325d9"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609132000-X29JE4"
+        task_revision: 7
+        work_item_id: "campaign-contract"
     leases: []
     mutation_receipts:
       compatibility:sha256:0cb8a88a987a412aa563166a81ada75c02cc7fad5f9bbe62a84e52bb3b6472ce:
@@ -1278,6 +1343,30 @@ extensions:
         mutation_id: "compatibility:sha256:fe61b4ec75461aac095d90735238d3bd03db00c50ef0e3a32f53decc95548150"
         next_revision: 7
         previous_revision: 6
+        schema_version: 1
+        task_id: "202609132000-X29JE4"
+      external-result:work-order-202609132000-X29JE4-executor-baa76abec6ec3688b5f26a5d:
+        aggregate_digest: "sha256:c8e4f262fd2aace2cb2cba5bfe0b8d0f77f2ce53ce952b6ceac097690a18ad6c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T20:13:19.918Z"
+          cause_refs:
+            - "semantic-result:sha256:64a4bee571fd4f0c04e9e047a84987fc2f8510e3bbbb22d4f6bf8167ec69bb3c"
+          entity: "work_item"
+          from: "READY"
+          id: "event_c86687bb5bde3f4116291647"
+          mutation_id: "external-result:work-order-202609132000-X29JE4-executor-baa76abec6ec3688b5f26a5d"
+          plan_digest: "sha256:c21ca9fb024d6c041175d789cd83b530decf10ee5907fff6d70dcdecc07325d9"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609132000-X29JE4"
+          task_revision: 7
+          to: "COMPLETED"
+          work_item_id: "campaign-contract"
+        mutation_id: "external-result:work-order-202609132000-X29JE4-executor-baa76abec6ec3688b5f26a5d"
+        next_revision: 8
+        previous_revision: 7
         schema_version: 1
         task_id: "202609132000-X29JE4"
     pending_effects: []

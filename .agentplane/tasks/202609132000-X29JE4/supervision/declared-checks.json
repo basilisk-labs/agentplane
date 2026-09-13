@@ -1,0 +1,45 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "benchmark-focused"
+      ],
+      "command": "node --test scripts/bench/paired-production-driver.test.mjs scripts/bench/paired-result-report.test.mjs",
+      "duration_ms": 1623,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
+        "executable_digest": "sha256:ee6fb0e015284d83a91e8ec5213f43a157f8a392b58555301682892ba928c04a",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "✔ runs the pinned three-arm task entrypoints offline and keeps transports stratified (1034.677542ms)\n✔ rejects every mismatched run identity field (43.6305ms)\n✔ rejects missing or mismatched observed raw cost (170.86825ms)\n✔ requires a trusted authority callback before live execution (39.956917ms)\n✔ rejects an observed execution identity that differs from the campaign (82.4415ms)\n✔ keeps failed-attempt cost in the numerator and pairs only equivalent successes (5.749125ms)\n✔ unknown charge prevents a complete numeric claim (0.232625ms)\n✔ an all-failed arm has no finite successful-result score (0.169167ms)\n✔ mismatched raw cost identity prevents numeric and efficiency claims (0.176709ms)\n✔ rejects outcome-mismatched successes from the paired population (0.169125ms)\n✔ keeps safety, activation, and efficiency gates independent (0.136666ms)\nℹ tests 11\nℹ suites 0\nℹ pass 11\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1414.331625\n"
+    },
+    {
+      "check_ids": [
+        "critical"
+      ],
+      "command": "bun run test:critical",
+      "duration_ms": 36607,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "test:critical",
+      "stderr_tail": "$ node scripts/checks/run-vitest-suite.mjs critical-cli\n",
+      "stdout_tail": "Vitest suite critical-cli: chunk 1/5 (2 files): packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts, packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts\nVitest suite critical-cli: chunk 1/5 passed in 7186ms (Test Files  2 passed (2); Tests  3 passed (3); Duration  6.50s (transform 3.30s, setup 0ms, import 2.73s, tests 6.17s, environment 0ms))\nVitest suite critical-cli: chunk 2/5 (2 files): packages/agentplane/src/cli/run-cli.critical.git-edge.test.ts, packages/agentplane/src/cli/run-cli.critical.protected-paths.test.ts\nVitest suite critical-cli: chunk 2/5 passed in 2949ms (Test Files  2 passed (2); Tests  5 passed (5); Duration  2.79s (transform 2.13s, setup 0ms, import 2.80s, tests 2.37s, environment 0ms))\nVitest suite critical-cli: chunk 3/5 (2 files): packages/agentplane/src/cli/run-cli.critical.scope-leak.test.ts, packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts\nVitest suite critical-cli: chunk 3/5 passed in 3302ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  3.12s (transform 2.31s, setup 0ms, import 3.05s, tests 2.59s, environment 0ms))\nVitest suite critical-cli: chunk 4/5 (2 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts, packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 4/5 passed in 17943ms (Test Files  2 passed (2); Tests  6 passed (6); Duration  17.77s (transform 3.21s, setup 0ms, import 2.81s, tests 16.55s, environment 0ms))\nVitest suite critical-cli: chunk 5/5 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 5/5 passed in 5015ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  4.83s (transform 1.14s, setup 0ms, import 1.37s, tests 3.40s, environment 0ms))\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202609132000-X29JE4"
+}
