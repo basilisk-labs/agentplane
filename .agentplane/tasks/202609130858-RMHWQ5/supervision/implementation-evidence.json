@@ -1,0 +1,157 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check d03a5e786db57136bf7f6c4661b148bcf97cfaf1..d14eb0228be0d507fe296883a8eef2b7d4447de8",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB d03a5e786db57136bf7f6c4661b148bcf97cfaf1..d14eb0228be0d507fe296883a8eef2b7d4447de8",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202609130858-RMHWQ5/README.md",
+        "A\t.agentplane/tasks/202609130858-RMHWQ5/blueprint/resolved-snapshot.json",
+        "A\t.agentplane/tasks/202609130858-RMHWQ5/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202609130858-RMHWQ5/pr/github-body.md",
+        "A\t.agentplane/tasks/202609130858-RMHWQ5/pr/github-title.txt",
+        "A\t.agentplane/tasks/202609130858-RMHWQ5/pr/meta.json",
+        "A\t.agentplane/tasks/202609130858-RMHWQ5/pr/review.md",
+        "A\tpackages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli/command-catalog.ts",
+        "A\tpackages/agentplane/src/cli/run-cli/command-catalog/task-supervisor.ts",
+        "M\tpackages/agentplane/src/cli/run-cli/command-loaders/task.ts",
+        "A\tpackages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts",
+        "A\tpackages/agentplane/src/commands/task/supervisor-budget-epoch.command.ts",
+        "M\tpackages/core/src/runner/supervisor-execution-episode.ts",
+        "M\tpackages/core/src/schemas/index.ts",
+        "M\tscripts/lib/test-route-registry.mjs"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "d03a5e786db57136bf7f6c4661b148bcf97cfaf1",
+  "implementation_commit": "d14eb0228be0d507fe296883a8eef2b7d4447de8",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M packages/agentplane/src/cli/run-cli/command-catalog.ts",
+      " M packages/agentplane/src/cli/run-cli/command-loaders/task.ts",
+      " M packages/core/src/runner/supervisor-execution-episode.ts",
+      " M packages/core/src/schemas/index.ts",
+      " M scripts/lib/test-route-registry.mjs",
+      "?? .agentplane/tasks/202609130858-RMHWQ5/README.md",
+      "?? .agentplane/tasks/202609130858-RMHWQ5/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202609130858-RMHWQ5/pr/diffstat.txt",
+      "?? .agentplane/tasks/202609130858-RMHWQ5/pr/github-body.md",
+      "?? .agentplane/tasks/202609130858-RMHWQ5/pr/github-title.txt",
+      "?? .agentplane/tasks/202609130858-RMHWQ5/pr/meta.json",
+      "?? .agentplane/tasks/202609130858-RMHWQ5/pr/review.md",
+      "?? packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts",
+      "?? packages/agentplane/src/cli/run-cli/command-catalog/task-supervisor.ts",
+      "?? packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts",
+      "?? packages/agentplane/src/commands/task/supervisor-budget-epoch.command.ts"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/run-cli/command-catalog.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/run-cli/command-loaders/task.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/src/runner/supervisor-execution-episode.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/src/schemas/index.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M scripts/lib/test-route-registry.mjs"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609130858-RMHWQ5/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609130858-RMHWQ5/blueprint/resolved-snapshot.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609130858-RMHWQ5/pr/diffstat.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609130858-RMHWQ5/pr/github-body.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609130858-RMHWQ5/pr/github-title.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609130858-RMHWQ5/pr/meta.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609130858-RMHWQ5/pr/review.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/cli/run-cli/command-catalog/task-supervisor.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/supervisor-budget-epoch.command.ts"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M packages/agentplane/src/cli/run-cli/command-catalog.ts",
+      " M packages/agentplane/src/cli/run-cli/command-loaders/task.ts",
+      " M packages/core/src/runner/supervisor-execution-episode.ts",
+      " M packages/core/src/schemas/index.ts",
+      " M scripts/lib/test-route-registry.mjs",
+      "?? .agentplane/tasks/202609130858-RMHWQ5/README.md",
+      "?? .agentplane/tasks/202609130858-RMHWQ5/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202609130858-RMHWQ5/pr/diffstat.txt",
+      "?? .agentplane/tasks/202609130858-RMHWQ5/pr/github-body.md",
+      "?? .agentplane/tasks/202609130858-RMHWQ5/pr/github-title.txt",
+      "?? .agentplane/tasks/202609130858-RMHWQ5/pr/meta.json",
+      "?? .agentplane/tasks/202609130858-RMHWQ5/pr/review.md",
+      "?? packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts",
+      "?? packages/agentplane/src/cli/run-cli/command-catalog/task-supervisor.ts",
+      "?? packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts",
+      "?? packages/agentplane/src/commands/task/supervisor-budget-epoch.command.ts"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609130858-RMHWQ5"
+}
