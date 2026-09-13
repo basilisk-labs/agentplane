@@ -1,0 +1,3 @@
+ scripts/bench/paired-production-driver.mjs      | 15 ---------------
+ scripts/bench/paired-production-driver.test.mjs |  2 +-
+ 2 files changed, 1 insertion(+), 16 deletions(-)
