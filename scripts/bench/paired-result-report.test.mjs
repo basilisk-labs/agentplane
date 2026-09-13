@@ -128,6 +128,7 @@ test("keeps failed-attempt tokens in the numerator and pairs only equivalent suc
   assert.equal(report.coverage.token_usage_observed, 6);
   assert.equal(report.coverage.token_usage_partial, 0);
   assert.equal(report.coverage.token_usage_unavailable, 0);
+  assert.deepEqual(report.coverage.derived_total_token_attempt_ids, []);
   assert.deepEqual(report.coverage.transports, { managed: 6 });
   assert.equal(report.gates.safety.verdict, "pass");
   assert.equal(report.gates.activation.verdict, "not_established");

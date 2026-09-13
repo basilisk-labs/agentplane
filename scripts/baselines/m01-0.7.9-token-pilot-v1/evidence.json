@@ -1,0 +1,1220 @@
+{
+  "attempts": [
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "codex-exec-jsonl-supervisor",
+          "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+          "check_ids": [
+            "m01-exact-file-oracle"
+          ],
+          "model": "gpt-5.6-terra",
+          "reasoning_effort": "low",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "codex_cli": "0.153.4",
+            "node": "v24.18.0",
+            "platform": "darwin-arm64"
+          }
+        },
+        "result_digest": "sha256:2db3284f350a63e6fa0fa5975252c96c23fb8832cb14f3bf92ca824cce0e9e2a",
+        "stages": [
+          {
+            "duration_ms": 3080.405417,
+            "id": "product_preparation"
+          },
+          {
+            "duration_ms": 3248.6245830000003,
+            "id": "provider"
+          }
+        ],
+        "status": "failed",
+        "violations": [
+          "codex_turn_completed_count",
+          "codex_final_status_not_done",
+          "codex_process_exit_1"
+        ]
+      },
+      "arm": "candidate",
+      "id": "pair-01-candidate",
+      "identity": {
+        "adapter": "codex-exec-jsonl-supervisor",
+        "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+        "check_ids": [
+          "m01-exact-file-oracle"
+        ],
+        "model": "gpt-5.6-terra",
+        "product_artifact_sha256": "sha256:a665f50c73a543a2270282a30328345d0a5159d29f2001222f3092d4f6806e4f",
+        "product_source_sha": "d6d10521f776881c94de92ae293a4c7ca2012562",
+        "reasoning_effort": "low",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "codex_cli": "0.153.4",
+          "node": "v24.18.0",
+          "platform": "darwin-arm64"
+        },
+        "target_commit": "63e55f0350c54c4ea39949228af5fbec2c7691b4",
+        "target_tree": "66cf042c38806b519f6df185491b6c896dbe1971",
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "oracle": {
+        "duration_ms": 10.121292,
+        "outcome_digest": "sha256:88718dc1f6995b0f7c3dd92f5c9874951ff4d3aada97387a2607fe349b76077d",
+        "verified": false,
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "order": 1,
+      "pair_id": "pair-01",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "provider token telemetry unavailable",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    },
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "codex-exec-jsonl-supervisor",
+          "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+          "check_ids": [
+            "m01-exact-file-oracle"
+          ],
+          "model": "gpt-5.6-terra",
+          "reasoning_effort": "low",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "codex_cli": "0.153.4",
+            "node": "v24.18.0",
+            "platform": "darwin-arm64"
+          }
+        },
+        "result_digest": "sha256:2db3284f350a63e6fa0fa5975252c96c23fb8832cb14f3bf92ca824cce0e9e2a",
+        "stages": [
+          {
+            "duration_ms": 2692.6112080000003,
+            "id": "product_preparation"
+          },
+          {
+            "duration_ms": 3341.0612500000007,
+            "id": "provider"
+          }
+        ],
+        "status": "failed",
+        "violations": [
+          "codex_turn_completed_count",
+          "codex_final_status_not_done",
+          "codex_process_exit_1"
+        ]
+      },
+      "arm": "previous_release",
+      "id": "pair-01-previous_release",
+      "identity": {
+        "adapter": "codex-exec-jsonl-supervisor",
+        "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+        "check_ids": [
+          "m01-exact-file-oracle"
+        ],
+        "model": "gpt-5.6-terra",
+        "product_artifact_sha256": "sha256:e9eebb8cfc933a415c6b8647e0cbf5d4c24964a20cb8ff32e529ce3c5c219bcf",
+        "product_source_sha": "81b3fe507426d82ea903d7a63fd6335b583d81b5",
+        "reasoning_effort": "low",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "codex_cli": "0.153.4",
+          "node": "v24.18.0",
+          "platform": "darwin-arm64"
+        },
+        "target_commit": "63e55f0350c54c4ea39949228af5fbec2c7691b4",
+        "target_tree": "66cf042c38806b519f6df185491b6c896dbe1971",
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "oracle": {
+        "duration_ms": 9.040291999999997,
+        "outcome_digest": "sha256:88718dc1f6995b0f7c3dd92f5c9874951ff4d3aada97387a2607fe349b76077d",
+        "verified": false,
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "order": 2,
+      "pair_id": "pair-01",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "provider token telemetry unavailable",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    },
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "codex-exec-jsonl-supervisor",
+          "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+          "check_ids": [
+            "m01-exact-file-oracle"
+          ],
+          "model": "gpt-5.6-terra",
+          "reasoning_effort": "low",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "codex_cli": "0.153.4",
+            "node": "v24.18.0",
+            "platform": "darwin-arm64"
+          }
+        },
+        "result_digest": "sha256:2db3284f350a63e6fa0fa5975252c96c23fb8832cb14f3bf92ca824cce0e9e2a",
+        "stages": [
+          {
+            "duration_ms": 24.084084000000075,
+            "id": "product_preparation"
+          },
+          {
+            "duration_ms": 3550.0374169999996,
+            "id": "provider"
+          }
+        ],
+        "status": "failed",
+        "violations": [
+          "codex_turn_completed_count",
+          "codex_final_status_not_done",
+          "codex_process_exit_1"
+        ]
+      },
+      "arm": "minimal_agent",
+      "id": "pair-01-minimal_agent",
+      "identity": {
+        "adapter": "codex-exec-jsonl-supervisor",
+        "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+        "check_ids": [
+          "m01-exact-file-oracle"
+        ],
+        "model": "gpt-5.6-terra",
+        "product_artifact_sha256": "sha256:74bffe170f7b115063f46924006208b91dd49582da793285a24ab0a6d55c140b",
+        "product_source_sha": "052014ef9d436e4cfe8ce70bb788295507efa300",
+        "reasoning_effort": "low",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "codex_cli": "0.153.4",
+          "node": "v24.18.0",
+          "platform": "darwin-arm64"
+        },
+        "target_commit": "63e55f0350c54c4ea39949228af5fbec2c7691b4",
+        "target_tree": "66cf042c38806b519f6df185491b6c896dbe1971",
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "oracle": {
+        "duration_ms": 8.080667000000002,
+        "outcome_digest": "sha256:88718dc1f6995b0f7c3dd92f5c9874951ff4d3aada97387a2607fe349b76077d",
+        "verified": false,
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "order": 3,
+      "pair_id": "pair-01",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "provider token telemetry unavailable",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    },
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "codex-exec-jsonl-supervisor",
+          "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+          "check_ids": [
+            "m01-exact-file-oracle"
+          ],
+          "model": "gpt-5.6-terra",
+          "reasoning_effort": "low",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "codex_cli": "0.153.4",
+            "node": "v24.18.0",
+            "platform": "darwin-arm64"
+          }
+        },
+        "result_digest": "sha256:2db3284f350a63e6fa0fa5975252c96c23fb8832cb14f3bf92ca824cce0e9e2a",
+        "stages": [
+          {
+            "duration_ms": 21.606958000000304,
+            "id": "product_preparation"
+          },
+          {
+            "duration_ms": 3869.175707999999,
+            "id": "provider"
+          }
+        ],
+        "status": "failed",
+        "violations": [
+          "codex_turn_completed_count",
+          "codex_final_status_not_done",
+          "codex_process_exit_1"
+        ]
+      },
+      "arm": "minimal_agent",
+      "id": "pair-02-minimal_agent",
+      "identity": {
+        "adapter": "codex-exec-jsonl-supervisor",
+        "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+        "check_ids": [
+          "m01-exact-file-oracle"
+        ],
+        "model": "gpt-5.6-terra",
+        "product_artifact_sha256": "sha256:74bffe170f7b115063f46924006208b91dd49582da793285a24ab0a6d55c140b",
+        "product_source_sha": "052014ef9d436e4cfe8ce70bb788295507efa300",
+        "reasoning_effort": "low",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "codex_cli": "0.153.4",
+          "node": "v24.18.0",
+          "platform": "darwin-arm64"
+        },
+        "target_commit": "63e55f0350c54c4ea39949228af5fbec2c7691b4",
+        "target_tree": "66cf042c38806b519f6df185491b6c896dbe1971",
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "oracle": {
+        "duration_ms": 8.938167,
+        "outcome_digest": "sha256:88718dc1f6995b0f7c3dd92f5c9874951ff4d3aada97387a2607fe349b76077d",
+        "verified": false,
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "order": 4,
+      "pair_id": "pair-02",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "provider token telemetry unavailable",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    },
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "codex-exec-jsonl-supervisor",
+          "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+          "check_ids": [
+            "m01-exact-file-oracle"
+          ],
+          "model": "gpt-5.6-terra",
+          "reasoning_effort": "low",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "codex_cli": "0.153.4",
+            "node": "v24.18.0",
+            "platform": "darwin-arm64"
+          }
+        },
+        "result_digest": "sha256:2db3284f350a63e6fa0fa5975252c96c23fb8832cb14f3bf92ca824cce0e9e2a",
+        "stages": [
+          {
+            "duration_ms": 3104.040832999999,
+            "id": "product_preparation"
+          },
+          {
+            "duration_ms": 3104.2117080000025,
+            "id": "provider"
+          }
+        ],
+        "status": "failed",
+        "violations": [
+          "codex_turn_completed_count",
+          "codex_final_status_not_done",
+          "codex_process_exit_1"
+        ]
+      },
+      "arm": "candidate",
+      "id": "pair-02-candidate",
+      "identity": {
+        "adapter": "codex-exec-jsonl-supervisor",
+        "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+        "check_ids": [
+          "m01-exact-file-oracle"
+        ],
+        "model": "gpt-5.6-terra",
+        "product_artifact_sha256": "sha256:a665f50c73a543a2270282a30328345d0a5159d29f2001222f3092d4f6806e4f",
+        "product_source_sha": "d6d10521f776881c94de92ae293a4c7ca2012562",
+        "reasoning_effort": "low",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "codex_cli": "0.153.4",
+          "node": "v24.18.0",
+          "platform": "darwin-arm64"
+        },
+        "target_commit": "63e55f0350c54c4ea39949228af5fbec2c7691b4",
+        "target_tree": "66cf042c38806b519f6df185491b6c896dbe1971",
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "oracle": {
+        "duration_ms": 9.174208,
+        "outcome_digest": "sha256:88718dc1f6995b0f7c3dd92f5c9874951ff4d3aada97387a2607fe349b76077d",
+        "verified": false,
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "order": 5,
+      "pair_id": "pair-02",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "provider token telemetry unavailable",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    },
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "codex-exec-jsonl-supervisor",
+          "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+          "check_ids": [
+            "m01-exact-file-oracle"
+          ],
+          "model": "gpt-5.6-terra",
+          "reasoning_effort": "low",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "codex_cli": "0.153.4",
+            "node": "v24.18.0",
+            "platform": "darwin-arm64"
+          }
+        },
+        "result_digest": "sha256:2db3284f350a63e6fa0fa5975252c96c23fb8832cb14f3bf92ca824cce0e9e2a",
+        "stages": [
+          {
+            "duration_ms": 2709.425292,
+            "id": "product_preparation"
+          },
+          {
+            "duration_ms": 3630.6740830000017,
+            "id": "provider"
+          }
+        ],
+        "status": "failed",
+        "violations": [
+          "codex_turn_completed_count",
+          "codex_final_status_not_done",
+          "codex_process_exit_1"
+        ]
+      },
+      "arm": "previous_release",
+      "id": "pair-02-previous_release",
+      "identity": {
+        "adapter": "codex-exec-jsonl-supervisor",
+        "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+        "check_ids": [
+          "m01-exact-file-oracle"
+        ],
+        "model": "gpt-5.6-terra",
+        "product_artifact_sha256": "sha256:e9eebb8cfc933a415c6b8647e0cbf5d4c24964a20cb8ff32e529ce3c5c219bcf",
+        "product_source_sha": "81b3fe507426d82ea903d7a63fd6335b583d81b5",
+        "reasoning_effort": "low",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "codex_cli": "0.153.4",
+          "node": "v24.18.0",
+          "platform": "darwin-arm64"
+        },
+        "target_commit": "63e55f0350c54c4ea39949228af5fbec2c7691b4",
+        "target_tree": "66cf042c38806b519f6df185491b6c896dbe1971",
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "oracle": {
+        "duration_ms": 8.940000000000001,
+        "outcome_digest": "sha256:88718dc1f6995b0f7c3dd92f5c9874951ff4d3aada97387a2607fe349b76077d",
+        "verified": false,
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "order": 6,
+      "pair_id": "pair-02",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "provider token telemetry unavailable",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    },
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "codex-exec-jsonl-supervisor",
+          "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+          "check_ids": [
+            "m01-exact-file-oracle"
+          ],
+          "model": "gpt-5.6-terra",
+          "reasoning_effort": "low",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "codex_cli": "0.153.4",
+            "node": "v24.18.0",
+            "platform": "darwin-arm64"
+          }
+        },
+        "result_digest": "sha256:2db3284f350a63e6fa0fa5975252c96c23fb8832cb14f3bf92ca824cce0e9e2a",
+        "stages": [
+          {
+            "duration_ms": 2727.410707999996,
+            "id": "product_preparation"
+          },
+          {
+            "duration_ms": 3977.574333999997,
+            "id": "provider"
+          }
+        ],
+        "status": "failed",
+        "violations": [
+          "codex_turn_completed_count",
+          "codex_final_status_not_done",
+          "codex_process_exit_1"
+        ]
+      },
+      "arm": "previous_release",
+      "id": "pair-03-previous_release",
+      "identity": {
+        "adapter": "codex-exec-jsonl-supervisor",
+        "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+        "check_ids": [
+          "m01-exact-file-oracle"
+        ],
+        "model": "gpt-5.6-terra",
+        "product_artifact_sha256": "sha256:e9eebb8cfc933a415c6b8647e0cbf5d4c24964a20cb8ff32e529ce3c5c219bcf",
+        "product_source_sha": "81b3fe507426d82ea903d7a63fd6335b583d81b5",
+        "reasoning_effort": "low",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "codex_cli": "0.153.4",
+          "node": "v24.18.0",
+          "platform": "darwin-arm64"
+        },
+        "target_commit": "63e55f0350c54c4ea39949228af5fbec2c7691b4",
+        "target_tree": "66cf042c38806b519f6df185491b6c896dbe1971",
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "oracle": {
+        "duration_ms": 9.642334000000002,
+        "outcome_digest": "sha256:88718dc1f6995b0f7c3dd92f5c9874951ff4d3aada97387a2607fe349b76077d",
+        "verified": false,
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "order": 7,
+      "pair_id": "pair-03",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "provider token telemetry unavailable",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    },
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "codex-exec-jsonl-supervisor",
+          "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+          "check_ids": [
+            "m01-exact-file-oracle"
+          ],
+          "model": "gpt-5.6-terra",
+          "reasoning_effort": "low",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "codex_cli": "0.153.4",
+            "node": "v24.18.0",
+            "platform": "darwin-arm64"
+          }
+        },
+        "result_digest": "sha256:2db3284f350a63e6fa0fa5975252c96c23fb8832cb14f3bf92ca824cce0e9e2a",
+        "stages": [
+          {
+            "duration_ms": 25.665374999996857,
+            "id": "product_preparation"
+          },
+          {
+            "duration_ms": 3512.9292920000007,
+            "id": "provider"
+          }
+        ],
+        "status": "failed",
+        "violations": [
+          "codex_turn_completed_count",
+          "codex_final_status_not_done",
+          "codex_process_exit_1"
+        ]
+      },
+      "arm": "minimal_agent",
+      "id": "pair-03-minimal_agent",
+      "identity": {
+        "adapter": "codex-exec-jsonl-supervisor",
+        "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+        "check_ids": [
+          "m01-exact-file-oracle"
+        ],
+        "model": "gpt-5.6-terra",
+        "product_artifact_sha256": "sha256:74bffe170f7b115063f46924006208b91dd49582da793285a24ab0a6d55c140b",
+        "product_source_sha": "052014ef9d436e4cfe8ce70bb788295507efa300",
+        "reasoning_effort": "low",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "codex_cli": "0.153.4",
+          "node": "v24.18.0",
+          "platform": "darwin-arm64"
+        },
+        "target_commit": "63e55f0350c54c4ea39949228af5fbec2c7691b4",
+        "target_tree": "66cf042c38806b519f6df185491b6c896dbe1971",
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "oracle": {
+        "duration_ms": 8.132208000000002,
+        "outcome_digest": "sha256:88718dc1f6995b0f7c3dd92f5c9874951ff4d3aada97387a2607fe349b76077d",
+        "verified": false,
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "order": 8,
+      "pair_id": "pair-03",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "provider token telemetry unavailable",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    },
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "codex-exec-jsonl-supervisor",
+          "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+          "check_ids": [
+            "m01-exact-file-oracle"
+          ],
+          "model": "gpt-5.6-terra",
+          "reasoning_effort": "low",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "codex_cli": "0.153.4",
+            "node": "v24.18.0",
+            "platform": "darwin-arm64"
+          }
+        },
+        "result_digest": "sha256:2db3284f350a63e6fa0fa5975252c96c23fb8832cb14f3bf92ca824cce0e9e2a",
+        "stages": [
+          {
+            "duration_ms": 3121.7340419999964,
+            "id": "product_preparation"
+          },
+          {
+            "duration_ms": 3598.3675839999996,
+            "id": "provider"
+          }
+        ],
+        "status": "failed",
+        "violations": [
+          "codex_turn_completed_count",
+          "codex_final_status_not_done",
+          "codex_process_exit_1"
+        ]
+      },
+      "arm": "candidate",
+      "id": "pair-03-candidate",
+      "identity": {
+        "adapter": "codex-exec-jsonl-supervisor",
+        "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+        "check_ids": [
+          "m01-exact-file-oracle"
+        ],
+        "model": "gpt-5.6-terra",
+        "product_artifact_sha256": "sha256:a665f50c73a543a2270282a30328345d0a5159d29f2001222f3092d4f6806e4f",
+        "product_source_sha": "d6d10521f776881c94de92ae293a4c7ca2012562",
+        "reasoning_effort": "low",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "codex_cli": "0.153.4",
+          "node": "v24.18.0",
+          "platform": "darwin-arm64"
+        },
+        "target_commit": "63e55f0350c54c4ea39949228af5fbec2c7691b4",
+        "target_tree": "66cf042c38806b519f6df185491b6c896dbe1971",
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "oracle": {
+        "duration_ms": 8.710207999999998,
+        "outcome_digest": "sha256:88718dc1f6995b0f7c3dd92f5c9874951ff4d3aada97387a2607fe349b76077d",
+        "verified": false,
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "order": 9,
+      "pair_id": "pair-03",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "provider token telemetry unavailable",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    },
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "codex-exec-jsonl-supervisor",
+          "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+          "check_ids": [
+            "m01-exact-file-oracle"
+          ],
+          "model": "gpt-5.6-terra",
+          "reasoning_effort": "low",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "codex_cli": "0.153.4",
+            "node": "v24.18.0",
+            "platform": "darwin-arm64"
+          }
+        },
+        "result_digest": "sha256:2db3284f350a63e6fa0fa5975252c96c23fb8832cb14f3bf92ca824cce0e9e2a",
+        "stages": [
+          {
+            "duration_ms": 3104.397082999996,
+            "id": "product_preparation"
+          },
+          {
+            "duration_ms": 3063.967208000002,
+            "id": "provider"
+          }
+        ],
+        "status": "failed",
+        "violations": [
+          "codex_turn_completed_count",
+          "codex_final_status_not_done",
+          "codex_process_exit_1"
+        ]
+      },
+      "arm": "candidate",
+      "id": "pair-04-candidate",
+      "identity": {
+        "adapter": "codex-exec-jsonl-supervisor",
+        "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+        "check_ids": [
+          "m01-exact-file-oracle"
+        ],
+        "model": "gpt-5.6-terra",
+        "product_artifact_sha256": "sha256:a665f50c73a543a2270282a30328345d0a5159d29f2001222f3092d4f6806e4f",
+        "product_source_sha": "d6d10521f776881c94de92ae293a4c7ca2012562",
+        "reasoning_effort": "low",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "codex_cli": "0.153.4",
+          "node": "v24.18.0",
+          "platform": "darwin-arm64"
+        },
+        "target_commit": "63e55f0350c54c4ea39949228af5fbec2c7691b4",
+        "target_tree": "66cf042c38806b519f6df185491b6c896dbe1971",
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "oracle": {
+        "duration_ms": 8.696125,
+        "outcome_digest": "sha256:88718dc1f6995b0f7c3dd92f5c9874951ff4d3aada97387a2607fe349b76077d",
+        "verified": false,
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "order": 10,
+      "pair_id": "pair-04",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "provider token telemetry unavailable",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    },
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "codex-exec-jsonl-supervisor",
+          "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+          "check_ids": [
+            "m01-exact-file-oracle"
+          ],
+          "model": "gpt-5.6-terra",
+          "reasoning_effort": "low",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "codex_cli": "0.153.4",
+            "node": "v24.18.0",
+            "platform": "darwin-arm64"
+          }
+        },
+        "result_digest": "sha256:2db3284f350a63e6fa0fa5975252c96c23fb8832cb14f3bf92ca824cce0e9e2a",
+        "stages": [
+          {
+            "duration_ms": 27.166667000004963,
+            "id": "product_preparation"
+          },
+          {
+            "duration_ms": 3353.7819999999992,
+            "id": "provider"
+          }
+        ],
+        "status": "failed",
+        "violations": [
+          "codex_turn_completed_count",
+          "codex_final_status_not_done",
+          "codex_process_exit_1"
+        ]
+      },
+      "arm": "minimal_agent",
+      "id": "pair-04-minimal_agent",
+      "identity": {
+        "adapter": "codex-exec-jsonl-supervisor",
+        "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+        "check_ids": [
+          "m01-exact-file-oracle"
+        ],
+        "model": "gpt-5.6-terra",
+        "product_artifact_sha256": "sha256:74bffe170f7b115063f46924006208b91dd49582da793285a24ab0a6d55c140b",
+        "product_source_sha": "052014ef9d436e4cfe8ce70bb788295507efa300",
+        "reasoning_effort": "low",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "codex_cli": "0.153.4",
+          "node": "v24.18.0",
+          "platform": "darwin-arm64"
+        },
+        "target_commit": "63e55f0350c54c4ea39949228af5fbec2c7691b4",
+        "target_tree": "66cf042c38806b519f6df185491b6c896dbe1971",
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "oracle": {
+        "duration_ms": 12.568957999999999,
+        "outcome_digest": "sha256:88718dc1f6995b0f7c3dd92f5c9874951ff4d3aada97387a2607fe349b76077d",
+        "verified": false,
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "order": 11,
+      "pair_id": "pair-04",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "provider token telemetry unavailable",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    },
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "codex-exec-jsonl-supervisor",
+          "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+          "check_ids": [
+            "m01-exact-file-oracle"
+          ],
+          "model": "gpt-5.6-terra",
+          "reasoning_effort": "low",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "codex_cli": "0.153.4",
+            "node": "v24.18.0",
+            "platform": "darwin-arm64"
+          }
+        },
+        "result_digest": "sha256:2db3284f350a63e6fa0fa5975252c96c23fb8832cb14f3bf92ca824cce0e9e2a",
+        "stages": [
+          {
+            "duration_ms": 3162.2818750000006,
+            "id": "product_preparation"
+          },
+          {
+            "duration_ms": 3052.5527920000095,
+            "id": "provider"
+          }
+        ],
+        "status": "failed",
+        "violations": [
+          "codex_turn_completed_count",
+          "codex_final_status_not_done",
+          "codex_process_exit_1"
+        ]
+      },
+      "arm": "previous_release",
+      "id": "pair-04-previous_release",
+      "identity": {
+        "adapter": "codex-exec-jsonl-supervisor",
+        "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+        "check_ids": [
+          "m01-exact-file-oracle"
+        ],
+        "model": "gpt-5.6-terra",
+        "product_artifact_sha256": "sha256:e9eebb8cfc933a415c6b8647e0cbf5d4c24964a20cb8ff32e529ce3c5c219bcf",
+        "product_source_sha": "81b3fe507426d82ea903d7a63fd6335b583d81b5",
+        "reasoning_effort": "low",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "codex_cli": "0.153.4",
+          "node": "v24.18.0",
+          "platform": "darwin-arm64"
+        },
+        "target_commit": "63e55f0350c54c4ea39949228af5fbec2c7691b4",
+        "target_tree": "66cf042c38806b519f6df185491b6c896dbe1971",
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "oracle": {
+        "duration_ms": 10.611417000000003,
+        "outcome_digest": "sha256:88718dc1f6995b0f7c3dd92f5c9874951ff4d3aada97387a2607fe349b76077d",
+        "verified": false,
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "order": 12,
+      "pair_id": "pair-04",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "provider token telemetry unavailable",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    },
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "codex-exec-jsonl-supervisor",
+          "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+          "check_ids": [
+            "m01-exact-file-oracle"
+          ],
+          "model": "gpt-5.6-terra",
+          "reasoning_effort": "low",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "codex_cli": "0.153.4",
+            "node": "v24.18.0",
+            "platform": "darwin-arm64"
+          }
+        },
+        "result_digest": "sha256:2db3284f350a63e6fa0fa5975252c96c23fb8832cb14f3bf92ca824cce0e9e2a",
+        "stages": [
+          {
+            "duration_ms": 3247.438958999992,
+            "id": "product_preparation"
+          },
+          {
+            "duration_ms": 3090.251959000001,
+            "id": "provider"
+          }
+        ],
+        "status": "failed",
+        "violations": [
+          "codex_turn_completed_count",
+          "codex_final_status_not_done",
+          "codex_process_exit_1"
+        ]
+      },
+      "arm": "previous_release",
+      "id": "pair-05-previous_release",
+      "identity": {
+        "adapter": "codex-exec-jsonl-supervisor",
+        "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+        "check_ids": [
+          "m01-exact-file-oracle"
+        ],
+        "model": "gpt-5.6-terra",
+        "product_artifact_sha256": "sha256:e9eebb8cfc933a415c6b8647e0cbf5d4c24964a20cb8ff32e529ce3c5c219bcf",
+        "product_source_sha": "81b3fe507426d82ea903d7a63fd6335b583d81b5",
+        "reasoning_effort": "low",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "codex_cli": "0.153.4",
+          "node": "v24.18.0",
+          "platform": "darwin-arm64"
+        },
+        "target_commit": "63e55f0350c54c4ea39949228af5fbec2c7691b4",
+        "target_tree": "66cf042c38806b519f6df185491b6c896dbe1971",
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "oracle": {
+        "duration_ms": 11.210292,
+        "outcome_digest": "sha256:88718dc1f6995b0f7c3dd92f5c9874951ff4d3aada97387a2607fe349b76077d",
+        "verified": false,
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "order": 13,
+      "pair_id": "pair-05",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "provider token telemetry unavailable",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    },
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "codex-exec-jsonl-supervisor",
+          "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+          "check_ids": [
+            "m01-exact-file-oracle"
+          ],
+          "model": "gpt-5.6-terra",
+          "reasoning_effort": "low",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "codex_cli": "0.153.4",
+            "node": "v24.18.0",
+            "platform": "darwin-arm64"
+          }
+        },
+        "result_digest": "sha256:2db3284f350a63e6fa0fa5975252c96c23fb8832cb14f3bf92ca824cce0e9e2a",
+        "stages": [
+          {
+            "duration_ms": 3098.7988329999935,
+            "id": "product_preparation"
+          },
+          {
+            "duration_ms": 3408.426332999996,
+            "id": "provider"
+          }
+        ],
+        "status": "failed",
+        "violations": [
+          "codex_turn_completed_count",
+          "codex_final_status_not_done",
+          "codex_process_exit_1"
+        ]
+      },
+      "arm": "candidate",
+      "id": "pair-05-candidate",
+      "identity": {
+        "adapter": "codex-exec-jsonl-supervisor",
+        "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+        "check_ids": [
+          "m01-exact-file-oracle"
+        ],
+        "model": "gpt-5.6-terra",
+        "product_artifact_sha256": "sha256:a665f50c73a543a2270282a30328345d0a5159d29f2001222f3092d4f6806e4f",
+        "product_source_sha": "d6d10521f776881c94de92ae293a4c7ca2012562",
+        "reasoning_effort": "low",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "codex_cli": "0.153.4",
+          "node": "v24.18.0",
+          "platform": "darwin-arm64"
+        },
+        "target_commit": "63e55f0350c54c4ea39949228af5fbec2c7691b4",
+        "target_tree": "66cf042c38806b519f6df185491b6c896dbe1971",
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "oracle": {
+        "duration_ms": 8.576332999999998,
+        "outcome_digest": "sha256:88718dc1f6995b0f7c3dd92f5c9874951ff4d3aada97387a2607fe349b76077d",
+        "verified": false,
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "order": 14,
+      "pair_id": "pair-05",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "provider token telemetry unavailable",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    },
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "codex-exec-jsonl-supervisor",
+          "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+          "check_ids": [
+            "m01-exact-file-oracle"
+          ],
+          "model": "gpt-5.6-terra",
+          "reasoning_effort": "low",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "codex_cli": "0.153.4",
+            "node": "v24.18.0",
+            "platform": "darwin-arm64"
+          }
+        },
+        "result_digest": "sha256:2db3284f350a63e6fa0fa5975252c96c23fb8832cb14f3bf92ca824cce0e9e2a",
+        "stages": [
+          {
+            "duration_ms": 22.6339169999992,
+            "id": "product_preparation"
+          },
+          {
+            "duration_ms": 3200.039875000002,
+            "id": "provider"
+          }
+        ],
+        "status": "failed",
+        "violations": [
+          "codex_turn_completed_count",
+          "codex_final_status_not_done",
+          "codex_process_exit_1"
+        ]
+      },
+      "arm": "minimal_agent",
+      "id": "pair-05-minimal_agent",
+      "identity": {
+        "adapter": "codex-exec-jsonl-supervisor",
+        "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+        "check_ids": [
+          "m01-exact-file-oracle"
+        ],
+        "model": "gpt-5.6-terra",
+        "product_artifact_sha256": "sha256:74bffe170f7b115063f46924006208b91dd49582da793285a24ab0a6d55c140b",
+        "product_source_sha": "052014ef9d436e4cfe8ce70bb788295507efa300",
+        "reasoning_effort": "low",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "codex_cli": "0.153.4",
+          "node": "v24.18.0",
+          "platform": "darwin-arm64"
+        },
+        "target_commit": "63e55f0350c54c4ea39949228af5fbec2c7691b4",
+        "target_tree": "66cf042c38806b519f6df185491b6c896dbe1971",
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "oracle": {
+        "duration_ms": 8.211292,
+        "outcome_digest": "sha256:88718dc1f6995b0f7c3dd92f5c9874951ff4d3aada97387a2607fe349b76077d",
+        "verified": false,
+        "verifier_digest": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606"
+      },
+      "order": 15,
+      "pair_id": "pair-05",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "provider token telemetry unavailable",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    }
+  ],
+  "campaign_id": "M01-0.7.9-token-pilot-v1",
+  "claim_policy": {
+    "max_candidate_to_previous_token_ratio": 1.05,
+    "minimum_paired_successes": 5,
+    "require_candidate_better_than_minimal": true
+  },
+  "constants": {
+    "adapter": "codex-exec-jsonl-supervisor",
+    "authority_digest": "sha256:d73367af10ebfd21333d142a568a050cd289a914fe52f8157be861938dbed7cf",
+    "cache_policy": "ephemeral-provider-default",
+    "check_ids": [
+      "m01-exact-file-oracle"
+    ],
+    "model": "gpt-5.6-terra",
+    "network": "deny",
+    "reasoning_effort": "low",
+    "retry_limit": 0,
+    "runtime_profile": {
+      "codex_cli": "0.153.4",
+      "node": "v24.18.0",
+      "platform": "darwin-arm64"
+    },
+    "sandbox": "workspace-write",
+    "session_policy": "one_fresh_session_per_attempt"
+  },
+  "digest": "sha256:804cc51f855da09a83ca7fff483aa6a373cd690c7c0a9fa955af2b6ba0cc28a6",
+  "kind": "agentplane.paired_production_campaign_evidence",
+  "manifest_digest": "sha256:4ceb333016a0c8ad9b113c3d4b190a8bc3f7973d9a6be05f868e60ea986f6c0a",
+  "mode": "live",
+  "randomized_run_ids": [
+    "pair-01-candidate",
+    "pair-01-previous_release",
+    "pair-01-minimal_agent",
+    "pair-02-minimal_agent",
+    "pair-02-candidate",
+    "pair-02-previous_release",
+    "pair-03-previous_release",
+    "pair-03-minimal_agent",
+    "pair-03-candidate",
+    "pair-04-candidate",
+    "pair-04-minimal_agent",
+    "pair-04-previous_release",
+    "pair-05-previous_release",
+    "pair-05-candidate",
+    "pair-05-minimal_agent"
+  ],
+  "schema_version": 1,
+  "strata": {
+    "external": [
+      "pair-01-candidate",
+      "pair-01-previous_release",
+      "pair-01-minimal_agent",
+      "pair-02-minimal_agent",
+      "pair-02-candidate",
+      "pair-02-previous_release",
+      "pair-03-previous_release",
+      "pair-03-minimal_agent",
+      "pair-03-candidate",
+      "pair-04-candidate",
+      "pair-04-minimal_agent",
+      "pair-04-previous_release",
+      "pair-05-previous_release",
+      "pair-05-candidate",
+      "pair-05-minimal_agent"
+    ]
+  },
+  "target": {
+    "commit": "63e55f0350c54c4ea39949228af5fbec2c7691b4",
+    "repository_path": "/Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can/scripts/baselines/m01-0.7.9-token-pilot-v1/target.bundle",
+    "repository_sha256": "sha256:a8519c04fa8c2490e3e813e7c7eaa16a393f8e858bf65135a2611c84c2d15d0b",
+    "tree": "66cf042c38806b519f6df185491b6c896dbe1971"
+  },
+  "verifier": {
+    "artifact_sha256": "sha256:2b9e9f57c9f074c3dae76b89701afd57bec6117e924bd53d81eb17b4c5dc7606",
+    "id": "m01-exact-file-oracle-v1"
+  }
+}

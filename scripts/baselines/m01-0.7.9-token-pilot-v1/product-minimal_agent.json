@@ -1,0 +1,13 @@
+{
+  "arm": "minimal_agent",
+  "kind": "agentplane.m01_product_artifact",
+  "runtime": {
+    "binary": {
+      "path": "/Users/densmirnov/.local/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
+      "sha256": "sha256:b973d440acac501fd2594a43e7ca9ce41e0a65b9dfb28d0d7a7837c99e1261e3"
+    },
+    "type": "codex"
+  },
+  "schema_version": 1,
+  "source_sha": "052014ef9d436e4cfe8ce70bb788295507efa300"
+}

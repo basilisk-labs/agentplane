@@ -137,6 +137,20 @@ function validateTokenUsage(value, label) {
   ) {
     throw new Error(`${label}.token_usage total cannot be lower than input plus output tokens.`);
   }
+  if (
+    value.total_tokens_source !== undefined &&
+    !["provider", "derived_input_plus_output"].includes(value.total_tokens_source)
+  ) {
+    throw new Error(`${label}.token_usage.total_tokens_source is invalid.`);
+  }
+  if (
+    value.total_tokens_source === "derived_input_plus_output" &&
+    (value.input_tokens === null ||
+      value.output_tokens === null ||
+      value.total_tokens !== value.input_tokens + value.output_tokens)
+  ) {
+    throw new Error(`${label}.token_usage derived total does not match its components.`);
+  }
   return value;
 }
 
@@ -168,15 +182,23 @@ function validateProduct(product, arm) {
     `products.${arm}.artifact_path`,
   );
   const entrypoint = validateCommand(product.entrypoint, `products.${arm}.entrypoint`);
-  if (realpathSync(path.resolve(entrypoint[0])) !== artifactPath) {
-    throw new Error(`products.${arm}.entrypoint must start with its pinned artifact_path.`);
-  }
+  const entrypointDigest = exactDigest(
+    product.entrypoint_sha256,
+    `products.${arm}.entrypoint_sha256`,
+  );
+  const entrypointPath = assertRegularArtifact(
+    entrypoint[0],
+    entrypointDigest,
+    `products.${arm}.entrypoint[0]`,
+  );
+  entrypoint[0] = entrypointPath;
   return {
     arm,
     artifact_path: artifactPath,
     artifact_sha256: artifactDigest,
     source_sha: exactSha(product.source_sha, `products.${arm}.source_sha`),
     entrypoint,
+    entrypoint_sha256: entrypointDigest,
   };
 }
 
@@ -228,8 +250,21 @@ export function validatePairedCampaignManifest(value) {
   const repositoryPath = path.resolve(
     exactNonEmptyString(value.target.repository_path, "target.repository_path"),
   );
+  const repositoryStats = lstatSync(repositoryPath, { throwIfNoEntry: false });
+  if (!repositoryStats || repositoryStats.isSymbolicLink()) {
+    throw new Error("target.repository_path must exist and must not be a symlink.");
+  }
+  const repositorySha256 = repositoryStats.isFile()
+    ? exactDigest(value.target.repository_sha256, "target.repository_sha256")
+    : null;
+  if (repositoryStats.isFile()) {
+    assertRegularArtifact(repositoryPath, repositorySha256, "target.repository_path");
+  } else if (!repositoryStats.isDirectory()) {
+    throw new Error("target.repository_path must be a Git repository or bundle.");
+  }
   const target = {
     repository_path: repositoryPath,
+    repository_sha256: repositorySha256,
     commit: exactSha(value.target.commit, "target.commit"),
     tree: exactSha(value.target.tree, "target.tree"),
   };
@@ -339,6 +374,16 @@ function git(repoRoot, args) {
 }
 
 function assertTargetIdentity(manifest) {
+  if (manifest.target.repository_sha256 !== null) {
+    const heads = execFileSync("git", ["bundle", "list-heads", manifest.target.repository_path], {
+      encoding: "utf8",
+      maxBuffer: 32 * 1024 * 1024,
+    });
+    if (!heads.split("\n").some((line) => line.startsWith(`${manifest.target.commit} `))) {
+      throw new Error("Target bundle does not contain its pinned commit.");
+    }
+    return;
+  }
   const commit = git(manifest.target.repository_path, [
     "rev-parse",
     "--verify",
