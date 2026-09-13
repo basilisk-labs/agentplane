@@ -226,13 +226,82 @@ const SUPERVISOR_LIFECYCLE_TIMING_ZOD_SCHEMA = z
     const ids = new Set(timing.spans.map((span) => span.span_id));
     if (ids.size !== timing.spans.length || !ids.has(timing.root_span_id)) {
       ctx.addIssue({ code: "custom", message: "Lifecycle timing span identities must be unique." });
+      return;
     }
+    const byId = new Map(timing.spans.map((span) => [span.span_id, span]));
+    const root = byId.get(timing.root_span_id)!;
+    if (
+      root.parent_span_id !== null ||
+      root.stage !== "lifecycle" ||
+      root.offset_ms !== 0 ||
+      root.elapsed_ms !== timing.elapsed_ms
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Lifecycle timing root span must cover the full lifecycle interval.",
+      });
+    }
+    const ancestors = new Map<string, Set<string>>();
+    let hierarchyIsValid = true;
     for (const span of timing.spans) {
       if (span.offset_ms + span.elapsed_ms > timing.elapsed_ms) {
         ctx.addIssue({ code: "custom", message: "Lifecycle timing spans must stay in the root." });
+        hierarchyIsValid = false;
       }
       if (span.parent_span_id !== null && !ids.has(span.parent_span_id)) {
         ctx.addIssue({ code: "custom", message: "Lifecycle timing parent span is missing." });
+        hierarchyIsValid = false;
+      }
+      if (span.span_id !== timing.root_span_id && span.parent_span_id === null) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Lifecycle timing contains a second root span.",
+        });
+        hierarchyIsValid = false;
+      }
+      const lineage = new Set<string>();
+      let current = span;
+      while (current.parent_span_id !== null) {
+        if (lineage.has(current.parent_span_id)) {
+          ctx.addIssue({ code: "custom", message: "Lifecycle timing contains a parent cycle." });
+          hierarchyIsValid = false;
+          break;
+        }
+        lineage.add(current.parent_span_id);
+        const parent = byId.get(current.parent_span_id);
+        if (!parent) break;
+        if (
+          current.offset_ms < parent.offset_ms ||
+          current.offset_ms + current.elapsed_ms > parent.offset_ms + parent.elapsed_ms
+        ) {
+          ctx.addIssue({
+            code: "custom",
+            message: "Lifecycle timing child span must stay inside its parent.",
+          });
+          hierarchyIsValid = false;
+        }
+        current = parent;
+      }
+      if (current.span_id !== timing.root_span_id) hierarchyIsValid = false;
+      ancestors.set(span.span_id, lineage);
+    }
+    if (!hierarchyIsValid) return;
+    for (let left = 1; left < timing.spans.length; left += 1) {
+      for (let right = left + 1; right < timing.spans.length; right += 1) {
+        const a = timing.spans[left]!;
+        const b = timing.spans[right]!;
+        const overlap =
+          a.offset_ms < b.offset_ms + b.elapsed_ms && b.offset_ms < a.offset_ms + a.elapsed_ms;
+        const nested = [
+          ancestors.get(a.span_id)?.has(b.span_id),
+          ancestors.get(b.span_id)?.has(a.span_id),
+        ].some(Boolean);
+        if (overlap && !nested) {
+          ctx.addIssue({
+            code: "custom",
+            message: "Lifecycle timing sibling spans must not overlap.",
+          });
+        }
       }
     }
   });

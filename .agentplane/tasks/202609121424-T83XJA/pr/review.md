@@ -55,12 +55,13 @@ Created: 2026-09-12T20:52:29.086Z
  packages/agentplane/src/runner/adapters/codex.ts   |  81 ++++-
  .../adapters/roadmap-usage-durability.test.ts      | 159 ++++++++++
  packages/agentplane/src/runner/artifacts.ts        |  29 ++
+ .../supervisor-execution-episode-timing.test.ts    | 101 +++++++
  .../runner/supervisor-execution-episode.test.ts    |   6 +-
- .../src/runner/supervisor-execution-episode.ts     | 138 ++++++++-
+ .../src/runner/supervisor-execution-episode.ts     | 207 ++++++++++++-
  scripts/bench/task-cost-rollup.test.mjs            | 192 ++++++++++++
  .../lib/agent-efficiency-repository-snapshot.mjs   | 167 +++++++++++
  scripts/lib/test-route-registry.mjs                |   1 +
- 31 files changed, 2729 insertions(+), 314 deletions(-)
+ 32 files changed, 2899 insertions(+), 314 deletions(-)
 ```
 
 </details>
