@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check b6c6d36234b083640fe9c7e1971120dc3cdf0d81..f5111b5032967e53f28ec04e6cdfb19fda3a894e",
+      "command": "git diff --check 98ebb7dd92506bbdd509ce81022eeb580dea9fe4..086025d419444b01aaf1f4e2b58bb6fce25ff662",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,16 +13,15 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB b6c6d36234b083640fe9c7e1971120dc3cdf0d81..f5111b5032967e53f28ec04e6cdfb19fda3a894e",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 98ebb7dd92506bbdd509ce81022eeb580dea9fe4..086025d419444b01aaf1f4e2b58bb6fce25ff662",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "M\t.agentplane/tasks/202609121424-ZEJ656/README.md",
         "M\t.agentplane/tasks/202609121424-ZEJ656/pr/diffstat.txt",
         "M\t.agentplane/tasks/202609121424-ZEJ656/pr/github-body.md",
         "M\t.agentplane/tasks/202609121424-ZEJ656/pr/meta.json",
         "M\t.agentplane/tasks/202609121424-ZEJ656/pr/review.md",
-        "M\t.agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json",
+        "M\tpackages/agentplane/src/runner/adapters/codex-result-transport.ts",
         "M\tpackages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts"
       ]
     },
@@ -33,29 +32,29 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "b6c6d36234b083640fe9c7e1971120dc3cdf0d81",
-  "implementation_commit": "f5111b5032967e53f28ec04e6cdfb19fda3a894e",
+  "execution_base_commit": "98ebb7dd92506bbdd509ce81022eeb580dea9fe4",
+  "implementation_commit": "086025d419444b01aaf1f4e2b58bb6fce25ff662",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
-      " M .agentplane/tasks/202609121424-ZEJ656/README.md",
-      " M .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
+      " M packages/agentplane/src/runner/adapters/codex-result-transport.ts",
+      " M packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts"
     ],
     "classification": [
       {
         "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202609121424-ZEJ656/README.md"
+        "line": " M packages/agentplane/src/runner/adapters/codex-result-transport.ts"
       },
       {
         "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
+        "line": " M packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
-      " M .agentplane/tasks/202609121424-ZEJ656/README.md",
-      " M .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json"
+      " M packages/agentplane/src/runner/adapters/codex-result-transport.ts",
+      " M packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts"
     ],
     "unchanged_from_execution_baseline": []
   },
