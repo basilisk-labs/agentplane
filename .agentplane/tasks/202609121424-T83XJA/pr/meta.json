@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:18b0cc41cbe6605ffbbebdf36a8ba44f1097b4398490771f69429af39490c68c",
   "pr_number": 5944,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5944",
+  "pre_merge_closure": {
+    "basis_commit": "894c242253482f1e9c6a0007573a605deae6b45a",
+    "branch": "task/202609121424-T83XJA/implement-durable-0-7-9-usage-cost-and-latency-a",
+    "pr_number": 5944,
+    "recorded_at": "2026-09-13T01:09:07.200Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
