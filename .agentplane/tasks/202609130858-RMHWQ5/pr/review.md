@@ -6,7 +6,7 @@ Created: 2026-09-13T09:03:04.106Z
 
 - Task: `202609130858-RMHWQ5`
 - Title: Add an explicit USER-approved supervisor budget epoch for unknown token telemetry
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609130858-RMHWQ5/add-an-explicit-user-approved-supervisor-budget`
 - Canonical task record: `.agentplane/tasks/202609130858-RMHWQ5/README.md`
 
