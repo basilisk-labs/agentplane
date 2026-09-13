@@ -4,7 +4,7 @@ title: "Implement durable 0.7.9 usage, cost, and latency accounting for ST-08 th
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 45
+revision: 46
 origin:
   system: "manual"
 depends_on:
@@ -30,33 +30,35 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-13T00:54:07.499Z"
+  updated_at: "2026-09-13T01:08:55.478Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 2 typed finding(s)."
-  evaluated_sha: "16f5015cf8cdd1e3b116721d79d0625dcc558ef3"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "44118fcf0d32825e963dc7db0504901753c4e9d5"
   blueprint_digest: "a0606595992db659882c934dc9224bb4e23891d77af067972ab0b021db13f8c1"
   evidence_refs:
-    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-005236716-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-005236716-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/929a608e882727e48ac02dbfa598532d9c90acfd8a9f19de23eaf57c2380069d.md"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-005236716-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-005236716-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-005236716-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-005236716-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-010710137-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-010710137-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/f7a320856a0c9e0693c1730246a11ca86b0ff72ed1f300ac1e15b9b03e98332c.md"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-010710137-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-010710137-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/20260913-010710137-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609121424-T83XJA/README.md"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/3e01e98971dc7a407b32d86adf49bb3251e465c27cbff9ee30aa68e476abf71c.patch"
-    - ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/4a69f6da271a5347d79f9d30ceab5fc0b08638459fa9b5d6620a4ff9208c9874.json"
-    - ".agentplane/tasks/202609121424-T83XJA/verification/20260913005226102-ceb047a7ccf2c2b3.json"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/acb5e13f22c5dfbd9ff3ef3ce69937520740933a85fb9a42a2af768300cd1951.patch"
+    - ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/db1ecae63dc7907cf907f6a3c55796ccc7e657d3d08f4444fa88a636f87e19ae.json"
+    - ".agentplane/tasks/202609121424-T83XJA/verification/20260913010700093-e36892520f15824e.json"
     - ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/8c7f73798b088adea69ca9b36d786e09a83742e28743c3425f571fbeb19021b1.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "[P1] packages/core/src/runner/supervisor-execution-episode.ts verifies that partitioned_ms sums to elapsed_ms, but it never derives category totals from the validated span hierarchy and compares them with partitioned_ms. A direct completion API reproduction supplied a 10 ms root plus a full-interval semantic_dispatch child labeled external_wait, while partitioned_ms claimed local_work: 10 and external_wait: 0; completeSupervisorExecutionEpisode accepted and persisted the contradictory record. ST-13 requires local work, USER wait, and external wait to be labeled separately, and the journal is the durable trust boundary. Recompute the non-overlapping category partition from span boundaries using the deepest active span and reject any mismatch; add negative coverage for a reconciled total assigned to the wrong category."
-    - "Residual risk: Without category reconciliation, malformed, migrated, or future caller-generated journals can report trustworthy-looking total latency while misclassifying provider, USER, or local time."
+    - "The canonical lifecycle timing validator now enforces root identity and coverage, rooted acyclic containment, order-independent sibling non-overlap, and category partition reconciliation from deepest active spans."
+    - "Direct boundary reproductions accept valid gapped, nested, and root-last-adjacent timing while rejecting contradictory category totals."
+    - "AgentPlane recorded all 12 required focused, schema, artifact, critical, type, and full local CI checks as passed for the evaluated implementation SHA."
+    - "The frozen branch diff contains no source roadmap path or raw provider result payload."
+    - "Residual risk: Hosted CI and provider integration must still pass against the published PR head before merge."
 execution_route:
   frozen: true
   reason_codes:
@@ -2432,7 +2434,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609121424-T83XJA"
-    event_cursor: 34
+    event_cursor: 35
     final_validation: null
     id: "202609121424-T83XJA"
     intent:
@@ -3194,9 +3196,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121424-T83XJA"
-    revision: 45
+    revision: 46
     schema_version: 1
-    updated_at: "2026-09-13T01:07:01.434Z"
+    updated_at: "2026-09-13T01:07:01.438Z"
     work_items:
       ST-08:
         attempt: 1
@@ -4260,6 +4262,30 @@ extensions:
         mutation_id: "compatibility:sha256:a2913137d5ff3984dc483e80431aa6640afaaf1187a70ab03921ebe01a376706"
         next_revision: 27
         previous_revision: 26
+        schema_version: 1
+        task_id: "202609121424-T83XJA"
+      compatibility:sha256:a563eb86ffbddf5434f6d031a3ee001e9fe065a3d9753596c96db6ab8bfb8aad:
+        aggregate_digest: "sha256:86246b3b7f0273785a518f46bbf87a71e52a99ef15b5dad2eaf26991facf2ffb"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T01:07:01.438Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_3b3f476925a27d6923de4e39"
+          mutation_id: "compatibility:sha256:a563eb86ffbddf5434f6d031a3ee001e9fe065a3d9753596c96db6ab8bfb8aad"
+          plan_digest: "sha256:47ee22d77ca7385f412a8a1da0d53ac32e469d13030f22fdc8fc03c8804e40a4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-T83XJA"
+          task_revision: 45
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:a563eb86ffbddf5434f6d031a3ee001e9fe065a3d9753596c96db6ab8bfb8aad"
+        next_revision: 46
+        previous_revision: 45
         schema_version: 1
         task_id: "202609121424-T83XJA"
       compatibility:sha256:b90109c2c06910395462306f52247f6269c0dccdf570ba8721cbe2761fc14cf5:
