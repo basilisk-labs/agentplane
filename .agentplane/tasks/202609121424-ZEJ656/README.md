@@ -4,7 +4,7 @@ title: "Conserve 0.7.9 semantic requirements and managed output parity for ST-06
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +25,11 @@ plan_approval:
   updated_by: "HOST:codex:USER"
   note: "host_user_decision=sha256:dd58ed194d6d04b319bce4c64fcc3ce4818712567d8b846d06d45f233b22793f"
 verification:
-  state: "needs_rework"
-  updated_at: "2026-09-13T17:31:04.921Z"
+  state: "ok"
+  updated_at: "2026-09-13T17:42:48.617Z"
   updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 1
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 execution_route:
   frozen: true
   reason_codes:
@@ -93,9 +93,7 @@ execution_contract:
       - "packages/core/src/runner/agent-work-order.ts"
       - "scripts/lib/test-route-registry.mjs"
   observed:
-    authority_violations:
-      - "verification:recorded-check-6:fail"
-      - "verification:verification-record:fail"
+    authority_violations: []
     changed_components:
       - "packages/agentplane"
       - "packages/core"
@@ -119,6 +117,36 @@ execution_contract:
         id: "recorded-check-1"
         result: "pass"
       -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-13"
+        result: "pass"
+      -
+        id: "recorded-check-14"
+        result: "pass"
+      -
+        id: "recorded-check-15"
+        result: "pass"
+      -
+        id: "recorded-check-16"
+        result: "pass"
+      -
+        id: "recorded-check-17"
+        result: "pass"
+      -
+        id: "recorded-check-18"
+        result: "pass"
+      -
+        id: "recorded-check-19"
+        result: "pass"
+      -
         id: "recorded-check-2"
         result: "pass"
       -
@@ -132,10 +160,19 @@ execution_contract:
         result: "pass"
       -
         id: "recorded-check-6"
-        result: "fail"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
       -
         id: "verification-record"
-        result: "fail"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -234,8 +271,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-6"
-      - "verification_recovery:verification-record"
 commit:
   hash: "086025d419444b01aaf1f4e2b58bb6fce25ff662"
   message: "🚧 ZEJ656 task: apply external agent result"
@@ -312,8 +347,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 086025d41944. CLI accepted one state-bound external-agent semantic result."
     commit: "086025d419444b01aaf1f4e2b58bb6fce25ff662"
+  -
+    type: "verify"
+    at: "2026-09-13T17:42:48.617Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-13T17:34:57.002Z"
+doc_updated_at: "2026-09-13T17:42:49.687Z"
 doc_updated_by: "SUPERVISOR"
 description: "Source contract: agentplane-roadmap-r2 cards ST-06 and ST-07. Preserve required objective, scope, outputs, checks, constraints, stop rules, WorkItem and WorkOrder identity across prompt compaction and role-specific projection. Repair managed semantic-result transport so completed, blocked, needs_context, and failed outcomes retain permitted typed fields without adapter loss. Do not add a second Plan or lifecycle format, and do not expose secrets. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: focused requirement-conservation and adapter output-parity tests with nonzero discovery, related transport/context critical suites, typecheck, schema/mirror checks."
 sections:
@@ -373,6 +414,150 @@ sections:
     Result: fail
     Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-6
     Scope: branch_pr task 202609121424-ZEJ656 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-ZEJ656-conserve-0-7-9-semantic-requirements-and-managed/.agentplane/tasks/202609121424-ZEJ656/blueprint/resolved-snapshot.json
+    - old_digest: e062431b59acd88978a3a9654d5feb31dc03e5953e9b7fbffbba3560975757da
+    - current_digest: e062431b59acd88978a3a9654d5feb31dc03e5953e9b7fbffbba3560975757da
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609121424-ZEJ656
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609121424-ZEJ656
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-13T17:42:48.617Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c86eba5918c06cde7b115a85f55b03217338eed8263a544d08e2ee4f768887e1, input_digest=sha256:f3ae35be2162b1c985fe1c685703ce948c48dbd88194f5b3fa3d3319c8fae812
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check affected_unit_integration (1/6)
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check affected_unit_integration (2/6)
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context packages/agentplane/src/runner/adapters
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check affected_unit_integration (3/6)
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check affected_unit_integration (4/6)
+
+    Check: affected_unit_integration
+    Command: bun run schemas:check && bun run agents:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check affected_unit_integration (5/6)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check affected_unit_integration (6/6)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check critical_paths (1/6)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check critical_paths (2/6)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context packages/agentplane/src/runner/adapters
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check critical_paths (3/6)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check critical_paths (4/6)
+
+    Check: critical_paths
+    Command: bun run schemas:check && bun run agents:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check critical_paths (5/6)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check critical_paths (6/6)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check task_outcome (1/6)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check task_outcome (2/6)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context packages/agentplane/src/runner/adapters
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check task_outcome (3/6)
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check task_outcome (4/6)
+
+    Check: task_outcome
+    Command: bun run schemas:check && bun run agents:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check task_outcome (5/6)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check task_outcome (6/6)
 
     BlueprintSnapshotRef:
     - state: current
@@ -665,7 +850,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609121424-ZEJ656"
-    event_cursor: 16
+    event_cursor: 17
     final_validation: null
     id: "202609121424-ZEJ656"
     intent:
@@ -1126,9 +1311,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121424-ZEJ656"
-    revision: 25
+    revision: 26
     schema_version: 1
-    updated_at: "2026-09-13T17:34:57.002Z"
+    updated_at: "2026-09-13T17:42:49.685Z"
     work_items:
       validate_existing_implementation:
         attempt: 1
@@ -1631,6 +1816,30 @@ extensions:
         previous_revision: 14
         schema_version: 1
         task_id: "202609121424-ZEJ656"
+      compatibility:sha256:de0f8320be9eeb4ce5fae2b69ed4b4d846d977ecad5d81c5bc120bbfc0fba2af:
+        aggregate_digest: "sha256:2b53ca7cdfaa3659732417ac785e63a18ccb25cdcd327f06c50916a9d8d36066"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-13T17:42:49.685Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_dd2c55998fd06c623ff7b05d"
+          mutation_id: "compatibility:sha256:de0f8320be9eeb4ce5fae2b69ed4b4d846d977ecad5d81c5bc120bbfc0fba2af"
+          plan_digest: "sha256:6cfcdb60047f6021f1f8c7a6f4fa3d300d878b6545b029bd41f4c4553e77e321"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-ZEJ656"
+          task_revision: 25
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:de0f8320be9eeb4ce5fae2b69ed4b4d846d977ecad5d81c5bc120bbfc0fba2af"
+        next_revision: 26
+        previous_revision: 25
+        schema_version: 1
+        task_id: "202609121424-ZEJ656"
       compatibility:sha256:ec02fec9f8f5bd38055ab6ecfa155948d24ff1c94baa4d14253044944e31e888:
         aggregate_digest: "sha256:7a6b46a85e3e473c1d42d6484480afcf2c2de99580d399df70a39fa41e0d62c8"
         event:
@@ -1918,6 +2127,150 @@ Command: bun run ci:local:full
 Result: fail
 Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-6
 Scope: branch_pr task 202609121424-ZEJ656 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-ZEJ656-conserve-0-7-9-semantic-requirements-and-managed/.agentplane/tasks/202609121424-ZEJ656/blueprint/resolved-snapshot.json
+- old_digest: e062431b59acd88978a3a9654d5feb31dc03e5953e9b7fbffbba3560975757da
+- current_digest: e062431b59acd88978a3a9654d5feb31dc03e5953e9b7fbffbba3560975757da
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609121424-ZEJ656
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609121424-ZEJ656
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-13T17:42:48.617Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c86eba5918c06cde7b115a85f55b03217338eed8263a544d08e2ee4f768887e1, input_digest=sha256:f3ae35be2162b1c985fe1c685703ce948c48dbd88194f5b3fa3d3319c8fae812
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check affected_unit_integration (1/6)
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check affected_unit_integration (2/6)
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context packages/agentplane/src/runner/adapters
+Result: pass
+Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check affected_unit_integration (3/6)
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check affected_unit_integration (4/6)
+
+Check: affected_unit_integration
+Command: bun run schemas:check && bun run agents:check
+Result: pass
+Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check affected_unit_integration (5/6)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check affected_unit_integration (6/6)
+
+Check: critical_paths
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check critical_paths (1/6)
+
+Check: critical_paths
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check critical_paths (2/6)
+
+Check: critical_paths
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context packages/agentplane/src/runner/adapters
+Result: pass
+Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check critical_paths (3/6)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check critical_paths (4/6)
+
+Check: critical_paths
+Command: bun run schemas:check && bun run agents:check
+Result: pass
+Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check critical_paths (5/6)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check critical_paths (6/6)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check task_outcome (1/6)
+
+Check: task_outcome
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check task_outcome (2/6)
+
+Check: task_outcome
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context packages/agentplane/src/runner/adapters
+Result: pass
+Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check task_outcome (3/6)
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check task_outcome (4/6)
+
+Check: task_outcome
+Command: bun run schemas:check && bun run agents:check
+Result: pass
+Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check task_outcome (5/6)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609121424-ZEJ656/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609121424-ZEJ656 Verification Contract check task_outcome (6/6)
 
 BlueprintSnapshotRef:
 - state: current
