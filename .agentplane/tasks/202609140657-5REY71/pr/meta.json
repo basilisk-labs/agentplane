@@ -8,10 +8,10 @@
   "pr_number": 5952,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5952",
   "pre_merge_closure": {
-    "basis_commit": "f4818c1752177ae76bea169c856a6f54ad23fbeb",
+    "basis_commit": "6740e6d8b932313bdfcbad7c7d4a2af686eb1c3c",
     "branch": "task/202609140657-5REY71/add-supervisor-owned-base-synchronization-before",
     "pr_number": 5952,
-    "recorded_at": "2026-09-14T08:07:49.953Z",
+    "recorded_at": "2026-09-14T08:49:51.500Z",
     "state": "closed_before_merge"
   },
   "provider": {
