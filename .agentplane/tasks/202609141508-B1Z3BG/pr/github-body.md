@@ -22,7 +22,7 @@ Prepare, review, merge, and publish the next 0.6 patch release from the merged m
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-14T15:10:38.998Z
+- Updated: 2026-09-14T16:08:51.776Z
 - Branch: task/202609141508-B1Z3BG/release-v0-6-29
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
@@ -60,7 +60,7 @@ Prepare, review, merge, and publish the next 0.6 patch release from the merged m
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
  packages/recipes/src/index.ts                      |   2 +-
- packages/spec/examples/acr.json                    |  22 +-
+ packages/spec/examples/acr.json                    |   4 +-
  packages/testkit/package.json                      |   2 +-
  scripts/README.md                                  |   2 +-
  scripts/checks/check-docs-ia.mjs                   |   2 +-
@@ -68,7 +68,7 @@ Prepare, review, merge, and publish the next 0.6 patch release from the merged m
  turbo.json                                         |   2 +-
  .../static/img/social/docs/releases/v0.6.29.png    | Bin 0 -> 54128 bytes
  website/static/img/social/manifest.json            |   8 +
- 41 files changed, 725 insertions(+), 67 deletions(-)
+ 41 files changed, 711 insertions(+), 63 deletions(-)
 ```
 
 </details>
