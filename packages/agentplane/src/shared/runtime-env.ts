@@ -19,13 +19,20 @@ export function withPreferredRuntimePath(
 
   const preferredEntries: string[] = [];
   pushUnique(preferredEntries, path.dirname(resolvePreferredNodeExecutable(baseEnv)));
+  pushUnique(preferredEntries, String(baseEnv.NVM_BIN ?? ""));
+  pushUnique(preferredEntries, path.join(String(baseEnv.VOLTA_HOME ?? "").trim(), "bin"));
+
+  const homeDir = String(baseEnv.HOME ?? os.homedir() ?? "").trim();
+  const discoveredNvmNode = homeDir ? readLatestNvmNodeBin(homeDir) : null;
+  if (discoveredNvmNode) {
+    pushUnique(preferredEntries, path.dirname(discoveredNvmNode));
+  }
 
   const bunInstallDir = String(baseEnv.BUN_INSTALL ?? "").trim();
   if (bunInstallDir) {
     pushUnique(preferredEntries, path.join(bunInstallDir, "bin"));
   }
 
-  const homeDir = String(baseEnv.HOME ?? os.homedir() ?? "").trim();
   if (homeDir) {
     pushUnique(preferredEntries, path.join(homeDir, ".bun", "bin"));
   }
@@ -68,7 +75,10 @@ function readLatestNvmNodeBin(homeDir: string): string | null {
 
 export function resolvePreferredNodeExecutable(baseEnv: NodeJS.ProcessEnv = process.env): string {
   const homeDir = String(baseEnv.HOME ?? os.homedir() ?? "").trim();
+  const currentNodeMajor = Number.parseInt(process.versions.node.split(".")[0] ?? "", 10);
+  const isNativeNodeProcess = !("bun" in process.versions);
   const candidates = [
+    isNativeNodeProcess && currentNodeMajor >= 24 ? process.execPath : null,
     path.join(String(baseEnv.NVM_BIN ?? "").trim(), "node"),
     path.join(String(baseEnv.VOLTA_HOME ?? "").trim(), "bin", "node"),
     homeDir ? readLatestNvmNodeBin(homeDir) : null,
