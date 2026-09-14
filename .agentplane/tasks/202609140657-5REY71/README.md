@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -33,34 +33,34 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-14T08:07:38.118Z"
+  updated_at: "2026-09-14T08:49:30.466Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 6 typed finding(s)."
-  evaluated_sha: "4be3447ccff551b8f67611538d8d784495a35893"
+  evaluated_sha: "497b702366a412f5db212d99baf29849287099bc"
   blueprint_digest: "44cb6a693c03d7f6613baa191627598ac96dc518887fb1525cd7328b0b5fef39"
   evidence_refs:
-    - ".agentplane/tasks/202609140657-5REY71/quality/20260914-080510987-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609140657-5REY71/quality/20260914-080510987-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609140657-5REY71/quality/objects/sha256/78ab76a7cb6ee5bb17fa50d9b2e81528a673ce2ddf73edf85ecbf2a7edfb7be5.md"
-    - ".agentplane/tasks/202609140657-5REY71/quality/20260914-080510987-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609140657-5REY71/quality/20260914-080510987-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609140657-5REY71/quality/20260914-080510987-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609140657-5REY71/quality/20260914-084735380-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609140657-5REY71/quality/20260914-084735380-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609140657-5REY71/quality/objects/sha256/4cada3577887cfa0bad4151f308323510aaea16a44901a4010e5924bdc2e0036.md"
+    - ".agentplane/tasks/202609140657-5REY71/quality/20260914-084735380-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609140657-5REY71/quality/20260914-084735380-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609140657-5REY71/quality/20260914-084735380-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609140657-5REY71/README.md"
-    - ".agentplane/tasks/202609140657-5REY71/quality/objects/sha256/3fd14e76a5923587eecc8489fc8a6b6aeac2d0b7d81224323d10cd6028f15746.patch"
-    - ".agentplane/tasks/202609140657-5REY71/quality/objects/sha256/a85a7e55d192e720583463869d1839f73285d233d62d9d8932309a6d0ae8fa57.json"
-    - ".agentplane/tasks/202609140657-5REY71/verification/20260914080501701-3b1483d7bf124fd2.json"
+    - ".agentplane/tasks/202609140657-5REY71/quality/objects/sha256/100555e07a44a5d91d922a409f3892912ee73a02966249e30791f5b4b2a3a0bb.patch"
+    - ".agentplane/tasks/202609140657-5REY71/quality/objects/sha256/5994e868d32b7844cf84f1f13cf87c444b4133c3888ab394001f5481bb734918.json"
+    - ".agentplane/tasks/202609140657-5REY71/verification/20260914084606234-271e10519bfe0f6d.json"
     - ".agentplane/tasks/202609140657-5REY71/quality/objects/sha256/93d109ad7afba099b1f2caa2b645d5eded949a77507a480ac4d607654cc4bc69.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The route derives synchronization authority only from one ready exclusive branch-base:<base-ref>@<full-sha> WorkItem claim and blocks malformed, ambiguous, wrong-base, or stale-base requests before semantic work."
-    - "The supervisor operation revalidates the authoritative worktree, current branch, exact candidate head, exact base head, and blocking cleanliness under the Git mutation mutex before both preflight and merge."
-    - "The operation preserves history with a no-ff merge of the exact base SHA, refuses semantic conflicts, and proves the resulting two-parent identity plus ancestry of both exact inputs before success."
-    - "The route orders base synchronization after worktree recovery and before conflict recovery, implementation, or rework episodes; a fresh route can issue semantic work only after the exact base is an ancestor."
-    - "The code, operation registry, fingerprint, authority, projection, postcondition, and tests form one coherent scoped change; the committed diff contains no unrelated base-checkout or agentplane-roadmap-r2 changes."
-    - "Residual risk: The first production exercise will be the preserved 0.7.9 candidate; exact identity checks intentionally fail closed if its qualified base changes before synchronization."
+    - "The frozen diff retains the route, exact-head and exact-base validation, mutex-protected merge, conflict preflight, no-ff history preservation, ancestry readback, and negative-path tests reviewed in the prior pass."
+    - "The rework moves only BaseSyncParams and the immutable BASE_SYNC_SPEC into workflow-step-branch-base-sync-spec.ts, so workflow-step.ts no longer imports the route builder that depends on workflow-step-factory.ts."
+    - "The route builder now imports only workflow-step-factory.ts and WorkflowRouteState or WorkflowStep types; the new spec module depends only on workflow-postconditions.ts, removing the reported dependency cycle without adding a competing owner."
+    - "The fresh supervisor record binds verification to implementation SHA 497b702366a412f5db212d99baf29849287099bc and records focused routing, supervisor, typecheck, lint, and full local CI checks as passing."
+    - "The task worktree was clean before evaluator evidence generation, and the frozen implementation diff contains no unrelated base-checkout or agentplane-roadmap-r2 changes."
+    - "Residual risk: The release-task exercise intentionally fails closed if the qualified exact base changes again before synchronization."
 token_usage:
   agent_runs: 3
   input_tokens: null
@@ -449,7 +449,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-14T08:46:10.481Z"
+doc_updated_at: "2026-09-14T08:49:30.477Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement a deterministic AgentPlane lifecycle route for an already-started branch_pr task whose approved WorkItem requires its preserved candidate branch to adopt an exact newer qualified base before semantic edits. The supervisor must own the Git or provider synchronization, bind it to exact branch/head/base identities, preserve existing candidate commits and unrelated work, fail closed on conflict or stale identity, and issue the next semantic packet only after verified base ancestry. An external semantic executor must never be asked to rebase, merge, cherry-pick, commit, force-push, or rewrite Git history. Cover the release-task failure demonstrated by task 202609121424-49XXT3, then integrate the fix through protected branch_pr workflow so that release 0.7.9 can resume."
 sections:
@@ -1273,7 +1273,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609140657-5REY71"
-    event_cursor: 12
+    event_cursor: 13
     final_validation:
       evidence:
         -
@@ -1364,9 +1364,9 @@ extensions:
     lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 16
+    revision: 17
     schema_version: 1
-    updated_at: "2026-09-14T08:46:10.479Z"
+    updated_at: "2026-09-14T08:46:10.481Z"
     work_items:
       implement_branch_base_sync:
         attempt: 1
@@ -1509,6 +1509,30 @@ extensions:
         work_item_id: "implement_branch_base_sync"
     leases: []
     mutation_receipts:
+      compatibility:sha256:0b2dcd0f7d57ff79a0904085864d28552b08fd0abf673788ebb97063ffee743a:
+        aggregate_digest: "sha256:1f94df097eb620fe95090a16ed34514a81e594f898db25d77854f893d4dad3af"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T08:46:10.481Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_a4d1d45d401387a254d6ab44"
+          mutation_id: "compatibility:sha256:0b2dcd0f7d57ff79a0904085864d28552b08fd0abf673788ebb97063ffee743a"
+          plan_digest: "sha256:05d9e037f315e3dad580662875f670e39118537f5689e20277c16450ce222b81"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140657-5REY71"
+          task_revision: 16
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:0b2dcd0f7d57ff79a0904085864d28552b08fd0abf673788ebb97063ffee743a"
+        next_revision: 17
+        previous_revision: 16
+        schema_version: 1
+        task_id: "202609140657-5REY71"
       compatibility:sha256:20bb0bdc7d0cf7eb787521d5a30c7f0f8f5b55701101b9f17be94151773121c6:
         aggregate_digest: "sha256:56ffcc81710fc65cdf1ec93424008fb17611386df1d77857d7cf57171125ea03"
         event:
