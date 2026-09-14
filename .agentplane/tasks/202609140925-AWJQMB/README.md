@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 42
+revision: 43
 origin:
   system: "manual"
 depends_on: []
@@ -1953,19 +1953,134 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202609140925-AWJQMB"
-    revision: 42
+    revision: 43
     schema_version: 1
-    updated_at: "2026-09-14T12:57:54.687Z"
+    updated_at: "2026-09-14T13:17:18.258Z"
     work_items:
       stabilize-evaluator-timeout-fixture:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "stabilize-evaluator-timeout-fixture"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:dc6043e37850d3f9c1d0367ce39305f73773ac40a7924e06f0d03aa69353154a"
+            id: "load-tolerant evaluator timeout fixture"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 4
+              task_id: "202609140925-AWJQMB"
+              work_item_id: "stabilize-evaluator-timeout-fixture"
+            provenance:
+              - "sha256:61a7164a6d719a696a52fdf4126fa4d29978a0b2719f89a6bf4390f936b55280"
+              - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:dcd5655357ef392b2b75c8461ce8cf944467ff7191e53f3fa9d702ca01174fa0"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:2b525e17d9679834f47bae31208abe1175d9c0abc2f0e256842f730fe4253f0e"
+            id: "complete verification evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 4
+              task_id: "202609140925-AWJQMB"
+              work_item_id: "stabilize-evaluator-timeout-fixture"
+            provenance:
+              - "sha256:61a7164a6d719a696a52fdf4126fa4d29978a0b2719f89a6bf4390f936b55280"
+              - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:dcd5655357ef392b2b75c8461ce8cf944467ff7191e53f3fa9d702ca01174fa0"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
+              check_id: "focused-sync-base"
+              command_identity: "bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+              detail: "Observed by bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-14T13:17:18.222Z"
+              repository_snapshot_digest: "sha256:dcd5655357ef392b2b75c8461ce8cf944467ff7191e53f3fa9d702ca01174fa0"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
+              check_id: "implicated-concurrency-suites"
+              command_identity: "bun x vitest run packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
+              detail: "Observed by bun x vitest run packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-14T13:17:18.222Z"
+              repository_snapshot_digest: "sha256:dcd5655357ef392b2b75c8461ce8cf944467ff7191e53f3fa9d702ca01174fa0"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
+              check_id: "focused-evaluator-timeout"
+              command_identity: "bun x vitest run packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts"
+              detail: "Observed by bun x vitest run packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-14T13:17:18.222Z"
+              repository_snapshot_digest: "sha256:dcd5655357ef392b2b75c8461ce8cf944467ff7191e53f3fa9d702ca01174fa0"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
+              check_id: "core-group"
+              command_identity: "node scripts/checks/run-local-ci-group.mjs core"
+              detail: "Observed by node scripts/checks/run-local-ci-group.mjs core."
+              exit_code: 0
+              observed_at: "2026-09-14T13:17:18.222Z"
+              repository_snapshot_digest: "sha256:dcd5655357ef392b2b75c8461ce8cf944467ff7191e53f3fa9d702ca01174fa0"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
+              check_id: "fast-ci"
+              command_identity: "bun run test:fast:ci"
+              detail: "Observed by bun run test:fast:ci."
+              exit_code: 0
+              observed_at: "2026-09-14T13:17:18.222Z"
+              repository_snapshot_digest: "sha256:dcd5655357ef392b2b75c8461ce8cf944467ff7191e53f3fa9d702ca01174fa0"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
+              check_id: "full-local"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-09-14T13:17:18.222Z"
+              repository_snapshot_digest: "sha256:dcd5655357ef392b2b75c8461ce8cf944467ff7191e53f3fa9d702ca01174fa0"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
+              check_id: "diff-status"
+              command_identity: "git diff --check && git status --short --untracked-files=all"
+              detail: "Observed by git diff --check && git status --short --untracked-files=all."
+              exit_code: 0
+              observed_at: "2026-09-14T13:17:18.222Z"
+              repository_snapshot_digest: "sha256:dcd5655357ef392b2b75c8461ce8cf944467ff7191e53f3fa9d702ca01174fa0"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
+              check_id: "hosted-integration"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-09-14T13:17:18.222Z"
+              repository_snapshot_digest: "sha256:dcd5655357ef392b2b75c8461ce8cf944467ff7191e53f3fa9d702ca01174fa0"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -2141,6 +2256,23 @@ extensions:
         task_id: "202609140925-AWJQMB"
         task_revision: 37
         work_item_id: null
+      -
+        at: "2026-09-14T13:17:18.258Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:50e5565f340df91fc52e58a0613052786e259abc6870ce9fc05149ad33dbaa93"
+        entity: "work_item"
+        id: "event_24c04361787d0c99bbd44981"
+        mutation_id: "external-result:work-order-202609140925-AWJQMB-executor-f84648b83a595476c7dd68c0"
+        plan_digest: "sha256:17e5cab8ed46d234d598017608d18f9c97c43dddff1331b90dd8fbfe285d403e"
+        plan_revision: 4
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
+        task_revision: 42
+        work_item_id: "stabilize-evaluator-timeout-fixture"
     leases: []
     mutation_receipts:
       compatibility:sha256:0afe412863eee97979a633489ad54b08dc9b6d97367cbe28fbbad823ce1903fe:
@@ -2885,6 +3017,30 @@ extensions:
         mutation_id: "external-result:work-order-202609140925-AWJQMB-executor-e25cae0d612f55dd2db95534"
         next_revision: 30
         previous_revision: 29
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
+      external-result:work-order-202609140925-AWJQMB-executor-f84648b83a595476c7dd68c0:
+        aggregate_digest: "sha256:f73313b64e4d0b524f29bb477533fcce43c1e1a43a52e8ee6e9dbf1d286554f3"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T13:17:18.258Z"
+          cause_refs:
+            - "semantic-result:sha256:50e5565f340df91fc52e58a0613052786e259abc6870ce9fc05149ad33dbaa93"
+          entity: "work_item"
+          from: "READY"
+          id: "event_24c04361787d0c99bbd44981"
+          mutation_id: "external-result:work-order-202609140925-AWJQMB-executor-f84648b83a595476c7dd68c0"
+          plan_digest: "sha256:17e5cab8ed46d234d598017608d18f9c97c43dddff1331b90dd8fbfe285d403e"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140925-AWJQMB"
+          task_revision: 42
+          to: "COMPLETED"
+          work_item_id: "stabilize-evaluator-timeout-fixture"
+        mutation_id: "external-result:work-order-202609140925-AWJQMB-executor-f84648b83a595476c7dd68c0"
+        next_revision: 43
+        previous_revision: 42
         schema_version: 1
         task_id: "202609140925-AWJQMB"
       legacy-finish:202609140925-AWJQMB:2026-09-14T10:59:52.042Z:b6dae19a727f6516137d85dbdb25f4d6961c05e7:
