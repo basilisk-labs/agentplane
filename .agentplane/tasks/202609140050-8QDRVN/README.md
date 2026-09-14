@@ -1,10 +1,10 @@
 ---
 id: "202609140050-8QDRVN"
 title: "Recover an external-agent result rejected during supervisor application"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,11 @@ plan_approval:
   updated_by: "HOST:codex:USER"
   note: "host_user_decision=sha256:5cef21c13132d53023ecd9bb7d12dabe1d15ed95a025f8ddb16e7f648d779251"
 verification:
-  state: "pending"
-  updated_at: "2026-09-14T01:20:44.408Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
-  attempts: 1
+  state: "needs_rework"
+  updated_at: "2026-09-14T01:31:12.134Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bun run ci:local:full"
+  attempts: 2
 execution_route:
   frozen: true
   reason_codes:
@@ -84,7 +84,9 @@ execution_contract:
       - "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
       - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-2:fail"
+      - "verification:verification-record:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -97,7 +99,16 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "fail"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -185,9 +196,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "7bd4004c11a8fb70fb4c8708a94557a41e301a65"
-  message: "🚧 8QDRVN task: apply external agent result"
+      - "verification_recovery:recorded-check-2"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -207,6 +218,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 7bd4004c11a8. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The remaining oversized-test gate requires one dedicated testkit module. Recommended action: Approve one new testkit path and move only the new scenario setup and assertions into it. Requested scope: roots=packages/agentplane/src/cli/task-advance-result-rejection-recovery.testkit.ts; repository effects=repository_write,tests; request digest=sha256:d528e833e5ce8ad8a80110c79cdeae8ac5883dd1d5a4cfbb7f24b3c6344964c7. Agentplane receipt: external-agent-blocker/tr_995d06a66acddde96490bbe069b9c7ce/sha256:41a416d380e01ac9399820a83c3dab2621ae8bcbae9371e6cd20d4802dc2d844/sha256:d528e833e5ce8ad8a80110c79cdeae8ac5883dd1d5a4cfbb7f24b3c6344964c7."
 events:
   -
     type: "status"
@@ -252,8 +266,21 @@ events:
     to: "DOING"
     note: "Implementation committed: 7bd4004c11a8. CLI accepted one state-bound external-agent semantic result."
     commit: "7bd4004c11a8fb70fb4c8708a94557a41e301a65"
+  -
+    type: "verify"
+    at: "2026-09-14T01:31:12.134Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-09-14T01:31:48.472Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The remaining oversized-test gate requires one dedicated testkit module. Recommended action: Approve one new testkit path and move only the new scenario setup and assertions into it. Requested scope: roots=packages/agentplane/src/cli/task-advance-result-rejection-recovery.testkit.ts; repository effects=repository_write,tests; request digest=sha256:d528e833e5ce8ad8a80110c79cdeae8ac5883dd1d5a4cfbb7f24b3c6344964c7. Agentplane receipt: external-agent-blocker/tr_995d06a66acddde96490bbe069b9c7ce/sha256:41a416d380e01ac9399820a83c3dab2621ae8bcbae9371e6cd20d4802dc2d844/sha256:d528e833e5ce8ad8a80110c79cdeae8ac5883dd1d5a4cfbb7f24b3c6344964c7."
 doc_version: 3
-doc_updated_at: "2026-09-14T01:24:06.290Z"
+doc_updated_at: "2026-09-14T01:31:48.472Z"
 doc_updated_by: "SUPERVISOR"
 description: "When a durable result_received external-agent result is rejected by deterministic supervisor application validation, fail the owning semantic operation without applying the result, retire the exchange, and require the existing exact-key --replacement route. Preserve single-use result integrity and effect-in-doubt behavior. Add focused regression coverage for an implementation result that changes Git history outside the permitted workspace effect."
 sections:
@@ -311,6 +338,46 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-09-14T01:31:12.134Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 2
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:05eab6b62620509c625d909f09ebfb96b67576ef0e857e4aff2df272b855d255, input_digest=sha256:cc659a7ace86ebec50e6c59310274fa3b05d7ed8d49698dd25c180d62142e258
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609140050-8QDRVN declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609140050-8QDRVN declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609140050-8QDRVN-recover-an-external-agent-result-rejected-during/.agentplane/tasks/202609140050-8QDRVN/blueprint/resolved-snapshot.json
+    - old_digest: 2b3bd560197c44675a24a60b7d3717014353b005bd56806b8fb6f1bc6db0d880
+    - current_digest: 2b3bd560197c44675a24a60b7d3717014353b005bd56806b8fb6f1bc6db0d880
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609140050-8QDRVN
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609140050-8QDRVN
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -318,22 +385,20 @@ sections:
   Findings: ""
 extensions:
   agentplane.scope_extension_request:
-    applied_at: "2026-09-14T01:20:44.408Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:61de061074e6f8662ae521bf4162a802199bbfe8a7d1cd12afff51da81fdc135"
+    blocker_state_fingerprint: "sha256:41a416d380e01ac9399820a83c3dab2621ae8bcbae9371e6cd20d4802dc2d844"
     kind: "task_scope_extension_request"
     request:
-      rationale: "Extract the pre-application snapshot, unchanged-state proof, and terminal failure transition from external-agent-supervisor.ts into one focused recovery module so the central supervisor remains below 600 lines."
+      rationale: "Move the new rejected-result integration scenario into a dedicated testkit module so the existing test file returns below the oversized-test threshold without weakening coverage."
       repository_effects:
         - "repository_write"
-        - "source_code"
+        - "tests"
       schema_version: 1
       scope_roots:
-        - "packages/agentplane/src/commands/task/external-agent-result-rejection-recovery.ts"
-    request_digest: "sha256:b8771c7f197270cda0a1858ec1a92226eb7df21754e64541fdfcd90e6d7174bc"
+        - "packages/agentplane/src/cli/task-advance-result-rejection-recovery.testkit.ts"
+    request_digest: "sha256:d528e833e5ce8ad8a80110c79cdeae8ac5883dd1d5a4cfbb7f24b3c6344964c7"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_f54760a204f63fe7afccddcd01a7afbb"
+    status: "pending"
+    transition_id: "tr_995d06a66acddde96490bbe069b9c7ce"
     work_item_id: null
   agentplane.task_centric:
     current_plan:
@@ -467,7 +532,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609140050-8QDRVN"
-    event_cursor: 18
+    event_cursor: 21
     final_validation: null
     id: "202609140050-8QDRVN"
     intent:
@@ -484,7 +549,7 @@ extensions:
 
         When a durable result_received external-agent result is rejected by deterministic supervisor application validation, fail the owning semantic operation without applying the result, retire the exchange, and require the existing exact-key --replacement route. Preserve single-use result integrity and effect-in-doubt behavior. Add focused regression coverage for an implementation result that changes Git history outside the permitted workspace effect.
       task_id: "202609140050-8QDRVN"
-    lifecycle: "ACTIVE"
+    lifecycle: "BLOCKED"
     plan_amendments: []
     plan_history:
       -
@@ -927,9 +992,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609140050-8QDRVN"
-    revision: 24
+    revision: 27
     schema_version: 1
-    updated_at: "2026-09-14T01:24:06.290Z"
+    updated_at: "2026-09-14T01:31:48.472Z"
     work_items:
       recover-rejected-result:
         attempt: 1
@@ -1106,6 +1171,54 @@ extensions:
         mutation_id: "compatibility:sha256:10c932162df279b024730d8bcb8e49408961f9a6f3ceec200acd8cba8fb17b34"
         next_revision: 3
         previous_revision: 2
+        schema_version: 1
+        task_id: "202609140050-8QDRVN"
+      compatibility:sha256:247892e7a0a394861ff159c177da64c061a7337221d4797f04ce892d0b083c1c:
+        aggregate_digest: "sha256:e9266c57a81f5de8064a4eb4a0b1a8eeb8622ff9f3907acf9d0c80bbc8fc70ee"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T01:31:13.650Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_e88a009193656266a508b8c4"
+          mutation_id: "compatibility:sha256:247892e7a0a394861ff159c177da64c061a7337221d4797f04ce892d0b083c1c"
+          plan_digest: "sha256:964641b14ee083eb612f6346f18943a5d0d25890074dadc3df62c6285d4e04cb"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140050-8QDRVN"
+          task_revision: 24
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:247892e7a0a394861ff159c177da64c061a7337221d4797f04ce892d0b083c1c"
+        next_revision: 25
+        previous_revision: 24
+        schema_version: 1
+        task_id: "202609140050-8QDRVN"
+      compatibility:sha256:599b6906cbddeb46496d98314010a6694974446802a3c16decf3aff7ff8bd2b2:
+        aggregate_digest: "sha256:2294e6f6f06a3271aa3660c123213b37d8029556e897fd3cd2ebb71ea83a0bd3"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T01:31:48.472Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_9bbf0d74d1f10137b95ffe4a"
+          mutation_id: "compatibility:sha256:599b6906cbddeb46496d98314010a6694974446802a3c16decf3aff7ff8bd2b2"
+          plan_digest: "sha256:964641b14ee083eb612f6346f18943a5d0d25890074dadc3df62c6285d4e04cb"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140050-8QDRVN"
+          task_revision: 26
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:599b6906cbddeb46496d98314010a6694974446802a3c16decf3aff7ff8bd2b2"
+        next_revision: 27
+        previous_revision: 26
         schema_version: 1
         task_id: "202609140050-8QDRVN"
       compatibility:sha256:6704b4de875cb03bc0deff335b1f96dd6147c7a05905dc68b3c281b7c6c02d36:
@@ -1420,6 +1533,30 @@ extensions:
         previous_revision: 22
         schema_version: 1
         task_id: "202609140050-8QDRVN"
+      compatibility:sha256:f13bd6c59f913407e0da7b822de879333a141f4e3bc0517c29f2245dc3037582:
+        aggregate_digest: "sha256:ed609f6d71d46c09e8f1b02c7b49608b9a8eb0d850940560180b98b87c5ac21f"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T01:31:48.472Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_bdb423eb82387423ffd739bb"
+          mutation_id: "compatibility:sha256:f13bd6c59f913407e0da7b822de879333a141f4e3bc0517c29f2245dc3037582"
+          plan_digest: "sha256:964641b14ee083eb612f6346f18943a5d0d25890074dadc3df62c6285d4e04cb"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140050-8QDRVN"
+          task_revision: 25
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:f13bd6c59f913407e0da7b822de879333a141f4e3bc0517c29f2245dc3037582"
+        next_revision: 26
+        previous_revision: 25
+        schema_version: 1
+        task_id: "202609140050-8QDRVN"
       compatibility:sha256:f17f78e586addd2fdaaf424857cf2b85bcf23dbe81ec6577ae9c1a64b745409e:
         aggregate_digest: "sha256:473d68b75d6d7c0c2c420cffade7effd29b9e40a4671e025ee930d103e9e8566"
         event:
@@ -1545,8 +1682,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "7bd4004c11a8fb70fb4c8708a94557a41e301a65"
   task_execution_context:
     base_ref: "main"
     base_sha: "9792878934b2c4d068e98056cef3c2c691451a90"
@@ -1590,6 +1725,46 @@ Note: Rework: Declared check failed: bun run ci:local:full
 Attempts: 1
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:05eab6b62620509c625d909f09ebfb96b67576ef0e857e4aff2df272b855d255, input_digest=sha256:16f08d4e2b301d98fd7c05b2eac3614512ae9a27b0d0a3cc838c23649f8fbd31
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609140050-8QDRVN declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609140050-8QDRVN declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609140050-8QDRVN-recover-an-external-agent-result-rejected-during/.agentplane/tasks/202609140050-8QDRVN/blueprint/resolved-snapshot.json
+- old_digest: 2b3bd560197c44675a24a60b7d3717014353b005bd56806b8fb6f1bc6db0d880
+- current_digest: 2b3bd560197c44675a24a60b7d3717014353b005bd56806b8fb6f1bc6db0d880
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609140050-8QDRVN
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609140050-8QDRVN
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-14T01:31:12.134Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 2
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:05eab6b62620509c625d909f09ebfb96b67576ef0e857e4aff2df272b855d255, input_digest=sha256:cc659a7ace86ebec50e6c59310274fa3b05d7ed8d49698dd25c180d62142e258
 
 Details:
 
