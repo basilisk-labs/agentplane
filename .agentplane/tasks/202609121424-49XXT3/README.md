@@ -4,7 +4,7 @@ title: "Publish and independently verify AgentPlane 0.7.9 from the exact qualifi
 status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 36
 origin:
   system: "manual"
 depends_on:
@@ -26,9 +26,9 @@ verify:
   - "bun run release:prepublish"
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-13T22:53:42.760Z"
+  updated_at: "2026-09-14T02:07:44.461Z"
   updated_by: "HOST:codex-desktop:USER"
-  note: "host_user_decision=sha256:4a965f2340adea8c7ef8ed6627f467899167ffc6dfbfce57d01b87ce15f4e597"
+  note: "host_user_decision=sha256:4854383666646eb7e5a8ca327f5747879666dfd2ab964d80d538bf4db99db700"
 verification:
   state: "pending"
   updated_at: "2026-09-13T23:22:11.249Z"
@@ -90,9 +90,6 @@ execution_contract:
       - "packages/testkit"
       - "scripts/baselines"
       - "website/static/img/social"
-      - "website/static/img/social/docs/releases/v0.7.9-evidence/preparation.png"
-      - "website/static/img/social/docs/releases/v0.7.9.png"
-      - "website/static/img/social/manifest.json"
   declaration:
     external_effects:
       - "credentials"
@@ -102,13 +99,10 @@ execution_contract:
     implementation_uncertainty: "bounded"
     preferred_mode: "branch_pr"
     rationale:
-      - "Publishing npm packages, GitHub assets, setup tags, Homebrew, and Scoop requires authenticated external writes and independent readback."
-      - "Stable release preparation changes canonical versions, generated release surfaces, release notes, and task evidence."
-      - "The stable candidate must pass hosted branch protection before its exact merged main SHA can be published."
-      - "USER-approved blocked-result scope extension: repository_effects=dependencies,public_api,source_code"
-      - "USER-approved blocked-result scope extension: roots=.agentplane/WORKFLOW.md,.agentplane/config.json; repository_effects=release_metadata,repository_write"
-      - "USER-approved blocked-result scope extension: roots=website/static/img/social/docs/releases/v0.7.9-evidence/preparation.png,website/static/img/social/docs/releases/v0.7.9.png,website/static/img/social/manifest.json; repository_effects=documentation,release_metadata,repository_write"
-      - "USER-approved blocked-result scope extension: roots=website/static/img/social; repository_effects=documentation,release_metadata,repository_write"
+      - "Public distribution requires authenticated external writes and independent readback."
+      - "Release preparation changes canonical versions, generated surfaces, notes, baselines, and task evidence."
+      - "The candidate must pass local and hosted qualification before exact-SHA publication."
+      - "The existing candidate must be replayed onto the exact qualified main commit."
     repository_effects:
       - "dependencies"
       - "documentation"
@@ -136,290 +130,12 @@ execution_contract:
       - "packages/testkit"
       - "scripts/baselines"
       - "website/static/img/social"
-      - "website/static/img/social/docs/releases/v0.7.9-evidence/preparation.png"
-      - "website/static/img/social/docs/releases/v0.7.9.png"
-      - "website/static/img/social/manifest.json"
   observed:
     authority_violations: []
-    changed_components:
-      - ".agentplane"
-      - "docs"
-      - "packages/agentplane"
-      - "packages/core"
-      - "packages/recipes"
-      - "packages/spec"
-      - "packages/testkit"
-      - "website"
-    changed_paths:
-      - ".agentplane/WORKFLOW.md"
-      - "docs/assets/header.svg"
-      - "docs/assets/readme-headers/adr.svg"
-      - "docs/assets/readme-headers/agentplane-cli.svg"
-      - "docs/assets/readme-headers/agentplane.svg"
-      - "docs/assets/readme-headers/core.svg"
-      - "docs/assets/readme-headers/docs.svg"
-      - "docs/assets/readme-headers/humanizer.svg"
-      - "docs/assets/readme-headers/recipes.svg"
-      - "docs/assets/readme-headers/releases.svg"
-      - "docs/assets/readme-headers/schemas.svg"
-      - "docs/assets/readme-headers/scripts.svg"
-      - "docs/assets/readme-headers/skills.svg"
-      - "docs/assets/readme-headers/spec.svg"
-      - "docs/assets/readme-headers/testkit.svg"
-      - "docs/reference/generated-reference.mdx"
-      - "docs/releases/v0.7.9-evidence/preparation.md"
-      - "docs/releases/v0.7.9-evidence/release-plan-changes.json"
-      - "docs/releases/v0.7.9-evidence/release-plan-version.json"
-      - "docs/releases/v0.7.9.md"
-      - "packages/agentplane/package.json"
-      - "packages/core/package.json"
-      - "packages/recipes/package.json"
-      - "packages/recipes/src/index.ts"
-      - "packages/spec/examples/acr.json"
-      - "packages/testkit/package.json"
-      - "website/static/img/social/docs.png"
-      - "website/static/img/social/docs/adr/0001-zod-config-parity.png"
-      - "website/static/img/social/docs/adr/0002-adr-process.png"
-      - "website/static/img/social/docs/adr/0003-refactor-sequencing.png"
-      - "website/static/img/social/docs/adr/0004-keep-custom-cli-stack.png"
-      - "website/static/img/social/docs/adr/0005-defer-biome-migration.png"
-      - "website/static/img/social/docs/adr/0006-no-effect-fp-ts-migration.png"
-      - "website/static/img/social/docs/adr/0007-freeze-yaml-parser-stack.png"
-      - "website/static/img/social/docs/adr/0008-keep-yauzl-for-zip-validation.png"
-      - "website/static/img/social/docs/adr/0009-recipes-index-signing-algorithm-policy.png"
-      - "website/static/img/social/docs/adr/0010-core-root-export-compatibility.png"
-      - "website/static/img/social/docs/adr/0011-v0.3-surface-freeze.png"
-      - "website/static/img/social/docs/adr/0012-v0.4-surface-transition.png"
-      - "website/static/img/social/docs/adr/0013-zod-contract-ssot.png"
-      - "website/static/img/social/docs/adr/0014-task-execution-authority.png"
-      - "website/static/img/social/docs/adr/0015-task-workspace-isolation.png"
-      - "website/static/img/social/docs/adr/0016-serialized-direct-integration.png"
-      - "website/static/img/social/docs/adr/0017-clean-task-core-rebuild.png"
-      - "website/static/img/social/docs/archive/v0-3/cli-bug-ledger-v0-3-x.png"
-      - "website/static/img/social/docs/archive/v0-3/framework-refactor-program.png"
-      - "website/static/img/social/docs/compare.png"
-      - "website/static/img/social/docs/concepts/agent-workflows.png"
-      - "website/static/img/social/docs/concepts/context-engineering.png"
-      - "website/static/img/social/docs/concepts/harness-engineering.png"
-      - "website/static/img/social/docs/concepts/traces.png"
-      - "website/static/img/social/docs/context.png"
-      - "website/static/img/social/docs/context/agent-guide.png"
-      - "website/static/img/social/docs/context/files.png"
-      - "website/static/img/social/docs/context/ingest.png"
-      - "website/static/img/social/docs/context/modes.png"
-      - "website/static/img/social/docs/context/quickstart.png"
-      - "website/static/img/social/docs/context/review.png"
-      - "website/static/img/social/docs/context/troubleshooting.png"
-      - "website/static/img/social/docs/contributing/citation-guidelines.png"
-      - "website/static/img/social/docs/developer/agent-change-record-implementation.png"
-      - "website/static/img/social/docs/developer/architecture.png"
-      - "website/static/img/social/docs/developer/blueprints.png"
-      - "website/static/img/social/docs/developer/cli-contract.png"
-      - "website/static/img/social/docs/developer/cli-help-json.png"
-      - "website/static/img/social/docs/developer/close-taxonomy.png"
-      - "website/static/img/social/docs/developer/cloud-backend-integration-plan.png"
-      - "website/static/img/social/docs/developer/code-quality.png"
-      - "website/static/img/social/docs/developer/contributing.png"
-      - "website/static/img/social/docs/developer/design-principles.png"
-      - "website/static/img/social/docs/developer/documentation-information-architecture.png"
-      - "website/static/img/social/docs/developer/evaluation-and-recursive-improvement.png"
-      - "website/static/img/social/docs/developer/harness-dev.png"
-      - "website/static/img/social/docs/developer/harness-engineering.png"
-      - "website/static/img/social/docs/developer/incident-archive.png"
-      - "website/static/img/social/docs/developer/local-context.png"
-      - "website/static/img/social/docs/developer/modular-prompt-assembly.png"
-      - "website/static/img/social/docs/developer/module-topology.png"
-      - "website/static/img/social/docs/developer/performance-baselines.png"
-      - "website/static/img/social/docs/developer/project-layout.png"
-      - "website/static/img/social/docs/developer/recipes-development.png"
-      - "website/static/img/social/docs/developer/recipes-how-it-works.png"
-      - "website/static/img/social/docs/developer/recipes-safety.png"
-      - "website/static/img/social/docs/developer/recipes-spec.png"
-      - "website/static/img/social/docs/developer/release-and-publishing.png"
-      - "website/static/img/social/docs/developer/schema-validation-strategy.png"
-      - "website/static/img/social/docs/developer/task-execution-authority.png"
-      - "website/static/img/social/docs/developer/testing-and-quality.png"
-      - "website/static/img/social/docs/developer/typescript-esm-imports.png"
-      - "website/static/img/social/docs/developer/verification-contract.png"
-      - "website/static/img/social/docs/developer/website-success-metrics.png"
-      - "website/static/img/social/docs/developer/workflow-contract.png"
-      - "website/static/img/social/docs/developer/workflow-harness-test-matrix.png"
-      - "website/static/img/social/docs/examples/debug-agent-run-with-traces.png"
-      - "website/static/img/social/docs/examples/export-traces.png"
-      - "website/static/img/social/docs/help/broken-workflow-runbook.png"
-      - "website/static/img/social/docs/help/glossary.png"
-      - "website/static/img/social/docs/help/legacy-upgrade-recovery.png"
-      - "website/static/img/social/docs/help/troubleshooting-by-symptom.png"
-      - "website/static/img/social/docs/help/troubleshooting.png"
-      - "website/static/img/social/docs/internal/git-mutation-model.png"
-      - "website/static/img/social/docs/internal/v0.6.22-refactor-plan.png"
-      - "website/static/img/social/docs/internal/v0.7-agent-efficiency-baseline.png"
-      - "website/static/img/social/docs/internal/v0.7-refactor-plan.png"
-      - "website/static/img/social/docs/listing.png"
-      - "website/static/img/social/docs/manifesto.png"
-      - "website/static/img/social/docs/recipes.png"
-      - "website/static/img/social/docs/recipes/docs-update.png"
-      - "website/static/img/social/docs/recipes/hermes-agentplane.png"
-      - "website/static/img/social/docs/recipes/security-review.png"
-      - "website/static/img/social/docs/recipes/tdd.png"
-      - "website/static/img/social/docs/reference/acr-schema.png"
-      - "website/static/img/social/docs/reference/acr.png"
-      - "website/static/img/social/docs/reference/clean-task-core-rebuild-spec.png"
-      - "website/static/img/social/docs/reference/cli.png"
-      - "website/static/img/social/docs/reference/evidence.png"
-      - "website/static/img/social/docs/reference/generated-reference.png"
-      - "website/static/img/social/docs/reference/runner-handoff.png"
-      - "website/static/img/social/docs/reference/task-observations.png"
-      - "website/static/img/social/docs/reference/trace-schema.png"
-      - "website/static/img/social/docs/reference/workflow-file.png"
-      - "website/static/img/social/docs/releases.png"
-      - "website/static/img/social/docs/releases/TEMPLATE.png"
-      - "website/static/img/social/docs/releases/v0.1.3.png"
-      - "website/static/img/social/docs/releases/v0.1.4.png"
-      - "website/static/img/social/docs/releases/v0.1.5.png"
-      - "website/static/img/social/docs/releases/v0.1.6.png"
-      - "website/static/img/social/docs/releases/v0.1.7.png"
-      - "website/static/img/social/docs/releases/v0.1.8.png"
-      - "website/static/img/social/docs/releases/v0.1.9.png"
-      - "website/static/img/social/docs/releases/v0.2.0.png"
-      - "website/static/img/social/docs/releases/v0.2.1.png"
-      - "website/static/img/social/docs/releases/v0.2.10.png"
-      - "website/static/img/social/docs/releases/v0.2.11.png"
-      - "website/static/img/social/docs/releases/v0.2.12.png"
-      - "website/static/img/social/docs/releases/v0.2.13.png"
-      - "website/static/img/social/docs/releases/v0.2.14.png"
-      - "website/static/img/social/docs/releases/v0.2.15.png"
-      - "website/static/img/social/docs/releases/v0.2.16.png"
-      - "website/static/img/social/docs/releases/v0.2.17.png"
-      - "website/static/img/social/docs/releases/v0.2.18.png"
-      - "website/static/img/social/docs/releases/v0.2.19.png"
-      - "website/static/img/social/docs/releases/v0.2.2.png"
-      - "website/static/img/social/docs/releases/v0.2.20.png"
-      - "website/static/img/social/docs/releases/v0.2.21.png"
-      - "website/static/img/social/docs/releases/v0.2.22.png"
-      - "website/static/img/social/docs/releases/v0.2.23.png"
-      - "website/static/img/social/docs/releases/v0.2.24.png"
-      - "website/static/img/social/docs/releases/v0.2.25.png"
-      - "website/static/img/social/docs/releases/v0.2.26.png"
-      - "website/static/img/social/docs/releases/v0.2.3.png"
-      - "website/static/img/social/docs/releases/v0.2.4.png"
-      - "website/static/img/social/docs/releases/v0.2.5.png"
-      - "website/static/img/social/docs/releases/v0.2.6.png"
-      - "website/static/img/social/docs/releases/v0.2.7.png"
-      - "website/static/img/social/docs/releases/v0.2.8.png"
-      - "website/static/img/social/docs/releases/v0.2.9.png"
-      - "website/static/img/social/docs/releases/v0.3.0.png"
-      - "website/static/img/social/docs/releases/v0.3.1.png"
-      - "website/static/img/social/docs/releases/v0.3.10.png"
-      - "website/static/img/social/docs/releases/v0.3.11.png"
-      - "website/static/img/social/docs/releases/v0.3.12.png"
-      - "website/static/img/social/docs/releases/v0.3.13.png"
-      - "website/static/img/social/docs/releases/v0.3.14.png"
-      - "website/static/img/social/docs/releases/v0.3.15.png"
-      - "website/static/img/social/docs/releases/v0.3.16.png"
-      - "website/static/img/social/docs/releases/v0.3.17.png"
-      - "website/static/img/social/docs/releases/v0.3.18.png"
-      - "website/static/img/social/docs/releases/v0.3.19.png"
-      - "website/static/img/social/docs/releases/v0.3.2.png"
-      - "website/static/img/social/docs/releases/v0.3.20.png"
-      - "website/static/img/social/docs/releases/v0.3.21.png"
-      - "website/static/img/social/docs/releases/v0.3.22.png"
-      - "website/static/img/social/docs/releases/v0.3.23.png"
-      - "website/static/img/social/docs/releases/v0.3.24.png"
-      - "website/static/img/social/docs/releases/v0.3.25.png"
-      - "website/static/img/social/docs/releases/v0.3.26.png"
-      - "website/static/img/social/docs/releases/v0.3.27.png"
-      - "website/static/img/social/docs/releases/v0.3.28.png"
-      - "website/static/img/social/docs/releases/v0.3.29.png"
-      - "website/static/img/social/docs/releases/v0.3.3.png"
-      - "website/static/img/social/docs/releases/v0.3.4.png"
-      - "website/static/img/social/docs/releases/v0.3.5.png"
-      - "website/static/img/social/docs/releases/v0.3.6.png"
-      - "website/static/img/social/docs/releases/v0.3.7.png"
-      - "website/static/img/social/docs/releases/v0.3.8.png"
-      - "website/static/img/social/docs/releases/v0.3.9.png"
-      - "website/static/img/social/docs/releases/v0.4.0.png"
-      - "website/static/img/social/docs/releases/v0.4.1.png"
-      - "website/static/img/social/docs/releases/v0.4.2.png"
-      - "website/static/img/social/docs/releases/v0.4.3.png"
-      - "website/static/img/social/docs/releases/v0.4.4.png"
-      - "website/static/img/social/docs/releases/v0.5.0-rc.1.png"
-      - "website/static/img/social/docs/releases/v0.5.0.png"
-      - "website/static/img/social/docs/releases/v0.6.0.png"
-      - "website/static/img/social/docs/releases/v0.6.1.png"
-      - "website/static/img/social/docs/releases/v0.6.10.png"
-      - "website/static/img/social/docs/releases/v0.6.11.png"
-      - "website/static/img/social/docs/releases/v0.6.12.png"
-      - "website/static/img/social/docs/releases/v0.6.13.png"
-      - "website/static/img/social/docs/releases/v0.6.14.png"
-      - "website/static/img/social/docs/releases/v0.6.15.png"
-      - "website/static/img/social/docs/releases/v0.6.16.png"
-      - "website/static/img/social/docs/releases/v0.6.17.png"
-      - "website/static/img/social/docs/releases/v0.6.18.png"
-      - "website/static/img/social/docs/releases/v0.6.19.png"
-      - "website/static/img/social/docs/releases/v0.6.2.png"
-      - "website/static/img/social/docs/releases/v0.6.20.png"
-      - "website/static/img/social/docs/releases/v0.6.21.png"
-      - "website/static/img/social/docs/releases/v0.6.22.png"
-      - "website/static/img/social/docs/releases/v0.6.23.png"
-      - "website/static/img/social/docs/releases/v0.6.24.png"
-      - "website/static/img/social/docs/releases/v0.6.3.png"
-      - "website/static/img/social/docs/releases/v0.6.4.png"
-      - "website/static/img/social/docs/releases/v0.6.5.png"
-      - "website/static/img/social/docs/releases/v0.6.6.png"
-      - "website/static/img/social/docs/releases/v0.6.7.png"
-      - "website/static/img/social/docs/releases/v0.6.8.png"
-      - "website/static/img/social/docs/releases/v0.6.9.png"
-      - "website/static/img/social/docs/releases/v0.7.0.png"
-      - "website/static/img/social/docs/releases/v0.7.1.png"
-      - "website/static/img/social/docs/releases/v0.7.2.png"
-      - "website/static/img/social/docs/releases/v0.7.3.png"
-      - "website/static/img/social/docs/releases/v0.7.4.png"
-      - "website/static/img/social/docs/releases/v0.7.5.png"
-      - "website/static/img/social/docs/releases/v0.7.6.png"
-      - "website/static/img/social/docs/releases/v0.7.7.png"
-      - "website/static/img/social/docs/releases/v0.7.9-evidence/preparation.png"
-      - "website/static/img/social/docs/releases/v0.7.9.png"
-      - "website/static/img/social/docs/showcase.png"
-      - "website/static/img/social/docs/start/first-local-run.png"
-      - "website/static/img/social/docs/start/quickstart.png"
-      - "website/static/img/social/docs/start/what-agentplane-writes.png"
-      - "website/static/img/social/docs/user/agent-bootstrap.generated.png"
-      - "website/static/img/social/docs/user/agent-discovery.png"
-      - "website/static/img/social/docs/user/agents.png"
-      - "website/static/img/social/docs/user/branching-and-pr-artifacts.png"
-      - "website/static/img/social/docs/user/breaking-changes.png"
-      - "website/static/img/social/docs/user/cli-reference.generated.png"
-      - "website/static/img/social/docs/user/commands.png"
-      - "website/static/img/social/docs/user/configuration.png"
-      - "website/static/img/social/docs/user/indexing-and-webmaster-operations.png"
-      - "website/static/img/social/docs/user/local-context.png"
-      - "website/static/img/social/docs/user/overview.png"
-      - "website/static/img/social/docs/user/prerequisites.png"
-      - "website/static/img/social/docs/user/setup.png"
-      - "website/static/img/social/docs/user/task-lifecycle.png"
-      - "website/static/img/social/docs/user/tasks-and-backends.png"
-      - "website/static/img/social/docs/user/v0-7-migration.png"
-      - "website/static/img/social/docs/user/website-ia.png"
-      - "website/static/img/social/docs/user/workflow-migration.png"
-      - "website/static/img/social/docs/user/workflow.png"
-      - "website/static/img/social/docs/workflow-guides.png"
-      - "website/static/img/social/docs/workflow-guides/aider.png"
-      - "website/static/img/social/docs/workflow-guides/branch-pr.png"
-      - "website/static/img/social/docs/workflow-guides/claude-code.png"
-      - "website/static/img/social/docs/workflow-guides/codex.png"
-      - "website/static/img/social/docs/workflow-guides/cursor.png"
-      - "website/static/img/social/docs/workflow-guides/github-actions.png"
-      - "website/static/img/social/docs/workflow-guides/hermes-kanban.png"
-      - "website/static/img/social/manifest.json"
+    changed_components: []
+    changed_paths: []
     external_effects: []
-    repository_effects:
-      - "dependencies"
-      - "documentation"
-      - "public_api"
-      - "release_metadata"
-      - "repository_write"
-      - "source_code"
+    repository_effects: []
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -462,9 +178,6 @@ execution_contract:
           - "packages/testkit"
           - "scripts/baselines"
           - "website/static/img/social"
-          - "website/static/img/social/docs/releases/v0.7.9-evidence/preparation.png"
-          - "website/static/img/social/docs/releases/v0.7.9.png"
-          - "website/static/img/social/manifest.json"
         evidence_requirements:
           - "external_effect:credentials"
           - "external_effect:external_write"
@@ -494,301 +207,24 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:77dd8fae41c6c94d3483c685c6bd98979823170cc1b3b0fde8e1beaa3d00807f"
+      digest: "sha256:d8c3a5ec006201e1981ec161ee5ffb1136b7680537334ce8dc2967828091c64c"
       escalation_reasons:
         - "central_component:package.json"
-        - "central_path:packages/core/package.json"
         - "effect_dependencies"
         - "effect_public_api"
         - "effect_release_metadata"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
-        - "unknown_path:packages/spec/examples/acr.json"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components:
-          - ".agentplane"
-          - "docs"
-          - "packages/agentplane"
-          - "packages/core"
-          - "packages/recipes"
-          - "packages/spec"
-          - "packages/testkit"
-          - "website"
-        changed_files:
-          - ".agentplane/WORKFLOW.md"
-          - "docs/assets/header.svg"
-          - "docs/assets/readme-headers/adr.svg"
-          - "docs/assets/readme-headers/agentplane-cli.svg"
-          - "docs/assets/readme-headers/agentplane.svg"
-          - "docs/assets/readme-headers/core.svg"
-          - "docs/assets/readme-headers/docs.svg"
-          - "docs/assets/readme-headers/humanizer.svg"
-          - "docs/assets/readme-headers/recipes.svg"
-          - "docs/assets/readme-headers/releases.svg"
-          - "docs/assets/readme-headers/schemas.svg"
-          - "docs/assets/readme-headers/scripts.svg"
-          - "docs/assets/readme-headers/skills.svg"
-          - "docs/assets/readme-headers/spec.svg"
-          - "docs/assets/readme-headers/testkit.svg"
-          - "docs/reference/generated-reference.mdx"
-          - "docs/releases/v0.7.9-evidence/preparation.md"
-          - "docs/releases/v0.7.9-evidence/release-plan-changes.json"
-          - "docs/releases/v0.7.9-evidence/release-plan-version.json"
-          - "docs/releases/v0.7.9.md"
-          - "packages/agentplane/package.json"
-          - "packages/core/package.json"
-          - "packages/recipes/package.json"
-          - "packages/recipes/src/index.ts"
-          - "packages/spec/examples/acr.json"
-          - "packages/testkit/package.json"
-          - "website/static/img/social/docs.png"
-          - "website/static/img/social/docs/adr/0001-zod-config-parity.png"
-          - "website/static/img/social/docs/adr/0002-adr-process.png"
-          - "website/static/img/social/docs/adr/0003-refactor-sequencing.png"
-          - "website/static/img/social/docs/adr/0004-keep-custom-cli-stack.png"
-          - "website/static/img/social/docs/adr/0005-defer-biome-migration.png"
-          - "website/static/img/social/docs/adr/0006-no-effect-fp-ts-migration.png"
-          - "website/static/img/social/docs/adr/0007-freeze-yaml-parser-stack.png"
-          - "website/static/img/social/docs/adr/0008-keep-yauzl-for-zip-validation.png"
-          - "website/static/img/social/docs/adr/0009-recipes-index-signing-algorithm-policy.png"
-          - "website/static/img/social/docs/adr/0010-core-root-export-compatibility.png"
-          - "website/static/img/social/docs/adr/0011-v0.3-surface-freeze.png"
-          - "website/static/img/social/docs/adr/0012-v0.4-surface-transition.png"
-          - "website/static/img/social/docs/adr/0013-zod-contract-ssot.png"
-          - "website/static/img/social/docs/adr/0014-task-execution-authority.png"
-          - "website/static/img/social/docs/adr/0015-task-workspace-isolation.png"
-          - "website/static/img/social/docs/adr/0016-serialized-direct-integration.png"
-          - "website/static/img/social/docs/adr/0017-clean-task-core-rebuild.png"
-          - "website/static/img/social/docs/archive/v0-3/cli-bug-ledger-v0-3-x.png"
-          - "website/static/img/social/docs/archive/v0-3/framework-refactor-program.png"
-          - "website/static/img/social/docs/compare.png"
-          - "website/static/img/social/docs/concepts/agent-workflows.png"
-          - "website/static/img/social/docs/concepts/context-engineering.png"
-          - "website/static/img/social/docs/concepts/harness-engineering.png"
-          - "website/static/img/social/docs/concepts/traces.png"
-          - "website/static/img/social/docs/context.png"
-          - "website/static/img/social/docs/context/agent-guide.png"
-          - "website/static/img/social/docs/context/files.png"
-          - "website/static/img/social/docs/context/ingest.png"
-          - "website/static/img/social/docs/context/modes.png"
-          - "website/static/img/social/docs/context/quickstart.png"
-          - "website/static/img/social/docs/context/review.png"
-          - "website/static/img/social/docs/context/troubleshooting.png"
-          - "website/static/img/social/docs/contributing/citation-guidelines.png"
-          - "website/static/img/social/docs/developer/agent-change-record-implementation.png"
-          - "website/static/img/social/docs/developer/architecture.png"
-          - "website/static/img/social/docs/developer/blueprints.png"
-          - "website/static/img/social/docs/developer/cli-contract.png"
-          - "website/static/img/social/docs/developer/cli-help-json.png"
-          - "website/static/img/social/docs/developer/close-taxonomy.png"
-          - "website/static/img/social/docs/developer/cloud-backend-integration-plan.png"
-          - "website/static/img/social/docs/developer/code-quality.png"
-          - "website/static/img/social/docs/developer/contributing.png"
-          - "website/static/img/social/docs/developer/design-principles.png"
-          - "website/static/img/social/docs/developer/documentation-information-architecture.png"
-          - "website/static/img/social/docs/developer/evaluation-and-recursive-improvement.png"
-          - "website/static/img/social/docs/developer/harness-dev.png"
-          - "website/static/img/social/docs/developer/harness-engineering.png"
-          - "website/static/img/social/docs/developer/incident-archive.png"
-          - "website/static/img/social/docs/developer/local-context.png"
-          - "website/static/img/social/docs/developer/modular-prompt-assembly.png"
-          - "website/static/img/social/docs/developer/module-topology.png"
-          - "website/static/img/social/docs/developer/performance-baselines.png"
-          - "website/static/img/social/docs/developer/project-layout.png"
-          - "website/static/img/social/docs/developer/recipes-development.png"
-          - "website/static/img/social/docs/developer/recipes-how-it-works.png"
-          - "website/static/img/social/docs/developer/recipes-safety.png"
-          - "website/static/img/social/docs/developer/recipes-spec.png"
-          - "website/static/img/social/docs/developer/release-and-publishing.png"
-          - "website/static/img/social/docs/developer/schema-validation-strategy.png"
-          - "website/static/img/social/docs/developer/task-execution-authority.png"
-          - "website/static/img/social/docs/developer/testing-and-quality.png"
-          - "website/static/img/social/docs/developer/typescript-esm-imports.png"
-          - "website/static/img/social/docs/developer/verification-contract.png"
-          - "website/static/img/social/docs/developer/website-success-metrics.png"
-          - "website/static/img/social/docs/developer/workflow-contract.png"
-          - "website/static/img/social/docs/developer/workflow-harness-test-matrix.png"
-          - "website/static/img/social/docs/examples/debug-agent-run-with-traces.png"
-          - "website/static/img/social/docs/examples/export-traces.png"
-          - "website/static/img/social/docs/help/broken-workflow-runbook.png"
-          - "website/static/img/social/docs/help/glossary.png"
-          - "website/static/img/social/docs/help/legacy-upgrade-recovery.png"
-          - "website/static/img/social/docs/help/troubleshooting-by-symptom.png"
-          - "website/static/img/social/docs/help/troubleshooting.png"
-          - "website/static/img/social/docs/internal/git-mutation-model.png"
-          - "website/static/img/social/docs/internal/v0.6.22-refactor-plan.png"
-          - "website/static/img/social/docs/internal/v0.7-agent-efficiency-baseline.png"
-          - "website/static/img/social/docs/internal/v0.7-refactor-plan.png"
-          - "website/static/img/social/docs/listing.png"
-          - "website/static/img/social/docs/manifesto.png"
-          - "website/static/img/social/docs/recipes.png"
-          - "website/static/img/social/docs/recipes/docs-update.png"
-          - "website/static/img/social/docs/recipes/hermes-agentplane.png"
-          - "website/static/img/social/docs/recipes/security-review.png"
-          - "website/static/img/social/docs/recipes/tdd.png"
-          - "website/static/img/social/docs/reference/acr-schema.png"
-          - "website/static/img/social/docs/reference/acr.png"
-          - "website/static/img/social/docs/reference/clean-task-core-rebuild-spec.png"
-          - "website/static/img/social/docs/reference/cli.png"
-          - "website/static/img/social/docs/reference/evidence.png"
-          - "website/static/img/social/docs/reference/generated-reference.png"
-          - "website/static/img/social/docs/reference/runner-handoff.png"
-          - "website/static/img/social/docs/reference/task-observations.png"
-          - "website/static/img/social/docs/reference/trace-schema.png"
-          - "website/static/img/social/docs/reference/workflow-file.png"
-          - "website/static/img/social/docs/releases.png"
-          - "website/static/img/social/docs/releases/TEMPLATE.png"
-          - "website/static/img/social/docs/releases/v0.1.3.png"
-          - "website/static/img/social/docs/releases/v0.1.4.png"
-          - "website/static/img/social/docs/releases/v0.1.5.png"
-          - "website/static/img/social/docs/releases/v0.1.6.png"
-          - "website/static/img/social/docs/releases/v0.1.7.png"
-          - "website/static/img/social/docs/releases/v0.1.8.png"
-          - "website/static/img/social/docs/releases/v0.1.9.png"
-          - "website/static/img/social/docs/releases/v0.2.0.png"
-          - "website/static/img/social/docs/releases/v0.2.1.png"
-          - "website/static/img/social/docs/releases/v0.2.10.png"
-          - "website/static/img/social/docs/releases/v0.2.11.png"
-          - "website/static/img/social/docs/releases/v0.2.12.png"
-          - "website/static/img/social/docs/releases/v0.2.13.png"
-          - "website/static/img/social/docs/releases/v0.2.14.png"
-          - "website/static/img/social/docs/releases/v0.2.15.png"
-          - "website/static/img/social/docs/releases/v0.2.16.png"
-          - "website/static/img/social/docs/releases/v0.2.17.png"
-          - "website/static/img/social/docs/releases/v0.2.18.png"
-          - "website/static/img/social/docs/releases/v0.2.19.png"
-          - "website/static/img/social/docs/releases/v0.2.2.png"
-          - "website/static/img/social/docs/releases/v0.2.20.png"
-          - "website/static/img/social/docs/releases/v0.2.21.png"
-          - "website/static/img/social/docs/releases/v0.2.22.png"
-          - "website/static/img/social/docs/releases/v0.2.23.png"
-          - "website/static/img/social/docs/releases/v0.2.24.png"
-          - "website/static/img/social/docs/releases/v0.2.25.png"
-          - "website/static/img/social/docs/releases/v0.2.26.png"
-          - "website/static/img/social/docs/releases/v0.2.3.png"
-          - "website/static/img/social/docs/releases/v0.2.4.png"
-          - "website/static/img/social/docs/releases/v0.2.5.png"
-          - "website/static/img/social/docs/releases/v0.2.6.png"
-          - "website/static/img/social/docs/releases/v0.2.7.png"
-          - "website/static/img/social/docs/releases/v0.2.8.png"
-          - "website/static/img/social/docs/releases/v0.2.9.png"
-          - "website/static/img/social/docs/releases/v0.3.0.png"
-          - "website/static/img/social/docs/releases/v0.3.1.png"
-          - "website/static/img/social/docs/releases/v0.3.10.png"
-          - "website/static/img/social/docs/releases/v0.3.11.png"
-          - "website/static/img/social/docs/releases/v0.3.12.png"
-          - "website/static/img/social/docs/releases/v0.3.13.png"
-          - "website/static/img/social/docs/releases/v0.3.14.png"
-          - "website/static/img/social/docs/releases/v0.3.15.png"
-          - "website/static/img/social/docs/releases/v0.3.16.png"
-          - "website/static/img/social/docs/releases/v0.3.17.png"
-          - "website/static/img/social/docs/releases/v0.3.18.png"
-          - "website/static/img/social/docs/releases/v0.3.19.png"
-          - "website/static/img/social/docs/releases/v0.3.2.png"
-          - "website/static/img/social/docs/releases/v0.3.20.png"
-          - "website/static/img/social/docs/releases/v0.3.21.png"
-          - "website/static/img/social/docs/releases/v0.3.22.png"
-          - "website/static/img/social/docs/releases/v0.3.23.png"
-          - "website/static/img/social/docs/releases/v0.3.24.png"
-          - "website/static/img/social/docs/releases/v0.3.25.png"
-          - "website/static/img/social/docs/releases/v0.3.26.png"
-          - "website/static/img/social/docs/releases/v0.3.27.png"
-          - "website/static/img/social/docs/releases/v0.3.28.png"
-          - "website/static/img/social/docs/releases/v0.3.29.png"
-          - "website/static/img/social/docs/releases/v0.3.3.png"
-          - "website/static/img/social/docs/releases/v0.3.4.png"
-          - "website/static/img/social/docs/releases/v0.3.5.png"
-          - "website/static/img/social/docs/releases/v0.3.6.png"
-          - "website/static/img/social/docs/releases/v0.3.7.png"
-          - "website/static/img/social/docs/releases/v0.3.8.png"
-          - "website/static/img/social/docs/releases/v0.3.9.png"
-          - "website/static/img/social/docs/releases/v0.4.0.png"
-          - "website/static/img/social/docs/releases/v0.4.1.png"
-          - "website/static/img/social/docs/releases/v0.4.2.png"
-          - "website/static/img/social/docs/releases/v0.4.3.png"
-          - "website/static/img/social/docs/releases/v0.4.4.png"
-          - "website/static/img/social/docs/releases/v0.5.0-rc.1.png"
-          - "website/static/img/social/docs/releases/v0.5.0.png"
-          - "website/static/img/social/docs/releases/v0.6.0.png"
-          - "website/static/img/social/docs/releases/v0.6.1.png"
-          - "website/static/img/social/docs/releases/v0.6.10.png"
-          - "website/static/img/social/docs/releases/v0.6.11.png"
-          - "website/static/img/social/docs/releases/v0.6.12.png"
-          - "website/static/img/social/docs/releases/v0.6.13.png"
-          - "website/static/img/social/docs/releases/v0.6.14.png"
-          - "website/static/img/social/docs/releases/v0.6.15.png"
-          - "website/static/img/social/docs/releases/v0.6.16.png"
-          - "website/static/img/social/docs/releases/v0.6.17.png"
-          - "website/static/img/social/docs/releases/v0.6.18.png"
-          - "website/static/img/social/docs/releases/v0.6.19.png"
-          - "website/static/img/social/docs/releases/v0.6.2.png"
-          - "website/static/img/social/docs/releases/v0.6.20.png"
-          - "website/static/img/social/docs/releases/v0.6.21.png"
-          - "website/static/img/social/docs/releases/v0.6.22.png"
-          - "website/static/img/social/docs/releases/v0.6.23.png"
-          - "website/static/img/social/docs/releases/v0.6.24.png"
-          - "website/static/img/social/docs/releases/v0.6.3.png"
-          - "website/static/img/social/docs/releases/v0.6.4.png"
-          - "website/static/img/social/docs/releases/v0.6.5.png"
-          - "website/static/img/social/docs/releases/v0.6.6.png"
-          - "website/static/img/social/docs/releases/v0.6.7.png"
-          - "website/static/img/social/docs/releases/v0.6.8.png"
-          - "website/static/img/social/docs/releases/v0.6.9.png"
-          - "website/static/img/social/docs/releases/v0.7.0.png"
-          - "website/static/img/social/docs/releases/v0.7.1.png"
-          - "website/static/img/social/docs/releases/v0.7.2.png"
-          - "website/static/img/social/docs/releases/v0.7.3.png"
-          - "website/static/img/social/docs/releases/v0.7.4.png"
-          - "website/static/img/social/docs/releases/v0.7.5.png"
-          - "website/static/img/social/docs/releases/v0.7.6.png"
-          - "website/static/img/social/docs/releases/v0.7.7.png"
-          - "website/static/img/social/docs/releases/v0.7.9-evidence/preparation.png"
-          - "website/static/img/social/docs/releases/v0.7.9.png"
-          - "website/static/img/social/docs/showcase.png"
-          - "website/static/img/social/docs/start/first-local-run.png"
-          - "website/static/img/social/docs/start/quickstart.png"
-          - "website/static/img/social/docs/start/what-agentplane-writes.png"
-          - "website/static/img/social/docs/user/agent-bootstrap.generated.png"
-          - "website/static/img/social/docs/user/agent-discovery.png"
-          - "website/static/img/social/docs/user/agents.png"
-          - "website/static/img/social/docs/user/branching-and-pr-artifacts.png"
-          - "website/static/img/social/docs/user/breaking-changes.png"
-          - "website/static/img/social/docs/user/cli-reference.generated.png"
-          - "website/static/img/social/docs/user/commands.png"
-          - "website/static/img/social/docs/user/configuration.png"
-          - "website/static/img/social/docs/user/indexing-and-webmaster-operations.png"
-          - "website/static/img/social/docs/user/local-context.png"
-          - "website/static/img/social/docs/user/overview.png"
-          - "website/static/img/social/docs/user/prerequisites.png"
-          - "website/static/img/social/docs/user/setup.png"
-          - "website/static/img/social/docs/user/task-lifecycle.png"
-          - "website/static/img/social/docs/user/tasks-and-backends.png"
-          - "website/static/img/social/docs/user/v0-7-migration.png"
-          - "website/static/img/social/docs/user/website-ia.png"
-          - "website/static/img/social/docs/user/workflow-migration.png"
-          - "website/static/img/social/docs/user/workflow.png"
-          - "website/static/img/social/docs/workflow-guides.png"
-          - "website/static/img/social/docs/workflow-guides/aider.png"
-          - "website/static/img/social/docs/workflow-guides/branch-pr.png"
-          - "website/static/img/social/docs/workflow-guides/claude-code.png"
-          - "website/static/img/social/docs/workflow-guides/codex.png"
-          - "website/static/img/social/docs/workflow-guides/cursor.png"
-          - "website/static/img/social/docs/workflow-guides/github-actions.png"
-          - "website/static/img/social/docs/workflow-guides/hermes-kanban.png"
-          - "website/static/img/social/manifest.json"
+        changed_components: []
+        changed_files: []
         external_effects: []
-        repository_effects:
-          - "dependencies"
-          - "documentation"
-          - "public_api"
-          - "release_metadata"
-          - "repository_write"
-          - "source_code"
+        repository_effects: []
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -870,6 +306,12 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The formal committed-candidate gate found a pre-existing task-state integrity failure in the qualified base. Recommended action: Create a separate AgentPlane task from current main, determine the intended immutable-evidence invariant, implement the narrow repair with regression coverage, integrate it through hosted CI, then refresh the 0.7.9 candidate base and rerun the complete prepublish gate. Agentplane receipt: external-agent-blocker/tr_8968ad611cc27642bbd26da3ecd9c844/sha256:f861a7b5a3eb8f61932568d387fe7054e33998181d8e091a03580b049c164b15."
+  -
+    author: "CODER"
+    body: "Resume: PR #5950 merged task-state validation repair at origin/main 9792878934b2c4d068e98056cef3c2c691451a90 | details: continue the approved 0.7.9 release qualification."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. Candidate-base synchronization requires a supervisor-owned Git lifecycle operation that this semantic executor is explicitly forbidden to perform. Recommended action: Run or emit the repository-owned candidate branch synchronization operation, record its receipt, and then issue a fresh semantic packet for prepare_candidate. Do not ask an external executor to rebase, cherry-pick, commit, or rewrite Git history. Agentplane receipt: external-agent-blocker/tr_64c6b4be9fa98a3b6e4c3b6312fed325/sha256:f5db69947a8573cb0f586066c4d5aebf308084d76935d1ea398de829dcbdd98d."
 events:
   -
     type: "status"
@@ -935,8 +377,22 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The formal committed-candidate gate found a pre-existing task-state integrity failure in the qualified base. Recommended action: Create a separate AgentPlane task from current main, determine the intended immutable-evidence invariant, implement the narrow repair with regression coverage, integrate it through hosted CI, then refresh the 0.7.9 candidate base and rerun the complete prepublish gate. Agentplane receipt: external-agent-blocker/tr_8968ad611cc27642bbd26da3ecd9c844/sha256:f861a7b5a3eb8f61932568d387fe7054e33998181d8e091a03580b049c164b15."
+  -
+    type: "status"
+    at: "2026-09-14T00:31:46.313Z"
+    author: "CODER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Resume: PR #5950 merged task-state validation repair at origin/main 9792878934b2c4d068e98056cef3c2c691451a90 | details: continue the approved 0.7.9 release qualification."
+  -
+    type: "status"
+    at: "2026-09-14T02:08:41.270Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. Candidate-base synchronization requires a supervisor-owned Git lifecycle operation that this semantic executor is explicitly forbidden to perform. Recommended action: Run or emit the repository-owned candidate branch synchronization operation, record its receipt, and then issue a fresh semantic packet for prepare_candidate. Do not ask an external executor to rebase, cherry-pick, commit, or rewrite Git history. Agentplane receipt: external-agent-blocker/tr_64c6b4be9fa98a3b6e4c3b6312fed325/sha256:f5db69947a8573cb0f586066c4d5aebf308084d76935d1ea398de829dcbdd98d."
 doc_version: 3
-doc_updated_at: "2026-09-13T23:30:11.418Z"
+doc_updated_at: "2026-09-14T02:08:41.270Z"
 doc_updated_by: "SUPERVISOR"
 description: "Release operator task after all 0.7.9 stabilization dependencies are integrated. Prepare exact 0.7.9 version parity and release notes, run the complete release prepublish and incident gates, produce and integrate the release-ready candidate through repository policy, publish v0.7.9 from the exact qualified main SHA, and independently verify the canonical .agentplane/.release/publish/publish-result.json has success=true with an empty failures array for that SHA. Verify GitHub release assets and checksums, package registries, setup-agentplane tag and install, Homebrew and Scoop distribution, both agentplane and ap entrypoints, and default-branch state. Record any unavailable anonymous GHCR check separately. Complete the required post-publish evidence follow-up and next patch beta only through AgentPlane-managed lifecycle. Never commit agentplane-roadmap-r2. Stop only at a genuine provider or evidence boundary; the user explicitly authorized publish, merge, network, credentials, and external-system actions for v0.7.9."
 sections:
@@ -947,7 +403,7 @@ sections:
   Scope: |-
     - In scope: Release operator task after all 0.7.9 stabilization dependencies are integrated. Prepare exact 0.7.9 version parity and release notes, run the complete release prepublish and incident gates, produce and integrate the release-ready candidate through repository policy, publish v0.7.9 from the exact qualified main SHA, and independently verify the canonical .agentplane/.release/publish/publish-result.json has success=true with an empty failures array for that SHA. Verify GitHub release assets and checksums, package registries, setup-agentplane tag and install, Homebrew and Scoop distribution, both agentplane and ap entrypoints, and default-branch state. Record any unavailable anonymous GHCR check separately. Complete the required post-publish evidence follow-up and next patch beta only through AgentPlane-managed lifecycle. Never commit agentplane-roadmap-r2. Stop only at a genuine provider or evidence boundary; the user explicitly authorized publish, merge, network, credentials, and external-system actions for v0.7.9.
     - Out of scope: unrelated refactors not required for "Publish and independently verify AgentPlane 0.7.9 from the exact qualified main SHA".
-  Plan: "Plan the stable 0.7.9 candidate, qualify and integrate its exact SHA, publish it through the protected release workflow, and verify every public distribution surface before opening the next beta."
+  Plan: "Updated the approved 0.7.9 release plan to the current qualified main and made candidate-base synchronization a supervisor-owned lifecycle prerequisite."
   Verify Steps: |-
     1. Run `bun run release:check`. Expected: version parity, generated release surfaces, package manifests, and release policy checks pass for 0.7.9.
     2. Run `bun run release:prepublish`. Expected: the complete prepublish gate passes for the exact release candidate without skipped mandatory checks.
@@ -967,6 +423,30 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.execution_grant:
+    actor: "HOST:codex-desktop:USER"
+    approval_evidence_digest: "sha256:4854383666646eb7e5a8ca327f5747879666dfd2ab964d80d538bf4db99db700"
+    approval_kind: "host_user_decision"
+    capabilities:
+      - "provider.merge"
+      - "provider.pr"
+      - "publish"
+      - "repository.integrate"
+      - "repository.write"
+      - "task.lifecycle"
+      - "task.scope.extend"
+    completion_contract_digest: "sha256:bbf4cae077401bcc2bc11bc9808649831638204423957859914ed29e9e9ff004"
+    digest: "sha256:2036274d6bfdf0b1171269622b9209518f0519462a622b966fd4cc0c14865fe2"
+    grant_id: "adcf668f-8564-4c8d-b307-7193ae7b08c2"
+    issued_at: "2026-09-14T02:07:44.461Z"
+    kind: "agentplane.execution_grant"
+    plan_digest: "sha256:9c4c12b2096a5312814a3ed707e217582b30ac72b5dc31cc59b87af7765054ca"
+    plan_revision: 34
+    repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+    schema_version: 1
+    scope_digest: "sha256:fb4fba3cb30b34e5beebbd221d597ac55478d33a14125c906112b0cad8604583"
+    status: "active"
+    task_id: "202609121424-49XXT3"
   agentplane.scope_extension_request:
     applied_at: "2026-09-13T23:22:11.249Z"
     applied_by: "USER"
@@ -988,179 +468,43 @@ extensions:
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-13T23:17:41.802Z"
-        approved_by: "USER"
-        approved_digest: "sha256:9ef83bad341e61625d2ba8e9adf09b88aa235b97a4b7094e623134ce86bdd9eb"
+        approved_at: "2026-09-14T02:07:44.461Z"
+        approved_by: "HOST:codex-desktop:USER"
+        approved_digest: "sha256:2dc5dc0f43f6b65479ab63ffbd9cd7f458486e5ed3678edeca71f4080fe8ce02"
         policy_facts:
-          - "state_bound_scope_extension:sha256:9824cf9eafc67eae044d2e802462dd1e37dcb3f5bc35f7d41e65690ee5d99256"
+          - "host_user_decision"
         state: "approved"
-      created_at: "2026-09-13T23:17:41.802Z"
-      digest: "sha256:9ef83bad341e61625d2ba8e9adf09b88aa235b97a4b7094e623134ce86bdd9eb"
+      created_at: "2026-09-14T02:06:34.504Z"
+      digest: "sha256:2dc5dc0f43f6b65479ab63ffbd9cd7f458486e5ed3678edeca71f4080fe8ce02"
       proposal:
         assumptions:
-          - "The integrated 0.7.9 stabilization tasks are complete because their protected PRs and hosted close evidence are present on synchronized main."
-          - "The repository release tooling remains the owner of version expansion, publication, next-beta creation, and exact-SHA evidence."
+          - "Qualified main 40368f0ae58774c8cdd80fddb22cb6daacbae8f4 is the required release base because it contains the merged task-state validation repair and hosted closure evidence."
+          - "The existing release branch contains the prepared stable candidate and must preserve it during synchronization."
+          - "Candidate-base synchronization is a supervisor-owned AgentPlane branch lifecycle operation that must complete before semantic release edits; external agents must not create or rewrite Git commits."
+          - "Repository release tooling owns publication, exact-SHA evidence, and next-beta creation."
         planning_baseline:
-          captured_at: "2026-09-13T03:05:22.900Z"
+          captured_at: "2026-09-14T02:02:03.588Z"
           config_digest: null
           context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
-          digest: "sha256:08e623aa8e62234e358d889c3c8857772bad3fb84df87657f5ba597807e8cb08"
+          digest: "sha256:aa1677a81c8c55cebc13561b94297ff8f13c830644a630de2a476aa6d7caa6f2"
           dirty_paths:
-            - ".agentplane/tasks/202609072121-9VEHKH/README.md"
-            - ".agentplane/tasks/202609080727-BAWTEE/README.md"
-            - ".agentplane/tasks/202609121424-3YAX44/README.md"
             - ".agentplane/tasks/202609121424-49XXT3/README.md"
-            - ".agentplane/tasks/202609121424-4BC7B3/README.md"
-            - ".agentplane/tasks/202609121424-ZEJ656/README.md"
-            - ".agentplane/tasks/202609130146-7AZ4T4/README.md"
-            - "agentplane-roadmap-r2/AGENT-START.md"
-            - "agentplane-roadmap-r2/EXECUTION-CHARTER.md"
-            - "agentplane-roadmap-r2/README.md"
-            - "agentplane-roadmap-r2/agentplane-0.7.9-0.7.14-roadmap-r2.md"
-            - "agentplane-roadmap-r2/checksums.json"
-            - "agentplane-roadmap-r2/coverage-and-gap-audit.md"
-            - "agentplane-roadmap-r2/coverage-map.json"
-            - "agentplane-roadmap-r2/dependency-graph.json"
-            - "agentplane-roadmap-r2/experiment-requirements.json"
-            - "agentplane-roadmap-r2/releases/0.7.10.md"
-            - "agentplane-roadmap-r2/releases/0.7.11.md"
-            - "agentplane-roadmap-r2/releases/0.7.12.md"
-            - "agentplane-roadmap-r2/releases/0.7.13.md"
-            - "agentplane-roadmap-r2/releases/0.7.14.md"
-            - "agentplane-roadmap-r2/releases/0.7.9.md"
-            - "agentplane-roadmap-r2/source-evidence.json"
-            - "agentplane-roadmap-r2/tasks.json"
-            - "agentplane-roadmap-r2/tasks/BP-01.md"
-            - "agentplane-roadmap-r2/tasks/BP-02.md"
-            - "agentplane-roadmap-r2/tasks/BP-03.md"
-            - "agentplane-roadmap-r2/tasks/BP-04.md"
-            - "agentplane-roadmap-r2/tasks/BP-05.md"
-            - "agentplane-roadmap-r2/tasks/BP-06.md"
-            - "agentplane-roadmap-r2/tasks/BP-07.md"
-            - "agentplane-roadmap-r2/tasks/BP-08.md"
-            - "agentplane-roadmap-r2/tasks/BP-09.md"
-            - "agentplane-roadmap-r2/tasks/BP-10.md"
-            - "agentplane-roadmap-r2/tasks/BP-11.md"
-            - "agentplane-roadmap-r2/tasks/BP-12.md"
-            - "agentplane-roadmap-r2/tasks/BP-13.md"
-            - "agentplane-roadmap-r2/tasks/BP-14.md"
-            - "agentplane-roadmap-r2/tasks/BP-15.md"
-            - "agentplane-roadmap-r2/tasks/BP-16.md"
-            - "agentplane-roadmap-r2/tasks/BP-17.md"
-            - "agentplane-roadmap-r2/tasks/BP-18.md"
-            - "agentplane-roadmap-r2/tasks/BP-19.md"
-            - "agentplane-roadmap-r2/tasks/BP-20.md"
-            - "agentplane-roadmap-r2/tasks/BP-21.md"
-            - "agentplane-roadmap-r2/tasks/BP-22.md"
-            - "agentplane-roadmap-r2/tasks/BP-23.md"
-            - "agentplane-roadmap-r2/tasks/BP-24.md"
-            - "agentplane-roadmap-r2/tasks/BP-25.md"
-            - "agentplane-roadmap-r2/tasks/BP-26.md"
-            - "agentplane-roadmap-r2/tasks/BP-27.md"
-            - "agentplane-roadmap-r2/tasks/BP-28.md"
-            - "agentplane-roadmap-r2/tasks/BP-29.md"
-            - "agentplane-roadmap-r2/tasks/BP-30.md"
-            - "agentplane-roadmap-r2/tasks/BP-31.md"
-            - "agentplane-roadmap-r2/tasks/EV-01.md"
-            - "agentplane-roadmap-r2/tasks/EV-02.md"
-            - "agentplane-roadmap-r2/tasks/EV-03.md"
-            - "agentplane-roadmap-r2/tasks/EV-04.md"
-            - "agentplane-roadmap-r2/tasks/EV-05.md"
-            - "agentplane-roadmap-r2/tasks/EV-06.md"
-            - "agentplane-roadmap-r2/tasks/EV-07.md"
-            - "agentplane-roadmap-r2/tasks/EV-08.md"
-            - "agentplane-roadmap-r2/tasks/EV-09.md"
-            - "agentplane-roadmap-r2/tasks/EV-10.md"
-            - "agentplane-roadmap-r2/tasks/EV-11.md"
-            - "agentplane-roadmap-r2/tasks/EV-12.md"
-            - "agentplane-roadmap-r2/tasks/EV-13.md"
-            - "agentplane-roadmap-r2/tasks/LC-01.md"
-            - "agentplane-roadmap-r2/tasks/LC-02.md"
-            - "agentplane-roadmap-r2/tasks/LC-03.md"
-            - "agentplane-roadmap-r2/tasks/LC-04.md"
-            - "agentplane-roadmap-r2/tasks/LC-05.md"
-            - "agentplane-roadmap-r2/tasks/LC-06.md"
-            - "agentplane-roadmap-r2/tasks/LC-07.md"
-            - "agentplane-roadmap-r2/tasks/LC-08.md"
-            - "agentplane-roadmap-r2/tasks/LC-09.md"
-            - "agentplane-roadmap-r2/tasks/LC-10.md"
-            - "agentplane-roadmap-r2/tasks/LC-11.md"
-            - "agentplane-roadmap-r2/tasks/LC-12.md"
-            - "agentplane-roadmap-r2/tasks/LC-13.md"
-            - "agentplane-roadmap-r2/tasks/LC-14.md"
-            - "agentplane-roadmap-r2/tasks/LC-15.md"
-            - "agentplane-roadmap-r2/tasks/LC-16.md"
-            - "agentplane-roadmap-r2/tasks/LC-17.md"
-            - "agentplane-roadmap-r2/tasks/LC-18.md"
-            - "agentplane-roadmap-r2/tasks/LC-19.md"
-            - "agentplane-roadmap-r2/tasks/LC-20.md"
-            - "agentplane-roadmap-r2/tasks/LC-21.md"
-            - "agentplane-roadmap-r2/tasks/LC-22.md"
-            - "agentplane-roadmap-r2/tasks/LC-23.md"
-            - "agentplane-roadmap-r2/tasks/PL-01.md"
-            - "agentplane-roadmap-r2/tasks/PL-02.md"
-            - "agentplane-roadmap-r2/tasks/PL-03.md"
-            - "agentplane-roadmap-r2/tasks/PL-04.md"
-            - "agentplane-roadmap-r2/tasks/PL-05.md"
-            - "agentplane-roadmap-r2/tasks/PL-06.md"
-            - "agentplane-roadmap-r2/tasks/PL-07.md"
-            - "agentplane-roadmap-r2/tasks/PL-08.md"
-            - "agentplane-roadmap-r2/tasks/PL-09.md"
-            - "agentplane-roadmap-r2/tasks/PL-10.md"
-            - "agentplane-roadmap-r2/tasks/PL-11.md"
-            - "agentplane-roadmap-r2/tasks/PL-12.md"
-            - "agentplane-roadmap-r2/tasks/RC-01.md"
-            - "agentplane-roadmap-r2/tasks/RC-02.md"
-            - "agentplane-roadmap-r2/tasks/RC-03.md"
-            - "agentplane-roadmap-r2/tasks/RC-04.md"
-            - "agentplane-roadmap-r2/tasks/RC-05.md"
-            - "agentplane-roadmap-r2/tasks/RC-06.md"
-            - "agentplane-roadmap-r2/tasks/RC-07.md"
-            - "agentplane-roadmap-r2/tasks/RC-08.md"
-            - "agentplane-roadmap-r2/tasks/RC-09.md"
-            - "agentplane-roadmap-r2/tasks/RC-10.md"
-            - "agentplane-roadmap-r2/tasks/RC-11.md"
-            - "agentplane-roadmap-r2/tasks/RC-12.md"
-            - "agentplane-roadmap-r2/tasks/RC-13.md"
-            - "agentplane-roadmap-r2/tasks/RC-14.md"
-            - "agentplane-roadmap-r2/tasks/RC-15.md"
-            - "agentplane-roadmap-r2/tasks/RC-16.md"
-            - "agentplane-roadmap-r2/tasks/RC-17.md"
-            - "agentplane-roadmap-r2/tasks/RC-18.md"
-            - "agentplane-roadmap-r2/tasks/ST-01.md"
-            - "agentplane-roadmap-r2/tasks/ST-02.md"
-            - "agentplane-roadmap-r2/tasks/ST-03.md"
-            - "agentplane-roadmap-r2/tasks/ST-04.md"
-            - "agentplane-roadmap-r2/tasks/ST-05.md"
-            - "agentplane-roadmap-r2/tasks/ST-06.md"
-            - "agentplane-roadmap-r2/tasks/ST-07.md"
-            - "agentplane-roadmap-r2/tasks/ST-08.md"
-            - "agentplane-roadmap-r2/tasks/ST-09.md"
-            - "agentplane-roadmap-r2/tasks/ST-10.md"
-            - "agentplane-roadmap-r2/tasks/ST-11.md"
-            - "agentplane-roadmap-r2/tasks/ST-12.md"
-            - "agentplane-roadmap-r2/tasks/ST-13.md"
-            - "agentplane-roadmap-r2/tasks/ST-14.md"
-            - "agentplane-roadmap-r2/tasks/ST-15.md"
-            - "agentplane-roadmap-r2/tasks/ST-16.md"
-            - "agentplane-roadmap-r2/tasks/ST-17.md"
-            - "agentplane-roadmap-r2/tasks/ST-18.md"
-            - "agentplane-roadmap-r2/tasks/ST-19.md"
-            - "agentplane-roadmap-r2/tasks/ST-20.md"
-            - "agentplane-roadmap-r2/tasks/ST-21.md"
-            - "agentplane-roadmap-r2/validate_roadmap.py"
-            - "agentplane-roadmap-r2/validation-report.json"
           git:
             kind: "commit"
             ref: null
-            sha: "d03a5e786db57136bf7f6c4661b148bcf97cfaf1"
+            sha: "e567297b0f86d69bfb9a939764ed4aef90fcc1d3"
           policy_digest: null
           schema_version: 1
-          task_history_cursor: "task-revision:2"
+          task_history_cursor: "task-revision:33"
         schema_version: 1
         task_id: "202609121424-49XXT3"
         top_level_validation:
           checks:
+            -
+              capability: "task.verify"
+              id: "candidate_base_identity"
+              kind: "structural"
+              required: true
             -
               capability: "task.verify"
               command: "bun run release:check"
@@ -1213,10 +557,17 @@ extensions:
           criteria:
             -
               check_ids:
+                - "candidate_base_identity"
+                - "scope_hygiene"
+              description: "The existing candidate is synchronized by a supervisor-owned AgentPlane branch lifecycle operation onto 40368f0ae58774c8cdd80fddb22cb6daacbae8f4, preserves all approved release paths and qualified-main repairs, and imports no unrelated work; no semantic executor creates or rewrites Git commits."
+              id: "candidate_base_exact"
+              required: true
+            -
+              check_ids:
                 - "release_check"
                 - "release_prepublish"
                 - "scope_hygiene"
-              description: "The release candidate promotes every canonical 0.7.9-beta.1 version and internal pin to stable 0.7.9, adds complete release notes and evidence, and introduces no semantic source change."
+              description: "The candidate has stable 0.7.9 version parity, complete notes and evidence, fresh generated surfaces and baselines, and no unrelated semantic source change."
               id: "candidate_exact"
               required: true
             -
@@ -1224,14 +575,14 @@ extensions:
                 - "release_check"
                 - "release_prepublish"
                 - "hosted_integration"
-              description: "The exact committed candidate passes local release gates, independent evaluation, hosted CI, protected integration, and hosted close."
+              description: "The exact candidate passes local gates, independent evaluation, hosted CI, protected integration, and hosted close."
               id: "candidate_qualified"
               required: true
             -
               check_ids:
                 - "publish_manifest"
                 - "github_release"
-              description: "The protected publish workflow releases v0.7.9 from the exact qualified main SHA and writes publish-result.json with success=true and an empty failures array."
+              description: "The protected workflow publishes v0.7.9 from the exact qualified main SHA and records success=true with an empty failures array."
               id: "publication_exact"
               required: true
             -
@@ -1239,17 +590,17 @@ extensions:
                 - "registry_readback"
                 - "installer_readback"
                 - "default_branch_readback"
-              description: "Independent readback verifies package registries, assets and checksums, setup-agentplane, Homebrew, Scoop, both CLI entrypoints, and final default-branch state."
+              description: "Independent readback verifies registries, release assets and checksums, setup-agentplane, Homebrew, Scoop, both CLI entrypoints, and final main."
               id: "distribution_verified"
               required: true
             -
               check_ids:
                 - "scope_hygiene"
                 - "default_branch_readback"
-              description: "Post-publish evidence is committed through AgentPlane and the next patch beta opens only after public 0.7.9 proof; unrelated untracked paths remain preserved."
+              description: "AgentPlane records post-publish evidence and starts the next beta only after public proof while preserving unrelated user work."
               id: "post_publish_complete"
               required: true
-          evidence_fingerprint: "sha256:08e623aa8e62234e358d889c3c8857772bad3fb84df87657f5ba597807e8cb08"
+          evidence_fingerprint: "sha256:aa1677a81c8c55cebc13561b94297ff8f13c830644a630de2a476aa6d7caa6f2"
           schema_version: 1
         unresolved_questions: []
         work_items:
@@ -1259,33 +610,30 @@ extensions:
               acceptance_criteria:
                 -
                   check_ids:
-                    - "release_check"
-                    - "release_prepublish"
+                    - "candidate_base_identity"
                     - "scope_hygiene"
-                  description: "The release candidate promotes every canonical 0.7.9-beta.1 version and internal pin to stable 0.7.9, adds complete release notes and evidence, and introduces no semantic source change."
-                  id: "candidate_exact"
+                  description: "The existing candidate is synchronized by a supervisor-owned AgentPlane branch lifecycle operation onto 40368f0ae58774c8cdd80fddb22cb6daacbae8f4, preserves all approved release paths and qualified-main repairs, and imports no unrelated work; no semantic executor creates or rewrites Git commits."
+                  id: "candidate_base_exact"
                   required: true
               capabilities:
                 - "task.verify"
               context:
                 max_bytes: 1000000
                 optional_sources:
-                  - "docs/releases/v0.7.8-evidence"
+                  - "PR #5950 provider state"
                 required_sources:
                   - ".agentplane/policy/workflow.release.md"
                   - ".agentplane/tasks/202609121424-49XXT3/README.md"
-                  - "docs/releases/v0.7.8.md"
                 symbol_hints:
-                  - "release plan"
-                  - "version parity"
-                  - "release notes"
+                  - "qualified main"
+                  - "release candidate base"
+                  - "history replay"
               depends_on: []
               expected_outputs:
-                - "stable_candidate_diff"
-                - "release_notes_and_evidence"
-                - "exact_candidate_sha"
-              id: "prepare_candidate"
-              objective: "Freeze d03a5e786 as the release base and prepare stable 0.7.9 versions, internal pins, generated release surfaces, release notes, and evidence without semantic source changes."
+                - "supervisor_owned_candidate_synchronization_receipt"
+                - "qualified_release_base_sha"
+              id: "synchronize_candidate_base"
+              objective: "Establish exact qualified main 40368f0ae58774c8cdd80fddb22cb6daacbae8f4 as the release candidate base through a supervisor-owned AgentPlane branch synchronization lifecycle operation while preserving all approved candidate content and unrelated user work. This WorkItem defines acceptance only; an external semantic executor must not create or rewrite Git commits."
               optional: false
               priority: 1
               required_inputs: []
@@ -1294,30 +642,6 @@ extensions:
                   kind: "workspace"
                   mode: "exclusive"
                   resource: "release-candidate-worktree"
-                -
-                  kind: "path"
-                  mode: "write"
-                  resource: ".agentplane/WORKFLOW.md"
-                -
-                  kind: "path"
-                  mode: "write"
-                  resource: ".agentplane/config.json"
-                -
-                  kind: "path"
-                  mode: "write"
-                  resource: "website/static/img/social/docs/releases/v0.7.9-evidence/preparation.png"
-                -
-                  kind: "path"
-                  mode: "write"
-                  resource: "website/static/img/social/docs/releases/v0.7.9.png"
-                -
-                  kind: "path"
-                  mode: "write"
-                  resource: "website/static/img/social/manifest.json"
-                -
-                  kind: "path"
-                  mode: "write"
-                  resource: "website/static/img/social"
               risk: "high"
               scope_roots:
                 - ".agentplane/WORKFLOW.md"
@@ -1331,9 +655,83 @@ extensions:
                 - "packages"
                 - "scripts/baselines"
                 - "website/static/img/social"
-                - "website/static/img/social/docs/releases/v0.7.9-evidence/preparation.png"
-                - "website/static/img/social/docs/releases/v0.7.9.png"
-                - "website/static/img/social/manifest.json"
+              validation:
+                checks:
+                  -
+                    capability: "task.verify"
+                    id: "candidate_base_identity"
+                    kind: "structural"
+                    required: true
+                  -
+                    capability: "task.verify"
+                    id: "scope_hygiene"
+                    kind: "structural"
+                    required: true
+                criteria:
+                  -
+                    check_ids:
+                      - "candidate_base_identity"
+                      - "scope_hygiene"
+                    description: "The existing candidate is synchronized by a supervisor-owned AgentPlane branch lifecycle operation onto 40368f0ae58774c8cdd80fddb22cb6daacbae8f4, preserves all approved release paths and qualified-main repairs, and imports no unrelated work; no semantic executor creates or rewrites Git commits."
+                    id: "candidate_base_exact"
+                    required: true
+                evidence_fingerprint: "sha256:aa1677a81c8c55cebc13561b94297ff8f13c830644a630de2a476aa6d7caa6f2"
+                schema_version: 1
+            -
+              acceptance_criteria:
+                -
+                  check_ids:
+                    - "release_check"
+                    - "release_prepublish"
+                    - "scope_hygiene"
+                  description: "The candidate has stable 0.7.9 version parity, complete notes and evidence, fresh generated surfaces and baselines, and no unrelated semantic source change."
+                  id: "candidate_exact"
+                  required: true
+              capabilities:
+                - "task.verify"
+              context:
+                max_bytes: 1000000
+                optional_sources:
+                  - "docs/releases/v0.7.8-evidence"
+                required_sources:
+                  - ".agentplane/policy/workflow.release.md"
+                  - ".agentplane/tasks/202609121424-49XXT3/README.md"
+                  - "docs/releases/v0.7.8.md"
+                symbol_hints:
+                  - "version parity"
+                  - "release notes"
+                  - "compatibility baseline"
+                  - "clone baseline"
+              depends_on:
+                - "synchronize_candidate_base"
+              expected_outputs:
+                - "stable_candidate_diff"
+                - "release_notes_and_evidence"
+                - "exact_candidate_sha"
+              id: "prepare_candidate"
+              objective: "Finalize stable 0.7.9 versions, pins, generated surfaces, notes, evidence, formatting, compatibility baselines, and clone baselines only after supervisor-owned synchronization establishes base 40368f0ae58774c8cdd80fddb22cb6daacbae8f4."
+              optional: false
+              priority: 2
+              required_inputs:
+                - "qualified_release_base_sha"
+              resource_claims:
+                -
+                  kind: "workspace"
+                  mode: "exclusive"
+                  resource: "release-candidate-worktree"
+              risk: "high"
+              scope_roots:
+                - ".agentplane/WORKFLOW.md"
+                - ".agentplane/config.json"
+                - ".agentplane/tasks/202609121424-49XXT3"
+                - "docs/assets"
+                - "docs/reference/generated-reference.mdx"
+                - "docs/releases/v0.7.9-evidence"
+                - "docs/releases/v0.7.9.md"
+                - "package.json"
+                - "packages"
+                - "scripts/baselines"
+                - "website/static/img/social"
               validation:
                 checks:
                   -
@@ -1361,10 +759,10 @@ extensions:
                       - "release_check"
                       - "release_prepublish"
                       - "scope_hygiene"
-                    description: "The release candidate promotes every canonical 0.7.9-beta.1 version and internal pin to stable 0.7.9, adds complete release notes and evidence, and introduces no semantic source change."
+                    description: "The candidate has stable 0.7.9 version parity, complete notes and evidence, fresh generated surfaces and baselines, and no unrelated semantic source change."
                     id: "candidate_exact"
                     required: true
-                evidence_fingerprint: "sha256:08e623aa8e62234e358d889c3c8857772bad3fb84df87657f5ba597807e8cb08"
+                evidence_fingerprint: "sha256:aa1677a81c8c55cebc13561b94297ff8f13c830644a630de2a476aa6d7caa6f2"
                 schema_version: 1
             -
               acceptance_criteria:
@@ -1373,7 +771,7 @@ extensions:
                     - "release_check"
                     - "release_prepublish"
                     - "hosted_integration"
-                  description: "The exact committed candidate passes local release gates, independent evaluation, hosted CI, protected integration, and hosted close."
+                  description: "The exact candidate passes local gates, independent evaluation, hosted CI, protected integration, and hosted close."
                   id: "candidate_qualified"
                   required: true
               capabilities:
@@ -1385,7 +783,6 @@ extensions:
                   - ".agentplane/tasks/202609121424-49XXT3/README.md"
                 symbol_hints:
                   - "verification"
-                  - "quality review"
                   - "hosted integration"
               depends_on:
                 - "prepare_candidate"
@@ -1394,9 +791,9 @@ extensions:
                 - "green_hosted_candidate_checks"
                 - "qualified_main_sha"
               id: "qualify_integrate"
-              objective: "Qualify the exact release candidate, obtain independent review and hosted checks, and integrate it through the protected AgentPlane merge lane and hosted close."
+              objective: "Qualify the exact candidate and integrate it through independent review, hosted CI, the protected merge lane, and hosted close."
               optional: false
-              priority: 2
+              priority: 3
               required_inputs:
                 - "exact_candidate_sha"
                 - "release_notes_and_evidence"
@@ -1435,10 +832,10 @@ extensions:
                       - "release_check"
                       - "release_prepublish"
                       - "hosted_integration"
-                    description: "The exact committed candidate passes local release gates, independent evaluation, hosted CI, protected integration, and hosted close."
+                    description: "The exact candidate passes local gates, independent evaluation, hosted CI, protected integration, and hosted close."
                     id: "candidate_qualified"
                     required: true
-                evidence_fingerprint: "sha256:08e623aa8e62234e358d889c3c8857772bad3fb84df87657f5ba597807e8cb08"
+                evidence_fingerprint: "sha256:aa1677a81c8c55cebc13561b94297ff8f13c830644a630de2a476aa6d7caa6f2"
                 schema_version: 1
             -
               acceptance_criteria:
@@ -1446,7 +843,7 @@ extensions:
                   check_ids:
                     - "publish_manifest"
                     - "github_release"
-                  description: "The protected publish workflow releases v0.7.9 from the exact qualified main SHA and writes publish-result.json with success=true and an empty failures array."
+                  description: "The protected workflow publishes v0.7.9 from the exact qualified main SHA and records success=true with an empty failures array."
                   id: "publication_exact"
                   required: true
               capabilities:
@@ -1467,9 +864,9 @@ extensions:
                 - "published_npm_packages"
                 - "exact_sha_publish_result"
               id: "publish_stable"
-              objective: "Publish v0.7.9 from the exact qualified main SHA through the protected release workflow and preserve canonical publication evidence."
+              objective: "Publish v0.7.9 from the exact qualified main SHA through the protected release route and preserve canonical publication evidence."
               optional: false
-              priority: 3
+              priority: 4
               required_inputs:
                 - "qualified_main_sha"
               resource_claims:
@@ -1498,10 +895,10 @@ extensions:
                     check_ids:
                       - "publish_manifest"
                       - "github_release"
-                    description: "The protected publish workflow releases v0.7.9 from the exact qualified main SHA and writes publish-result.json with success=true and an empty failures array."
+                    description: "The protected workflow publishes v0.7.9 from the exact qualified main SHA and records success=true with an empty failures array."
                     id: "publication_exact"
                     required: true
-                evidence_fingerprint: "sha256:08e623aa8e62234e358d889c3c8857772bad3fb84df87657f5ba597807e8cb08"
+                evidence_fingerprint: "sha256:aa1677a81c8c55cebc13561b94297ff8f13c830644a630de2a476aa6d7caa6f2"
                 schema_version: 1
             -
               acceptance_criteria:
@@ -1510,14 +907,14 @@ extensions:
                     - "registry_readback"
                     - "installer_readback"
                     - "default_branch_readback"
-                  description: "Independent readback verifies package registries, assets and checksums, setup-agentplane, Homebrew, Scoop, both CLI entrypoints, and final default-branch state."
+                  description: "Independent readback verifies registries, release assets and checksums, setup-agentplane, Homebrew, Scoop, both CLI entrypoints, and final main."
                   id: "distribution_verified"
                   required: true
                 -
                   check_ids:
                     - "scope_hygiene"
                     - "default_branch_readback"
-                  description: "Post-publish evidence is committed through AgentPlane and the next patch beta opens only after public 0.7.9 proof; unrelated untracked paths remain preserved."
+                  description: "AgentPlane records post-publish evidence and starts the next beta only after public proof while preserving unrelated user work."
                   id: "post_publish_complete"
                   required: true
               capabilities:
@@ -1543,9 +940,9 @@ extensions:
                 - "final_main_and_next_beta_evidence"
                 - "residual_limitations"
               id: "verify_distribution"
-              objective: "Independently verify all public 0.7.9 artifacts and installers, record limitations precisely, and complete the AgentPlane-managed post-publish evidence and next-beta follow-up."
+              objective: "Independently verify public 0.7.9 artifacts and installers, record limitations, and complete AgentPlane-managed evidence and next-beta follow-up."
               optional: false
-              priority: 4
+              priority: 5
               required_inputs:
                 - "exact_sha_publish_result"
                 - "v0_7_9_github_release"
@@ -1587,22 +984,22 @@ extensions:
                       - "registry_readback"
                       - "installer_readback"
                       - "default_branch_readback"
-                    description: "Independent readback verifies package registries, assets and checksums, setup-agentplane, Homebrew, Scoop, both CLI entrypoints, and final default-branch state."
+                    description: "Independent readback verifies registries, release assets and checksums, setup-agentplane, Homebrew, Scoop, both CLI entrypoints, and final main."
                     id: "distribution_verified"
                     required: true
                   -
                     check_ids:
                       - "scope_hygiene"
                       - "default_branch_readback"
-                    description: "Post-publish evidence is committed through AgentPlane and the next patch beta opens only after public 0.7.9 proof; unrelated untracked paths remain preserved."
+                    description: "AgentPlane records post-publish evidence and starts the next beta only after public proof while preserving unrelated user work."
                     id: "post_publish_complete"
                     required: true
-                evidence_fingerprint: "sha256:08e623aa8e62234e358d889c3c8857772bad3fb84df87657f5ba597807e8cb08"
+                evidence_fingerprint: "sha256:aa1677a81c8c55cebc13561b94297ff8f13c830644a630de2a476aa6d7caa6f2"
                 schema_version: 1
-      revision: 4
+      revision: 7
       schema_version: 1
       task_id: "202609121424-49XXT3"
-    event_cursor: 21
+    event_cursor: 27
     final_validation: null
     id: "202609121424-49XXT3"
     intent:
@@ -1625,26 +1022,7 @@ extensions:
         Release operator task after all 0.7.9 stabilization dependencies are integrated. Prepare exact 0.7.9 version parity and release notes, run the complete release prepublish and incident gates, produce and integrate the release-ready candidate through repository policy, publish v0.7.9 from the exact qualified main SHA, and independently verify the canonical .agentplane/.release/publish/publish-result.json has success=true with an empty failures array for that SHA. Verify GitHub release assets and checksums, package registries, setup-agentplane tag and install, Homebrew and Scoop distribution, both agentplane and ap entrypoints, and default-branch state. Record any unavailable anonymous GHCR check separately. Complete the required post-publish evidence follow-up and next patch beta only through AgentPlane-managed lifecycle. Never commit agentplane-roadmap-r2. Stop only at a genuine provider or evidence boundary; the user explicitly authorized publish, merge, network, credentials, and external-system actions for v0.7.9.
       task_id: "202609121424-49XXT3"
     lifecycle: "BLOCKED"
-    plan_amendments:
-      -
-        actor_id: "external:EXECUTOR"
-        created_at: "2026-09-13T23:01:21.946Z"
-        digest: "sha256:24582bb56476c1224e61f81d96fb931933fa4d48bde7b85ad1d6778ed4b24cbc"
-        id: "amendment_24582bb56476c1224e61f81d"
-        plan_digest: "sha256:b60009385881a9948ab9650dbcfdceb73d95c42fed33418aa4c5510198d4176e"
-        plan_revision: 1
-        refinement:
-          acceptance_changed: false
-          architecture_constraints_changed: false
-          dependencies_changed: false
-          description: "Replace the stale release base d03a5e786db57136bf7f6c4661b148bcf97cfaf1 with the current qualified main SHA ecfccc5ad0230fc1876a319be0af5cdb530c339f after required dependency 202609121424-4BC7B3 merged. Keep the existing scope, outputs, acceptance criteria, risk, external effects, dependency graph, and architecture constraints unchanged."
-          external_effects_added: []
-          operations:
-            - "clarify"
-          outputs_added: []
-          risk_changed: false
-          scope_roots_added: []
-        schema_version: 1
+    plan_amendments: []
     plan_history:
       -
         approval:
@@ -3439,9 +2817,1737 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202609121424-49XXT3"
-    revision: 24
+      -
+        approval:
+          approved_at: "2026-09-13T23:17:41.802Z"
+          approved_by: "USER"
+          approved_digest: "sha256:9ef83bad341e61625d2ba8e9adf09b88aa235b97a4b7094e623134ce86bdd9eb"
+          policy_facts:
+            - "state_bound_scope_extension:sha256:9824cf9eafc67eae044d2e802462dd1e37dcb3f5bc35f7d41e65690ee5d99256"
+          state: "approved"
+        created_at: "2026-09-13T23:17:41.802Z"
+        digest: "sha256:9ef83bad341e61625d2ba8e9adf09b88aa235b97a4b7094e623134ce86bdd9eb"
+        proposal:
+          assumptions:
+            - "The integrated 0.7.9 stabilization tasks are complete because their protected PRs and hosted close evidence are present on synchronized main."
+            - "The repository release tooling remains the owner of version expansion, publication, next-beta creation, and exact-SHA evidence."
+          planning_baseline:
+            captured_at: "2026-09-13T03:05:22.900Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:08e623aa8e62234e358d889c3c8857772bad3fb84df87657f5ba597807e8cb08"
+            dirty_paths:
+              - ".agentplane/tasks/202609072121-9VEHKH/README.md"
+              - ".agentplane/tasks/202609080727-BAWTEE/README.md"
+              - ".agentplane/tasks/202609121424-3YAX44/README.md"
+              - ".agentplane/tasks/202609121424-49XXT3/README.md"
+              - ".agentplane/tasks/202609121424-4BC7B3/README.md"
+              - ".agentplane/tasks/202609121424-ZEJ656/README.md"
+              - ".agentplane/tasks/202609130146-7AZ4T4/README.md"
+              - "agentplane-roadmap-r2/AGENT-START.md"
+              - "agentplane-roadmap-r2/EXECUTION-CHARTER.md"
+              - "agentplane-roadmap-r2/README.md"
+              - "agentplane-roadmap-r2/agentplane-0.7.9-0.7.14-roadmap-r2.md"
+              - "agentplane-roadmap-r2/checksums.json"
+              - "agentplane-roadmap-r2/coverage-and-gap-audit.md"
+              - "agentplane-roadmap-r2/coverage-map.json"
+              - "agentplane-roadmap-r2/dependency-graph.json"
+              - "agentplane-roadmap-r2/experiment-requirements.json"
+              - "agentplane-roadmap-r2/releases/0.7.10.md"
+              - "agentplane-roadmap-r2/releases/0.7.11.md"
+              - "agentplane-roadmap-r2/releases/0.7.12.md"
+              - "agentplane-roadmap-r2/releases/0.7.13.md"
+              - "agentplane-roadmap-r2/releases/0.7.14.md"
+              - "agentplane-roadmap-r2/releases/0.7.9.md"
+              - "agentplane-roadmap-r2/source-evidence.json"
+              - "agentplane-roadmap-r2/tasks.json"
+              - "agentplane-roadmap-r2/tasks/BP-01.md"
+              - "agentplane-roadmap-r2/tasks/BP-02.md"
+              - "agentplane-roadmap-r2/tasks/BP-03.md"
+              - "agentplane-roadmap-r2/tasks/BP-04.md"
+              - "agentplane-roadmap-r2/tasks/BP-05.md"
+              - "agentplane-roadmap-r2/tasks/BP-06.md"
+              - "agentplane-roadmap-r2/tasks/BP-07.md"
+              - "agentplane-roadmap-r2/tasks/BP-08.md"
+              - "agentplane-roadmap-r2/tasks/BP-09.md"
+              - "agentplane-roadmap-r2/tasks/BP-10.md"
+              - "agentplane-roadmap-r2/tasks/BP-11.md"
+              - "agentplane-roadmap-r2/tasks/BP-12.md"
+              - "agentplane-roadmap-r2/tasks/BP-13.md"
+              - "agentplane-roadmap-r2/tasks/BP-14.md"
+              - "agentplane-roadmap-r2/tasks/BP-15.md"
+              - "agentplane-roadmap-r2/tasks/BP-16.md"
+              - "agentplane-roadmap-r2/tasks/BP-17.md"
+              - "agentplane-roadmap-r2/tasks/BP-18.md"
+              - "agentplane-roadmap-r2/tasks/BP-19.md"
+              - "agentplane-roadmap-r2/tasks/BP-20.md"
+              - "agentplane-roadmap-r2/tasks/BP-21.md"
+              - "agentplane-roadmap-r2/tasks/BP-22.md"
+              - "agentplane-roadmap-r2/tasks/BP-23.md"
+              - "agentplane-roadmap-r2/tasks/BP-24.md"
+              - "agentplane-roadmap-r2/tasks/BP-25.md"
+              - "agentplane-roadmap-r2/tasks/BP-26.md"
+              - "agentplane-roadmap-r2/tasks/BP-27.md"
+              - "agentplane-roadmap-r2/tasks/BP-28.md"
+              - "agentplane-roadmap-r2/tasks/BP-29.md"
+              - "agentplane-roadmap-r2/tasks/BP-30.md"
+              - "agentplane-roadmap-r2/tasks/BP-31.md"
+              - "agentplane-roadmap-r2/tasks/EV-01.md"
+              - "agentplane-roadmap-r2/tasks/EV-02.md"
+              - "agentplane-roadmap-r2/tasks/EV-03.md"
+              - "agentplane-roadmap-r2/tasks/EV-04.md"
+              - "agentplane-roadmap-r2/tasks/EV-05.md"
+              - "agentplane-roadmap-r2/tasks/EV-06.md"
+              - "agentplane-roadmap-r2/tasks/EV-07.md"
+              - "agentplane-roadmap-r2/tasks/EV-08.md"
+              - "agentplane-roadmap-r2/tasks/EV-09.md"
+              - "agentplane-roadmap-r2/tasks/EV-10.md"
+              - "agentplane-roadmap-r2/tasks/EV-11.md"
+              - "agentplane-roadmap-r2/tasks/EV-12.md"
+              - "agentplane-roadmap-r2/tasks/EV-13.md"
+              - "agentplane-roadmap-r2/tasks/LC-01.md"
+              - "agentplane-roadmap-r2/tasks/LC-02.md"
+              - "agentplane-roadmap-r2/tasks/LC-03.md"
+              - "agentplane-roadmap-r2/tasks/LC-04.md"
+              - "agentplane-roadmap-r2/tasks/LC-05.md"
+              - "agentplane-roadmap-r2/tasks/LC-06.md"
+              - "agentplane-roadmap-r2/tasks/LC-07.md"
+              - "agentplane-roadmap-r2/tasks/LC-08.md"
+              - "agentplane-roadmap-r2/tasks/LC-09.md"
+              - "agentplane-roadmap-r2/tasks/LC-10.md"
+              - "agentplane-roadmap-r2/tasks/LC-11.md"
+              - "agentplane-roadmap-r2/tasks/LC-12.md"
+              - "agentplane-roadmap-r2/tasks/LC-13.md"
+              - "agentplane-roadmap-r2/tasks/LC-14.md"
+              - "agentplane-roadmap-r2/tasks/LC-15.md"
+              - "agentplane-roadmap-r2/tasks/LC-16.md"
+              - "agentplane-roadmap-r2/tasks/LC-17.md"
+              - "agentplane-roadmap-r2/tasks/LC-18.md"
+              - "agentplane-roadmap-r2/tasks/LC-19.md"
+              - "agentplane-roadmap-r2/tasks/LC-20.md"
+              - "agentplane-roadmap-r2/tasks/LC-21.md"
+              - "agentplane-roadmap-r2/tasks/LC-22.md"
+              - "agentplane-roadmap-r2/tasks/LC-23.md"
+              - "agentplane-roadmap-r2/tasks/PL-01.md"
+              - "agentplane-roadmap-r2/tasks/PL-02.md"
+              - "agentplane-roadmap-r2/tasks/PL-03.md"
+              - "agentplane-roadmap-r2/tasks/PL-04.md"
+              - "agentplane-roadmap-r2/tasks/PL-05.md"
+              - "agentplane-roadmap-r2/tasks/PL-06.md"
+              - "agentplane-roadmap-r2/tasks/PL-07.md"
+              - "agentplane-roadmap-r2/tasks/PL-08.md"
+              - "agentplane-roadmap-r2/tasks/PL-09.md"
+              - "agentplane-roadmap-r2/tasks/PL-10.md"
+              - "agentplane-roadmap-r2/tasks/PL-11.md"
+              - "agentplane-roadmap-r2/tasks/PL-12.md"
+              - "agentplane-roadmap-r2/tasks/RC-01.md"
+              - "agentplane-roadmap-r2/tasks/RC-02.md"
+              - "agentplane-roadmap-r2/tasks/RC-03.md"
+              - "agentplane-roadmap-r2/tasks/RC-04.md"
+              - "agentplane-roadmap-r2/tasks/RC-05.md"
+              - "agentplane-roadmap-r2/tasks/RC-06.md"
+              - "agentplane-roadmap-r2/tasks/RC-07.md"
+              - "agentplane-roadmap-r2/tasks/RC-08.md"
+              - "agentplane-roadmap-r2/tasks/RC-09.md"
+              - "agentplane-roadmap-r2/tasks/RC-10.md"
+              - "agentplane-roadmap-r2/tasks/RC-11.md"
+              - "agentplane-roadmap-r2/tasks/RC-12.md"
+              - "agentplane-roadmap-r2/tasks/RC-13.md"
+              - "agentplane-roadmap-r2/tasks/RC-14.md"
+              - "agentplane-roadmap-r2/tasks/RC-15.md"
+              - "agentplane-roadmap-r2/tasks/RC-16.md"
+              - "agentplane-roadmap-r2/tasks/RC-17.md"
+              - "agentplane-roadmap-r2/tasks/RC-18.md"
+              - "agentplane-roadmap-r2/tasks/ST-01.md"
+              - "agentplane-roadmap-r2/tasks/ST-02.md"
+              - "agentplane-roadmap-r2/tasks/ST-03.md"
+              - "agentplane-roadmap-r2/tasks/ST-04.md"
+              - "agentplane-roadmap-r2/tasks/ST-05.md"
+              - "agentplane-roadmap-r2/tasks/ST-06.md"
+              - "agentplane-roadmap-r2/tasks/ST-07.md"
+              - "agentplane-roadmap-r2/tasks/ST-08.md"
+              - "agentplane-roadmap-r2/tasks/ST-09.md"
+              - "agentplane-roadmap-r2/tasks/ST-10.md"
+              - "agentplane-roadmap-r2/tasks/ST-11.md"
+              - "agentplane-roadmap-r2/tasks/ST-12.md"
+              - "agentplane-roadmap-r2/tasks/ST-13.md"
+              - "agentplane-roadmap-r2/tasks/ST-14.md"
+              - "agentplane-roadmap-r2/tasks/ST-15.md"
+              - "agentplane-roadmap-r2/tasks/ST-16.md"
+              - "agentplane-roadmap-r2/tasks/ST-17.md"
+              - "agentplane-roadmap-r2/tasks/ST-18.md"
+              - "agentplane-roadmap-r2/tasks/ST-19.md"
+              - "agentplane-roadmap-r2/tasks/ST-20.md"
+              - "agentplane-roadmap-r2/tasks/ST-21.md"
+              - "agentplane-roadmap-r2/validate_roadmap.py"
+              - "agentplane-roadmap-r2/validation-report.json"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "d03a5e786db57136bf7f6c4661b148bcf97cfaf1"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:2"
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bun run release:check"
+                id: "release_check"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1200000
+              -
+                capability: "task.verify"
+                command: "bun run release:prepublish"
+                id: "release_prepublish"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1200000
+              -
+                capability: "task.verify"
+                id: "scope_hygiene"
+                kind: "structural"
+                required: true
+              -
+                capability: "task.verify"
+                id: "hosted_integration"
+                kind: "provider"
+                required: true
+              -
+                capability: "task.verify"
+                id: "publish_manifest"
+                kind: "structural"
+                required: true
+              -
+                capability: "task.verify"
+                id: "github_release"
+                kind: "provider"
+                required: true
+              -
+                capability: "task.verify"
+                id: "registry_readback"
+                kind: "provider"
+                required: true
+              -
+                capability: "task.verify"
+                id: "installer_readback"
+                kind: "provider"
+                required: true
+              -
+                capability: "task.verify"
+                id: "default_branch_readback"
+                kind: "provider"
+                required: true
+            criteria:
+              -
+                check_ids:
+                  - "release_check"
+                  - "release_prepublish"
+                  - "scope_hygiene"
+                description: "The release candidate promotes every canonical 0.7.9-beta.1 version and internal pin to stable 0.7.9, adds complete release notes and evidence, and introduces no semantic source change."
+                id: "candidate_exact"
+                required: true
+              -
+                check_ids:
+                  - "release_check"
+                  - "release_prepublish"
+                  - "hosted_integration"
+                description: "The exact committed candidate passes local release gates, independent evaluation, hosted CI, protected integration, and hosted close."
+                id: "candidate_qualified"
+                required: true
+              -
+                check_ids:
+                  - "publish_manifest"
+                  - "github_release"
+                description: "The protected publish workflow releases v0.7.9 from the exact qualified main SHA and writes publish-result.json with success=true and an empty failures array."
+                id: "publication_exact"
+                required: true
+              -
+                check_ids:
+                  - "registry_readback"
+                  - "installer_readback"
+                  - "default_branch_readback"
+                description: "Independent readback verifies package registries, assets and checksums, setup-agentplane, Homebrew, Scoop, both CLI entrypoints, and final default-branch state."
+                id: "distribution_verified"
+                required: true
+              -
+                check_ids:
+                  - "scope_hygiene"
+                  - "default_branch_readback"
+                description: "Post-publish evidence is committed through AgentPlane and the next patch beta opens only after public 0.7.9 proof; unrelated untracked paths remain preserved."
+                id: "post_publish_complete"
+                required: true
+            evidence_fingerprint: "sha256:08e623aa8e62234e358d889c3c8857772bad3fb84df87657f5ba597807e8cb08"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "release_check"
+                      - "release_prepublish"
+                      - "scope_hygiene"
+                    description: "The release candidate promotes every canonical 0.7.9-beta.1 version and internal pin to stable 0.7.9, adds complete release notes and evidence, and introduces no semantic source change."
+                    id: "candidate_exact"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 1000000
+                  optional_sources:
+                    - "docs/releases/v0.7.8-evidence"
+                  required_sources:
+                    - ".agentplane/policy/workflow.release.md"
+                    - ".agentplane/tasks/202609121424-49XXT3/README.md"
+                    - "docs/releases/v0.7.8.md"
+                  symbol_hints:
+                    - "release plan"
+                    - "version parity"
+                    - "release notes"
+                depends_on: []
+                expected_outputs:
+                  - "stable_candidate_diff"
+                  - "release_notes_and_evidence"
+                  - "exact_candidate_sha"
+                id: "prepare_candidate"
+                objective: "Freeze d03a5e786 as the release base and prepare stable 0.7.9 versions, internal pins, generated release surfaces, release notes, and evidence without semantic source changes."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "exclusive"
+                    resource: "release-candidate-worktree"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: ".agentplane/WORKFLOW.md"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: ".agentplane/config.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "website/static/img/social/docs/releases/v0.7.9-evidence/preparation.png"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "website/static/img/social/docs/releases/v0.7.9.png"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "website/static/img/social/manifest.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "website/static/img/social"
+                risk: "high"
+                scope_roots:
+                  - ".agentplane/WORKFLOW.md"
+                  - ".agentplane/config.json"
+                  - ".agentplane/tasks/202609121424-49XXT3"
+                  - "docs/assets"
+                  - "docs/reference/generated-reference.mdx"
+                  - "docs/releases/v0.7.9-evidence"
+                  - "docs/releases/v0.7.9.md"
+                  - "package.json"
+                  - "packages"
+                  - "scripts/baselines"
+                  - "website/static/img/social"
+                  - "website/static/img/social/docs/releases/v0.7.9-evidence/preparation.png"
+                  - "website/static/img/social/docs/releases/v0.7.9.png"
+                  - "website/static/img/social/manifest.json"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run release:check"
+                      id: "release_check"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1200000
+                    -
+                      capability: "task.verify"
+                      command: "bun run release:prepublish"
+                      id: "release_prepublish"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1200000
+                    -
+                      capability: "task.verify"
+                      id: "scope_hygiene"
+                      kind: "structural"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "release_check"
+                        - "release_prepublish"
+                        - "scope_hygiene"
+                      description: "The release candidate promotes every canonical 0.7.9-beta.1 version and internal pin to stable 0.7.9, adds complete release notes and evidence, and introduces no semantic source change."
+                      id: "candidate_exact"
+                      required: true
+                  evidence_fingerprint: "sha256:08e623aa8e62234e358d889c3c8857772bad3fb84df87657f5ba597807e8cb08"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "release_check"
+                      - "release_prepublish"
+                      - "hosted_integration"
+                    description: "The exact committed candidate passes local release gates, independent evaluation, hosted CI, protected integration, and hosted close."
+                    id: "candidate_qualified"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 500000
+                  optional_sources: []
+                  required_sources:
+                    - ".agentplane/tasks/202609121424-49XXT3/README.md"
+                  symbol_hints:
+                    - "verification"
+                    - "quality review"
+                    - "hosted integration"
+                depends_on:
+                  - "prepare_candidate"
+                expected_outputs:
+                  - "independent_evaluator_verdict"
+                  - "green_hosted_candidate_checks"
+                  - "qualified_main_sha"
+                id: "qualify_integrate"
+                objective: "Qualify the exact release candidate, obtain independent review and hosted checks, and integrate it through the protected AgentPlane merge lane and hosted close."
+                optional: false
+                priority: 2
+                required_inputs:
+                  - "exact_candidate_sha"
+                  - "release_notes_and_evidence"
+                resource_claims:
+                  -
+                    kind: "provider_queue"
+                    mode: "exclusive"
+                    resource: "integration-lane"
+                risk: "high"
+                scope_roots:
+                  - ".agentplane/tasks/202609121424-49XXT3"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run release:check"
+                      id: "release_check"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1200000
+                    -
+                      capability: "task.verify"
+                      command: "bun run release:prepublish"
+                      id: "release_prepublish"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1200000
+                    -
+                      capability: "task.verify"
+                      id: "hosted_integration"
+                      kind: "provider"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "release_check"
+                        - "release_prepublish"
+                        - "hosted_integration"
+                      description: "The exact committed candidate passes local release gates, independent evaluation, hosted CI, protected integration, and hosted close."
+                      id: "candidate_qualified"
+                      required: true
+                  evidence_fingerprint: "sha256:08e623aa8e62234e358d889c3c8857772bad3fb84df87657f5ba597807e8cb08"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "publish_manifest"
+                      - "github_release"
+                    description: "The protected publish workflow releases v0.7.9 from the exact qualified main SHA and writes publish-result.json with success=true and an empty failures array."
+                    id: "publication_exact"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 500000
+                  optional_sources: []
+                  required_sources:
+                    - ".agentplane/policy/workflow.release.md"
+                    - ".agentplane/tasks/202609121424-49XXT3/README.md"
+                  symbol_hints:
+                    - "publish-result.json"
+                    - "release-ready"
+                depends_on:
+                  - "qualify_integrate"
+                expected_outputs:
+                  - "v0_7_9_github_release"
+                  - "published_npm_packages"
+                  - "exact_sha_publish_result"
+                id: "publish_stable"
+                objective: "Publish v0.7.9 from the exact qualified main SHA through the protected release workflow and preserve canonical publication evidence."
+                optional: false
+                priority: 3
+                required_inputs:
+                  - "qualified_main_sha"
+                resource_claims:
+                  -
+                    kind: "provider_queue"
+                    mode: "exclusive"
+                    resource: "release-v0.7.9"
+                risk: "high"
+                scope_roots:
+                  - ".agentplane/.release"
+                  - ".agentplane/tasks/202609121424-49XXT3"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      id: "publish_manifest"
+                      kind: "structural"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      id: "github_release"
+                      kind: "provider"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "publish_manifest"
+                        - "github_release"
+                      description: "The protected publish workflow releases v0.7.9 from the exact qualified main SHA and writes publish-result.json with success=true and an empty failures array."
+                      id: "publication_exact"
+                      required: true
+                  evidence_fingerprint: "sha256:08e623aa8e62234e358d889c3c8857772bad3fb84df87657f5ba597807e8cb08"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "registry_readback"
+                      - "installer_readback"
+                      - "default_branch_readback"
+                    description: "Independent readback verifies package registries, assets and checksums, setup-agentplane, Homebrew, Scoop, both CLI entrypoints, and final default-branch state."
+                    id: "distribution_verified"
+                    required: true
+                  -
+                    check_ids:
+                      - "scope_hygiene"
+                      - "default_branch_readback"
+                    description: "Post-publish evidence is committed through AgentPlane and the next patch beta opens only after public 0.7.9 proof; unrelated untracked paths remain preserved."
+                    id: "post_publish_complete"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 500000
+                  optional_sources:
+                    - "public GHCR metadata"
+                  required_sources:
+                    - ".agentplane/.release/publish/publish-result.json"
+                    - ".agentplane/tasks/202609121424-49XXT3/README.md"
+                  symbol_hints:
+                    - "agentplane"
+                    - "ap"
+                    - "Homebrew"
+                    - "Scoop"
+                    - "setup-agentplane"
+                depends_on:
+                  - "publish_stable"
+                expected_outputs:
+                  - "independent_distribution_readback"
+                  - "verified_cli_entrypoints"
+                  - "final_main_and_next_beta_evidence"
+                  - "residual_limitations"
+                id: "verify_distribution"
+                objective: "Independently verify all public 0.7.9 artifacts and installers, record limitations precisely, and complete the AgentPlane-managed post-publish evidence and next-beta follow-up."
+                optional: false
+                priority: 4
+                required_inputs:
+                  - "exact_sha_publish_result"
+                  - "v0_7_9_github_release"
+                  - "published_npm_packages"
+                resource_claims:
+                  -
+                    kind: "provider_queue"
+                    mode: "read"
+                    resource: "release-readback-v0.7.9"
+                risk: "high"
+                scope_roots:
+                  - ".agentplane/.release"
+                  - ".agentplane/tasks/202609121424-49XXT3"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      id: "registry_readback"
+                      kind: "provider"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      id: "installer_readback"
+                      kind: "provider"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      id: "default_branch_readback"
+                      kind: "provider"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      id: "scope_hygiene"
+                      kind: "structural"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "registry_readback"
+                        - "installer_readback"
+                        - "default_branch_readback"
+                      description: "Independent readback verifies package registries, assets and checksums, setup-agentplane, Homebrew, Scoop, both CLI entrypoints, and final default-branch state."
+                      id: "distribution_verified"
+                      required: true
+                    -
+                      check_ids:
+                        - "scope_hygiene"
+                        - "default_branch_readback"
+                      description: "Post-publish evidence is committed through AgentPlane and the next patch beta opens only after public 0.7.9 proof; unrelated untracked paths remain preserved."
+                      id: "post_publish_complete"
+                      required: true
+                  evidence_fingerprint: "sha256:08e623aa8e62234e358d889c3c8857772bad3fb84df87657f5ba597807e8cb08"
+                  schema_version: 1
+        revision: 4
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+      -
+        approval:
+          approved_at: "2026-09-14T00:38:42.841Z"
+          approved_by: "HOST:codex-desktop:USER"
+          approved_digest: "sha256:eb9ce27c4909631c733ca19863ef09fc2f884213b20b57e35f4f50e01462d5d5"
+          policy_facts:
+            - "host_user_decision"
+          state: "approved"
+        created_at: "2026-09-14T00:37:24.811Z"
+        digest: "sha256:eb9ce27c4909631c733ca19863ef09fc2f884213b20b57e35f4f50e01462d5d5"
+        proposal:
+          assumptions:
+            - "Qualified main commit 9792878934b2c4d068e98056cef3c2c691451a90 is the required release base because it contains the merged task-state validation repair and its hosted closure evidence."
+            - "The existing release branch contains the previously prepared stable 0.7.9 candidate and must preserve those changes during synchronization."
+            - "The repository release tooling remains the owner of version expansion, publication, next-beta creation, and exact-SHA evidence."
+          planning_baseline:
+            captured_at: "2026-09-14T00:34:11.350Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:4cc4070687bcfe5bfb52a882f38fd6ace12e6d3504ce1815aa8b64502439dd6b"
+            dirty_paths:
+              - ".agentplane/tasks/202609121424-49XXT3/README.md"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "e567297b0f86d69bfb9a939764ed4aef90fcc1d3"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:26"
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                id: "candidate_base_identity"
+                kind: "structural"
+                required: true
+              -
+                capability: "task.verify"
+                command: "bun run release:check"
+                id: "release_check"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1200000
+              -
+                capability: "task.verify"
+                command: "bun run release:prepublish"
+                id: "release_prepublish"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1200000
+              -
+                capability: "task.verify"
+                id: "scope_hygiene"
+                kind: "structural"
+                required: true
+              -
+                capability: "task.verify"
+                id: "hosted_integration"
+                kind: "provider"
+                required: true
+              -
+                capability: "task.verify"
+                id: "publish_manifest"
+                kind: "structural"
+                required: true
+              -
+                capability: "task.verify"
+                id: "github_release"
+                kind: "provider"
+                required: true
+              -
+                capability: "task.verify"
+                id: "registry_readback"
+                kind: "provider"
+                required: true
+              -
+                capability: "task.verify"
+                id: "installer_readback"
+                kind: "provider"
+                required: true
+              -
+                capability: "task.verify"
+                id: "default_branch_readback"
+                kind: "provider"
+                required: true
+            criteria:
+              -
+                check_ids:
+                  - "candidate_base_identity"
+                  - "scope_hygiene"
+                description: "The existing release candidate is synchronized onto qualified main commit 9792878934b2c4d068e98056cef3c2c691451a90 without losing prepared release changes or importing unrelated work."
+                id: "candidate_base_exact"
+                required: true
+              -
+                check_ids:
+                  - "release_check"
+                  - "release_prepublish"
+                  - "scope_hygiene"
+                description: "The release candidate promotes every canonical 0.7.9-beta.1 version and internal pin to stable 0.7.9, adds complete release notes and evidence, and introduces no semantic source change beyond generated or version-parity release surfaces."
+                id: "candidate_exact"
+                required: true
+              -
+                check_ids:
+                  - "release_check"
+                  - "release_prepublish"
+                  - "hosted_integration"
+                description: "The exact committed candidate passes local release gates, independent evaluation, hosted CI, protected integration, and hosted close."
+                id: "candidate_qualified"
+                required: true
+              -
+                check_ids:
+                  - "publish_manifest"
+                  - "github_release"
+                description: "The protected publish workflow releases v0.7.9 from the exact qualified main SHA and writes publish-result.json with success=true and an empty failures array."
+                id: "publication_exact"
+                required: true
+              -
+                check_ids:
+                  - "registry_readback"
+                  - "installer_readback"
+                  - "default_branch_readback"
+                description: "Independent readback verifies package registries, assets and checksums, setup-agentplane, Homebrew, Scoop, both CLI entrypoints, and final default-branch state."
+                id: "distribution_verified"
+                required: true
+              -
+                check_ids:
+                  - "scope_hygiene"
+                  - "default_branch_readback"
+                description: "Post-publish evidence is committed through AgentPlane and the next patch beta opens only after public 0.7.9 proof; unrelated untracked paths remain preserved."
+                id: "post_publish_complete"
+                required: true
+            evidence_fingerprint: "sha256:4cc4070687bcfe5bfb52a882f38fd6ace12e6d3504ce1815aa8b64502439dd6b"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "candidate_base_identity"
+                      - "scope_hygiene"
+                    description: "The existing release candidate is synchronized onto qualified main commit 9792878934b2c4d068e98056cef3c2c691451a90 without losing prepared release changes or importing unrelated work."
+                    id: "candidate_base_exact"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 500000
+                  optional_sources:
+                    - "PR #5950 provider state"
+                  required_sources:
+                    - ".agentplane/policy/workflow.release.md"
+                    - ".agentplane/tasks/202609121424-49XXT3/README.md"
+                  symbol_hints:
+                    - "qualified main"
+                    - "release candidate base"
+                    - "branch synchronization"
+                depends_on: []
+                expected_outputs:
+                  - "synchronized_candidate_branch"
+                  - "qualified_release_base_sha"
+                id: "synchronize_candidate_base"
+                objective: "Synchronize the existing stable candidate branch onto exact qualified main commit 9792878934b2c4d068e98056cef3c2c691451a90 through the repository-owned recovery path while preserving all prepared candidate changes and unrelated user work."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "exclusive"
+                    resource: "release-candidate-worktree"
+                risk: "high"
+                scope_roots:
+                  - ".agentplane/tasks/202609121424-49XXT3"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      id: "candidate_base_identity"
+                      kind: "structural"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      id: "scope_hygiene"
+                      kind: "structural"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "candidate_base_identity"
+                        - "scope_hygiene"
+                      description: "The existing release candidate is synchronized onto qualified main commit 9792878934b2c4d068e98056cef3c2c691451a90 without losing prepared release changes or importing unrelated work."
+                      id: "candidate_base_exact"
+                      required: true
+                  evidence_fingerprint: "sha256:4cc4070687bcfe5bfb52a882f38fd6ace12e6d3504ce1815aa8b64502439dd6b"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "release_check"
+                      - "release_prepublish"
+                      - "scope_hygiene"
+                    description: "The release candidate promotes every canonical 0.7.9-beta.1 version and internal pin to stable 0.7.9, adds complete release notes and evidence, and introduces no semantic source change beyond generated or version-parity release surfaces."
+                    id: "candidate_exact"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 1000000
+                  optional_sources:
+                    - "docs/releases/v0.7.8-evidence"
+                  required_sources:
+                    - ".agentplane/policy/workflow.release.md"
+                    - ".agentplane/tasks/202609121424-49XXT3/README.md"
+                    - "docs/releases/v0.7.8.md"
+                  symbol_hints:
+                    - "release plan"
+                    - "version parity"
+                    - "release notes"
+                    - "compatibility baseline"
+                    - "clone baseline"
+                depends_on:
+                  - "synchronize_candidate_base"
+                expected_outputs:
+                  - "stable_candidate_diff"
+                  - "release_notes_and_evidence"
+                  - "exact_candidate_sha"
+                id: "prepare_candidate"
+                objective: "Freeze 9792878934b2c4d068e98056cef3c2c691451a90 as the release base and finalize stable 0.7.9 versions, internal pins, generated release surfaces, release notes, and evidence without unrelated semantic source changes."
+                optional: false
+                priority: 2
+                required_inputs:
+                  - "qualified_release_base_sha"
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "exclusive"
+                    resource: "release-candidate-worktree"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: ".agentplane/WORKFLOW.md"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: ".agentplane/config.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "website/static/img/social"
+                risk: "high"
+                scope_roots:
+                  - ".agentplane/WORKFLOW.md"
+                  - ".agentplane/config.json"
+                  - ".agentplane/tasks/202609121424-49XXT3"
+                  - "docs/assets"
+                  - "docs/reference/generated-reference.mdx"
+                  - "docs/releases/v0.7.9-evidence"
+                  - "docs/releases/v0.7.9.md"
+                  - "package.json"
+                  - "packages"
+                  - "scripts/baselines"
+                  - "website/static/img/social"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run release:check"
+                      id: "release_check"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1200000
+                    -
+                      capability: "task.verify"
+                      command: "bun run release:prepublish"
+                      id: "release_prepublish"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1200000
+                    -
+                      capability: "task.verify"
+                      id: "scope_hygiene"
+                      kind: "structural"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "release_check"
+                        - "release_prepublish"
+                        - "scope_hygiene"
+                      description: "The release candidate promotes every canonical 0.7.9-beta.1 version and internal pin to stable 0.7.9, adds complete release notes and evidence, and introduces no semantic source change beyond generated or version-parity release surfaces."
+                      id: "candidate_exact"
+                      required: true
+                  evidence_fingerprint: "sha256:4cc4070687bcfe5bfb52a882f38fd6ace12e6d3504ce1815aa8b64502439dd6b"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "release_check"
+                      - "release_prepublish"
+                      - "hosted_integration"
+                    description: "The exact committed candidate passes local release gates, independent evaluation, hosted CI, protected integration, and hosted close."
+                    id: "candidate_qualified"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 500000
+                  optional_sources: []
+                  required_sources:
+                    - ".agentplane/tasks/202609121424-49XXT3/README.md"
+                  symbol_hints:
+                    - "verification"
+                    - "quality review"
+                    - "hosted integration"
+                depends_on:
+                  - "prepare_candidate"
+                expected_outputs:
+                  - "independent_evaluator_verdict"
+                  - "green_hosted_candidate_checks"
+                  - "qualified_main_sha"
+                id: "qualify_integrate"
+                objective: "Qualify the exact release candidate, obtain independent review and hosted checks, and integrate it through the protected AgentPlane merge lane and hosted close."
+                optional: false
+                priority: 3
+                required_inputs:
+                  - "exact_candidate_sha"
+                  - "release_notes_and_evidence"
+                resource_claims:
+                  -
+                    kind: "provider_queue"
+                    mode: "exclusive"
+                    resource: "integration-lane"
+                risk: "high"
+                scope_roots:
+                  - ".agentplane/tasks/202609121424-49XXT3"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run release:check"
+                      id: "release_check"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1200000
+                    -
+                      capability: "task.verify"
+                      command: "bun run release:prepublish"
+                      id: "release_prepublish"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1200000
+                    -
+                      capability: "task.verify"
+                      id: "hosted_integration"
+                      kind: "provider"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "release_check"
+                        - "release_prepublish"
+                        - "hosted_integration"
+                      description: "The exact committed candidate passes local release gates, independent evaluation, hosted CI, protected integration, and hosted close."
+                      id: "candidate_qualified"
+                      required: true
+                  evidence_fingerprint: "sha256:4cc4070687bcfe5bfb52a882f38fd6ace12e6d3504ce1815aa8b64502439dd6b"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "publish_manifest"
+                      - "github_release"
+                    description: "The protected publish workflow releases v0.7.9 from the exact qualified main SHA and writes publish-result.json with success=true and an empty failures array."
+                    id: "publication_exact"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 500000
+                  optional_sources: []
+                  required_sources:
+                    - ".agentplane/policy/workflow.release.md"
+                    - ".agentplane/tasks/202609121424-49XXT3/README.md"
+                  symbol_hints:
+                    - "publish-result.json"
+                    - "release-ready"
+                depends_on:
+                  - "qualify_integrate"
+                expected_outputs:
+                  - "v0_7_9_github_release"
+                  - "published_npm_packages"
+                  - "exact_sha_publish_result"
+                id: "publish_stable"
+                objective: "Publish v0.7.9 from the exact qualified main SHA through the protected release workflow and preserve canonical publication evidence."
+                optional: false
+                priority: 4
+                required_inputs:
+                  - "qualified_main_sha"
+                resource_claims:
+                  -
+                    kind: "provider_queue"
+                    mode: "exclusive"
+                    resource: "release-v0.7.9"
+                risk: "high"
+                scope_roots:
+                  - ".agentplane/.release"
+                  - ".agentplane/tasks/202609121424-49XXT3"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      id: "publish_manifest"
+                      kind: "structural"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      id: "github_release"
+                      kind: "provider"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "publish_manifest"
+                        - "github_release"
+                      description: "The protected publish workflow releases v0.7.9 from the exact qualified main SHA and writes publish-result.json with success=true and an empty failures array."
+                      id: "publication_exact"
+                      required: true
+                  evidence_fingerprint: "sha256:4cc4070687bcfe5bfb52a882f38fd6ace12e6d3504ce1815aa8b64502439dd6b"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "registry_readback"
+                      - "installer_readback"
+                      - "default_branch_readback"
+                    description: "Independent readback verifies package registries, assets and checksums, setup-agentplane, Homebrew, Scoop, both CLI entrypoints, and final default-branch state."
+                    id: "distribution_verified"
+                    required: true
+                  -
+                    check_ids:
+                      - "scope_hygiene"
+                      - "default_branch_readback"
+                    description: "Post-publish evidence is committed through AgentPlane and the next patch beta opens only after public 0.7.9 proof; unrelated untracked paths remain preserved."
+                    id: "post_publish_complete"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 500000
+                  optional_sources:
+                    - "public GHCR metadata"
+                  required_sources:
+                    - ".agentplane/.release/publish/publish-result.json"
+                    - ".agentplane/tasks/202609121424-49XXT3/README.md"
+                  symbol_hints:
+                    - "agentplane"
+                    - "ap"
+                    - "Homebrew"
+                    - "Scoop"
+                    - "setup-agentplane"
+                depends_on:
+                  - "publish_stable"
+                expected_outputs:
+                  - "independent_distribution_readback"
+                  - "verified_cli_entrypoints"
+                  - "final_main_and_next_beta_evidence"
+                  - "residual_limitations"
+                id: "verify_distribution"
+                objective: "Independently verify all public 0.7.9 artifacts and installers, record limitations precisely, and complete the AgentPlane-managed post-publish evidence and next-beta follow-up."
+                optional: false
+                priority: 5
+                required_inputs:
+                  - "exact_sha_publish_result"
+                  - "v0_7_9_github_release"
+                  - "published_npm_packages"
+                resource_claims:
+                  -
+                    kind: "provider_queue"
+                    mode: "read"
+                    resource: "release-readback-v0.7.9"
+                risk: "high"
+                scope_roots:
+                  - ".agentplane/.release"
+                  - ".agentplane/tasks/202609121424-49XXT3"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      id: "registry_readback"
+                      kind: "provider"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      id: "installer_readback"
+                      kind: "provider"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      id: "default_branch_readback"
+                      kind: "provider"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      id: "scope_hygiene"
+                      kind: "structural"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "registry_readback"
+                        - "installer_readback"
+                        - "default_branch_readback"
+                      description: "Independent readback verifies package registries, assets and checksums, setup-agentplane, Homebrew, Scoop, both CLI entrypoints, and final default-branch state."
+                      id: "distribution_verified"
+                      required: true
+                    -
+                      check_ids:
+                        - "scope_hygiene"
+                        - "default_branch_readback"
+                      description: "Post-publish evidence is committed through AgentPlane and the next patch beta opens only after public 0.7.9 proof; unrelated untracked paths remain preserved."
+                      id: "post_publish_complete"
+                      required: true
+                  evidence_fingerprint: "sha256:4cc4070687bcfe5bfb52a882f38fd6ace12e6d3504ce1815aa8b64502439dd6b"
+                  schema_version: 1
+        revision: 5
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+      -
+        approval:
+          approved_at: "2026-09-14T00:43:06.119Z"
+          approved_by: "HOST:codex-desktop:USER"
+          approved_digest: "sha256:b7ab04861eb63f6d357b719af194fb1fa2aa03047d37e31af93321b1205476d2"
+          policy_facts:
+            - "host_user_decision"
+          state: "approved"
+        created_at: "2026-09-14T00:42:42.447Z"
+        digest: "sha256:b7ab04861eb63f6d357b719af194fb1fa2aa03047d37e31af93321b1205476d2"
+        proposal:
+          assumptions:
+            - "Qualified main 9792878934b2c4d068e98056cef3c2c691451a90 is the required release base."
+            - "The existing release branch contains the prepared stable candidate and must preserve it during replay."
+            - "Repository release tooling owns publication, exact-SHA evidence, and next-beta creation."
+          planning_baseline:
+            captured_at: "2026-09-14T00:40:55.620Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:87c1bb77c938e8f2169cf14be7f5755554e96076b8b9a08cdc0bef88b9a8228a"
+            dirty_paths:
+              - ".agentplane/tasks/202609121424-49XXT3/README.md"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "e567297b0f86d69bfb9a939764ed4aef90fcc1d3"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:30"
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                id: "candidate_base_identity"
+                kind: "structural"
+                required: true
+              -
+                capability: "task.verify"
+                command: "bun run release:check"
+                id: "release_check"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1200000
+              -
+                capability: "task.verify"
+                command: "bun run release:prepublish"
+                id: "release_prepublish"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1200000
+              -
+                capability: "task.verify"
+                id: "scope_hygiene"
+                kind: "structural"
+                required: true
+              -
+                capability: "task.verify"
+                id: "hosted_integration"
+                kind: "provider"
+                required: true
+              -
+                capability: "task.verify"
+                id: "publish_manifest"
+                kind: "structural"
+                required: true
+              -
+                capability: "task.verify"
+                id: "github_release"
+                kind: "provider"
+                required: true
+              -
+                capability: "task.verify"
+                id: "registry_readback"
+                kind: "provider"
+                required: true
+              -
+                capability: "task.verify"
+                id: "installer_readback"
+                kind: "provider"
+                required: true
+              -
+                capability: "task.verify"
+                id: "default_branch_readback"
+                kind: "provider"
+                required: true
+            criteria:
+              -
+                check_ids:
+                  - "candidate_base_identity"
+                  - "scope_hygiene"
+                description: "The existing candidate is replayed onto 9792878934b2c4d068e98056cef3c2c691451a90, preserves all approved release paths and qualified-main repairs, and imports no unrelated work."
+                id: "candidate_base_exact"
+                required: true
+              -
+                check_ids:
+                  - "release_check"
+                  - "release_prepublish"
+                  - "scope_hygiene"
+                description: "The candidate has stable 0.7.9 version parity, complete notes and evidence, fresh generated surfaces and baselines, and no unrelated semantic source change."
+                id: "candidate_exact"
+                required: true
+              -
+                check_ids:
+                  - "release_check"
+                  - "release_prepublish"
+                  - "hosted_integration"
+                description: "The exact candidate passes local gates, independent evaluation, hosted CI, protected integration, and hosted close."
+                id: "candidate_qualified"
+                required: true
+              -
+                check_ids:
+                  - "publish_manifest"
+                  - "github_release"
+                description: "The protected workflow publishes v0.7.9 from the exact qualified main SHA and records success=true with an empty failures array."
+                id: "publication_exact"
+                required: true
+              -
+                check_ids:
+                  - "registry_readback"
+                  - "installer_readback"
+                  - "default_branch_readback"
+                description: "Independent readback verifies registries, release assets and checksums, setup-agentplane, Homebrew, Scoop, both CLI entrypoints, and final main."
+                id: "distribution_verified"
+                required: true
+              -
+                check_ids:
+                  - "scope_hygiene"
+                  - "default_branch_readback"
+                description: "AgentPlane records post-publish evidence and starts the next beta only after public proof while preserving unrelated user work."
+                id: "post_publish_complete"
+                required: true
+            evidence_fingerprint: "sha256:87c1bb77c938e8f2169cf14be7f5755554e96076b8b9a08cdc0bef88b9a8228a"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "candidate_base_identity"
+                      - "scope_hygiene"
+                    description: "The existing candidate is replayed onto 9792878934b2c4d068e98056cef3c2c691451a90, preserves all approved release paths and qualified-main repairs, and imports no unrelated work."
+                    id: "candidate_base_exact"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 1000000
+                  optional_sources:
+                    - "PR #5950 provider state"
+                  required_sources:
+                    - ".agentplane/policy/workflow.release.md"
+                    - ".agentplane/tasks/202609121424-49XXT3/README.md"
+                  symbol_hints:
+                    - "qualified main"
+                    - "release candidate base"
+                    - "history replay"
+                depends_on: []
+                expected_outputs:
+                  - "synchronized_candidate_branch"
+                  - "qualified_release_base_sha"
+                id: "synchronize_candidate_base"
+                objective: "Replay the existing stable candidate onto exact qualified main 9792878934b2c4d068e98056cef3c2c691451a90 while preserving all approved candidate content and unrelated user work."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "exclusive"
+                    resource: "release-candidate-worktree"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: ".agentplane/WORKFLOW.md"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: ".agentplane/config.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: ".agentplane/tasks/202609121424-49XXT3"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/assets"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/reference/generated-reference.mdx"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/releases/v0.7.9-evidence"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/releases/v0.7.9.md"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "package.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/baselines"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "website/static/img/social"
+                risk: "high"
+                scope_roots:
+                  - ".agentplane/WORKFLOW.md"
+                  - ".agentplane/config.json"
+                  - ".agentplane/tasks/202609121424-49XXT3"
+                  - "docs/assets"
+                  - "docs/reference/generated-reference.mdx"
+                  - "docs/releases/v0.7.9-evidence"
+                  - "docs/releases/v0.7.9.md"
+                  - "package.json"
+                  - "packages"
+                  - "scripts/baselines"
+                  - "website/static/img/social"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      id: "candidate_base_identity"
+                      kind: "structural"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      id: "scope_hygiene"
+                      kind: "structural"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "candidate_base_identity"
+                        - "scope_hygiene"
+                      description: "The existing candidate is replayed onto 9792878934b2c4d068e98056cef3c2c691451a90, preserves all approved release paths and qualified-main repairs, and imports no unrelated work."
+                      id: "candidate_base_exact"
+                      required: true
+                  evidence_fingerprint: "sha256:87c1bb77c938e8f2169cf14be7f5755554e96076b8b9a08cdc0bef88b9a8228a"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "release_check"
+                      - "release_prepublish"
+                      - "scope_hygiene"
+                    description: "The candidate has stable 0.7.9 version parity, complete notes and evidence, fresh generated surfaces and baselines, and no unrelated semantic source change."
+                    id: "candidate_exact"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 1000000
+                  optional_sources:
+                    - "docs/releases/v0.7.8-evidence"
+                  required_sources:
+                    - ".agentplane/policy/workflow.release.md"
+                    - ".agentplane/tasks/202609121424-49XXT3/README.md"
+                    - "docs/releases/v0.7.8.md"
+                  symbol_hints:
+                    - "version parity"
+                    - "release notes"
+                    - "compatibility baseline"
+                    - "clone baseline"
+                depends_on:
+                  - "synchronize_candidate_base"
+                expected_outputs:
+                  - "stable_candidate_diff"
+                  - "release_notes_and_evidence"
+                  - "exact_candidate_sha"
+                id: "prepare_candidate"
+                objective: "Finalize stable 0.7.9 versions, pins, generated surfaces, notes, evidence, formatting, compatibility baselines, and clone baselines on base 9792878934b2c4d068e98056cef3c2c691451a90."
+                optional: false
+                priority: 2
+                required_inputs:
+                  - "qualified_release_base_sha"
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "exclusive"
+                    resource: "release-candidate-worktree"
+                risk: "high"
+                scope_roots:
+                  - ".agentplane/WORKFLOW.md"
+                  - ".agentplane/config.json"
+                  - ".agentplane/tasks/202609121424-49XXT3"
+                  - "docs/assets"
+                  - "docs/reference/generated-reference.mdx"
+                  - "docs/releases/v0.7.9-evidence"
+                  - "docs/releases/v0.7.9.md"
+                  - "package.json"
+                  - "packages"
+                  - "scripts/baselines"
+                  - "website/static/img/social"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run release:check"
+                      id: "release_check"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1200000
+                    -
+                      capability: "task.verify"
+                      command: "bun run release:prepublish"
+                      id: "release_prepublish"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1200000
+                    -
+                      capability: "task.verify"
+                      id: "scope_hygiene"
+                      kind: "structural"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "release_check"
+                        - "release_prepublish"
+                        - "scope_hygiene"
+                      description: "The candidate has stable 0.7.9 version parity, complete notes and evidence, fresh generated surfaces and baselines, and no unrelated semantic source change."
+                      id: "candidate_exact"
+                      required: true
+                  evidence_fingerprint: "sha256:87c1bb77c938e8f2169cf14be7f5755554e96076b8b9a08cdc0bef88b9a8228a"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "release_check"
+                      - "release_prepublish"
+                      - "hosted_integration"
+                    description: "The exact candidate passes local gates, independent evaluation, hosted CI, protected integration, and hosted close."
+                    id: "candidate_qualified"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 500000
+                  optional_sources: []
+                  required_sources:
+                    - ".agentplane/tasks/202609121424-49XXT3/README.md"
+                  symbol_hints:
+                    - "verification"
+                    - "hosted integration"
+                depends_on:
+                  - "prepare_candidate"
+                expected_outputs:
+                  - "independent_evaluator_verdict"
+                  - "green_hosted_candidate_checks"
+                  - "qualified_main_sha"
+                id: "qualify_integrate"
+                objective: "Qualify the exact candidate and integrate it through independent review, hosted CI, the protected merge lane, and hosted close."
+                optional: false
+                priority: 3
+                required_inputs:
+                  - "exact_candidate_sha"
+                  - "release_notes_and_evidence"
+                resource_claims:
+                  -
+                    kind: "provider_queue"
+                    mode: "exclusive"
+                    resource: "integration-lane"
+                risk: "high"
+                scope_roots:
+                  - ".agentplane/tasks/202609121424-49XXT3"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run release:check"
+                      id: "release_check"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1200000
+                    -
+                      capability: "task.verify"
+                      command: "bun run release:prepublish"
+                      id: "release_prepublish"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1200000
+                    -
+                      capability: "task.verify"
+                      id: "hosted_integration"
+                      kind: "provider"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "release_check"
+                        - "release_prepublish"
+                        - "hosted_integration"
+                      description: "The exact candidate passes local gates, independent evaluation, hosted CI, protected integration, and hosted close."
+                      id: "candidate_qualified"
+                      required: true
+                  evidence_fingerprint: "sha256:87c1bb77c938e8f2169cf14be7f5755554e96076b8b9a08cdc0bef88b9a8228a"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "publish_manifest"
+                      - "github_release"
+                    description: "The protected workflow publishes v0.7.9 from the exact qualified main SHA and records success=true with an empty failures array."
+                    id: "publication_exact"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 500000
+                  optional_sources: []
+                  required_sources:
+                    - ".agentplane/policy/workflow.release.md"
+                    - ".agentplane/tasks/202609121424-49XXT3/README.md"
+                  symbol_hints:
+                    - "publish-result.json"
+                    - "release-ready"
+                depends_on:
+                  - "qualify_integrate"
+                expected_outputs:
+                  - "v0_7_9_github_release"
+                  - "published_npm_packages"
+                  - "exact_sha_publish_result"
+                id: "publish_stable"
+                objective: "Publish v0.7.9 from the exact qualified main SHA through the protected release route and preserve canonical publication evidence."
+                optional: false
+                priority: 4
+                required_inputs:
+                  - "qualified_main_sha"
+                resource_claims:
+                  -
+                    kind: "provider_queue"
+                    mode: "exclusive"
+                    resource: "release-v0.7.9"
+                risk: "high"
+                scope_roots:
+                  - ".agentplane/.release"
+                  - ".agentplane/tasks/202609121424-49XXT3"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      id: "publish_manifest"
+                      kind: "structural"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      id: "github_release"
+                      kind: "provider"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "publish_manifest"
+                        - "github_release"
+                      description: "The protected workflow publishes v0.7.9 from the exact qualified main SHA and records success=true with an empty failures array."
+                      id: "publication_exact"
+                      required: true
+                  evidence_fingerprint: "sha256:87c1bb77c938e8f2169cf14be7f5755554e96076b8b9a08cdc0bef88b9a8228a"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "registry_readback"
+                      - "installer_readback"
+                      - "default_branch_readback"
+                    description: "Independent readback verifies registries, release assets and checksums, setup-agentplane, Homebrew, Scoop, both CLI entrypoints, and final main."
+                    id: "distribution_verified"
+                    required: true
+                  -
+                    check_ids:
+                      - "scope_hygiene"
+                      - "default_branch_readback"
+                    description: "AgentPlane records post-publish evidence and starts the next beta only after public proof while preserving unrelated user work."
+                    id: "post_publish_complete"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 500000
+                  optional_sources:
+                    - "public GHCR metadata"
+                  required_sources:
+                    - ".agentplane/.release/publish/publish-result.json"
+                    - ".agentplane/tasks/202609121424-49XXT3/README.md"
+                  symbol_hints:
+                    - "agentplane"
+                    - "ap"
+                    - "Homebrew"
+                    - "Scoop"
+                    - "setup-agentplane"
+                depends_on:
+                  - "publish_stable"
+                expected_outputs:
+                  - "independent_distribution_readback"
+                  - "verified_cli_entrypoints"
+                  - "final_main_and_next_beta_evidence"
+                  - "residual_limitations"
+                id: "verify_distribution"
+                objective: "Independently verify public 0.7.9 artifacts and installers, record limitations, and complete AgentPlane-managed evidence and next-beta follow-up."
+                optional: false
+                priority: 5
+                required_inputs:
+                  - "exact_sha_publish_result"
+                  - "v0_7_9_github_release"
+                  - "published_npm_packages"
+                resource_claims:
+                  -
+                    kind: "provider_queue"
+                    mode: "read"
+                    resource: "release-readback-v0.7.9"
+                risk: "high"
+                scope_roots:
+                  - ".agentplane/.release"
+                  - ".agentplane/tasks/202609121424-49XXT3"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      id: "registry_readback"
+                      kind: "provider"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      id: "installer_readback"
+                      kind: "provider"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      id: "default_branch_readback"
+                      kind: "provider"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      id: "scope_hygiene"
+                      kind: "structural"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "registry_readback"
+                        - "installer_readback"
+                        - "default_branch_readback"
+                      description: "Independent readback verifies registries, release assets and checksums, setup-agentplane, Homebrew, Scoop, both CLI entrypoints, and final main."
+                      id: "distribution_verified"
+                      required: true
+                    -
+                      check_ids:
+                        - "scope_hygiene"
+                        - "default_branch_readback"
+                      description: "AgentPlane records post-publish evidence and starts the next beta only after public proof while preserving unrelated user work."
+                      id: "post_publish_complete"
+                      required: true
+                  evidence_fingerprint: "sha256:87c1bb77c938e8f2169cf14be7f5755554e96076b8b9a08cdc0bef88b9a8228a"
+                  schema_version: 1
+        revision: 6
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+    revision: 36
     schema_version: 1
-    updated_at: "2026-09-13T23:30:11.418Z"
+    updated_at: "2026-09-14T02:08:41.270Z"
     work_items:
       prepare_candidate:
         attempt: 0
@@ -3450,7 +4556,7 @@ extensions:
         last_failure: null
         output_manifests: []
         revision: 1
-        state: "READY"
+        state: "PLANNED"
         validation_result: null
       publish_stable:
         attempt: 0
@@ -3469,6 +4575,15 @@ extensions:
         output_manifests: []
         revision: 1
         state: "PLANNED"
+        validation_result: null
+      synchronize_candidate_base:
+        attempt: 0
+        claim_id: null
+        id: "synchronize_candidate_base"
+        last_failure: null
+        output_manifests: []
+        revision: 1
+        state: "READY"
         validation_result: null
       verify_distribution:
         attempt: 0
@@ -3497,6 +4612,77 @@ extensions:
         schema_version: 1
         task_id: "202609121424-49XXT3"
         task_revision: 6
+        work_item_id: null
+      -
+        at: "2026-09-14T00:34:09.691Z"
+        from: "ACTIVE"
+        to: "PLANNING"
+        actor_id: "external:EXECUTOR"
+        cause_refs:
+          - "acceptance_changed"
+          - "dependencies_changed"
+        entity: "task"
+        id: "event_8548f5a0e0489ca2e70cd1a4"
+        mutation_id: "plan-refinement:work-order-202609121424-49XXT3-executor-45f2030ec063788840e7c4b9"
+        plan_digest: "sha256:9ef83bad341e61625d2ba8e9adf09b88aa235b97a4b7094e623134ce86bdd9eb"
+        plan_revision: 4
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+        task_revision: 25
+        work_item_id: null
+      -
+        at: "2026-09-14T00:39:46.937Z"
+        from: "sha256:eb9ce27c4909631c733ca19863ef09fc2f884213b20b57e35f4f50e01462d5d5"
+        to: "sha256:9e285965362318aa806b2ead1dcddad86f26178f8bb4aaca1e55a3618812daf3"
+        actor_id: "external:EXECUTOR"
+        cause_refs: []
+        entity: "plan"
+        id: "event_5c54ba054e1eeb90f0335dc0"
+        mutation_id: "plan-refinement:work-order-202609121424-49XXT3-executor-84bb81bb296b8c85aff12b04"
+        plan_digest: "sha256:eb9ce27c4909631c733ca19863ef09fc2f884213b20b57e35f4f50e01462d5d5"
+        plan_revision: 5
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+        task_revision: 28
+        work_item_id: null
+      -
+        at: "2026-09-14T00:40:53.958Z"
+        from: "ACTIVE"
+        to: "PLANNING"
+        actor_id: "external:EXECUTOR"
+        cause_refs:
+          - "acceptance_changed"
+        entity: "task"
+        id: "event_5f6cadaeee399a2ec63ca6d3"
+        mutation_id: "plan-refinement:work-order-202609121424-49XXT3-executor-0abaa4e4bfeb153cdcdd51a6"
+        plan_digest: "sha256:eb9ce27c4909631c733ca19863ef09fc2f884213b20b57e35f4f50e01462d5d5"
+        plan_revision: 5
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+        task_revision: 29
+        work_item_id: null
+      -
+        at: "2026-09-14T02:02:01.893Z"
+        from: "ACTIVE"
+        to: "PLANNING"
+        actor_id: "external:EXECUTOR"
+        cause_refs:
+          - "outputs_changed"
+          - "acceptance_changed"
+          - "dependencies_changed"
+          - "architecture_changed"
+        entity: "task"
+        id: "event_b169b299c4e7016f6d543c6e"
+        mutation_id: "plan-refinement:work-order-202609121424-49XXT3-executor-af29bd7cf5ad53932e76c5d7"
+        plan_digest: "sha256:b7ab04861eb63f6d357b719af194fb1fa2aa03047d37e31af93321b1205476d2"
+        plan_revision: 6
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+        task_revision: 32
         work_item_id: null
     leases: []
     mutation_receipts:
@@ -3644,6 +4830,54 @@ extensions:
         previous_revision: 18
         schema_version: 1
         task_id: "202609121424-49XXT3"
+      compatibility:sha256:61f02ff91468050eeda24345627a94091b29b5f7d3dcbe93ed180359a45b320a:
+        aggregate_digest: "sha256:f6a6da89a73f8b65d2277141bb97a9f6abdcccdf4de9379d6500de8d9adc7e97"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T02:08:41.270Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_357089c057e55c649823612d"
+          mutation_id: "compatibility:sha256:61f02ff91468050eeda24345627a94091b29b5f7d3dcbe93ed180359a45b320a"
+          plan_digest: "sha256:2dc5dc0f43f6b65479ab63ffbd9cd7f458486e5ed3678edeca71f4080fe8ce02"
+          plan_revision: 7
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          task_revision: 35
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:61f02ff91468050eeda24345627a94091b29b5f7d3dcbe93ed180359a45b320a"
+        next_revision: 36
+        previous_revision: 35
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+      compatibility:sha256:65940460e9ca8855a966ffb8780d92852cd020fe430fae86f7ff92affd20b9ca:
+        aggregate_digest: "sha256:872c4a4537e2e0039a879e3e38b43357e038acf6c8a92c04b85c2137f6fe6062"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T00:31:46.313Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_060812bce7c428874eb4dd98"
+          mutation_id: "compatibility:sha256:65940460e9ca8855a966ffb8780d92852cd020fe430fae86f7ff92affd20b9ca"
+          plan_digest: "sha256:9ef83bad341e61625d2ba8e9adf09b88aa235b97a4b7094e623134ce86bdd9eb"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          task_revision: 24
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:65940460e9ca8855a966ffb8780d92852cd020fe430fae86f7ff92affd20b9ca"
+        next_revision: 25
+        previous_revision: 24
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
       compatibility:sha256:6a8c60830af7e59784fb00121c19a9d5f6d3567ff9b68b7a177db48775c1f288:
         aggregate_digest: "sha256:391bb726eb853e11a177b8e41b6c676817ab8929cbe42cbdad85a1aaca195f8f"
         event:
@@ -3762,6 +4996,30 @@ extensions:
         mutation_id: "compatibility:sha256:96f7310412316b0dba40ec2e3e025ff2aa898261d8b34987df9345eeb138d716"
         next_revision: 16
         previous_revision: 15
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+      compatibility:sha256:a7953a26a334852a2d946428fa46f4f9f351cbce1911c1fa63708bab698b84ac:
+        aggregate_digest: "sha256:50e80b646ba01144540d80d31e5bc131ebdc2b0b5f4fac24a6f01dd2c4aec3cb"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T00:42:42.470Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "AWAITING_PLAN_APPROVAL"
+          id: "event_0cda429031b9b7c8ffa2a9e9"
+          mutation_id: "compatibility:sha256:a7953a26a334852a2d946428fa46f4f9f351cbce1911c1fa63708bab698b84ac"
+          plan_digest: "sha256:b7ab04861eb63f6d357b719af194fb1fa2aa03047d37e31af93321b1205476d2"
+          plan_revision: 6
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          task_revision: 31
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:a7953a26a334852a2d946428fa46f4f9f351cbce1911c1fa63708bab698b84ac"
+        next_revision: 32
+        previous_revision: 31
         schema_version: 1
         task_id: "202609121424-49XXT3"
       compatibility:sha256:a7d45aee995566076a18d8eb39dd713b1dc66734a91bf0a72b74c4ddc3a73ade:
@@ -3908,6 +5166,54 @@ extensions:
         previous_revision: 17
         schema_version: 1
         task_id: "202609121424-49XXT3"
+      compatibility:sha256:f03af7a31da8d893b1460a148258a988f9ae521e8ff765e8b4577c70f51d13c4:
+        aggregate_digest: "sha256:b3ddac01873d010923232adcfef354bba7c2e79d5c743e61d197916f4e46bb52"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T00:37:24.832Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "AWAITING_PLAN_APPROVAL"
+          id: "event_d51c5675ca3172cad8a950b1"
+          mutation_id: "compatibility:sha256:f03af7a31da8d893b1460a148258a988f9ae521e8ff765e8b4577c70f51d13c4"
+          plan_digest: "sha256:eb9ce27c4909631c733ca19863ef09fc2f884213b20b57e35f4f50e01462d5d5"
+          plan_revision: 5
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          task_revision: 27
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:f03af7a31da8d893b1460a148258a988f9ae521e8ff765e8b4577c70f51d13c4"
+        next_revision: 28
+        previous_revision: 27
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+      compatibility:sha256:f73189cbd47c6805c1d7b2c98b106d7239f5029b70208be5f4c89e7a940ba33a:
+        aggregate_digest: "sha256:dfd4f710774be68b229ec6675f303aff5a17d63e68db658c3cfcc74690226d7a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T02:06:34.530Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "AWAITING_PLAN_APPROVAL"
+          id: "event_200048e783a5d8b3b8b2a3b5"
+          mutation_id: "compatibility:sha256:f73189cbd47c6805c1d7b2c98b106d7239f5029b70208be5f4c89e7a940ba33a"
+          plan_digest: "sha256:2dc5dc0f43f6b65479ab63ffbd9cd7f458486e5ed3678edeca71f4080fe8ce02"
+          plan_revision: 7
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          task_revision: 34
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:f73189cbd47c6805c1d7b2c98b106d7239f5029b70208be5f4c89e7a940ba33a"
+        next_revision: 35
+        previous_revision: 34
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
       compatibility:sha256:f943c80d309cd21e7572c292933d541957390452136eaf26b2e5b8360086820f:
         aggregate_digest: "sha256:59f999ba0cb5832a58f63e98a719e85f0cde09eac64c57fd478d6c088c9a1290"
         event:
@@ -3980,6 +5286,30 @@ extensions:
         previous_revision: 13
         schema_version: 1
         task_id: "202609121424-49XXT3"
+      plan-refinement:work-order-202609121424-49XXT3-executor-0abaa4e4bfeb153cdcdd51a6:
+        aggregate_digest: "sha256:2099ae2049cd5115b8745c9bdb56d889e1592e0314283a76101c9d6e950e82b2"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-14T00:40:53.958Z"
+          cause_refs:
+            - "acceptance_changed"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_5f6cadaeee399a2ec63ca6d3"
+          mutation_id: "plan-refinement:work-order-202609121424-49XXT3-executor-0abaa4e4bfeb153cdcdd51a6"
+          plan_digest: "sha256:eb9ce27c4909631c733ca19863ef09fc2f884213b20b57e35f4f50e01462d5d5"
+          plan_revision: 5
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          task_revision: 29
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609121424-49XXT3-executor-0abaa4e4bfeb153cdcdd51a6"
+        next_revision: 30
+        previous_revision: 29
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
       plan-refinement:work-order-202609121424-49XXT3-executor-357f96ca071f158ceb929079:
         aggregate_digest: "sha256:b31d2c603a5a552f448f5af1c0488402aedc0fc4cf5b392656c4c416a2f881bc"
         event:
@@ -4001,6 +5331,81 @@ extensions:
         mutation_id: "plan-refinement:work-order-202609121424-49XXT3-executor-357f96ca071f158ceb929079"
         next_revision: 7
         previous_revision: 6
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+      plan-refinement:work-order-202609121424-49XXT3-executor-45f2030ec063788840e7c4b9:
+        aggregate_digest: "sha256:c2a7c81734e2bc934351979d1539b040cb5f0a31d56b54ef0a0695f53a0a8b43"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-14T00:34:09.691Z"
+          cause_refs:
+            - "acceptance_changed"
+            - "dependencies_changed"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_8548f5a0e0489ca2e70cd1a4"
+          mutation_id: "plan-refinement:work-order-202609121424-49XXT3-executor-45f2030ec063788840e7c4b9"
+          plan_digest: "sha256:9ef83bad341e61625d2ba8e9adf09b88aa235b97a4b7094e623134ce86bdd9eb"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          task_revision: 25
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609121424-49XXT3-executor-45f2030ec063788840e7c4b9"
+        next_revision: 26
+        previous_revision: 25
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+      plan-refinement:work-order-202609121424-49XXT3-executor-84bb81bb296b8c85aff12b04:
+        aggregate_digest: "sha256:4b9f1ec85caa7be3536a43d537022ac806198417d31bb48512d2701579dded22"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-14T00:39:46.937Z"
+          cause_refs: []
+          entity: "plan"
+          from: "sha256:eb9ce27c4909631c733ca19863ef09fc2f884213b20b57e35f4f50e01462d5d5"
+          id: "event_5c54ba054e1eeb90f0335dc0"
+          mutation_id: "plan-refinement:work-order-202609121424-49XXT3-executor-84bb81bb296b8c85aff12b04"
+          plan_digest: "sha256:eb9ce27c4909631c733ca19863ef09fc2f884213b20b57e35f4f50e01462d5d5"
+          plan_revision: 5
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          task_revision: 28
+          to: "sha256:9e285965362318aa806b2ead1dcddad86f26178f8bb4aaca1e55a3618812daf3"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609121424-49XXT3-executor-84bb81bb296b8c85aff12b04"
+        next_revision: 29
+        previous_revision: 28
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+      plan-refinement:work-order-202609121424-49XXT3-executor-af29bd7cf5ad53932e76c5d7:
+        aggregate_digest: "sha256:342f69ac5230e446f53de5e61c299170a05a1eb2b5fb96bebef7fdf17ac8f0b2"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-14T02:02:01.893Z"
+          cause_refs:
+            - "outputs_changed"
+            - "acceptance_changed"
+            - "dependencies_changed"
+            - "architecture_changed"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_b169b299c4e7016f6d543c6e"
+          mutation_id: "plan-refinement:work-order-202609121424-49XXT3-executor-af29bd7cf5ad53932e76c5d7"
+          plan_digest: "sha256:b7ab04861eb63f6d357b719af194fb1fa2aa03047d37e31af93321b1205476d2"
+          plan_revision: 6
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          task_revision: 32
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609121424-49XXT3-executor-af29bd7cf5ad53932e76c5d7"
+        next_revision: 33
+        previous_revision: 32
         schema_version: 1
         task_id: "202609121424-49XXT3"
     pending_effects: []
@@ -4032,7 +5437,7 @@ Release operator task after all 0.7.9 stabilization dependencies are integrated.
 
 ## Plan
 
-Plan the stable 0.7.9 candidate, qualify and integrate its exact SHA, publish it through the protected release workflow, and verify every public distribution surface before opening the next beta.
+Updated the approved 0.7.9 release plan to the current qualified main and made candidate-base synchronization a supervisor-owned lifecycle prerequisite.
 
 ## Verify Steps
 
