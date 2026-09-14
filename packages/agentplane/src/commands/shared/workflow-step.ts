@@ -13,7 +13,7 @@ import type { TaskWorktreeCleanliness } from "./task-worktree-cleanliness.js";
 import type { ForeignTaskReadmeReplicaRepair } from "./task-worktree-foreign-artifact-repair.js";
 import type { BranchBaseSyncObservation } from "./branch-base-sync-route.js";
 import { foreignTaskReadmeReplicaRepairOperation } from "./workflow-step-foreign-task-readme-repair.js";
-import { BASE_SYNC_SPEC, type BaseSyncParams } from "./workflow-step-branch-base-sync.js";
+import { BASE_SYNC_SPEC, type BaseSyncParams } from "./workflow-step-branch-base-sync-spec.js";
 import { PROVIDER_UPDATE_BRANCH_OPERATION_SPEC } from "./workflow-step-provider-update-branch-spec.js";
 import { POSTCONDITION, type WorkflowPostcondition } from "./workflow-postconditions.js";
 

@@ -9,7 +9,8 @@
  .../workflow-operation-projection.registry.test.ts |  10 ++
  .../shared/workflow-operation-projection.ts        |   3 +
  .../src/commands/shared/workflow-postconditions.ts |   6 +
- .../shared/workflow-step-branch-base-sync.ts       |  63 +++++++
+ .../shared/workflow-step-branch-base-sync-spec.ts  |  23 +++
+ .../shared/workflow-step-branch-base-sync.ts       |  40 +++++
  .../commands/shared/workflow-step-branch-state.ts  |  18 ++
  .../src/commands/shared/workflow-step-branch.ts    |  22 +--
  .../commands/shared/workflow-step-fingerprint.ts   |   1 +
@@ -17,4 +18,4 @@
  .../src/commands/shared/workflow-step.ts           |   7 +
  .../task/branch-task-supervisor-operations.test.ts |  60 ++++++-
  .../task/branch-task-supervisor-operations.ts      |  20 +++
- 19 files changed, 902 insertions(+), 18 deletions(-)
+ 20 files changed, 902 insertions(+), 18 deletions(-)
