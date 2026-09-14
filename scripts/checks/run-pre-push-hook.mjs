@@ -223,9 +223,9 @@ function failIfPollutedReleaseGitConfig() {
   ]);
 }
 
-function failIfStandardPrePushRequiresFullFast({ updates, changedFiles, diffRange }) {
+function failIfStandardPrePushRequiresFullFast({ updates, changedFiles, diffRange, scripts }) {
   if (changedFiles.length === 0) {
-    if (updates.length === 0) return;
+    if (updates.length === 0 || !Object.hasOwn(scripts, "ci:local:fast")) return;
     fail("pre-push blocked: changed-file scope could not be bounded for this push.", [
       "Standard git hooks cannot safely run the broad fast lane for unknown push scopes.",
       "Run the broad validation explicitly, then push with --no-verify after it passes:",
@@ -531,7 +531,7 @@ function main() {
   });
   enforceTaskBoundOutgoingCommits(diffRange);
   if (!isReleasePush) {
-    failIfStandardPrePushRequiresFullFast({ updates, changedFiles, diffRange });
+    failIfStandardPrePushRequiresFullFast({ updates, changedFiles, diffRange, scripts });
   }
   const key = proofKey({ updates, mode, ciScript, changedFiles });
   if (!trackedChangesShort()) {
