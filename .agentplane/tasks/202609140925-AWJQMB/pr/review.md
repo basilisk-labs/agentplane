@@ -6,7 +6,7 @@ Created: 2026-09-14T10:14:14.692Z
 
 - Task: `202609140925-AWJQMB`
 - Title: Make supervisor-owned task branch base synchronization generate a commit subject accepted by AgentPlane commit-msg po...
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609140925-AWJQMB/make-supervisor-owned-task-branch-base-synchroni`
 - Canonical task record: `.agentplane/tasks/202609140925-AWJQMB/README.md`
 
