@@ -4,7 +4,7 @@ title: "Repair managed usage observation and branch-pr finish guard regressions"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -93,10 +93,17 @@ execution_contract:
       - "packages/agentplane/src/runner/adapters/custom.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/task/finish-command.ts"
+      - "packages/agentplane/src/runner/adapters/custom.test.ts"
+      - "packages/agentplane/src/runner/adapters/custom.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -136,7 +143,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:90bf5b84d12192d37dae7e915625df487471d196a0060f0407ca9599ef1fd29c"
+      digest: "sha256:38ff679b1c599ea56286bedf7db69171c42e2c662fe714401b14401327794321"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts"
@@ -148,10 +155,17 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/task/finish-command.ts"
+          - "packages/agentplane/src/runner/adapters/custom.test.ts"
+          - "packages/agentplane/src/runner/adapters/custom.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -185,11 +199,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "bb5980e80f1b95e3162905ed7304d5da54de66f2"
+  message: "🚧 VFA9C1 task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: bb5980e80f1b. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -198,9 +217,17 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-14T15:44:57.093Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: bb5980e80f1b. CLI accepted one state-bound external-agent semantic result."
+    commit: "bb5980e80f1b95e3162905ed7304d5da54de66f2"
 doc_version: 3
-doc_updated_at: "2026-09-14T15:15:16.341Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-14T15:44:57.093Z"
+doc_updated_by: "SUPERVISOR"
 description: "Repair two reproducible qualified-main regressions blocking the AgentPlane 0.7.9 prepublish gate. Managed custom runner episodes must durably record an unavailable provider-usage observation when token telemetry is not exposed, without weakening fail-closed accounting. Branch-pr finish from a task branch must reach the intended E_GIT base-checkout guard instead of an earlier E_VALIDATION failure. Add focused regression coverage, run the implicated release-ci-base chunk and complete local CI, integrate through hosted CI, then unblock release task 202609121424-49XXT3. Preserve unrelated user work and never commit agentplane-roadmap-r2."
 sections:
   Summary: |-
@@ -631,7 +658,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609141440-VFA9C1"
-    event_cursor: 3
+    event_cursor: 5
     final_validation: null
     id: "202609141440-VFA9C1"
     intent:
@@ -656,9 +683,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 5
+    revision: 7
     schema_version: 1
-    updated_at: "2026-09-14T15:15:16.341Z"
+    updated_at: "2026-09-14T15:44:57.093Z"
     work_items:
       repair_release_blocking_regressions:
         attempt: 0
@@ -674,6 +701,30 @@ extensions:
     events: []
     leases: []
     mutation_receipts:
+      compatibility:sha256:06d65e62814eb0d779557e07a5541272d5b4933e1a972ead016137b08be30a5c:
+        aggregate_digest: "sha256:c41c72a4c3264d19a79e50572492cff626dfd83be812ff5f2e800a2858871d50"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T15:44:57.093Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_05d4ac828ebdf52fb3c501d1"
+          mutation_id: "compatibility:sha256:06d65e62814eb0d779557e07a5541272d5b4933e1a972ead016137b08be30a5c"
+          plan_digest: "sha256:f7741223c0c9b53ff1f36aff040f8acd2f05849ba6e4e3fa640d1adbc2f5200c"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609141440-VFA9C1"
+          task_revision: 6
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:06d65e62814eb0d779557e07a5541272d5b4933e1a972ead016137b08be30a5c"
+        next_revision: 7
+        previous_revision: 6
+        schema_version: 1
+        task_id: "202609141440-VFA9C1"
       compatibility:sha256:5ecaef3fba77685920c90bdc97f1eb798673f3fe357d9bde992e0fa067280a07:
         aggregate_digest: "sha256:d10115ef5f3967fefbfcae9eb2baa2ace177359519db02c32be754f1eac9136d"
         event:
@@ -722,6 +773,30 @@ extensions:
         previous_revision: 3
         schema_version: 1
         task_id: "202609141440-VFA9C1"
+      compatibility:sha256:88a01d99ca8426593292036a5678562afd1d4267ce2ab4c3d11f393a6df23294:
+        aggregate_digest: "sha256:c0b49124eb9c7faef3c3a95ca7070b8c0b05fe1e28d740af42b627393a97bbc1"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T15:44:57.093Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_dd9da8e4a79eac6496d5a82d"
+          mutation_id: "compatibility:sha256:88a01d99ca8426593292036a5678562afd1d4267ce2ab4c3d11f393a6df23294"
+          plan_digest: "sha256:f7741223c0c9b53ff1f36aff040f8acd2f05849ba6e4e3fa640d1adbc2f5200c"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609141440-VFA9C1"
+          task_revision: 5
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:88a01d99ca8426593292036a5678562afd1d4267ce2ab4c3d11f393a6df23294"
+        next_revision: 6
+        previous_revision: 5
+        schema_version: 1
+        task_id: "202609141440-VFA9C1"
       compatibility:sha256:b24be80f57bfdeaa1ef7bfabc6a41006cbbd83e06c6fdffb8421e653c2ff34d1:
         aggregate_digest: "sha256:0a0c7a190345353511656151b7946fb7bb5684a29e4a20761723104df4a59c36"
         event:
@@ -749,6 +824,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "bb5980e80f1b95e3162905ed7304d5da54de66f2"
   task_execution_context:
     base_ref: "main"
     base_sha: "ed89f946b3058cf290df7a76bec23ab4dcc1fa92"
