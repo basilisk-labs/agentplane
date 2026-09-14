@@ -1,10 +1,11 @@
 ---
 id: "202609140925-AWJQMB"
 title: "Make supervisor-owned task branch base synchronization generate a commit subject accepted by AgentPlane commit-msg policy"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -59,6 +60,22 @@ quality_review:
     - "Conflict, stale-base, and dirty-worktree refusal paths remain unchanged and covered."
     - "Supervisor evidence records the focused Bun suite and full local regression as passing against evaluated SHA b6dae19a727f6516137d85dbdb25f4d6961c05e7."
     - "Residual risk: Hosted CI and provider readback must still pass before merge."
+token_usage:
+  agent_runs: 10
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:0b510df6ed49a6211ea8d4a57a45ed7489025f2bef98599692ef2eb8ba20606b"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-09-14T11:02:21.185Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -243,8 +260,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "b6dae19a727f6516137d85dbdb25f4d6961c05e7"
-  message: "🚧 AWJQMB task: apply external agent result"
+  hash: "3746697db0279b3d8011349653cb90e2860e3f91"
+  message: "🚧 AWJQMB task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -264,6 +281,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: b6dae19a727f. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -330,9 +350,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-14T11:02:21.185Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "3746697db0279b3d8011349653cb90e2860e3f91"
 doc_version: 3
-doc_updated_at: "2026-09-14T10:59:53.451Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-14T11:02:21.185Z"
+doc_updated_by: "CODER"
 description: "The release task 202609121424-49XXT3 requested exact branch-base synchronization onto main 1a93a9a43da2b714854174491f9672c52bf33e9f. synchronizeTaskBranchBase generated subject 'Merge branch main into task/...' and git hook run commit-msg rejected it because the repository requires '<emoji> <task-suffix> <scope>: <summary>'. Update the supervisor-owned synchronization implementation to create a policy-compliant task-attributed merge subject without weakening or bypassing hooks. Preserve the exact two-parent no-ff merge and ancestry postconditions. Add focused regression coverage for the real hook-compatible subject. Do not touch release candidate content or agentplane-roadmap-r2."
 sections:
   Summary: |-
@@ -852,7 +880,34 @@ extensions:
       schema_version: 1
       task_id: "202609140925-AWJQMB"
     event_cursor: 18
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609140925-AWJQMB"
+            - "git:b6dae19a727f6516137d85dbdb25f4d6961c05e7"
+          check_id: "focused_base_sync_tests"
+          command_identity: "bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-14T10:59:52.042Z"
+          repository_snapshot_digest: "sha256:558854ecd311b0dffc2ac76f58b32f5c09f886bfce1ed31f80fc88acd9f53c5d"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609140925-AWJQMB"
+            - "git:b6dae19a727f6516137d85dbdb25f4d6961c05e7"
+          check_id: "diff_hygiene"
+          command_identity: "task.verify"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-14T10:59:52.042Z"
+          repository_snapshot_digest: "sha256:558854ecd311b0dffc2ac76f58b32f5c09f886bfce1ed31f80fc88acd9f53c5d"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609140925-AWJQMB"
     intent:
       acceptance_criteria:
@@ -868,7 +923,7 @@ extensions:
 
         The release task 202609121424-49XXT3 requested exact branch-base synchronization onto main 1a93a9a43da2b714854174491f9672c52bf33e9f. synchronizeTaskBranchBase generated subject 'Merge branch main into task/...' and git hook run commit-msg rejected it because the repository requires '<emoji> <task-suffix> <scope>: <summary>'. Update the supervisor-owned synchronization implementation to create a policy-compliant task-attributed merge subject without weakening or bypassing hooks. Preserve the exact two-parent no-ff merge and ancestry postconditions. Add focused regression coverage for the real hook-compatible subject. Do not touch release candidate content or agentplane-roadmap-r2.
       task_id: "202609140925-AWJQMB"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments:
       -
         actor_id: "external:EXECUTOR"
@@ -890,9 +945,9 @@ extensions:
           scope_roots_added: []
         schema_version: 1
     plan_history: []
-    revision: 23
+    revision: 24
     schema_version: 1
-    updated_at: "2026-09-14T10:59:53.451Z"
+    updated_at: "2026-09-14T11:02:21.185Z"
     work_items:
       repair_sync_merge_message:
         attempt: 3
@@ -1510,6 +1565,31 @@ extensions:
         previous_revision: 10
         schema_version: 1
         task_id: "202609140925-AWJQMB"
+      legacy-finish:202609140925-AWJQMB:2026-09-14T10:59:52.042Z:b6dae19a727f6516137d85dbdb25f4d6961c05e7:
+        aggregate_digest: "sha256:9cf538ea0eeb7675105d2a40d6557038ad5d42727bc584d6a10f6d05559e839b"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-14T11:02:21.185Z"
+          cause_refs:
+            - "task-verification:202609140925-AWJQMB"
+            - "git:b6dae19a727f6516137d85dbdb25f4d6961c05e7"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_b97fca3126dba2ae2209e8d8"
+          mutation_id: "legacy-finish:202609140925-AWJQMB:2026-09-14T10:59:52.042Z:b6dae19a727f6516137d85dbdb25f4d6961c05e7"
+          plan_digest: "sha256:2c389272e5f29f9871078eff17e16d5beacad44a28981e9eb54e884794820fcc"
+          plan_revision: 1
+          repository_fingerprint: "sha256:558854ecd311b0dffc2ac76f58b32f5c09f886bfce1ed31f80fc88acd9f53c5d"
+          schema_version: 1
+          task_id: "202609140925-AWJQMB"
+          task_revision: 23
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609140925-AWJQMB:2026-09-14T10:59:52.042Z:b6dae19a727f6516137d85dbdb25f4d6961c05e7"
+        next_revision: 24
+        previous_revision: 23
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
       plan-refinement:work-order-202609140925-AWJQMB-executor-9a902b369de69795d062d657:
         aggregate_digest: "sha256:64e60011a250c765fe3495a7699a420c16328a3a51ddd7c77fb59c6c8eb06cca"
         event:
@@ -1538,6 +1618,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "b6dae19a727f6516137d85dbdb25f4d6961c05e7"
+    message: "🚧 AWJQMB task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "1a93a9a43da2b714854174491f9672c52bf33e9f"
@@ -1745,3 +1826,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/10` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:0b510df6ed49a6211ea8d4a57a45ed7489025f2bef98599692ef2eb8ba20606b`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-09-14T11:02:21.185Z`
