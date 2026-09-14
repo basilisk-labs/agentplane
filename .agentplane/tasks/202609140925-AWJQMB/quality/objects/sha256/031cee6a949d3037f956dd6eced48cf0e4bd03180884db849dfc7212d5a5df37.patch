@@ -1,0 +1,172 @@
+diff --git a/packages/agentplane/src/commands/branch/sync-task-base.test.ts b/packages/agentplane/src/commands/branch/sync-task-base.test.ts
+index 3a5693785..18c10b4e6 100644
+--- a/packages/agentplane/src/commands/branch/sync-task-base.test.ts
++++ b/packages/agentplane/src/commands/branch/sync-task-base.test.ts
+@@ -1,8 +1,9 @@
+-import { mkdtemp, mkdir, writeFile } from "node:fs/promises";
++import { chmod, mkdtemp, mkdir, readFile, writeFile } from "node:fs/promises";
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+ 
+ import { execFileAsync } from "@agentplaneorg/core/process";
++import { validateCommitSubject } from "@agentplaneorg/core/commit";
+ import { describe, expect, it } from "vitest";
+ 
+ import { synchronizeTaskBranchBase } from "./sync-task-base.js";
+@@ -45,6 +46,9 @@ describe("task branch base synchronization", () => {
+     const taskDir = path.join(f.worktreePath, ".agentplane", "tasks", f.taskId);
+     await mkdir(taskDir, { recursive: true });
+     await writeFile(path.join(taskDir, "README.md"), "task artifact\n", "utf8");
++    const hookPath = path.join(f.root, ".git", "hooks", "commit-msg");
++    await writeFile(hookPath, ["#!/bin/sh", 'cp "$1" .commit-msg-invoked', ""].join("\n"), "utf8");
++    await chmod(hookPath, 0o755);
+ 
+     const result = await synchronizeTaskBranchBase({
+       gitRoot: f.root,
+@@ -62,6 +66,22 @@ describe("task branch base synchronization", () => {
+     expect(await git(f.worktreePath, "rev-list", "--parents", "-n", "1", result.headSha)).toBe(
+       `${result.headSha} ${f.expectedHeadSha} ${f.expectedBaseSha}`,
+     );
++    const subject = await git(f.worktreePath, "show", "-s", "--format=%s", result.headSha);
++    expect(
++      validateCommitSubject({
++        subject,
++        taskId: f.taskId,
++        genericTokens: ["update", "tasks"],
++        taskIntent: { taskKind: "code", mutationScope: "code" },
++      }),
++    ).toEqual({ ok: true, errors: [] });
++    const dcoTrailer = /^Signed-off-by: [^<>\r\n]+ <[^<>\s]+@[^<>\s]+>$/mu;
++    expect(await git(f.worktreePath, "show", "-s", "--format=%B", result.headSha)).toMatch(
++      dcoTrailer,
++    );
++    const hookMessage = await readFile(path.join(f.worktreePath, ".commit-msg-invoked"), "utf8");
++    expect(hookMessage.split(/\r?\n/u)[0]).toBe(subject);
++    expect(hookMessage).toMatch(dcoTrailer);
+     await expect(
+       git(f.worktreePath, "merge-base", "--is-ancestor", f.expectedHeadSha, result.headSha),
+     ).resolves.toBe("");
+diff --git a/packages/agentplane/src/commands/branch/sync-task-base.ts b/packages/agentplane/src/commands/branch/sync-task-base.ts
+index 7aa43e452..55cba1eae 100644
+--- a/packages/agentplane/src/commands/branch/sync-task-base.ts
++++ b/packages/agentplane/src/commands/branch/sync-task-base.ts
+@@ -1,4 +1,5 @@
+ import { execFileAsync } from "@agentplaneorg/core/process";
++import { extractTaskSuffix } from "@agentplaneorg/core/commit";
+ import { realpath } from "node:fs/promises";
+ 
+ import { CliError } from "../../shared/errors.js";
+@@ -115,13 +116,16 @@ export async function synchronizeTaskBranchBase(opts: {
+         refuse("the exact head and base require semantic conflict resolution", opts.taskId);
+       }
+       await assertBoundState();
+-      const message = `Merge branch '${opts.baseBranch}' into ${opts.branch}`;
++      const message =
++        `🔀 ${extractTaskSuffix(opts.taskId)} task: sync exact ` +
++        `${opts.baseBranch} into task branch`;
+       try {
+         await git(opts.worktreePath, [
+           "merge",
+           "--no-ff",
+           "--no-edit",
+           "--no-overwrite-ignore",
++          "--signoff",
+           "-m",
+           message,
+           opts.expectedBaseSha,
+diff --git a/packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts b/packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts
+index 9150891ae..0419debe7 100644
+--- a/packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts
++++ b/packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts
+@@ -19,6 +19,8 @@ import {
+ import { prepareEvaluatorReview } from "./evaluator-review-usecase.js";
+ import { recoverPersistedEvaluatorFailureEpisode } from "./evaluator-execute-supervisor.js";
+ 
++const PROVIDER_OBSERVATION_TIMEOUT_MS = 2000;
++
+ async function prepare(root: string, taskId: string) {
+   await writeDefaultConfig(root);
+   await cmdTaskAdd({
+@@ -102,7 +104,9 @@ describe("evaluator failure usage receipts", () => {
+       const fakeBin = await installProvider(root, mode);
+       const previousPath = process.env.PATH;
+       process.env.PATH = `${fakeBin}${path.delimiter}${previousPath ?? ""}`;
+-      if (mode === "timeout") command.config.runner.timeouts.wall_clock_ms = 500;
++      if (mode === "timeout") {
++        command.config.runner.timeouts.wall_clock_ms = PROVIDER_OBSERVATION_TIMEOUT_MS;
++      }
+       let caught: unknown;
+       try {
+         await executePreparedEvaluatorEpisode({ ctx: command, prepared });
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+index 216ba3f47..8208da4fc 100644
+--- a/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+@@ -6,6 +6,10 @@ import type { CommandContext } from "../shared/task-backend.js";
+ import type { WorkflowOperation } from "../shared/workflow-step.js";
+ import { executeBranchWorkflowOperation } from "./branch-task-supervisor-operations.js";
+ 
++if (typeof vi.hoisted !== "function") {
++  Object.defineProperty(vi, "hoisted", { value: <T>(factory: () => T): T => factory() });
++}
++
+ const mocks = vi.hoisted(() => ({
+   cmdFinish: vi.fn(),
+   runNext: vi.fn(),
+diff --git a/packages/agentplane/src/commands/workflow.verify-hooks.test.ts b/packages/agentplane/src/commands/workflow.verify-hooks.test.ts
+index 4f912e3ee..4c7e0691c 100644
+--- a/packages/agentplane/src/commands/workflow.verify-hooks.test.ts
++++ b/packages/agentplane/src/commands/workflow.verify-hooks.test.ts
+@@ -246,6 +246,16 @@ describe("commands/workflow", () => {
+       loadCommandContext({ cwd: root, rootOverride: null }),
+       loadCommandContext({ cwd: root, rootOverride: null }),
+     ]);
++    let preparedWrites = 0;
++    let releasePreparedWrites!: () => void;
++    const bothWritesPrepared = new Promise<void>((resolve) => {
++      releasePreparedWrites = resolve;
++    });
++    const synchronizeFirstWrites = async () => {
++      preparedWrites += 1;
++      if (preparedWrites === 2) releasePreparedWrites();
++      await bothWritesPrepared;
++    };
+ 
+     const outcomes = await Promise.all([
+       cmdVerifyParsed({
+@@ -257,6 +267,7 @@ describe("commands/workflow", () => {
+         by: "FIRST",
+         note: "First verification",
+         quiet: true,
++        beforePersist: synchronizeFirstWrites,
+       }),
+       cmdVerifyParsed({
+         ctx: secondContext,
+@@ -267,6 +278,7 @@ describe("commands/workflow", () => {
+         by: "SECOND",
+         note: "Second verification",
+         quiet: true,
++        beforePersist: synchronizeFirstWrites,
+       }),
+     ]);
+     expect(outcomes).toEqual([0, 0]);
+diff --git a/packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts b/packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts
+index ec0f4d430..780862f7b 100644
+--- a/packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts
++++ b/packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts
+@@ -108,11 +108,9 @@ describe("workspace allocation", () => {
+       }
+     }
+ 
+-    await Promise.all(
+-      allocations.map(async (allocation, index) => {
+-        await unlink(path.join(allocation.workspace_root, `private-${index}.txt`));
+-        await cleanupTaskWorkspace(allocation);
+-      }),
+-    );
++    for (const [index, allocation] of allocations.entries()) {
++      await unlink(path.join(allocation.workspace_root, `private-${index}.txt`));
++      await cleanupTaskWorkspace(allocation);
++    }
+   });
+ });
