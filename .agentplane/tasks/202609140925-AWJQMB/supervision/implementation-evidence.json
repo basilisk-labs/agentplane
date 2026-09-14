@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 9382fbdfc07cdfc0b00cb7f972b5043fbe08758d..5c3f3ac18fa6d662c7406c74b9bf00963b2729da",
+      "command": "git diff --check 45ce6f380bab5acbad703d967d7be80f8837007e..b80f7723f6e74bafa214501519fa91ca767dc2e5",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,17 +13,15 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 9382fbdfc07cdfc0b00cb7f972b5043fbe08758d..5c3f3ac18fa6d662c7406c74b9bf00963b2729da",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 45ce6f380bab5acbad703d967d7be80f8837007e..b80f7723f6e74bafa214501519fa91ca767dc2e5",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "M\t.agentplane/tasks/202609140925-AWJQMB/README.md",
         "M\t.agentplane/tasks/202609140925-AWJQMB/pr/diffstat.txt",
         "M\t.agentplane/tasks/202609140925-AWJQMB/pr/github-body.md",
-        "M\t.agentplane/tasks/202609140925-AWJQMB/pr/github-title.txt",
         "M\t.agentplane/tasks/202609140925-AWJQMB/pr/meta.json",
         "M\t.agentplane/tasks/202609140925-AWJQMB/pr/review.md",
-        "M\tpackages/agentplane/src/commands/workflow.verify-hooks.test.ts"
+        "M\tpackages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
       ]
     },
     {
@@ -33,24 +31,15 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "9382fbdfc07cdfc0b00cb7f972b5043fbe08758d",
-  "implementation_commit": "5c3f3ac18fa6d662c7406c74b9bf00963b2729da",
+  "execution_base_commit": "45ce6f380bab5acbad703d967d7be80f8837007e",
+  "implementation_commit": "b80f7723f6e74bafa214501519fa91ca767dc2e5",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [
-      " M .agentplane/tasks/202609140925-AWJQMB/README.md"
-    ],
-    "classification": [
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202609140925-AWJQMB/README.md"
-      }
-    ],
+    "baseline": [],
+    "classification": [],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [
-      " M .agentplane/tasks/202609140925-AWJQMB/README.md"
-    ],
+    "removed_after_execution_baseline": [],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
