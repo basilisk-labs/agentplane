@@ -1,4 +1,4 @@
-import { copyFile, cp, mkdir, readdir, rm, symlink } from "node:fs/promises";
+import { copyFile, cp, mkdir, readdir, readFile, realpath, rm, symlink } from "node:fs/promises";
 import path from "node:path";
 
 import { LocalBackend } from "../../backends/task-backend.js";
@@ -10,6 +10,52 @@ import { WORKTREE_INSTALL_LAYOUT_LINKS } from "../shared/worktree-install-layout
 
 function isPresentString(value: string | null): value is string {
   return value !== null;
+}
+
+function declaredDirectDependencies(manifest: unknown): string[] {
+  if (!manifest || typeof manifest !== "object" || Array.isArray(manifest)) return [];
+  const record = manifest as Record<string, unknown>;
+  const names = ["dependencies", "devDependencies"].flatMap((field) => {
+    const dependencies = record[field];
+    return dependencies && typeof dependencies === "object" && !Array.isArray(dependencies)
+      ? Object.keys(dependencies as Record<string, unknown>)
+      : [];
+  });
+  return [...new Set(names)].toSorted();
+}
+
+export async function isReusableWorkspaceInstallLayout(opts: {
+  repoRoot: string;
+  sourceRoot: string;
+}): Promise<boolean> {
+  const sourcePath = path.join(opts.sourceRoot, "node_modules");
+  const manifest = await readFile(path.join(opts.sourceRoot, "package.json"), "utf8")
+    .then((text) => JSON.parse(text) as unknown)
+    .catch(() => null);
+  if (manifest === null) return false;
+
+  const resolvedRepoRoot = await realpath(opts.repoRoot).catch(() => path.resolve(opts.repoRoot));
+  const resolvedSource = await realpath(sourcePath).catch(() => null);
+  if (!resolvedSource || !isPathWithin(resolvedRepoRoot, resolvedSource)) return false;
+  const taskWorktreesRoot = path.join(opts.repoRoot, ".agentplane", "worktrees");
+  const resolvedTaskWorktreesRoot = await realpath(taskWorktreesRoot).catch(() =>
+    path.resolve(taskWorktreesRoot),
+  );
+  if (isPathWithin(resolvedTaskWorktreesRoot, resolvedSource)) return false;
+
+  for (const dependency of declaredDirectDependencies(manifest)) {
+    const dependencyRoot = path.join(sourcePath, ...dependency.split("/"));
+    const resolvedDependency = await realpath(dependencyRoot).catch(() => null);
+    if (
+      !resolvedDependency ||
+      !isPathWithin(resolvedRepoRoot, resolvedDependency) ||
+      isPathWithin(resolvedTaskWorktreesRoot, resolvedDependency) ||
+      !(await fileExists(path.join(dependencyRoot, "package.json")))
+    ) {
+      return false;
+    }
+  }
+  return true;
 }
 
 export async function materializeLocalBackendReadmesForWorktree(opts: {
@@ -108,6 +154,7 @@ export async function materializeRepoLocalDistForWorktree(opts: {
 }
 
 async function linkDirectoryIntoWorktree(opts: {
+  repoRoot: string;
   sourceRoots: string[];
   worktreePath: string;
   relativePath: string;
@@ -115,7 +162,10 @@ async function linkDirectoryIntoWorktree(opts: {
   let sourcePath = "";
   for (const sourceRoot of opts.sourceRoots) {
     const candidate = path.join(sourceRoot, opts.relativePath);
-    if (await fileExists(candidate)) {
+    const reusable =
+      opts.relativePath !== "node_modules" ||
+      (await isReusableWorkspaceInstallLayout({ repoRoot: opts.repoRoot, sourceRoot }));
+    if ((await fileExists(candidate)) && reusable) {
       sourcePath = candidate;
       break;
     }
@@ -137,6 +187,7 @@ export async function materializeRepoLocalInstallLayoutForWorktree(opts: {
   const sourceRoots = resolveRuntimeSourceRoots(opts.repoRoot);
   for (const relativePath of WORKTREE_INSTALL_LAYOUT_LINKS) {
     await linkDirectoryIntoWorktree({
+      repoRoot: opts.repoRoot,
       sourceRoots,
       worktreePath: opts.worktreePath,
       relativePath,
