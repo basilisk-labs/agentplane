@@ -4,9 +4,14 @@ import path from "node:path";
 import {
   AGENT_SEMANTIC_RESULT_ZOD_SCHEMA,
   AGENT_WORK_ORDER_V2_ZOD_SCHEMA,
+  advanceSupervisorExecutionEpisodeState,
+  completeSupervisorExecutionEpisode,
   evaluateStateFingerprintPrecondition,
+  reopenSupervisorExecutionEpisodeAfterEffectEvidence,
+  startSupervisorExecutionEpisode,
 } from "@agentplaneorg/core/schemas";
 import { createRunnerAdapter } from "../../runner/adapters/index.js";
+import { readRunnerProviderUsageObservation } from "../../runner/artifacts.js";
 import { RunnerRunRepository } from "../../runner/run-repository.js";
 import { resolveSupervisorTaskRunnerPaths } from "../../runner/task-run-paths.js";
 import { buildRunnerPolicyDecision } from "../../runner/policy-decision.js";
@@ -16,11 +21,50 @@ import { resolveRunnerSandboxPolicy } from "../../runner/sandbox-policy.js";
 import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js";
 import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
 import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-backend.js";
+import {
+  openSupervisorExecutionEpisode,
+  tryAcquireSupervisorExecutionLease,
+} from "../shared/supervisor-execution-episode.js";
+import { buildMonotonicLifecycleTiming } from "../shared/lifecycle-stage-timing.js";
 import { advanceCanonicalTask } from "./kernel-advance.js";
 import { writeKernelArtifact } from "./kernel-exchange.js";
 import { createKernelRuntime } from "./kernel-runtime-context.js";
 
 type Packet = Awaited<ReturnType<typeof advanceCanonicalTask>>;
+
+async function readManagedProviderAccounting(invocation: {
+  adapter_id: string;
+  run_id: string;
+  work_order_id: string;
+  events_path: string;
+}) {
+  const observation = await readRunnerProviderUsageObservation({
+    events_path: invocation.events_path,
+    provider: invocation.adapter_id,
+    dispatch_id: `dispatch:${invocation.work_order_id}`,
+    run_id: invocation.run_id,
+    work_order_id: invocation.work_order_id,
+  });
+  if (!observation) {
+    throw new Error("Canonical managed provider usage observation is unavailable");
+  }
+  return {
+    usage: observation.usage ?? {},
+    provider_usage: {
+      provider: observation.provider,
+      run_id: observation.run_id,
+      work_order_id: observation.work_order_id,
+      thread_id: observation.thread_id,
+      turn_id: observation.turn_id,
+    },
+    usage_attribution:
+      observation.status === "observed"
+        ? ({ state: "observed", reason: null } as const)
+        : observation.status === "partial"
+          ? ({ state: "partial", reason: "partial_provider_token_telemetry" } as const)
+          : ({ state: "unavailable", reason: "provider_token_telemetry_unavailable" } as const),
+  };
+}
 
 async function executeKernelPacket(
   command: CommandContext,
@@ -107,14 +151,25 @@ async function executeKernelPacket(
   });
   assertRunnerPolicyCompatibility(bundle);
   const repository = RunnerRunRepository.fromBundle(bundle);
-  await repository.createFreshDirectory({ run_id: runId });
   const invocation = await adapter.prepare(bundle);
-  const bootstrap = renderSemanticBootstrap(bundle, invocation);
-  const prepared = await repository.writePrepared({
-    bundle,
-    invocation,
-    bootstrap_markdown: bootstrap,
-  });
+  const existing = await repository.readRecord();
+  if (
+    existing &&
+    (existing.bundle.execution.run_id !== runId ||
+      existing.bundle.work_order?.work_order_id !== workOrder.work_order_id)
+  ) {
+    throw new Error("Canonical managed run artifacts do not match the current WorkOrder");
+  }
+  let prepared = existing?.state ?? null;
+  if (!prepared) {
+    await repository.createFreshDirectory({ run_id: runId });
+    const bootstrap = renderSemanticBootstrap(bundle, invocation);
+    prepared = await repository.writePrepared({
+      bundle,
+      invocation,
+      bootstrap_markdown: bootstrap,
+    });
+  }
   const runtime = await createKernelRuntime({
     command,
     task_id: taskId,
@@ -127,15 +182,6 @@ async function executeKernelPacket(
     fresh.repository_fingerprint !== workOrder.canonical_binding?.repository_fingerprint
   )
     throw new Error("Canonical managed dispatch state changed during preparation");
-  // A lost launch response never permits another process with this episode identity.
-  const ownsDispatch = await writeKernelArtifact(directory, "managed-dispatch.json", {
-    work_order_id: workOrder.work_order_id,
-    run_id: runId,
-  });
-  if (!ownsDispatch)
-    throw new Error(
-      "Canonical managed dispatch already claimed; inspect the existing run before recovery",
-    );
   const capture = async () => {
     const current = await runtime.adapter.read(taskId);
     if (current.kind !== "canonical") throw new Error("Canonical run state unavailable");
@@ -149,62 +195,228 @@ async function executeKernelPacket(
           : null,
     });
   };
-  const before = await capture();
-  const diagnostic = evaluateStateFingerprintPrecondition({
-    expected: workOrder.state_fingerprint,
-    current: before,
-    policy: workOrder.state_fingerprint_policy,
-  });
-  if (diagnostic.status === "stale" || diagnostic.status === "blocked")
-    throw new Error("Canonical managed state precondition failed");
-  const stateFingerprint: RunnerStateFingerprintRecord = {
-    schema_version: 1,
-    kind: "runner_state_fingerprint_record",
-    outcome: "effect_started",
-    precondition_fingerprint: workOrder.state_fingerprint,
-    precondition_policy: workOrder.state_fingerprint_policy,
-    state_before: before,
-    state_after: null,
-    precondition: diagnostic,
-    effect_applied: null,
-    post_state_reason_code: null,
-  };
-  await repository.writeState({
-    ...prepared,
-    updated_at: new Date().toISOString(),
-    state_fingerprint: stateFingerprint,
-  });
-  const result = await adapter.execute(invocation);
-  const observed = await repository.readState();
-  if (!observed) throw new Error("Canonical managed run evidence is unavailable");
-  await repository.writeState({
-    ...observed,
-    state_fingerprint: {
-      ...stateFingerprint,
-      outcome: "accepted",
-      state_after: await capture(),
-      effect_applied: true,
-    },
-  });
-  if (
-    result.status !== "success" ||
-    result.execution_receipt?.verification_state !== "observed_success"
-  )
-    return {
-      schema_version: 1,
-      task_id: taskId,
-      action: { kind: "human_required", reason: "canonical_runner_receipt_not_successful" },
-      run_id: runId,
-      status: result.status,
-    };
-  const semantic = AGENT_SEMANTIC_RESULT_ZOD_SCHEMA.parse(result.semantic_result?.value);
-  await writeKernelArtifact(directory, "result.json", semantic);
-  return advanceCanonicalTask({
-    command,
+  const opened = await openSupervisorExecutionEpisode({
+    git_root: command.resolvedProject.gitRoot,
+    common_git_dir: await resolveCommandGitCommonDir(command),
     task_id: taskId,
-    transport: "managed",
-    result_path: packet.exchange.result_path,
+    task_revision: workOrder.task.revision,
+    state_fingerprint_digest: workOrder.state_fingerprint.digest,
   });
+  const lease = await tryAcquireSupervisorExecutionLease({ journal_path: opened.journal_path });
+  if (!lease) throw new Error("Another supervisor owns the canonical managed provider window");
+  try {
+    let journal = opened.journal;
+    const workOrderRef = path.join(directory, "work-order.json");
+    const latest = journal.operations.at(-1);
+    const sameOperation =
+      latest?.role === workOrder.role &&
+      latest.work_order_ref === workOrderRef &&
+      latest.effect_ref === invocation.result_path;
+    let result = existing?.result ?? null;
+
+    if (result && sameOperation && latest?.status === "intent") {
+      if (journal.status === "stopped" && journal.stop?.reason === "effect_in_doubt") {
+        const reopened = reopenSupervisorExecutionEpisodeAfterEffectEvidence({
+          journal,
+          operation_key: latest.operation_key,
+        });
+        if (!(await opened.store.compareAndSwap(journal.digest, reopened))) {
+          throw new Error("Canonical managed journal changed during result recovery");
+        }
+        journal = reopened;
+      }
+      if (journal.status !== "running" || journal.cursor.phase !== "intent_recorded") {
+        throw new Error("Canonical managed result cannot complete its recorded operation");
+      }
+      const accounting = await readManagedProviderAccounting(invocation);
+      const completed = completeSupervisorExecutionEpisode({
+        journal,
+        operation_key: latest.operation_key,
+        result: {
+          run_id: runId,
+          work_order_id: workOrder.work_order_id,
+          status: result.status,
+        },
+        ...accounting,
+        failed: result.status !== "success",
+      });
+      if (!(await opened.store.compareAndSwap(journal.digest, completed))) {
+        throw new Error("Canonical managed journal changed while applying a saved result");
+      }
+      journal = completed;
+    } else if (result && !(sameOperation && latest?.status === "completed")) {
+      throw new Error("Canonical managed saved result has no matching journal operation");
+    } else if (!result) {
+      if (journal.status === "running" && journal.cursor.phase === "completed") {
+        const advanced = advanceSupervisorExecutionEpisodeState({
+          journal,
+          state_fingerprint_digest: workOrder.state_fingerprint.digest,
+          route_observation: { transport: "managed", work_order_id: workOrder.work_order_id },
+        });
+        if (!(await opened.store.compareAndSwap(journal.digest, advanced))) {
+          throw new Error("Canonical managed journal changed before route advancement");
+        }
+        journal = advanced;
+      }
+      if (journal.status !== "running" || journal.cursor.phase !== "ready") {
+        throw new Error(
+          `Canonical managed supervisor is stopped (${journal.stop?.reason ?? journal.cursor.phase})`,
+        );
+      }
+      const started = startSupervisorExecutionEpisode({
+        journal,
+        role: workOrder.role,
+        kind: workOrder.role === "EVALUATOR" ? "evaluator_episode" : "agent_episode",
+        operation_identity: {
+          transport: "managed",
+          task_id: taskId,
+          work_order_id: workOrder.work_order_id,
+        },
+        precondition_fingerprint_digest: workOrder.state_fingerprint.digest,
+        authority_ref: `kernel-managed:${taskId}:${workOrder.work_order_id}`,
+        authority_digest: workOrder.state_fingerprint.digest,
+        work_order_ref: workOrderRef,
+        effect_ref: invocation.result_path,
+      });
+      if (started.status !== "started") {
+        await opened.store.write(started.journal);
+        throw new Error(`Canonical managed episode could not start (${started.status})`);
+      }
+      if (!(await opened.store.compareAndSwap(journal.digest, started.journal))) {
+        throw new Error("Canonical managed journal changed before provider dispatch");
+      }
+      journal = started.journal;
+      // A lost launch response never permits another process with this episode identity.
+      const ownsDispatch = await writeKernelArtifact(directory, "managed-dispatch.json", {
+        work_order_id: workOrder.work_order_id,
+        run_id: runId,
+      });
+      if (!ownsDispatch) {
+        throw new Error(
+          "Canonical managed dispatch already claimed without a durable saved result",
+        );
+      }
+      const before = await capture();
+      const diagnostic = evaluateStateFingerprintPrecondition({
+        expected: workOrder.state_fingerprint,
+        current: before,
+        policy: workOrder.state_fingerprint_policy,
+      });
+      if (diagnostic.status === "stale" || diagnostic.status === "blocked")
+        throw new Error("Canonical managed state precondition failed");
+      const stateFingerprint: RunnerStateFingerprintRecord = {
+        schema_version: 1,
+        kind: "runner_state_fingerprint_record",
+        outcome: "effect_started",
+        precondition_fingerprint: workOrder.state_fingerprint,
+        precondition_policy: workOrder.state_fingerprint_policy,
+        state_before: before,
+        state_after: null,
+        precondition: diagnostic,
+        effect_applied: null,
+        post_state_reason_code: null,
+      };
+      await repository.writeState({
+        ...prepared,
+        updated_at: new Date().toISOString(),
+        state_fingerprint: stateFingerprint,
+      });
+      const dispatchStartedAt = performance.now();
+      const timing = (endedAt: number, firstMutation: boolean) =>
+        buildMonotonicLifecycleTiming({
+          root_span_id: started.operation_key,
+          started_ms: dispatchStartedAt,
+          ended_ms: endedAt,
+          spans: [
+            {
+              span_id: `${started.operation_key}:semantic_dispatch`,
+              parent_span_id: started.operation_key,
+              stage: workOrder.role === "EVALUATOR" ? "review" : "semantic_dispatch",
+              category: "external_wait",
+              started_ms: dispatchStartedAt,
+              ended_ms: endedAt,
+            },
+            ...(firstMutation
+              ? [
+                  {
+                    span_id: `${started.operation_key}:first_scoped_mutation`,
+                    parent_span_id: started.operation_key,
+                    stage: "first_scoped_mutation" as const,
+                    category: "local_work" as const,
+                    started_ms: endedAt,
+                    ended_ms: endedAt,
+                  },
+                ]
+              : []),
+          ],
+        });
+      try {
+        result = await adapter.execute(invocation);
+      } catch (error) {
+        const failed = completeSupervisorExecutionEpisode({
+          journal,
+          operation_key: started.operation_key,
+          result: { error: error instanceof Error ? error.name : "unknown_error" },
+          lifecycle_timing: timing(performance.now(), false),
+          failed: true,
+        });
+        await opened.store.compareAndSwap(journal.digest, failed);
+        throw error;
+      }
+      const observed = await repository.readState();
+      if (!observed) throw new Error("Canonical managed run evidence is unavailable");
+      await repository.writeState({
+        ...observed,
+        result,
+        state_fingerprint: {
+          ...stateFingerprint,
+          outcome: "accepted",
+          state_after: await capture(),
+          effect_applied: true,
+        },
+      });
+      const accounting = await readManagedProviderAccounting(invocation);
+      const dispatchEndedAt = performance.now();
+      const completed = completeSupervisorExecutionEpisode({
+        journal,
+        operation_key: started.operation_key,
+        result: {
+          run_id: runId,
+          work_order_id: workOrder.work_order_id,
+          status: result.status,
+        },
+        ...accounting,
+        lifecycle_timing: timing(dispatchEndedAt, (result.evidence?.files_changed_count ?? 0) > 0),
+        failed: result.status !== "success",
+      });
+      if (!(await opened.store.compareAndSwap(journal.digest, completed))) {
+        throw new Error("Canonical managed journal changed while recording provider usage");
+      }
+      journal = completed;
+    }
+
+    if (
+      result.status !== "success" ||
+      result.execution_receipt?.verification_state !== "observed_success"
+    )
+      return {
+        schema_version: 1,
+        task_id: taskId,
+        action: { kind: "human_required", reason: "canonical_runner_receipt_not_successful" },
+        run_id: runId,
+        status: result.status,
+      };
+    const semantic = AGENT_SEMANTIC_RESULT_ZOD_SCHEMA.parse(result.semantic_result?.value);
+    await writeKernelArtifact(directory, "result.json", semantic);
+    return advanceCanonicalTask({
+      command,
+      task_id: taskId,
+      transport: "managed",
+      result_path: packet.exchange.result_path,
+    });
+  } finally {
+    await lease.release();
+  }
 }
 
 export async function runCanonicalTask(opts: {

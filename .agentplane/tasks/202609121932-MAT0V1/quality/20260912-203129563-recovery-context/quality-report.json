@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202609121932-MAT0V1",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-12T20:33:21.242Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "858f3fc349daab7c990e7fd4fe66b1f02ab19bab",
+  "blueprint_digest": "75affa1a467c1e6344a2ac0ec8f371c0d40d99007d85697566bf5c44d48a134a",
+  "findings": [
+    "The recovery path aligns the canonical aggregate revision before projecting one compatibility mutation, and the focused regression proves both legacy reconciliation and a successful subsequent task-centric mutation."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609121932-MAT0V1/quality/objects/sha256/f8d2fa7909b04a94b066f46cba2deb24f9c0ae13f67fb99a8a4e6d3b39561c05.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

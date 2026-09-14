@@ -4,19 +4,21 @@ import {
 } from "@agentplaneorg/core/tasks";
 import { hasUninitializedTaskBaseline } from "./workflow-step-policy-scope.js";
 import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
-import type { RouteBlocker } from "./route-oracle.js";
 import { conflictReworkRouteStep } from "./workflow-step-conflict-rework.js";
 import {
   branchHeadRepairStep,
   blockedTaskStep,
+  hasRouteBlocker,
   missingPrRemoteRefreshStep,
   preMergeCommit,
   primaryIncludeTaskIds,
+  unavailableWorktreeBlocker,
 } from "./workflow-step-branch-state.js";
 import { supersededProviderConflictStep } from "./workflow-step-provider-conflict-superseded.js";
 import { needsQualityEvidenceRefresh } from "./workflow-step-quality.js";
 import { integrationQueueStep } from "./workflow-step-integration-queue.js";
 import { providerUpdateBranchStep } from "./workflow-step-provider-update-branch.js";
+import { branchBaseSyncStep } from "./workflow-step-branch-base-sync.js";
 import {
   approvalStep,
   branchImplementationStep,
@@ -36,9 +38,6 @@ import {
   workSlug,
   worktreeResolutionStep,
 } from "./workflow-step-factory.js";
-function hasRouteBlocker(state: WorkflowRouteState, code: RouteBlocker["code"]): boolean {
-  return state.blockers.some((blocker) => blocker.code === code);
-}
 function primaryBatchVerificationStep(state: WorkflowRouteState): WorkflowStep | null {
   if (state.batchOwnership.role !== "primary") return null;
   const ownership = state.batchOwnership;
@@ -140,19 +139,6 @@ function runnerWaitStep(state: WorkflowRouteState): WorkflowStep {
       role: "CODER",
       mustNot: ["do not reclaim or force progress without explicit parent approval"],
     }),
-  };
-}
-function unavailableWorktreeBlocker(state: WorkflowRouteState): RouteBlocker {
-  const probe = state.taskWorktree;
-  if (probe?.state === "unavailable") {
-    return {
-      code: "task_worktree_state_unavailable",
-      summary: `task worktree state could not be inspected: ${probe.reason}`,
-    };
-  }
-  return {
-    code: "task_worktree_state_unavailable",
-    summary: "task worktree state could not be inspected",
   };
 }
 export function doneBranchStep(state: WorkflowRouteState): WorkflowStep {
@@ -435,6 +421,8 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
       worktreeResolutionStep(state, worktreeBlocker)
     );
   }
+  const baseSyncStep = branchBaseSyncStep(state);
+  if (baseSyncStep) return baseSyncStep;
   const recoveryStep = conflictReworkRouteStep(state) ?? providerUpdateBranchStep(state);
   if (recoveryStep) return recoveryStep;
   if (state.taskWorktree?.state === "not_present" && hasRouteBlocker(state, "pr_meta_stale")) {

@@ -12,7 +12,7 @@ export const VITEST_WORKSPACE_PROJECTS = [
     name: "agentplane",
     test: {
       include: ["packages/agentplane/src/**/*.test.ts"],
-      exclude: ["**/cli-smoke.test.ts", "**/run-cli*.test.ts"],
+      exclude: ["**/cli-smoke.test.ts", "**/run-cli!(*.roadmap-*).test.ts"],
     },
   },
   {
@@ -336,12 +336,31 @@ const RELEASE_CI_BASE_FILES = discoverTests(["packages"], (filePath) => {
   ].some((pattern) => pattern.test(filePath));
 });
 
+const AGENT_EFFICIENCY_QUALIFICATION_PATTERN =
+  /^packages\/agentplane\/src\/cli\/run-cli\.critical\.agent-efficiency-.+\.test\.ts$/;
+
+const ALL_CRITICAL_CLI_FILES = discoverTestFiles(
+  ["packages/agentplane/src/cli"],
+  [/^packages\/agentplane\/src\/cli\/run-cli\.critical\..+\.test\.ts$/],
+);
+
 const CRITICAL_CLI_SUITE = {
+  chunkSize: 2,
+  config: "vitest.config.ts",
+  files: ALL_CRITICAL_CLI_FILES.filter(
+    (filePath) => !AGENT_EFFICIENCY_QUALIFICATION_PATTERN.test(filePath),
+  ),
+  maxWorkers: "4",
+  pool: "forks",
+  testTimeout: "120000",
+  hookTimeout: "120000",
+};
+
+const AGENT_EFFICIENCY_QUALIFICATION_SUITE = {
   chunkSize: 1,
   config: "vitest.config.ts",
-  files: discoverTestFiles(
-    ["packages/agentplane/src/cli"],
-    [/^packages\/agentplane\/src\/cli\/run-cli\.critical\..+\.test\.ts$/],
+  files: ALL_CRITICAL_CLI_FILES.filter((filePath) =>
+    AGENT_EFFICIENCY_QUALIFICATION_PATTERN.test(filePath),
   ),
   maxWorkers: "4",
   pool: "forks",
@@ -378,11 +397,13 @@ const V07_CONTEXT_FILES = [
   "packages/agentplane/src/commands/context/search.fts5.unit.test.ts",
   "packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts",
   "packages/agentplane/src/runner/context/task-context.test.ts",
+  "packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts",
   "packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts",
 ];
 
 const V07_SUPERVISOR_FILES = [
   "packages/core/src/runner/supervisor-execution-episode.test.ts",
+  "packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts",
   "packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts",
   "packages/agentplane/src/commands/shared/workflow-supervisor.test.ts",
   "packages/agentplane/src/commands/shared/workflow-step.test.ts",
@@ -391,6 +412,7 @@ const V07_SUPERVISOR_FILES = [
   "packages/agentplane/src/commands/task/direct-task-supervisor.test.ts",
   "packages/agentplane/src/commands/task/branch-task-supervisor.test.ts",
   "packages/agentplane/src/commands/task/agent-action-packet.test.ts",
+  "packages/agentplane/src/commands/task/roadmap-stage-timing.test.ts",
   "packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts",
   "packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts",
   "packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts",
@@ -423,6 +445,7 @@ const V07_HOSTED_FILES = [
 ];
 
 export const VITEST_SUITES = {
+  "agent-efficiency-qualification": AGENT_EFFICIENCY_QUALIFICATION_SUITE,
   "backend-critical": {
     files: BACKEND_CRITICAL_FILES,
     maxWorkers: "4",
@@ -574,7 +597,7 @@ const CLI_HELP_DISCOVERY_PATTERNS = [
 
 const CLI_CORE_DISCOVERY_PATTERNS = [
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.test\.ts$/,
-  /^packages\/agentplane\/src\/cli\/run-cli\.core\.(?:boot|branch-meta(?:\..+)?|misc|pr-flow(?:\..+)?)\.test\.ts$/,
+  /^packages\/agentplane\/src\/cli\/run-cli\.core\.(?:boot|branch-meta(?:\..+)?|misc|pr-flow(?:\..+)?|task-supervisor-budget-epoch)\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.lifecycle(?:\..+)?\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.tasks(?:\..+)?\.test\.ts$/,
 ];
@@ -697,7 +720,6 @@ const PROMPT_MODULES_TEST_FILES = [
   "packages/agentplane/src/runtime/prompt-modules/model.test.ts",
   "packages/agentplane/src/runtime/prompt-modules/mutations.test.ts",
   "packages/agentplane/src/runtime/prompt-modules/registry.test.ts",
-  "packages/agentplane/src/runtime/prompt-modules/gpt55-contract.test.ts",
 ];
 
 const EVALUATOR_TEST_FILES = [

@@ -670,6 +670,14 @@ describe("runCli task advance blocked results", { timeout: 180_000 }, () => {
     if (!blockedTask) throw new Error("expected blocked task in its authoritative checkout");
     const pending = parseTaskScopeExtensionRequestState(blockedTask);
     if (!pending) throw new Error("expected pending scope extension request");
+    const issuedWorkOrder = JSON.parse(
+      await readFile(
+        path.join(issued.exchange!.directory, issued.exchange!.work_order_ref),
+        "utf8",
+      ),
+    ) as { task: { work_item_id?: string | null } };
+    expect(pending.work_item_id).not.toBeNull();
+    expect(pending.work_item_id).toBe(issuedWorkOrder.task.work_item_id ?? null);
     const baseCommand = await loadCommandContext({ cwd: root, rootOverride: root });
     const authorizedDecision = await buildTaskRouteDecision({
       ctx: baseCommand,

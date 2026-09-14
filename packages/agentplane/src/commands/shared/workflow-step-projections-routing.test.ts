@@ -190,4 +190,61 @@ describe("WorkflowStep routing projections", () => {
       exactArgv: null,
     });
   });
+
+  it("synchronizes an exact plan-bound base before the implementation episode", () => {
+    const expectedBaseSha = "2222222222222222222222222222222222222222";
+    const { step, packet } = executionPacket(
+      routeState({
+        branchBaseSync: {
+          state: "ready",
+          workItemId: "sync-base",
+          branch: taskBranch,
+          baseBranch: "main",
+          expectedHeadSha: resume.head_sha,
+          expectedBaseSha,
+        },
+      }),
+    );
+
+    expect(step).toMatchObject({
+      kind: "cli_operation",
+      id: "task.branch.sync_base",
+      authoritativeCheckout: "task_worktree",
+      operation: {
+        params: {
+          taskId: task.id,
+          branch: taskBranch,
+          baseBranch: "main",
+          expectedHeadSha: resume.head_sha,
+          expectedBaseSha,
+        },
+        triggersGitHooks: true,
+      },
+    });
+    expect(packet).toMatchObject({
+      actionKind: "local_command",
+      safeToMutate: true,
+      mutationPathHint: taskWorktreePath,
+      exactArgv: ["agentplane", "task", "run", task.id, "--json"],
+    });
+  });
+
+  it("fails closed when a ready WorkItem has an invalid base synchronization request", () => {
+    const { step, packet } = executionPacket(
+      routeState({
+        branchBaseSync: {
+          state: "invalid",
+          workItemId: "sync-base",
+          reason: "requested base SHA no longer matches main",
+        },
+      }),
+    );
+
+    expect(step).toMatchObject({
+      kind: "terminal",
+      id: "terminal.task_branch_base_sync",
+      outcome: { type: "repair_required" },
+    });
+    expect(packet).toMatchObject({ safeToMutate: false, exactArgv: null });
+  });
 });

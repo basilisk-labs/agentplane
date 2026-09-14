@@ -7,7 +7,6 @@ vi.mock("node:fs/promises", { spy: true });
 vi.mock("@agentplaneorg/core/git", { spy: true });
 
 import type { TaskData } from "../../backends/task-backend.js";
-import { parseCommandArgv } from "../../cli/spec/parse.js";
 import {
   approveTaskPlan,
   createLegacyTaskAggregate,
@@ -41,101 +40,8 @@ import {
   extendBlockedTaskExecutionContract,
   taskWithRebasedExecutionGrant,
 } from "./scope-extend.js";
-import { taskScopeExtendSpec } from "./scope-extend.command.js";
 import { buildTaskStatusTransition } from "./shared/workflow-transition-service.js";
 import { projectTaskCentricCompatibilityMutation } from "../../adapters/task-backend/task-centric-backend-projection.js";
-
-const REQUEST_DIGEST = `sha256:${"1".repeat(64)}`;
-const STATE_SCOPE_DIGEST = `sha256:${"2".repeat(64)}`;
-const STATE_FINGERPRINT = `sha256:${"3".repeat(64)}`;
-
-describe("task scope extend command parsing", () => {
-  it.each(
-    [
-      { option: "--state-scope-digest", value: STATE_SCOPE_DIGEST, key: "stateScopeDigest" },
-      { option: "--state-fingerprint", value: STATE_FINGERPRINT, key: "stateFingerprint" },
-    ].flatMap((binding) => [false, true].map((padded) => ({ ...binding, padded }))),
-  )(
-    "preserves scalar $option after normalization (padded=$padded)",
-    ({ option, value, key, padded }) => {
-      expect(
-        parseCommandArgv(taskScopeExtendSpec, [
-          "T-1",
-          "--scope-root",
-          "packages/agentplane",
-          "--request-digest",
-          REQUEST_DIGEST,
-          option,
-          padded ? `  ${value}  ` : value,
-          "--by",
-          "USER",
-        ]),
-      ).toMatchObject({
-        parsed: {
-          taskId: "T-1",
-          scopeRoots: ["packages/agentplane"],
-          requestDigest: REQUEST_DIGEST,
-          by: "USER",
-          [key]: value,
-        },
-      });
-    },
-  );
-
-  it("continues to reject a missing state binding", () => {
-    const base = [
-      "T-1",
-      "--scope-root",
-      "packages/agentplane",
-      "--request-digest",
-      REQUEST_DIGEST,
-      "--by",
-      "USER",
-    ];
-
-    expect(() => parseCommandArgv(taskScopeExtendSpec, base)).toThrow(
-      "One of --state-scope-digest or --state-fingerprint is required.",
-    );
-  });
-
-  it.each(["--state-scope-digest", "--state-fingerprint"] as const)(
-    "treats whitespace-only %s as missing",
-    (option) => {
-      expect(() =>
-        parseCommandArgv(taskScopeExtendSpec, [
-          "T-1",
-          "--scope-root",
-          "packages/agentplane",
-          "--request-digest",
-          REQUEST_DIGEST,
-          option,
-          "   ",
-          "--by",
-          "USER",
-        ]),
-      ).toThrow("One of --state-scope-digest or --state-fingerprint is required.");
-    },
-  );
-
-  it.each(["--state-scope-digest", "--state-fingerprint"] as const)(
-    "continues to reject malformed %s",
-    (option) => {
-      const base = [
-        "T-1",
-        "--scope-root",
-        "packages/agentplane",
-        "--request-digest",
-        REQUEST_DIGEST,
-        "--by",
-        "USER",
-      ];
-
-      expect(() =>
-        parseCommandArgv(taskScopeExtendSpec, [...base, option, "sha256:not-a-digest"]),
-      ).toThrow(`${option} must be an exact sha256:<64 lowercase hex> digest.`);
-    },
-  );
-});
 
 const NOW = "2026-08-18T01:00:00.000Z";
 
@@ -297,12 +203,33 @@ function fixture(
   return { command, pending, task };
 }
 
+function taskContractNoOp(workItemId: string | null, activeState = "READY", optionalLater = false) {
+  const noOp = fixture(
+    {},
+    { scope_roots: ["docs/releases"], repository_effects: ["documentation"] },
+  );
+  noOp.pending.work_item_id = workItemId;
+  const aggregate = structuredClone(taskCentricAggregate(noOp.task.id, false, optionalLater));
+  const active = aggregate.current_plan!.proposal.work_items.work_items.find(
+    (item) => item.id === "active",
+  )!;
+  active.scope_roots = [];
+  active.resource_claims = [];
+  aggregate.work_items.active!.state = activeState;
+  noOp.task.extensions = {
+    ...withTaskCentricAggregate(noOp.task.extensions, aggregate),
+    [TASK_SCOPE_EXTENSION_REQUEST_KEY]: noOp.pending,
+  };
+  return noOp;
+}
+
 describe("blocked task execution scope extension", () => {
   it.each(["valid", "digest", "receipt", "scope", "approval", "verification", "task", "plan"])(
     "recovers only an applied scope receipt without relaxing generic revision checks (%s)",
     async (variant) => {
       const { command, pending, task } = fixture();
-      const aggregate = taskCentricAggregate(task.id);
+      pending.work_item_id = "active";
+      const aggregate = taskCentricAggregate(task.id, true);
       task.revision = aggregate.revision;
       task.extensions = withTaskCentricAggregate(task.extensions, {
         ...aggregate,
@@ -636,10 +563,10 @@ describe("blocked task execution scope extension", () => {
       }),
     ).toThrow("exactly one schedulable WorkItem");
   });
-
   it("creates an approved plan revision for only the selected task-centric WorkItem", () => {
     const { command, pending, task } = fixture();
-    const aggregate = taskCentricAggregate(task.id);
+    const aggregate = structuredClone(taskCentricAggregate(task.id, true));
+    aggregate.work_items.active!.state = "REWORK_READY";
     task.extensions = {
       ...withTaskCentricAggregate(task.extensions, aggregate),
       [TASK_SCOPE_EXTENSION_REQUEST_KEY]: pending,
@@ -954,6 +881,79 @@ describe("blocked task execution scope extension", () => {
         }),
       ).toThrow(testCase.message);
     }
+  });
+
+  it("extends the exact schedulable WorkItem when the task contract already has the scope", () => {
+    const noOp = taskContractNoOp("active");
+
+    const executionContract = extendBlockedTaskExecutionContract({
+      command: noOp.command,
+      task: noOp.task,
+      scope_roots: noOp.pending.request.scope_roots,
+      repository_effects: noOp.pending.request.repository_effects,
+      request_digest: noOp.pending.request_digest,
+      by: "USER",
+    });
+    const updated = applyApprovedTaskScopeExtension({
+      task: noOp.task,
+      executionContract,
+      pending: noOp.pending,
+      scopeRoots: noOp.pending.request.scope_roots,
+      repositoryEffects: noOp.pending.request.repository_effects,
+      by: "USER",
+      now: NOW,
+    });
+    const nextPlan = taskCentricAggregateFromExtensions(updated.extensions)?.current_plan;
+    const nextActive = nextPlan?.proposal.work_items.work_items.find(
+      (item) => item.id === "active",
+    );
+
+    expect(executionContract.declaration.scope_roots).toEqual(
+      noOp.task.execution_contract?.declaration.scope_roots,
+    );
+    expect(nextActive?.scope_roots).toEqual(["docs/releases"]);
+    expect(nextActive?.resource_claims).toContainEqual({
+      kind: "path",
+      resource: "docs/releases",
+      mode: "write",
+    });
+  });
+
+  it.each([
+    [null, "READY"],
+    ["missing", "READY"],
+    ["active", "BLOCKED"],
+  ] as const)(
+    "rejects a task-contract no-op without an exact schedulable WorkItem delta (%s, %s)",
+    (workItemId, state) => {
+      const noOp = taskContractNoOp(workItemId, state);
+
+      expect(() =>
+        extendBlockedTaskExecutionContract({
+          command: noOp.command,
+          task: noOp.task,
+          scope_roots: noOp.pending.request.scope_roots,
+          repository_effects: noOp.pending.request.repository_effects,
+          request_digest: noOp.pending.request_digest,
+          by: "USER",
+        }),
+      ).toThrow(/must add a new scope root or repository effect/u);
+    },
+  );
+
+  it("rejects a WorkItem-only delta after every required WorkItem is completed", () => {
+    const noOp = taskContractNoOp("later", "COMPLETED", true);
+
+    expect(() =>
+      extendBlockedTaskExecutionContract({
+        command: noOp.command,
+        task: noOp.task,
+        scope_roots: noOp.pending.request.scope_roots,
+        repository_effects: noOp.pending.request.repository_effects,
+        request_digest: noOp.pending.request_digest,
+        by: "USER",
+      }),
+    ).toThrow(/must add a new scope root or repository effect/u);
   });
 
   it("rejects unsafe roots and no-op extensions", () => {

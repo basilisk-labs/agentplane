@@ -29,9 +29,9 @@ function budget(overrides: Partial<SupervisorExecutionBudget> = {}): SupervisorE
   return {
     max_episodes: 3,
     max_agent_runs: 2,
-    max_input_tokens: 100,
-    max_output_tokens: 100,
-    max_total_tokens: 200,
+    max_input_tokens: null,
+    max_output_tokens: null,
+    max_total_tokens: null,
     max_wall_time_ms: 10_000,
     max_changed_files: 4,
     max_diff_lines: 40,

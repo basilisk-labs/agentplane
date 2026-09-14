@@ -23,6 +23,11 @@ import {
 } from "../shared/supervisor-execution-episode.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
 import { cmdTaskAdd } from "../workflow.js";
+import {
+  replaceCodexWithFailure,
+  runEvaluatorCliInSeparateProcess,
+  waitForFileText,
+} from "./evaluator-execute-subprocess.testkit.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -120,7 +125,8 @@ async function installFakeCodex(root: string): Promise<string> {
     "  if (!evidence) process.exit(1);",
     "  const invocationLog = process.env.AGENTPLANE_FAKE_CODEX_INVOCATIONS;",
     "  if (invocationLog) fs.appendFileSync(invocationLog, 'provider-started\\n');",
-    "  const result = { schema_version: 1, kind: 'evaluator_result', evaluator_id: 'recovery-context', verdict: 'pass', findings: [{ id: 'fixture-pass', severity: 'low', summary: 'Fixture verifies the persisted EVALUATOR result path.', broken_invariant: 'Pass reviews require one evidence-backed finding.', evidence_refs: [{ path: evidence.path }] }], missing_tests: [], hidden_assumptions: [] };",
+    "  const verdict = process.env.AGENTPLANE_FAKE_CODEX_VERDICT ?? 'pass';",
+    "  const result = { schema_version: 1, kind: 'evaluator_result', evaluator_id: 'recovery-context', verdict, findings: [{ id: 'fixture-pass', severity: 'low', summary: 'Fixture verifies the persisted EVALUATOR result path.', broken_invariant: 'Pass reviews require one evidence-backed finding.', evidence_refs: [{ path: evidence.path }] }], missing_tests: [], hidden_assumptions: [], ...(verdict === 'pass' ? {} : { recovery_context: 'Should the owner accept this explicit decision boundary?' }) };",
     "  const complete = () => {",
     "    process.stdout.write(JSON.stringify({ type: 'session.started' }) + '\\n');",
     "    process.stdout.write(JSON.stringify({ type: 'item.completed', item: { type: 'agent_message', text: JSON.stringify(result) } }) + '\\n');",
@@ -136,19 +142,6 @@ async function installFakeCodex(root: string): Promise<string> {
   await writeFile(command, source, "utf8");
   await chmod(command, 0o755);
   return bin;
-}
-
-async function replaceCodexWithFailure(fakeBin: string, delayMs = 0): Promise<void> {
-  const source = [
-    "#!/usr/bin/env node",
-    "const fs = require('node:fs');",
-    "const invocationLog = process.env.AGENTPLANE_FAKE_CODEX_INVOCATIONS;",
-    "if (invocationLog) fs.appendFileSync(invocationLog, 'provider-started\\n');",
-    `setTimeout(() => process.exit(99), ${delayMs});`,
-    "",
-  ].join("\n");
-  await writeFile(path.join(fakeBin, "codex"), source, "utf8");
-  await chmod(path.join(fakeBin, "codex"), 0o755);
 }
 
 async function runWithFakeCodex(
@@ -179,59 +172,6 @@ async function runWithFakeCodex(
     if (previous === undefined) delete process.env.PATH;
     else process.env.PATH = previous;
   }
-}
-
-async function runCliInSeparateProcess(opts: {
-  root: string;
-  taskId: string;
-  fakeBin: string;
-  executeArgs?: string[];
-  env?: Record<string, string>;
-}): Promise<{ code: number; stdout: string; stderr: string }> {
-  const cli = path.resolve(process.cwd(), "packages/agentplane/src/cli.ts");
-  const args = [
-    "--bun",
-    cli,
-    "evaluator",
-    "execute",
-    opts.taskId,
-    ...(opts.executeArgs ?? []),
-    "--json",
-    "--root",
-    opts.root,
-  ];
-  return await new Promise((resolve, reject) => {
-    execFile(
-      "bun",
-      args,
-      {
-        cwd: process.cwd(),
-        env: {
-          ...process.env,
-          PATH: `${opts.fakeBin}${path.delimiter}${process.env.PATH ?? ""}`,
-          ...opts.env,
-        },
-        maxBuffer: 1024 * 1024,
-      },
-      (error, stdout, stderr) => {
-        if (error && typeof error.code !== "number") {
-          reject(error instanceof Error ? error : new Error("subprocess execution failed"));
-          return;
-        }
-        resolve({ code: typeof error?.code === "number" ? error.code : 0, stdout, stderr });
-      },
-    );
-  });
-}
-
-async function waitForFileText(filePath: string, expected: string): Promise<void> {
-  const deadline = Date.now() + 30_000;
-  while (Date.now() < deadline) {
-    const text = await readFile(filePath, "utf8").catch(() => "");
-    if (text.includes(expected)) return;
-    await new Promise<void>((resolve) => setTimeout(resolve, 20));
-  }
-  throw new Error(`Timed out waiting for ${JSON.stringify(expected)} in ${filePath}`);
 }
 
 describe("evaluator execute supervisor episode", () => {
@@ -301,6 +241,52 @@ describe("evaluator execute supervisor episode", () => {
       required: true,
     });
     expect(verificationEvidence?.sha256).toMatch(/^sha256:[a-f0-9]{64}$/u);
+  });
+
+  it("applies human_review and preserves its terminal supervisor stop", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202607280000-EE13";
+    await addTask(root, taskId);
+    await commitTarget(root);
+    const fakeBin = await installFakeCodex(root);
+    const previousVerdict = process.env.AGENTPLANE_FAKE_CODEX_VERDICT;
+    process.env.AGENTPLANE_FAKE_CODEX_VERDICT = "human_review";
+    let execution;
+    try {
+      execution = await runWithFakeCodex(root, taskId, fakeBin);
+    } finally {
+      if (previousVerdict === undefined) delete process.env.AGENTPLANE_FAKE_CODEX_VERDICT;
+      else process.env.AGENTPLANE_FAKE_CODEX_VERDICT = previousVerdict;
+    }
+
+    expect(execution.code, execution.stderr).toBe(0);
+    expect(JSON.parse(execution.stdout)).toMatchObject({
+      verdict: "human_review",
+      supervisor_episode: {
+        status: "stopped",
+        cursor: { phase: "stopped" },
+        stop: { reason: "human_review" },
+      },
+    });
+    const stored = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(stored.frontmatter.quality_review).toMatchObject({
+      state: "human_review",
+      updated_by: "EVALUATOR",
+    });
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    const persisted = validateSupervisorExecutionEpisodeJournal(
+      await createSupervisorEpisodeStore(journalPath).read(),
+    );
+    expect(persisted).toMatchObject({
+      status: "stopped",
+      cursor: { phase: "stopped" },
+      stop: { reason: "human_review" },
+      operations: [{ status: "completed" }],
+    });
   });
 
   it("applies a completed EVALUATOR result before preserving its terminal budget stop", async () => {
@@ -627,9 +613,23 @@ describe("evaluator execute supervisor episode", () => {
       status: "stopped",
       stop: { reason: "operation_failed" },
       cursor: { phase: "stopped" },
-      usage: { episodes: 1, agent_runs: 1 },
-      operations: [{ role: "EVALUATOR", kind: "evaluator_episode", status: "failed" }],
+      usage: { episodes: 1, agent_runs: 1, token_observed_agent_runs: 1 },
+      operations: [
+        {
+          role: "EVALUATOR",
+          kind: "evaluator_episode",
+          status: "failed",
+          provider_usage: {
+            provider: "codex",
+            thread_id: "failed-thread",
+            turn_id: "failed-turn",
+          },
+        },
+      ],
     });
+    expect(recorded.operations[0]?.provider_usage?.work_order_id).toMatch(
+      /^evaluator-work-order-/u,
+    );
     expect(recorded.usage.wall_time_ms).toBeGreaterThan(0);
     expect(JSON.stringify(recorded)).not.toContain("provider diagnostics");
 
@@ -956,7 +956,7 @@ describe("evaluator execute supervisor episode", () => {
       AGENTPLANE_FAKE_CODEX_INVOCATIONS: invocationLog,
       AGENTPLANE_FAKE_CODEX_DELAY_MS: "2000",
     };
-    const winner = runCliInSeparateProcess({
+    const winner = runEvaluatorCliInSeparateProcess({
       root,
       taskId,
       fakeBin,
@@ -964,7 +964,7 @@ describe("evaluator execute supervisor episode", () => {
       env: childEnv,
     });
     await waitForFileText(invocationLog, "provider-started\n");
-    const loser = runCliInSeparateProcess({
+    const loser = runEvaluatorCliInSeparateProcess({
       root,
       taskId,
       fakeBin,

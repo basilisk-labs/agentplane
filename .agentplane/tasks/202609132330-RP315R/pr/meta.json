@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202609132330-RP315R/repair-task-state-validation-for-immutable-quali",
+  "created_at": "2026-09-13T23:35:19.456Z",
+  "diffstat_sha256": "sha256:559b8307c9c36e73f7413dfcfee6287e3989806894a7c0c2a797cf733b1b5286",
+  "last_verified_at": "2026-09-14T00:15:34.469Z",
+  "last_verified_diffstat_sha256": "sha256:559b8307c9c36e73f7413dfcfee6287e3989806894a7c0c2a797cf733b1b5286",
+  "pr_number": 5950,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5950",
+  "pre_merge_closure": {
+    "basis_commit": "b99c1781643820997da7fba19000c9435b566e3f",
+    "branch": "task/202609132330-RP315R/repair-task-state-validation-for-immutable-quali",
+    "pr_number": 5950,
+    "recorded_at": "2026-09-14T00:16:46.858Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202609132330-RP315R",
+  "updated_at": "2026-09-13T23:45:27.430Z",
+  "verify": {
+    "status": "pass"
+  }
+}

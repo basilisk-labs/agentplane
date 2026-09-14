@@ -1,0 +1,48 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check f733af763cd87854934efe004f5bfbd24e1e706b..44118fcf0d32825e963dc7db0504901753c4e9d5",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB f733af763cd87854934efe004f5bfbd24e1e706b..44118fcf0d32825e963dc7db0504901753c4e9d5",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202609121424-T83XJA/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609121424-T83XJA/pr/github-body.md",
+        "M\t.agentplane/tasks/202609121424-T83XJA/pr/meta.json",
+        "M\t.agentplane/tasks/202609121424-T83XJA/pr/review.md",
+        "M\tpackages/core/src/runner/supervisor-execution-episode-timing.test.ts",
+        "M\tpackages/core/src/runner/supervisor-execution-episode.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "f733af763cd87854934efe004f5bfbd24e1e706b",
+  "implementation_commit": "44118fcf0d32825e963dc7db0504901753c4e9d5",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [],
+    "classification": [],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609121424-T83XJA"
+}

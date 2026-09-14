@@ -40,11 +40,16 @@ type EvaluatorEpisodeProviderResult = {
   stdout_bytes: number;
   stderr_bytes: number;
   provider_usage?: CodexProviderUsage | null;
+  provider_usage_status?: "observed" | "partial" | "unavailable";
+  provider_thread_id?: string | null;
+  provider_turn_id?: string | null;
 };
 
 type EvaluatorProviderFailureKind =
   | "nonzero_exit"
+  | "malformed_structured_result"
   | "missing_structured_result"
+  | "provider_error"
   | "stdin_write_failure"
   | "stderr_limit"
   | "stdout_limit"
@@ -69,6 +74,34 @@ class EvaluatorProviderFailure extends Error {
   }
 }
 
+type EvaluatorProviderFailureObservation = {
+  started_at: string;
+  ended_at: string;
+  stdout_bytes: number;
+  stderr_bytes: number;
+  provider_usage_status: "observed" | "partial" | "unavailable";
+  provider_usage: CodexProviderUsage | null;
+  provider_thread_id: string | null;
+  provider_turn_id: string | null;
+};
+
+class ObservedEvaluatorProviderFailure extends Error {
+  readonly kind: EvaluatorProviderFailureKind | "provider_error";
+  readonly exit_code: number | null;
+  readonly signal: string | null;
+
+  constructor(
+    readonly failure: Error,
+    readonly observation: EvaluatorProviderFailureObservation,
+  ) {
+    super(failure.message);
+    this.name = "ObservedEvaluatorProviderFailure";
+    this.kind = failure instanceof EvaluatorProviderFailure ? failure.kind : "provider_error";
+    this.exit_code = failure instanceof EvaluatorProviderFailure ? failure.exit_code : null;
+    this.signal = failure instanceof EvaluatorProviderFailure ? failure.signal : null;
+  }
+}
+
 export type EvaluatorEpisodeProvider = (
   invocation: EvaluatorEpisodeInvocation,
 ) => Promise<EvaluatorEpisodeProviderResult>;
@@ -85,9 +118,105 @@ export type EvaluatorEpisodeReceipt = {
   stdout_bytes: number;
   stderr_bytes: number;
   provider_usage: CodexProviderUsage | null;
+  provider_usage_status?: "observed" | "partial" | "unavailable";
+  provider_thread_id?: string | null;
+  provider_turn_id?: string | null;
   workspace_state: "unchanged";
   result_sha256: `sha256:${string}`;
 };
+
+export type EvaluatorProviderFailureReceipt = {
+  schema_version: 1;
+  kind: "evaluator_provider_failure_receipt";
+  work_order_id: string;
+  provider: "codex";
+  authority: { sandbox: "read-only"; writable_roots: [] };
+  argv: string[];
+  started_at: string;
+  ended_at: string;
+  stdout_bytes: number;
+  stderr_bytes: number;
+  provider_usage: CodexProviderUsage | null;
+  provider_usage_status: "observed" | "partial" | "unavailable";
+  provider_thread_id: string | null;
+  provider_turn_id: string | null;
+  workspace_state: "unchanged";
+  failure: ReturnType<typeof evaluatorProviderFailureRecord>;
+};
+
+export class EvaluatorEpisodeFailureError extends CliError {
+  constructor(
+    readonly receipt: EvaluatorProviderFailureReceipt,
+    message?: string,
+  ) {
+    super({
+      code: "E_RUNTIME",
+      message:
+        message ??
+        "Codex evaluator provider failed before returning a typed result " +
+          `(classification=${receipt.failure.classification} exit_code=${receipt.failure.exit_code ?? "unknown"} signal=${receipt.failure.signal ?? "none"}). ` +
+          "The typed result was not applied.",
+    });
+  }
+}
+
+function providerFailureObservation(opts: {
+  failure: unknown;
+  result: EvaluatorEpisodeProviderResult | null;
+  message?: string;
+}): EvaluatorProviderFailureObservation {
+  if (opts.failure instanceof ObservedEvaluatorProviderFailure) {
+    return opts.failure.observation;
+  }
+  if (opts.result) {
+    return {
+      started_at: opts.result.started_at,
+      ended_at: opts.result.ended_at,
+      stdout_bytes: opts.result.stdout_bytes,
+      stderr_bytes: opts.result.stderr_bytes,
+      provider_usage_status:
+        opts.result.provider_usage_status ??
+        (opts.result.provider_usage === null ? "unavailable" : "partial"),
+      provider_usage: opts.result.provider_usage ?? null,
+      provider_thread_id:
+        opts.result.provider_thread_id ?? opts.result.provider_usage?.thread_id ?? null,
+      provider_turn_id: opts.result.provider_turn_id ?? opts.result.provider_usage?.turn_id ?? null,
+    };
+  }
+  const now = new Date().toISOString();
+  return {
+    started_at: now,
+    ended_at: now,
+    stdout_bytes: 0,
+    stderr_bytes: 0,
+    provider_usage_status: "unavailable",
+    provider_usage: null,
+    provider_thread_id: null,
+    provider_turn_id: null,
+  };
+}
+
+async function persistEvaluatorProviderFailure(opts: {
+  prepared: PreparedEvaluatorReview;
+  invocation: EvaluatorEpisodeInvocation;
+  failure: unknown;
+  result: EvaluatorEpisodeProviderResult | null;
+  message?: string;
+}): Promise<never> {
+  const receipt: EvaluatorProviderFailureReceipt = {
+    schema_version: 1,
+    kind: "evaluator_provider_failure_receipt",
+    work_order_id: opts.invocation.work_order_id,
+    provider: "codex",
+    authority: { sandbox: "read-only", writable_roots: [] },
+    argv: opts.invocation.argv,
+    ...providerFailureObservation({ failure: opts.failure, result: opts.result }),
+    workspace_state: "unchanged",
+    failure: evaluatorProviderFailureRecord(opts.failure),
+  };
+  await writeEvaluatorReceipt({ prepared: opts.prepared, receipt });
+  throw new EvaluatorEpisodeFailureError(receipt, opts.message);
+}
 
 function sha256(value: string): `sha256:${string}` {
   return `sha256:${createHash("sha256").update(value, "utf8").digest("hex")}`;
@@ -152,12 +281,13 @@ export function evaluatorProviderFailureRecord(error: unknown): {
   exit_code: number | null;
   signal: string | null;
 } {
-  if (error instanceof EvaluatorProviderFailure) {
+  const failure = error instanceof ObservedEvaluatorProviderFailure ? error.failure : error;
+  if (failure instanceof EvaluatorProviderFailure) {
     return {
       kind: "evaluator_provider_failure",
-      classification: error.kind,
-      exit_code: error.exit_code,
-      signal: error.signal,
+      classification: failure.kind,
+      exit_code: failure.exit_code,
+      signal: failure.signal,
     };
   }
   return {
@@ -247,10 +377,30 @@ export const executeCodexEvaluatorEpisode: EvaluatorEpisodeProvider = async (inv
       if (settled) return;
       settled = true;
       if (timeout !== null) clearTimeout(timeout);
-      if (error) reject(error);
-      else if (value) resolve(value);
+      if (error) {
+        const usage = collector.readUsageObservation();
+        reject(
+          new ObservedEvaluatorProviderFailure(error, {
+            started_at: startedAt,
+            ended_at: new Date().toISOString(),
+            stdout_bytes: stdoutBytes,
+            stderr_bytes: stderrBytes,
+            provider_usage_status: usage.status,
+            provider_usage: usage.usage,
+            provider_thread_id: usage.thread_id,
+            provider_turn_id: usage.turn_id,
+          }),
+        );
+      } else if (value) resolve(value);
     };
-    child.on("error", (error) => finish(error));
+    child.on("error", (error) =>
+      finish(
+        new EvaluatorProviderFailure({
+          kind: "provider_error",
+          message: error.message,
+        }),
+      ),
+    );
     child.stdout.on("data", (chunk: Buffer) => {
       stdoutBytes += chunk.length;
       if (stdoutBytes > MAX_PROVIDER_STDOUT_BYTES) {
@@ -318,6 +468,7 @@ export const executeCodexEvaluatorEpisode: EvaluatorEpisodeProvider = async (inv
           throw new EvaluatorProviderFailure({ kind: "missing_structured_result" });
         }
         const providerUsage = collector.readUsage();
+        const usageObservation = collector.readUsageObservation();
         finish(undefined, {
           raw_result: JSON.parse(rawText) as unknown,
           started_at: startedAt,
@@ -325,9 +476,19 @@ export const executeCodexEvaluatorEpisode: EvaluatorEpisodeProvider = async (inv
           stdout_bytes: stdoutBytes,
           stderr_bytes: stderrBytes,
           provider_usage: providerUsage,
+          provider_usage_status: usageObservation.status,
+          provider_thread_id: usageObservation.thread_id,
+          provider_turn_id: usageObservation.turn_id,
         });
       } catch (error) {
-        finish(error instanceof Error ? error : new Error(String(error)));
+        finish(
+          error instanceof EvaluatorProviderFailure
+            ? error
+            : new EvaluatorProviderFailure({
+                kind: "malformed_structured_result",
+                message: error instanceof Error ? error.message : String(error),
+              }),
+        );
       }
     });
     child.stdin.end(invocation.prompt);
@@ -357,28 +518,36 @@ export async function executePreparedEvaluatorEpisode(opts: {
   const after = await readWorkspaceState(invocation.repository_root);
   assertUnchangedWorkspace({ before, after });
   if (providerFailure !== null || providerResult === null) {
-    const failure = evaluatorProviderFailureRecord(providerFailure);
-    throw new CliError({
-      code: "E_RUNTIME",
-      message:
-        "Codex evaluator provider failed before returning a typed result " +
-        `(classification=${failure.classification} exit_code=${failure.exit_code ?? "unknown"} signal=${failure.signal ?? "none"}). ` +
-        "The typed result was not applied.",
+    return await persistEvaluatorProviderFailure({
+      prepared: opts.prepared,
+      invocation,
+      failure: providerFailure,
+      result: providerResult,
     });
   }
-  const result = validateStrictEvaluatorResult(providerResult.raw_result);
-  if (result.evaluator_id !== opts.prepared.work_order.evaluator.id) {
-    throw new CliError({
-      code: "E_VALIDATION",
-      message: "Evaluator episode result id does not match the prepared work order.",
-    });
-  }
-  assertResultEvidenceIsFrozen({ workOrder: opts.prepared.work_order, result });
-  if (result.verdict !== "pass" && !result.recovery_context) {
-    throw new CliError({
-      code: "E_VALIDATION",
-      message:
+  let result: EvaluatorSgrResult;
+  try {
+    result = validateStrictEvaluatorResult(providerResult.raw_result);
+    if (result.evaluator_id !== opts.prepared.work_order.evaluator.id) {
+      throw new Error("Evaluator episode result id does not match the prepared work order.");
+    }
+    assertResultEvidenceIsFrozen({ workOrder: opts.prepared.work_order, result });
+    if (result.verdict !== "pass" && !result.recovery_context) {
+      throw new Error(
         "Evaluator episode rework, blocked, and human_review results require a bounded recovery_context.",
+      );
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return await persistEvaluatorProviderFailure({
+      prepared: opts.prepared,
+      invocation,
+      failure: new EvaluatorProviderFailure({
+        kind: "malformed_structured_result",
+        message,
+      }),
+      result: providerResult,
+      message,
     });
   }
   const canonicalResult = `${JSON.stringify(result, null, 2)}\n`;
@@ -394,6 +563,13 @@ export async function executePreparedEvaluatorEpisode(opts: {
     stdout_bytes: providerResult.stdout_bytes,
     stderr_bytes: providerResult.stderr_bytes,
     provider_usage: providerResult.provider_usage ?? null,
+    provider_usage_status:
+      providerResult.provider_usage_status ??
+      (providerResult.provider_usage === null ? "unavailable" : "partial"),
+    provider_thread_id:
+      providerResult.provider_thread_id ?? providerResult.provider_usage?.thread_id ?? null,
+    provider_turn_id:
+      providerResult.provider_turn_id ?? providerResult.provider_usage?.turn_id ?? null,
     workspace_state: "unchanged",
     result_sha256: sha256(canonicalResult),
   };
@@ -401,16 +577,16 @@ export async function executePreparedEvaluatorEpisode(opts: {
   // task mutation that applies its verdict. A restart can validate and apply
   // this outcome instead of asking the provider to repeat the evaluation.
   await writeFile(opts.prepared.result_path, canonicalResult, "utf8");
-  await writeEvaluatorEpisodeReceipt({ prepared: opts.prepared, receipt });
+  await writeEvaluatorReceipt({ prepared: opts.prepared, receipt });
   return {
     result,
     receipt,
   };
 }
 
-async function writeEvaluatorEpisodeReceipt(opts: {
+async function writeEvaluatorReceipt(opts: {
   prepared: PreparedEvaluatorReview;
-  receipt: EvaluatorEpisodeReceipt;
+  receipt: EvaluatorEpisodeReceipt | EvaluatorProviderFailureReceipt;
 }): Promise<string> {
   const receiptPath = path.join(
     path.dirname(opts.prepared.work_order_path),

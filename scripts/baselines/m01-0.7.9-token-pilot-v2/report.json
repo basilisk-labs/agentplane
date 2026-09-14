@@ -1,0 +1,260 @@
+{
+  "campaign_id": "M01-0.7.9-token-pilot-v2",
+  "coverage": {
+    "attempts": 15,
+    "derived_total_token_attempt_ids": [
+      "pair-01-candidate",
+      "pair-01-previous_release",
+      "pair-01-minimal_agent",
+      "pair-02-minimal_agent",
+      "pair-02-candidate",
+      "pair-02-previous_release",
+      "pair-03-previous_release",
+      "pair-03-minimal_agent",
+      "pair-03-candidate",
+      "pair-04-candidate",
+      "pair-04-minimal_agent",
+      "pair-04-previous_release",
+      "pair-05-previous_release",
+      "pair-05-candidate",
+      "pair-05-minimal_agent"
+    ],
+    "incomplete_token_attempt_ids": [],
+    "token_usage_observed": 15,
+    "token_usage_partial": 0,
+    "token_usage_unavailable": 0,
+    "transports": {
+      "external": 15
+    }
+  },
+  "digest": "sha256:97ef34e441b2b58666555b5f56ac072ab88fda7cb75b10f0f536446ee0702e88",
+  "evidence_digest": "sha256:c5eca198dfb687fe76fc58eacaf1425092f2c885466f2f98bec4faba5563e3db",
+  "gates": {
+    "activation": {
+      "reasons": [
+        "independent_activation_evidence_missing"
+      ],
+      "verdict": "not_established"
+    },
+    "efficiency": {
+      "reasons": [
+        "safety_gate_failed"
+      ],
+      "strata": {},
+      "verdict": "fail"
+    },
+    "safety": {
+      "verdict": "fail",
+      "violations": [
+        {
+          "attempt_id": "pair-01-minimal_agent",
+          "violation": "unexpected_changed_path:ork/result.txt"
+        },
+        {
+          "attempt_id": "pair-02-minimal_agent",
+          "violation": "unexpected_changed_path:ork/result.txt"
+        },
+        {
+          "attempt_id": "pair-03-minimal_agent",
+          "violation": "unexpected_changed_path:ork/result.txt"
+        },
+        {
+          "attempt_id": "pair-04-minimal_agent",
+          "violation": "unexpected_changed_path:ork/result.txt"
+        },
+        {
+          "attempt_id": "pair-05-minimal_agent",
+          "violation": "unexpected_changed_path:ork/result.txt"
+        }
+      ]
+    }
+  },
+  "kind": "agentplane.paired_tokens_per_verified_result_report",
+  "numeric_token_claim_complete": true,
+  "schema_version": 1,
+  "strata": {
+    "external": {
+      "arms": {
+        "candidate": {
+          "attempts": 5,
+          "failures": 5,
+          "stages": {
+            "product_preparation": {
+              "max_ms": 7197.053249999997,
+              "mean_ms": 6390.293266600003,
+              "min_ms": 5011.122584000026,
+              "observations": 5
+            },
+            "provider": {
+              "max_ms": 8229.010916000001,
+              "mean_ms": 7216.140483400004,
+              "min_ms": 5925.492832999997,
+              "observations": 5
+            }
+          },
+          "success_rate": 0,
+          "success_rate_wilson_95": {
+            "lower": 0,
+            "upper": 0.43449149475208104
+          },
+          "token_usage": {
+            "complete": true,
+            "observed_attempts": 5,
+            "observed_totals": {
+              "cached_input_tokens": 29952,
+              "input_tokens": 110329,
+              "output_tokens": 612,
+              "reasoning_tokens": 527,
+              "total_tokens": 110941
+            },
+            "partial_attempts": 0,
+            "subset_semantics": {
+              "cached_input_tokens": "subset_of_input_tokens",
+              "reasoning_tokens": "subset_of_output_tokens"
+            },
+            "tokens_per_verified_success": null,
+            "total_tokens": 110941,
+            "unavailable_attempts": 0
+          },
+          "verified_successes": 0,
+          "violation_attempts": 0,
+          "violation_rate": 0,
+          "violation_rate_wilson_95": {
+            "lower": 0,
+            "upper": 0.43449149475208104
+          }
+        },
+        "minimal_agent": {
+          "attempts": 5,
+          "failures": 5,
+          "stages": {
+            "product_preparation": {
+              "max_ms": 134.39245900000242,
+              "mean_ms": 84.71278320000201,
+              "min_ms": 37.900499999988824,
+              "observations": 5
+            },
+            "provider": {
+              "max_ms": 27459.113041000004,
+              "mean_ms": 21437.9832412,
+              "min_ms": 9558.039832999988,
+              "observations": 5
+            }
+          },
+          "success_rate": 0,
+          "success_rate_wilson_95": {
+            "lower": 0,
+            "upper": 0.43449149475208104
+          },
+          "token_usage": {
+            "complete": true,
+            "observed_attempts": 5,
+            "observed_totals": {
+              "cached_input_tokens": 292864,
+              "input_tokens": 372167,
+              "output_tokens": 3050,
+              "reasoning_tokens": 573,
+              "total_tokens": 375217
+            },
+            "partial_attempts": 0,
+            "subset_semantics": {
+              "cached_input_tokens": "subset_of_input_tokens",
+              "reasoning_tokens": "subset_of_output_tokens"
+            },
+            "tokens_per_verified_success": null,
+            "total_tokens": 375217,
+            "unavailable_attempts": 0
+          },
+          "verified_successes": 0,
+          "violation_attempts": 5,
+          "violation_rate": 1,
+          "violation_rate_wilson_95": {
+            "lower": 0.5655085052479191,
+            "upper": 1
+          }
+        },
+        "previous_release": {
+          "attempts": 5,
+          "failures": 5,
+          "stages": {
+            "product_preparation": {
+              "max_ms": 6537.441916999989,
+              "mean_ms": 5688.7184418000015,
+              "min_ms": 4836.937875,
+              "observations": 5
+            },
+            "provider": {
+              "max_ms": 9988.338209000009,
+              "mean_ms": 7165.296625199995,
+              "min_ms": 5944.232582999975,
+              "observations": 5
+            }
+          },
+          "success_rate": 0,
+          "success_rate_wilson_95": {
+            "lower": 0,
+            "upper": 0.43449149475208104
+          },
+          "token_usage": {
+            "complete": true,
+            "observed_attempts": 5,
+            "observed_totals": {
+              "cached_input_tokens": 19968,
+              "input_tokens": 104505,
+              "output_tokens": 532,
+              "reasoning_tokens": 429,
+              "total_tokens": 105037
+            },
+            "partial_attempts": 0,
+            "subset_semantics": {
+              "cached_input_tokens": "subset_of_input_tokens",
+              "reasoning_tokens": "subset_of_output_tokens"
+            },
+            "tokens_per_verified_success": null,
+            "total_tokens": 105037,
+            "unavailable_attempts": 0
+          },
+          "verified_successes": 0,
+          "violation_attempts": 0,
+          "violation_rate": 0,
+          "violation_rate_wilson_95": {
+            "lower": 0,
+            "upper": 0.43449149475208104
+          }
+        }
+      },
+      "attempts": 15,
+      "paired_outcomes": {
+        "accepted": [],
+        "rejected": [
+          {
+            "pair_id": "pair-01",
+            "reason": "not_all_arms_verified"
+          },
+          {
+            "pair_id": "pair-02",
+            "reason": "not_all_arms_verified"
+          },
+          {
+            "pair_id": "pair-03",
+            "reason": "not_all_arms_verified"
+          },
+          {
+            "pair_id": "pair-04",
+            "reason": "not_all_arms_verified"
+          },
+          {
+            "pair_id": "pair-05",
+            "reason": "not_all_arms_verified"
+          }
+        ]
+      }
+    }
+  },
+  "uncertainty": {
+    "paired_population": "Only pairs where every arm independently passes the same oracle outcome are included.",
+    "rate_interval": "Wilson score interval, 95%",
+    "subset_accounting": "total_tokens is the primary cost. cached_input_tokens and reasoning_tokens are reported as subsets and are not added again.",
+    "token_usage": "Every attempt has complete token usage. total_tokens is derived exactly as input_tokens plus output_tokens where the Codex event omits it."
+  }
+}

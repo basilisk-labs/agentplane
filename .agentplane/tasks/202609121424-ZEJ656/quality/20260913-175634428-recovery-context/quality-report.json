@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202609121424-ZEJ656",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-13T17:58:02.322Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "592c2bd7e87ec32c6d50e48234f92ec042911194",
+  "blueprint_digest": "e062431b59acd88978a3a9654d5feb31dc03e5953e9b7fbffbba3560975757da",
+  "findings": [
+    "Local verification passes for the evaluated SHA: 2 conservation tests, 10 output-parity tests, 183 related tests, typecheck, schema/template checks, and full local CI. Hosted CI remains an integration prerequisite."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609121424-ZEJ656/verification/20260913175610563-5ac26e94d52e7e95.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

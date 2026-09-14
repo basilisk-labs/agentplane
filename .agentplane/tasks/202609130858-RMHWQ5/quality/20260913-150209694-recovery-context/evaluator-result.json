@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The epoch is restricted to completed or failed telemetry-only budget stops, binds explicit USER authority to the stopped journal and current route fingerprint, preserves lifetime usage, rejects stale or conflicting replay, and keeps measurable supervisor limits active when token limits are disabled.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609130858-RMHWQ5/quality/objects/sha256/86c5e7f7fb0468ae92ab55c699d274f9c979e88bfa56f4036b74e2b221d3768b.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The compatibility candidate now records the advanced command, every emitted option and positional argument, and exact task provenance without changing the immutable compatibility baseline.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609130858-RMHWQ5/quality/objects/sha256/86c5e7f7fb0468ae92ab55c699d274f9c979e88bfa56f4036b74e2b221d3768b.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted integration remains a lifecycle gate and is not established by this semantic review.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609130858-RMHWQ5/quality/objects/sha256/86c5e7f7fb0468ae92ab55c699d274f9c979e88bfa56f4036b74e2b221d3768b.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

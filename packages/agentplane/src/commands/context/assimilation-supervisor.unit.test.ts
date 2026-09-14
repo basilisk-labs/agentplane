@@ -481,7 +481,12 @@ describe("context assimilation supervisor", () => {
       task_id: "202607281900-SUPERV",
       task_revision: 1,
       state_fingerprint_digest: FINGERPRINT,
-      budget: episodeBudget({ max_episodes: 29 }),
+      budget: episodeBudget({
+        max_episodes: 29,
+        max_input_tokens: null,
+        max_output_tokens: null,
+        max_total_tokens: null,
+      }),
       recover_intent: false,
     });
     const calls: string[] = [];
@@ -533,8 +538,21 @@ describe("context assimilation supervisor", () => {
   });
 
   it.each([
-    ["token", episodeBudget({ max_total_tokens: 1 }), { total_tokens: 1 }],
-    ["no-progress", episodeBudget({ max_no_progress_episodes: 1 }), undefined],
+    [
+      "token",
+      episodeBudget({ max_total_tokens: 1 }),
+      { input_tokens: 0, output_tokens: 0, total_tokens: 1 },
+    ],
+    [
+      "no-progress",
+      episodeBudget({
+        max_input_tokens: null,
+        max_output_tokens: null,
+        max_total_tokens: null,
+        max_no_progress_episodes: 1,
+      }),
+      undefined,
+    ],
   ] as const)(
     "refuses a new CURATOR cycle when the shared %s budget is exhausted",
     async (_label, budget, firstUsage) => {

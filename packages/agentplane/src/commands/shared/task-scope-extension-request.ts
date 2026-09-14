@@ -2,7 +2,6 @@ import { createHash } from "node:crypto";
 import path from "node:path";
 import { gitIsAncestor, gitRevParse, gitShowFile } from "@agentplaneorg/core/git";
 import { runProcess } from "@agentplaneorg/core/process";
-
 import {
   validateSupervisorExecutionEpisodeJournal,
   type AgentSemanticResultScopeExtensionRequest,
@@ -20,7 +19,6 @@ import {
   type TaskAggregate,
   type TaskRepositoryEffect,
 } from "@agentplaneorg/core/tasks";
-
 import type { TaskData } from "../../backends/task-backend.js";
 import { resolveCommandGitCommonDir, type CommandContext } from "./task-backend.js";
 import {
@@ -38,9 +36,7 @@ import {
 import { CliError } from "../../shared/errors.js";
 import { isRecord } from "../../shared/guards.js";
 import { projectTaskCentricCompatibilityMutation } from "../../adapters/task-backend/task-centric-backend-projection.js";
-
 export const TASK_SCOPE_EXTENSION_REQUEST_KEY = "agentplane.scope_extension_request";
-
 export function requiresImplementationReworkReopen(opts: {
   purpose: string;
   task_status: string;
@@ -60,19 +56,18 @@ type NormalizedTaskScopeExtensionRequest = {
   repository_effects: TaskRepositoryEffect[];
   rationale: string;
 };
-
 export type TaskScopeExtensionRequestState = {
   schema_version: 1;
   kind: "task_scope_extension_request";
   status: "pending" | "applied";
   transition_id: string;
   blocker_state_fingerprint: string;
+  work_item_id: string | null;
   request_digest: string;
   request: NormalizedTaskScopeExtensionRequest;
   applied_at?: string;
   applied_by?: string;
 };
-
 const REPOSITORY_EFFECTS = new Set<TaskRepositoryEffect>([
   "repository_write",
   "documentation",
@@ -85,7 +80,6 @@ const REPOSITORY_EFFECTS = new Set<TaskRepositoryEffect>([
   "release_metadata",
   "security_boundary",
 ]);
-
 function uniqueSorted<T extends string>(values: readonly T[]): T[] {
   return [...new Set(values)].toSorted();
 }
@@ -143,6 +137,7 @@ export function createTaskScopeExtensionRequestState(opts: {
   request: AgentSemanticResultScopeExtensionRequest;
   transition_id: string;
   state_fingerprint: string;
+  work_item_id?: string | null;
 }): TaskScopeExtensionRequestState {
   const request = normalizeTaskScopeExtensionRequest(opts.request);
   return {
@@ -151,6 +146,7 @@ export function createTaskScopeExtensionRequestState(opts: {
     status: "pending",
     transition_id: opts.transition_id,
     blocker_state_fingerprint: opts.state_fingerprint,
+    work_item_id: opts.work_item_id ?? null,
     request_digest: taskScopeExtensionRequestDigest(request),
     request,
   };
@@ -170,6 +166,10 @@ export function parseTaskScopeExtensionRequestState(
     !/^tr_[0-9a-f]{32}$/u.test(raw.transition_id) ||
     typeof raw.blocker_state_fingerprint !== "string" ||
     !/^sha256:[0-9a-f]{64}$/u.test(raw.blocker_state_fingerprint) ||
+    (raw.work_item_id != null &&
+      (typeof raw.work_item_id !== "string" ||
+        raw.work_item_id.trim().length === 0 ||
+        raw.work_item_id.trim() !== raw.work_item_id)) ||
     typeof raw.request_digest !== "string" ||
     !/^sha256:[0-9a-f]{64}$/u.test(raw.request_digest) ||
     request.schema_version !== 1 ||
@@ -206,6 +206,7 @@ export function parseTaskScopeExtensionRequestState(
       status: raw.status,
       transition_id: raw.transition_id,
       blocker_state_fingerprint: raw.blocker_state_fingerprint,
+      work_item_id: typeof raw.work_item_id === "string" ? raw.work_item_id : null,
       request_digest: raw.request_digest,
       request: normalized,
       ...(typeof raw.applied_at === "string" ? { applied_at: raw.applied_at } : {}),
@@ -292,6 +293,7 @@ function extendTaskCentricWorkItemScope(opts: {
   by: string;
   now: string;
   requestDigest: string;
+  workItemId: string | null;
 }): TaskAggregate | null {
   const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
   const currentPlan = aggregate?.current_plan;
@@ -300,18 +302,25 @@ function extendTaskCentricWorkItemScope(opts: {
     .filter((item) => !item.optional)
     .every((item) => aggregate.work_items[item.id]?.state === "COMPLETED");
   if (allRequiredCompleted) return aggregate;
-  const selected = new WorkItemScheduler(2).select({
-    graph: currentPlan.proposal.work_items,
-    runtime: aggregate.work_items,
-    active_leases: [],
-  });
-  if (selected.length !== 1) {
+  const legacyRework = Object.values(aggregate.work_items).filter(
+    (item) => item.state === "REWORK_READY",
+  );
+  const selected = opts.workItemId
+    ? [{ id: opts.workItemId }]
+    : legacyRework.length === 1
+      ? legacyRework
+      : new WorkItemScheduler(2).select({
+          graph: currentPlan.proposal.work_items,
+          runtime: aggregate.work_items,
+          active_leases: [],
+        });
+  const selectedState = aggregate.work_items[selected[0]?.id ?? ""]?.state;
+  if (selected.length !== 1 || !["PLANNED", "READY", "REWORK_READY"].includes(selectedState ?? ""))
     throw new CliError({
       code: "E_VALIDATION",
       message:
         "Task-centric scope extension requires exactly one schedulable WorkItem for the approved retry unless every required WorkItem is completed.",
     });
-  }
   const selectedId = selected[0]!.id;
   const addedRoots = uniqueSorted(opts.scopeRoots.map((root) => normalizeTaskScopeRoot(root)));
   const workItems = currentPlan.proposal.work_items.work_items.map((item) => {
@@ -378,6 +387,7 @@ export function applyApprovedTaskScopeExtension(opts: {
     by: opts.by,
     now: opts.now,
     requestDigest: opts.pending.request_digest,
+    workItemId: opts.pending.work_item_id,
   });
   const next: TaskData = {
     ...opts.task,

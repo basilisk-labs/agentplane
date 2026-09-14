@@ -1,0 +1,4 @@
+ .../src/commands/task/scope-extend.command.test.ts |  95 +++++++++++
+ .../src/commands/task/scope-extend.test.ts         | 188 ++++++++++-----------
+ .../agentplane/src/commands/task/scope-extend.ts   |  37 +++-
+ 3 files changed, 224 insertions(+), 96 deletions(-)

@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane.m01_campaign_disposition",
+  "campaign_id": "M01-0.7.9-token-pilot-v2",
+  "status": "not_established",
+  "performance_claim": null,
+  "safety_claim": null,
+  "all_assigned_attempts_retained": true,
+  "rerun_decision": "stop",
+  "expansion_decision": "not_run",
+  "reasons": [
+    "The v1 campaign stopped every provider turn with invalid_json_schema before generation.",
+    "The v2 campaign captured complete token usage, but the AgentPlane arms received a PLANNER episode instead of the fixed implementation episode.",
+    "The v2 oracle and launcher parsed tracked porcelain output after trimming its leading status column, so the minimal arm's valid work/result.txt mutation was misclassified.",
+    "No v2 pair has equivalent independently verified outcomes across all three arms.",
+    "Further attempts would require a newly preregistered campaign and are not justified by the fixed pilot rule."
+  ],
+  "future_campaign_requirements": [
+    "The AgentPlane arms must enter the fixed implementation episode instead of stopping after the PLANNER bootstrap.",
+    "The launcher and oracle must parse the two-character porcelain status column before normalizing the tracked path.",
+    "The corrected launcher, oracle, campaign order, and claim policy must be pinned before any new provider attempt.",
+    "A future campaign must use a new campaign identity and must not replace, omit, or retry any v1 or v2 attempt."
+  ],
+  "evidence": {
+    "v1": {
+      "evidence_digest": "sha256:804cc51f855da09a83ca7fff483aa6a373cd690c7c0a9fa955af2b6ba0cc28a6",
+      "report_digest": "sha256:aa5f516f6127563c2101eb468a0ca70e4bd59f3f05f3e10333ea041f63121024",
+      "attempts": 15,
+      "token_usage_observed": 0
+    },
+    "v2": {
+      "evidence_digest": "sha256:c5eca198dfb687fe76fc58eacaf1425092f2c885466f2f98bec4faba5563e3db",
+      "report_digest": "sha256:97ef34e441b2b58666555b5f56ac072ab88fda7cb75b10f0f536446ee0702e88",
+      "attempts": 15,
+      "token_usage_observed": 15,
+      "paired_successes": 0
+    }
+  },
+  "release_gate": "measurement_debt_requires_release_owner_acceptance"
+}

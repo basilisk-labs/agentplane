@@ -499,13 +499,28 @@ export function validateAgentSemanticResultForWorkOrder(opts: {
   format?: "semantic_payload_v1";
 }): AgentSemanticResult {
   const workOrder = validateAgentWorkOrderV2(opts.work_order);
+  const compactResult =
+    opts.format === "semantic_payload_v1" &&
+    opts.semantic_result !== null &&
+    typeof opts.semantic_result === "object" &&
+    !Array.isArray(opts.semantic_result)
+      ? {
+          ...(opts.semantic_result as Record<string, unknown>),
+          work_order_id:
+            (opts.semantic_result as Record<string, unknown>).work_order_id ??
+            workOrder.work_order_id,
+        }
+      : opts.semantic_result;
   const payload =
     opts.format === "semantic_payload_v1"
       ? buildAgentSemanticPayloadSchema({
           role: workOrder.role,
           phase: workOrder.canonical_binding?.phase,
-        }).parse(opts.semantic_result)
+        }).parse(compactResult)
       : null;
+  if (payload?.work_order_id && payload.work_order_id !== workOrder.work_order_id) {
+    throw new Error("Agent semantic result work_order_id must match the prepared AgentWorkOrder.");
+  }
   const proposal = payload?.task_plan_proposal;
   if (
     proposal &&

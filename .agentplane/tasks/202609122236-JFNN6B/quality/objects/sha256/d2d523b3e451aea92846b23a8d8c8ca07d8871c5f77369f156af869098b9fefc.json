@@ -1,0 +1,187 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run test:agent-efficiency:qualification",
+    "bun run test:critical",
+    "bun run test:project agentplane packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/release/release-ci-contract.test.ts --maxWorkers=2",
+    "bun run vitest:projects:check"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "ci",
+        "dependencies",
+        "documentation",
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "components": [
+        ".agentplane/tasks/202609122236-JFNN6B",
+        "package.json",
+        "packages/agentplane/src/commands/release/release-ci-contract.test.ts",
+        "packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts",
+        "packages/agentplane/src/runtime/prompt-modules",
+        "scripts/README.md",
+        "scripts/check-coverage-thresholds.mjs",
+        "scripts/checks/check-coverage-thresholds.mjs",
+        "scripts/lib/test-route-registry.mjs"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:ci",
+        "repository_effect:dependencies",
+        "repository_effect:documentation",
+        "repository_effect:repository_write",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "dependencies",
+        "documentation",
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "package.json",
+        "packages/agentplane",
+        "scripts"
+      ],
+      "changed_files": [
+        "package.json",
+        "packages/agentplane/src/commands/release/release-ci-contract.test.ts",
+        "packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts",
+        "packages/agentplane/src/runtime/prompt-modules/gpt55-contract.test.ts",
+        "packages/agentplane/src/runtime/prompt-modules/gpt55-contract.ts",
+        "packages/agentplane/src/runtime/prompt-modules/gpt56-contract.test.ts",
+        "packages/agentplane/src/runtime/prompt-modules/gpt56-contract.ts",
+        "packages/agentplane/src/runtime/prompt-modules/index.ts",
+        "scripts/README.md",
+        "scripts/check-coverage-thresholds.mjs",
+        "scripts/checks/check-coverage-thresholds.mjs",
+        "scripts/lib/test-route-registry.mjs"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "docs_contract",
+      "full_regression",
+      "hosted_integration",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_component:package.json",
+      "central_component:scripts/checks/check-coverage-thresholds.mjs",
+      "central_component:scripts/lib/test-route-registry.mjs",
+      "central_path:package.json",
+      "central_path:scripts/checks/check-coverage-thresholds.mjs",
+      "central_path:scripts/lib/test-route-registry.mjs",
+      "effect_ci",
+      "effect_dependencies"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": false,
+    "digest": "sha256:0b9bdb0cdef2d4021e0a26c41212c4288f9b85ee5698f2d156af0457d10cd637"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-09-12T23:36:34.529Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202609122236-JFNN6B/verification/20260912233634529-0bf83b1b982adaaa.json",
+      "sha256": "sha256:20483b3cb45512603e5ad51450dea2b439ffa4ea90f59a22f02b8094a353746b"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 7f4f41290eba98d1d333955613203c07e7f28cb1..3dde6bc3b2297caa1615cc9e7d476fe17ebc4656",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 7f4f41290eba98d1d333955613203c07e7f28cb1..3dde6bc3b2297caa1615cc9e7d476fe17ebc4656",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "A\t.agentplane/tasks/202609122236-JFNN6B/semantic-report-3fb932a4f0a1b18ec08a4d24e18329028eabb5a3a65864e06d6bb32b044d38f7.json"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "7f4f41290eba98d1d333955613203c07e7f28cb1",
+    "implementation_commit": "3dde6bc3b2297caa1615cc9e7d476fe17ebc4656",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [],
+      "classification": [],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202609122236-JFNN6B",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202609122236-JFNN6B/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

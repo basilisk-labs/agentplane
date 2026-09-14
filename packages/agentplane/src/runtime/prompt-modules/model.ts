@@ -1,7 +1,5 @@
 import type { PromptModuleContractSchemaVersion } from "./schema.js";
 
-export { PROMPT_MODULE_CONTRACT_SCHEMA_VERSION } from "./schema.js";
-
 type PromptModuleNamespace = "framework" | "project" | "runtime" | `recipe.${string}`;
 
 export type PromptModuleSurface =

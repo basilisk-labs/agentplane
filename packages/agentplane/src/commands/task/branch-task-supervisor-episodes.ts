@@ -51,7 +51,7 @@ import {
   branchSupervisorArtifactCommitMessage,
   commitBranchSupervisorTaskArtifacts,
 } from "./branch-task-supervisor-artifact-commit.js";
-import { branchSupervisorUsageFromLifecycle } from "./branch-task-supervisor-usage.js";
+import { branchSupervisorAccountingFromLifecycle } from "./branch-task-supervisor-usage.js";
 
 import path from "node:path";
 import { readFile } from "node:fs/promises";
@@ -65,6 +65,7 @@ import {
 
 import { conflictApplicationAuthority } from "../pr/conflict-rework-authority.js";
 import { workflowTaskFingerprintComponent } from "../shared/workflow-step-fingerprint.js";
+import { buildSingleStageLifecycleTiming } from "../shared/lifecycle-stage-timing.js";
 
 async function executeBranchImplementationEpisode(opts: {
   input: BranchTaskSupervisorOptions;
@@ -173,6 +174,16 @@ async function executeBranchImplementationEpisode(opts: {
     ]);
     const eventsBefore = task.events?.length ?? 0;
     let executed: Awaited<ReturnType<typeof executeTaskRunnerExecution>>;
+    const dispatchStartedAt = performance.now();
+    const timing = (endedAt: number, firstMutation: boolean) =>
+      buildSingleStageLifecycleTiming({
+        root_span_id: started.operation_key,
+        stage: "semantic_dispatch",
+        category: "external_wait",
+        started_ms: dispatchStartedAt,
+        ended_ms: endedAt,
+        first_scoped_mutation: firstMutation,
+      });
     try {
       executed = await executeTaskRunnerExecution({
         ctx: command,
@@ -190,6 +201,7 @@ async function executeBranchImplementationEpisode(opts: {
         journal,
         operation_key: started.operation_key,
         result: { error: error instanceof Error ? error.name : "unknown_error" },
+        lifecycle_timing: timing(performance.now(), false),
         failed: true,
       });
       await opened.store.write(journal);
@@ -260,6 +272,8 @@ async function executeBranchImplementationEpisode(opts: {
         }
       }
     }
+    const accounting = branchSupervisorAccountingFromLifecycle(lifecycle);
+    const dispatchEndedAt = performance.now();
     journal = completeSupervisorExecutionEpisode({
       journal,
       operation_key: started.operation_key,
@@ -269,7 +283,9 @@ async function executeBranchImplementationEpisode(opts: {
         receipt: lifecycle.result?.execution_receipt ?? null,
         semantic_status: lifecycle.result?.semantic_result?.value.status ?? null,
       },
-      usage: branchSupervisorUsageFromLifecycle(lifecycle),
+      usage: accounting.usage,
+      provider_usage: accounting.provider_usage,
+      lifecycle_timing: timing(dispatchEndedAt, (accounting.usage.changed_files ?? 0) > 0),
       progress: acceptedRoute
         ? {
             authority: conflictApplicationAuthority(acceptedRoute),

@@ -1,5 +1,4 @@
 import { captureExternalTaskArtifacts } from "./external-agent-task-artifact-baseline.js";
-import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -24,11 +23,12 @@ import {
   resolveCommandGitCommonDir,
   type CommandContext,
 } from "../shared/task-backend.js";
-
 import { agentTransitionId } from "./agent-action-packet.js";
 import {
   externalAgentIssueDigest,
+  externalAgentExchangeDigest,
   externalAgentResultDigest,
+  externalAgentUsageAccounting,
   persistExternalAgentExchangeArtifacts,
   readExternalAgentExchange,
   readExternalAgentResult,
@@ -50,11 +50,9 @@ import {
   evaluatorReturnFingerprint,
   isRecoverableAppliedEvaluatorResult,
 } from "./external-agent-evaluator-recovery.js";
-import {
-  applyAcceptedExternalAgentResult,
-  isExternalAgentResultAlreadyApplied,
-} from "./external-agent-result-application.js";
+import { isExternalAgentResultAlreadyApplied } from "./external-agent-result-application.js";
 import { superviseExternalAgentIssuance } from "./external-agent-supervisor-recovery.js";
+import { applyExternalAgentResultWithRejectedResultRecovery } from "./external-agent-result-rejection-recovery.js";
 import { recordIssuedExternalAgentEpisode } from "./external-agent-supervisor-episode.js";
 import { assertExternalPlanningResultApplicable } from "./external-agent-planning-authority.js";
 import {
@@ -63,16 +61,11 @@ import {
 } from "./external-agent-result-routing.js";
 import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
 import { resolveConflictReworkSemanticInput } from "../pr/conflict-rework-semantic-input.js";
-
 export type IssuedExternalAgentExchange = {
   exchange: ExternalAgentExchange;
   paths: ExternalAgentExchangePaths;
   work_order: AgentWorkOrderV2;
 };
-
-function digestText(value: string): string {
-  return `sha256:${createHash("sha256").update(value, "utf8").digest("hex")}`;
-}
 
 async function commandContextForCheckout(opts: {
   command: CommandContext;
@@ -125,7 +118,7 @@ async function prepareEvaluatorInput(opts: {
       work_order: opts.work_order,
       git_root: packet.git_root,
       work_order_path: prepared.work_order_path,
-      digest: digestText(serialized),
+      digest: externalAgentExchangeDigest(serialized),
     }),
     evaluator_work_order_ref: prepared.work_order_path,
   };
@@ -247,6 +240,14 @@ async function issueExternalAgentExchangeUnlocked(opts: {
     result_digest: null,
     result: null,
     postcondition_fingerprint: null,
+    host_usage: {
+      schema_version: 1,
+      observed_by: "host_transport",
+      state: "unallocatable",
+      reason: "external_host_turn_not_task_attributable",
+      provider_usage: null,
+      usage: null,
+    },
     created_at: at,
     updated_at: at,
   };
@@ -318,7 +319,9 @@ async function assertReadOnlyReturnFresh(opts: {
     );
     if (
       !opts.exchange.evaluator_work_order_ref ||
-      digestText(await readFile(opts.exchange.evaluator_work_order_ref, "utf8")) !== frozen?.digest
+      externalAgentExchangeDigest(
+        await readFile(opts.exchange.evaluator_work_order_ref, "utf8"),
+      ) !== frozen?.digest
     ) {
       throw new CliError({
         code: "E_VALIDATION",
@@ -527,20 +530,22 @@ export async function acceptExternalAgentResult(opts: {
     ) {
       await assertReadOnlyReturnFresh({ exchange, work_order: workOrder, decision: current });
     }
-    if (!acceptedApplication && !(alreadyApplied && exchange.purpose === "planning")) {
-      await applyAcceptedExternalAgentResult({
-        command: checkoutCommand,
-        decision: current,
-        exchange,
-        work_order: workOrder,
-        envelope,
-      });
-    }
+    await applyExternalAgentResultWithRejectedResultRecovery({
+      command: checkoutCommand,
+      decision: current,
+      exchange,
+      work_order: workOrder,
+      envelope,
+      supervisor: { store, journal: issuedJournal, operation, paths },
+      include_remote: includeRemote,
+      skip_application: acceptedApplication || (alreadyApplied && exchange.purpose === "planning"),
+    });
     const after = await refreshExternalAgentRoute({
       cwd: exchange.checkout,
       task_id: opts.task_id,
       include_remote: includeRemote,
     });
+    const accounting = externalAgentUsageAccounting({ exchange });
     let journal = completeSupervisorExecutionEpisode({
       journal: issuedJournal,
       operation_key: operation.operation_key,
@@ -549,6 +554,9 @@ export async function acceptExternalAgentResult(opts: {
         semantic_status: envelope.result.status,
         result_digest: resultDigest,
       },
+      usage: accounting.usage,
+      provider_usage: accounting.provider_usage,
+      usage_attribution: accounting.usage_attribution,
       progress: after.workflowStep.preconditionFingerprint,
     });
     if (!(await store.compareAndSwap(issuedJournal.digest, journal))) {

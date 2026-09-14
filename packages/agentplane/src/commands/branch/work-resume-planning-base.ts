@@ -7,8 +7,10 @@ import {
   taskCentricAggregateFromExtensions,
   taskCentricDigest,
   taskExecutionBaseFromExtensions,
+  withTaskCentricAggregate,
 } from "@agentplaneorg/core/tasks";
 import { loadTaskRunnerDiagnosticInspection } from "../../runner/usecases/task-run-inspect.js";
+import { projectTaskCentricCompatibilityMutation } from "../../adapters/task-backend/task-centric-backend-projection.js";
 import { runtimeFrom } from "../../adapters/task-backend/task-centric-backend-runtime.js";
 import { LocalBackend } from "../../backends/task-backend.js";
 import {
@@ -208,19 +210,27 @@ export async function recoverWorkPlanningBase(opts: {
       (previous as Record<string, unknown>).target_sha !== target
     )
       refuse("no planning base advancement is required");
-    return { ...identity, token, status: "already_applied" };
+    if (aggregate.revision === task.revision)
+      return { ...identity, token, status: "already_applied" };
   }
   if (!opts.apply)
     return { ...identity, token, status: head === target ? "ready_to_reconcile" : "ready" };
   if (opts.expectedToken !== token) refuse("stale or missing recovery token; inspect again");
-  const next = {
-    ...task,
-    extensions: {
-      ...task.extensions,
-      task_execution_context: { ...base, base_sha: target },
-      task_planning_base_recovery: { ...identity, token, state: "applied" },
+  const normalizedExtensions = withTaskCentricAggregate(task.extensions, {
+    ...aggregate,
+    revision: task.revision!,
+  });
+  const next = projectTaskCentricCompatibilityMutation({
+    current: task,
+    next: {
+      ...task,
+      extensions: {
+        ...normalizedExtensions,
+        task_execution_context: { ...base, base_sha: target },
+        task_planning_base_recovery: { ...identity, token, state: "applied" },
+      },
     },
-  };
+  });
   // Existing native persistence holds the Task lock and verifies its revision before Git.
   // If Git lands but publication is interrupted, the original Task and approved plan still
   // bind both SHAs. A fresh inspection can reconcile HEAD=target without another Git effect.

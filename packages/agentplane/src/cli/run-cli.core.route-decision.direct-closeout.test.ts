@@ -79,6 +79,59 @@ async function recordEvaluatorReview(root: string, taskId: string): Promise<void
   }
 }
 
+async function completeDirectRunner(root: string, taskId: string): Promise<void> {
+  const policyDir = path.join(root, ".agentplane", "policy");
+  await mkdir(policyDir, { recursive: true });
+  for (const policy of ["security.must.md", "dod.core.md", "dod.code.md", "workflow.direct.md"]) {
+    await writeFile(path.join(policyDir, policy), `# ${policy}\n`, "utf8");
+  }
+  await runCliSilent(["task", "run", taskId, "--dry-run", "--root", root]);
+
+  const statusIo = captureStdIO();
+  let statePath = "";
+  try {
+    expect(await runCli(["task", "run", "status", taskId, "--json", "--root", root])).toBe(0);
+    const payload = JSON.parse(statusIo.stdout) as { paths: { state: string } };
+    statePath = payload.paths.state;
+  } finally {
+    statusIo.restore();
+  }
+  const state = JSON.parse(await readFile(statePath, "utf8")) as Record<string, unknown>;
+  const fingerprint = state.state_fingerprint as {
+    precondition_fingerprint: Parameters<
+      typeof evaluateStateFingerprintPrecondition
+    >[0]["expected"];
+    precondition_policy: Parameters<typeof evaluateStateFingerprintPrecondition>[0]["policy"];
+  };
+  const completedAt = new Date().toISOString();
+  const expected = fingerprint.precondition_fingerprint;
+  state.state_fingerprint = {
+    ...fingerprint,
+    outcome: "accepted",
+    state_before: expected,
+    state_after: expected,
+    precondition: evaluateStateFingerprintPrecondition({
+      expected,
+      current: expected,
+      policy: fingerprint.precondition_policy,
+    }),
+    effect_applied: true,
+    post_state_reason_code: null,
+  };
+  state.result = {
+    status: "success",
+    exit_code: 0,
+    started_at: state.created_at,
+    ended_at: completedAt,
+  };
+  state.updated_at = completedAt;
+  await writeFile(
+    statePath,
+    `${JSON.stringify({ ...state, status: "success" }, null, 2)}\n`,
+    "utf8",
+  );
+}
+
 describe("runCli route decision direct closeout", () => {
   it("routes approved direct tasks to current-agent start-ready before execution", async () => {
     const root = await mkGitRepoRootWithCommit();
@@ -216,56 +269,7 @@ describe("runCli route decision direct closeout", () => {
       root,
     ]);
     await commitAll(root, "track direct task state before terminal runner simulation");
-    const policyDir = path.join(root, ".agentplane", "policy");
-    await mkdir(policyDir, { recursive: true });
-    for (const policy of ["security.must.md", "dod.core.md", "dod.code.md", "workflow.direct.md"]) {
-      await writeFile(path.join(policyDir, policy), `# ${policy}\n`, "utf8");
-    }
-    await runCliSilent(["task", "run", taskId, "--dry-run", "--root", root]);
-
-    const statusIo = captureStdIO();
-    let statePath = "";
-    try {
-      expect(await runCli(["task", "run", "status", taskId, "--json", "--root", root])).toBe(0);
-      const payload = JSON.parse(statusIo.stdout) as { paths: { state: string } };
-      statePath = payload.paths.state;
-    } finally {
-      statusIo.restore();
-    }
-    const state = JSON.parse(await readFile(statePath, "utf8")) as Record<string, unknown>;
-    const fingerprint = state.state_fingerprint as {
-      precondition_fingerprint: Parameters<
-        typeof evaluateStateFingerprintPrecondition
-      >[0]["expected"];
-      precondition_policy: Parameters<typeof evaluateStateFingerprintPrecondition>[0]["policy"];
-    };
-    const completedAt = new Date().toISOString();
-    const expected = fingerprint.precondition_fingerprint;
-    state.state_fingerprint = {
-      ...fingerprint,
-      outcome: "accepted",
-      state_before: expected,
-      state_after: expected,
-      precondition: evaluateStateFingerprintPrecondition({
-        expected,
-        current: expected,
-        policy: fingerprint.precondition_policy,
-      }),
-      effect_applied: true,
-      post_state_reason_code: null,
-    };
-    state.result = {
-      status: "success",
-      exit_code: 0,
-      started_at: state.created_at,
-      ended_at: completedAt,
-    };
-    state.updated_at = completedAt;
-    await writeFile(
-      statePath,
-      `${JSON.stringify({ ...state, status: "success" }, null, 2)}\n`,
-      "utf8",
-    );
+    await completeDirectRunner(root, taskId);
 
     const nextIo = captureStdIO();
     try {
@@ -310,6 +314,114 @@ describe("runCli route decision direct closeout", () => {
     }
   });
 
+  it("routes direct verification rework to a mutable CODER episode", async () => {
+    const root = await mkGitRepoRootWithCommit();
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    await writeConfig(root, config);
+    await commitAll(root, "seed direct rework workflow config");
+
+    const taskId = await createBranchPrTask(root);
+    await approveRouteTaskPlan(root, taskId, "Exercise direct verification rework routing.");
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: create a direct task whose completed runner needs bounded repair.",
+      "--root",
+      root,
+    ]);
+    await commitAll(root, "track direct task state before rework simulation");
+    await completeDirectRunner(root, taskId);
+    await runCliSilent([
+      "verify",
+      taskId,
+      "--rework",
+      "--by",
+      "TESTER",
+      "--note",
+      "The completed direct implementation needs bounded repository repair.",
+      "--observation",
+      "The direct runner completed but the verified behavior is incorrect.",
+      "--impact",
+      "Repeating verification cannot repair the repository or task contract.",
+      "--resolution",
+      "Return control to CODER for implementation rework or a plan refinement.",
+      "--repo-fixable",
+      "--root",
+      root,
+    ]);
+
+    const nextIo = captureStdIO();
+    try {
+      expect(await runCli(["task", "next-action", taskId, "--json", "--root", root])).toBe(0);
+      const parsed = JSON.parse(nextIo.stdout) as {
+        route_oracle: { phase: string };
+        workflow_step: {
+          kind: string;
+          id: string;
+          episode?: { purpose: string; role: string; objective: string };
+        };
+        execution_packet: {
+          actionKind: string;
+          safeToMutate: boolean;
+          mutationPathHint: string | null;
+          exactArgv: string[] | null;
+        };
+        next_action: { code: string; command: string | null };
+      };
+      expect(parsed.route_oracle.phase).toBe("implementation_rework_required");
+      expect(parsed.workflow_step).toMatchObject({
+        kind: "agent_episode",
+        id: "agent.direct_implementation_rework",
+        episode: { purpose: "implementation_rework", role: "CODER" },
+      });
+      expect(parsed.workflow_step.episode?.objective).toContain("plan refinement");
+      expect(parsed.execution_packet).toMatchObject({
+        actionKind: "stop",
+        safeToMutate: true,
+        mutationPathHint: root,
+        exactArgv: null,
+      });
+      expect(parsed.next_action).toMatchObject({
+        code: "implementation_rework_required",
+        command: null,
+      });
+    } finally {
+      nextIo.restore();
+    }
+
+    const statusIo = captureStdIO();
+    try {
+      expect(await runCli(["task", "status", taskId, "--route", "--json", "--root", root])).toBe(0);
+      const parsed = JSON.parse(statusIo.stdout) as {
+        oracle: { phase: string };
+        executionPacket: {
+          safeToMutate: boolean;
+          mutationPathHint: string | null;
+          recommendedRole: string;
+        };
+        nextAction: { code: string; command: string | null };
+      };
+      expect(parsed.oracle.phase).toBe("implementation_rework_required");
+      expect(parsed.executionPacket).toMatchObject({
+        safeToMutate: true,
+        mutationPathHint: root,
+        recommendedRole: "CODER",
+      });
+      expect(parsed.nextAction).toMatchObject({
+        code: "implementation_rework_required",
+        command: null,
+      });
+    } finally {
+      statusIo.restore();
+    }
+  });
+
   it("routes verified direct tasks to closeout instead of rerunning them and drops them from active work", async () => {
     const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
@@ -329,6 +441,7 @@ describe("runCli route decision direct closeout", () => {
       "--root",
       root,
     ]);
+    await completeRouteWorkItem(root, taskId);
     await recordRouteVerification(root, taskId, "Verified: ready for direct closeout.");
     await recordEvaluatorReview(root, taskId);
 

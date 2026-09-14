@@ -1,0 +1,226 @@
+{
+  "schema_version": 1,
+  "unknown_custom_semantics": "explicit_blocker",
+  "rows": [
+    {
+      "id": "lifecycle.ordinary.run",
+      "category": "lifecycle_writer",
+      "owner": "ordinary task supervisors",
+      "caller": "task run",
+      "invariant": "Direct and branch_pr execution remain separate repository-effect policies under the ordinary task lifecycle.",
+      "replacement_test": "packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts",
+      "replacement_test_status": "proposed",
+      "sources": [
+        {
+          "path": "packages/agentplane/src/commands/task/run.command.ts",
+          "symbols": ["superviseDirectTaskRun", "superviseBranchTaskRun"]
+        }
+      ]
+    },
+    {
+      "id": "lifecycle.ordinary.advance",
+      "category": "lifecycle_writer",
+      "owner": "ordinary task advance use cases",
+      "caller": "task advance",
+      "invariant": "Admission, semantic exchange, native verification, and formal effects use the current task identity and accepted execution grant.",
+      "replacement_test": "packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts",
+      "replacement_test_status": "proposed",
+      "sources": [
+        {
+          "path": "packages/agentplane/src/commands/task/advance.command.ts",
+          "symbols": [
+            "acceptExternalAgentResult",
+            "executeExternalAgentVerification",
+            "executeBranchWorkflowOperation"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lifecycle.kernel.dispatch",
+      "category": "lifecycle_writer",
+      "owner": "canonical kernel supervisor",
+      "caller": "task run and task advance when task_kernel is present",
+      "invariant": "Kernel records never fall through to the ordinary lifecycle and ordinary records never enter the kernel lifecycle.",
+      "replacement_test": "packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts",
+      "replacement_test_status": "existing",
+      "sources": [
+        {
+          "path": "packages/agentplane/src/commands/task/run.command.ts",
+          "symbols": ["TASK_KERNEL_EXTENSION", "runCanonicalTask"]
+        },
+        {
+          "path": "packages/agentplane/src/commands/task/advance.command.ts",
+          "symbols": ["TASK_KERNEL_EXTENSION", "advanceCanonicalTask"]
+        }
+      ]
+    },
+    {
+      "id": "lifecycle.task-centric.orchestrator",
+      "category": "public_export",
+      "owner": "core task-centric library",
+      "caller": "library consumers",
+      "invariant": "The additional orchestrator is inventoried but is not assumed to be the production lifecycle owner.",
+      "replacement_test": "packages/core/src/tasks/task-centric/orchestrator.test.ts",
+      "replacement_test_status": "existing",
+      "sources": [
+        {
+          "path": "packages/core/src/tasks/task-centric/index.ts",
+          "symbols": ["TaskCentricOrchestrator"]
+        },
+        {
+          "path": "packages/core/src/tasks/task-centric/orchestrator.ts",
+          "symbols": ["export class TaskCentricOrchestrator"]
+        }
+      ]
+    },
+    {
+      "id": "blueprint.registry-and-resolution",
+      "category": "blueprint_producer",
+      "owner": "Blueprint registry and resolver",
+      "caller": "Blueprint commands and task lifecycle projections",
+      "invariant": "Blueprint selection remains a policy projection and cannot grant authority.",
+      "replacement_test": "packages/agentplane/src/blueprints/resolve.test.ts",
+      "replacement_test_status": "existing",
+      "sources": [
+        {
+          "path": "packages/agentplane/src/blueprints/index.ts",
+          "symbols": ["createBlueprintRegistry", "resolveBlueprint"]
+        },
+        {
+          "path": "packages/agentplane/src/blueprints/resolve.ts",
+          "symbols": ["export function resolveBlueprint"]
+        }
+      ]
+    },
+    {
+      "id": "blueprint.snapshot-writer",
+      "category": "blueprint_producer",
+      "owner": "Blueprint snapshot artifact use case",
+      "caller": "verification recording",
+      "invariant": "A Blueprint snapshot reference identifies observed policy input and never substitutes for observed verification.",
+      "replacement_test": "packages/agentplane/src/blueprints/snapshot.test.ts",
+      "replacement_test_status": "existing",
+      "sources": [
+        {
+          "path": "packages/agentplane/src/blueprints/snapshot.ts",
+          "symbols": ["buildBlueprintResolvedSnapshot"]
+        },
+        {
+          "path": "packages/agentplane/src/commands/task/verify-record-references.ts",
+          "symbols": ["BlueprintSnapshotRef:"]
+        }
+      ]
+    },
+    {
+      "id": "blueprint.finish-consumer",
+      "category": "blueprint_consumer",
+      "owner": "task finish and quality admission",
+      "caller": "task finish",
+      "invariant": "Required Blueprint evidence stays current until a later release moves every enforced obligation to its target owner.",
+      "replacement_test": "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
+      "replacement_test_status": "existing",
+      "sources": [
+        {
+          "path": "packages/agentplane/src/commands/task/finish-blueprint-evidence.ts",
+          "symbols": ["BLUEPRINT_SNAPSHOT_REF_MARKER", "BlueprintSnapshotRef:"]
+        }
+      ]
+    },
+    {
+      "id": "blueprint.project-local-definition",
+      "category": "project_local_definition",
+      "owner": "trusted project Blueprint loader",
+      "caller": "Blueprint registry construction",
+      "invariant": "Unknown project-local semantics are compatibility blockers and are never mapped to the nearest built-in behavior.",
+      "replacement_test": "packages/agentplane/src/blueprints/project-local.test.ts",
+      "replacement_test_status": "existing",
+      "sources": [
+        {
+          "path": "packages/agentplane/src/blueprints/project-local.ts",
+          "symbols": [
+            "createTrustedProjectBlueprintRegistry",
+            "loadTrustedProjectBlueprintRegistry"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "recipe.blueprint-extensions",
+      "category": "recipe_extension",
+      "owner": "Recipe manifest contract",
+      "caller": "Recipe validation and Blueprint hint projection",
+      "invariant": "Recipe metadata may request stricter behavior but cannot grant effects or waive mandatory review.",
+      "replacement_test": "packages/recipes/src/blueprint-extensions.test.ts",
+      "replacement_test_status": "existing",
+      "sources": [
+        {
+          "path": "packages/recipes/src/manifest-contracts.ts",
+          "symbols": ["RecipeBlueprintExtensionKind", "blueprint_extensions"]
+        },
+        {
+          "path": "packages/recipes/src/blueprint-extensions.ts",
+          "symbols": ["preferred_blueprint"]
+        }
+      ]
+    },
+    {
+      "id": "verification.material-input-identity",
+      "category": "verification_identity",
+      "owner": "existing task_verification_input family",
+      "caller": "verification record assessment",
+      "invariant": "Checked-content identity remains distinct from current admission revision and current evidence sufficiency.",
+      "replacement_test": "packages/agentplane/src/commands/shared/task-verification-input.test.ts",
+      "replacement_test_status": "existing",
+      "sources": [
+        {
+          "path": "packages/agentplane/src/commands/shared/task-verification-input-types.ts",
+          "symbols": ["VerificationInputIdentity", "implementation", "verify_steps_digest"]
+        }
+      ]
+    },
+    {
+      "id": "backend.local-and-cloud-ports",
+      "category": "backend_entrypoint",
+      "owner": "TaskBackend ports",
+      "caller": "command execution context",
+      "invariant": "Local canonical data and remote projection freshness retain revision guards and fail closed before unsupported mutation.",
+      "replacement_test": "packages/agentplane/src/commands/shared/roadmap-backend-roundtrip.test.ts",
+      "replacement_test_status": "proposed",
+      "sources": [
+        {
+          "path": "packages/agentplane/src/backends/task-backend/local-backend.ts",
+          "symbols": ["export class LocalBackend", "supports_revision_guarded_writes"]
+        },
+        {
+          "path": "packages/agentplane/src/backends/task-backend/cloud-backend.ts",
+          "symbols": ["export class CloudBackend", "ensureCloudProjectionFreshForLocalMutation"]
+        },
+        {
+          "path": "packages/agentplane/src/adapters/task-backend/task-centric-backend-runtime.ts",
+          "symbols": ["TASK_CENTRIC_RUNTIME_EXTENSION_KEY", "TASK_KERNEL_EXTENSION"]
+        }
+      ]
+    },
+    {
+      "id": "generated.agent-and-policy-mirrors",
+      "category": "generated_mirror",
+      "owner": "packaged agent and policy assets",
+      "caller": "framework asset synchronization",
+      "invariant": "Generated repository mirrors match their packaged canonical assets byte for byte.",
+      "replacement_test": "scripts/generate/sync-agent-templates.test.mjs",
+      "replacement_test_status": "existing",
+      "sources": [
+        {
+          "path": "scripts/generate/sync-agent-templates.mjs",
+          "symbols": ["compareDirectoryTrees", "canonicalAgentsDir", "targetAgentsDir"]
+        },
+        {
+          "path": "packages/agentplane/assets/agents/PLANNER.json",
+          "symbols": ["planning.constraints"]
+        },
+        { "path": ".agentplane/agents/PLANNER.json", "symbols": ["planning.constraints"] }
+      ]
+    }
+  ]
+}

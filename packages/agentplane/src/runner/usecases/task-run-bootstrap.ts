@@ -10,6 +10,7 @@ import {
 
 import {
   AGENT_INSTRUCTION_LANGUAGE,
+  hasExplicitProcessMechanismRepairAuthority,
   semanticTextHasProcessChoreography,
 } from "../context/semantic-prompt-projection.js";
 import type { RunnerContextBundle, RunnerInvocation } from "../types.js";
@@ -180,11 +181,19 @@ function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string
       selected.has(`/prepared_evidence/${index}`),
     ),
   };
+  const preserveProcessRepairRequirements = hasExplicitProcessMechanismRepairAuthority(bundle.task);
   const semanticAcceptanceCriteria = workOrder.task.acceptance_criteria.filter(
-    (criterion) => !semanticTextHasProcessChoreography(criterion.description),
+    (criterion) =>
+      preserveProcessRepairRequirements ||
+      !semanticTextHasProcessChoreography(criterion.description),
   );
   const semanticVerificationRequirements = workOrder.verification_intent.requirements.filter(
-    (requirement) => !semanticTextHasProcessChoreography(requirement.description),
+    (requirement) =>
+      preserveProcessRepairRequirements ||
+      !semanticTextHasProcessChoreography(requirement.description),
+  );
+  const semanticStopRules = workOrder.stop_rules.filter(
+    (rule) => preserveProcessRepairRequirements || !semanticTextHasProcessChoreography(rule),
   );
   const requiredInputs = workOrder.required_inputs.filter((input) => {
     if (!input.required) return false;
@@ -247,6 +256,7 @@ function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string
     })),
     semantic_result_schema: workOrder.semantic_result_schema,
     stop_rules: [
+      ...semanticStopRules,
       "Stop and return a blocked semantic result when required context is missing or stale.",
       "Stop before exceeding the granted authority, writable roots, network policy, or protected paths.",
       "Return one typed semantic result when the objective is satisfied or blocked.",

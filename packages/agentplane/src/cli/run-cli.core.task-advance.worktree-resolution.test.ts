@@ -601,9 +601,15 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
       }
 
       const after = (await taskCtx.taskBackend.getTask(taskId))!;
-      expect(taskCentricAggregateFromExtensions(after.extensions)).toEqual(
-        taskCentricAggregateFromExtensions(original.extensions),
-      );
+      const afterAggregate = taskCentricAggregateFromExtensions(after.extensions)!;
+      const originalAggregate = taskCentricAggregateFromExtensions(original.extensions)!;
+      expect(afterAggregate.revision).toBe(after.revision);
+      expect({
+        ...afterAggregate,
+        revision: originalAggregate.revision,
+        event_cursor: originalAggregate.event_cursor,
+        updated_at: originalAggregate.updated_at,
+      }).toEqual(originalAggregate);
       expect(after.depends_on).toEqual(original.depends_on);
       const dependencyAfter = await taskCtx.taskBackend.getTask(dependencyId);
       expect(dependencyAfter?.status).toBe("DONE");
@@ -630,6 +636,41 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
       const repeated = await recoverWorkPlanningBase({ ctx, taskId, apply: false });
       expect(repeated.status).toBe("already_applied");
       expect(await readFile(readmePath, "utf8")).toBe(completedBytes);
+      const legacy = (await taskCtx.taskBackend.getTask(taskId))!;
+      const legacyAggregate = taskCentricAggregateFromExtensions(legacy.extensions)!;
+      await taskCtx.taskBackend.writeTask({
+        ...legacy,
+        extensions: withTaskCentricAggregate(legacy.extensions, {
+          ...legacyAggregate,
+          revision: legacyAggregate.revision - 1,
+        }),
+      });
+      const reconciliation = await recoverWorkPlanningBase({ ctx, taskId, apply: false });
+      expect(reconciliation.status).toBe("ready_to_reconcile");
+      const appliedReconciliation = await recoverWorkPlanningBase({
+        ctx,
+        taskId,
+        apply: true,
+        expectedToken: reconciliation.token,
+      });
+      expect(appliedReconciliation.status).toBe("applied");
+      expect(
+        await runCliSilent([
+          "task",
+          "start-ready",
+          taskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Start: continue branch_pr task after planning-base recovery.",
+          "--root",
+          taskRoot,
+        ]),
+      ).toBe(0);
+      const started = (await taskCtx.taskBackend.getTask(taskId))!;
+      expect(taskCentricAggregateFromExtensions(started.extensions)?.revision).toBe(
+        started.revision,
+      );
     },
   );
 

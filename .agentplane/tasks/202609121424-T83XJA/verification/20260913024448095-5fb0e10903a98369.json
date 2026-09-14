@@ -1,0 +1,121 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun x vitest run packages/agentplane/src/commands/task/external-agent-report-result.test.ts packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts packages/agentplane/src/commands/evaluator/roadmap-telemetry-disposition.test.ts packages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts packages/agentplane/src/commands/task/roadmap-external-accounting.test.ts packages/agentplane/src/commands/task/roadmap-stage-timing.test.ts packages/agentplane/src/runner/adapters/roadmap-usage-durability.test.ts\nResult: pass\nEvidence: 8 test files passed; 38 tests passed.\nScope: Host-observed usage, evaluator failure/reuse, managed and external accounting, and lifecycle timing.\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: full-fast ok=true; build, runtime, core, CLI, Windows platform-critical, and coverage groups passed.\nScope: Critical authority, recovery, evaluator, runner, task, and platform behavior.\n\nCheck: docs_contract\nCommand: bun run ci:local:full\nResult: pass\nEvidence: docs-schema, docs site, workflow lint, schema sync, generated references, and design checks passed.\nScope: Documentation, schemas, workflows, and generated artifacts.\n\nCheck: full_regression\nCommand: bun run ci:local:full && bun run knip:check && bun run typecheck\nResult: pass\nEvidence: Full local CI passed; Knip exact budgets passed for agentplane 0/0 and core 21/21; typecheck passed.\nScope: Full repository regression and unused export contract at HEAD d233b5762.\n\nCheck: task_outcome\nCommand: git status --short --untracked-files=all\nResult: pass\nEvidence: Empty output before verification; committed implementation HEAD was d233b5762.\nScope: Approved task worktree was clean and contained only intended changes.",
+  "digest": "sha256:5fb0e10903a983696a86f32664fad90efd972a55c35d531b66eefe283d3cbc90",
+  "implementation_sha": "d233b5762ac3b0430cdeb924b024cc70e3d613c6",
+  "input": {
+    "context": {
+      "digest": "sha256:45ee344941f379a9d4696a9ccbbe7e795ad57ce6e2dfde08c2a623e9e2528cb7",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:290abb3636f017aed829eb801359c51c5c04788ffcef0f133bc17fad0fe51a88",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:6ff15f5ae9fb7c38888ff786a394cee6d50b5fb6e4e394b0458a42ddc6988e8d",
+      "digest": "sha256:e5ce61dda8b953ca0c6c4ebd6653a2a2adad07ae6cb0f0f9e3b4675e35dde44f",
+      "references": [
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "0/0",
+          "reference": "0/0",
+          "source": "missing"
+        },
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "21/21",
+          "reference": "21/21",
+          "source": "missing"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "1f8b58d52ade59dd6185af72b00f70bb6194bdb0",
+      "digest": "sha256:5b132e63d511a489b39822aaaebc10a00ddf20176c98139cef4ee8582f0e9a07",
+      "primary_task_id": "202609121424-T83XJA",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_ci",
+        "effect_public_api",
+        "effect_schema",
+        "observed_path_outside_scope:packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts",
+        "observed_path_outside_scope:packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609121424-T83XJA"
+      ]
+    },
+    "implementation": {
+      "base_sha": "1f8b58d52ade59dd6185af72b00f70bb6194bdb0",
+      "digest": "sha256:e9720b1d87b572ff9d0d750265c18fcbd56bf646334adefcd5d0ae4117dba880",
+      "strategy": "branch_diff",
+      "target_sha": "d233b5762ac3b0430cdeb924b024cc70e3d613c6"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:aa1a5987dae5045c5893a86508ffecdbe2a7752f1b2730a8c57ae0ef8b1e6889",
+    "verify_steps_digest": "sha256:47b7def428d877601b2b150f350d4b26cdcd9ee2f6b9e7aee315eb10145204de"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified current HEAD d233b5762: full local CI, Knip, typecheck, and focused telemetry regression tests passed.",
+  "recorded_at": "2026-09-13T02:44:48.095Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run `bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/adapters/roadmap-usage-durability.test.ts`; require durable identity-bound provider usage before semantic validation, deduplication, and partial or unavailable coverage instead of implicit zero.\n2. Run `bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts`; require observed evaluator charges to survive timeout, nonzero exit, malformed results, and recovery.\n3. Run `bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts`; require all managed roles and attempts to use the existing journal exactly once without classifying CLI operations as billable dispatches.\n4. Run `bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-external-accounting.test.ts`; require external role coverage, idempotent replay, rejection of model-supplied token claims, and explicit unavailable or unallocatable attribution.\n5. Run `node --test scripts/bench/task-cost-rollup.test.mjs`; require nonzero test discovery and exact reconciliation of unique observed, partial, unavailable, failed, role, and attempt records without adding cache or reasoning subsets twice.\n6. Run `bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-stage-timing.test.ts`; require monotonic parent and child stage spans, separate local, USER-wait, and external-wait time, no overlap double count, and no negative elapsed duration.\n7. Run `bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/evaluator/roadmap-telemetry-disposition.test.ts`; require saved valid verdict reuse, a hard stop before unproven further paid spend, and unchanged actual human_review semantics.\n8. Run `bun run typecheck`; require success.\n9. Run `bun run schemas:check`; require persisted and public schema mirrors to be current.\n10. Run `bun run artifacts:check`; require generated artifacts to be current.\n11. Run `bun run test:critical`; require existing authority, stale-state, recovery, evaluator, runner, and task negative cases to remain green.\n12. Run `bun run ci:local:full`; require the full local CI route to pass.\n13. Review `git diff` and `git status --short --untracked-files=all`; require no roadmap file, raw provider payload, secret, second accounting store, unrelated task artifact, generated drift, or unintended path in the task change.",
+  "scope_digest": "sha256:47b7def428d877601b2b150f350d4b26cdcd9ee2f6b9e7aee315eb10145204de",
+  "task_id": "202609121424-T83XJA",
+  "verification_command": "agentplane task verify ok 202609121424-T83XJA --ok --by TESTER",
+  "verifier": "TESTER"
+}

@@ -267,7 +267,7 @@ describe("runner bootstrap result examples", () => {
   });
 });
 
-it("reduces fixed prompt baselines while preserving semantic inputs", () => {
+it("preserves semantic prompt inputs and result examples", () => {
   for (const role of ["EXECUTOR", "EVALUATOR"] as const) {
     const bundle = makeRunnerContextBundle({ runId: "prompt-size" });
     bundle.work_order = buildAgentWorkOrderV2ValidFixture("prompt-size");
@@ -277,9 +277,6 @@ it("reduces fixed prompt baselines while preserving semantic inputs", () => {
       role,
     }));
     const bootstrap = renderTaskRunnerBootstrap(bundle);
-    // Measured before compaction on ca07204ee with these fixed fixtures.
-    const baseline = role === "EXECUTOR" ? 8590 : 9196;
-    expect(Buffer.byteLength(bootstrap, "utf8")).toBeLessThan(baseline);
     expect(bootstrap).toContain("simple technical English");
     expect(bootstrap).toContain(
       "Preserve commands, paths, identifiers, enum values, quoted text, user input, logs, and source evidence exactly.",

@@ -25,9 +25,12 @@ import type { EvaluatorArtifactPreparationPort } from "./evaluator-artifact-port
 
 import {
   evaluatorProviderFailureRecord,
+  EvaluatorEpisodeFailureError,
   executePreparedEvaluatorEpisode,
   type EvaluatorEpisodeReceipt,
+  type EvaluatorProviderFailureReceipt,
 } from "./evaluator-episode.js";
+import { readPersistedEvaluatorFailureReceipt } from "./evaluator-failure-recovery.js";
 import {
   isWithinRoot,
   readWorkOrder,
@@ -84,6 +87,18 @@ function assertPersistedEvaluatorReceipt(opts: {
       (usage.visible_output_tokens === undefined ||
         isNonNegativeInteger(usage.visible_output_tokens)) &&
       (usage.reasoning_tokens === undefined || isNonNegativeInteger(usage.reasoning_tokens)));
+  const usageStatusIsValid =
+    value.provider_usage_status === undefined ||
+    value.provider_usage_status === "observed" ||
+    value.provider_usage_status === "partial" ||
+    value.provider_usage_status === "unavailable";
+  const providerIdentityIsValid =
+    (value.provider_thread_id === undefined ||
+      value.provider_thread_id === null ||
+      (typeof value.provider_thread_id === "string" && value.provider_thread_id.length > 0)) &&
+    (value.provider_turn_id === undefined ||
+      value.provider_turn_id === null ||
+      (typeof value.provider_turn_id === "string" && value.provider_turn_id.length > 0));
   if (
     value.schema_version !== 1 ||
     value.kind !== "evaluator_episode_receipt" ||
@@ -92,6 +107,8 @@ function assertPersistedEvaluatorReceipt(opts: {
     value.authority?.sandbox !== "read-only" ||
     value.authority?.writable_roots?.length !== 0 ||
     !usageIsValid ||
+    !usageStatusIsValid ||
+    !providerIdentityIsValid ||
     value.result_sha256 !== sha256(opts.canonical_result)
   ) {
     throw new CliError({
@@ -155,7 +172,7 @@ async function readCompletedEvaluatorOutcome(opts: {
   };
 }
 
-function evaluatorUsage(receipt: EvaluatorEpisodeReceipt): {
+function evaluatorUsage(receipt: EvaluatorEpisodeReceipt | EvaluatorProviderFailureReceipt): {
   input_tokens?: number;
   output_tokens?: number;
   total_tokens?: number;
@@ -172,17 +189,31 @@ function evaluatorUsage(receipt: EvaluatorEpisodeReceipt): {
   };
 }
 
+function evaluatorProviderUsageIdentity(
+  receipt: EvaluatorEpisodeReceipt | EvaluatorProviderFailureReceipt,
+  operationKey: string,
+): NonNullable<SupervisorExecutionEpisodeJournal["operations"][number]["provider_usage"]> {
+  return {
+    provider: receipt.provider,
+    run_id: `evaluator:${operationKey}`,
+    work_order_id: receipt.work_order_id,
+    thread_id: receipt.provider_thread_id ?? receipt.provider_usage?.thread_id ?? null,
+    turn_id: receipt.provider_turn_id ?? receipt.provider_usage?.turn_id ?? null,
+  };
+}
+
 function completePersistedEvaluatorEpisode(opts: {
   journal: SupervisorExecutionEpisodeJournal;
   operation_key: string;
   result: ReturnType<typeof validateStrictEvaluatorResult>;
   receipt: EvaluatorEpisodeReceipt;
 }): SupervisorExecutionEpisodeJournal {
-  let journal = completeSupervisorExecutionEpisode({
+  const completed = completeSupervisorExecutionEpisode({
     journal: opts.journal,
     operation_key: opts.operation_key,
     result: opts.result,
     usage: evaluatorUsage(opts.receipt),
+    provider_usage: evaluatorProviderUsageIdentity(opts.receipt, opts.operation_key),
     progress: {
       evaluator_id: opts.result.evaluator_id,
       verdict: opts.result.verdict,
@@ -197,18 +228,39 @@ function completePersistedEvaluatorEpisode(opts: {
         }
       : {}),
   });
-  if (opts.receipt.provider_usage === null) {
-    journal = stopSupervisorExecutionEpisode({
-      journal,
-      reason: "human_review",
-      exhausted_dimensions: [
-        "input_tokens_telemetry",
-        "output_tokens_telemetry",
-        "total_tokens_telemetry",
-      ],
-    });
-  }
-  return journal;
+  return opts.result.verdict === "human_review"
+    ? stopSupervisorExecutionEpisode({ journal: completed, reason: "human_review" })
+    : completed;
+}
+
+export async function recoverPersistedEvaluatorFailureEpisode(opts: {
+  git_root: string;
+  journal: SupervisorExecutionEpisodeJournal;
+}): Promise<{
+  journal: SupervisorExecutionEpisodeJournal;
+  receipt: EvaluatorProviderFailureReceipt;
+}> {
+  const operationKey = opts.journal.cursor.operation_key;
+  if (!operationKey) throw new Error("Evaluator supervisor intent is missing its operation key.");
+  const receipt = await readPersistedEvaluatorFailureReceipt(opts);
+  const usageAttribution =
+    receipt.provider_usage_status === "observed"
+      ? ({ state: "observed", reason: null } as const)
+      : receipt.provider_usage_status === "partial"
+        ? ({ state: "partial", reason: "partial_provider_token_telemetry" } as const)
+        : ({ state: "unavailable", reason: "provider_token_telemetry_unavailable" } as const);
+  return {
+    receipt,
+    journal: completeSupervisorExecutionEpisode({
+      journal: opts.journal,
+      operation_key: operationKey,
+      result: receipt.failure,
+      usage: evaluatorUsage(receipt),
+      provider_usage: evaluatorProviderUsageIdentity(receipt, operationKey),
+      usage_attribution: usageAttribution,
+      failed: true,
+    }),
+  };
 }
 
 function hasCompletedEvaluatorOutcomeForApplication(
@@ -225,7 +277,7 @@ function hasCompletedEvaluatorOutcomeForApplication(
   if (journal.status === "running" && journal.cursor.phase === "completed") return true;
   return (
     journal.status === "stopped" &&
-    journal.stop?.reason === "budget_exhausted" &&
+    (journal.stop?.reason === "budget_exhausted" || journal.stop?.reason === "human_review") &&
     journal.cursor.phase === "stopped" &&
     journal.stop.operation_key === last.operation_key
   );
@@ -339,7 +391,7 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
       });
       await opened.store.write(journal);
     }
-    let outcome: CompletedEvaluatorOutcome;
+    let outcome: CompletedEvaluatorOutcome | null = null;
 
     if (journal.status === "running" && journal.cursor.phase === "intent_recorded") {
       const pendingOperation = journal.operations.at(-1);
@@ -352,20 +404,40 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
             "return or reconcile that operation before evaluator execution.",
         });
       }
+      let recoveredFailure: Awaited<
+        ReturnType<typeof recoverPersistedEvaluatorFailureEpisode>
+      > | null = null;
       try {
         outcome = await readCompletedEvaluatorOutcome({
           git_root: opts.command.resolvedProject.gitRoot,
           journal,
         });
-      } catch {
-        journal = stopSupervisorExecutionEpisode({ journal, reason: "effect_in_doubt" });
-        await opened.store.write(journal);
-        throw new CliError({
-          code: "E_RUNTIME",
-          message:
-            "Evaluator supervisor intent has no complete validated outcome; resolve the effect before retrying.",
-        });
+      } catch (successError) {
+        try {
+          recoveredFailure = await recoverPersistedEvaluatorFailureEpisode({
+            git_root: opts.command.resolvedProject.gitRoot,
+            journal,
+          });
+        } catch {
+          journal = stopSupervisorExecutionEpisode({ journal, reason: "effect_in_doubt" });
+          await opened.store.write(journal);
+          throw new CliError({
+            code: "E_RUNTIME",
+            message:
+              "Evaluator supervisor intent has no complete validated outcome; resolve the effect before retrying.",
+            context: {
+              successful_outcome_error:
+                successError instanceof Error ? successError.message : String(successError),
+            },
+          });
+        }
       }
+      if (recoveredFailure) {
+        journal = recoveredFailure.journal;
+        await opened.store.write(journal);
+        throw new EvaluatorEpisodeFailureError(recoveredFailure.receipt);
+      }
+      if (!outcome) throw new Error("Evaluator outcome recovery did not produce an outcome.");
       const operationKey = journal.cursor.operation_key;
       if (!operationKey)
         throw new Error("Evaluator supervisor intent is missing its operation key.");
@@ -451,14 +523,25 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
       try {
         episode = await executePreparedEvaluatorEpisode({ ctx: opts.command, prepared });
       } catch (error) {
+        const failureReceipt = error instanceof EvaluatorEpisodeFailureError ? error.receipt : null;
         journal = completeSupervisorExecutionEpisode({
           journal,
           operation_key: started.operation_key,
           // Persist only a small classification. Provider stderr and model
           // output can contain sensitive data and belong neither in the task
           // record nor in the durable supervisor journal.
-          result: evaluatorProviderFailureRecord(error),
-          usage: { wall_time_ms: Math.max(0, Date.now() - providerStartedAt) },
+          result: failureReceipt?.failure ?? evaluatorProviderFailureRecord(error),
+          usage: failureReceipt
+            ? evaluatorUsage(failureReceipt)
+            : { wall_time_ms: Math.max(0, Date.now() - providerStartedAt) },
+          ...(failureReceipt
+            ? {
+                provider_usage: evaluatorProviderUsageIdentity(
+                  failureReceipt,
+                  started.operation_key,
+                ),
+              }
+            : {}),
           failed: true,
         });
         await opened.store.write(journal);
@@ -487,6 +570,7 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
           "Evaluator outcome was persisted, but the supervisor budget stopped before its task-state application.",
       });
     }
+    if (!outcome) throw new Error("Evaluator execution did not produce an outcome.");
     return { ...outcome, journal, store: opened.store };
   } finally {
     await lease.release();

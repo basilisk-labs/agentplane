@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609121019-8K70MT-9f3c2e9bf805ea3e0ec10d3b",
+  "prepared_at": "2026-09-12T13:40:49.901Z",
+  "task": {
+    "id": "202609121019-8K70MT",
+    "revision": 22,
+    "objective": "Make verification rework exhaustion atomically project BLOCKED into the task-centric aggregate, with focused regression coverage, so supervisor verification failures cannot leave a partial task-centric projection\n\nWhen a needs_rework verification exceeds evaluator.max_rework_attempts, compatibility mutation currently sets the legacy task status to BLOCKED while leaving the canonical task-centric lifecycle ACTIVE, triggering task_centric_projection_mismatch and preventing recovery. Preserve normal ACTIVE rework behavior, atomically project terminal exhaustion to BLOCKED, and cover the boundary with focused tests.",
+    "acceptance_criteria": [
+      "bun run typecheck",
+      "bunx --no-install vitest run packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts --maxWorkers=1",
+      "- In scope: When a needs_rework verification exceeds evaluator.max_rework_attempts, compatibility mutation currently sets the legacy task status to BLOCKED while leaving the canonical task-centric lifecycle ACTIVE, triggering task_centric_projection_mismatch and preventing recovery. Preserve normal ACTIVE rework behavior, atomically project terminal exhaustion to BLOCKED, and cover the boundary with focused tests.\n- Out of scope: unrelated refactors not required for \"Make verification rework exhaustion atomically project BLOCKED into the task-centric aggregate, with focused regression coverage, so supervisor verification failures cannot leave a partial task-centric projection\".",
+      "Preserve the implementation scope and give the required full regression check a 45-minute outer timeout.",
+      "1. Run `bunx --no-install vitest run packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts --maxWorkers=1`. Expected: terminal verification exhaustion projects canonical BLOCKED while existing rework behavior remains unchanged.\n2. Run `bun run typecheck`. Expected: TypeScript build passes.\n3. Run `git diff --check`. Expected: no whitespace errors."
+    ]
+  },
+  "evaluated_sha": "9bd82d62ce901f7962c650aa3e64577968b953c9",
+  "diff_base_sha": "50b1810dda648be0c0762b47e885c6ad0b2d42af",
+  "blueprint_digest": "64d8ed4597711fd2487eaf045d531db4d83fa7be2833be34da0bf5b386c33cda",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609121019-8K70MT/quality/20260912-134049901-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:b1fa182b23cc5ae4788f8abb1036c04802f3b7af94dee18142277f1f461784f1",
+    "prompt_path": ".agentplane/tasks/202609121019-8K70MT/quality/objects/sha256/e4388e57990a5fad81699b7982d4bed29401f30b6f7e81312f220ea036b11874.md",
+    "result_schema_path": ".agentplane/tasks/202609121019-8K70MT/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609121019-8K70MT/README.md",
+      "sha256": "sha256:c0520385b8b88e69d012dfe7e614db892f5fb4bda962ad47df3082faa4e0b15e",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609121019-8K70MT/quality/objects/sha256/52f3f6fdc8fd66f9054878d5d0e11605311b04b2a355fa62fe78c077f4ef1a1a.patch",
+      "sha256": "sha256:52f3f6fdc8fd66f9054878d5d0e11605311b04b2a355fa62fe78c077f4ef1a1a",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609121019-8K70MT/quality/objects/sha256/a13c83bfa6e246cb0635bda1714f9750aeead021b67868c22531a874627c731c.json",
+      "sha256": "sha256:a13c83bfa6e246cb0635bda1714f9750aeead021b67868c22531a874627c731c",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609121019-8K70MT/verification/20260912134038604-214d32aabc2cfbaa.json",
+      "sha256": "sha256:440e997c0a461b20d797ef26466c98595ac574ac7ef4db8bf07d9c11ca7d7c9e",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609121019-8K70MT/quality/objects/sha256/6c5aa8dd5965460944f15f65ed05b11170f35619049258d548c31ca4c59e3e85.json",
+      "sha256": "sha256:6c5aa8dd5965460944f15f65ed05b11170f35619049258d548c31ca4c59e3e85",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

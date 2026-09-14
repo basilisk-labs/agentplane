@@ -25,8 +25,6 @@ export type {
   PromptModuleValidator,
 } from "./mutations.js";
 export { loadFrameworkPromptModuleRegistry, loadFrameworkPromptModules } from "./registry.js";
-export { diagnoseGpt55PromptContract } from "./gpt55-contract.js";
-export { diagnoseGpt56PromptContract } from "./gpt56-contract.js";
 export {
   validatePromptModuleCompiledGraph,
   validatePromptModule,

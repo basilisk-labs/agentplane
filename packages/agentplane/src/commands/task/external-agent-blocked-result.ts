@@ -17,6 +17,7 @@ import type {
   ExternalAgentExchange,
   ExternalAgentResultEnvelope,
 } from "./external-agent-exchange.js";
+import { readExternalAgentWorkOrder } from "./external-agent-exchange.js";
 import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
 import { cmdTaskSetStatus } from "./set-status.js";
 
@@ -27,6 +28,7 @@ function blockerSubject(taskId: string): string {
 function scopeExtensionState(opts: {
   exchange: ExternalAgentExchange;
   semantic: ExternalAgentResultEnvelope["result"];
+  workItemId?: string | null;
 }) {
   const request = opts.semantic.blocker?.scope_extension_request;
   return request
@@ -34,6 +36,7 @@ function scopeExtensionState(opts: {
         request,
         transition_id: opts.exchange.transition_id,
         state_fingerprint: opts.exchange.state_fingerprint,
+        work_item_id: opts.workItemId,
       })
     : null;
 }
@@ -90,7 +93,11 @@ async function persistScopeExtensionRequest(opts: {
   exchange: ExternalAgentExchange;
   semantic: ExternalAgentResultEnvelope["result"];
 }): Promise<void> {
-  const pending = scopeExtensionState(opts);
+  const workOrder = await readExternalAgentWorkOrder(opts.exchange.work_order_ref);
+  const pending = scopeExtensionState({
+    ...opts,
+    workItemId: workOrder.task.work_item_id ?? null,
+  });
   if (!pending) return;
   const task = await loadTaskFromContext({ ctx: opts.command, taskId: opts.exchange.task_id });
   await opts.command.taskBackend.writeTask(

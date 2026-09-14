@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "PASS: implementation commit b0f5f5dc961455109b187b605b7d753e9b3266e2 fixes the path parser defect, adds the focused regression, resolves lint, preserves immutable M01 evidence, and synchronizes generated documentation.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609121424-4BC7B3/quality/objects/sha256/2072024e66e6094a60e57ea0984da6f9dd2235f59d0bdcbd08e5fadfa48650d3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Supervisor evidence records all 11 declared checks as passed, including bun run ci:local:full, package checks, release-critical tests, efficiency checks, documentation checks, and git diff --check.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609121424-4BC7B3/quality/objects/sha256/2072024e66e6094a60e57ea0984da6f9dd2235f59d0bdcbd08e5fadfa48650d3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The implementation evidence records a clean repository after commit and no agentplane-roadmap-r2 path in the implementation commit.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609121424-4BC7B3/quality/objects/sha256/2072024e66e6094a60e57ea0984da6f9dd2235f59d0bdcbd08e5fadfa48650d3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Residual risk: A future M01 campaign needs a new preregistered identity because the launcher and oracle bytes changed after the immutable v1 and v2 campaigns.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609121424-4BC7B3/quality/objects/sha256/2072024e66e6094a60e57ea0984da6f9dd2235f59d0bdcbd08e5fadfa48650d3.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

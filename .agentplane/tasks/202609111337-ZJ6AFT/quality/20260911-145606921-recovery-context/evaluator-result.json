@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The implementation derives one health model from process liveness, trace timestamp and sequence, trace or stderr modification time, heartbeat, state timestamps, and the persisted idle_ms policy.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609111337-ZJ6AFT/quality/objects/sha256/07bbbd1fa94d3be16f2e7c428663b9266b1fa40441452b1cc05543ace5f989ff.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "JSON and human status outputs expose last_trace_at, last_trace_seq, seconds_since_activity, and health.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609111337-ZJ6AFT/quality/objects/sha256/07bbbd1fa94d3be16f2e7c428663b9266b1fa40441452b1cc05543ace5f989ff.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Recent trace or stderr activity produces wait_for_active_run for an unverified child, while confirmed dead or mismatched children retain task_reclaim guidance.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609111337-ZJ6AFT/quality/objects/sha256/07bbbd1fa94d3be16f2e7c428663b9266b1fa40441452b1cc05543ace5f989ff.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Supervisor-owned verification records 7 focused tests and typecheck as passing for commit 41245a6a7d7a8b4c6a3d9c03431dd6ac105734fc.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609111337-ZJ6AFT/quality/objects/sha256/07bbbd1fa94d3be16f2e7c428663b9266b1fa40441452b1cc05543ace5f989ff.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: Status reads retained trace and stderr content through the bounded repository artifact reader, so very large retained artifacts can add status latency.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609111337-ZJ6AFT/quality/objects/sha256/07bbbd1fa94d3be16f2e7c428663b9266b1fa40441452b1cc05543ace5f989ff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202609121424-T83XJA/implement-durable-0-7-9-usage-cost-and-latency-a",
+  "created_at": "2026-09-12T20:52:29.086Z",
+  "diffstat_sha256": "sha256:c32327335b36edbf7af6184c92df2aab5b2186b997de1b9b86cf91c6ab620073",
+  "last_verified_at": "2026-09-13T02:44:48.095Z",
+  "last_verified_diffstat_sha256": "sha256:c32327335b36edbf7af6184c92df2aab5b2186b997de1b9b86cf91c6ab620073",
+  "pr_number": 5944,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5944",
+  "pre_merge_closure": {
+    "basis_commit": "d233b5762ac3b0430cdeb924b024cc70e3d613c6",
+    "branch": "task/202609121424-T83XJA/implement-durable-0-7-9-usage-cost-and-latency-a",
+    "pr_number": 5944,
+    "recorded_at": "2026-09-13T02:48:07.551Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202609121424-T83XJA",
+  "updated_at": "2026-09-12T23:45:11.158Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -170,7 +170,9 @@ export function makeRunTaskAdvanceHandler(deps: {
         allow_agent_run_budget_extension: true,
         budget_only: true,
       });
-      if (continuation === "budget_extended") current = await decide(true);
+      if (continuation === "budget_extended" || continuation === "telemetry_recovered") {
+        current = await decide(true);
+      }
     }
     let replacementPrepared = false;
     if (parsed.replacement) {

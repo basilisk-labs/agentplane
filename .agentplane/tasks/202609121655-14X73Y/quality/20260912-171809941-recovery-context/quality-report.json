@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202609121655-14X73Y",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-12T17:18:46.096Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "9e97cac5e82f9efc1e26a1e22c8802f96939ef3d",
+  "blueprint_digest": "25515cb4ded9a32b13449f99348fa47b42cbe8ba06c1e30f6a32000bab6157fd",
+  "findings": [
+    "Residual risk: A provider failure may remain unresolved."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609121655-14X73Y/quality/objects/sha256/78be06878aa806c3f440f9e711398ceb09abb1786645a6201ef44918029b5aae.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "The evaluator cannot establish acceptance because the packet has no prepared evidence and the task worktree is dirty from supervisor projection."
+  ]
+}

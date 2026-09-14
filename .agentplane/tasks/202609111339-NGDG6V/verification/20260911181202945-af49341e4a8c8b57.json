@@ -1,0 +1,101 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bunx --no-install vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1\nResult: pass\nEvidence: 3 test files passed; 47 tests passed under task-local Bun 1.4.2.\nScope: affected direct verification rework routing and freshness units.\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: runtime, core, and critical CLI groups passed under task-local Bun 1.4.2.\nScope: critical routing and lifecycle paths.\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: the full repository CI completed with exit code 0.\nScope: full repository regression matrix.\n\nCheck: real_e2e\nCommand: agentplane task advance 202609111339-NGDG6V --result <state-bound-result> --agent-json\nResult: pass\nEvidence: the live branch task advanced from the accepted implementation through TESTER to EVALUATOR instead of returning to CODER.\nScope: real task lifecycle route for event-only implementation evidence.\n\nCheck: task_outcome\nCommand: bunx --no-install vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1\nResult: pass\nEvidence: direct needs_rework selects mutable CODER repair, then supervisor implementation evidence returns the route to fresh TESTER verification.\nScope: requested GitHub issue #4893 task outcome.",
+  "digest": "sha256:af49341e4a8c8b57fdd417b514a8d4272b667f993074747fcdf65d77bf228528",
+  "implementation_sha": "769499c4b85a218bf58d06f4829a86fbbed4961a",
+  "input": {
+    "context": {
+      "digest": "sha256:20dddbaf4e87fde843f53aec54dc59500d42d14038f2306350a4a19fabf2a0aa",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:cac19a0b9a01b05639318bf53d426249d02ca65c73e88684dbc6ed1f6c8323c1",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:9bf5da7cb4777bf8caa1e1c17c8c505e9358a6cc3b00bdb9031f41f4d613b572",
+      "digest": "sha256:8606a561e4a38118399715c2bad58bbf7e7fc6075f17d963875c273d121aac8a",
+      "references": []
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "f774282d4a6ef8ce7da5bc08c8e2fd9abb99303d",
+      "digest": "sha256:129b45ab52bc6254f24a51060b62613d0f18b74979a9d6a2e89c048bf971d51a",
+      "primary_task_id": "202609111339-NGDG6V",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609111339-NGDG6V"
+      ]
+    },
+    "implementation": {
+      "base_sha": "f774282d4a6ef8ce7da5bc08c8e2fd9abb99303d",
+      "digest": "sha256:0750a4d842d972c584a20ed7ecaeba39dea52eba552e6ca3c2417e254a317d4f",
+      "strategy": "branch_diff",
+      "target_sha": "769499c4b85a218bf58d06f4829a86fbbed4961a"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:01cded343d9f8656d4e5975288320421872c1213a701827fe379a691f57a2495",
+    "verify_steps_digest": "sha256:7fa82ae4a3ef90db87015c6e695b5546fd83a8f3f9d523c277d8b2ccc6ee303d"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: final scoped routing change passes focused and full regression under Bun 1.4.2.",
+  "recorded_at": "2026-09-11T18:12:02.945Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. With approved network access, run `MISE_DATA_DIR=\"$PWD/node_modules/.cache/agentplane-mise/data\" MISE_CACHE_DIR=\"$PWD/node_modules/.cache/agentplane-mise/cache\" mise install bun@1.4.2`. Expected: Bun 1.4.2 is available only in the ignored task-local cache.\n2. With the task-local Bun directory prepended to `PATH`, run `bunx --no-install vitest run packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1`. Expected: all focused direct rework and workflow-step routing regressions pass.\n3. Inspect `task next-action --json` and `task status --json` in the regression after `verify --rework`. Expected: both expose a CODER `implementation_rework` episode, `safeToMutate=true`, and no repeated TESTER verification.\n4. With the same task-local Bun directory prepended to `PATH`, run `bun run ci:local:full`. Expected: the repository full local CI gate passes under the pinned Bun 1.4.2 runtime.",
+  "scope_digest": "sha256:7fa82ae4a3ef90db87015c6e695b5546fd83a8f3f9d523c277d8b2ccc6ee303d",
+  "task_id": "202609111339-NGDG6V",
+  "verification_command": "agentplane verify 202609111339-NGDG6V --ok --by TESTER",
+  "verifier": "TESTER"
+}

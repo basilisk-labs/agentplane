@@ -74,6 +74,7 @@ const EXTERNAL_PRE_AUTHORIZED: AuthorityRequirement = {
  */
 export const WORKFLOW_OPERATION_AUTHORITY_POLICY = {
   "task.artifacts.commit": LOCAL_REVERSIBLE,
+  "task.branch.sync_base": LOCAL_REVERSIBLE,
   "task.start": LOCAL_REVERSIBLE,
   "task.branch.start": LOCAL_REVERSIBLE,
   "task.scope.extend": SEMANTIC_DECISION,

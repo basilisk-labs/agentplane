@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202609121655-14X73Y",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-12T16:59:51.424Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 3 typed finding(s).",
+  "evaluated_sha": "a974bdef9d52bba58b584dd6de411c18e311336c",
+  "blueprint_digest": "25515cb4ded9a32b13449f99348fa47b42cbe8ba06c1e30f6a32000bab6157fd",
+  "findings": [
+    "hasExactSchedulableWorkItemScopeDelta returns true for a missing root on an optional READY WorkItem even when every required WorkItem is COMPLETED.",
+    "extendTaskCentricWorkItemScope returns the aggregate unchanged when every required WorkItem is completed, so the accepted request would change only rationale and mark the extension applied without extending the target WorkItem.",
+    "The narrow repair is to make the guard mirror the shared all-required-completed rule and add a regression test for that exact state."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609121655-14X73Y/quality/objects/sha256/d0ff8a97b08f736b32fba490a592611aa232e2f17b277e1441ce63f491e1c830.patch"
+  ],
+  "missing_tests": [
+    "Reject a global-contract no-op when all required WorkItems are completed and an optional exact target is READY but missing the requested root."
+  ],
+  "hidden_assumptions": [
+    "A READY optional target does not imply that the shared extension function will mutate it after all required WorkItems are completed."
+  ],
+  "residual_risks": [
+    "Rework is required because the new guard can accept a true no-op when every required WorkItem is already completed and the exact target is an optional schedulable WorkItem."
+  ]
+}

@@ -1,0 +1,116 @@
+{
+  "details": "Command: bunx --no-install vitest run packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1\nResult: pass\nEvidence: .agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609111339-NGDG6V declared verification\n\nCommand: bun run ci:local:full\nResult: fail\nEvidence: .agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609111339-NGDG6V declared verification",
+  "digest": "sha256:901ebf3f4d79394bf7cd10f2b50bd2e21994c5c8a6593f7e83b4e07e08a8674e",
+  "implementation_sha": "c14b1c85cb35f0ee51131670fa16bb50a191284b",
+  "input": {
+    "context": {
+      "digest": "sha256:20dddbaf4e87fde843f53aec54dc59500d42d14038f2306350a4a19fabf2a0aa",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:4c16ece2228341cf4a376c4427243a034ef3e8d81e414cc7209098068c6a88fb",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:c98c44ac3fb2f00f8056152f845018463f14f532d40621a8f69e69df024e1b76",
+      "digest": "sha256:2e28854a85a5957e19b48a1ac0bad8fd9dfa27630544d4410a217357ebeaa719",
+      "references": [
+        {
+          "digest": "sha256:7d3a449738fb935908189a9b9e473fd08f4f2c00c64f8a973546b12091473636",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:7d3a449738fb935908189a9b9e473fd08f4f2c00c64f8a973546b12091473636",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "f774282d4a6ef8ce7da5bc08c8e2fd9abb99303d",
+      "digest": "sha256:129b45ab52bc6254f24a51060b62613d0f18b74979a9d6a2e89c048bf971d51a",
+      "primary_task_id": "202609111339-NGDG6V",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609111339-NGDG6V"
+      ]
+    },
+    "implementation": {
+      "base_sha": "f774282d4a6ef8ce7da5bc08c8e2fd9abb99303d",
+      "digest": "sha256:70ed15281253797791167cc4be1ab1dcb9f7833c7358df33b8be84750ba7f002",
+      "strategy": "branch_diff",
+      "target_sha": "c14b1c85cb35f0ee51131670fa16bb50a191284b"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:564c0d23b7fffb79578ae95e617f9b09ba8983227a98463d84a109ecd6d7ba5e",
+    "verify_steps_digest": "sha256:b434ac5d180a14ad7cb650945d4df1b94248c088dc1a0b0826e42f5675c67a03"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check failed: bun run ci:local:full",
+  "recorded_at": "2026-09-11T15:36:23.030Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "1. Run `bunx --no-install vitest run packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1`. Expected: all focused direct rework and workflow-step routing regressions pass.\n2. Inspect `task next-action --json` and `task status --json` in the regression after `verify --rework`. Expected: both expose a CODER `implementation_rework` episode, `safeToMutate=true`, and no repeated TESTER verification.\n3. Confirm the regression records newer repair evidence before TESTER is selected again. Expected: unchanged implementation or unapproved task-contract drift remains on the repair path.",
+  "scope_digest": "sha256:b434ac5d180a14ad7cb650945d4df1b94248c088dc1a0b0826e42f5675c67a03",
+  "task_id": "202609111339-NGDG6V",
+  "verification_command": "agentplane verify 202609111339-NGDG6V --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

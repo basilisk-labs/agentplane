@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202609121424-T83XJA-fa4a926f24f61d13e8289d9a",
+  "task_id": "202609121424-T83XJA",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Rework is required because the durable lifecycle timing schema does not enforce its non-overlap invariant.",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "summary": "[P1] packages/core/src/runner/supervisor-execution-episode.ts validates timing totals, identities, parent existence, and root bounds, but it does not reject overlapping non-ancestor spans. A direct reproduction through completeSupervisorExecutionEpisode persisted sibling spans [0,8] and [2,10] while partitioned_ms still claimed a reconciled total of 10. The local builder rejects this shape, but the canonical journal is a persisted trust boundary and its public completion API accepts caller-supplied lifecycle_timing. Add schema-level hierarchy, root, cycle, and sibling-overlap validation plus a negative core test so malformed or migrated journals cannot violate ST-13 acceptance.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/1a97cd233f305b740f12f26776deecf8a06c0e9bd64a878412f1ba2d89204faa.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "summary": "Residual risk: Without schema-level structural validation, corrupted, historical, or future caller-generated timing can claim reconciled partitions while its spans overlap, undermining cost and latency analysis.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/1a97cd233f305b740f12f26776deecf8a06c0e9bd64a878412f1ba2d89204faa.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202609121424-T83XJA/quality/20260912-235818266-recovery-context/evaluator-result.json"
+}
