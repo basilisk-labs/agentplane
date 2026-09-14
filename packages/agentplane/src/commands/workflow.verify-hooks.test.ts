@@ -246,6 +246,16 @@ describe("commands/workflow", () => {
       loadCommandContext({ cwd: root, rootOverride: null }),
       loadCommandContext({ cwd: root, rootOverride: null }),
     ]);
+    let preparedWrites = 0;
+    let releasePreparedWrites!: () => void;
+    const bothWritesPrepared = new Promise<void>((resolve) => {
+      releasePreparedWrites = resolve;
+    });
+    const synchronizeFirstWrites = async () => {
+      preparedWrites += 1;
+      if (preparedWrites === 2) releasePreparedWrites();
+      await bothWritesPrepared;
+    };
 
     const outcomes = await Promise.all([
       cmdVerifyParsed({
@@ -257,6 +267,7 @@ describe("commands/workflow", () => {
         by: "FIRST",
         note: "First verification",
         quiet: true,
+        beforePersist: synchronizeFirstWrites,
       }),
       cmdVerifyParsed({
         ctx: secondContext,
@@ -267,6 +278,7 @@ describe("commands/workflow", () => {
         by: "SECOND",
         note: "Second verification",
         quiet: true,
+        beforePersist: synchronizeFirstWrites,
       }),
     ]);
     expect(outcomes).toEqual([0, 0]);

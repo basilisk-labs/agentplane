@@ -1,0 +1,119 @@
+{
+  "details": "Command: bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609140925-AWJQMB declared verification\n\nCommand: bun run ci:local:full\nResult: fail\nEvidence: .agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609140925-AWJQMB declared verification",
+  "digest": "sha256:1bf823f8d4a7c0f5ac91e44b71e1e5ad241a467e12d16977077060235a237604",
+  "implementation_sha": "a88bbf51753b05ac3da03316f90a7e9c39b536c8",
+  "input": {
+    "context": {
+      "digest": "sha256:be2cd4a1822669e850198c66e1dff5858d19f4644abe13560d0a8d2504db633b",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+        "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:d762a1fd07ca163675a30f0d7ceb7775ddf42bb22bc65a442d099f15416e2331",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:5ae5af39a0b6f9bf2675abd0294a998e7608f4d6071770460ec8652624eaa707",
+      "digest": "sha256:2fd5749e9790975699fdded076141af47f5079603f0d9a136344e680139d7b55",
+      "references": [
+        {
+          "digest": "sha256:5ddb5abce51d2b9af8c2bbb438ca1e69b2f324a2c91452702f4c2192c4e5f2ca",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:5ddb5abce51d2b9af8c2bbb438ca1e69b2f324a2c91452702f4c2192c4e5f2ca",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "1a93a9a43da2b714854174491f9672c52bf33e9f",
+      "digest": "sha256:cbdb10657326b416a364df1b24b7de3c91d87b867c2717f0fd60d25d5726aac6",
+      "primary_task_id": "202609140925-AWJQMB",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor",
+        "reversibility_recovery_required"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609140925-AWJQMB"
+      ]
+    },
+    "implementation": {
+      "base_sha": "1a93a9a43da2b714854174491f9672c52bf33e9f",
+      "digest": "sha256:898d976824de665e3d7b625d8c8ab5abbb3dafc1fe2bc291ae4906cecefcf2b7",
+      "strategy": "branch_diff",
+      "target_sha": "a88bbf51753b05ac3da03316f90a7e9c39b536c8"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:bb9843b56beb6ee559d385d4c0b48b82365728864d5a1feba4bce9f060b32e93",
+    "verify_steps_digest": "sha256:caf6c21d548ad559712ae0b86a33201ebda52f08a24f8d962503cd7828f36f4d"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check failed: bun run ci:local:full",
+  "recorded_at": "2026-09-14T10:50:30.069Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "1. Run `bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts`. Expected: focused synchronization and supervisor-operation tests pass.\n2. Inspect the focused fixture merge commit subject, body, and parents. Expected: the subject matches the task-attributed AgentPlane format, the body contains a valid Signed-off-by trailer, and the parents are the exact prior task head followed by the exact plan-bound base SHA.\n3. Run `git diff --check` and review the exact diff and status. Expected: only the approved synchronization implementation, focused regression tests, and this task artifact changed; hook enforcement, conflict refusal, stale-identity refusal, dirty-worktree refusal, and unrelated user work remain intact.",
+  "scope_digest": "sha256:caf6c21d548ad559712ae0b86a33201ebda52f08a24f8d962503cd7828f36f4d",
+  "task_id": "202609140925-AWJQMB",
+  "verification_command": "agentplane verify 202609140925-AWJQMB --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

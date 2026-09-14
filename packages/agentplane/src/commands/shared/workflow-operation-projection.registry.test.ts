@@ -152,6 +152,16 @@ describe("Workflow operation projection registry", () => {
         params: { taskId },
         argv: ["agentplane", "commit", taskId, "--close", "--unstage-others"],
       },
+      "task.branch.sync_base": {
+        params: {
+          taskId,
+          branch: taskBranch,
+          baseBranch: "main",
+          expectedHeadSha: taskHead,
+          expectedBaseSha: "2222222222222222222222222222222222222222",
+        },
+        argv: ["agentplane", "task", "run", taskId, "--json"],
+      },
       "task.branch.start": {
         params: { taskId, author: "CODER", body: "Start: branch work." },
         argv: [

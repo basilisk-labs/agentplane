@@ -50,11 +50,9 @@ import {
   evaluatorReturnFingerprint,
   isRecoverableAppliedEvaluatorResult,
 } from "./external-agent-evaluator-recovery.js";
-import {
-  applyAcceptedExternalAgentResult,
-  isExternalAgentResultAlreadyApplied,
-} from "./external-agent-result-application.js";
+import { isExternalAgentResultAlreadyApplied } from "./external-agent-result-application.js";
 import { superviseExternalAgentIssuance } from "./external-agent-supervisor-recovery.js";
+import { applyExternalAgentResultWithRejectedResultRecovery } from "./external-agent-result-rejection-recovery.js";
 import { recordIssuedExternalAgentEpisode } from "./external-agent-supervisor-episode.js";
 import { assertExternalPlanningResultApplicable } from "./external-agent-planning-authority.js";
 import {
@@ -532,15 +530,16 @@ export async function acceptExternalAgentResult(opts: {
     ) {
       await assertReadOnlyReturnFresh({ exchange, work_order: workOrder, decision: current });
     }
-    if (!acceptedApplication && !(alreadyApplied && exchange.purpose === "planning")) {
-      await applyAcceptedExternalAgentResult({
-        command: checkoutCommand,
-        decision: current,
-        exchange,
-        work_order: workOrder,
-        envelope,
-      });
-    }
+    await applyExternalAgentResultWithRejectedResultRecovery({
+      command: checkoutCommand,
+      decision: current,
+      exchange,
+      work_order: workOrder,
+      envelope,
+      supervisor: { store, journal: issuedJournal, operation, paths },
+      include_remote: includeRemote,
+      skip_application: acceptedApplication || (alreadyApplied && exchange.purpose === "planning"),
+    });
     const after = await refreshExternalAgentRoute({
       cwd: exchange.checkout,
       task_id: opts.task_id,

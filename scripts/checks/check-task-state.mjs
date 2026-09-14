@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -41,9 +42,53 @@ function listTaskDirs(tasksRoot) {
   return readdirSync(tasksRoot)
     .filter((entry) => {
       const fullPath = path.join(tasksRoot, entry);
-      return statSync(fullPath).isDirectory();
+      return statSync(fullPath).isDirectory() && !hasOnlyValidQualityObjects(fullPath);
     })
     .toSorted((a, b) => a.localeCompare(b));
+}
+
+function hasOnlyValidQualityObjects(taskDir) {
+  const qualityEntries = readdirSync(taskDir, { withFileTypes: true });
+  if (
+    qualityEntries.length !== 1 ||
+    qualityEntries[0]?.name !== "quality" ||
+    !qualityEntries[0].isDirectory()
+  ) {
+    return false;
+  }
+
+  const qualityRoot = path.join(taskDir, "quality");
+  const objectEntries = readdirSync(qualityRoot, { withFileTypes: true });
+  if (
+    objectEntries.length !== 1 ||
+    objectEntries[0]?.name !== "objects" ||
+    !objectEntries[0].isDirectory()
+  ) {
+    return false;
+  }
+
+  const objectsRoot = path.join(qualityRoot, "objects");
+  const algorithmEntries = readdirSync(objectsRoot, { withFileTypes: true });
+  if (
+    algorithmEntries.length !== 1 ||
+    algorithmEntries[0]?.name !== "sha256" ||
+    !algorithmEntries[0].isDirectory()
+  ) {
+    return false;
+  }
+
+  const sha256Root = path.join(objectsRoot, "sha256");
+  const objects = readdirSync(sha256Root, { withFileTypes: true });
+  if (objects.length === 0) return false;
+  return objects.every((entry) => {
+    if (!entry.isFile()) return false;
+    const match = /^([0-9a-f]{64})\.[^/]+$/u.exec(entry.name);
+    if (!match) return false;
+    const digest = createHash("sha256")
+      .update(readFileSync(path.join(sha256Root, entry.name)))
+      .digest("hex");
+    return digest === match[1];
+  });
 }
 
 function readObservationLines(filePath) {

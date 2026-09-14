@@ -19,6 +19,8 @@ import {
 import { prepareEvaluatorReview } from "./evaluator-review-usecase.js";
 import { recoverPersistedEvaluatorFailureEpisode } from "./evaluator-execute-supervisor.js";
 
+const PROVIDER_OBSERVATION_TIMEOUT_MS = 2000;
+
 async function prepare(root: string, taskId: string) {
   await writeDefaultConfig(root);
   await cmdTaskAdd({
@@ -102,7 +104,9 @@ describe("evaluator failure usage receipts", () => {
       const fakeBin = await installProvider(root, mode);
       const previousPath = process.env.PATH;
       process.env.PATH = `${fakeBin}${path.delimiter}${previousPath ?? ""}`;
-      if (mode === "timeout") command.config.runner.timeouts.wall_clock_ms = 500;
+      if (mode === "timeout") {
+        command.config.runner.timeouts.wall_clock_ms = PROVIDER_OBSERVATION_TIMEOUT_MS;
+      }
       let caught: unknown;
       try {
         await executePreparedEvaluatorEpisode({ ctx: command, prepared });

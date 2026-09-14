@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609140050-8QDRVN-a67bd14539e80314b779d036",
+  "prepared_at": "2026-09-14T01:44:38.643Z",
+  "task": {
+    "id": "202609140050-8QDRVN",
+    "revision": 31,
+    "objective": "Recover an external-agent result rejected during supervisor application\n\nWhen a durable result_received external-agent result is rejected by deterministic supervisor application validation, fail the owning semantic operation without applying the result, retire the exchange, and require the existing exact-key --replacement route. Preserve single-use result integrity and effect-in-doubt behavior. Add focused regression coverage for an implementation result that changes Git history outside the permitted workspace effect.",
+    "acceptance_criteria": [
+      "bun test packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+      "- In scope: When a durable result_received external-agent result is rejected by deterministic supervisor application validation, fail the owning semantic operation without applying the result, retire the exchange, and require the existing exact-key --replacement route. Preserve single-use result integrity and effect-in-doubt behavior. Add focused regression coverage for an implementation result that changes Git history outside the permitted workspace effect.\n- Out of scope: unrelated refactors not required for \"Recover an external-agent result rejected during supervisor application\".",
+      "Preserve the original WorkItem identity and correct its test launcher.",
+      "1. Run `bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts`. Expected: all focused recovery tests pass, including the Git-history rejection regression.\n2. Confirm the rejected exchange is retired, the owning journal operation is failed, and a plain advance requires the existing exact-key `--replacement` route.\n3. Confirm existing accepted-result replay and effect-in-doubt recovery cases still pass."
+    ]
+  },
+  "evaluated_sha": "0aa277dd97640bbc2afba29d72adb91fae64021f",
+  "diff_base_sha": "9792878934b2c4d068e98056cef3c2c691451a90",
+  "blueprint_digest": "2b3bd560197c44675a24a60b7d3717014353b005bd56806b8fb6f1bc6db0d880",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609140050-8QDRVN/quality/20260914-014438643-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:fea8c7a3804673e7b181cd67f1f81a51e59d3d986ec551735e2d2cb585279811",
+    "prompt_path": ".agentplane/tasks/202609140050-8QDRVN/quality/objects/sha256/5861dad09e13f523e9a392a5ddd8a4b959b643b46dac2839064d13dfc644a7fe.md",
+    "result_schema_path": ".agentplane/tasks/202609140050-8QDRVN/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609140050-8QDRVN/README.md",
+      "sha256": "sha256:09308120f53c2c95cd412f4cbb3b3794daa328e0da4dd8fda259d4dc1f310f0d",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609140050-8QDRVN/quality/objects/sha256/390511960cf208eb237e7d06bd52162fefa52783dbc1038b48e6f1f1988f08df.patch",
+      "sha256": "sha256:390511960cf208eb237e7d06bd52162fefa52783dbc1038b48e6f1f1988f08df",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609140050-8QDRVN/quality/objects/sha256/007ad751a64e6a3fc4c76b11e146a0e264d3629a865b23ee9b89ccb03785edc3.json",
+      "sha256": "sha256:007ad751a64e6a3fc4c76b11e146a0e264d3629a865b23ee9b89ccb03785edc3",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609140050-8QDRVN/verification/20260914014428438-c9b85eadd02c96e7.json",
+      "sha256": "sha256:61b731cd21a0c5f0532278139534b478aa0d45d01301eba96425eef8740c2215",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609140050-8QDRVN/quality/objects/sha256/7bf79f1c63f9fb40ab92f33a74add480a1de3c515299836cb5eb9e8dffa962c7.json",
+      "sha256": "sha256:7bf79f1c63f9fb40ab92f33a74add480a1de3c515299836cb5eb9e8dffa962c7",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

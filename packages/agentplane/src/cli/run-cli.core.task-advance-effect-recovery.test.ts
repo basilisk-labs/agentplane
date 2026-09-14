@@ -46,6 +46,7 @@ import {
   writePlanningResult,
   type AgentPacket,
 } from "./task-advance-effect-recovery.testkit.js";
+import { exerciseRejectedResultApplicationRecovery } from "./task-advance-result-rejection-recovery.testkit.js";
 import { applyExternalPlanningResult } from "../commands/task/external-agent-planning-authority.js";
 import { loadCommandContext } from "../commands/shared/task-backend.js";
 
@@ -193,6 +194,10 @@ describe("task advance effect recovery", () => {
     expect(oldResult.code).not.toBe(0);
     expect(oldResult.stderr).toContain("retired");
   });
+
+  it("fails and retires an implementation result rejected before application", async () => {
+    await exerciseRejectedResultApplicationRecovery({ createTask, readAgentPacket });
+  }, 30_000);
 
   it("lets implementation rework proceed past stale verification failures only", () => {
     expect(

@@ -108,11 +108,9 @@ describe("workspace allocation", () => {
       }
     }
 
-    await Promise.all(
-      allocations.map(async (allocation, index) => {
-        await unlink(path.join(allocation.workspace_root, `private-${index}.txt`));
-        await cleanupTaskWorkspace(allocation);
-      }),
-    );
+    for (const [index, allocation] of allocations.entries()) {
+      await unlink(path.join(allocation.workspace_root, `private-${index}.txt`));
+      await cleanupTaskWorkspace(allocation);
+    }
   });
 });
