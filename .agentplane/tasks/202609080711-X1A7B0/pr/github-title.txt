@@ -1,0 +1,1 @@
+🚧 X1A7B0 task: Remove ap task run from standard route recommendations and release AgentPlane v0.6.28 [202609080711-X1A7B0]

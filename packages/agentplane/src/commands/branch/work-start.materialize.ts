@@ -6,6 +6,7 @@ import { fileExists } from "../../cli/fs-utils.js";
 import { resolveRuntimeSourceInfo } from "../../runtime/shared/runtime-source.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { isPathWithin } from "../shared/path.js";
+import { WORKTREE_INSTALL_LAYOUT_LINKS } from "../shared/worktree-install-layout-links.js";
 
 function isPresentString(value: string | null): value is string {
   return value !== null;
@@ -134,14 +135,7 @@ export async function materializeRepoLocalInstallLayoutForWorktree(opts: {
   worktreePath: string;
 }): Promise<void> {
   const sourceRoots = resolveRuntimeSourceRoots(opts.repoRoot);
-  const linkTargets = [
-    "node_modules",
-    path.join("packages", "core", "node_modules"),
-    path.join("packages", "agentplane", "node_modules"),
-    path.join("website", "node_modules"),
-    "agentplane-recipes",
-  ];
-  for (const relativePath of linkTargets) {
+  for (const relativePath of WORKTREE_INSTALL_LAYOUT_LINKS) {
     await linkDirectoryIntoWorktree({
       sourceRoots,
       worktreePath: opts.worktreePath,

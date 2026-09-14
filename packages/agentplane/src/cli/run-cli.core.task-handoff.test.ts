@@ -204,8 +204,8 @@ describe("runCli task handoff and recovery", () => {
       };
       expect(parsed.next_action.command).not.toContain("task reclaim");
       expect(parsed.next_action).toMatchObject({
-        code: "retry",
-        command: `agentplane task run ${taskId}`,
+        code: "continue_direct",
+        command: `agentplane task verify-show ${taskId}`,
       });
     } finally {
       nextIo.restore();

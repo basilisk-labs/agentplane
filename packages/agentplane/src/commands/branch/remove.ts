@@ -11,6 +11,7 @@ import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitEnv } from "@agentplaneorg/core/git";
 import { gitBranchExists } from "../shared/git-ops.js";
 import { isPathWithin, resolvePathFallback } from "../shared/path.js";
+import { unlinkWorktreeInstallLayout } from "../shared/worktree-install-layout-links.js";
 
 export async function cmdBranchRemove(opts: {
   cwd: string;
@@ -58,6 +59,7 @@ export async function cmdBranchRemove(opts: {
           message: `Refusing to remove worktree outside ${worktreesRoot}: ${worktreePath}`,
         });
       }
+      await unlinkWorktreeInstallLayout(worktreePath);
       await execFileAsync(
         "git",
         ["worktree", "remove", ...(opts.force ? ["--force"] : []), worktreePath],

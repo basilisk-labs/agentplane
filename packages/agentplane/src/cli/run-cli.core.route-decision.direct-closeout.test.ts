@@ -105,7 +105,7 @@ describe("runCli route decision direct closeout", () => {
     }
   });
 
-  it("routes a tracked DOING direct task without runner state into the task runner", async () => {
+  it("keeps a tracked DOING direct task without runner state on the current-agent route", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);
     const config = defaultConfig();
@@ -147,6 +147,13 @@ describe("runCli route decision direct closeout", () => {
       const parsed = JSON.parse(nextIo.stdout) as {
         route_oracle: { phase: string; nextCommand: string | null };
         operator_guidance: {
+          executor_context: {
+            current_agent_must_execute: boolean;
+            instruction: string;
+            warning: string;
+          };
+          repeat_policy: { allowed: boolean; stop_condition: string };
+          after_command: string;
           runner_context: {
             runner_is_required: boolean;
             runner_is_allowed_now: boolean;
@@ -157,15 +164,32 @@ describe("runCli route decision direct closeout", () => {
       };
       expect(parsed.route_oracle.phase).toBe("direct_execution");
       expect(parsed.next_action).toMatchObject({
-        code: "run",
-        command: `agentplane task run ${taskId}`,
+        code: "continue_direct",
+        command: `agentplane task verify-show ${taskId}`,
       });
-      expect(parsed.route_oracle.nextCommand).toBe(`agentplane task run ${taskId}`);
+      expect(parsed.route_oracle.nextCommand).toBe(`agentplane task verify-show ${taskId}`);
+      expect(parsed.next_action.command).not.toContain("task run");
       expect(parsed.operator_guidance.runner_context).toMatchObject({
-        runner_is_required: true,
-        runner_is_allowed_now: true,
-        runner_failure_means: "runner_infrastructure_or_task_unknown",
+        runner_is_required: false,
+        runner_is_allowed_now: false,
+        runner_failure_means: "not_runner_route",
       });
+      expect(parsed.operator_guidance.executor_context).toMatchObject({
+        current_agent_must_execute: true,
+        instruction: "current_agent_performs_semantic_work",
+      });
+      expect(parsed.operator_guidance.executor_context.warning).toContain(
+        "perform the approved implementation",
+      );
+      expect(parsed.operator_guidance.repeat_policy).toMatchObject({
+        allowed: false,
+      });
+      expect(parsed.operator_guidance.repeat_policy.stop_condition).toContain(
+        "do not repeat task verify-show",
+      );
+      expect(parsed.operator_guidance.after_command).toContain(
+        "completes the approved implementation",
+      );
     } finally {
       nextIo.restore();
     }
@@ -180,10 +204,10 @@ describe("runCli route decision direct closeout", () => {
         next_action: { code: string; command: string | null };
       };
       expect(parsed.next_action).toMatchObject({
-        code: "resume",
-        command: `agentplane task run ${taskId}`,
+        code: "continue_direct",
+        command: `agentplane task verify-show ${taskId}`,
       });
-      expect(parsed.next_action.command).not.toContain("verify-show");
+      expect(parsed.next_action.command).not.toContain("task run");
     } finally {
       recomputeIo.restore();
     }
@@ -280,15 +304,16 @@ describe("runCli route decision direct closeout", () => {
         next_action: { code: string; command: string | null };
       };
       expect(parsed.next_action).toMatchObject({
-        code: "run",
-        command: `agentplane task run ${taskId}`,
+        code: "continue_direct",
+        command: `agentplane task verify-show ${taskId}`,
       });
+      expect(parsed.next_action.command).not.toContain("task run");
     } finally {
       recomputeIo.restore();
     }
   });
 
-  it("stops for verification evidence after a successful runner instead of looping verify-show", async () => {
+  it("keeps a terminal historical runner record on the current-agent execution route", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);
     const config = defaultConfig();
@@ -350,23 +375,39 @@ describe("runCli route decision direct closeout", () => {
           actionKind: string;
           safeToMutate: boolean;
           exactArgv: string[] | null;
+          returnControlWhen: string;
         };
-        operator_guidance: { canExecuteNow: boolean; safeCommand: string | null };
+        operator_guidance: {
+          canExecuteNow: boolean;
+          safeCommand: string | null;
+          executor_context: {
+            executor: string;
+            current_agent_must_execute: boolean;
+            instruction: string;
+          };
+        };
       };
       expect(parsed.next_action).toMatchObject({
-        code: "review_direct_verification",
-        command: null,
+        code: "continue_direct",
+        command: `agentplane task verify-show ${taskId}`,
       });
-      expect(parsed.next_action.summary).toContain(`agentplane verify ${taskId}`);
-      expect(parsed.next_action.summary).not.toContain("verify-show");
+      expect(parsed.next_action.summary).toContain("current coding agent");
       expect(parsed.execution_packet).toMatchObject({
-        actionKind: "stop",
-        safeToMutate: false,
-        exactArgv: null,
+        actionKind: "local_command",
+        safeToMutate: true,
+        exactArgv: ["agentplane", "task", "verify-show", taskId],
       });
+      expect(parsed.execution_packet.returnControlWhen).toContain(
+        "completes the approved implementation",
+      );
       expect(parsed.operator_guidance).toMatchObject({
-        canExecuteNow: false,
-        safeCommand: null,
+        canExecuteNow: true,
+        safeCommand: `agentplane task verify-show ${taskId}`,
+        executor_context: {
+          executor: "current_agent",
+          current_agent_must_execute: true,
+          instruction: "current_agent_performs_semantic_work",
+        },
       });
     } finally {
       nextIo.restore();

@@ -48,7 +48,15 @@ function taskSuffix(taskId: string): string {
   return taskId.split("-").at(-1) ?? taskId;
 }
 
-function directRunnerAction(resume: TaskResumeContext, taskId: string): RouteNextAction {
+function directExecutionAction(resume: TaskResumeContext, taskId: string): RouteNextAction {
+  if (resume.runner.next_action === "cancel_then_resume") {
+    return {
+      code: "cancel_then_resume",
+      command: resume.runner.next_command ?? null,
+      summary: "reclaim the stale direct-workflow runner before current-agent execution",
+      requiresApproval: false,
+    };
+  }
   if (resume.runner.next_action === "wait") {
     return {
       code: "wait_runner",
@@ -57,20 +65,11 @@ function directRunnerAction(resume: TaskResumeContext, taskId: string): RouteNex
       requiresApproval: false,
     };
   }
-  if (resume.runner.next_action === "none") {
-    return {
-      code: "review_direct_verification",
-      command: null,
-      summary:
-        `runner work is complete; execute the declared Verify Steps, then record ` +
-        `agentplane verify ${taskId} --ok|--rework with evidence`,
-      requiresApproval: false,
-    };
-  }
   return {
-    code: resume.runner.next_action ?? "run",
-    command: resume.runner.next_command ?? `agentplane task run ${taskId}`,
-    summary: "execute or recover the direct-workflow task through the configured runner",
+    code: "continue_direct",
+    command: `agentplane task verify-show ${taskId}`,
+    summary:
+      "read the declared Verify Steps, then have the current coding agent implement and verify the approved direct-mode task in this checkout",
     requiresApproval: false,
   };
 }
@@ -189,7 +188,7 @@ export function deriveNextAction(opts: {
         requiresApproval: false,
       };
     }
-    return directRunnerAction(opts.resume, id);
+    return directExecutionAction(opts.resume, id);
   }
   if (opts.batchOwnership.role === "included") {
     return opts.batchOwnership.nextOwnerAction;

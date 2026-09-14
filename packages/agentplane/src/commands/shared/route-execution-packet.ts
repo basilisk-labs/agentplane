@@ -135,6 +135,10 @@ function exactArgvFor(command: string | null): string[] | null {
 
 function automationBoundaryMustNotFor(code: string): string[] {
   const rules: Record<string, string[]> = {
+    continue_direct: [
+      "do not stop after reading Verify Steps; that command prepares the approved semantic implementation",
+      "do not start or wait for a runner; the current coding agent owns implementation and verification",
+    ],
     open_pr: [
       "do not create/link the hosted PR manually; agentplane pr open owns branch publish, PR artifacts, and PR creation/linking",
     ],
@@ -198,6 +202,9 @@ function returnControlWhenFor(opts: {
   actionKind: RouteExecutionPacket["actionKind"];
   nextAction: RouteBatchNextAction;
 }): string {
+  if (opts.nextAction.code === "continue_direct") {
+    return "after the current coding agent reads Verify Steps, completes the approved implementation, runs the declared checks, and records verification; then recompute task next-action";
+  }
   if (opts.actionKind === "local_command") {
     return "after the exact command exits; recompute task next-action before any further step";
   }

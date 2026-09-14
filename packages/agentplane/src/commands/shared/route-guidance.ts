@@ -64,6 +64,7 @@ type RouteExecutorContext = {
   currentAgentMustExecute: boolean;
   instruction:
     | "current_agent_executes_safe_command"
+    | "current_agent_performs_semantic_work"
     | "runner_route_follow_runner_lifecycle"
     | "current_agent_waits_for_provider_or_recompute";
   warning: string;
@@ -263,6 +264,16 @@ function deriveExecutorContext(
         "runner route is active; inspect runner artifacts/status before local mutation or verification",
     };
   }
+  if (decision.nextAction.code === "continue_direct") {
+    return {
+      executor: "current_agent",
+      runnerRouteActive: false,
+      currentAgentMustExecute: true,
+      instruction: "current_agent_performs_semantic_work",
+      warning:
+        "current coding agent must read Verify Steps, perform the approved implementation, run the declared checks, and record verification",
+    };
+  }
   if (currentAgentMustExecute) {
     return {
       executor: "current_agent",
@@ -308,7 +319,8 @@ export function deriveRouteOperatorGuidance(decision: TaskRouteDecision): RouteO
     unsafeShellRisk?.mitigationCommand ??
     risks.find((risk) => risk.code === "runner_rail_confusion")?.mitigationCommand ??
     null;
-  const repeatAllowed = canExecuteNow && artifactRisk === null;
+  const semanticWork = decision.nextAction.code === "continue_direct";
+  const repeatAllowed = canExecuteNow && artifactRisk === null && !semanticWork;
   const runnerContext = deriveRunnerContext(decision);
   return {
     schemaVersion: 1,
@@ -327,9 +339,11 @@ export function deriveRouteOperatorGuidance(decision: TaskRouteDecision): RouteO
       allowed: repeatAllowed,
       maxAttemptsBeforeRecompute: 1,
       recomputeCommand: decision.executionPacket.staleStateCheck,
-      stopCondition: artifactRisk
-        ? artifactRisk.stopCondition
-        : "after any non-zero exit or completed mutation, recompute task next-action before a second step",
+      stopCondition: semanticWork
+        ? "do not repeat task verify-show; complete the approved semantic work and verification before recomputing the route"
+        : artifactRisk
+          ? artifactRisk.stopCondition
+          : "after any non-zero exit or completed mutation, recompute task next-action before a second step",
     },
     fallback: {
       allowed: hookRisk !== null,
