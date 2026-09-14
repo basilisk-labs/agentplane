@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "PASS: CustomRunnerAdapter returns only after persisting one provider- and dispatch-bound unavailable usage observation, and Hermes uses the same branch-free execution path with its own adapter id.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609141440-VFA9C1/quality/objects/sha256/80c915ee57425f981428bc138f9cd23ec3135d75056b6ac8ae6f26c4eb512ea1.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "PASS: cmdFinish performs the branch-pr base-checkout guard before reconciliation, while reconciliation still runs for eligible checkouts.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609141440-VFA9C1/quality/objects/sha256/80c915ee57425f981428bc138f9cd23ec3135d75056b6ac8ae6f26c4eb512ea1.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "PASS: supervisor-recorded full local CI passed, and an independent focused rerun passed 13 of 13 tests on committed HEAD a2e1365c9e7db575ba31007ea61d2b96120a198c.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609141440-VFA9C1/quality/objects/sha256/80c915ee57425f981428bc138f9cd23ec3135d75056b6ac8ae6f26c4eb512ea1.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted integration has not yet been observed and must remain fail-closed until the provider checks pass on the published exact head.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609141440-VFA9C1/quality/objects/sha256/80c915ee57425f981428bc138f9cd23ec3135d75056b6ac8ae6f26c4eb512ea1.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

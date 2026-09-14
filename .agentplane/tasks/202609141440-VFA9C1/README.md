@@ -4,7 +4,7 @@ title: "Repair managed usage observation and branch-pr finish guard regressions"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -31,6 +31,35 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-14T16:04:31.447Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "bb5980e80f1b95e3162905ed7304d5da54de66f2"
+  blueprint_digest: "a5e2f89fe35a9cb6618947168657d5dbe23402eb8c0915a320f44b2b151c0d57"
+  evidence_refs:
+    - ".agentplane/tasks/202609141440-VFA9C1/quality/20260914-160224812-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609141440-VFA9C1/quality/20260914-160224812-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609141440-VFA9C1/quality/objects/sha256/47f9474fcf8c5d5814c1af4a39772e72c1faf55d5454ec0a4d60db43846d03c1.md"
+    - ".agentplane/tasks/202609141440-VFA9C1/quality/20260914-160224812-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609141440-VFA9C1/quality/20260914-160224812-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609141440-VFA9C1/quality/20260914-160224812-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609141440-VFA9C1/README.md"
+    - ".agentplane/tasks/202609141440-VFA9C1/quality/objects/sha256/80c915ee57425f981428bc138f9cd23ec3135d75056b6ac8ae6f26c4eb512ea1.patch"
+    - ".agentplane/tasks/202609141440-VFA9C1/quality/objects/sha256/b1cbbdf35481f6e235ce22df666443bbfb64ea7b8884fd1ed48a26a903b69cc4.json"
+    - ".agentplane/tasks/202609141440-VFA9C1/verification/20260914160215087-a8392fd8995b0aa6.json"
+    - ".agentplane/tasks/202609141440-VFA9C1/quality/objects/sha256/63de350557411146ca66ec72e3d95a0d7a3abb88af2dc9bc3dfd445880b7ed03.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "PASS: CustomRunnerAdapter returns only after persisting one provider- and dispatch-bound unavailable usage observation, and Hermes uses the same branch-free execution path with its own adapter id."
+    - "PASS: cmdFinish performs the branch-pr base-checkout guard before reconciliation, while reconciliation still runs for eligible checkouts."
+    - "PASS: supervisor-recorded full local CI passed, and an independent focused rerun passed 13 of 13 tests on committed HEAD a2e1365c9e7db575ba31007ea61d2b96120a198c."
+    - "Residual risk: Hosted integration has not yet been observed and must remain fail-closed until the provider checks pass on the published exact head."
 execution_route:
   frozen: true
   reason_codes:
@@ -778,7 +807,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609141440-VFA9C1"
-    event_cursor: 6
+    event_cursor: 7
     final_validation: null
     id: "202609141440-VFA9C1"
     intent:
@@ -803,9 +832,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 9
+    revision: 10
     schema_version: 1
-    updated_at: "2026-09-14T16:02:16.182Z"
+    updated_at: "2026-09-14T16:02:16.183Z"
     work_items:
       repair_release_blocking_regressions:
         attempt: 1
@@ -998,6 +1027,30 @@ extensions:
         mutation_id: "compatibility:sha256:608e0f893ab7c2bd9eb53fafe659fc69334972f2e25ada343b33063b4c89f234"
         next_revision: 4
         previous_revision: 3
+        schema_version: 1
+        task_id: "202609141440-VFA9C1"
+      compatibility:sha256:86b6788b5b5f5cfe1630d6578aa989fe45de26f4186f90ebc72946900c655db0:
+        aggregate_digest: "sha256:203eeb77bd8720b14fadac9ffbb539339200af3fea889262c3f1826c5d136323"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T16:02:16.183Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_d2a711feba02271431671820"
+          mutation_id: "compatibility:sha256:86b6788b5b5f5cfe1630d6578aa989fe45de26f4186f90ebc72946900c655db0"
+          plan_digest: "sha256:f7741223c0c9b53ff1f36aff040f8acd2f05849ba6e4e3fa640d1adbc2f5200c"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609141440-VFA9C1"
+          task_revision: 9
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:86b6788b5b5f5cfe1630d6578aa989fe45de26f4186f90ebc72946900c655db0"
+        next_revision: 10
+        previous_revision: 9
         schema_version: 1
         task_id: "202609141440-VFA9C1"
       compatibility:sha256:88a01d99ca8426593292036a5678562afd1d4267ce2ab4c3d11f393a6df23294:
