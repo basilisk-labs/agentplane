@@ -75,7 +75,7 @@ export function renderHookShimScript(installedRunnerPath: string): string {
     '  case "$probe_timeout_seconds" in',
     '    ""|*[!0-9]*) probe_timeout_seconds=10 ;;',
     "  esac",
-    `  node -e 'const { execFile } = require("node:child_process"); const timeout = Number(process.argv[1]) * 1000; const [command, ...args] = process.argv.slice(2); const child = execFile(command, [...args, "--version"], { timeout }, (error) => process.exit(error ? 1 : 0)); child.stdin.end();' "$probe_timeout_seconds" "$@"`,
+    `  node -e 'const { execFile } = require("node:child_process"); const { argv } = require("node:process"); const timeout = Number(argv[1]) * 1000; const [command, ...args] = argv.slice(2); const child = execFile(command, [...args, "--version"], { timeout }, (error) => process.exit(error ? 1 : 0)); child.stdin.end();' "$probe_timeout_seconds" "$@"`,
     "}",
     'ENV_BIN="${AGENTPLANE_HOOK_RUNNER:-}"',
     'if [ -n "$ENV_BIN" ] && command -v node >/dev/null 2>&1 && [ -f "$ENV_BIN" ] && runner_ready node "$ENV_BIN"; then',
