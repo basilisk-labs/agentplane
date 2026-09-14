@@ -1,10 +1,10 @@
 ---
 id: "202609142329-DN50HH"
 title: "Release AgentPlane 0.6.30 from the 0.6 maintenance branch"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -39,6 +39,9 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Resume: fetched v0.6.29 from origin and verified it resolves exactly to 69d023b1de5450a63244e8443662021fba484f81. Continue the approved 0.6.30 release plan."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The v0.6.30 candidate is prepared, but the required prepublish gate exposed a source-code regression in the newly backported install-layout guard; publishing is unsafe until that guard is corrected and requalified. Recommended action: Create a bounded source-code fix task on the 0.6 maintenance branch. Qualify the source layout against its owning repository/worktree boundary, add the missing cross-repository regression test, merge that fix into the maintenance branch, then restart the v0.6.30 candidate from the new exact base SHA. Requested scope: roots=packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts,packages/agentplane/src/commands/branch/work-start.materialize.test.ts,packages/agentplane/src/commands/branch/work-start.materialize.ts; repository effects=source_code,tests; request digest=sha256:be74f5c4b03bfc9b19939132b7b86b934c29f90118a42a33eaf847c1f0d11531. Agentplane receipt: external-agent-blocker/tr_37aba4fcff770d68dd683414acc1d192/sha256:bb54d7703951dce7a53a99b39b2d5932806a6ee5c05c47bf13e148305d471f4e/sha256:be74f5c4b03bfc9b19939132b7b86b934c29f90118a42a33eaf847c1f0d11531."
 events:
   -
     type: "status"
@@ -61,9 +64,16 @@ events:
     from: "BLOCKED"
     to: "DOING"
     note: "Resume: fetched v0.6.29 from origin and verified it resolves exactly to 69d023b1de5450a63244e8443662021fba484f81. Continue the approved 0.6.30 release plan."
+  -
+    type: "status"
+    at: "2026-09-14T23:50:38.731Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The v0.6.30 candidate is prepared, but the required prepublish gate exposed a source-code regression in the newly backported install-layout guard; publishing is unsafe until that guard is corrected and requalified. Recommended action: Create a bounded source-code fix task on the 0.6 maintenance branch. Qualify the source layout against its owning repository/worktree boundary, add the missing cross-repository regression test, merge that fix into the maintenance branch, then restart the v0.6.30 candidate from the new exact base SHA. Requested scope: roots=packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts,packages/agentplane/src/commands/branch/work-start.materialize.test.ts,packages/agentplane/src/commands/branch/work-start.materialize.ts; repository effects=source_code,tests; request digest=sha256:be74f5c4b03bfc9b19939132b7b86b934c29f90118a42a33eaf847c1f0d11531. Agentplane receipt: external-agent-blocker/tr_37aba4fcff770d68dd683414acc1d192/sha256:bb54d7703951dce7a53a99b39b2d5932806a6ee5c05c47bf13e148305d471f4e/sha256:be74f5c4b03bfc9b19939132b7b86b934c29f90118a42a33eaf847c1f0d11531."
 doc_version: 3
-doc_updated_at: "2026-09-14T23:32:29.798Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-09-14T23:50:38.731Z"
+doc_updated_by: "SUPERVISOR"
 description: "Prepare, qualify, merge, publish, and verify AgentPlane 0.6.30 from exact maintenance SHA cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9. Do not modify main. Include the safe reusable node_modules layout guard merged by PR #5958."
 sections:
   Summary: |-
@@ -89,6 +99,24 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.scope_extension_request:
+    blocker_state_fingerprint: "sha256:bb54d7703951dce7a53a99b39b2d5932806a6ee5c05c47bf13e148305d471f4e"
+    kind: "task_scope_extension_request"
+    request:
+      rationale: "The release cannot pass its required prepublish gate without correcting the guard implementation and tests outside release metadata."
+      repository_effects:
+        - "source_code"
+        - "tests"
+      schema_version: 1
+      scope_roots:
+        - "packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+        - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
+        - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
+    request_digest: "sha256:be74f5c4b03bfc9b19939132b7b86b934c29f90118a42a33eaf847c1f0d11531"
+    schema_version: 1
+    status: "pending"
+    transition_id: "tr_37aba4fcff770d68dd683414acc1d192"
+    work_item_id: null
   workflow_route_baseline:
     start_head_sha: "cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9"
     version: 1
