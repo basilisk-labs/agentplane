@@ -1,10 +1,11 @@
 ---
 id: "202609142255-KR5FPV"
 title: "Backport safe reusable node_modules guards to the 0.6 maintenance branch and publish AgentPlane 0.6.30"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -29,209 +30,32 @@ plan_approval:
   updated_by: "HOST:local:USER"
   note: "host_user_decision=sha256:093098e9e417da97bf378aec398625aed46300adeec16d4f272bf5890fb2f1a6"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-09-14T23:18:36.554Z"
+  updated_by: "TESTER"
+  note: "Verified after current release.strict blueprint snapshot on PR head 99521b9e10fcd063120660304cd64821a2495ad7."
   attempts: 0
-execution_route:
-  frozen: true
-  reason_codes:
-    - "agent_preferred_branch_pr"
-    - "effect_external_write"
-    - "effect_publish"
-    - "effect_release_metadata"
-    - "repository_branch_pr_floor"
-    - "reversibility_recovery_required"
-  repository_mode: "branch_pr"
-  requested_mode: "branch_pr"
-  schema_version: 1
-  selected_mode: "branch_pr"
-execution_contract:
-  authority:
-    allowed_external_effects:
-      - "network_read"
-    allowed_repository_effects:
-      - "release_metadata"
-      - "repository_write"
-      - "source_code"
-      - "tests"
-    forbidden_external_effects:
-      - "external_write"
-      - "credentials"
-      - "publish"
-      - "deploy"
-      - "destructive_git"
-    forbidden_repository_effects:
-      - "documentation"
-      - "public_api"
-      - "schema"
-      - "dependencies"
-      - "ci"
-      - "security_boundary"
-    writable_roots:
-      - ".agentplane/tasks/202609142255-KR5FPV"
-      - "bun.lock"
-      - "package.json"
-      - "packages/agentplane/package.json"
-      - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
-      - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
-      - "packages/core/package.json"
-      - "packages/recipes/package.json"
-  declaration:
-    external_effects:
-      - "external_write"
-      - "network_read"
-      - "publish"
-    implementation_uncertainty: "bounded"
-    preferred_mode: "branch_pr"
-    rationale:
-      - "Publication must use the exact merged maintenance SHA for v0.6.30."
-      - "The branch_pr route isolates the maintenance change and supplies hosted evidence."
-      - "The change backports an existing guard from v0.7.8 instead of inventing a new mechanism."
-    repository_effects:
-      - "release_metadata"
-      - "repository_write"
-      - "source_code"
-      - "tests"
-    requirements_uncertainty: "bounded"
-    reversibility: "recovery_required"
-    schema_version: 2
-    scope_roots:
-      - ".agentplane/tasks/202609142255-KR5FPV"
-      - "bun.lock"
-      - "package.json"
-      - "packages/agentplane/package.json"
-      - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
-      - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
-      - "packages/core/package.json"
-      - "packages/recipes/package.json"
-  observed:
-    authority_violations: []
-    changed_components:
-      - "packages/agentplane"
-    changed_paths:
-      - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
-      - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
-    external_effects: []
-    repository_effects:
-      - "repository_write"
-      - "source_code"
-      - "tests"
-    verification_results: []
-  reason_codes:
-    - "agent_preferred_branch_pr"
-    - "effect_external_write"
-    - "effect_publish"
-    - "effect_release_metadata"
-    - "repository_branch_pr_floor"
-    - "reversibility_recovery_required"
-  repository_mode: "branch_pr"
-  safety:
-    approval_effects:
-      - "external_write"
-      - "publish"
-    requires_user_approval: true
-    requires_worktree: true
-  schema_version: 1
-  selected_mode: "branch_pr"
-  source: "agent_declared"
-  verification:
-    contract:
-      declared:
-        components:
-          - ".agentplane/tasks/202609142255-KR5FPV"
-          - "bun.lock"
-          - "package.json"
-          - "packages/agentplane/package.json"
-          - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
-          - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
-          - "packages/core/package.json"
-          - "packages/recipes/package.json"
-        evidence_requirements:
-          - "external_effect:external_write"
-          - "external_effect:network_read"
-          - "external_effect:publish"
-          - "hosted_integration"
-          - "repository_effect:release_metadata"
-          - "repository_effect:repository_write"
-          - "repository_effect:source_code"
-          - "repository_effect:tests"
-          - "task_outcome"
-        external_effects:
-          - "external_write"
-          - "network_read"
-          - "publish"
-        repository_effects:
-          - "release_metadata"
-          - "repository_write"
-          - "source_code"
-          - "tests"
-        risk:
-          implementation_uncertainty: "bounded"
-          requirements_uncertainty: "bounded"
-          reversibility: "recovery_required"
-      digest: "sha256:7597e60f2f18a145f6d504e282fbcc0d47f706ae514538c94a48b935d825f66d"
-      escalation_reasons:
-        - "central_component:bun.lock"
-        - "central_component:package.json"
-        - "central_component:packages/core/package.json"
-        - "effect_release_metadata"
-        - "external_effect_requires_real_e2e"
-        - "reversibility_recovery_required"
-      execution_groups:
-        - "docs-schema"
-        - "core"
-        - "runtime"
-        - "cli"
-      observed:
-        changed_components:
-          - "packages/agentplane"
-        changed_files:
-          - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
-          - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
-        external_effects: []
-        repository_effects:
-          - "repository_write"
-          - "source_code"
-          - "tests"
-      phase: "task"
-      policy_floor:
-        monotonic_strengthening: true
-        pr_full_regression: true
-        unknown_or_central_full_regression: true
-      requires_full_regression: true
-      requires_real_e2e: true
-      schema_version: 2
-      selected_checks:
-        - "affected_unit_integration"
-        - "critical_paths"
-        - "full_regression"
-        - "hosted_integration"
-        - "real_e2e"
-        - "task_outcome"
-      selector:
-        bucket: null
-        buckets: []
-        execution_mode: "semantic"
-        kind: "semantic"
-        lint_targets: []
-        reason: "execution_declaration"
-        run_cli_docs_check: false
-        selected_test_files: []
-        vitest_pool: "forks"
-      source: "execution_contract"
-    required_evidence:
-      - "external_effect:external_write"
-      - "external_effect:network_read"
-      - "external_effect:publish"
-      - "hosted_integration"
-      - "repository_effect:release_metadata"
-      - "repository_effect:repository_write"
-      - "repository_effect:source_code"
-      - "repository_effect:tests"
-      - "task_outcome"
-commit: null
+quality_review:
+  state: "pass"
+  updated_at: "2026-09-14T23:18:05.536Z"
+  updated_by: "EVALUATOR"
+  note: "The 0.6 backport is narrowly scoped, preserves the existing unlink safety defense, and adds the proven source-ownership and dependency-completeness guard with direct tests."
+  evaluated_sha: "f030f679ddd67bb024665ebf9717c05cd4373f48"
+  blueprint_digest: "92249eea6ce21268022d6e2dac1f9668d509cb27c63635f4529b8148e1969827"
+  evidence_refs:
+    - ".agentplane/tasks/202609142255-KR5FPV/README.md"
+    - ".agentplane/tasks/202609142255-KR5FPV/quality/20260914-231805536-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609142255-KR5FPV/quality/20260914-231805536-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202609142255-KR5FPV/quality/20260914-231805536-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609142255-KR5FPV/blueprint/resolved-snapshot.json"
+    - ".agentplane/tasks/202609142255-KR5FPV/supervision/declared-checks.json"
+    - "https://github.com/basilisk-labs/agentplane/actions/runs/34907626254"
+    - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
+  findings:
+    - "No unresolved correctness, scope, or regression findings in the implementation diff."
+commit:
+  hash: "99521b9e10fcd063120660304cd64821a2495ad7"
+  message: "🚧 KR5FPV task: record external implementation evidence"
 comments:
   -
     author: "CODER"
@@ -239,6 +63,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: f030f679ddd6. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -254,10 +81,28 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation committed: f030f679ddd6. CLI accepted one state-bound external-agent semantic result."
-    commit: "f030f679ddd67bb024665ebf9717c05cd4373f48"
+  -
+    type: "verify"
+    at: "2026-09-14T23:17:56.104Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Local and hosted verification passed on PR head 99521b9e10fcd063120660304cd64821a2495ad7."
+  -
+    type: "verify"
+    at: "2026-09-14T23:18:36.554Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified after current release.strict blueprint snapshot on PR head 99521b9e10fcd063120660304cd64821a2495ad7."
+  -
+    type: "status"
+    at: "2026-09-14T23:18:46.620Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-09-14T23:07:12.483Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-14T23:18:46.621Z"
+doc_updated_by: "CODER"
 description: "On the authoritative codex/release-v0.6.27-reclaim-fix maintenance branch, retain the v0.6.29 pre-removal unlink defense and backport the v0.7.8 source-layout guard so a worktree node_modules junction is created only from a repository-local source outside every task worktree with valid direct dependency targets. Add focused regression coverage, qualify the exact release candidate, merge only into the 0.6 maintenance branch, publish 0.6.30, and verify exact-SHA distribution evidence. Do not modify main."
 sections:
   Summary: |-
@@ -277,6 +122,70 @@ sections:
     6. Verify the v0.6.30 publication against the exact merged SHA. Expected: npm packages, CLI install smoke, tag, GitHub Release, distribution assets, and GHCR are confirmed or any credential-gated channel is explicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-14T23:17:56.104Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Local and hosted verification passed on PR head 99521b9e10fcd063120660304cd64821a2495ad7.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-09-14T23:07:12.483Z, excerpt_hash=sha256:1c9fecee6653a59f8c9649025bf2e906a23dda35ce890ea931792d4e9361099e
+
+    Details:
+
+    Local declared checks passed: bun run test:platform-critical (6 files, 92 tests), node .agentplane/policy/check-routing.mjs, and bun run ci:local:full (372 fast files, 2194 tests plus critical suites). GitHub Core CI run 34907626254 passed verify-contract, verify-static, verify-unit, verify-cli-critical, verify-workflow, verify-coverage, test-windows, and aggregate PR verification. PR #5958 targets codex/release-v0.6.27-reclaim-fix. The existing pre-removal unlink defense remains unchanged.
+
+    BlueprintSnapshotRef:
+    - state: missing
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609142255-KR5FPV-backport-install-layout-guard/.agentplane/tasks/202609142255-KR5FPV/blueprint/resolved-snapshot.json
+    - old_digest: none
+    - current_digest: 92249eea6ce21268022d6e2dac1f9668d509cb27c63635f4529b8148e1969827
+    - route_changed: unknown
+    - safe_command: agentplane blueprint snapshot 202609142255-KR5FPV
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202609142255-KR5FPV --branch task/202609142255-KR5FPV/backport-install-layout-guard
+    - diagnostic_command: agentplane pr check 202609142255-KR5FPV
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
+    ### 2026-09-14T23:18:36.554Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified after current release.strict blueprint snapshot on PR head 99521b9e10fcd063120660304cd64821a2495ad7.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-09-14T23:17:56.207Z, excerpt_hash=sha256:1c9fecee6653a59f8c9649025bf2e906a23dda35ce890ea931792d4e9361099e
+
+    Details:
+
+    Local declared checks passed: platform-critical 6/92, routing policy, and full local CI including 372 fast files and 2194 tests. Hosted Core CI run 34907626254 passed every required Linux and Windows job plus aggregate PR verification. PR #5958 targets codex/release-v0.6.27-reclaim-fix only.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609142255-KR5FPV-backport-install-layout-guard/.agentplane/tasks/202609142255-KR5FPV/blueprint/resolved-snapshot.json
+    - old_digest: 92249eea6ce21268022d6e2dac1f9668d509cb27c63635f4529b8148e1969827
+    - current_digest: 92249eea6ce21268022d6e2dac1f9668d509cb27c63635f4529b8148e1969827
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609142255-KR5FPV
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane finish 202609142255-KR5FPV --author CODER --body Verified: pre-merge closure packet is ready for the task PR. --result pre-merge closure --commit 99521b9e10fcd063120660304cd64821a2495ad7 --pre-merge-closure
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -1084,6 +993,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "f030f679ddd67bb024665ebf9717c05cd4373f48"
+    message: "🚧 KR5FPV task: apply external agent result"
   task_execution_context:
     base_ref: "refs/remotes/origin/codex/release-v0.6.27-reclaim-fix"
     base_sha: "69d023b1de5450a63244e8443662021fba484f81"
@@ -1094,6 +1004,203 @@ extensions:
     start_head_sha: "a3ccf6f1927bf5ab3a9cf6612dd7326d68d1f270"
     version: 1
 id_source: "generated"
+execution_contract:
+  authority:
+    allowed_external_effects:
+      - "network_read"
+    allowed_repository_effects:
+      - "release_metadata"
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    forbidden_external_effects:
+      - "external_write"
+      - "credentials"
+      - "publish"
+      - "deploy"
+      - "destructive_git"
+    forbidden_repository_effects:
+      - "documentation"
+      - "public_api"
+      - "schema"
+      - "dependencies"
+      - "ci"
+      - "security_boundary"
+    writable_roots:
+      - ".agentplane/tasks/202609142255-KR5FPV"
+      - "bun.lock"
+      - "package.json"
+      - "packages/agentplane/package.json"
+      - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
+      - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
+      - "packages/core/package.json"
+      - "packages/recipes/package.json"
+  declaration:
+    external_effects:
+      - "external_write"
+      - "network_read"
+      - "publish"
+    implementation_uncertainty: "bounded"
+    preferred_mode: "branch_pr"
+    rationale:
+      - "Publication must use the exact merged maintenance SHA for v0.6.30."
+      - "The branch_pr route isolates the maintenance change and supplies hosted evidence."
+      - "The change backports an existing guard from v0.7.8 instead of inventing a new mechanism."
+    repository_effects:
+      - "release_metadata"
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    requirements_uncertainty: "bounded"
+    reversibility: "recovery_required"
+    schema_version: 2
+    scope_roots:
+      - ".agentplane/tasks/202609142255-KR5FPV"
+      - "bun.lock"
+      - "package.json"
+      - "packages/agentplane/package.json"
+      - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
+      - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
+      - "packages/core/package.json"
+      - "packages/recipes/package.json"
+  observed:
+    authority_violations: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
+      - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
+    external_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results: []
+  reason_codes:
+    - "agent_preferred_branch_pr"
+    - "effect_external_write"
+    - "effect_publish"
+    - "effect_release_metadata"
+    - "repository_branch_pr_floor"
+    - "reversibility_recovery_required"
+  repository_mode: "branch_pr"
+  safety:
+    approval_effects:
+      - "external_write"
+      - "publish"
+    requires_user_approval: true
+    requires_worktree: true
+  schema_version: 1
+  selected_mode: "branch_pr"
+  source: "agent_declared"
+  verification:
+    contract:
+      declared:
+        components:
+          - ".agentplane/tasks/202609142255-KR5FPV"
+          - "bun.lock"
+          - "package.json"
+          - "packages/agentplane/package.json"
+          - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
+          - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
+          - "packages/core/package.json"
+          - "packages/recipes/package.json"
+        evidence_requirements:
+          - "external_effect:external_write"
+          - "external_effect:network_read"
+          - "external_effect:publish"
+          - "hosted_integration"
+          - "repository_effect:release_metadata"
+          - "repository_effect:repository_write"
+          - "repository_effect:source_code"
+          - "repository_effect:tests"
+          - "task_outcome"
+        external_effects:
+          - "external_write"
+          - "network_read"
+          - "publish"
+        repository_effects:
+          - "release_metadata"
+          - "repository_write"
+          - "source_code"
+          - "tests"
+        risk:
+          implementation_uncertainty: "bounded"
+          requirements_uncertainty: "bounded"
+          reversibility: "recovery_required"
+      digest: "sha256:7597e60f2f18a145f6d504e282fbcc0d47f706ae514538c94a48b935d825f66d"
+      escalation_reasons:
+        - "central_component:bun.lock"
+        - "central_component:package.json"
+        - "central_component:packages/core/package.json"
+        - "effect_release_metadata"
+        - "external_effect_requires_real_e2e"
+        - "reversibility_recovery_required"
+      execution_groups:
+        - "docs-schema"
+        - "core"
+        - "runtime"
+        - "cli"
+      observed:
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
+          - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
+        external_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
+      phase: "task"
+      policy_floor:
+        monotonic_strengthening: true
+        pr_full_regression: true
+        unknown_or_central_full_regression: true
+      requires_full_regression: true
+      requires_real_e2e: true
+      schema_version: 2
+      selected_checks:
+        - "affected_unit_integration"
+        - "critical_paths"
+        - "full_regression"
+        - "hosted_integration"
+        - "real_e2e"
+        - "task_outcome"
+      selector:
+        bucket: null
+        buckets: []
+        execution_mode: "semantic"
+        kind: "semantic"
+        lint_targets: []
+        reason: "execution_declaration"
+        run_cli_docs_check: false
+        selected_test_files: []
+        vitest_pool: "forks"
+      source: "execution_contract"
+    required_evidence:
+      - "external_effect:external_write"
+      - "external_effect:network_read"
+      - "external_effect:publish"
+      - "hosted_integration"
+      - "repository_effect:release_metadata"
+      - "repository_effect:repository_write"
+      - "repository_effect:source_code"
+      - "repository_effect:tests"
+      - "task_outcome"
+execution_route:
+  frozen: true
+  reason_codes:
+    - "agent_preferred_branch_pr"
+    - "effect_external_write"
+    - "effect_publish"
+    - "effect_release_metadata"
+    - "repository_branch_pr_floor"
+    - "reversibility_recovery_required"
+  repository_mode: "branch_pr"
+  requested_mode: "branch_pr"
+  schema_version: 1
+  selected_mode: "branch_pr"
 ---
 ## Summary
 
@@ -1122,6 +1229,70 @@ Backport the proven install-layout guard, verify it, and publish v0.6.30 from th
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-14T23:17:56.104Z — VERIFY — ok
+
+By: TESTER
+
+Note: Local and hosted verification passed on PR head 99521b9e10fcd063120660304cd64821a2495ad7.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-09-14T23:07:12.483Z, excerpt_hash=sha256:1c9fecee6653a59f8c9649025bf2e906a23dda35ce890ea931792d4e9361099e
+
+Details:
+
+Local declared checks passed: bun run test:platform-critical (6 files, 92 tests), node .agentplane/policy/check-routing.mjs, and bun run ci:local:full (372 fast files, 2194 tests plus critical suites). GitHub Core CI run 34907626254 passed verify-contract, verify-static, verify-unit, verify-cli-critical, verify-workflow, verify-coverage, test-windows, and aggregate PR verification. PR #5958 targets codex/release-v0.6.27-reclaim-fix. The existing pre-removal unlink defense remains unchanged.
+
+BlueprintSnapshotRef:
+- state: missing
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609142255-KR5FPV-backport-install-layout-guard/.agentplane/tasks/202609142255-KR5FPV/blueprint/resolved-snapshot.json
+- old_digest: none
+- current_digest: 92249eea6ce21268022d6e2dac1f9668d509cb27c63635f4529b8148e1969827
+- route_changed: unknown
+- safe_command: agentplane blueprint snapshot 202609142255-KR5FPV
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202609142255-KR5FPV --branch task/202609142255-KR5FPV/backport-install-layout-guard
+- diagnostic_command: agentplane pr check 202609142255-KR5FPV
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
+### 2026-09-14T23:18:36.554Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified after current release.strict blueprint snapshot on PR head 99521b9e10fcd063120660304cd64821a2495ad7.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-09-14T23:17:56.207Z, excerpt_hash=sha256:1c9fecee6653a59f8c9649025bf2e906a23dda35ce890ea931792d4e9361099e
+
+Details:
+
+Local declared checks passed: platform-critical 6/92, routing policy, and full local CI including 372 fast files and 2194 tests. Hosted Core CI run 34907626254 passed every required Linux and Windows job plus aggregate PR verification. PR #5958 targets codex/release-v0.6.27-reclaim-fix only.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609142255-KR5FPV-backport-install-layout-guard/.agentplane/tasks/202609142255-KR5FPV/blueprint/resolved-snapshot.json
+- old_digest: 92249eea6ce21268022d6e2dac1f9668d509cb27c63635f4529b8148e1969827
+- current_digest: 92249eea6ce21268022d6e2dac1f9668d509cb27c63635f4529b8148e1969827
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609142255-KR5FPV
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane finish 202609142255-KR5FPV --author CODER --body Verified: pre-merge closure packet is ready for the task PR. --result pre-merge closure --commit 99521b9e10fcd063120660304cd64821a2495ad7 --pre-merge-closure
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

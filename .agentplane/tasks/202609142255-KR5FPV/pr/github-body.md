@@ -15,21 +15,19 @@ On the authoritative codex/release-v0.6.27-reclaim-fix maintenance branch, retai
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified after current release.strict blueprint snapshot on PR head 99521b9e10fcd063120660304cd64821a2495ad7.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-14T23:10:32.910Z
+- Updated: 2026-09-14T23:10:36.085Z
 - Branch: task/202609142255-KR5FPV/backport-install-layout-guard
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../commands/branch/work-start.materialize.test.ts | 107 +++++++++++++++++++++
- .../src/commands/branch/work-start.materialize.ts  |  55 ++++++++++-
- 2 files changed, 160 insertions(+), 2 deletions(-)
+No changes detected.
 ```
 
 </details>
