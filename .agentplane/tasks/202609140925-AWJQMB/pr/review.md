@@ -31,10 +31,11 @@ Created: 2026-09-14T10:14:14.692Z
 ```text
  .../src/commands/branch/sync-task-base.test.ts     | 22 +++++++++++++++++++++-
  .../src/commands/branch/sync-task-base.ts          |  6 +++++-
+ .../evaluator/roadmap-failed-usage.test.ts         |  6 +++++-
  .../task/branch-task-supervisor-operations.test.ts |  4 ++++
  .../src/commands/workflow.verify-hooks.test.ts     | 12 ++++++++++++
  .../runtime/workspace-allocation/allocate.test.ts  | 10 ++++------
- 5 files changed, 46 insertions(+), 8 deletions(-)
+ 6 files changed, 51 insertions(+), 9 deletions(-)
 ```
 
 </details>
