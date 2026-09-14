@@ -272,6 +272,7 @@ function currentManagedShimText(installedRunnerPath: string): string {
     "#!/usr/bin/env sh",
     "# agentplane-hook-shim (do not edit)",
     "set -e",
+    "runner_ready() { return 0; }",
     `INSTALL_BIN='${installedRunnerPath}'`,
     'if command -v node >/dev/null 2>&1 && [ -f "$INSTALL_BIN" ]; then',
     '  exec node "$INSTALL_BIN" "$@"',
@@ -810,7 +811,7 @@ describe(
           "managed AgentPlane hook shim uses a stale format without an installed runner fallback",
         );
         expect(output).toContain(
-          "managed AgentPlane hook shim is missing current fallback branches",
+          "managed AgentPlane hook shim is missing current readiness or fallback branches",
         );
       } finally {
         stderr.restore();
