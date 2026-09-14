@@ -4,7 +4,7 @@ title: "Make supervisor-owned task branch base synchronization generate a commit
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -29,6 +29,36 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-14T11:02:00.752Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "b6dae19a727f6516137d85dbdb25f4d6961c05e7"
+  blueprint_digest: "a6e5b2fab41b3002672a798cbdc5183879cab8758bc252220e9ddbb9e8ce8cc5"
+  evidence_refs:
+    - ".agentplane/tasks/202609140925-AWJQMB/quality/20260914-110002617-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609140925-AWJQMB/quality/20260914-110002617-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609140925-AWJQMB/quality/objects/sha256/02d52954c2e0aea451d2eb6e979f114169761cfd3c18fc9af5828abfaf0bb87d.md"
+    - ".agentplane/tasks/202609140925-AWJQMB/quality/20260914-110002617-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609140925-AWJQMB/quality/20260914-110002617-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609140925-AWJQMB/quality/20260914-110002617-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609140925-AWJQMB/README.md"
+    - ".agentplane/tasks/202609140925-AWJQMB/quality/objects/sha256/3610cac068019e3e1b200bec4d30bfc9c14f68655b5affb994bedef16811b961.patch"
+    - ".agentplane/tasks/202609140925-AWJQMB/quality/objects/sha256/f4c4bd38a163310d42d9ce8caa4fce677d9ce5702a971c5a75f5fd2cb83970d7.json"
+    - ".agentplane/tasks/202609140925-AWJQMB/verification/20260914105952042-5ecf5db8809e0a57.json"
+    - ".agentplane/tasks/202609140925-AWJQMB/quality/objects/sha256/a300db90dc4e6981d570d6b6e7d686aba6fe384030746744e5c89130b19af35d.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The production change uses a task-attributed policy-valid subject and --signoff without disabling or bypassing Git hooks."
+    - "The integration fixture proves Git invoked commit-msg with the generated subject and DCO trailer, validates the subject through the repository policy function, and preserves exact parent-order and ancestry assertions."
+    - "Conflict, stale-base, and dirty-worktree refusal paths remain unchanged and covered."
+    - "Supervisor evidence records the focused Bun suite and full local regression as passing against evaluated SHA b6dae19a727f6516137d85dbdb25f4d6961c05e7."
+    - "Residual risk: Hosted CI and provider readback must still pass before merge."
 execution_route:
   frozen: true
   reason_codes:
@@ -821,7 +851,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609140925-AWJQMB"
-    event_cursor: 17
+    event_cursor: 18
     final_validation: null
     id: "202609140925-AWJQMB"
     intent:
@@ -860,9 +890,9 @@ extensions:
           scope_roots_added: []
         schema_version: 1
     plan_history: []
-    revision: 22
+    revision: 23
     schema_version: 1
-    updated_at: "2026-09-14T10:59:53.450Z"
+    updated_at: "2026-09-14T10:59:53.451Z"
     work_items:
       repair_sync_merge_message:
         attempt: 3
@@ -1214,6 +1244,30 @@ extensions:
         mutation_id: "compatibility:sha256:64fbbdaf5b4ec2ba9bd366ac2d3230d9957718ff9d26350c62e9aabdd4621390"
         next_revision: 17
         previous_revision: 16
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
+      compatibility:sha256:76c88d65187ec16be41173718a6d4c8f28165f796c412483051ec134bda83525:
+        aggregate_digest: "sha256:11042f8da6acb68b003b92ec3999423c8d183603db43118f7601bd5159da75d2"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T10:59:53.451Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_20ebe211c571b77e8325f43c"
+          mutation_id: "compatibility:sha256:76c88d65187ec16be41173718a6d4c8f28165f796c412483051ec134bda83525"
+          plan_digest: "sha256:2c389272e5f29f9871078eff17e16d5beacad44a28981e9eb54e884794820fcc"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140925-AWJQMB"
+          task_revision: 22
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:76c88d65187ec16be41173718a6d4c8f28165f796c412483051ec134bda83525"
+        next_revision: 23
+        previous_revision: 22
         schema_version: 1
         task_id: "202609140925-AWJQMB"
       compatibility:sha256:7f269cb2104429a68b2c738fc88b4b7c4d30f43525d2efaddf62e2db2aa39f9b:
