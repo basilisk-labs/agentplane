@@ -61,6 +61,7 @@ const staleDistRuntimeEnv = (): NodeJS.ProcessEnv => ({
   ...cleanGitEnv(),
   PATH: process.env.PATH ?? "",
   AGENTPLANE_DEV_ALLOW_STALE_DIST: "1",
+  AGENTPLANE_HOOK_RUNNER: "",
 });
 
 async function seedRepoLocalDistArtifacts(root: string): Promise<void> {
