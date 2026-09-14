@@ -27,9 +27,9 @@ Repair task-state validation for immutable quality-object directories without ta
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/release/task-state-script.test.ts | 57 ++++++++++++++++++++++
- scripts/checks/check-task-state.mjs                | 46 +++++++++++++++++
- 2 files changed, 103 insertions(+)
+ .../src/commands/release/task-state-script.test.ts | 91 ++++++++++++++++++++++
+ scripts/checks/check-task-state.mjs                | 47 ++++++++++-
+ 2 files changed, 137 insertions(+), 1 deletion(-)
 ```
 
 </details>
