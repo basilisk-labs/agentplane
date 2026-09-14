@@ -280,14 +280,21 @@ export function resolveTaskExecutionContract(opts: {
   task: RouteTaskInput;
   requestedMode?: TaskExecutionRouteRequest;
   declaration?: TaskExecutionDeclarationInput;
+  declarationSource?: TaskExecutionContract["source"];
 }): TaskExecutionContract {
   const repository_mode = repositoryMode(opts.config);
   const requestedMode = opts.requestedMode ?? "auto";
+  const source =
+    opts.declarationSource ?? (opts.declaration ? "agent_declared" : "legacy_compatibility");
   const declaration = opts.declaration
     ? normalizeTaskExecutionDeclaration(opts.declaration)
     : legacyDeclaration({ task: opts.task, requestedMode });
   const scopeRoots = normalizedScopeRoots(declaration.scope_roots);
-  if (declaration.repository_effects.length > 0 && scopeRoots.length === 0 && opts.declaration) {
+  if (
+    declaration.repository_effects.length > 0 &&
+    scopeRoots.length === 0 &&
+    source !== "legacy_compatibility"
+  ) {
     throw new Error("Execution declaration with repository effects requires scope_roots.");
   }
   const preservesLegacyRepositoryRoute = !opts.declaration && requestedMode === "repository";
@@ -309,7 +316,7 @@ export function resolveTaskExecutionContract(opts: {
   );
   return {
     schema_version: 1,
-    source: opts.declaration ? "agent_declared" : "legacy_compatibility",
+    source,
     declaration: {
       ...declaration,
       scope_roots: scopeRoots,

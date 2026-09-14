@@ -369,6 +369,41 @@ describe("task execution route", () => {
     expect(contract.verification.required_evidence).toContain("repository_effect:tests");
   });
 
+  it("preserves empty scope only when re-resolving a legacy contract", () => {
+    const config = defaultConfig();
+    const declaration = {
+      schema_version: 2 as const,
+      preferred_mode: "branch_pr" as const,
+      scope_roots: [],
+      repository_effects: ["repository_write" as const, "source_code" as const, "tests" as const],
+      external_effects: [],
+      requirements_uncertainty: "bounded" as const,
+      implementation_uncertainty: "bounded" as const,
+      reversibility: "reversible" as const,
+      rationale: ["preserve an existing legacy execution contract"],
+    };
+    const task = { task_kind: "code" as const, mutation_scope: "code" as const, risk_flags: [] };
+
+    expect(() => resolveTaskExecutionContract({ config, task, declaration })).toThrow(
+      "Execution declaration with repository effects requires scope_roots.",
+    );
+    const legacy = resolveTaskExecutionContract({
+      config,
+      task,
+      declaration,
+      declarationSource: "legacy_compatibility",
+    });
+
+    expect(legacy.source).toBe("legacy_compatibility");
+    expect(legacy.declaration.scope_roots).toEqual([]);
+    expect(legacy.authority.writable_roots).toEqual([]);
+    expect(legacy.authority.allowed_repository_effects).toEqual([
+      "repository_write",
+      "source_code",
+      "tests",
+    ]);
+  });
+
   it.each([
     {
       requirements: "bounded" as const,
