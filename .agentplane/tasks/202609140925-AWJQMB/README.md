@@ -4,7 +4,7 @@ title: "Make supervisor-owned task branch base synchronization generate a commit
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -626,54 +626,48 @@ extensions:
           scope_roots_added: []
         schema_version: 1
     plan_history: []
-    revision: 14
+    revision: 15
     schema_version: 1
-    updated_at: "2026-09-14T10:27:35.082Z"
+    updated_at: "2026-09-14T10:27:39.216Z"
     work_items:
       repair_sync_merge_message:
-        attempt: 2
+        attempt: 3
         claim_id: null
         id: "repair_sync_merge_message"
-        last_failure:
-          cause_refs:
-            - "hook_compatible_base_sync"
-          code: "validation_failed"
-          kind: "validation"
-          message: "Classified the remaining scoped test change as an intentional acceptance-strengthening follow-up and preserved supervisor-owned task evidence for commit."
-          retryable: true
+        last_failure: null
         output_manifests:
           -
-            digest: "sha256:13ebb5535ed50e002fdfa86e81747b9acbba9f06946034f2acd045af12454613"
+            digest: "sha256:e291a2b43883fe92f4e96730e4c2edbed426319b43464cf1248b3ebf605336df"
             id: "hook-compatible supervisor merge implementation"
             kind: "semantic_output"
             producer:
-              attempt: 2
+              attempt: 3
               plan_revision: 1
               task_id: "202609140925-AWJQMB"
               work_item_id: "repair_sync_merge_message"
             provenance:
-              - "sha256:c8f53c4d13cdb4be042d5f4e0e376fb37933c5696fb52aa9516e3bbf38535c19"
+              - "sha256:ee20cb7957e0de27514e402462456548e873eabb6f5ead16891b3eb2d38f3d56"
               - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:a357939ef1d2a5a36153170d2ce0321c6f57eb16fe6322fbfbeaf00bd7ff8849"
+            repository_snapshot_digest: "sha256:c467154767ea0b16d071775182f30f3600a56c409821abf3136b5a8841fe0f4a"
             schema: "agentplane.semantic-output.v1"
             schema_version: 1
           -
-            digest: "sha256:919164e2e8f2f3044a195af3e5437bd62d3513d7d32279910c336e139d81e740"
+            digest: "sha256:8ec588e4e0edc0c781f17cded3fdbbc4878d371209846889c297d27d62916422"
             id: "focused regression proof"
             kind: "semantic_output"
             producer:
-              attempt: 2
+              attempt: 3
               plan_revision: 1
               task_id: "202609140925-AWJQMB"
               work_item_id: "repair_sync_merge_message"
             provenance:
-              - "sha256:c8f53c4d13cdb4be042d5f4e0e376fb37933c5696fb52aa9516e3bbf38535c19"
+              - "sha256:ee20cb7957e0de27514e402462456548e873eabb6f5ead16891b3eb2d38f3d56"
               - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:a357939ef1d2a5a36153170d2ce0321c6f57eb16fe6322fbfbeaf00bd7ff8849"
+            repository_snapshot_digest: "sha256:c467154767ea0b16d071775182f30f3600a56c409821abf3136b5a8841fe0f4a"
             schema: "agentplane.semantic-output.v1"
             schema_version: 1
-        revision: 3
-        state: "REWORK_READY"
+        revision: 4
+        state: "COMPLETED"
         validation_result:
           evidence:
             -
@@ -681,26 +675,25 @@ extensions:
                 - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
               check_id: "focused_base_sync_tests"
               command_identity: "bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
-              detail: "Declared check failed: bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
-              exit_code: 1
-              observed_at: "2026-09-14T10:22:38.803Z"
-              repository_snapshot_digest: "sha256:a357939ef1d2a5a36153170d2ce0321c6f57eb16fe6322fbfbeaf00bd7ff8849"
-              status: "failed"
+              detail: "Observed by bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-14T10:27:39.211Z"
+              repository_snapshot_digest: "sha256:c467154767ea0b16d071775182f30f3600a56c409821abf3136b5a8841fe0f4a"
+              status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
               check_id: "diff_hygiene"
               command_identity: "task.verify"
-              detail: "Declared check failed: bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
-              exit_code: 1
-              observed_at: "2026-09-14T10:22:38.803Z"
-              repository_snapshot_digest: "sha256:a357939ef1d2a5a36153170d2ce0321c6f57eb16fe6322fbfbeaf00bd7ff8849"
-              status: "failed"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-09-14T10:27:39.211Z"
+              repository_snapshot_digest: "sha256:c467154767ea0b16d071775182f30f3600a56c409821abf3136b5a8841fe0f4a"
+              status: "passed"
           schema_version: 1
           stale_evidence: []
-          status: "failed"
-          unsatisfied_criteria:
-            - "hook_compatible_base_sync"
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -754,6 +747,23 @@ extensions:
         task_id: "202609140925-AWJQMB"
         task_revision: 11
         work_item_id: null
+      -
+        at: "2026-09-14T10:27:39.216Z"
+        from: "REWORK_READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:e6b12352022b173ed9a43994db43e897a50ef8747d6196957cf907297d3d7360"
+        entity: "work_item"
+        id: "event_3e1de6749408d1c49a5b04f8"
+        mutation_id: "external-result:work-order-202609140925-AWJQMB-executor-1101e395d601831b8e49fda4"
+        plan_digest: "sha256:2c389272e5f29f9871078eff17e16d5beacad44a28981e9eb54e884794820fcc"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
+        task_revision: 14
+        work_item_id: "repair_sync_merge_message"
     leases: []
     mutation_receipts:
       compatibility:sha256:10454c878c86d6a8032dad45aae9a9b271c6885f44e0bae0a61c1c152dd36ceb:
@@ -994,6 +1004,30 @@ extensions:
         mutation_id: "external-result:work-order-202609140925-AWJQMB-executor-09108b3a400c752081a39c43"
         next_revision: 8
         previous_revision: 7
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
+      external-result:work-order-202609140925-AWJQMB-executor-1101e395d601831b8e49fda4:
+        aggregate_digest: "sha256:2a687eed1a1d3e10a28cf52a53328510f2288b83696e15235d774cf189caef55"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T10:27:39.216Z"
+          cause_refs:
+            - "semantic-result:sha256:e6b12352022b173ed9a43994db43e897a50ef8747d6196957cf907297d3d7360"
+          entity: "work_item"
+          from: "REWORK_READY"
+          id: "event_3e1de6749408d1c49a5b04f8"
+          mutation_id: "external-result:work-order-202609140925-AWJQMB-executor-1101e395d601831b8e49fda4"
+          plan_digest: "sha256:2c389272e5f29f9871078eff17e16d5beacad44a28981e9eb54e884794820fcc"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140925-AWJQMB"
+          task_revision: 14
+          to: "COMPLETED"
+          work_item_id: "repair_sync_merge_message"
+        mutation_id: "external-result:work-order-202609140925-AWJQMB-executor-1101e395d601831b8e49fda4"
+        next_revision: 15
+        previous_revision: 14
         schema_version: 1
         task_id: "202609140925-AWJQMB"
       external-result:work-order-202609140925-AWJQMB-executor-260bd52d3a17ccb834b42969:

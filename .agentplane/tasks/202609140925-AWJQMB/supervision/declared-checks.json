@@ -5,8 +5,8 @@
         "focused_base_sync_tests"
       ],
       "command": "bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts",
-      "duration_ms": 1166,
-      "exit_code": 1,
+      "duration_ms": 1146,
+      "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
         "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
@@ -15,13 +15,13 @@
         "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
       },
       "script": null,
-      "stderr_tail": "\npackages/agentplane/src/commands/branch/sync-task-base.test.ts:\n(pass) task branch base synchronization > creates one merge commit with the exact previous head and plan-bound base [579.73ms]\n(pass) task branch base synchronization > refuses a semantic conflict without changing task HEAD [152.88ms]\n(pass) task branch base synchronization > refuses stale identity and unrelated dirty content before mutation [146.98ms]\n\npackages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts:\n\n# Unhandled error between tests\n-------------------------------\n4 | import type { TaskRouteDecision } from \"../shared/route-decision-types.js\";\n5 | import type { CommandContext } from \"../shared/task-backend.js\";\n6 | import type { WorkflowOperation } from \"../shared/workflow-step.js\";\n7 | import { executeBranchWorkflowOperation } from \"./branch-task-supervisor-operations.js\";\n8 | \n9 | const mocks = vi.hoisted(() => ({\n                     ^\nTypeError: vi.hoisted is not a function. (In 'vi.hoisted(() => ({\n  cmdFinish: vi.fn(),\n  runNext: vi.fn(),\n  loadCommandContext: vi.fn(),\n  loadTaskFromContext: vi.fn(),\n  loadTaskCommandContext: vi.fn(),\n  cmdWorkStart: vi.fn(),\n  enqueue: vi.fn(),\n  cmdCleanupMerged: vi.fn(),\n  updateProviderBranch: vi.fn(),\n  synchronizeTaskBranchBase: vi.fn()\n}))', 'vi.hoisted' is undefined)\n      at /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609140925-AWJQMB-make-supervisor-owned-task-branch-base-synchroni/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts:9:18\n-------------------------------\n\n\n 3 pass\n 1 fail\n 1 error\n 13 expect() calls\nRan 4 tests across 2 files. [1005.00ms]\n",
+      "stderr_tail": "\npackages/agentplane/src/commands/branch/sync-task-base.test.ts:\n(pass) task branch base synchronization > creates one merge commit with the exact previous head and plan-bound base [567.79ms]\n(pass) task branch base synchronization > refuses a semantic conflict without changing task HEAD [151.16ms]\n(pass) task branch base synchronization > refuses stale identity and unrelated dirty content before mutation [144.70ms]\n\npackages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts:\n(pass) branch task supervisor operations > executes exact supervisor-owned task branch base synchronization [0.43ms]\n(pass) branch task supervisor operations > executes the exact provider update operation with reconciliation-only mode: %s [0.07ms]\n(pass) branch task supervisor operations > executes the exact provider update operation with reconciliation-only mode: %s [0.01ms]\n(pass) branch task supervisor operations > requires a distinct supervisor operation after a pre-effect provider failure [0.03ms]\n(pass) branch task supervisor operations > stops effect-in-doubt without repeating the provider mutation [0.03ms]\n(pass) branch task supervisor operations > routes worktree creation and integration through the frozen task base [0.07ms]\n(pass) branch task supervisor operations > lets finish resolve the reviewed implementation behind a task-artifact head [0.04ms]\n(pass) branch task supervisor operations > runs one hosted foreground queue cycle without repeating local verification [0.04ms]\n(pass) branch task supervisor operations > completes the worker cycle for expected provider handoff protected_base_auto_merge_enabled [0.13ms]\n(pass) branch task supervisor operations > completes the worker cycle for expected provider handoff protected_base_github_merge_completed [0.01ms]\n(pass) branch task supervisor operations > does not hide an unrecognized queue handoff [0.03ms]\n(pass) branch task supervisor operations > applies deterministic cleanup for task.hosted_close.finalize instead of stopping at a dry-run [0.04ms]\n(pass) branch task supervisor operations > applies deterministic cleanup for task.worktree.cleanup instead of stopping at a dry-run\n\n 16 pass\n 0 fail\n 51 expect() calls\nRan 16 tests across 2 files. [986.00ms]\n",
       "stdout_tail": "bun test v1.4.2 (744846f84)\n"
     }
   ],
   "kind": "direct_task_declared_checks",
-  "reason": "Declared check failed: bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts",
+  "reason": null,
   "schema_version": 1,
-  "status": "failed",
+  "status": "passed",
   "task_id": "202609140925-AWJQMB"
 }
