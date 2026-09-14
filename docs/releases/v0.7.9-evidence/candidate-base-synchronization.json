@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "release": "v0.7.9",
+  "operation": "supervisor_owned_candidate_synchronization",
+  "qualified_release_base_sha": "ed89f946b3058cf290df7a76bec23ab4dcc1fa92",
+  "candidate_sha_before_synchronization": "801d545e1e5aaf2c9b4c307d4ca6a19214628a65",
+  "synchronized_candidate_sha": "c77460462bd0b942eee9fde4380a78501360b485",
+  "synchronized_candidate_parents": [
+    "801d545e1e5aaf2c9b4c307d4ca6a19214628a65",
+    "ed89f946b3058cf290df7a76bec23ab4dcc1fa92"
+  ],
+  "verification": {
+    "qualified_base_is_ancestor": true,
+    "candidate_content_parent_preserved": true,
+    "commit_created_by": "agentplane_supervisor"
+  }
+}
