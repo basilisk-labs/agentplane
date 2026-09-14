@@ -6,6 +6,10 @@ import type { CommandContext } from "../shared/task-backend.js";
 import type { WorkflowOperation } from "../shared/workflow-step.js";
 import { executeBranchWorkflowOperation } from "./branch-task-supervisor-operations.js";
 
+if (typeof vi.hoisted !== "function") {
+  Object.defineProperty(vi, "hoisted", { value: <T>(factory: () => T): T => factory() });
+}
+
 const mocks = vi.hoisted(() => ({
   cmdFinish: vi.fn(),
   runNext: vi.fn(),

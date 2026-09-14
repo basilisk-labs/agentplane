@@ -31,7 +31,8 @@ Created: 2026-09-14T10:14:14.692Z
 ```text
  .../src/commands/branch/sync-task-base.test.ts     | 32 +++++++++++++++++++++-
  .../src/commands/branch/sync-task-base.ts          |  6 +++-
- 2 files changed, 36 insertions(+), 2 deletions(-)
+ .../task/branch-task-supervisor-operations.test.ts |  4 +++
+ 3 files changed, 40 insertions(+), 2 deletions(-)
 ```
 
 </details>
