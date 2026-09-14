@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check c77460462bd0b942eee9fde4380a78501360b485..dea7d66178a082498a8f40f9e892c656fe59bad5",
+      "command": "git diff --check 867220ed92840ede4a50fde236a427e896d00edd..529d2a93fa0636f31830be894a727866e788e23a",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,16 +13,14 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB c77460462bd0b942eee9fde4380a78501360b485..dea7d66178a082498a8f40f9e892c656fe59bad5",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 867220ed92840ede4a50fde236a427e896d00edd..529d2a93fa0636f31830be894a727866e788e23a",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
         "M\t.agentplane/tasks/202609121424-49XXT3/README.md",
-        "M\t.agentplane/tasks/202609121424-49XXT3/pr/diffstat.txt",
         "M\t.agentplane/tasks/202609121424-49XXT3/pr/github-body.md",
-        "M\t.agentplane/tasks/202609121424-49XXT3/pr/meta.json",
         "M\t.agentplane/tasks/202609121424-49XXT3/pr/review.md",
-        "A\tdocs/releases/v0.7.9-evidence/candidate-base-synchronization.json"
+        "M\tdocs/releases/v0.7.9-evidence/candidate-base-synchronization.json"
       ]
     },
     {
@@ -32,8 +30,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "c77460462bd0b942eee9fde4380a78501360b485",
-  "implementation_commit": "dea7d66178a082498a8f40f9e892c656fe59bad5",
+  "execution_base_commit": "867220ed92840ede4a50fde236a427e896d00edd",
+  "implementation_commit": "529d2a93fa0636f31830be894a727866e788e23a",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
