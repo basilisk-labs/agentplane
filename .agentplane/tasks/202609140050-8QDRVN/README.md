@@ -4,7 +4,7 @@ title: "Recover an external-agent result rejected during supervisor application"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 31
+revision: 32
 origin:
   system: "manual"
 depends_on: []
@@ -27,6 +27,37 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-14T01:46:07.322Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "0aa277dd97640bbc2afba29d72adb91fae64021f"
+  blueprint_digest: "2b3bd560197c44675a24a60b7d3717014353b005bd56806b8fb6f1bc6db0d880"
+  evidence_refs:
+    - ".agentplane/tasks/202609140050-8QDRVN/quality/20260914-014438643-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609140050-8QDRVN/quality/20260914-014438643-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609140050-8QDRVN/quality/objects/sha256/5861dad09e13f523e9a392a5ddd8a4b959b643b46dac2839064d13dfc644a7fe.md"
+    - ".agentplane/tasks/202609140050-8QDRVN/quality/20260914-014438643-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609140050-8QDRVN/quality/20260914-014438643-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609140050-8QDRVN/quality/20260914-014438643-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609140050-8QDRVN/README.md"
+    - ".agentplane/tasks/202609140050-8QDRVN/quality/objects/sha256/390511960cf208eb237e7d06bd52162fefa52783dbc1038b48e6f1f1988f08df.patch"
+    - ".agentplane/tasks/202609140050-8QDRVN/quality/objects/sha256/007ad751a64e6a3fc4c76b11e146a0e264d3629a865b23ee9b89ccb03785edc3.json"
+    - ".agentplane/tasks/202609140050-8QDRVN/verification/20260914014428438-c9b85eadd02c96e7.json"
+    - ".agentplane/tasks/202609140050-8QDRVN/quality/objects/sha256/7bf79f1c63f9fb40ab92f33a74add480a1de3c515299836cb5eb9e8dffa962c7.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The recovery path is limited to E_VALIDATION from a durable result_received exchange with implementation authority, and it refuses recovery when Git HEAD, repository status, or the route fingerprint changed during application."
+    - "The failed-operation CAS is recorded before exchange retirement, so a rejected result cannot be silently reused as a successful semantic effect."
+    - "The focused regression verifies the original Git-history validation error, retired exchange state, operation_failed journal state, plain advance refusal, and a replacement operation linked to the failed operation key."
+    - "Supervisor evidence is bound to implementation 0aa277dd97640bbc2afba29d72adb91fae64021f and records both 44 focused recovery tests and bun run ci:local:full as passing."
+    - "Residual risk: A filesystem failure after the failed-operation CAS but before exchange retirement may leave an unretired artifact, but the journal remains fail-closed and requires the existing replacement recovery path."
+    - "Residual risk: Hosted integration must still validate the published exact head before merge."
 execution_route:
   frozen: true
   reason_codes:
@@ -647,7 +678,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609140050-8QDRVN"
-    event_cursor: 25
+    event_cursor: 26
     final_validation: null
     id: "202609140050-8QDRVN"
     intent:
@@ -1107,9 +1138,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609140050-8QDRVN"
-    revision: 31
+    revision: 32
     schema_version: 1
-    updated_at: "2026-09-14T01:44:29.835Z"
+    updated_at: "2026-09-14T01:44:29.837Z"
     work_items:
       recover-rejected-result:
         attempt: 1
@@ -1310,6 +1341,30 @@ extensions:
         mutation_id: "compatibility:sha256:247892e7a0a394861ff159c177da64c061a7337221d4797f04ce892d0b083c1c"
         next_revision: 25
         previous_revision: 24
+        schema_version: 1
+        task_id: "202609140050-8QDRVN"
+      compatibility:sha256:4d66451320df7f4330380c0721e78986be2ed66d37465bb2cf58bce389992825:
+        aggregate_digest: "sha256:8dff181e7bc7bfe3f4032b77f96dca51c87da890c6e95bcb6847dfc079317650"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T01:44:29.837Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_1d7b70c94546b152fb6a147d"
+          mutation_id: "compatibility:sha256:4d66451320df7f4330380c0721e78986be2ed66d37465bb2cf58bce389992825"
+          plan_digest: "sha256:964641b14ee083eb612f6346f18943a5d0d25890074dadc3df62c6285d4e04cb"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140050-8QDRVN"
+          task_revision: 31
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:4d66451320df7f4330380c0721e78986be2ed66d37465bb2cf58bce389992825"
+        next_revision: 32
+        previous_revision: 31
         schema_version: 1
         task_id: "202609140050-8QDRVN"
       compatibility:sha256:599b6906cbddeb46496d98314010a6694974446802a3c16decf3aff7ff8bd2b2:
