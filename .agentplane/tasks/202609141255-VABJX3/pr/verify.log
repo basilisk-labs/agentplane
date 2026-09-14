@@ -1,0 +1,177 @@
+[2026-09-14T15:04:33.431Z] sha=d87548d427758c75250371fe8f904be1b4232825 $ bun test packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/run-render.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts
+bun test v1.4.2 (744846f84)
+202605240900-EV01
+evaluator run 202605240900-EV01
+verdict: pass
+recorded: true
+report: .agentplane/tasks/202605240900-EV01/quality/20260914-150434799-recovery-context/quality-report.json
+prompt: .agentplane/tasks/202605240900-EV01/quality/20260914-150434799-recovery-context/evaluator-prompt.md
+opinion: .agentplane/tasks/202605240900-EV01/quality/20260914-150434799-recovery-context/evaluator-opinion.md
+202605240900-EV02
+evaluator run 202605240900-EV02
+verdict: pass
+recorded: true
+report: .agentplane/tasks/202605240900-EV02/quality/20260914-150434911-recovery-context/quality-report.json
+prompt: .agentplane/tasks/202605240900-EV02/quality/20260914-150434911-recovery-context/evaluator-prompt.md
+opinion: .agentplane/tasks/202605240900-EV02/quality/20260914-150434911-recovery-context/evaluator-opinion.md
+202605240900-EV04
+evaluator run 202605240900-EV04
+verdict: pass
+recorded: true
+report: .agentplane/tasks/202605240900-EV04/quality/20260914-150435032-recovery-context/quality-report.json
+prompt: .agentplane/tasks/202605240900-EV04/quality/20260914-150435032-recovery-context/evaluator-prompt.md
+opinion: .agentplane/tasks/202605240900-EV04/quality/20260914-150435032-recovery-context/evaluator-opinion.md
+evaluator run 202605240900-EV04
+verdict: pass
+recorded: true
+report: .agentplane/tasks/202605240900-EV04/quality/20260914-150435135-recovery-context/quality-report.json
+prompt: .agentplane/tasks/202605240900-EV04/quality/20260914-150435135-recovery-context/evaluator-prompt.md
+opinion: .agentplane/tasks/202605240900-EV04/quality/20260914-150435135-recovery-context/evaluator-opinion.md
+202605240900-EV03
+
+packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts:
+(pass) runCli route decision direct closeout > routes approved direct tasks to current-agent start-ready before execution [104.34ms]
+(pass) runCli route decision direct closeout > keeps a tracked DOING direct task without runner state on the current-agent route [147.67ms]
+(pass) runCli route decision direct closeout > routes direct verification rework back to the current agent [122.56ms]
+(pass) runCli route decision direct closeout > persists untracked canonical task artifacts before routing direct runner work [185.27ms]
+(pass) runCli route decision direct closeout > keeps a terminal historical runner record on the current-agent execution route [118.18ms]
+(pass) runCli route decision direct closeout > routes verified direct tasks to an argv-safe closeout and drops them from active work [109.07ms]
+(pass) runCli route decision direct closeout > routes done direct tasks with dirty tracked task artifacts to a cleanup commit [221.34ms]
+
+packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts:
+(pass) evaluator run command > parses structured review evidence and findings as repeatable fields [0.08ms]
+(pass) evaluator run command > requires an explicit verdict [0.26ms]
+(pass) evaluator run command > records the last non-task-artifact commit as evaluated_sha [96.52ms]
+(pass) evaluator run command > anchors a task-artifact-only work unit before unrelated workflow history [112.87ms]
+(pass) evaluator run command > keeps evaluator reruns anchored across committed review and PR artifacts [242.80ms]
+(pass) evaluator run command > does not anchor an unrelated task artifact when the current task has no committed work [76.96ms]
+
+packages/agentplane/src/commands/task/run-render.test.ts:
+(pass) task run rendering > derives runner health from durable trace activity [2.33ms]
+(pass) task run rendering > treats recent stderr writes as runner activity [0.57ms]
+
+ 15 pass
+ 0 fail
+ 93 expect() calls
+Ran 15 tests across 3 files. [1.82s]
+
+[2026-09-14T15:04:35.272Z] sha=d87548d427758c75250371fe8f904be1b4232825 $ bun run typecheck
+$ node scripts/checks/run-typescript-build.mjs
+
+[2026-09-14T15:04:35.375Z] sha=d87548d427758c75250371fe8f904be1b4232825 $ bun run test:platform-critical
+
+ RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/v0-6-issues-base/.agentplane/worktrees/202609141255-VABJX3-backport-applicable-open-issue-fixes-to-the-0-6
+
+
+ Test Files  6 passed (6)
+      Tests  92 passed (92)
+   Start at  18:04:35
+   Duration  15.66s (transform 5.10s, setup 0ms, import 6.69s, tests 24.37s, environment 0ms)
+
+$ node scripts/checks/run-vitest-suite.mjs platform-critical
+
+[2026-09-14T15:04:51.385Z] sha=d87548d427758c75250371fe8f904be1b4232825 $ bun test packages/agentplane/src/commands/branch/work-start.hook-shim.test.ts packages/agentplane/src/commands/release/release-ci-contract.test.ts packages/agentplane/src/cli/verify-global-install-script.test.ts
+bun test v1.4.2 (744846f84)
+
+packages/agentplane/src/cli/verify-global-install-script.test.ts:
+(pass) verify-global-agentplane-install script > passes when the global runtime resolves agentplane and core from this checkout [27.96ms]
+(pass) verify-global-agentplane-install script > fails when global agentplane resolves core from a non-local nested dependency [25.47ms]
+(pass) verify-global-agentplane-install script > fails when the global install resolves inside the mutable source checkout [25.38ms]
+
+packages/agentplane/src/commands/branch/work-start.hook-shim.test.ts:
+(pass) worktree hook shim > materializes a shim with the active installed runner before PATH fallback [1.27ms]
+(pass) worktree hook shim > bounds raw shim runner hangs with actionable diagnostics [3418.02ms]
+(pass) worktree hook shim > normalizes killed runner exits into actionable diagnostics [1280.58ms]
+(pass) worktree hook shim > preserves hook stdin when the runner is watched in the background [1415.03ms]
+(pass) worktree hook shim > falls through when the repository-local runner cannot start [1461.91ms]
+(pass) worktree hook shim > honors an explicit ready runner before repository and installed candidates [1278.88ms]
+(pass) worktree hook shim > does not fall back after a ready runner rejects the hook command [1302.98ms]
+(pass) worktree task artifact materialization > copies the active task artifact directory into the task worktree [7.64ms]
+
+packages/agentplane/src/commands/release/release-ci-contract.test.ts:
+(pass) release CI contract > keeps release:ci-check aligned with release-relevant coverage guards [0.69ms]
+(pass) release CI contract > builds testkit after agentplane in release and hosted install routes [0.52ms]
+(pass) release CI contract > does not require recipes submodule inventory checks for docs-only fast CI [0.26ms]
+(pass) release CI contract > bounds local CI Vitest subprocesses with an operator-tunable suite timeout [0.13ms]
+(pass) release CI contract > keeps the developer reinstall helper on the minimal runtime build path [0.56ms]
+(pass) release CI contract > does not expose repo-private test helpers from the published agentplane package [0.13ms]
+(pass) release CI contract > keeps the publishable agentplane build independent from cached dist state [0.10ms]
+(pass) release CI contract > keeps repo-only CLI helper exclusions out of the publishable agentplane build [0.11ms]
+(pass) release CI contract > checks the generated bootstrap doc against the actual runtime-source source path [0.53ms]
+(pass) release CI contract > documents the release prepublish coverage guards [0.30ms]
+(pass) release CI contract > keeps candidate preparation gated on task registry reconciliation before incidents [0.20ms]
+
+ 22 pass
+ 0 fail
+ 90 expect() calls
+Ran 22 tests across 3 files. [10.33s]
+
+[2026-09-14T15:05:01.724Z] sha=d87548d427758c75250371fe8f904be1b4232825 $ bun run workflows:command-check
+workflow and command guidance contract OK
+workflow lifecycle parity OK
+critical Vitest route OK
+$ node scripts/checks/check-workflow-command-contract.mjs && bun scripts/checks/check-lifecycle-parity.ts && node scripts/checks/check-critical-test-route.mjs
+
+[2026-09-14T15:05:01.845Z] sha=d87548d427758c75250371fe8f904be1b4232825 $ bun run release:bun:smoke
+bun compiled CLI smoke OK (0.6.28; --version, quickstart, role CODER)
+$ node scripts/release/smoke-bun-compiled-cli.mjs
+
+[2026-09-14T15:05:03.136Z] sha=d87548d427758c75250371fe8f904be1b4232825 $ bun test packages/agentplane/src/commands/doctor.command.runtime.test.ts
+bun test v1.4.2 (744846f84)
+✅ doctor (OK)
+✅ doctor (OK)
+✅ doctor (OK)
+✅ doctor (OK)
+✅ doctor (OK)
+✅ doctor (OK)
+✅ doctor (OK)
+✅ doctor (OK)
+✅ doctor (OK)
+✅ doctor (OK)
+✅ doctor (OK)
+✅ doctor (OK)
+✅ doctor (OK)
+✅ doctor (OK)
+✅ doctor fix (Skip: .gitignore not found.)
+✅ doctor fix (OK: rebuilt tasks index cache (best-effort).)
+✅ doctor fix (Fixed: normalized workflow contract and refreshed last-known-good.)
+✅ doctor fix (Fixed: refreshed AgentPlane-managed hook files and shim.)
+✅ doctor (OK)
+✅ doctor fix (Skip: .gitignore not found.)
+✅ doctor fix (OK: rebuilt tasks index cache (best-effort).)
+✅ doctor fix (Fixed: normalized workflow contract and refreshed last-known-good.)
+✅ doctor fix (Skip: no AgentPlane-managed hook files found; leaving intentionally removed hooks untouched.)
+✅ doctor (OK)
+✅ doctor (OK)
+✅ doctor (OK)
+✅ doctor (OK)
+
+packages/agentplane/src/commands/doctor.command.runtime.test.ts:
+(pass) doctor.command runtime version and policy diagnostics > summarizes repeated unknown historical hashes instead of printing one warning per task [91.77ms]
+(pass) doctor.command runtime version and policy diagnostics > summarizes repeated close-commit misuse in historical DONE tasks [104.92ms]
+(pass) doctor.command runtime version and policy diagnostics > downgrades legacy backfill historical hashes to info [78.08ms]
+(pass) doctor.command runtime version and policy diagnostics > downgrades no-op close-commit references to info [71.70ms]
+(pass) doctor.command runtime version and policy diagnostics > downgrades legacy close: record task doc references to info [70.22ms]
+(pass) doctor.command runtime version and policy diagnostics > warns when DONE task README archives exist on disk but are missing from the git index [67.47ms]
+(pass) doctor.command runtime version and policy diagnostics > warns when the active CLI is older than the repository expectation [12.79ms]
+(pass) doctor.command runtime version and policy diagnostics > does not emit version-match findings when the active CLI already satisfies the repository expectation [12.05ms]
+(pass) doctor.command runtime version and policy diagnostics > warns when the generated prompt graph is stale [19.68ms]
+(pass) doctor.command runtime version and policy diagnostics > fails when the managed policy tree is incomplete for the active gateway [14.08ms]
+(pass) doctor.command runtime version and policy diagnostics > keeps doctor quiet for a current managed hook shim with an available installed runner [58.31ms]
+(pass) doctor.command runtime version and policy diagnostics > warns when a managed hook shim points to a missing installed runner [55.99ms]
+(pass) doctor.command runtime version and policy diagnostics > warns when a managed hook shim was generated by a stale fallback format [57.86ms]
+(pass) doctor.command runtime version and policy diagnostics > warns when managed hook wrappers still use direct global fallback [58.30ms]
+(pass) doctor.command runtime version and policy diagnostics > reports installed clean-project fallback behavior when local pre-push scripts are absent [56.72ms]
+(pass) doctor.command runtime version and policy diagnostics > refreshes existing managed hooks and shim when doctor --fix runs [94.65ms]
+(pass) doctor.command runtime version and policy diagnostics > does not reinstall hooks when only the managed shim remains [71.80ms]
+(pass) doctor.command runtime version and policy diagnostics > reports unmanaged hooks without suggesting silent overwrite [57.68ms]
+(pass) doctor.command runtime version and policy diagnostics > prints runtime info when doctor runs inside a framework checkout [12.63ms]
+(pass) doctor.command runtime version and policy diagnostics > warns when the global binary is forced inside a framework checkout [12.43ms]
+
+ 20 pass
+ 0 fail
+ 76 expect() calls
+Ran 20 tests across 1 file. [1158.00ms]
+
+[2026-09-14T15:05:04.300Z] ✅ verified_sha=d87548d427758c75250371fe8f904be1b4232825
+

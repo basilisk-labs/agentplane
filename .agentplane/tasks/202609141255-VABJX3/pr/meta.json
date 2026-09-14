@@ -1,10 +1,15 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-09-14T15:05:14.062Z",
   "base": "codex/release-v0.6.27-reclaim-fix",
   "branch": "task/202609141255-VABJX3/backport-applicable-open-issue-fixes-to-the-0-6",
   "created_at": "2026-09-14T12:57:53.404Z",
   "diffstat_sha256": "sha256:93c8094652a04821314c56035ec67afd71ac63c050318246c1f1707253861b58",
-  "last_verified_at": "2026-09-14T14:58:38.968Z",
+  "last_verified_at": "2026-09-14T15:05:14.062Z",
   "last_verified_diffstat_sha256": "sha256:93c8094652a04821314c56035ec67afd71ac63c050318246c1f1707253861b58",
+  "merge_commit": "28cdfbf9faef003b52fc8fbd71c5c3a839c17e9d",
+  "merge_strategy": "merge",
+  "merged_at": "2026-09-14T15:05:14.062Z",
   "pr_number": 5955,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5955",
   "pre_merge_closure": {
@@ -15,9 +20,9 @@
     "state": "closed_before_merge"
   },
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202609141255-VABJX3",
-  "updated_at": "2026-09-14T14:39:23.076Z",
+  "updated_at": "2026-09-14T15:05:14.062Z",
   "verify": {
     "status": "pass"
   }
