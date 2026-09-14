@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -62,9 +62,11 @@ quality_review:
     - "The task worktree was clean before evaluator evidence generation, and the frozen implementation diff contains no unrelated base-checkout or agentplane-roadmap-r2 changes."
     - "Residual risk: The release-task exercise intentionally fails closed if the qualified exact base changes again before synchronization."
 token_usage:
-  agent_runs: 3
+  agent_runs: 10
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:e9dcdf3546fad664eea3c7f7f6f1f7de30ec7bd2fef8bfda4f27e1e668f2cbd1"
+  journal_digest: "sha256:7fa6e204d7ed9d9abf861af3bcabffa0e74f149194b63bd03de993c50d7367cb"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -74,7 +76,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "external_host_turn_unallocatable"
-  updated_at: "2026-09-14T08:07:49.888Z"
+  updated_at: "2026-09-14T08:49:51.434Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -368,7 +370,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "f4818c1752177ae76bea169c856a6f54ad23fbeb"
+  hash: "6740e6d8b932313bdfcbad7c7d4a2af686eb1c3c"
   message: "🚧 5REY71 task: record external evaluator result"
 comments:
   -
@@ -392,6 +394,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The three uncommitted source paths are the intended acyclic hosted-CI rework and should be committed together through the approved task allowlist."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -448,9 +453,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-14T08:49:51.434Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "6740e6d8b932313bdfcbad7c7d4a2af686eb1c3c"
 doc_version: 3
-doc_updated_at: "2026-09-14T08:49:30.477Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-14T08:49:51.442Z"
+doc_updated_by: "CODER"
 description: "Implement a deterministic AgentPlane lifecycle route for an already-started branch_pr task whose approved WorkItem requires its preserved candidate branch to adopt an exact newer qualified base before semantic edits. The supervisor must own the Git or provider synchronization, bind it to exact branch/head/base identities, preserve existing candidate commits and unrelated work, fail closed on conflict or stale identity, and issue the next semantic packet only after verified base ancestry. An external semantic executor must never be asked to rebase, merge, cherry-pick, commit, force-push, or rewrite Git history. Cover the release-task failure demonstrated by task 202609121424-49XXT3, then integrate the fix through protected branch_pr workflow so that release 0.7.9 can resume."
 sections:
   Summary: |-
@@ -1273,7 +1286,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609140657-5REY71"
-    event_cursor: 13
+    event_cursor: 14
     final_validation:
       evidence:
         -
@@ -1364,9 +1377,9 @@ extensions:
     lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 17
+    revision: 18
     schema_version: 1
-    updated_at: "2026-09-14T08:46:10.481Z"
+    updated_at: "2026-09-14T08:49:51.434Z"
     work_items:
       implement_branch_base_sync:
         attempt: 1
@@ -1677,6 +1690,30 @@ extensions:
         previous_revision: 2
         schema_version: 1
         task_id: "202609140657-5REY71"
+      compatibility:sha256:90ca9e00368c4ba722a9393f345ea34fc4a79ff772c841fd92e8a4df39760a6f:
+        aggregate_digest: "sha256:36969f103c7c4564e97f248a0cf1bc0222a4cc9d0016046f08e982dbbbf29442"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T08:49:51.434Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_c7b934dab25f0276532d7dcd"
+          mutation_id: "compatibility:sha256:90ca9e00368c4ba722a9393f345ea34fc4a79ff772c841fd92e8a4df39760a6f"
+          plan_digest: "sha256:05d9e037f315e3dad580662875f670e39118537f5689e20277c16450ce222b81"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140657-5REY71"
+          task_revision: 17
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:90ca9e00368c4ba722a9393f345ea34fc4a79ff772c841fd92e8a4df39760a6f"
+        next_revision: 18
+        previous_revision: 17
+        schema_version: 1
+        task_id: "202609140657-5REY71"
       compatibility:sha256:96354d61d369727d621ad77320e278a88179af2a81792f2a3e45e2d796aa520b:
         aggregate_digest: "sha256:32de463750f382f7b6b0c06bd782f20571db1253037912d2db5d9598bf56275d"
         event:
@@ -1874,8 +1911,8 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "4be3447ccff551b8f67611538d8d784495a35893"
-    message: "🚧 5REY71 task: apply external agent result"
+    hash: "497b702366a412f5db212d99baf29849287099bc"
+    message: "♻️ 5REY71 task: break workflow-step dependency cycle"
   task_execution_context:
     base_ref: "main"
     base_sha: "40368f0ae58774c8cdd80fddb22cb6daacbae8f4"
@@ -2238,12 +2275,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/3` agent runs
+- Completeness: `0/10` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:e9dcdf3546fad664eea3c7f7f6f1f7de30ec7bd2fef8bfda4f27e1e668f2cbd1`
+- Journal digest: `sha256:7fa6e204d7ed9d9abf861af3bcabffa0e74f149194b63bd03de993c50d7367cb`
 - Unavailable reason: `external_host_turn_unallocatable`
-- Updated at: `2026-09-14T08:07:49.888Z`
+- Updated at: `2026-09-14T08:49:51.434Z`
