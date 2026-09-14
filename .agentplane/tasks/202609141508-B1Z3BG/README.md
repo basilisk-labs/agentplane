@@ -4,7 +4,7 @@ title: "Release AgentPlane v0.6.29"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -24,17 +24,23 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-09-14T16:26:03.049Z"
+  updated_by: "CODER"
+  note: "Verified release v0.6.29 candidate: local release gate 82/82 groups, local ci:local:fast 371/371 files and 2190/2190 tests, release parity and routing checks passed; hosted Core CI, Docs CI, Dependency Review, Windows, Release-ready manifest, and PR verification passed on 9f39c055484843c71225f157cbdfdf177a9e8339."
   attempts: 0
 commit: null
 comments: []
-events: []
+events:
+  -
+    type: "verify"
+    at: "2026-09-14T16:26:03.049Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified release v0.6.29 candidate: local release gate 82/82 groups, local ci:local:fast 371/371 files and 2190/2190 tests, release parity and routing checks passed; hosted Core CI, Docs CI, Dependency Review, Windows, Release-ready manifest, and PR verification passed on 9f39c055484843c71225f157cbdfdf177a9e8339."
 doc_version: 3
-doc_updated_at: "2026-09-14T15:09:02.126Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-09-14T16:26:03.134Z"
+doc_updated_by: "CODER"
 description: "Prepare, review, merge, and publish the next 0.6 patch release from the merged maintenance fixes, with exact-SHA release evidence and post-publish install verification."
 sections:
   Summary: |-
@@ -60,6 +66,36 @@ sections:
     6. Verify tag v0.6.29, the GitHub release, npm versions for agentplane, @agentplaneorg/core, and @agentplaneorg/recipes, both CLI entrypoints, and origin/codex/release-v0.6.27-reclaim-fix convergence.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-14T16:26:03.049Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified release v0.6.29 candidate: local release gate 82/82 groups, local ci:local:fast 371/371 files and 2190/2190 tests, release parity and routing checks passed; hosted Core CI, Docs CI, Dependency Review, Windows, Release-ready manifest, and PR verification passed on 9f39c055484843c71225f157cbdfdf177a9e8339.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-09-14T15:09:02.126Z, excerpt_hash=sha256:7a8f7b7b21d26d19bb37e236038a9fa4f3d7ea4b09522c1fdc32ff46a7694198
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: missing
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/v0-6-issues-base/.agentplane/worktrees/202609141508-B1Z3BG-release-v0-6-29/.agentplane/tasks/202609141508-B1Z3BG/blueprint/resolved-snapshot.json
+    - old_digest: none
+    - current_digest: e4beed472f52ff7eacb96653f841fd6989d2bf0019ec20a9312f059008846122
+    - route_changed: unknown
+    - safe_command: agentplane blueprint snapshot 202609141508-B1Z3BG
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202609141508-B1Z3BG --branch task/202609141508-B1Z3BG/release-v0-6-29
+    - diagnostic_command: agentplane pr check 202609141508-B1Z3BG
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -99,6 +135,36 @@ Prepare, review, merge, and publish the next 0.6 patch release from the merged m
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-14T16:26:03.049Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified release v0.6.29 candidate: local release gate 82/82 groups, local ci:local:fast 371/371 files and 2190/2190 tests, release parity and routing checks passed; hosted Core CI, Docs CI, Dependency Review, Windows, Release-ready manifest, and PR verification passed on 9f39c055484843c71225f157cbdfdf177a9e8339.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-09-14T15:09:02.126Z, excerpt_hash=sha256:7a8f7b7b21d26d19bb37e236038a9fa4f3d7ea4b09522c1fdc32ff46a7694198
+
+Details:
+
+BlueprintSnapshotRef:
+- state: missing
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/v0-6-issues-base/.agentplane/worktrees/202609141508-B1Z3BG-release-v0-6-29/.agentplane/tasks/202609141508-B1Z3BG/blueprint/resolved-snapshot.json
+- old_digest: none
+- current_digest: e4beed472f52ff7eacb96653f841fd6989d2bf0019ec20a9312f059008846122
+- route_changed: unknown
+- safe_command: agentplane blueprint snapshot 202609141508-B1Z3BG
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202609141508-B1Z3BG --branch task/202609141508-B1Z3BG/release-v0-6-29
+- diagnostic_command: agentplane pr check 202609141508-B1Z3BG
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

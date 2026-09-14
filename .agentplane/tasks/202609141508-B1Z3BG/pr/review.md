@@ -12,8 +12,8 @@ Created: 2026-09-14T15:10:38.998Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified release v0.6.29 candidate: local release gate 82/82 groups, local ci:local:fast 371/371 files and 2190/2190 tests, release parity and routing checks passed; hosted Core CI, Docs CI, Dependency Review, Windows, Release-ready manifest, and PR verification passed on 9f39c055484843c71225f157cbdfdf177a9e8339.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
