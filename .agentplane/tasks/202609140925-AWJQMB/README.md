@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 29
+revision: 30
 origin:
   system: "manual"
 depends_on: []
@@ -25,41 +25,11 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "host_user_decision=sha256:94c0b7d373b1f6201c268ed5e311db2fd42605c07bbc8f3d25950273f27267c6"
 verification:
-  state: "ok"
-  updated_at: "2026-09-14T10:59:52.042Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
   attempts: 0
-quality_review:
-  state: "pass"
-  provenance: "evaluator_supplied"
-  updated_at: "2026-09-14T11:02:00.752Z"
-  updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 5 typed finding(s)."
-  evaluated_sha: "b6dae19a727f6516137d85dbdb25f4d6961c05e7"
-  blueprint_digest: "a6e5b2fab41b3002672a798cbdc5183879cab8758bc252220e9ddbb9e8ce8cc5"
-  evidence_refs:
-    - ".agentplane/tasks/202609140925-AWJQMB/quality/20260914-110002617-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609140925-AWJQMB/quality/20260914-110002617-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609140925-AWJQMB/quality/objects/sha256/02d52954c2e0aea451d2eb6e979f114169761cfd3c18fc9af5828abfaf0bb87d.md"
-    - ".agentplane/tasks/202609140925-AWJQMB/quality/20260914-110002617-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609140925-AWJQMB/quality/20260914-110002617-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609140925-AWJQMB/quality/20260914-110002617-recovery-context/evaluator-evidence-manifest.json"
-    - ".agentplane/tasks/202609140925-AWJQMB/README.md"
-    - ".agentplane/tasks/202609140925-AWJQMB/quality/objects/sha256/3610cac068019e3e1b200bec4d30bfc9c14f68655b5affb994bedef16811b961.patch"
-    - ".agentplane/tasks/202609140925-AWJQMB/quality/objects/sha256/f4c4bd38a163310d42d9ce8caa4fce677d9ce5702a971c5a75f5fd2cb83970d7.json"
-    - ".agentplane/tasks/202609140925-AWJQMB/verification/20260914105952042-5ecf5db8809e0a57.json"
-    - ".agentplane/tasks/202609140925-AWJQMB/quality/objects/sha256/a300db90dc4e6981d570d6b6e7d686aba6fe384030746744e5c89130b19af35d.json"
-    - ".agentplane/policy/dod.code.md"
-    - ".agentplane/policy/dod.core.md"
-    - ".agentplane/policy/security.must.md"
-    - ".agentplane/policy/workflow.branch_pr.md"
-  findings:
-    - "The production change uses a task-attributed policy-valid subject and --signoff without disabling or bypassing Git hooks."
-    - "The integration fixture proves Git invoked commit-msg with the generated subject and DCO trailer, validates the subject through the repository policy function, and preserves exact parent-order and ancestry assertions."
-    - "Conflict, stale-base, and dirty-worktree refusal paths remain unchanged and covered."
-    - "Supervisor evidence records the focused Bun suite and full local regression as passing against evaluated SHA b6dae19a727f6516137d85dbdb25f4d6961c05e7."
-    - "Residual risk: Hosted CI and provider readback must still pass before merge."
 token_usage:
   agent_runs: 10
   input_tokens: null
@@ -227,9 +197,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "5c3f3ac18fa6d662c7406c74b9bf00963b2729da"
-  message: "🚧 AWJQMB task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -1219,9 +1187,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609140925-AWJQMB"
-    revision: 29
+    revision: 30
     schema_version: 1
-    updated_at: "2026-09-14T11:43:31.206Z"
+    updated_at: "2026-09-14T11:49:33.543Z"
     work_items:
       harden-and-verify:
         attempt: 0
@@ -1233,14 +1201,69 @@ extensions:
         state: "PLANNED"
         validation_result: null
       prove-hosted-races:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "prove-hosted-races"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:dfe13378f0dca4f931ba2232c2a9f01a66f30031041b144accdab678b1f81687"
+            id: "race-analysis"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609140925-AWJQMB"
+              work_item_id: "prove-hosted-races"
+            provenance:
+              - "sha256:5cf2a4fe8d9c6aa90a4bae1a8f575baede00d03d40e2e640ae0cf70a94f2a984"
+              - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:00ea5d2adeafbe05ed34130bfad02053117e7cdc08280fca0a48dd54b5ebf336"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:a36e1e11e27baaa95c164565cfcb2e33ceb51da752c7bd1f1faf4e3015974a54"
+            id: "correction-decision"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609140925-AWJQMB"
+              work_item_id: "prove-hosted-races"
+            provenance:
+              - "sha256:5cf2a4fe8d9c6aa90a4bae1a8f575baede00d03d40e2e640ae0cf70a94f2a984"
+              - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:00ea5d2adeafbe05ed34130bfad02053117e7cdc08280fca0a48dd54b5ebf336"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
+              check_id: "implicated-concurrency-suites"
+              command_identity: "bun x vitest run packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
+              detail: "Observed by bun x vitest run packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-14T11:49:33.525Z"
+              repository_snapshot_digest: "sha256:00ea5d2adeafbe05ed34130bfad02053117e7cdc08280fca0a48dd54b5ebf336"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
+              check_id: "fast-ci"
+              command_identity: "bun run test:fast:ci"
+              detail: "Observed by bun run test:fast:ci."
+              exit_code: 0
+              observed_at: "2026-09-14T11:49:33.525Z"
+              repository_snapshot_digest: "sha256:00ea5d2adeafbe05ed34130bfad02053117e7cdc08280fca0a48dd54b5ebf336"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -1331,6 +1354,23 @@ extensions:
         task_id: "202609140925-AWJQMB"
         task_revision: 24
         work_item_id: null
+      -
+        at: "2026-09-14T11:49:33.543Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:0123ac0c964164309b9f2b052922ad4440c96b7782bee5c5ddb4780a5ea57812"
+        entity: "work_item"
+        id: "event_8943b17357f4839e41ec286f"
+        mutation_id: "external-result:work-order-202609140925-AWJQMB-executor-e25cae0d612f55dd2db95534"
+        plan_digest: "sha256:c0fcc82c1cd8640ea3e274ea04ce90a2b291327cd89d088e94807312ce3e0d44"
+        plan_revision: 2
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
+        task_revision: 29
+        work_item_id: "prove-hosted-races"
     leases: []
     mutation_receipts:
       compatibility:sha256:0afe412863eee97979a633489ad54b08dc9b6d97367cbe28fbbad823ce1903fe:
@@ -1883,6 +1923,30 @@ extensions:
         mutation_id: "external-result:work-order-202609140925-AWJQMB-executor-260bd52d3a17ccb834b42969"
         next_revision: 11
         previous_revision: 10
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
+      external-result:work-order-202609140925-AWJQMB-executor-e25cae0d612f55dd2db95534:
+        aggregate_digest: "sha256:f9c2aec204d27ba174b309213a6baf5ab4cb919741b0c758eb1da6c0b343b690"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T11:49:33.543Z"
+          cause_refs:
+            - "semantic-result:sha256:0123ac0c964164309b9f2b052922ad4440c96b7782bee5c5ddb4780a5ea57812"
+          entity: "work_item"
+          from: "READY"
+          id: "event_8943b17357f4839e41ec286f"
+          mutation_id: "external-result:work-order-202609140925-AWJQMB-executor-e25cae0d612f55dd2db95534"
+          plan_digest: "sha256:c0fcc82c1cd8640ea3e274ea04ce90a2b291327cd89d088e94807312ce3e0d44"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140925-AWJQMB"
+          task_revision: 29
+          to: "COMPLETED"
+          work_item_id: "prove-hosted-races"
+        mutation_id: "external-result:work-order-202609140925-AWJQMB-executor-e25cae0d612f55dd2db95534"
+        next_revision: 30
+        previous_revision: 29
         schema_version: 1
         task_id: "202609140925-AWJQMB"
       legacy-finish:202609140925-AWJQMB:2026-09-14T10:59:52.042Z:b6dae19a727f6516137d85dbdb25f4d6961c05e7:
