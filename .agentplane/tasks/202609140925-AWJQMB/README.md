@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 29
 origin:
   system: "manual"
 depends_on: []
@@ -133,10 +133,14 @@ execution_contract:
       - "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -161,6 +165,7 @@ execution_contract:
           - "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
         evidence_requirements:
           - "hosted_integration"
+          - "repository_effect:repository_write"
           - "repository_effect:source_code"
           - "repository_effect:tests"
           - "task_outcome"
@@ -172,7 +177,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:a3fb98332f091f7ef64879daffd52c88457339844e92229aff2e2a0ef426a3d9"
+      digest: "sha256:1542fc94d63daccb360c2d83a59871b1ef2070ac90784c7bc53bbebbb7b3f897"
       escalation_reasons:
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
@@ -182,10 +187,14 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -214,12 +223,13 @@ execution_contract:
       source: "execution_contract"
     required_evidence:
       - "hosted_integration"
+      - "repository_effect:repository_write"
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "3746697db0279b3d8011349653cb90e2860e3f91"
-  message: "🚧 AWJQMB task: record external evaluator result"
+  hash: "5c3f3ac18fa6d662c7406c74b9bf00963b2729da"
+  message: "🚧 AWJQMB task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -242,6 +252,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 5c3f3ac18fa6. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -316,9 +329,17 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "3746697db0279b3d8011349653cb90e2860e3f91"
+  -
+    type: "status"
+    at: "2026-09-14T11:43:31.181Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 5c3f3ac18fa6. CLI accepted one state-bound external-agent semantic result."
+    commit: "5c3f3ac18fa6d662c7406c74b9bf00963b2729da"
 doc_version: 3
-doc_updated_at: "2026-09-14T11:30:50.392Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-14T11:43:31.275Z"
+doc_updated_by: "SUPERVISOR"
 description: "The release task 202609121424-49XXT3 requested exact branch-base synchronization onto main 1a93a9a43da2b714854174491f9672c52bf33e9f. synchronizeTaskBranchBase generated subject 'Merge branch main into task/...' and git hook run commit-msg rejected it because the repository requires '<emoji> <task-suffix> <scope>: <summary>'. Update the supervisor-owned synchronization implementation to create a policy-compliant task-attributed merge subject without weakening or bypassing hooks. Preserve the exact two-parent no-ff merge and ancestry postconditions. Add focused regression coverage for the real hook-compatible subject. Do not touch release candidate content or agentplane-roadmap-r2."
 sections:
   Summary: |-
@@ -870,7 +891,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609140925-AWJQMB"
-    event_cursor: 19
+    event_cursor: 21
     final_validation: null
     id: "202609140925-AWJQMB"
     intent:
@@ -1198,9 +1219,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609140925-AWJQMB"
-    revision: 27
+    revision: 29
     schema_version: 1
-    updated_at: "2026-09-14T11:24:44.856Z"
+    updated_at: "2026-09-14T11:43:31.206Z"
     work_items:
       harden-and-verify:
         attempt: 0
@@ -1334,6 +1355,30 @@ extensions:
         mutation_id: "compatibility:sha256:0afe412863eee97979a633489ad54b08dc9b6d97367cbe28fbbad823ce1903fe"
         next_revision: 19
         previous_revision: 18
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
+      compatibility:sha256:0d830e226941f3ab6b16c2d95078c02fe7c1777652a7c4d330dab10e360494ce:
+        aggregate_digest: "sha256:381bac418becebeaf26cbdeccc54d63a960c40ed7c186e63d8dfbac39f99e36d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T11:43:31.206Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_b2c8cdf46a1b5162a3e1101d"
+          mutation_id: "compatibility:sha256:0d830e226941f3ab6b16c2d95078c02fe7c1777652a7c4d330dab10e360494ce"
+          plan_digest: "sha256:c0fcc82c1cd8640ea3e274ea04ce90a2b291327cd89d088e94807312ce3e0d44"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140925-AWJQMB"
+          task_revision: 28
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:0d830e226941f3ab6b16c2d95078c02fe7c1777652a7c4d330dab10e360494ce"
+        next_revision: 29
+        previous_revision: 28
         schema_version: 1
         task_id: "202609140925-AWJQMB"
       compatibility:sha256:10454c878c86d6a8032dad45aae9a9b271c6885f44e0bae0a61c1c152dd36ceb:
@@ -1720,6 +1765,30 @@ extensions:
         previous_revision: 5
         schema_version: 1
         task_id: "202609140925-AWJQMB"
+      compatibility:sha256:df52061b8cfa7da736131dcb4c38d9afd7404bf3c61e9aa827a3f0ad68cbf25d:
+        aggregate_digest: "sha256:71e845a5fa7efc21a8a4736e70f6a4373c547e3e8fa388638b47380e4a383abc"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T11:43:31.181Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_fac5bb8bcbe97d798148db0f"
+          mutation_id: "compatibility:sha256:df52061b8cfa7da736131dcb4c38d9afd7404bf3c61e9aa827a3f0ad68cbf25d"
+          plan_digest: "sha256:c0fcc82c1cd8640ea3e274ea04ce90a2b291327cd89d088e94807312ce3e0d44"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140925-AWJQMB"
+          task_revision: 27
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:df52061b8cfa7da736131dcb4c38d9afd7404bf3c61e9aa827a3f0ad68cbf25d"
+        next_revision: 28
+        previous_revision: 27
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
       compatibility:sha256:fa9350ba4a6ba93c65507251d9dc08232c631c30f54e2a565784430f873bb962:
         aggregate_digest: "sha256:e471f546378fe20c1f2d1531de3a3752ebc8942d854bd966bfe9e5b0bb786722"
         event:
@@ -1895,8 +1964,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "b6dae19a727f6516137d85dbdb25f4d6961c05e7"
-    message: "🚧 AWJQMB task: apply external agent result"
+    hash: "5c3f3ac18fa6d662c7406c74b9bf00963b2729da"
   task_execution_context:
     base_ref: "main"
     base_sha: "1a93a9a43da2b714854174491f9672c52bf33e9f"
