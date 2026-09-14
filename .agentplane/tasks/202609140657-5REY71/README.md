@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 12
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -380,6 +380,12 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The three uncommitted branch-base workflow paths are the intended hosted-CI rework and should be preserved for the scoped CODER continuation."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The pending source paths remain the intended acyclic hosted-CI rework, and the repo-local derived runtime is refreshed so the supervisor can record its task observation."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The three source paths are the intended acyclic hosted-CI rework; the staged task README is supervisor-generated refresh state from the already-created worktree-observation commit and must be preserved."
 events:
   -
     type: "status"
@@ -415,8 +421,18 @@ events:
     at: "2026-09-14T08:24:22.882Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The three uncommitted branch-base workflow paths are the intended hosted-CI rework and should be preserved for the scoped CODER continuation."
+  -
+    type: "comment"
+    at: "2026-09-14T08:27:36.002Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The pending source paths remain the intended acyclic hosted-CI rework, and the repo-local derived runtime is refreshed so the supervisor can record its task observation."
+  -
+    type: "comment"
+    at: "2026-09-14T08:34:38.162Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The three source paths are the intended acyclic hosted-CI rework; the staged task README is supervisor-generated refresh state from the already-created worktree-observation commit and must be preserved."
 doc_version: 3
-doc_updated_at: "2026-09-14T08:24:22.893Z"
+doc_updated_at: "2026-09-14T08:34:38.173Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement a deterministic AgentPlane lifecycle route for an already-started branch_pr task whose approved WorkItem requires its preserved candidate branch to adopt an exact newer qualified base before semantic edits. The supervisor must own the Git or provider synchronization, bind it to exact branch/head/base identities, preserve existing candidate commits and unrelated work, fail closed on conflict or stale identity, and issue the next semantic packet only after verified base ancestry. An external semantic executor must never be asked to rebase, merge, cherry-pick, commit, force-push, or rewrite Git history. Cover the release-task failure demonstrated by task 202609121424-49XXT3, then integrate the fix through protected branch_pr workflow so that release 0.7.9 can resume."
 sections:
@@ -1084,7 +1100,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609140657-5REY71"
-    event_cursor: 8
+    event_cursor: 10
     final_validation:
       evidence:
         -
@@ -1175,9 +1191,9 @@ extensions:
     lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 12
+    revision: 14
     schema_version: 1
-    updated_at: "2026-09-14T08:24:22.882Z"
+    updated_at: "2026-09-14T08:34:38.162Z"
     work_items:
       implement_branch_base_sync:
         attempt: 1
@@ -1368,6 +1384,30 @@ extensions:
         previous_revision: 4
         schema_version: 1
         task_id: "202609140657-5REY71"
+      compatibility:sha256:73ab6845b71e453f331743406bb91f87c825264a70cdf802241cc02359888931:
+        aggregate_digest: "sha256:d620cb0a436e981e0b6a31921d967c86037deecc845120aa1a0508134c944ab1"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T08:34:38.162Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_db3982b7bf1e42acca45d8cf"
+          mutation_id: "compatibility:sha256:73ab6845b71e453f331743406bb91f87c825264a70cdf802241cc02359888931"
+          plan_digest: "sha256:05d9e037f315e3dad580662875f670e39118537f5689e20277c16450ce222b81"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140657-5REY71"
+          task_revision: 13
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:73ab6845b71e453f331743406bb91f87c825264a70cdf802241cc02359888931"
+        next_revision: 14
+        previous_revision: 13
+        schema_version: 1
+        task_id: "202609140657-5REY71"
       compatibility:sha256:84b458e0035dfaf1f48da567122bb28c9f8301b041305af19bbf63fae11dbe53:
         aggregate_digest: "sha256:c572d5d1b5e133c12b2be5a8d8ccccf5418714ac0b9f7559c3d83c7788ad0359"
         event:
@@ -1438,6 +1478,30 @@ extensions:
         mutation_id: "compatibility:sha256:96354d61d369727d621ad77320e278a88179af2a81792f2a3e45e2d796aa520b"
         next_revision: 9
         previous_revision: 8
+        schema_version: 1
+        task_id: "202609140657-5REY71"
+      compatibility:sha256:a5e6d61709829627ddf75b2a31a797839f498428f2f4a1247411ef5fb5fd8a69:
+        aggregate_digest: "sha256:d154805783d720db2db8b9966beede3018f76dff1a125b1c490fa55d810e9ace"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T08:27:36.002Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_13515929d7c9a9d3314f007a"
+          mutation_id: "compatibility:sha256:a5e6d61709829627ddf75b2a31a797839f498428f2f4a1247411ef5fb5fd8a69"
+          plan_digest: "sha256:05d9e037f315e3dad580662875f670e39118537f5689e20277c16450ce222b81"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140657-5REY71"
+          task_revision: 12
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:a5e6d61709829627ddf75b2a31a797839f498428f2f4a1247411ef5fb5fd8a69"
+        next_revision: 13
+        previous_revision: 12
         schema_version: 1
         task_id: "202609140657-5REY71"
       compatibility:sha256:a86ce7bb21629779650be37bb2082cf43894ad6d944176c38e332bede423e96e:
