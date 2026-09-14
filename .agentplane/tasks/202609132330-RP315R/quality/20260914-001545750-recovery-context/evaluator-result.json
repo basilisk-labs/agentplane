@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "`listTaskDirs` now removes valid quality-object-only directories before the main loop adds task IDs to `seen`.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609132330-RP315R/quality/objects/sha256/f2b667d01ac0062ff0d6945c3aa11c2dd521b3d85aed095feced67de45a232f3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The new regression proves that `depends_on` cannot resolve to a quality-object-only directory.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609132330-RP315R/quality/objects/sha256/f2b667d01ac0062ff0d6945c3aa11c2dd521b3d85aed095feced67de45a232f3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The existing tests continue to accept hash-verified non-empty object storage and reject empty, malformed, digest-mismatched, and unexpected-artifact directories.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609132330-RP315R/quality/objects/sha256/f2b667d01ac0062ff0d6945c3aa11c2dd521b3d85aed095feced67de45a232f3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Supervisor evidence binds the implementation to d80bd0cf3ebde8f350af4bdd4663dd86c5a4426f and records all declared checks plus `bun run ci:local:full` as passed.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609132330-RP315R/quality/objects/sha256/f2b667d01ac0062ff0d6945c3aa11c2dd521b3d85aed095feced67de45a232f3.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
