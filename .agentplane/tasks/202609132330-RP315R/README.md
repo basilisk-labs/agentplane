@@ -1,10 +1,11 @@
 ---
 id: "202609132330-RP315R"
 title: "Repair task-state validation for immutable quality-object directories without task README artifacts so the stable 0.7.9 release gate passes without weakening validation for real task records"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -60,6 +61,22 @@ quality_review:
     - "The new regression proves that `depends_on` cannot resolve to a quality-object-only directory."
     - "The existing tests continue to accept hash-verified non-empty object storage and reject empty, malformed, digest-mismatched, and unexpected-artifact directories."
     - "Supervisor evidence binds the implementation to d80bd0cf3ebde8f350af4bdd4663dd86c5a4426f and records all declared checks plus `bun run ci:local:full` as passed."
+token_usage:
+  agent_runs: 9
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:26bf0da2e7339e87fc41baee39b319f4632bb510df763a5160217aa43182527b"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-09-14T00:16:46.794Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -287,8 +304,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "d80bd0cf3ebde8f350af4bdd4663dd86c5a4426f"
-  message: "🚧 RP315R task: apply external agent result"
+  hash: "b99c1781643820997da7fba19000c9435b566e3f"
+  message: "🚧 RP315R task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -299,6 +316,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: d80bd0cf3ebd. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -335,9 +355,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-14T00:16:46.794Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "b99c1781643820997da7fba19000c9435b566e3f"
 doc_version: 3
-doc_updated_at: "2026-09-14T00:15:36.044Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-14T00:16:46.794Z"
+doc_updated_by: "CODER"
 description: "Repair task-state validation for immutable quality-object directories without task README artifacts so the stable 0.7.9 release gate passes without weakening validation for real task records"
 sections:
   Summary: |-
@@ -856,7 +884,56 @@ extensions:
       schema_version: 1
       task_id: "202609132330-RP315R"
     event_cursor: 13
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609132330-RP315R"
+            - "git:d80bd0cf3ebde8f350af4bdd4663dd86c5a4426f"
+          check_id: "targeted_task_state_tests"
+          command_identity: "bun run test:project -- agentplane packages/agentplane/src/commands/release/task-state-script.test.ts --maxWorkers=4"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-14T00:15:34.469Z"
+          repository_snapshot_digest: "sha256:1fb914314a84f30b9083c5a08868e0d62b5e89e9ddc8206f72b7b2c12ebeea6f"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609132330-RP315R"
+            - "git:d80bd0cf3ebde8f350af4bdd4663dd86c5a4426f"
+          check_id: "repository_task_state"
+          command_identity: "bun run task-state:check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-14T00:15:34.469Z"
+          repository_snapshot_digest: "sha256:1fb914314a84f30b9083c5a08868e0d62b5e89e9ddc8206f72b7b2c12ebeea6f"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609132330-RP315R"
+            - "git:d80bd0cf3ebde8f350af4bdd4663dd86c5a4426f"
+          check_id: "full_release_gate"
+          command_identity: "bun run release:check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-14T00:15:34.469Z"
+          repository_snapshot_digest: "sha256:1fb914314a84f30b9083c5a08868e0d62b5e89e9ddc8206f72b7b2c12ebeea6f"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609132330-RP315R"
+            - "git:d80bd0cf3ebde8f350af4bdd4663dd86c5a4426f"
+          check_id: "hosted_integration"
+          command_identity: "task.verify"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-14T00:15:34.469Z"
+          repository_snapshot_digest: "sha256:1fb914314a84f30b9083c5a08868e0d62b5e89e9ddc8206f72b7b2c12ebeea6f"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609132330-RP315R"
     intent:
       acceptance_criteria: []
@@ -867,7 +944,7 @@ extensions:
 
         Repair task-state validation for immutable quality-object directories without task README artifacts so the stable 0.7.9 release gate passes without weakening validation for real task records
       task_id: "202609132330-RP315R"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -1447,9 +1524,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609132330-RP315R"
-    revision: 20
+    revision: 21
     schema_version: 1
-    updated_at: "2026-09-14T00:15:36.044Z"
+    updated_at: "2026-09-14T00:16:46.794Z"
     work_items:
       repair_task_state_object_store_classification:
         attempt: 1
@@ -1942,6 +2019,31 @@ extensions:
         previous_revision: 12
         schema_version: 1
         task_id: "202609132330-RP315R"
+      legacy-finish:202609132330-RP315R:2026-09-14T00:15:34.469Z:d80bd0cf3ebde8f350af4bdd4663dd86c5a4426f:
+        aggregate_digest: "sha256:58ca5b304726c7d1909d3aff537a6c902ad1f0939bf008d65323eb655155e4b8"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-14T00:16:46.794Z"
+          cause_refs:
+            - "task-verification:202609132330-RP315R"
+            - "git:d80bd0cf3ebde8f350af4bdd4663dd86c5a4426f"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_2c7658bb0a0e2307dd194c0e"
+          mutation_id: "legacy-finish:202609132330-RP315R:2026-09-14T00:15:34.469Z:d80bd0cf3ebde8f350af4bdd4663dd86c5a4426f"
+          plan_digest: "sha256:d2d827b02520ca449713d5ac66f10bb428289a4d6fa99e303fcd8ec8d6880dbe"
+          plan_revision: 3
+          repository_fingerprint: "sha256:1fb914314a84f30b9083c5a08868e0d62b5e89e9ddc8206f72b7b2c12ebeea6f"
+          schema_version: 1
+          task_id: "202609132330-RP315R"
+          task_revision: 20
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609132330-RP315R:2026-09-14T00:15:34.469Z:d80bd0cf3ebde8f350af4bdd4663dd86c5a4426f"
+        next_revision: 21
+        previous_revision: 20
+        schema_version: 1
+        task_id: "202609132330-RP315R"
       plan-refinement:work-order-202609132330-RP315R-executor-19b1c35d6ab9b999bb8575b2:
         aggregate_digest: "sha256:14e924f02ba0ffef6c0aa51dc56d20b09df43c642de4891baec8f8f5d5e3736c"
         event:
@@ -1995,6 +2097,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "d80bd0cf3ebde8f350af4bdd4663dd86c5a4426f"
+    message: "🚧 RP315R task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "ecfccc5ad0230fc1876a319be0af5cdb530c339f"
@@ -2303,3 +2406,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/9` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:26bf0da2e7339e87fc41baee39b319f4632bb510df763a5160217aa43182527b`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-09-14T00:16:46.794Z`
