@@ -4,7 +4,7 @@ title: "Recover an external-agent result rejected during supervisor application"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 30
 origin:
   system: "manual"
 depends_on: []
@@ -92,6 +92,7 @@ execution_contract:
       - "packages/agentplane"
     changed_paths:
       - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+      - "packages/agentplane/src/cli/task-advance-result-rejection-recovery.testkit.ts"
       - "packages/agentplane/src/commands/task/external-agent-result-rejection-recovery.ts"
       - "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
       - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
@@ -136,11 +137,12 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:c2b07d87302e46460a3e7a398ae030a0374bd0dab9fb8d24bbf6afa092fcb5a2"
+      digest: "sha256:6bc67cb9bd0ee0dfda91230935234e74f050bf97e70cc9d4e7db30a5c59be225"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
         - "central_component:packages/agentplane/src/cli/task-advance-result-rejection-recovery.testkit.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+        - "central_path:packages/agentplane/src/cli/task-advance-result-rejection-recovery.testkit.ts"
       execution_groups:
         - "docs-schema"
         - "core"
@@ -151,6 +153,7 @@ execution_contract:
           - "packages/agentplane"
         changed_files:
           - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+          - "packages/agentplane/src/cli/task-advance-result-rejection-recovery.testkit.ts"
           - "packages/agentplane/src/commands/task/external-agent-result-rejection-recovery.ts"
           - "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
           - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
@@ -190,7 +193,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "0aa277dd97640bbc2afba29d72adb91fae64021f"
+  message: "🚧 8QDRVN task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -216,6 +221,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/src/cli/task-advance-result-rejection-recovery.testkit.ts; repository effects: repository_write, tests."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 0aa277dd9764. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -274,8 +282,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The remaining oversized-test gate requires one dedicated testkit module. Recommended action: Approve one new testkit path and move only the new scenario setup and assertions into it. Requested scope: roots=packages/agentplane/src/cli/task-advance-result-rejection-recovery.testkit.ts; repository effects=repository_write,tests; request digest=sha256:d528e833e5ce8ad8a80110c79cdeae8ac5883dd1d5a4cfbb7f24b3c6344964c7. Agentplane receipt: external-agent-blocker/tr_995d06a66acddde96490bbe069b9c7ce/sha256:41a416d380e01ac9399820a83c3dab2621ae8bcbae9371e6cd20d4802dc2d844/sha256:d528e833e5ce8ad8a80110c79cdeae8ac5883dd1d5a4cfbb7f24b3c6344964c7."
+  -
+    type: "status"
+    at: "2026-09-14T01:36:41.000Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 0aa277dd9764. CLI accepted one state-bound external-agent semantic result."
+    commit: "0aa277dd97640bbc2afba29d72adb91fae64021f"
 doc_version: 3
-doc_updated_at: "2026-09-14T01:31:48.472Z"
+doc_updated_at: "2026-09-14T01:36:41.000Z"
 doc_updated_by: "SUPERVISOR"
 description: "When a durable result_received external-agent result is rejected by deterministic supervisor application validation, fail the owning semantic operation without applying the result, retire the exchange, and require the existing exact-key --replacement route. Preserve single-use result integrity and effect-in-doubt behavior. Add focused regression coverage for an implementation result that changes Git history outside the permitted workspace effect."
 sections:
@@ -529,7 +545,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609140050-8QDRVN"
-    event_cursor: 22
+    event_cursor: 24
     final_validation: null
     id: "202609140050-8QDRVN"
     intent:
@@ -989,9 +1005,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609140050-8QDRVN"
-    revision: 28
+    revision: 30
     schema_version: 1
-    updated_at: "2026-09-14T01:31:48.472Z"
+    updated_at: "2026-09-14T01:36:41.000Z"
     work_items:
       recover-rejected-result:
         attempt: 1
@@ -1266,6 +1282,30 @@ extensions:
         previous_revision: 3
         schema_version: 1
         task_id: "202609140050-8QDRVN"
+      compatibility:sha256:71097fd7dbb08fc9645be896090e987011e5be518551b5a28b7f48a5316643b1:
+        aggregate_digest: "sha256:6ea0d9b71aeee131ef48dc3a3de0f999cce19c7c1dba3b75dc4f2581228c23c2"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T01:36:41.000Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_6625d0377b623578e43ce489"
+          mutation_id: "compatibility:sha256:71097fd7dbb08fc9645be896090e987011e5be518551b5a28b7f48a5316643b1"
+          plan_digest: "sha256:964641b14ee083eb612f6346f18943a5d0d25890074dadc3df62c6285d4e04cb"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140050-8QDRVN"
+          task_revision: 29
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:71097fd7dbb08fc9645be896090e987011e5be518551b5a28b7f48a5316643b1"
+        next_revision: 30
+        previous_revision: 29
+        schema_version: 1
+        task_id: "202609140050-8QDRVN"
       compatibility:sha256:8c2b4153bfb5d20efc58d726ccaf7aadf696b2f7a77fbef0b9ed9c105c5bb074:
         aggregate_digest: "sha256:004543dfa8a3f03419879af766ac6749eec54123b8b140285dd80786ddfd7cca"
         event:
@@ -1480,6 +1520,30 @@ extensions:
         mutation_id: "compatibility:sha256:dc43596d8cc2b290396c91f063914998907fe93d1e1b194cfd8e34d42d8d9b88"
         next_revision: 12
         previous_revision: 11
+        schema_version: 1
+        task_id: "202609140050-8QDRVN"
+      compatibility:sha256:de6d4c3dd995ff72771801ff2079b795f6fcff5f180b9b090b6fee868790ac0c:
+        aggregate_digest: "sha256:ddf7c00d0184dd50e351d42c41bda45ea26c3c90c48eda60c5261c91a0fab534"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T01:36:41.000Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_445839e210ab38387ff0b637"
+          mutation_id: "compatibility:sha256:de6d4c3dd995ff72771801ff2079b795f6fcff5f180b9b090b6fee868790ac0c"
+          plan_digest: "sha256:964641b14ee083eb612f6346f18943a5d0d25890074dadc3df62c6285d4e04cb"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140050-8QDRVN"
+          task_revision: 28
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:de6d4c3dd995ff72771801ff2079b795f6fcff5f180b9b090b6fee868790ac0c"
+        next_revision: 29
+        previous_revision: 28
         schema_version: 1
         task_id: "202609140050-8QDRVN"
       compatibility:sha256:e1bf3038eb7e40566636d26a8f70e78bcb22abdbe872fad67c9a0c5fa685758b:
@@ -1703,6 +1767,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "0aa277dd97640bbc2afba29d72adb91fae64021f"
   task_execution_context:
     base_ref: "main"
     base_sha: "9792878934b2c4d068e98056cef3c2c691451a90"

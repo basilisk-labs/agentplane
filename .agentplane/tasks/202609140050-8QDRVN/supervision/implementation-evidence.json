@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check df00fc754211616c998ca5911765be5f5910f5fe..7bd4004c11a8fb70fb4c8708a94557a41e301a65",
+      "command": "git diff --check 33c353c13f5c7c9f07fa19539839ef6bcbb71e2b..0aa277dd97640bbc2afba29d72adb91fae64021f",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB df00fc754211616c998ca5911765be5f5910f5fe..7bd4004c11a8fb70fb4c8708a94557a41e301a65",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 33c353c13f5c7c9f07fa19539839ef6bcbb71e2b..0aa277dd97640bbc2afba29d72adb91fae64021f",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,8 +21,8 @@
         "M\t.agentplane/tasks/202609140050-8QDRVN/pr/github-body.md",
         "M\t.agentplane/tasks/202609140050-8QDRVN/pr/meta.json",
         "M\t.agentplane/tasks/202609140050-8QDRVN/pr/review.md",
-        "A\tpackages/agentplane/src/commands/task/external-agent-result-rejection-recovery.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-supervisor.ts"
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+        "A\tpackages/agentplane/src/cli/task-advance-result-rejection-recovery.testkit.ts"
       ]
     },
     {
@@ -32,8 +32,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "df00fc754211616c998ca5911765be5f5910f5fe",
-  "implementation_commit": "7bd4004c11a8fb70fb4c8708a94557a41e301a65",
+  "execution_base_commit": "33c353c13f5c7c9f07fa19539839ef6bcbb71e2b",
+  "implementation_commit": "0aa277dd97640bbc2afba29d72adb91fae64021f",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
