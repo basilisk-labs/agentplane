@@ -6,14 +6,14 @@ Created: 2026-09-14T12:57:53.404Z
 
 - Task: `202609141255-VABJX3`
 - Title: Backport applicable open issue fixes to the 0.6 maintenance branch
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609141255-VABJX3/backport-applicable-open-issue-fixes-to-the-0-6`
 - Canonical task record: `.agentplane/tasks/202609141255-VABJX3/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Bun 1.4.2 qualification and v0.6 runtime hardening pass: 57 focused tests, 92 platform-critical tests, typecheck, focused ESLint and Prettier, workflow command contracts, compiled Bun CLI smoke, local tarball install smoke, release:check, doctor, policy routing, git diff --check, and unchanged bun.lock. The isolated developer reinstall installed materialized tarballs successfully; its in-checkout temporary prefix was then rejected by the new source-coupling guard as designed.
+- Note: Verified: 57 focused tests and 92 platform-critical tests passed; typecheck, focused ESLint and Prettier, workflow command contracts, Bun compiled CLI smoke, local tarball install smoke, release:check, policy routing, doctor, and git diff checks passed on Bun 1.4.2; bun.lock is unchanged.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

@@ -19,11 +19,10 @@ Audit all open GitHub issues against AgentPlane 0.6.28 and backport only confirm
 - Note:
 
 ```text
-Bun 1.4.2 qualification and v0.6 runtime hardening pass: 57 focused tests, 92 platform-critical
-tests, typecheck, focused ESLint and Prettier, workflow command contracts, compiled Bun CLI smoke,
-local tarball install smoke, release:check, doctor, policy routing, git diff --check, and unchanged
-bun.lock. The isolated developer reinstall installed materialized tarballs successfully; its
-in-checkout temporary prefix was then rejected by the new source-coupling guard as designed.
+Verified: 57 focused tests and 92 platform-critical tests passed; typecheck, focused ESLint and
+Prettier, workflow command contracts, Bun compiled CLI smoke, local tarball install smoke,
+release:check, policy routing, doctor, and git diff checks passed on Bun 1.4.2; bun.lock is
+unchanged.
 ```
 - Canonical workflow state lives in the task README.
 
