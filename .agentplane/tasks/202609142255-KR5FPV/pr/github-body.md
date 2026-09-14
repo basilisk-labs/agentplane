@@ -22,7 +22,7 @@ On the authoritative codex/release-v0.6.27-reclaim-fix maintenance branch, retai
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-14T23:07:09.197Z
+- Updated: 2026-09-14T23:10:32.910Z
 - Branch: task/202609142255-KR5FPV/backport-install-layout-guard
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

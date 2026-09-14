@@ -4,7 +4,7 @@ title: "Backport safe reusable node_modules guards to the 0.6 maintenance branch
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -231,9 +231,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "f030f679ddd67bb024665ebf9717c05cd4373f48"
-  message: "🚧 KR5FPV task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -818,19 +816,94 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 7
+    revision: 8
     schema_version: 1
-    updated_at: "2026-09-14T23:07:12.483Z"
+    updated_at: "2026-09-14T23:09:52.996Z"
     work_items:
       backport-install-layout-guard:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "backport-install-layout-guard"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:7d040748ada110c73055dee3ac0c2becd91435e5e97772998d6b9188984b89d4"
+            id: "guard-implementation"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609142255-KR5FPV"
+              work_item_id: "backport-install-layout-guard"
+            provenance:
+              - "sha256:90cede26ec8e4b45482411e5b4e3e932a1929fb8bfd632935a94eec6fd194cfd"
+              - ".agentplane/tasks/202609142255-KR5FPV/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:384ce57c4d796bf1000d9a08d3cb37477dd9a455afe41f3fc85eddcef33f1a3f"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:777ea45c16fae8ab94b27f63670d9579af09769b892977a29edf94985e5b6a25"
+            id: "guard-regression-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609142255-KR5FPV"
+              work_item_id: "backport-install-layout-guard"
+            provenance:
+              - "sha256:90cede26ec8e4b45482411e5b4e3e932a1929fb8bfd632935a94eec6fd194cfd"
+              - ".agentplane/tasks/202609142255-KR5FPV/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:384ce57c4d796bf1000d9a08d3cb37477dd9a455afe41f3fc85eddcef33f1a3f"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609142255-KR5FPV/supervision/declared-checks.json"
+              check_id: "check-platform"
+              command_identity: "bun run test:platform-critical"
+              detail: "Observed by bun run test:platform-critical."
+              exit_code: 0
+              observed_at: "2026-09-14T23:09:52.987Z"
+              repository_snapshot_digest: "sha256:384ce57c4d796bf1000d9a08d3cb37477dd9a455afe41f3fc85eddcef33f1a3f"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609142255-KR5FPV/supervision/declared-checks.json"
+              check_id: "check-routing"
+              command_identity: "node .agentplane/policy/check-routing.mjs"
+              detail: "Observed by node .agentplane/policy/check-routing.mjs."
+              exit_code: 0
+              observed_at: "2026-09-14T23:09:52.987Z"
+              repository_snapshot_digest: "sha256:384ce57c4d796bf1000d9a08d3cb37477dd9a455afe41f3fc85eddcef33f1a3f"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609142255-KR5FPV/supervision/declared-checks.json"
+              check_id: "check-full"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-09-14T23:09:52.987Z"
+              repository_snapshot_digest: "sha256:384ce57c4d796bf1000d9a08d3cb37477dd9a455afe41f3fc85eddcef33f1a3f"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609142255-KR5FPV/supervision/declared-checks.json"
+              check_id: "check-semantic-review"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-09-14T23:09:52.987Z"
+              repository_snapshot_digest: "sha256:384ce57c4d796bf1000d9a08d3cb37477dd9a455afe41f3fc85eddcef33f1a3f"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       qualify-and-verify-release:
         attempt: 0
         claim_id: null
@@ -842,7 +915,24 @@ extensions:
         validation_result: null
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-14T23:09:52.996Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:0798aa8d496ecff1294d7e1d5c1c7eb8df2d5eb283e16d94b02c305bbd641995"
+        entity: "work_item"
+        id: "event_53b3146077798d75f5f2ec82"
+        mutation_id: "external-result:work-order-202609142255-KR5FPV-executor-f9b285d666e4ea80d75935d8"
+        plan_digest: "sha256:cb3b0df8355f15e5e1ccd768b58458bbb80b70b9b69abeecd6c23317b7a3d16f"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609142255-KR5FPV"
+        task_revision: 7
+        work_item_id: "backport-install-layout-guard"
     leases: []
     mutation_receipts:
       compatibility:sha256:2f2c22ddd17a9bc3d8afb2e208eaeba3e5fe897d37259e2bf30b554ea7e207ba:
@@ -963,6 +1053,30 @@ extensions:
         mutation_id: "compatibility:sha256:af6e3501a2fe5681f40092ac37dc387ec12b7b1748903dbc3d521f275e750f6e"
         next_revision: 3
         previous_revision: 2
+        schema_version: 1
+        task_id: "202609142255-KR5FPV"
+      external-result:work-order-202609142255-KR5FPV-executor-f9b285d666e4ea80d75935d8:
+        aggregate_digest: "sha256:a875744818cc0296fd0a15b63aaae680ce2d21d373c3cbc1db8be035efe86d86"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T23:09:52.996Z"
+          cause_refs:
+            - "semantic-result:sha256:0798aa8d496ecff1294d7e1d5c1c7eb8df2d5eb283e16d94b02c305bbd641995"
+          entity: "work_item"
+          from: "READY"
+          id: "event_53b3146077798d75f5f2ec82"
+          mutation_id: "external-result:work-order-202609142255-KR5FPV-executor-f9b285d666e4ea80d75935d8"
+          plan_digest: "sha256:cb3b0df8355f15e5e1ccd768b58458bbb80b70b9b69abeecd6c23317b7a3d16f"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609142255-KR5FPV"
+          task_revision: 7
+          to: "COMPLETED"
+          work_item_id: "backport-install-layout-guard"
+        mutation_id: "external-result:work-order-202609142255-KR5FPV-executor-f9b285d666e4ea80d75935d8"
+        next_revision: 8
+        previous_revision: 7
         schema_version: 1
         task_id: "202609142255-KR5FPV"
     pending_effects: []
