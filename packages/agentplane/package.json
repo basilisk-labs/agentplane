@@ -77,10 +77,10 @@
   "dependencies": {
     "@agentplaneorg/core": "0.7.9-beta.1",
     "@agentplaneorg/recipes": "0.7.9-beta.1",
-    "@clack/prompts": "^1.5.1",
+    "@clack/prompts": "^1.7.0",
     "yaml": "^2.7.1",
     "yauzl": "^3.4.0",
-    "zod": "^4.4.3",
+    "zod": "^4.5.4",
     "zod-validation-error": "^5.0.0"
   },
   "devDependencies": {
