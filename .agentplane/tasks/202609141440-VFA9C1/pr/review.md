@@ -6,7 +6,7 @@ Created: 2026-09-14T15:15:16.456Z
 
 - Task: `202609141440-VFA9C1`
 - Title: Repair managed usage observation and branch-pr finish guard regressions
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609141440-VFA9C1/repair-managed-usage-observation-and-branch-pr-f`
 - Canonical task record: `.agentplane/tasks/202609141440-VFA9C1/README.md`
 
