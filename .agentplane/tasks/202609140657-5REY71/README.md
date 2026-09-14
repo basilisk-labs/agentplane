@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -26,7 +26,7 @@ plan_approval:
   note: "host_user_decision=sha256:e09aba7b31d998b26302c69d89a1af8b673aeec0904bda7ffaa007044629802b"
 verification:
   state: "ok"
-  updated_at: "2026-09-14T08:05:01.701Z"
+  updated_at: "2026-09-14T08:46:06.234Z"
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
@@ -154,6 +154,7 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts"
       - "packages/agentplane/src/commands/shared/workflow-operation-projection.ts"
       - "packages/agentplane/src/commands/shared/workflow-postconditions.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-branch-base-sync-spec.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-branch-base-sync.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-branch-state.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
@@ -276,7 +277,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:5fdb0a83d3fc6fce7383f3b15108008f0232af85b5ce811356b9ffbc44d61200"
+      digest: "sha256:e9f82c348008a463f482cfbdd8079d74dd2112de7d07731aa217a128eca37ee8"
       escalation_reasons:
         - "central_path:packages/agentplane/src/commands/shared/branch-base-sync-route.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/branch-base-sync-route.ts"
@@ -287,6 +288,7 @@ execution_contract:
         - "central_path:packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/workflow-operation-projection.ts"
         - "central_path:packages/agentplane/src/commands/shared/workflow-postconditions.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-branch-base-sync-spec.ts"
         - "central_path:packages/agentplane/src/commands/shared/workflow-step-branch-base-sync.ts"
         - "central_path:packages/agentplane/src/commands/shared/workflow-step-branch-state.ts"
         - "central_path:packages/agentplane/src/commands/shared/workflow-step-branch.ts"
@@ -317,6 +319,7 @@ execution_contract:
           - "packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts"
           - "packages/agentplane/src/commands/shared/workflow-operation-projection.ts"
           - "packages/agentplane/src/commands/shared/workflow-postconditions.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-branch-base-sync-spec.ts"
           - "packages/agentplane/src/commands/shared/workflow-step-branch-base-sync.ts"
           - "packages/agentplane/src/commands/shared/workflow-step-branch-state.ts"
           - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
@@ -439,8 +442,14 @@ events:
     at: "2026-09-14T08:36:40.334Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The three uncommitted source paths are the intended acyclic hosted-CI rework and should be committed together through the approved task allowlist."
+  -
+    type: "verify"
+    at: "2026-09-14T08:46:06.234Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-14T08:36:40.343Z"
+doc_updated_at: "2026-09-14T08:46:10.481Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement a deterministic AgentPlane lifecycle route for an already-started branch_pr task whose approved WorkItem requires its preserved candidate branch to adopt an exact newer qualified base before semantic edits. The supervisor must own the Git or provider synchronization, bind it to exact branch/head/base identities, preserve existing candidate commits and unrelated work, fail closed on conflict or stale identity, and issue the next semantic packet only after verified base ancestry. An external semantic executor must never be asked to rebase, merge, cherry-pick, commit, force-push, or rewrite Git history. Cover the release-task failure demonstrated by task 202609121424-49XXT3, then integrate the fix through protected branch_pr workflow so that release 0.7.9 can resume."
 sections:
@@ -611,6 +620,162 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202609140657-5REY71
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-14T08:46:06.234Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:af09596d73f73d032dc226c320ef6e297dbe20645b6d25d8aa177877bab8c8f4, input_digest=sha256:1592f38462abb97c338ca62cdb191273adf10cd38e584248d9b598f474a2d5d9
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000
+    Result: pass
+    Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609140657-5REY71 Verification Contract check affected_unit_integration (1/5)
+
+    Check: affected_unit_integration
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000
+    Result: pass
+    Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609140657-5REY71 Verification Contract check affected_unit_integration (2/5)
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609140657-5REY71 Verification Contract check affected_unit_integration (3/5)
+
+    Check: affected_unit_integration
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609140657-5REY71 Verification Contract check affected_unit_integration (4/5)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609140657-5REY71 Verification Contract check affected_unit_integration (5/5)
+
+    Check: critical_paths
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000
+    Result: pass
+    Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609140657-5REY71 Verification Contract check critical_paths (1/5)
+
+    Check: critical_paths
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000
+    Result: pass
+    Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609140657-5REY71 Verification Contract check critical_paths (2/5)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609140657-5REY71 Verification Contract check critical_paths (3/5)
+
+    Check: critical_paths
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609140657-5REY71 Verification Contract check critical_paths (4/5)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609140657-5REY71 Verification Contract check critical_paths (5/5)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609140657-5REY71 Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000
+    Result: pass
+    Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609140657-5REY71 Verification Contract check real_e2e (1/5)
+
+    Check: real_e2e
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000
+    Result: pass
+    Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609140657-5REY71 Verification Contract check real_e2e (2/5)
+
+    Check: real_e2e
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609140657-5REY71 Verification Contract check real_e2e (3/5)
+
+    Check: real_e2e
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609140657-5REY71 Verification Contract check real_e2e (4/5)
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609140657-5REY71 Verification Contract check real_e2e (5/5)
+
+    Check: task_outcome
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000
+    Result: pass
+    Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609140657-5REY71 Verification Contract check task_outcome (1/5)
+
+    Check: task_outcome
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000
+    Result: pass
+    Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609140657-5REY71 Verification Contract check task_outcome (2/5)
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609140657-5REY71 Verification Contract check task_outcome (3/5)
+
+    Check: task_outcome
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609140657-5REY71 Verification Contract check task_outcome (4/5)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609140657-5REY71 Verification Contract check task_outcome (5/5)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609140657-5REY71-add-supervisor-owned-base-synchronization-before/.agentplane/tasks/202609140657-5REY71/blueprint/resolved-snapshot.json
+    - old_digest: 44cb6a693c03d7f6613baa191627598ac96dc518887fb1525cd7328b0b5fef39
+    - current_digest: 44cb6a693c03d7f6613baa191627598ac96dc518887fb1525cd7328b0b5fef39
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609140657-5REY71
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -1108,7 +1273,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609140657-5REY71"
-    event_cursor: 11
+    event_cursor: 12
     final_validation:
       evidence:
         -
@@ -1199,9 +1364,9 @@ extensions:
     lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 15
+    revision: 16
     schema_version: 1
-    updated_at: "2026-09-14T08:36:40.334Z"
+    updated_at: "2026-09-14T08:46:10.479Z"
     work_items:
       implement_branch_base_sync:
         attempt: 1
@@ -1608,6 +1773,30 @@ extensions:
         previous_revision: 5
         schema_version: 1
         task_id: "202609140657-5REY71"
+      compatibility:sha256:f6911cc90067b4b7773ca9c19ff533043382a38c2380b929aeab16c1bf2dce6c:
+        aggregate_digest: "sha256:0218c39fbb9d117718487fb76f2f35b81c8175f931ec2d479b74a9aefeaa4732"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T08:46:10.479Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_bc5d39a768e5cbdc02fd25c0"
+          mutation_id: "compatibility:sha256:f6911cc90067b4b7773ca9c19ff533043382a38c2380b929aeab16c1bf2dce6c"
+          plan_digest: "sha256:05d9e037f315e3dad580662875f670e39118537f5689e20277c16450ce222b81"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140657-5REY71"
+          task_revision: 15
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:f6911cc90067b4b7773ca9c19ff533043382a38c2380b929aeab16c1bf2dce6c"
+        next_revision: 16
+        previous_revision: 15
+        schema_version: 1
+        task_id: "202609140657-5REY71"
       external-result:work-order-202609140657-5REY71-executor-ba38a9a7c47922ed4ec0715c:
         aggregate_digest: "sha256:57e8c6a4901e2f20048349553b61fbcf5a8e623b7f3afb932b6917c0f70962f5"
         event:
@@ -1851,6 +2040,162 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202609140657-5REY71
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-14T08:46:06.234Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:af09596d73f73d032dc226c320ef6e297dbe20645b6d25d8aa177877bab8c8f4, input_digest=sha256:1592f38462abb97c338ca62cdb191273adf10cd38e584248d9b598f474a2d5d9
+
+Details:
+
+Check: affected_unit_integration
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000
+Result: pass
+Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609140657-5REY71 Verification Contract check affected_unit_integration (1/5)
+
+Check: affected_unit_integration
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000
+Result: pass
+Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609140657-5REY71 Verification Contract check affected_unit_integration (2/5)
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609140657-5REY71 Verification Contract check affected_unit_integration (3/5)
+
+Check: affected_unit_integration
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609140657-5REY71 Verification Contract check affected_unit_integration (4/5)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609140657-5REY71 Verification Contract check affected_unit_integration (5/5)
+
+Check: critical_paths
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000
+Result: pass
+Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609140657-5REY71 Verification Contract check critical_paths (1/5)
+
+Check: critical_paths
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000
+Result: pass
+Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609140657-5REY71 Verification Contract check critical_paths (2/5)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609140657-5REY71 Verification Contract check critical_paths (3/5)
+
+Check: critical_paths
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609140657-5REY71 Verification Contract check critical_paths (4/5)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609140657-5REY71 Verification Contract check critical_paths (5/5)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609140657-5REY71 Verification Contract check full_regression
+
+Check: real_e2e
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000
+Result: pass
+Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609140657-5REY71 Verification Contract check real_e2e (1/5)
+
+Check: real_e2e
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000
+Result: pass
+Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609140657-5REY71 Verification Contract check real_e2e (2/5)
+
+Check: real_e2e
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609140657-5REY71 Verification Contract check real_e2e (3/5)
+
+Check: real_e2e
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609140657-5REY71 Verification Contract check real_e2e (4/5)
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609140657-5REY71 Verification Contract check real_e2e (5/5)
+
+Check: task_outcome
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000
+Result: pass
+Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609140657-5REY71 Verification Contract check task_outcome (1/5)
+
+Check: task_outcome
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000
+Result: pass
+Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609140657-5REY71 Verification Contract check task_outcome (2/5)
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609140657-5REY71 Verification Contract check task_outcome (3/5)
+
+Check: task_outcome
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609140657-5REY71 Verification Contract check task_outcome (4/5)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609140657-5REY71 Verification Contract check task_outcome (5/5)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609140657-5REY71-add-supervisor-owned-base-synchronization-before/.agentplane/tasks/202609140657-5REY71/blueprint/resolved-snapshot.json
+- old_digest: 44cb6a693c03d7f6613baa191627598ac96dc518887fb1525cd7328b0b5fef39
+- current_digest: 44cb6a693c03d7f6613baa191627598ac96dc518887fb1525cd7328b0b5fef39
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609140657-5REY71
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
