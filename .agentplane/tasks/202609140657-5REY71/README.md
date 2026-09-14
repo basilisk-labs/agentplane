@@ -1,10 +1,11 @@
 ---
 id: "202609140657-5REY71"
 title: "Add supervisor-owned base synchronization before semantic work on stale branch_pr candidates"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -60,6 +61,22 @@ quality_review:
     - "The route orders base synchronization after worktree recovery and before conflict recovery, implementation, or rework episodes; a fresh route can issue semantic work only after the exact base is an ancestor."
     - "The code, operation registry, fingerprint, authority, projection, postcondition, and tests form one coherent scoped change; the committed diff contains no unrelated base-checkout or agentplane-roadmap-r2 changes."
     - "Residual risk: The first production exercise will be the preserved 0.7.9 candidate; exact identity checks intentionally fail closed if its qualified base changes before synchronization."
+token_usage:
+  agent_runs: 3
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:e9dcdf3546fad664eea3c7f7f6f1f7de30ec7bd2fef8bfda4f27e1e668f2cbd1"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-09-14T08:07:49.888Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -350,8 +367,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "4be3447ccff551b8f67611538d8d784495a35893"
-  message: "🚧 5REY71 task: apply external agent result"
+  hash: "f4818c1752177ae76bea169c856a6f54ad23fbeb"
+  message: "🚧 5REY71 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -359,6 +376,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 4be3447ccff5. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -381,9 +401,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-14T08:07:49.888Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "f4818c1752177ae76bea169c856a6f54ad23fbeb"
 doc_version: 3
-doc_updated_at: "2026-09-14T08:05:02.660Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-14T08:07:49.888Z"
+doc_updated_by: "CODER"
 description: "Implement a deterministic AgentPlane lifecycle route for an already-started branch_pr task whose approved WorkItem requires its preserved candidate branch to adopt an exact newer qualified base before semantic edits. The supervisor must own the Git or provider synchronization, bind it to exact branch/head/base identities, preserve existing candidate commits and unrelated work, fail closed on conflict or stale identity, and issue the next semantic packet only after verified base ancestry. An external semantic executor must never be asked to rebase, merge, cherry-pick, commit, force-push, or rewrite Git history. Cover the release-task failure demonstrated by task 202609121424-49XXT3, then integrate the fix through protected branch_pr workflow so that release 0.7.9 can resume."
 sections:
   Summary: |-
@@ -1051,7 +1079,78 @@ extensions:
       schema_version: 1
       task_id: "202609140657-5REY71"
     event_cursor: 7
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609140657-5REY71"
+            - "git:4be3447ccff551b8f67611538d8d784495a35893"
+          check_id: "focused_route_tests"
+          command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-14T08:05:01.701Z"
+          repository_snapshot_digest: "sha256:799c327cfeb50226e8c3880e50805e383ac2ad1389e97b88ac09c48ce45cca07"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609140657-5REY71"
+            - "git:4be3447ccff551b8f67611538d8d784495a35893"
+          check_id: "focused_supervisor_tests"
+          command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-14T08:05:01.701Z"
+          repository_snapshot_digest: "sha256:799c327cfeb50226e8c3880e50805e383ac2ad1389e97b88ac09c48ce45cca07"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609140657-5REY71"
+            - "git:4be3447ccff551b8f67611538d8d784495a35893"
+          check_id: "typecheck"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-14T08:05:01.701Z"
+          repository_snapshot_digest: "sha256:799c327cfeb50226e8c3880e50805e383ac2ad1389e97b88ac09c48ce45cca07"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609140657-5REY71"
+            - "git:4be3447ccff551b8f67611538d8d784495a35893"
+          check_id: "lint_core"
+          command_identity: "bun run lint:core"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-14T08:05:01.701Z"
+          repository_snapshot_digest: "sha256:799c327cfeb50226e8c3880e50805e383ac2ad1389e97b88ac09c48ce45cca07"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609140657-5REY71"
+            - "git:4be3447ccff551b8f67611538d8d784495a35893"
+          check_id: "full_ci"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-14T08:05:01.701Z"
+          repository_snapshot_digest: "sha256:799c327cfeb50226e8c3880e50805e383ac2ad1389e97b88ac09c48ce45cca07"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609140657-5REY71"
+            - "git:4be3447ccff551b8f67611538d8d784495a35893"
+          check_id: "diff_hygiene"
+          command_identity: "task.verify"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-14T08:05:01.701Z"
+          repository_snapshot_digest: "sha256:799c327cfeb50226e8c3880e50805e383ac2ad1389e97b88ac09c48ce45cca07"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609140657-5REY71"
     intent:
       acceptance_criteria:
@@ -1067,12 +1166,12 @@ extensions:
 
         Implement a deterministic AgentPlane lifecycle route for an already-started branch_pr task whose approved WorkItem requires its preserved candidate branch to adopt an exact newer qualified base before semantic edits. The supervisor must own the Git or provider synchronization, bind it to exact branch/head/base identities, preserve existing candidate commits and unrelated work, fail closed on conflict or stale identity, and issue the next semantic packet only after verified base ancestry. An external semantic executor must never be asked to rebase, merge, cherry-pick, commit, force-push, or rewrite Git history. Cover the release-task failure demonstrated by task 202609121424-49XXT3, then integrate the fix through protected branch_pr workflow so that release 0.7.9 can resume.
       task_id: "202609140657-5REY71"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 10
+    revision: 11
     schema_version: 1
-    updated_at: "2026-09-14T08:05:02.660Z"
+    updated_at: "2026-09-14T08:07:49.888Z"
     work_items:
       implement_branch_base_sync:
         attempt: 1
@@ -1407,11 +1506,37 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202609140657-5REY71"
+      legacy-finish:202609140657-5REY71:2026-09-14T08:05:01.701Z:4be3447ccff551b8f67611538d8d784495a35893:
+        aggregate_digest: "sha256:258955b1ace53bb8c7128c030726880a201cfcbe1e251c56ea0940b9b1cf88fb"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-14T08:07:49.888Z"
+          cause_refs:
+            - "task-verification:202609140657-5REY71"
+            - "git:4be3447ccff551b8f67611538d8d784495a35893"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_0b88a3b6331bf4b5100a7a2f"
+          mutation_id: "legacy-finish:202609140657-5REY71:2026-09-14T08:05:01.701Z:4be3447ccff551b8f67611538d8d784495a35893"
+          plan_digest: "sha256:05d9e037f315e3dad580662875f670e39118537f5689e20277c16450ce222b81"
+          plan_revision: 1
+          repository_fingerprint: "sha256:799c327cfeb50226e8c3880e50805e383ac2ad1389e97b88ac09c48ce45cca07"
+          schema_version: 1
+          task_id: "202609140657-5REY71"
+          task_revision: 10
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609140657-5REY71:2026-09-14T08:05:01.701Z:4be3447ccff551b8f67611538d8d784495a35893"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202609140657-5REY71"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "4be3447ccff551b8f67611538d8d784495a35893"
+    message: "🚧 5REY71 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "40368f0ae58774c8cdd80fddb22cb6daacbae8f4"
@@ -1614,3 +1739,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:e9dcdf3546fad664eea3c7f7f6f1f7de30ec7bd2fef8bfda4f27e1e668f2cbd1`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-09-14T08:07:49.888Z`
