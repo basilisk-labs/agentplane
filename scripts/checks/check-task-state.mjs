@@ -42,7 +42,7 @@ function listTaskDirs(tasksRoot) {
   return readdirSync(tasksRoot)
     .filter((entry) => {
       const fullPath = path.join(tasksRoot, entry);
-      return statSync(fullPath).isDirectory();
+      return statSync(fullPath).isDirectory() && !hasOnlyValidQualityObjects(fullPath);
     })
     .toSorted((a, b) => a.localeCompare(b));
 }
@@ -174,7 +174,6 @@ export function checkTaskState(repoRoot, opts = {}) {
     const readmePath = path.join(tasksRoot, taskId, "README.md");
     const relReadmePath = normalizePath(path.relative(repoRoot, readmePath));
     if (!existsSync(readmePath)) {
-      if (hasOnlyValidQualityObjects(path.join(tasksRoot, taskId))) continue;
       failures.push(`${relReadmePath}: missing task README artifact`);
       continue;
     }

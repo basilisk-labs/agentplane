@@ -15,6 +15,22 @@ async function writePackageVersion(root: string): Promise<void> {
   await writeFile(path.join(packageDir, "package.json"), '{"version":"0.6.7"}\n', "utf8");
 }
 
+async function writeValidQualityObject(root: string, taskId: string): Promise<void> {
+  const contents = '{"title":"schema"}\n';
+  const digest = createHash("sha256").update(contents).digest("hex");
+  const objectRoot = path.join(
+    root,
+    ".agentplane",
+    "tasks",
+    taskId,
+    "quality",
+    "objects",
+    "sha256",
+  );
+  await mkdir(objectRoot, { recursive: true });
+  await writeFile(path.join(objectRoot, `${digest}.json`), contents, "utf8");
+}
+
 describe("check-task-state script", () => {
   it("fails when a task directory is missing its README artifact", async () => {
     const root = await mkdtemp(path.join(tmpdir(), "agentplane-task-state-"));
@@ -46,19 +62,7 @@ describe("check-task-state script", () => {
   it("allows a README-less directory that contains only valid content-addressed quality objects", async () => {
     const root = await mkdtemp(path.join(tmpdir(), "agentplane-task-state-"));
     await writePackageVersion(root);
-    const contents = '{"title":"schema"}\n';
-    const digest = createHash("sha256").update(contents).digest("hex");
-    const objectRoot = path.join(
-      root,
-      ".agentplane",
-      "tasks",
-      "202605230000-OBJECT",
-      "quality",
-      "objects",
-      "sha256",
-    );
-    await mkdir(objectRoot, { recursive: true });
-    await writeFile(path.join(objectRoot, `${digest}.json`), contents, "utf8");
+    await writeValidQualityObject(root, "202605230000-OBJECT");
 
     await expect(
       execFileAsync(
@@ -67,6 +71,36 @@ describe("check-task-state script", () => {
         { cwd: root },
       ),
     ).resolves.toBeDefined();
+  });
+
+  it("does not treat a quality-object-only directory as a task dependency", async () => {
+    const root = await mkdtemp(path.join(tmpdir(), "agentplane-task-state-"));
+    await writePackageVersion(root);
+    await writeValidQualityObject(root, "202605230000-OBJECT");
+    const dependentRoot = path.join(root, ".agentplane", "tasks", "202605230001-DEPENDENT");
+    await mkdir(dependentRoot, { recursive: true });
+    await writeFile(
+      path.join(dependentRoot, "README.md"),
+      "---\nstatus: TODO\ntitle: Dependent task\ndepends_on: [202605230000-OBJECT]\n---\n",
+      "utf8",
+    );
+
+    try {
+      await execFileAsync(
+        "node",
+        [path.join(process.cwd(), "scripts", "release", "check-task-registry-ready.mjs")],
+        { cwd: root },
+      );
+      throw new Error("expected check-task-registry-ready to fail");
+    } catch (err) {
+      const stderr =
+        typeof (err as { stderr?: unknown }).stderr === "string"
+          ? (err as { stderr: string }).stderr
+          : "";
+      expect(stderr).toContain(
+        ".agentplane/tasks/202605230001-DEPENDENT/README.md: missing dependency 202605230000-OBJECT",
+      );
+    }
   });
 
   it.each([
