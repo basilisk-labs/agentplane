@@ -6,7 +6,7 @@ Created: 2026-09-14T00:54:28.900Z
 
 - Task: `202609140050-8QDRVN`
 - Title: Recover an external-agent result rejected during supervisor application
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609140050-8QDRVN/recover-an-external-agent-result-rejected-during`
 - Canonical task record: `.agentplane/tasks/202609140050-8QDRVN/README.md`
 
