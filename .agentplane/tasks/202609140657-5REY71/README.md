@@ -4,7 +4,7 @@ title: "Add supervisor-owned base synchronization before semantic work on stale 
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -29,6 +29,37 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-14T08:07:38.118Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "4be3447ccff551b8f67611538d8d784495a35893"
+  blueprint_digest: "44cb6a693c03d7f6613baa191627598ac96dc518887fb1525cd7328b0b5fef39"
+  evidence_refs:
+    - ".agentplane/tasks/202609140657-5REY71/quality/20260914-080510987-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609140657-5REY71/quality/20260914-080510987-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609140657-5REY71/quality/objects/sha256/78ab76a7cb6ee5bb17fa50d9b2e81528a673ce2ddf73edf85ecbf2a7edfb7be5.md"
+    - ".agentplane/tasks/202609140657-5REY71/quality/20260914-080510987-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609140657-5REY71/quality/20260914-080510987-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609140657-5REY71/quality/20260914-080510987-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609140657-5REY71/README.md"
+    - ".agentplane/tasks/202609140657-5REY71/quality/objects/sha256/3fd14e76a5923587eecc8489fc8a6b6aeac2d0b7d81224323d10cd6028f15746.patch"
+    - ".agentplane/tasks/202609140657-5REY71/quality/objects/sha256/a85a7e55d192e720583463869d1839f73285d233d62d9d8932309a6d0ae8fa57.json"
+    - ".agentplane/tasks/202609140657-5REY71/verification/20260914080501701-3b1483d7bf124fd2.json"
+    - ".agentplane/tasks/202609140657-5REY71/quality/objects/sha256/93d109ad7afba099b1f2caa2b645d5eded949a77507a480ac4d607654cc4bc69.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The route derives synchronization authority only from one ready exclusive branch-base:<base-ref>@<full-sha> WorkItem claim and blocks malformed, ambiguous, wrong-base, or stale-base requests before semantic work."
+    - "The supervisor operation revalidates the authoritative worktree, current branch, exact candidate head, exact base head, and blocking cleanliness under the Git mutation mutex before both preflight and merge."
+    - "The operation preserves history with a no-ff merge of the exact base SHA, refuses semantic conflicts, and proves the resulting two-parent identity plus ancestry of both exact inputs before success."
+    - "The route orders base synchronization after worktree recovery and before conflict recovery, implementation, or rework episodes; a fresh route can issue semantic work only after the exact base is an ancestor."
+    - "The code, operation registry, fingerprint, authority, projection, postcondition, and tests form one coherent scoped change; the committed diff contains no unrelated base-checkout or agentplane-roadmap-r2 changes."
+    - "Residual risk: The first production exercise will be the preserved 0.7.9 candidate; exact identity checks intentionally fail closed if its qualified base changes before synchronization."
 execution_route:
   frozen: true
   reason_codes:
@@ -1019,7 +1050,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609140657-5REY71"
-    event_cursor: 6
+    event_cursor: 7
     final_validation: null
     id: "202609140657-5REY71"
     intent:
@@ -1039,9 +1070,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 9
+    revision: 10
     schema_version: 1
-    updated_at: "2026-09-14T08:05:02.658Z"
+    updated_at: "2026-09-14T08:05:02.660Z"
     work_items:
       implement_branch_base_sync:
         attempt: 1
@@ -1302,6 +1333,30 @@ extensions:
         mutation_id: "compatibility:sha256:96354d61d369727d621ad77320e278a88179af2a81792f2a3e45e2d796aa520b"
         next_revision: 9
         previous_revision: 8
+        schema_version: 1
+        task_id: "202609140657-5REY71"
+      compatibility:sha256:b53e5e4b4aaa4275b5931ece9cfb09d20803d3f7e7f8117099e5da8d6b2c57f5:
+        aggregate_digest: "sha256:103ceda29c799459846491f57964f7d253f9f42bd169ae1db5074dd6226f08ed"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T08:05:02.660Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_4938f81257d736b885f14ca0"
+          mutation_id: "compatibility:sha256:b53e5e4b4aaa4275b5931ece9cfb09d20803d3f7e7f8117099e5da8d6b2c57f5"
+          plan_digest: "sha256:05d9e037f315e3dad580662875f670e39118537f5689e20277c16450ce222b81"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140657-5REY71"
+          task_revision: 9
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b53e5e4b4aaa4275b5931ece9cfb09d20803d3f7e7f8117099e5da8d6b2c57f5"
+        next_revision: 10
+        previous_revision: 9
         schema_version: 1
         task_id: "202609140657-5REY71"
       compatibility:sha256:e7598bb4771e8f6809d20485b2a85165ee7e93c2927baa80869f07ab94d495e2:
