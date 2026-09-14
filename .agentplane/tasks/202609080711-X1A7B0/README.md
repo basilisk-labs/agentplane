@@ -1,10 +1,11 @@
 ---
 id: "202609080711-X1A7B0"
 title: "Remove ap task run from standard route recommendations and release AgentPlane v0.6.28"
-status: "DOING"
+result_summary: "Merged via PR #5922."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -34,214 +35,9 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-execution_route:
-  frozen: true
-  reason_codes:
-    - "agent_preferred_branch_pr"
-    - "effect_external_write"
-    - "effect_publish"
-    - "effect_release_metadata"
-    - "repository_branch_pr_floor"
-    - "reversibility_recovery_required"
-  repository_mode: "branch_pr"
-  requested_mode: "branch_pr"
-  schema_version: 1
-  selected_mode: "branch_pr"
-execution_contract:
-  authority:
-    allowed_external_effects:
-      - "network_read"
-    allowed_repository_effects:
-      - "documentation"
-      - "release_metadata"
-      - "repository_write"
-      - "source_code"
-      - "tests"
-    forbidden_external_effects:
-      - "external_write"
-      - "credentials"
-      - "publish"
-      - "deploy"
-      - "destructive_git"
-    forbidden_repository_effects:
-      - "public_api"
-      - "schema"
-      - "dependencies"
-      - "ci"
-      - "security_boundary"
-    writable_roots:
-      - ".agentplane/policy"
-      - ".github"
-      - "docs"
-      - "packages"
-      - "packages/agentplane/assets"
-      - "packages/agentplane/src"
-      - "scripts"
-  declaration:
-    external_effects:
-      - "external_write"
-      - "network_read"
-      - "publish"
-    implementation_uncertainty: "bounded"
-    preferred_mode: "branch_pr"
-    rationale:
-      - "Publication is irreversible and must remain behind the explicit release approval boundary."
-      - "The change requires source or template updates, synchronized policy projections, regression tests, release metadata, hosted integration, and publication."
-      - "The user explicitly requested a policy-backed routing correction and a patch release through a hosted PR."
-    repository_effects:
-      - "documentation"
-      - "release_metadata"
-      - "repository_write"
-      - "source_code"
-      - "tests"
-    requirements_uncertainty: "bounded"
-    reversibility: "recovery_required"
-    schema_version: 2
-    scope_roots:
-      - ".agentplane/policy"
-      - ".github"
-      - "docs"
-      - "packages"
-      - "packages/agentplane/assets"
-      - "packages/agentplane/src"
-      - "scripts"
-  observed:
-    authority_violations: []
-    changed_components:
-      - "packages/agentplane"
-    changed_paths:
-      - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.task-guided.test.ts"
-      - "packages/agentplane/src/commands/shared/route-decision-next-action.ts"
-      - "packages/agentplane/src/commands/task/begin.command.ts"
-      - "packages/agentplane/src/commands/task/task.command.ts"
-    external_effects: []
-    repository_effects:
-      - "repository_write"
-      - "source_code"
-      - "tests"
-    verification_results: []
-  reason_codes:
-    - "agent_preferred_branch_pr"
-    - "effect_external_write"
-    - "effect_publish"
-    - "effect_release_metadata"
-    - "repository_branch_pr_floor"
-    - "reversibility_recovery_required"
-  repository_mode: "branch_pr"
-  safety:
-    approval_effects:
-      - "external_write"
-      - "publish"
-    requires_user_approval: true
-    requires_worktree: true
-  schema_version: 1
-  selected_mode: "branch_pr"
-  source: "agent_declared"
-  verification:
-    contract:
-      declared:
-        components:
-          - ".agentplane/policy"
-          - ".github"
-          - "docs"
-          - "packages"
-          - "packages/agentplane/assets"
-          - "packages/agentplane/src"
-          - "scripts"
-        evidence_requirements:
-          - "external_effect:external_write"
-          - "external_effect:network_read"
-          - "external_effect:publish"
-          - "hosted_integration"
-          - "repository_effect:documentation"
-          - "repository_effect:release_metadata"
-          - "repository_effect:repository_write"
-          - "repository_effect:source_code"
-          - "repository_effect:tests"
-          - "task_outcome"
-        external_effects:
-          - "external_write"
-          - "network_read"
-          - "publish"
-        repository_effects:
-          - "documentation"
-          - "release_metadata"
-          - "repository_write"
-          - "source_code"
-          - "tests"
-        risk:
-          implementation_uncertainty: "bounded"
-          requirements_uncertainty: "bounded"
-          reversibility: "recovery_required"
-      digest: "sha256:e4a31c0f9293b50ab452344f61ea1aec4c1a5c2b0acb368b7601753ff11bdf16"
-      escalation_reasons:
-        - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.task-guided.test.ts"
-        - "central_path:packages/agentplane/src/commands/shared/route-decision-next-action.ts"
-        - "effect_release_metadata"
-        - "external_effect_requires_real_e2e"
-        - "reversibility_recovery_required"
-      execution_groups:
-        - "docs-schema"
-        - "core"
-        - "runtime"
-        - "cli"
-      observed:
-        changed_components:
-          - "packages/agentplane"
-        changed_files:
-          - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.task-guided.test.ts"
-          - "packages/agentplane/src/commands/shared/route-decision-next-action.ts"
-          - "packages/agentplane/src/commands/task/begin.command.ts"
-          - "packages/agentplane/src/commands/task/task.command.ts"
-        external_effects: []
-        repository_effects:
-          - "repository_write"
-          - "source_code"
-          - "tests"
-      phase: "task"
-      policy_floor:
-        monotonic_strengthening: true
-        pr_full_regression: true
-        unknown_or_central_full_regression: true
-      requires_full_regression: true
-      requires_real_e2e: true
-      schema_version: 2
-      selected_checks:
-        - "affected_unit_integration"
-        - "critical_paths"
-        - "docs_contract"
-        - "full_regression"
-        - "hosted_integration"
-        - "real_e2e"
-        - "task_outcome"
-      selector:
-        bucket: null
-        buckets: []
-        execution_mode: "semantic"
-        kind: "semantic"
-        lint_targets: []
-        reason: "execution_declaration"
-        run_cli_docs_check: false
-        selected_test_files: []
-        vitest_pool: "forks"
-      source: "execution_contract"
-    required_evidence:
-      - "external_effect:external_write"
-      - "external_effect:network_read"
-      - "external_effect:publish"
-      - "hosted_integration"
-      - "repository_effect:documentation"
-      - "repository_effect:release_metadata"
-      - "repository_effect:repository_write"
-      - "repository_effect:source_code"
-      - "repository_effect:tests"
-      - "task_outcome"
 commit:
-  hash: "63aa76504c1a3007172393186c667cf59d9ed4a8"
-  message: "🚧 X1A7B0 task: apply external agent result"
+  hash: "5f5612fa1898f4394a9825716db73ffbee9915a3"
+  message: "Merge pull request #5922 from odubinkin/task/202609080711-X1A7B0/remove-ap-task-run-from-standard-route-recommend"
 comments:
   -
     author: "CODER"
@@ -252,6 +48,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 63aa76504c1a. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #5922 merged on GitHub codex/release-v0.6.27-reclaim-fix; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -267,7 +66,6 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation committed: 83675d44dd9d. CLI accepted one state-bound external-agent semantic result."
-    commit: "83675d44dd9d14c22a6c8038eb7d77e52667f417"
   -
     type: "status"
     at: "2026-09-08T07:44:18.806Z"
@@ -275,10 +73,16 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation committed: 63aa76504c1a. CLI accepted one state-bound external-agent semantic result."
-    commit: "63aa76504c1a3007172393186c667cf59d9ed4a8"
+  -
+    type: "status"
+    at: "2026-09-14T12:15:24.367Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #5922 merged on GitHub codex/release-v0.6.27-reclaim-fix; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-09-08T07:49:10.609Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-14T12:15:24.377Z"
+doc_updated_by: "INTEGRATOR"
 description: "On the v0.6.27 maintenance base, preserve task next-action as the v0.6 route oracle and remove only recommendations that direct the current coding agent to ap task run. Keep ap task run available for explicit managed-runner or compatibility use. Prepare AgentPlane v0.6.28 and open a PR against codex/release-v0.6.27-reclaim-fix."
 sections:
   Summary: |-
@@ -1466,17 +1270,222 @@ extensions:
     start_head_sha: "33e106d611fe92603cb836bdcd500a1c624d206b"
     version: 1
 id_source: "generated"
+execution_contract:
+  authority:
+    allowed_external_effects:
+      - "network_read"
+    allowed_repository_effects:
+      - "documentation"
+      - "release_metadata"
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    forbidden_external_effects:
+      - "external_write"
+      - "credentials"
+      - "publish"
+      - "deploy"
+      - "destructive_git"
+    forbidden_repository_effects:
+      - "public_api"
+      - "schema"
+      - "dependencies"
+      - "ci"
+      - "security_boundary"
+    writable_roots:
+      - ".agentplane/policy"
+      - ".github"
+      - "docs"
+      - "packages"
+      - "packages/agentplane/assets"
+      - "packages/agentplane/src"
+      - "scripts"
+  declaration:
+    external_effects:
+      - "external_write"
+      - "network_read"
+      - "publish"
+    implementation_uncertainty: "bounded"
+    preferred_mode: "branch_pr"
+    rationale:
+      - "Publication is irreversible and must remain behind the explicit release approval boundary."
+      - "The change requires source or template updates, synchronized policy projections, regression tests, release metadata, hosted integration, and publication."
+      - "The user explicitly requested a policy-backed routing correction and a patch release through a hosted PR."
+    repository_effects:
+      - "documentation"
+      - "release_metadata"
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    requirements_uncertainty: "bounded"
+    reversibility: "recovery_required"
+    schema_version: 2
+    scope_roots:
+      - ".agentplane/policy"
+      - ".github"
+      - "docs"
+      - "packages"
+      - "packages/agentplane/assets"
+      - "packages/agentplane/src"
+      - "scripts"
+  observed:
+    authority_violations: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-guided.test.ts"
+      - "packages/agentplane/src/commands/shared/route-decision-next-action.ts"
+      - "packages/agentplane/src/commands/task/begin.command.ts"
+      - "packages/agentplane/src/commands/task/task.command.ts"
+    external_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results: []
+  reason_codes:
+    - "agent_preferred_branch_pr"
+    - "effect_external_write"
+    - "effect_publish"
+    - "effect_release_metadata"
+    - "repository_branch_pr_floor"
+    - "reversibility_recovery_required"
+  repository_mode: "branch_pr"
+  safety:
+    approval_effects:
+      - "external_write"
+      - "publish"
+    requires_user_approval: true
+    requires_worktree: true
+  schema_version: 1
+  selected_mode: "branch_pr"
+  source: "agent_declared"
+  verification:
+    contract:
+      declared:
+        components:
+          - ".agentplane/policy"
+          - ".github"
+          - "docs"
+          - "packages"
+          - "packages/agentplane/assets"
+          - "packages/agentplane/src"
+          - "scripts"
+        evidence_requirements:
+          - "external_effect:external_write"
+          - "external_effect:network_read"
+          - "external_effect:publish"
+          - "hosted_integration"
+          - "repository_effect:documentation"
+          - "repository_effect:release_metadata"
+          - "repository_effect:repository_write"
+          - "repository_effect:source_code"
+          - "repository_effect:tests"
+          - "task_outcome"
+        external_effects:
+          - "external_write"
+          - "network_read"
+          - "publish"
+        repository_effects:
+          - "documentation"
+          - "release_metadata"
+          - "repository_write"
+          - "source_code"
+          - "tests"
+        risk:
+          implementation_uncertainty: "bounded"
+          requirements_uncertainty: "bounded"
+          reversibility: "recovery_required"
+      digest: "sha256:e4a31c0f9293b50ab452344f61ea1aec4c1a5c2b0acb368b7601753ff11bdf16"
+      escalation_reasons:
+        - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-guided.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/route-decision-next-action.ts"
+        - "effect_release_metadata"
+        - "external_effect_requires_real_e2e"
+        - "reversibility_recovery_required"
+      execution_groups:
+        - "docs-schema"
+        - "core"
+        - "runtime"
+        - "cli"
+      observed:
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-guided.test.ts"
+          - "packages/agentplane/src/commands/shared/route-decision-next-action.ts"
+          - "packages/agentplane/src/commands/task/begin.command.ts"
+          - "packages/agentplane/src/commands/task/task.command.ts"
+        external_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
+      phase: "task"
+      policy_floor:
+        monotonic_strengthening: true
+        pr_full_regression: true
+        unknown_or_central_full_regression: true
+      requires_full_regression: true
+      requires_real_e2e: true
+      schema_version: 2
+      selected_checks:
+        - "affected_unit_integration"
+        - "critical_paths"
+        - "docs_contract"
+        - "full_regression"
+        - "hosted_integration"
+        - "real_e2e"
+        - "task_outcome"
+      selector:
+        bucket: null
+        buckets: []
+        execution_mode: "semantic"
+        kind: "semantic"
+        lint_targets: []
+        reason: "execution_declaration"
+        run_cli_docs_check: false
+        selected_test_files: []
+        vitest_pool: "forks"
+      source: "execution_contract"
+    required_evidence:
+      - "external_effect:external_write"
+      - "external_effect:network_read"
+      - "external_effect:publish"
+      - "hosted_integration"
+      - "repository_effect:documentation"
+      - "repository_effect:release_metadata"
+      - "repository_effect:repository_write"
+      - "repository_effect:source_code"
+      - "repository_effect:tests"
+      - "task_outcome"
+execution_route:
+  frozen: true
+  reason_codes:
+    - "agent_preferred_branch_pr"
+    - "effect_external_write"
+    - "effect_publish"
+    - "effect_release_metadata"
+    - "repository_branch_pr_floor"
+    - "reversibility_recovery_required"
+  repository_mode: "branch_pr"
+  requested_mode: "branch_pr"
+  schema_version: 1
+  selected_mode: "branch_pr"
 ---
 ## Summary
 
-Remove ap task run from standard route recommendations and release AgentPlane v0.6.28
+Remove `ap task run` from standard route recommendations and release AgentPlane v0.6.28.
 
-On the 0.6 maintenance line based on v0.6.27, remove recommendations that direct agents to ap task run. The standard agent route must require the external-agent task advance exchange so the agent performs bounded semantic episodes itself. Update canonical policy, generated projections, implementation and regression tests as required; prepare and publish v0.6.28 through a PR targeting 0.6.x without unrelated 0.7.x changes.
+On the v0.6.27 maintenance base, preserve `ap task next-action <task-id> --explain` as the route oracle and remove only recommendations that direct the current coding agent to `ap task run`. The agent performs the task itself. Keep `ap task run` available for explicit managed-runner or compatibility use. Open the PR against `codex/release-v0.6.27-reclaim-fix`.
 
 ## Scope
 
-- In scope: On the 0.6 maintenance line based on v0.6.27, remove recommendations that direct agents to ap task run. The standard agent route must require the external-agent task advance exchange so the agent performs bounded semantic episodes itself. Update canonical policy, generated projections, implementation and regression tests as required; prepare and publish v0.6.28 through a PR targeting 0.6.x without unrelated 0.7.x changes.
-- Out of scope: unrelated refactors not required for "Remove ap task run from standard route recommendations and release AgentPlane v0.6.28".
+- In scope: remove `ap task run` from normal route recommendations while preserving `ap task next-action <task-id> --explain`; keep the command implementation available for explicit managed-runner or compatibility use; update focused tests and release surfaces for v0.6.28; open the PR against `codex/release-v0.6.27-reclaim-fix`.
+- Out of scope: removing the `task run` command, replacing `task next-action`, backporting the 0.7 `task advance` protocol, unrelated refactors, merge, tag creation, npm publication.
 
 ## Plan
 
@@ -1484,14 +1493,13 @@ Refined the maintenance plan to preserve task next-action as the v0.6.x route or
 
 ## Verify Steps
 
-1. Inspect standard route output and canonical policy projections. Expected: normal agent guidance uses `ap task active`, `ap task advance <task-id> --agent-json`, the typed result path, and exact resume argv; it does not recommend `ap task run`.
-2. Run focused route-decision, external-agent packet, prompt/policy projection, and help snapshot tests selected from changed files. Expected: all pass and preserve `task run` only as a compatibility/operator command.
+1. Inspect standard route output and canonical policy projections. Expected: the v0.6 route oracle remains `ap task next-action <task-id> --explain`, and normal agent guidance does not recommend `ap task run`.
+2. Run the focused route-decision, task-guided, route-guidance, and command-catalog tests selected from changed files. Expected: all pass and preserve `task run` only as an explicit compatibility/operator command.
 3. Run `node .agentplane/policy/check-routing.mjs`. Expected: routing graph and policy size budgets pass.
 4. Run `git diff --check` and review `v0.6.27..HEAD`. Expected: only the approved routing fix, tests, task evidence, and 0.6.28 release surfaces changed; historical task/release artifacts remain untouched.
 5. Run `bun run release:parity`. Expected: all version surfaces and exact internal dependency pins resolve to 0.6.28.
-6. Run `bun run release:prepublish`. Expected: the complete local release gate passes.
-7. Verify the hosted PR targets `0.6.x` and required checks pass for its exact head SHA.
-8. After explicit publish approval, verify GitHub tag/release `v0.6.28` and npm versions for `agentplane`, `@agentplaneorg/core`, and `@agentplaneorg/recipes` all resolve to 0.6.28 from the exact integrated SHA.
+6. Run `bun run release:prepublish`. Expected: checks available without the optional recipes submodule pass; the submodule-dependent recipe documentation check is explicitly waived by the user for this narrow patch.
+7. Verify the hosted PR targets `codex/release-v0.6.27-reclaim-fix` at the exact candidate head SHA.
 
 ## Verification
 
