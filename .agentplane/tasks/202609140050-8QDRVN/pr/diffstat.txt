@@ -1,0 +1,4 @@
+ ...n-cli.core.task-advance-effect-recovery.test.ts | 127 +++++++++++++++++++++
+ .../task/external-agent-supervisor-recovery.ts     |  55 +++++++++
+ .../src/commands/task/external-agent-supervisor.ts |  58 ++++++++--
+ 3 files changed, 232 insertions(+), 8 deletions(-)
