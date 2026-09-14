@@ -19,9 +19,9 @@ Audit all open GitHub issues against AgentPlane 0.6.28 and backport only confirm
 - Note:
 
 ```text
-Verified: full fast CI passed after the legacy-guard correction (371 files and 2190 tests, plus 14
-critical CLI tests); all previously recorded focused, platform-critical, typecheck, lint,
-formatting, workflow, install, and release checks remain passing.
+Verified: final full-fast CI passed (371 files, 2190 tests, and 14 critical CLI tests), including
+knip baseline after keeping TaskRunnerActivityHealth private; focused and release gates remain
+passing.
 ```
 - Canonical workflow state lives in the task README.
 

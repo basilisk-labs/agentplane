@@ -13,7 +13,7 @@ Created: 2026-09-14T12:57:53.404Z
 ## Verification
 
 - State: ok
-- Note: Verified: full fast CI passed after the legacy-guard correction (371 files and 2190 tests, plus 14 critical CLI tests); all previously recorded focused, platform-critical, typecheck, lint, formatting, workflow, install, and release checks remain passing.
+- Note: Verified: final full-fast CI passed (371 files, 2190 tests, and 14 critical CLI tests), including knip baseline after keeping TaskRunnerActivityHealth private; focused and release gates remain passing.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

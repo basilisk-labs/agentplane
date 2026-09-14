@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -31,25 +31,25 @@ plan_approval:
   note: "Approved from the user instruction to proceed in a separate branch and the explicit Bun 1.4.2 question; scope remains local to the existing v0.6 maintenance task branch with no publication lifecycle."
 verification:
   state: "ok"
-  updated_at: "2026-09-14T14:50:36.586Z"
+  updated_at: "2026-09-14T14:58:38.968Z"
   updated_by: "CODER"
-  note: "Verified: full fast CI passed after the legacy-guard correction (371 files and 2190 tests, plus 14 critical CLI tests); all previously recorded focused, platform-critical, typecheck, lint, formatting, workflow, install, and release checks remain passing."
+  note: "Verified: final full-fast CI passed (371 files, 2190 tests, and 14 critical CLI tests), including knip baseline after keeping TaskRunnerActivityHealth private; focused and release gates remain passing."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-09-14T14:50:40.717Z"
+  updated_at: "2026-09-14T14:58:43.521Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed on the final v0.6 maintenance implementation head."
-  evaluated_sha: "46ed8d8bfe8fda48fad07fd9f36bac18ebec0348"
+  note: "Quality review passed on final implementation commit 704c89dd1001."
+  evaluated_sha: "704c89dd100186836473f3221b3a9aaf9ce0f85e"
   blueprint_digest: "40202f09d413e42875c6948dabee1280ec84db755295162aad21c96c07153b96"
   evidence_refs:
     - ".agentplane/tasks/202609141255-VABJX3/README.md"
-    - ".agentplane/tasks/202609141255-VABJX3/quality/20260914-145040717-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609141255-VABJX3/quality/20260914-145040717-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202609141255-VABJX3/quality/20260914-145040717-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609141255-VABJX3/quality/20260914-145843521-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609141255-VABJX3/quality/20260914-145843521-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202609141255-VABJX3/quality/20260914-145843521-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202609141255-VABJX3/blueprint/resolved-snapshot.json"
   findings:
-    - "No blocking findings; the generated readiness probe preserves behavior while satisfying the command-layer legacy guard."
+    - "No blocking findings; hosted knip failure was resolved by removing an unnecessary exported type without behavior change."
 commit:
   hash: "e2ae35364abb7d9b1948737d6149b37b00f05ed2"
   message: "🐛 VABJX3 code: harden hooks and global installs"
@@ -103,8 +103,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: full fast CI passed after the legacy-guard correction (371 files and 2190 tests, plus 14 critical CLI tests); all previously recorded focused, platform-critical, typecheck, lint, formatting, workflow, install, and release checks remain passing."
+  -
+    type: "verify"
+    at: "2026-09-14T14:58:38.968Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: final full-fast CI passed (371 files, 2190 tests, and 14 critical CLI tests), including knip baseline after keeping TaskRunnerActivityHealth private; focused and release gates remain passing."
 doc_version: 3
-doc_updated_at: "2026-09-14T14:50:39.683Z"
+doc_updated_at: "2026-09-14T14:58:42.368Z"
 doc_updated_by: "CODER"
 description: "Backport confirmed 0.6-relevant fixes onto the dedicated maintenance branch. Preserve the existing #5892, #5887, and #4893 work; add v0.6-native hook runner readiness and deterministic fallback for #5941; replace mutable source-linked developer global installs with materialized package installs for the applicable #5942 failure mode; update Bun pins from 1.3.6 to 1.4.2 without changing Node, Vitest, tsup, dependencies, or lockfile resolution. Do not push, open a PR, merge, or release."
 sections:
@@ -200,6 +206,36 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-09-14T14:43:24.570Z, excerpt_hash=sha256:6a833fc3d8ed67155fb0e8b722dc7eebe4b0f8116c7db40b7da94296d77ef1de
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/v0-6-issues-base/.agentplane/worktrees/202609141255-VABJX3-backport-applicable-open-issue-fixes-to-the-0-6/.agentplane/tasks/202609141255-VABJX3/blueprint/resolved-snapshot.json
+    - old_digest: 40202f09d413e42875c6948dabee1280ec84db755295162aad21c96c07153b96
+    - current_digest: 40202f09d413e42875c6948dabee1280ec84db755295162aad21c96c07153b96
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609141255-VABJX3
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202609141255-VABJX3 --branch task/202609141255-VABJX3/backport-applicable-open-issue-fixes-to-the-0-6
+    - diagnostic_command: agentplane pr check 202609141255-VABJX3
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
+    ### 2026-09-14T14:58:38.968Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: final full-fast CI passed (371 files, 2190 tests, and 14 critical CLI tests), including knip baseline after keeping TaskRunnerActivityHealth private; focused and release gates remain passing.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-09-14T14:50:39.683Z, excerpt_hash=sha256:6a833fc3d8ed67155fb0e8b722dc7eebe4b0f8116c7db40b7da94296d77ef1de
 
     Details:
 
@@ -337,6 +373,36 @@ Note: Verified: full fast CI passed after the legacy-guard correction (371 files
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-09-14T14:43:24.570Z, excerpt_hash=sha256:6a833fc3d8ed67155fb0e8b722dc7eebe4b0f8116c7db40b7da94296d77ef1de
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/v0-6-issues-base/.agentplane/worktrees/202609141255-VABJX3-backport-applicable-open-issue-fixes-to-the-0-6/.agentplane/tasks/202609141255-VABJX3/blueprint/resolved-snapshot.json
+- old_digest: 40202f09d413e42875c6948dabee1280ec84db755295162aad21c96c07153b96
+- current_digest: 40202f09d413e42875c6948dabee1280ec84db755295162aad21c96c07153b96
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609141255-VABJX3
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202609141255-VABJX3 --branch task/202609141255-VABJX3/backport-applicable-open-issue-fixes-to-the-0-6
+- diagnostic_command: agentplane pr check 202609141255-VABJX3
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
+### 2026-09-14T14:58:38.968Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: final full-fast CI passed (371 files, 2190 tests, and 14 critical CLI tests), including knip baseline after keeping TaskRunnerActivityHealth private; focused and release gates remain passing.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-09-14T14:50:39.683Z, excerpt_hash=sha256:6a833fc3d8ed67155fb0e8b722dc7eebe4b0f8116c7db40b7da94296d77ef1de
 
 Details:
 
