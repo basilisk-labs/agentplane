@@ -12,8 +12,8 @@ Created: 2026-09-13T23:35:19.456Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-09-13T23:35:19.456Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-13T23:35:19.456Z
+- Updated: 2026-09-13T23:45:27.430Z
 - Branch: task/202609132330-RP315R/repair-task-state-validation-for-immutable-quali
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
