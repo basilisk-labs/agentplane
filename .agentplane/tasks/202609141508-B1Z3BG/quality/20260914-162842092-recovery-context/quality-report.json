@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202609141508-B1Z3BG",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-14T16:28:42.092Z",
+  "verdict": "pass",
+  "summary": "Release v0.6.29 candidate and current release.strict blueprint snapshot satisfy the approved maintenance release contract.",
+  "evaluated_sha": "e4a04bdbc9e2e623304acb004c576f0577770739",
+  "blueprint_digest": "e4beed472f52ff7eacb96653f841fd6989d2bf0019ec20a9312f059008846122",
+  "findings": [
+    "No unresolved findings remain after reviewing the release diff, version parity, release notes, verification records, hosted checks, and resolved blueprint snapshot."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609141508-B1Z3BG/README.md",
+    ".agentplane/tasks/202609141508-B1Z3BG/blueprint/resolved-snapshot.json",
+    "docs/releases/v0.6.29.md",
+    "GitHub Core CI run 34868107221 and late release checks passed on PR #5957",
+    "Local release candidate gate passed 82/82 groups and follow-up full-fast passed 371/371 test files, 2190/2190 tests"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Exact merged-SHA publish, npm/tag/GitHub release confirmation, installed CLI smoke, issue closure, and maintenance-branch convergence remain required after protected integration."
+  ]
+}

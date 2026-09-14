@@ -4,7 +4,7 @@ title: "Release AgentPlane v0.6.29"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -31,23 +31,22 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-09-14T16:27:15.409Z"
+  updated_at: "2026-09-14T16:28:42.092Z"
   updated_by: "EVALUATOR"
-  note: "Release candidate v0.6.29 is coherent with the approved maintenance scope and is ready for protected-branch integration."
+  note: "Release v0.6.29 candidate and current release.strict blueprint snapshot satisfy the approved maintenance release contract."
   evaluated_sha: "e4a04bdbc9e2e623304acb004c576f0577770739"
   blueprint_digest: "e4beed472f52ff7eacb96653f841fd6989d2bf0019ec20a9312f059008846122"
   evidence_refs:
     - ".agentplane/tasks/202609141508-B1Z3BG/README.md"
-    - ".agentplane/tasks/202609141508-B1Z3BG/quality/20260914-162715409-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609141508-B1Z3BG/quality/20260914-162715409-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202609141508-B1Z3BG/quality/20260914-162715409-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609141508-B1Z3BG/quality/20260914-162842092-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609141508-B1Z3BG/quality/20260914-162842092-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202609141508-B1Z3BG/quality/20260914-162842092-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202609141508-B1Z3BG/blueprint/resolved-snapshot.json"
     - "docs/releases/v0.6.29.md"
-    - ".agentplane/.release/plan/2026-09-14T15-08-28-971Z"
-    - "GitHub Core CI run 34868107221 passed on PR head 9f39c055484843c71225f157cbdfdf177a9e8339"
-    - "Local release candidate gate passed 82/82 groups; local ci:local:fast passed 371/371 test files and 2190/2190 tests"
+    - "GitHub Core CI run 34868107221 and late release checks passed on PR #5957"
+    - "Local release candidate gate passed 82/82 groups and follow-up full-fast passed 371/371 test files, 2190/2190 tests"
   findings:
-    - "No unresolved correctness, scope, release-parity, formatting, or policy-routing findings remain after review of the full maintenance-to-candidate diff."
+    - "No unresolved findings remain after reviewing the release diff, version parity, release notes, verification records, hosted checks, and resolved blueprint snapshot."
 commit: null
 comments: []
 events:
