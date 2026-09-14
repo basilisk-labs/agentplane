@@ -4,7 +4,7 @@ title: "Repair task-state validation for immutable quality-object directories wi
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -27,9 +27,9 @@ plan_approval:
   note: "host_user_decision=sha256:962542e95cad1b302f97b48985975f128cdce3d29ce04f1f9b65d8947272fd8a"
 verification:
   state: "ok"
-  updated_at: "2026-09-14T00:02:56.951Z"
+  updated_at: "2026-09-14T00:15:34.469Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
   state: "rework"
@@ -331,8 +331,14 @@ events:
     to: "DOING"
     note: "Implementation committed: d80bd0cf3ebd. CLI accepted one state-bound external-agent semantic result."
     commit: "d80bd0cf3ebde8f350af4bdd4663dd86c5a4426f"
+  -
+    type: "verify"
+    at: "2026-09-14T00:15:34.469Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-14T00:07:49.865Z"
+doc_updated_at: "2026-09-14T00:15:36.044Z"
 doc_updated_by: "SUPERVISOR"
 description: "Repair task-state validation for immutable quality-object directories without task README artifacts so the stable 0.7.9 release gate passes without weakening validation for real task records"
 sections:
@@ -359,6 +365,138 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:53f3aca74f7411fac0e118fa97fe99279434727fdb505148478c2873539a3eb4, input_digest=sha256:f5e192a41d89a5d5edb41021677dc46e3677261c2a004bccf5a3928a6403db51
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run test:project -- agentplane packages/agentplane/src/commands/release/task-state-script.test.ts --maxWorkers=4
+    Result: pass
+    Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609132330-RP315R Verification Contract check affected_unit_integration (1/4)
+
+    Check: affected_unit_integration
+    Command: bun run task-state:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609132330-RP315R Verification Contract check affected_unit_integration (2/4)
+
+    Check: affected_unit_integration
+    Command: bun run release:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609132330-RP315R Verification Contract check affected_unit_integration (3/4)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609132330-RP315R Verification Contract check affected_unit_integration (4/4)
+
+    Check: critical_paths
+    Command: bun run test:project -- agentplane packages/agentplane/src/commands/release/task-state-script.test.ts --maxWorkers=4
+    Result: pass
+    Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609132330-RP315R Verification Contract check critical_paths (1/4)
+
+    Check: critical_paths
+    Command: bun run task-state:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609132330-RP315R Verification Contract check critical_paths (2/4)
+
+    Check: critical_paths
+    Command: bun run release:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609132330-RP315R Verification Contract check critical_paths (3/4)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609132330-RP315R Verification Contract check critical_paths (4/4)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609132330-RP315R Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bun run test:project -- agentplane packages/agentplane/src/commands/release/task-state-script.test.ts --maxWorkers=4
+    Result: pass
+    Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609132330-RP315R Verification Contract check real_e2e (1/4)
+
+    Check: real_e2e
+    Command: bun run task-state:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609132330-RP315R Verification Contract check real_e2e (2/4)
+
+    Check: real_e2e
+    Command: bun run release:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609132330-RP315R Verification Contract check real_e2e (3/4)
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609132330-RP315R Verification Contract check real_e2e (4/4)
+
+    Check: task_outcome
+    Command: bun run test:project -- agentplane packages/agentplane/src/commands/release/task-state-script.test.ts --maxWorkers=4
+    Result: pass
+    Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609132330-RP315R Verification Contract check task_outcome (1/4)
+
+    Check: task_outcome
+    Command: bun run task-state:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609132330-RP315R Verification Contract check task_outcome (2/4)
+
+    Check: task_outcome
+    Command: bun run release:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609132330-RP315R Verification Contract check task_outcome (3/4)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609132330-RP315R Verification Contract check task_outcome (4/4)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609132330-RP315R-repair-task-state-validation-for-immutable-quali/.agentplane/tasks/202609132330-RP315R/blueprint/resolved-snapshot.json
+    - old_digest: dd6c228e2c24bd4f6d2b65056f9691f84324a0867b1c6171979423d9d93afd1d
+    - current_digest: dd6c228e2c24bd4f6d2b65056f9691f84324a0867b1c6171979423d9d93afd1d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609132330-RP315R
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609132330-RP315R
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-14T00:15:34.469Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:53f3aca74f7411fac0e118fa97fe99279434727fdb505148478c2873539a3eb4, input_digest=sha256:25d498773ec0553c41ee125bcf72a2acbe244e4890e6b1c061d57de8503bec90
 
     Details:
 
@@ -719,7 +857,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609132330-RP315R"
-    event_cursor: 11
+    event_cursor: 12
     final_validation: null
     id: "202609132330-RP315R"
     intent:
@@ -1311,9 +1449,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609132330-RP315R"
-    revision: 18
+    revision: 19
     schema_version: 1
-    updated_at: "2026-09-14T00:07:49.865Z"
+    updated_at: "2026-09-14T00:15:36.042Z"
     work_items:
       repair_task_state_object_store_classification:
         attempt: 1
@@ -1614,6 +1752,30 @@ extensions:
         previous_revision: 15
         schema_version: 1
         task_id: "202609132330-RP315R"
+      compatibility:sha256:b2d9bd3c3405fd2cf4e6aa7db5c8b473628490c0aadcb96666ddfd0a3fb3fbcf:
+        aggregate_digest: "sha256:9f3576f45953a153e1eb5f57b0fa86359e521218e3bebd9091e0f88e78122f65"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T00:15:36.042Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_747d8ba0493ac8d669e531b4"
+          mutation_id: "compatibility:sha256:b2d9bd3c3405fd2cf4e6aa7db5c8b473628490c0aadcb96666ddfd0a3fb3fbcf"
+          plan_digest: "sha256:d2d827b02520ca449713d5ac66f10bb428289a4d6fa99e303fcd8ec8d6880dbe"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609132330-RP315R"
+          task_revision: 18
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b2d9bd3c3405fd2cf4e6aa7db5c8b473628490c0aadcb96666ddfd0a3fb3fbcf"
+        next_revision: 19
+        previous_revision: 18
+        schema_version: 1
+        task_id: "202609132330-RP315R"
       compatibility:sha256:b366124dc075c19e1a2f1b02c2cca61315eb1e591ab165672a524897d1a99895:
         aggregate_digest: "sha256:6b0bbfd8697ab8d981033eb8089419c5f134d12e23cb5aca929e2a6c42ce1279"
         event:
@@ -1855,6 +2017,138 @@ Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review i
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:53f3aca74f7411fac0e118fa97fe99279434727fdb505148478c2873539a3eb4, input_digest=sha256:f5e192a41d89a5d5edb41021677dc46e3677261c2a004bccf5a3928a6403db51
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run test:project -- agentplane packages/agentplane/src/commands/release/task-state-script.test.ts --maxWorkers=4
+Result: pass
+Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609132330-RP315R Verification Contract check affected_unit_integration (1/4)
+
+Check: affected_unit_integration
+Command: bun run task-state:check
+Result: pass
+Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609132330-RP315R Verification Contract check affected_unit_integration (2/4)
+
+Check: affected_unit_integration
+Command: bun run release:check
+Result: pass
+Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609132330-RP315R Verification Contract check affected_unit_integration (3/4)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609132330-RP315R Verification Contract check affected_unit_integration (4/4)
+
+Check: critical_paths
+Command: bun run test:project -- agentplane packages/agentplane/src/commands/release/task-state-script.test.ts --maxWorkers=4
+Result: pass
+Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609132330-RP315R Verification Contract check critical_paths (1/4)
+
+Check: critical_paths
+Command: bun run task-state:check
+Result: pass
+Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609132330-RP315R Verification Contract check critical_paths (2/4)
+
+Check: critical_paths
+Command: bun run release:check
+Result: pass
+Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609132330-RP315R Verification Contract check critical_paths (3/4)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609132330-RP315R Verification Contract check critical_paths (4/4)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609132330-RP315R Verification Contract check full_regression
+
+Check: real_e2e
+Command: bun run test:project -- agentplane packages/agentplane/src/commands/release/task-state-script.test.ts --maxWorkers=4
+Result: pass
+Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609132330-RP315R Verification Contract check real_e2e (1/4)
+
+Check: real_e2e
+Command: bun run task-state:check
+Result: pass
+Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609132330-RP315R Verification Contract check real_e2e (2/4)
+
+Check: real_e2e
+Command: bun run release:check
+Result: pass
+Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609132330-RP315R Verification Contract check real_e2e (3/4)
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609132330-RP315R Verification Contract check real_e2e (4/4)
+
+Check: task_outcome
+Command: bun run test:project -- agentplane packages/agentplane/src/commands/release/task-state-script.test.ts --maxWorkers=4
+Result: pass
+Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609132330-RP315R Verification Contract check task_outcome (1/4)
+
+Check: task_outcome
+Command: bun run task-state:check
+Result: pass
+Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609132330-RP315R Verification Contract check task_outcome (2/4)
+
+Check: task_outcome
+Command: bun run release:check
+Result: pass
+Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609132330-RP315R Verification Contract check task_outcome (3/4)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609132330-RP315R/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609132330-RP315R Verification Contract check task_outcome (4/4)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609132330-RP315R-repair-task-state-validation-for-immutable-quali/.agentplane/tasks/202609132330-RP315R/blueprint/resolved-snapshot.json
+- old_digest: dd6c228e2c24bd4f6d2b65056f9691f84324a0867b1c6171979423d9d93afd1d
+- current_digest: dd6c228e2c24bd4f6d2b65056f9691f84324a0867b1c6171979423d9d93afd1d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609132330-RP315R
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609132330-RP315R
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-14T00:15:34.469Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:53f3aca74f7411fac0e118fa97fe99279434727fdb505148478c2873539a3eb4, input_digest=sha256:25d498773ec0553c41ee125bcf72a2acbe244e4890e6b1c061d57de8503bec90
 
 Details:
 
