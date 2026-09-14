@@ -4,7 +4,7 @@ title: "Recover an external-agent result rejected during supervisor application"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,11 @@ plan_approval:
   updated_by: "HOST:codex:USER"
   note: "host_user_decision=sha256:5cef21c13132d53023ecd9bb7d12dabe1d15ed95a025f8ddb16e7f648d779251"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-09-14T01:18:24.089Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bun run ci:local:full"
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -81,7 +81,9 @@ execution_contract:
       - "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
       - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-2:fail"
+      - "verification:verification-record:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -93,7 +95,16 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "fail"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -179,9 +190,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "b4792b0bfad088dedeca07904a813fe2b7c53f9d"
-  message: "🚧 8QDRVN task: apply external agent result"
+      - "verification_recovery:recorded-check-2"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -216,8 +227,14 @@ events:
     to: "DOING"
     note: "Implementation committed: b4792b0bfad0. CLI accepted one state-bound external-agent semantic result."
     commit: "b4792b0bfad088dedeca07904a813fe2b7c53f9d"
+  -
+    type: "verify"
+    at: "2026-09-14T01:18:24.089Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-14T01:10:31.333Z"
+doc_updated_at: "2026-09-14T01:18:25.139Z"
 doc_updated_by: "SUPERVISOR"
 description: "When a durable result_received external-agent result is rejected by deterministic supervisor application validation, fail the owning semantic operation without applying the result, retire the exchange, and require the existing exact-key --replacement route. Preserve single-use result integrity and effect-in-doubt behavior. Add focused regression coverage for an implementation result that changes Git history outside the permitted workspace effect."
 sections:
@@ -235,6 +252,46 @@ sections:
     3. Confirm existing accepted-result replay and effect-in-doubt recovery cases still pass.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-14T01:18:24.089Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:05eab6b62620509c625d909f09ebfb96b67576ef0e857e4aff2df272b855d255, input_digest=sha256:16f08d4e2b301d98fd7c05b2eac3614512ae9a27b0d0a3cc838c23649f8fbd31
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609140050-8QDRVN declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609140050-8QDRVN declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609140050-8QDRVN-recover-an-external-agent-result-rejected-during/.agentplane/tasks/202609140050-8QDRVN/blueprint/resolved-snapshot.json
+    - old_digest: 2b3bd560197c44675a24a60b7d3717014353b005bd56806b8fb6f1bc6db0d880
+    - current_digest: 2b3bd560197c44675a24a60b7d3717014353b005bd56806b8fb6f1bc6db0d880
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609140050-8QDRVN
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609140050-8QDRVN
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -396,7 +453,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609140050-8QDRVN"
-    event_cursor: 12
+    event_cursor: 13
     final_validation: null
     id: "202609140050-8QDRVN"
     intent:
@@ -856,9 +913,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609140050-8QDRVN"
-    revision: 18
+    revision: 19
     schema_version: 1
-    updated_at: "2026-09-14T01:11:08.412Z"
+    updated_at: "2026-09-14T01:18:25.138Z"
     work_items:
       recover-rejected-result:
         attempt: 1
@@ -1109,6 +1166,30 @@ extensions:
         previous_revision: 4
         schema_version: 1
         task_id: "202609140050-8QDRVN"
+      compatibility:sha256:b4ae132658e8b75a2b63423d85bc2653844c7e4567d0d053be89606d065fd69e:
+        aggregate_digest: "sha256:be8b675c9f14bccb6262f402088304d3a7e537a34b4e76500bccf5965ede3253"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T01:18:25.138Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_64d1d35757b57daf19b3923d"
+          mutation_id: "compatibility:sha256:b4ae132658e8b75a2b63423d85bc2653844c7e4567d0d053be89606d065fd69e"
+          plan_digest: "sha256:964641b14ee083eb612f6346f18943a5d0d25890074dadc3df62c6285d4e04cb"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140050-8QDRVN"
+          task_revision: 18
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b4ae132658e8b75a2b63423d85bc2653844c7e4567d0d053be89606d065fd69e"
+        next_revision: 19
+        previous_revision: 18
+        schema_version: 1
+        task_id: "202609140050-8QDRVN"
       compatibility:sha256:c357b5b194d48d6adb135134e8695bd7f85b44b3b7698999dfc0d9d60f77fdf9:
         aggregate_digest: "sha256:5565a5a9c5c53c1eaa2ce73d949431d6a4978b4ea5e850c043dfde2179baeff0"
         event:
@@ -1330,8 +1411,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "b4792b0bfad088dedeca07904a813fe2b7c53f9d"
   task_execution_context:
     base_ref: "main"
     base_sha: "9792878934b2c4d068e98056cef3c2c691451a90"
@@ -1367,6 +1446,46 @@ Preserve the original WorkItem identity and correct its test launcher.
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-14T01:18:24.089Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:05eab6b62620509c625d909f09ebfb96b67576ef0e857e4aff2df272b855d255, input_digest=sha256:16f08d4e2b301d98fd7c05b2eac3614512ae9a27b0d0a3cc838c23649f8fbd31
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609140050-8QDRVN declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609140050-8QDRVN declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609140050-8QDRVN-recover-an-external-agent-result-rejected-during/.agentplane/tasks/202609140050-8QDRVN/blueprint/resolved-snapshot.json
+- old_digest: 2b3bd560197c44675a24a60b7d3717014353b005bd56806b8fb6f1bc6db0d880
+- current_digest: 2b3bd560197c44675a24a60b7d3717014353b005bd56806b8fb6f1bc6db0d880
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609140050-8QDRVN
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609140050-8QDRVN
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

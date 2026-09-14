@@ -15,14 +15,14 @@ When a durable result_received external-agent result is rejected by deterministi
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-14T00:54:28.900Z
+- Updated: 2026-09-14T01:11:18.204Z
 - Branch: task/202609140050-8QDRVN/recover-an-external-agent-result-rejected-during
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

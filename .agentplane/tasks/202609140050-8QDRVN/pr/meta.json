@@ -3,7 +3,10 @@
   "branch": "task/202609140050-8QDRVN/recover-an-external-agent-result-rejected-during",
   "created_at": "2026-09-14T00:54:28.900Z",
   "diffstat_sha256": "sha256:db2cb3e76975fb41ede5e9dbfedbc734c0cbc9e60fef135040f7b65773c0088d",
-  "last_verified_at": null,
+  "last_verified_at": "2026-09-14T01:18:24.089Z",
+  "last_verified_diffstat_sha256": "sha256:db2cb3e76975fb41ede5e9dbfedbc734c0cbc9e60fef135040f7b65773c0088d",
+  "pr_number": 5951,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5951",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -13,9 +16,10 @@
     "target_project": "basilisk-labs/agentplane"
   },
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202609140050-8QDRVN",
-  "updated_at": "2026-09-14T00:54:28.900Z",
+  "updated_at": "2026-09-14T01:11:18.204Z",
   "verify": {
-    "status": "skipped"
+    "status": "fail"
   }
 }
