@@ -4,9 +4,9 @@
       "check_ids": [
         "focused-recovery-tests"
       ],
-      "command": "bun test packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
-      "duration_ms": 361,
-      "exit_code": 1,
+      "command": "bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+      "duration_ms": 31181,
+      "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
         "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
@@ -15,13 +15,13 @@
         "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
       },
       "script": null,
-      "stderr_tail": "\npackages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts:\n\n# Unhandled error between tests\n-------------------------------\n1626 | let runner;\n1627 | let defaultSuite;\n1628 | let currentTestFilepath;\n1629 | function assert(condition, message) {\n1630 | \tif (!condition) {\n1631 | \t\tthrow new Error(`Vitest failed to find ${message}. One of the following is possible:` + \"\\n- \\\"vitest\\\" is imported directly without running \\\"vitest\\\" command\" + \"\\n- \\\"vitest\\\" is imported inside \\\"globalSetup\\\" (to fix this, use \\\"setupFiles\\\" instead, because \\\"globalSetup\\\" runs in a different context)\" + \"\\n- \\\"vitest\\\" is imported inside Vite / Vitest config file\" + \"\\n- Otherwise, it might be a Vitest bug. Please report it to https://github.com/vitest-dev/vitest/issues\\n\");\n                   ^\nerror: Vitest failed to find the current suite. One of the following is possible:\n- \"vitest\" is imported directly without running \"vitest\" command\n- \"vitest\" is imported inside \"globalSetup\" (to fix this, use \"setupFiles\" instead, because \"globalSetup\" runs in a different context)\n- \"vitest\" is imported inside Vite / Vitest config file\n- Otherwise, it might be a Vitest bug. Please report it to https://github.com/vitest-dev/vitest/issues\n\n      at assert (/Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609140050-8QDRVN-recover-an-external-agent-result-rejected-during/node_modules/.bun/@vitest+runner@4.1.9/node_modules/@vitest/runner/dist/chunk-artifact.js:1631:13)\n      at getCurrentSuite (/Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609140050-8QDRVN-recover-an-external-agent-result-rejected-during/node_modules/.bun/@vitest+runner@4.1.9/node_modules/@vitest/runner/dist/chunk-artifact.js:1666:2)\n      at afterEach (/Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609140050-8QDRVN-recover-an-external-agent-result-rejected-during/node_modules/.bun/@vitest+runner@4.1.9/node_modules/@vitest/runner/dist/chunk-artifact.js:752:9)\n      at /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609140050-8QDRVN-recover-an-external-agent-result-rejected-during/packages/testkit/src/cli-harness.ts:129:1\n-------------------------------\n\n\n 0 pass\n 1 fail\n 1 error\nRan 1 test across 1 file. [159.00ms]\n",
-      "stdout_tail": "bun test v1.4.2 (744846f84)\n"
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609140050-8QDRVN-recover-an-external-agent-result-rejected-during\n\n\n Test Files  1 passed (1)\n      Tests  44 passed (44)\n   Start at  04:10:37\n   Duration  30.84s (transform 1.99s, setup 0ms, import 1.52s, tests 29.27s, environment 0ms)\n\n"
     }
   ],
   "kind": "direct_task_declared_checks",
-  "reason": "Declared bun test check executed zero tests: bun test packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+  "reason": null,
   "schema_version": 1,
-  "status": "failed",
+  "status": "passed",
   "task_id": "202609140050-8QDRVN"
 }
