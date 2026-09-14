@@ -7,7 +7,7 @@
     "tsconfig.base.json",
     "vitest.config.ts",
     "vitest.workspace.ts",
-    "eslint.config.cjs",
+    "eslint.config.mjs",
     "scripts/lib/test-route-registry.mjs"
   ],
   "tasks": {

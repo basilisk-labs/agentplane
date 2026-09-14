@@ -16,7 +16,7 @@ formatting.
 
 Current enforcement includes:
 
-1. `eslint` over `packages`, `scripts`, `eslint.config.cjs`, and `vitest.config.ts`.
+1. `eslint` over `packages`, `scripts`, `eslint.config.mjs`, and `vitest.config.ts`.
 2. Prettier formatting as a separate check.
 3. Import, Node, Promise, Unicorn, and repository-specific lint rules.
 4. Snapshot and generated-document checks that assume stable formatting.

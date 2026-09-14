@@ -9,7 +9,7 @@ core:
   - "package.json"
   - "bun.lock"
   - "tsconfig*.json"
-  - "eslint.config.cjs"
+  - "eslint.config.mjs"
   - "vitest.config.ts"
   - ".github/workflows/**"
   - ".github/path-filters.yml"

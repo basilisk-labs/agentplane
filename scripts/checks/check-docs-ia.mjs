@@ -62,7 +62,7 @@ const repoPathPrefixes = [
   "README.md",
   "DESIGN.md",
   "docs/",
-  "eslint.config.cjs",
+  "eslint.config.mjs",
   "package.json",
   "packages/",
   "scripts/",

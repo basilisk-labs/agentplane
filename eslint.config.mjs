@@ -1,15 +1,15 @@
-const js = require("@eslint/js");
-const globals = require("globals");
+import js from "@eslint/js";
+import globals from "globals";
+import { createRequire } from "node:module";
+import prettierConfig from "eslint-config-prettier";
+import importPlugin from "eslint-plugin-import";
+import nPlugin from "eslint-plugin-n";
+import promisePlugin from "eslint-plugin-promise";
+import unicornPlugin from "eslint-plugin-unicorn";
 
+const require = createRequire(import.meta.url);
 const tsParser = require("@typescript-eslint/parser");
 const tsPlugin = require("@typescript-eslint/eslint-plugin");
-
-const importPlugin = require("eslint-plugin-import");
-const nPluginModule = require("eslint-plugin-n");
-const promisePlugin = require("eslint-plugin-promise");
-const unicornPlugin = require("eslint-plugin-unicorn").default;
-const prettierConfig = require("eslint-config-prettier");
-const nPlugin = nPluginModule.default ?? nPluginModule;
 
 function rulesFromConfig(config) {
   if (Array.isArray(config)) {
@@ -270,7 +270,7 @@ const unicorn66CompatibilityRules = {
 };
 
 /** @type {import("eslint").Linter.FlatConfig[]} */
-module.exports = [
+export default [
   {
     ignores: [
       "**/node_modules/**",
@@ -342,7 +342,7 @@ module.exports = [
       parser: tsParser,
       parserOptions: {
         project: tsconfigProjects,
-        tsconfigRootDir: __dirname,
+        tsconfigRootDir: import.meta.dirname,
       },
     },
     plugins: {
