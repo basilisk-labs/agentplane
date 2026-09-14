@@ -1,10 +1,10 @@
 ---
 id: "202609121424-49XXT3"
 title: "Publish and independently verify AgentPlane 0.7.9 from the exact qualified main SHA"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 36
+revision: 37
 origin:
   system: "manual"
 depends_on:
@@ -312,6 +312,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. Candidate-base synchronization requires a supervisor-owned Git lifecycle operation that this semantic executor is explicitly forbidden to perform. Recommended action: Run or emit the repository-owned candidate branch synchronization operation, record its receipt, and then issue a fresh semantic packet for prepare_candidate. Do not ask an external executor to rebase, cherry-pick, commit, or rewrite Git history. Agentplane receipt: external-agent-blocker/tr_64c6b4be9fa98a3b6e4c3b6312fed325/sha256:f5db69947a8573cb0f586066c4d5aebf308084d76935d1ea398de829dcbdd98d."
+  -
+    author: "ORCHESTRATOR"
+    body: "Resume after the release-base blocker was resolved. | details: PR #5952 merged as origin/main 1a93a9a43da2b714854174491f9672c52bf33e9f, and Core CI run 34825881983 completed successfully for that exact SHA.; The approved plan must be refined before synchronization because its existing base 40368f0ae58774c8cdd80fddb22cb6daacbae8f4 is obsolete and its ready WorkItem lacks the exact branch-base claim required by current main."
 events:
   -
     type: "status"
@@ -391,9 +394,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. Candidate-base synchronization requires a supervisor-owned Git lifecycle operation that this semantic executor is explicitly forbidden to perform. Recommended action: Run or emit the repository-owned candidate branch synchronization operation, record its receipt, and then issue a fresh semantic packet for prepare_candidate. Do not ask an external executor to rebase, cherry-pick, commit, or rewrite Git history. Agentplane receipt: external-agent-blocker/tr_64c6b4be9fa98a3b6e4c3b6312fed325/sha256:f5db69947a8573cb0f586066c4d5aebf308084d76935d1ea398de829dcbdd98d."
+  -
+    type: "status"
+    at: "2026-09-14T09:13:07.280Z"
+    author: "ORCHESTRATOR"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Resume after the release-base blocker was resolved. | details: PR #5952 merged as origin/main 1a93a9a43da2b714854174491f9672c52bf33e9f, and Core CI run 34825881983 completed successfully for that exact SHA.; The approved plan must be refined before synchronization because its existing base 40368f0ae58774c8cdd80fddb22cb6daacbae8f4 is obsolete and its ready WorkItem lacks the exact branch-base claim required by current main."
 doc_version: 3
-doc_updated_at: "2026-09-14T02:08:41.270Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-14T09:13:07.280Z"
+doc_updated_by: "ORCHESTRATOR"
 description: "Release operator task after all 0.7.9 stabilization dependencies are integrated. Prepare exact 0.7.9 version parity and release notes, run the complete release prepublish and incident gates, produce and integrate the release-ready candidate through repository policy, publish v0.7.9 from the exact qualified main SHA, and independently verify the canonical .agentplane/.release/publish/publish-result.json has success=true with an empty failures array for that SHA. Verify GitHub release assets and checksums, package registries, setup-agentplane tag and install, Homebrew and Scoop distribution, both agentplane and ap entrypoints, and default-branch state. Record any unavailable anonymous GHCR check separately. Complete the required post-publish evidence follow-up and next patch beta only through AgentPlane-managed lifecycle. Never commit agentplane-roadmap-r2. Stop only at a genuine provider or evidence boundary; the user explicitly authorized publish, merge, network, credentials, and external-system actions for v0.7.9."
 sections:
   Summary: |-
@@ -999,7 +1009,7 @@ extensions:
       revision: 7
       schema_version: 1
       task_id: "202609121424-49XXT3"
-    event_cursor: 27
+    event_cursor: 28
     final_validation: null
     id: "202609121424-49XXT3"
     intent:
@@ -1021,7 +1031,7 @@ extensions:
 
         Release operator task after all 0.7.9 stabilization dependencies are integrated. Prepare exact 0.7.9 version parity and release notes, run the complete release prepublish and incident gates, produce and integrate the release-ready candidate through repository policy, publish v0.7.9 from the exact qualified main SHA, and independently verify the canonical .agentplane/.release/publish/publish-result.json has success=true with an empty failures array for that SHA. Verify GitHub release assets and checksums, package registries, setup-agentplane tag and install, Homebrew and Scoop distribution, both agentplane and ap entrypoints, and default-branch state. Record any unavailable anonymous GHCR check separately. Complete the required post-publish evidence follow-up and next patch beta only through AgentPlane-managed lifecycle. Never commit agentplane-roadmap-r2. Stop only at a genuine provider or evidence boundary; the user explicitly authorized publish, merge, network, credentials, and external-system actions for v0.7.9.
       task_id: "202609121424-49XXT3"
-    lifecycle: "BLOCKED"
+    lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history:
       -
@@ -4545,9 +4555,9 @@ extensions:
         revision: 6
         schema_version: 1
         task_id: "202609121424-49XXT3"
-    revision: 36
+    revision: 37
     schema_version: 1
-    updated_at: "2026-09-14T02:08:41.270Z"
+    updated_at: "2026-09-14T09:13:07.280Z"
     work_items:
       prepare_candidate:
         attempt: 0
@@ -5116,6 +5126,30 @@ extensions:
         mutation_id: "compatibility:sha256:d235f5333939dc9ff195fadd1180abfe75d12db918a97c634e63eae18a8599fd"
         next_revision: 12
         previous_revision: 11
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+      compatibility:sha256:de2094d53b7dc3aff3e2338d3eed355bf2d209869e1bbecd169452eea0de4054:
+        aggregate_digest: "sha256:c1cf95fe6c1218862b73d053743ed5e6308859d920d6e572ddd3001141bc6e50"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T09:13:07.280Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_2a0d280a5820e629f5772d8f"
+          mutation_id: "compatibility:sha256:de2094d53b7dc3aff3e2338d3eed355bf2d209869e1bbecd169452eea0de4054"
+          plan_digest: "sha256:2dc5dc0f43f6b65479ab63ffbd9cd7f458486e5ed3678edeca71f4080fe8ce02"
+          plan_revision: 7
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          task_revision: 36
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:de2094d53b7dc3aff3e2338d3eed355bf2d209869e1bbecd169452eea0de4054"
+        next_revision: 37
+        previous_revision: 36
         schema_version: 1
         task_id: "202609121424-49XXT3"
       compatibility:sha256:de306b92afeb498e88a226d4f067bd7e696f5079b64093f693e02d3930c28ee4:
