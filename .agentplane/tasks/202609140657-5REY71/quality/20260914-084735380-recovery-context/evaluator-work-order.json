@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609140657-5REY71-c2d650b8aaff8d6346d10395",
+  "prepared_at": "2026-09-14T08:47:35.380Z",
+  "task": {
+    "id": "202609140657-5REY71",
+    "revision": 16,
+    "objective": "Add supervisor-owned base synchronization before semantic work on stale branch_pr candidates\n\nImplement a deterministic AgentPlane lifecycle route for an already-started branch_pr task whose approved WorkItem requires its preserved candidate branch to adopt an exact newer qualified base before semantic edits. The supervisor must own the Git or provider synchronization, bind it to exact branch/head/base identities, preserve existing candidate commits and unrelated work, fail closed on conflict or stale identity, and issue the next semantic packet only after verified base ancestry. An external semantic executor must never be asked to rebase, merge, cherry-pick, commit, force-push, or rewrite Git history. Cover the release-task failure demonstrated by task 202609121424-49XXT3, then integrate the fix through protected branch_pr workflow so that release 0.7.9 can resume.",
+    "acceptance_criteria": [
+      "bun run test:unit -- packages/agentplane/src/commands/task",
+      "- In scope: Implement a deterministic AgentPlane lifecycle route for an already-started branch_pr task whose approved WorkItem requires its preserved candidate branch to adopt an exact newer qualified base before semantic edits. The supervisor must own the Git or provider synchronization, bind it to exact branch/head/base identities, preserve existing candidate commits and unrelated work, fail closed on conflict or stale identity, and issue the next semantic packet only after verified base ancestry. An external semantic executor must never be asked to rebase, merge, cherry-pick, commit, force-push, or rewrite Git history. Cover the release-task failure demonstrated by task 202609121424-49XXT3, then integrate the fix through protected branch_pr workflow so that release 0.7.9 can resume.\n- Out of scope: unrelated refactors not required for \"Add supervisor-owned base synchronization before semantic work on stale branch_pr candidates\".",
+      "Add one exact-identity branch base synchronization lifecycle operation before incomplete branch_pr work reaches a semantic executor.",
+      "1. Run node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000. Expected: stale-base routing emits the lifecycle operation before semantic work and existing routes remain stable.\n2. Run node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000. Expected: exact-identity synchronization, fail-closed boundaries, receipts, and convergence pass.\n3. Run bun run typecheck. Expected: TypeScript build passes.\n4. Run bun run lint:core. Expected: core lint passes.\n5. Run bun run ci:local:full. Expected: the complete local gate passes.\n6. Review git diff --check, the exact task diff, and git status --short --untracked-files=all. Expected: only approved lifecycle code, tests, and task artifacts changed; unrelated base work and agentplane-roadmap-r2 are absent."
+    ]
+  },
+  "evaluated_sha": "497b702366a412f5db212d99baf29849287099bc",
+  "diff_base_sha": "40368f0ae58774c8cdd80fddb22cb6daacbae8f4",
+  "blueprint_digest": "44cb6a693c03d7f6613baa191627598ac96dc518887fb1525cd7328b0b5fef39",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609140657-5REY71/quality/20260914-084735380-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:04d47c5f48eebb242e35c55f1043a048e2d34197afb45832b80a50642fb73e7d",
+    "prompt_path": ".agentplane/tasks/202609140657-5REY71/quality/objects/sha256/4cada3577887cfa0bad4151f308323510aaea16a44901a4010e5924bdc2e0036.md",
+    "result_schema_path": ".agentplane/tasks/202609140657-5REY71/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609140657-5REY71/README.md",
+      "sha256": "sha256:c0573c4f4033d2ae1902b185fb4c8eb6fa0817f92b1e996b358603b45757dad2",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609140657-5REY71/quality/objects/sha256/100555e07a44a5d91d922a409f3892912ee73a02966249e30791f5b4b2a3a0bb.patch",
+      "sha256": "sha256:100555e07a44a5d91d922a409f3892912ee73a02966249e30791f5b4b2a3a0bb",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609140657-5REY71/quality/objects/sha256/5994e868d32b7844cf84f1f13cf87c444b4133c3888ab394001f5481bb734918.json",
+      "sha256": "sha256:5994e868d32b7844cf84f1f13cf87c444b4133c3888ab394001f5481bb734918",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609140657-5REY71/verification/20260914084606234-271e10519bfe0f6d.json",
+      "sha256": "sha256:e24ad673b6ef0d96af28b61e6f246b2de9b0aa91abb07f654b3d9e58b6a38277",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609140657-5REY71/quality/objects/sha256/93d109ad7afba099b1f2caa2b645d5eded949a77507a480ac4d607654cc4bc69.json",
+      "sha256": "sha256:93d109ad7afba099b1f2caa2b645d5eded949a77507a480ac4d607654cc4bc69",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
