@@ -4,7 +4,7 @@ title: "Publish and independently verify AgentPlane 0.7.9 from the exact qualifi
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 53
+revision: 54
 origin:
   system: "manual"
 depends_on:
@@ -275,9 +275,7 @@ execution_contract:
       - "repository_effect:repository_write"
       - "repository_effect:source_code"
       - "task_outcome"
-commit:
-  hash: "529d2a93fa0636f31830be894a727866e788e23a"
-  message: "🚧 49XXT3 task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -6226,9 +6224,9 @@ extensions:
         revision: 9
         schema_version: 1
         task_id: "202609121424-49XXT3"
-    revision: 53
+    revision: 54
     schema_version: 1
-    updated_at: "2026-09-14T22:15:48.057Z"
+    updated_at: "2026-09-14T22:15:51.336Z"
     work_items:
       prepare_candidate:
         attempt: 0
@@ -6258,14 +6256,69 @@ extensions:
         state: "PLANNED"
         validation_result: null
       synchronize_candidate_base:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "synchronize_candidate_base"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:a9d1fb3adfcdb80a0c5f5fbabaa2107af25c3b23d6ed95b6c50b07e48c8a3169"
+            id: "supervisor_owned_candidate_synchronization_receipt"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 10
+              task_id: "202609121424-49XXT3"
+              work_item_id: "synchronize_candidate_base"
+            provenance:
+              - "sha256:ee6e73f0f43da46bc821f098adf51cc22613c15a0b1aadd1e69b6428dc27fd3e"
+              - ".agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:da18916e8326e580f3c89a896b967455897e6fd2ea3c73dc1c5f184eccd28568"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:5724856167b5100850f3741c3d68fb218f0d33712319585115e8b93b6fc5f42b"
+            id: "qualified_release_base_sha"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 10
+              task_id: "202609121424-49XXT3"
+              work_item_id: "synchronize_candidate_base"
+            provenance:
+              - "sha256:ee6e73f0f43da46bc821f098adf51cc22613c15a0b1aadd1e69b6428dc27fd3e"
+              - ".agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:da18916e8326e580f3c89a896b967455897e6fd2ea3c73dc1c5f184eccd28568"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json"
+              check_id: "candidate_base_identity"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-09-14T22:15:51.305Z"
+              repository_snapshot_digest: "sha256:da18916e8326e580f3c89a896b967455897e6fd2ea3c73dc1c5f184eccd28568"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json"
+              check_id: "scope_hygiene"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-09-14T22:15:51.305Z"
+              repository_snapshot_digest: "sha256:da18916e8326e580f3c89a896b967455897e6fd2ea3c73dc1c5f184eccd28568"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       verify_distribution:
         attempt: 0
         claim_id: null
@@ -6418,6 +6471,23 @@ extensions:
         task_id: "202609121424-49XXT3"
         task_revision: 48
         work_item_id: null
+      -
+        at: "2026-09-14T22:15:51.336Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:c8b3c17a8bace614db0f4cc9a20661bf56823077e183a3e7d5b6af7f22627c72"
+        entity: "work_item"
+        id: "event_5167f6465707615d336c0fea"
+        mutation_id: "external-result:work-order-202609121424-49XXT3-executor-b52af39d3d1a16f646ddb191"
+        plan_digest: "sha256:c37f177171441b358c9a0bde2de1a4f18a7ed0a9a89bba7ce19c1595bcdcd2ce"
+        plan_revision: 10
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+        task_revision: 53
+        work_item_id: "synchronize_candidate_base"
     leases: []
     mutation_receipts:
       compatibility:sha256:046ef3d623a69511cecc08b34cefc3449d060dba8558b29211086e726db3ceb3:
@@ -7306,6 +7376,30 @@ extensions:
         mutation_id: "external-result:work-order-202609121424-49XXT3-executor-00afd788a39e4976554119c6"
         next_revision: 46
         previous_revision: 45
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+      external-result:work-order-202609121424-49XXT3-executor-b52af39d3d1a16f646ddb191:
+        aggregate_digest: "sha256:1af8b0214af19c9bc9b792afb536b61058bf10f1a9c86b8a7d139325798b0cfd"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T22:15:51.336Z"
+          cause_refs:
+            - "semantic-result:sha256:c8b3c17a8bace614db0f4cc9a20661bf56823077e183a3e7d5b6af7f22627c72"
+          entity: "work_item"
+          from: "READY"
+          id: "event_5167f6465707615d336c0fea"
+          mutation_id: "external-result:work-order-202609121424-49XXT3-executor-b52af39d3d1a16f646ddb191"
+          plan_digest: "sha256:c37f177171441b358c9a0bde2de1a4f18a7ed0a9a89bba7ce19c1595bcdcd2ce"
+          plan_revision: 10
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          task_revision: 53
+          to: "COMPLETED"
+          work_item_id: "synchronize_candidate_base"
+        mutation_id: "external-result:work-order-202609121424-49XXT3-executor-b52af39d3d1a16f646ddb191"
+        next_revision: 54
+        previous_revision: 53
         schema_version: 1
         task_id: "202609121424-49XXT3"
       plan-refinement:work-order-202609121424-49XXT3-executor-0abaa4e4bfeb153cdcdd51a6:
