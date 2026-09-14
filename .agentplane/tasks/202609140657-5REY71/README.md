@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -386,6 +386,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The three source paths are the intended acyclic hosted-CI rework; the staged task README is supervisor-generated refresh state from the already-created worktree-observation commit and must be preserved."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The three uncommitted source paths are the intended acyclic hosted-CI rework and should be committed together through the approved task allowlist."
 events:
   -
     type: "status"
@@ -431,8 +434,13 @@ events:
     at: "2026-09-14T08:34:38.162Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The three source paths are the intended acyclic hosted-CI rework; the staged task README is supervisor-generated refresh state from the already-created worktree-observation commit and must be preserved."
+  -
+    type: "comment"
+    at: "2026-09-14T08:36:40.334Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The three uncommitted source paths are the intended acyclic hosted-CI rework and should be committed together through the approved task allowlist."
 doc_version: 3
-doc_updated_at: "2026-09-14T08:34:38.173Z"
+doc_updated_at: "2026-09-14T08:36:40.343Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement a deterministic AgentPlane lifecycle route for an already-started branch_pr task whose approved WorkItem requires its preserved candidate branch to adopt an exact newer qualified base before semantic edits. The supervisor must own the Git or provider synchronization, bind it to exact branch/head/base identities, preserve existing candidate commits and unrelated work, fail closed on conflict or stale identity, and issue the next semantic packet only after verified base ancestry. An external semantic executor must never be asked to rebase, merge, cherry-pick, commit, force-push, or rewrite Git history. Cover the release-task failure demonstrated by task 202609121424-49XXT3, then integrate the fix through protected branch_pr workflow so that release 0.7.9 can resume."
 sections:
@@ -1100,7 +1108,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609140657-5REY71"
-    event_cursor: 10
+    event_cursor: 11
     final_validation:
       evidence:
         -
@@ -1191,9 +1199,9 @@ extensions:
     lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 14
+    revision: 15
     schema_version: 1
-    updated_at: "2026-09-14T08:34:38.162Z"
+    updated_at: "2026-09-14T08:36:40.334Z"
     work_items:
       implement_branch_base_sync:
         attempt: 1
@@ -1358,6 +1366,30 @@ extensions:
         mutation_id: "compatibility:sha256:20bb0bdc7d0cf7eb787521d5a30c7f0f8f5b55701101b9f17be94151773121c6"
         next_revision: 4
         previous_revision: 3
+        schema_version: 1
+        task_id: "202609140657-5REY71"
+      compatibility:sha256:65ca4030ebbb4ecdeae0867e2d6462025a47a07eada7e54914e93b4902f24d1a:
+        aggregate_digest: "sha256:4582781822b01ea5d44f58c3b8ea4a762289302ec98b501f06d10c06b0dc0012"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T08:36:40.334Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_2b7424cb455fb537d718bd5c"
+          mutation_id: "compatibility:sha256:65ca4030ebbb4ecdeae0867e2d6462025a47a07eada7e54914e93b4902f24d1a"
+          plan_digest: "sha256:05d9e037f315e3dad580662875f670e39118537f5689e20277c16450ce222b81"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140657-5REY71"
+          task_revision: 14
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:65ca4030ebbb4ecdeae0867e2d6462025a47a07eada7e54914e93b4902f24d1a"
+        next_revision: 15
+        previous_revision: 14
         schema_version: 1
         task_id: "202609140657-5REY71"
       compatibility:sha256:6a6a572118fac838bac7f1791d704da0d6996982bcedb011bb3ce66795c0786a:
