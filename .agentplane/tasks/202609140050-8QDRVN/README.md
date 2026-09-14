@@ -4,7 +4,7 @@ title: "Recover an external-agent result rejected during supervisor application"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 30
+revision: 31
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,11 @@ plan_approval:
   updated_by: "HOST:codex:USER"
   note: "host_user_decision=sha256:5cef21c13132d53023ecd9bb7d12dabe1d15ed95a025f8ddb16e7f648d779251"
 verification:
-  state: "pending"
-  updated_at: "2026-09-14T01:32:12.108Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
-  attempts: 2
+  state: "ok"
+  updated_at: "2026-09-14T01:44:28.438Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 execution_route:
   frozen: true
   reason_codes:
@@ -101,7 +101,31 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "verification-record"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -290,8 +314,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 0aa277dd9764. CLI accepted one state-bound external-agent semantic result."
     commit: "0aa277dd97640bbc2afba29d72adb91fae64021f"
+  -
+    type: "verify"
+    at: "2026-09-14T01:44:28.438Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-14T01:36:41.000Z"
+doc_updated_at: "2026-09-14T01:44:29.837Z"
 doc_updated_by: "SUPERVISOR"
 description: "When a durable result_received external-agent result is rejected by deterministic supervisor application validation, fail the owning semantic operation without applying the result, retire the exchange, and require the existing exact-key --replacement route. Preserve single-use result integrity and effect-in-doubt behavior. Add focused regression coverage for an implementation result that changes Git history outside the permitted workspace effect."
 sections:
@@ -369,6 +399,78 @@ sections:
     Result: fail
     Evidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-2
     Scope: branch_pr task 202609140050-8QDRVN declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609140050-8QDRVN-recover-an-external-agent-result-rejected-during/.agentplane/tasks/202609140050-8QDRVN/blueprint/resolved-snapshot.json
+    - old_digest: 2b3bd560197c44675a24a60b7d3717014353b005bd56806b8fb6f1bc6db0d880
+    - current_digest: 2b3bd560197c44675a24a60b7d3717014353b005bd56806b8fb6f1bc6db0d880
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609140050-8QDRVN
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609140050-8QDRVN
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-14T01:44:28.438Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:05eab6b62620509c625d909f09ebfb96b67576ef0e857e4aff2df272b855d255, input_digest=sha256:bdb0cdba7693edf45b0107f4524b4ebc0fbfb7517e8c71c7b5e7a2cfd363b944
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609140050-8QDRVN Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609140050-8QDRVN Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609140050-8QDRVN Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609140050-8QDRVN Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609140050-8QDRVN Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609140050-8QDRVN Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609140050-8QDRVN Verification Contract check task_outcome (2/2)
 
     BlueprintSnapshotRef:
     - state: current
@@ -545,7 +647,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609140050-8QDRVN"
-    event_cursor: 24
+    event_cursor: 25
     final_validation: null
     id: "202609140050-8QDRVN"
     intent:
@@ -1005,9 +1107,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609140050-8QDRVN"
-    revision: 30
+    revision: 31
     schema_version: 1
-    updated_at: "2026-09-14T01:36:41.000Z"
+    updated_at: "2026-09-14T01:44:29.835Z"
     work_items:
       recover-rejected-result:
         attempt: 1
@@ -1280,6 +1382,30 @@ extensions:
         mutation_id: "compatibility:sha256:6dc3924e9b235917f951d93d77769cbbada95478bf9d2ff04fd80270e9644782"
         next_revision: 4
         previous_revision: 3
+        schema_version: 1
+        task_id: "202609140050-8QDRVN"
+      compatibility:sha256:6e39bf77e923ac6efe48c7b793e2ab7327fdbdc665b2fa8197ed40feb507c019:
+        aggregate_digest: "sha256:98a5e63273edad139ccc2f0eec36d2bb976835548180c8710c59925c0ef6bd2d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T01:44:29.835Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_32ee6384b1271b0e09d286a7"
+          mutation_id: "compatibility:sha256:6e39bf77e923ac6efe48c7b793e2ab7327fdbdc665b2fa8197ed40feb507c019"
+          plan_digest: "sha256:964641b14ee083eb612f6346f18943a5d0d25890074dadc3df62c6285d4e04cb"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140050-8QDRVN"
+          task_revision: 30
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:6e39bf77e923ac6efe48c7b793e2ab7327fdbdc665b2fa8197ed40feb507c019"
+        next_revision: 31
+        previous_revision: 30
         schema_version: 1
         task_id: "202609140050-8QDRVN"
       compatibility:sha256:71097fd7dbb08fc9645be896090e987011e5be518551b5a28b7f48a5316643b1:
@@ -1864,6 +1990,78 @@ Command: bun run ci:local:full
 Result: fail
 Evidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-2
 Scope: branch_pr task 202609140050-8QDRVN declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609140050-8QDRVN-recover-an-external-agent-result-rejected-during/.agentplane/tasks/202609140050-8QDRVN/blueprint/resolved-snapshot.json
+- old_digest: 2b3bd560197c44675a24a60b7d3717014353b005bd56806b8fb6f1bc6db0d880
+- current_digest: 2b3bd560197c44675a24a60b7d3717014353b005bd56806b8fb6f1bc6db0d880
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609140050-8QDRVN
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609140050-8QDRVN
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-14T01:44:28.438Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:05eab6b62620509c625d909f09ebfb96b67576ef0e857e4aff2df272b855d255, input_digest=sha256:bdb0cdba7693edf45b0107f4524b4ebc0fbfb7517e8c71c7b5e7a2cfd363b944
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609140050-8QDRVN Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609140050-8QDRVN Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609140050-8QDRVN Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609140050-8QDRVN Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609140050-8QDRVN Verification Contract check full_regression
+
+Check: task_outcome
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609140050-8QDRVN Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609140050-8QDRVN Verification Contract check task_outcome (2/2)
 
 BlueprintSnapshotRef:
 - state: current
