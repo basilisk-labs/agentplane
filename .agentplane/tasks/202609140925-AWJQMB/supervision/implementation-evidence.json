@@ -1,0 +1,108 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 1a93a9a43da2b714854174491f9672c52bf33e9f..bcd5c7206dcda4ade485cb1b90836eb2d55d0e64",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 1a93a9a43da2b714854174491f9672c52bf33e9f..bcd5c7206dcda4ade485cb1b90836eb2d55d0e64",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202609140925-AWJQMB/README.md",
+        "A\t.agentplane/tasks/202609140925-AWJQMB/blueprint/resolved-snapshot.json",
+        "A\t.agentplane/tasks/202609140925-AWJQMB/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202609140925-AWJQMB/pr/github-body.md",
+        "A\t.agentplane/tasks/202609140925-AWJQMB/pr/github-title.txt",
+        "A\t.agentplane/tasks/202609140925-AWJQMB/pr/meta.json",
+        "A\t.agentplane/tasks/202609140925-AWJQMB/pr/review.md",
+        "M\tpackages/agentplane/src/commands/branch/sync-task-base.test.ts",
+        "M\tpackages/agentplane/src/commands/branch/sync-task-base.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "1a93a9a43da2b714854174491f9672c52bf33e9f",
+  "implementation_commit": "bcd5c7206dcda4ade485cb1b90836eb2d55d0e64",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "A  .agentplane/tasks/202609140925-AWJQMB/README.md",
+      "A  .agentplane/tasks/202609140925-AWJQMB/blueprint/resolved-snapshot.json",
+      "A  .agentplane/tasks/202609140925-AWJQMB/pr/diffstat.txt",
+      "A  .agentplane/tasks/202609140925-AWJQMB/pr/github-body.md",
+      "A  .agentplane/tasks/202609140925-AWJQMB/pr/github-title.txt",
+      "A  .agentplane/tasks/202609140925-AWJQMB/pr/meta.json",
+      "A  .agentplane/tasks/202609140925-AWJQMB/pr/review.md",
+      "M  packages/agentplane/src/commands/branch/sync-task-base.test.ts",
+      "M  packages/agentplane/src/commands/branch/sync-task-base.ts"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "A  .agentplane/tasks/202609140925-AWJQMB/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  .agentplane/tasks/202609140925-AWJQMB/blueprint/resolved-snapshot.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  .agentplane/tasks/202609140925-AWJQMB/pr/diffstat.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  .agentplane/tasks/202609140925-AWJQMB/pr/github-body.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  .agentplane/tasks/202609140925-AWJQMB/pr/github-title.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  .agentplane/tasks/202609140925-AWJQMB/pr/meta.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  .agentplane/tasks/202609140925-AWJQMB/pr/review.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/branch/sync-task-base.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/branch/sync-task-base.ts"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "A  .agentplane/tasks/202609140925-AWJQMB/README.md",
+      "A  .agentplane/tasks/202609140925-AWJQMB/blueprint/resolved-snapshot.json",
+      "A  .agentplane/tasks/202609140925-AWJQMB/pr/diffstat.txt",
+      "A  .agentplane/tasks/202609140925-AWJQMB/pr/github-body.md",
+      "A  .agentplane/tasks/202609140925-AWJQMB/pr/github-title.txt",
+      "A  .agentplane/tasks/202609140925-AWJQMB/pr/meta.json",
+      "A  .agentplane/tasks/202609140925-AWJQMB/pr/review.md",
+      "M  packages/agentplane/src/commands/branch/sync-task-base.test.ts",
+      "M  packages/agentplane/src/commands/branch/sync-task-base.ts"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609140925-AWJQMB"
+}

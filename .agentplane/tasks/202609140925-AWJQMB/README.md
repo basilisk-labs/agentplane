@@ -4,7 +4,7 @@ title: "Make supervisor-owned task branch base synchronization generate a commit
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -84,10 +84,16 @@ execution_contract:
       - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/branch/sync-task-base.test.ts"
+      - "packages/agentplane/src/commands/branch/sync-task-base.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -110,6 +116,7 @@ execution_contract:
           - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
         evidence_requirements:
           - "hosted_integration"
+          - "repository_effect:repository_write"
           - "repository_effect:source_code"
           - "repository_effect:tests"
           - "task_outcome"
@@ -121,7 +128,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:2669ca8327e4187e7f2890509f96e8724ade534f4dc75daf1e22887bebccaadc"
+      digest: "sha256:37fe39319a198f7fd3184b7ceef6be72b1b7a9cd7717aa683abb139ad9e7aef6"
       escalation_reasons:
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
@@ -131,10 +138,16 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/branch/sync-task-base.test.ts"
+          - "packages/agentplane/src/commands/branch/sync-task-base.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -163,14 +176,20 @@ execution_contract:
       source: "execution_contract"
     required_evidence:
       - "hosted_integration"
+      - "repository_effect:repository_write"
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "bcd5c7206dcda4ade485cb1b90836eb2d55d0e64"
+  message: "🚧 AWJQMB task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: bcd5c7206dcd. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -179,9 +198,17 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-14T10:19:46.970Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: bcd5c7206dcd. CLI accepted one state-bound external-agent semantic result."
+    commit: "bcd5c7206dcda4ade485cb1b90836eb2d55d0e64"
 doc_version: 3
-doc_updated_at: "2026-09-14T10:14:14.591Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-14T10:19:46.970Z"
+doc_updated_by: "SUPERVISOR"
 description: "The release task 202609121424-49XXT3 requested exact branch-base synchronization onto main 1a93a9a43da2b714854174491f9672c52bf33e9f. synchronizeTaskBranchBase generated subject 'Merge branch main into task/...' and git hook run commit-msg rejected it because the repository requires '<emoji> <task-suffix> <scope>: <summary>'. Update the supervisor-owned synchronization implementation to create a policy-compliant task-attributed merge subject without weakening or bypassing hooks. Preserve the exact two-parent no-ff merge and ancestry postconditions. Add focused regression coverage for the real hook-compatible subject. Do not touch release candidate content or agentplane-roadmap-r2."
 sections:
   Summary: |-
@@ -536,7 +563,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609140925-AWJQMB"
-    event_cursor: 3
+    event_cursor: 5
     final_validation: null
     id: "202609140925-AWJQMB"
     intent:
@@ -556,9 +583,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 5
+    revision: 7
     schema_version: 1
-    updated_at: "2026-09-14T10:14:14.591Z"
+    updated_at: "2026-09-14T10:19:46.970Z"
     work_items:
       repair_sync_merge_message:
         attempt: 0
@@ -596,6 +623,30 @@ extensions:
         mutation_id: "compatibility:sha256:10454c878c86d6a8032dad45aae9a9b271c6885f44e0bae0a61c1c152dd36ceb"
         next_revision: 4
         previous_revision: 3
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
+      compatibility:sha256:17ca2cca3c99ab30901c0b06c9047fe0cb95a52c2dcd95f009b3d7829f9ea5d0:
+        aggregate_digest: "sha256:ca33a703e4bf3f5fc28c813a094f8f95bf403e22581a537e6545c916da126488"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T10:19:46.970Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_3c6e2e2f2ceb9ae7a03cf393"
+          mutation_id: "compatibility:sha256:17ca2cca3c99ab30901c0b06c9047fe0cb95a52c2dcd95f009b3d7829f9ea5d0"
+          plan_digest: "sha256:2c389272e5f29f9871078eff17e16d5beacad44a28981e9eb54e884794820fcc"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140925-AWJQMB"
+          task_revision: 6
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:17ca2cca3c99ab30901c0b06c9047fe0cb95a52c2dcd95f009b3d7829f9ea5d0"
+        next_revision: 7
+        previous_revision: 6
         schema_version: 1
         task_id: "202609140925-AWJQMB"
       compatibility:sha256:1d24bba766050d21c0f0f0cacfa4f15f9b1a1c960132208ab628a17f38d798a3:
@@ -646,9 +697,35 @@ extensions:
         previous_revision: 2
         schema_version: 1
         task_id: "202609140925-AWJQMB"
+      compatibility:sha256:debfb1be45c658078eb6f7eb622fcdb194a79eb2d120070117277424280c49a7:
+        aggregate_digest: "sha256:ee2cfb8e8bb26fc53a7232db88e6b638bdbdf7d4b6f8456aa06d20c20e57eac7"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T10:19:46.970Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_dc2b80b60d4714a013ddb280"
+          mutation_id: "compatibility:sha256:debfb1be45c658078eb6f7eb622fcdb194a79eb2d120070117277424280c49a7"
+          plan_digest: "sha256:2c389272e5f29f9871078eff17e16d5beacad44a28981e9eb54e884794820fcc"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140925-AWJQMB"
+          task_revision: 5
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:debfb1be45c658078eb6f7eb622fcdb194a79eb2d120070117277424280c49a7"
+        next_revision: 6
+        previous_revision: 5
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "bcd5c7206dcda4ade485cb1b90836eb2d55d0e64"
   task_execution_context:
     base_ref: "main"
     base_sha: "1a93a9a43da2b714854174491f9672c52bf33e9f"
