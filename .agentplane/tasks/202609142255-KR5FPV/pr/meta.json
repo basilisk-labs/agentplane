@@ -1,0 +1,24 @@
+{
+  "base": "codex/release-v0.6.27-reclaim-fix",
+  "branch": "task/202609142255-KR5FPV/backport-install-layout-guard",
+  "created_at": "2026-09-14T23:07:09.197Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": "2026-09-14T23:18:36.554Z",
+  "last_verified_diffstat_sha256": "sha256:1dff19404fa7ae23cc4f62e77daf53d6d806cd588b0457a7c02f734ab9078dba",
+  "pr_number": 5958,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5958",
+  "pre_merge_closure": {
+    "basis_commit": "99521b9e10fcd063120660304cd64821a2495ad7",
+    "branch": "task/202609142255-KR5FPV/backport-install-layout-guard",
+    "pr_number": 5958,
+    "recorded_at": "2026-09-14T23:18:46.644Z",
+    "state": "closed_before_merge"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202609142255-KR5FPV",
+  "updated_at": "2026-09-14T23:10:36.085Z",
+  "verify": {
+    "status": "pass"
+  }
+}

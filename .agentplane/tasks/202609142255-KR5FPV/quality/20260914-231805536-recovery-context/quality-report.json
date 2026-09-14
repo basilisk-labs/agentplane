@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202609142255-KR5FPV",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-14T23:18:05.536Z",
+  "verdict": "pass",
+  "summary": "The 0.6 backport is narrowly scoped, preserves the existing unlink safety defense, and adds the proven source-ownership and dependency-completeness guard with direct tests.",
+  "evaluated_sha": "f030f679ddd67bb024665ebf9717c05cd4373f48",
+  "blueprint_digest": "92249eea6ce21268022d6e2dac1f9668d509cb27c63635f4529b8148e1969827",
+  "findings": [
+    "No unresolved correctness, scope, or regression findings in the implementation diff."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609142255-KR5FPV/README.md",
+    ".agentplane/tasks/202609142255-KR5FPV/supervision/declared-checks.json",
+    "https://github.com/basilisk-labs/agentplane/actions/runs/34907626254",
+    "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Publication remains a separate supervisor-owned lifecycle step and must be verified against the exact merged maintenance SHA."
+  ]
+}
