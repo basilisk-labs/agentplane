@@ -19,10 +19,9 @@ Audit all open GitHub issues against AgentPlane 0.6.28 and backport only confirm
 - Note:
 
 ```text
-Verified: 57 focused tests and 92 platform-critical tests passed; typecheck, focused ESLint and
-Prettier, workflow command contracts, Bun compiled CLI smoke, local tarball install smoke,
-release:check, policy routing, doctor, and git diff checks passed on Bun 1.4.2; bun.lock is
-unchanged.
+Verified: full fast CI passed after the legacy-guard correction (371 files and 2190 tests, plus 14
+critical CLI tests); all previously recorded focused, platform-critical, typecheck, lint,
+formatting, workflow, install, and release checks remain passing.
 ```
 - Canonical workflow state lives in the task README.
 

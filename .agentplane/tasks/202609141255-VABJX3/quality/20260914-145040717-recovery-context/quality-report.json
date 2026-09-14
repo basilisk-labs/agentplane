@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "task_id": "202609141255-VABJX3",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-14T14:50:40.717Z",
+  "verdict": "pass",
+  "summary": "Quality review passed on the final v0.6 maintenance implementation head.",
+  "evaluated_sha": "46ed8d8bfe8fda48fad07fd9f36bac18ebec0348",
+  "blueprint_digest": "40202f09d413e42875c6948dabee1280ec84db755295162aad21c96c07153b96",
+  "findings": [
+    "No blocking findings; the generated readiness probe preserves behavior while satisfying the command-layer legacy guard."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609141255-VABJX3/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

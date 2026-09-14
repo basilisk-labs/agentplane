@@ -13,7 +13,7 @@ Created: 2026-09-14T12:57:53.404Z
 ## Verification
 
 - State: ok
-- Note: Verified: 57 focused tests and 92 platform-critical tests passed; typecheck, focused ESLint and Prettier, workflow command contracts, Bun compiled CLI smoke, local tarball install smoke, release:check, policy routing, doctor, and git diff checks passed on Bun 1.4.2; bun.lock is unchanged.
+- Note: Verified: full fast CI passed after the legacy-guard correction (371 files and 2190 tests, plus 14 critical CLI tests); all previously recorded focused, platform-critical, typecheck, lint, formatting, workflow, install, and release checks remain passing.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
