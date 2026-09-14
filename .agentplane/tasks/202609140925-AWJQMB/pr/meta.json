@@ -8,10 +8,10 @@
   "pr_number": 5954,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5954",
   "pre_merge_closure": {
-    "basis_commit": "3746697db0279b3d8011349653cb90e2860e3f91",
+    "basis_commit": "0fbda6655677f93644c61179e940e2003033b158",
     "branch": "task/202609140925-AWJQMB/make-supervisor-owned-task-branch-base-synchroni",
     "pr_number": 5954,
-    "recorded_at": "2026-09-14T11:02:21.251Z",
+    "recorded_at": "2026-09-14T13:42:15.673Z",
     "state": "closed_before_merge"
   },
   "provider": {
