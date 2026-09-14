@@ -1,10 +1,11 @@
 ---
 id: "202609141508-B1Z3BG"
 title: "Release AgentPlane v0.6.29"
-status: "TODO"
+result_summary: "Prepared and verified AgentPlane v0.6.29 release candidate with applicable 0.6 issue fixes and exact-SHA release evidence."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -47,8 +48,13 @@ quality_review:
     - "Local release candidate gate passed 82/82 groups and follow-up full-fast passed 371/371 test files, 2190/2190 tests"
   findings:
     - "No unresolved findings remain after reviewing the release diff, version parity, release notes, verification records, hosted checks, and resolved blueprint snapshot."
-commit: null
-comments: []
+commit:
+  hash: "158ef787d29c7a04b153b11a2dd41439abcc64bb"
+  message: "✅ B1Z3BG task: refresh release quality review"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: release v0.6.29 candidate passed local release gates, full-fast validation, exact-head hosted CI, current blueprint snapshot, and EVALUATOR review; ready for protected maintenance-branch integration."
 events:
   -
     type: "verify"
@@ -62,8 +68,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: release.strict blueprint snapshot e4beed472f52ff7eacb96653f841fd6989d2bf0019ec20a9312f059008846122 is current; prior release gate 82/82, local ci:local:fast 371/371 files and 2190/2190 tests, and hosted CI on implementation/projection head remain passed."
+  -
+    type: "status"
+    at: "2026-09-14T16:29:19.488Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: release v0.6.29 candidate passed local release gates, full-fast validation, exact-head hosted CI, current blueprint snapshot, and EVALUATOR review; ready for protected maintenance-branch integration."
 doc_version: 3
-doc_updated_at: "2026-09-14T16:28:18.087Z"
+doc_updated_at: "2026-09-14T16:29:19.489Z"
 doc_updated_by: "CODER"
 description: "Prepare, review, merge, and publish the next 0.6 patch release from the merged maintenance fixes, with exact-SHA release evidence and post-publish install verification."
 sections:
@@ -155,6 +168,10 @@ sections:
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
+extensions:
+  implementation_commit:
+    hash: "e4a04bdbc9e2e623304acb004c576f0577770739"
+    message: "📝 B1Z3BG release: finalize v0.6.29 PR metadata"
 id_source: "generated"
 ---
 ## Summary
