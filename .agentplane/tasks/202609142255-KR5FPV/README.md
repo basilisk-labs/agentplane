@@ -4,7 +4,7 @@ title: "Backport safe reusable node_modules guards to the 0.6 maintenance branch
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -108,10 +108,16 @@ execution_contract:
       - "packages/recipes/package.json"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
+      - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -165,7 +171,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:8d3a431d4e46918a9ba138af56ee1a14342e314b193df26292a4cad8c77563fa"
+      digest: "sha256:7597e60f2f18a145f6d504e282fbcc0d47f706ae514538c94a48b935d825f66d"
       escalation_reasons:
         - "central_component:bun.lock"
         - "central_component:package.json"
@@ -179,10 +185,16 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
+          - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -219,11 +231,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "f030f679ddd67bb024665ebf9717c05cd4373f48"
+  message: "🚧 KR5FPV task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: f030f679ddd6. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -232,9 +249,17 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-14T23:07:12.483Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: f030f679ddd6. CLI accepted one state-bound external-agent semantic result."
+    commit: "f030f679ddd67bb024665ebf9717c05cd4373f48"
 doc_version: 3
-doc_updated_at: "2026-09-14T22:58:33.303Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-14T23:07:12.483Z"
+doc_updated_by: "SUPERVISOR"
 description: "On the authoritative codex/release-v0.6.27-reclaim-fix maintenance branch, retain the v0.6.29 pre-removal unlink defense and backport the v0.7.8 source-layout guard so a worktree node_modules junction is created only from a repository-local source outside every task worktree with valid direct dependency targets. Add focused regression coverage, qualify the exact release candidate, merge only into the 0.6 maintenance branch, publish 0.6.30, and verify exact-SHA distribution evidence. Do not modify main."
 sections:
   Summary: |-
@@ -763,7 +788,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609142255-KR5FPV"
-    event_cursor: 3
+    event_cursor: 5
     final_validation: null
     id: "202609142255-KR5FPV"
     intent:
@@ -793,9 +818,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 5
+    revision: 7
     schema_version: 1
-    updated_at: "2026-09-14T22:58:33.303Z"
+    updated_at: "2026-09-14T23:07:12.483Z"
     work_items:
       backport-install-layout-guard:
         attempt: 0
@@ -868,6 +893,54 @@ extensions:
         previous_revision: 4
         schema_version: 1
         task_id: "202609142255-KR5FPV"
+      compatibility:sha256:8601cd2e0882a092ceed3588c47716c4b53e4ad46224898464e7aa6fe1b588fb:
+        aggregate_digest: "sha256:8eae82303c727a2f59f522688414fa6b1ea15e7120c4cc284189d30bfe775ded"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T23:07:12.483Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_16f10b0a975a58f63458ef1c"
+          mutation_id: "compatibility:sha256:8601cd2e0882a092ceed3588c47716c4b53e4ad46224898464e7aa6fe1b588fb"
+          plan_digest: "sha256:cb3b0df8355f15e5e1ccd768b58458bbb80b70b9b69abeecd6c23317b7a3d16f"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609142255-KR5FPV"
+          task_revision: 5
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:8601cd2e0882a092ceed3588c47716c4b53e4ad46224898464e7aa6fe1b588fb"
+        next_revision: 6
+        previous_revision: 5
+        schema_version: 1
+        task_id: "202609142255-KR5FPV"
+      compatibility:sha256:970e0e0fd20abe5208a4952de63856e2d3a501cb4c2b686b4da661a040e90458:
+        aggregate_digest: "sha256:11dd18899d11a0d49e71dab6966218450beb3cc30308d0118d4f54434c367281"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T23:07:12.483Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_efd4e3b98f6050b48746c9f8"
+          mutation_id: "compatibility:sha256:970e0e0fd20abe5208a4952de63856e2d3a501cb4c2b686b4da661a040e90458"
+          plan_digest: "sha256:cb3b0df8355f15e5e1ccd768b58458bbb80b70b9b69abeecd6c23317b7a3d16f"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609142255-KR5FPV"
+          task_revision: 6
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:970e0e0fd20abe5208a4952de63856e2d3a501cb4c2b686b4da661a040e90458"
+        next_revision: 7
+        previous_revision: 6
+        schema_version: 1
+        task_id: "202609142255-KR5FPV"
       compatibility:sha256:af6e3501a2fe5681f40092ac37dc387ec12b7b1748903dbc3d521f275e750f6e:
         aggregate_digest: "sha256:191571a3d48a194258718669ace7fcb476683e5f91f72dd13e895daae1f16399"
         event:
@@ -895,6 +968,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "f030f679ddd67bb024665ebf9717c05cd4373f48"
   task_execution_context:
     base_ref: "refs/remotes/origin/codex/release-v0.6.27-reclaim-fix"
     base_sha: "69d023b1de5450a63244e8443662021fba484f81"
