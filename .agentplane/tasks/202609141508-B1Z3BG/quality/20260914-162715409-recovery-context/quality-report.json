@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202609141508-B1Z3BG",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-14T16:27:15.409Z",
+  "verdict": "pass",
+  "summary": "Release candidate v0.6.29 is coherent with the approved maintenance scope and is ready for protected-branch integration.",
+  "evaluated_sha": "e4a04bdbc9e2e623304acb004c576f0577770739",
+  "blueprint_digest": "e4beed472f52ff7eacb96653f841fd6989d2bf0019ec20a9312f059008846122",
+  "findings": [
+    "No unresolved correctness, scope, release-parity, formatting, or policy-routing findings remain after review of the full maintenance-to-candidate diff."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609141508-B1Z3BG/README.md",
+    "docs/releases/v0.6.29.md",
+    ".agentplane/.release/plan/2026-09-14T15-08-28-971Z",
+    "GitHub Core CI run 34868107221 passed on PR head 9f39c055484843c71225f157cbdfdf177a9e8339",
+    "Local release candidate gate passed 82/82 groups; local ci:local:fast passed 371/371 test files and 2190/2190 tests"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "npm publication, tag/GitHub release creation, installed CLI smoke, issue closure, and maintenance-branch convergence remain post-merge release steps and must be verified on the exact merged SHA."
+  ]
+}
