@@ -19,10 +19,10 @@ Prepare, review, merge, and publish the next 0.6 patch release from the merged m
 - Note:
 
 ```text
-Verified release v0.6.29 candidate: local release gate 82/82 groups, local ci:local:fast 371/371
-files and 2190/2190 tests, release parity and routing checks passed; hosted Core CI, Docs CI,
-Dependency Review, Windows, Release-ready manifest, and PR verification passed on
-9f39c055484843c71225f157cbdfdf177a9e8339.
+Verified: release.strict blueprint snapshot
+e4beed472f52ff7eacb96653f841fd6989d2bf0019ec20a9312f059008846122 is current; prior release gate
+82/82, local ci:local:fast 371/371 files and 2190/2190 tests, and hosted CI on
+implementation/projection head remain passed.
 ```
 - Canonical workflow state lives in the task README.
 
