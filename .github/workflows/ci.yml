@@ -83,7 +83,7 @@ jobs:
         run: git submodule update --init agentplane-recipes
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: "1.3.6"
+          bun-version: "1.4.2"
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
@@ -119,7 +119,7 @@ jobs:
           ref: ${{ env.AGENTPLANE_CI_REF }}
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: "1.3.6"
+          bun-version: "1.4.2"
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
@@ -165,7 +165,7 @@ jobs:
           ref: ${{ env.AGENTPLANE_CI_REF }}
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: "1.3.6"
+          bun-version: "1.4.2"
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
@@ -206,7 +206,7 @@ jobs:
           ref: ${{ env.AGENTPLANE_CI_REF }}
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: "1.3.6"
+          bun-version: "1.4.2"
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
@@ -249,7 +249,7 @@ jobs:
           ref: ${{ env.AGENTPLANE_CI_REF }}
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: "1.3.6"
+          bun-version: "1.4.2"
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
@@ -291,7 +291,7 @@ jobs:
           ref: ${{ env.AGENTPLANE_CI_REF }}
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: "1.3.6"
+          bun-version: "1.4.2"
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
@@ -335,7 +335,7 @@ jobs:
           ref: ${{ env.AGENTPLANE_CI_REF }}
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: "1.3.6"
+          bun-version: "1.4.2"
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
@@ -375,7 +375,7 @@ jobs:
           ref: ${{ env.AGENTPLANE_CI_REF }}
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: "1.3.6"
+          bun-version: "1.4.2"
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
@@ -417,7 +417,7 @@ jobs:
           ref: ${{ env.AGENTPLANE_CI_REF }}
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: "1.3.6"
+          bun-version: "1.4.2"
       - uses: actions/setup-node@v6
         with:
           node-version: "24"

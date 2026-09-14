@@ -11,6 +11,11 @@ import { materializeActiveTaskArtifactsForWorktree } from "./work-start.material
 const ACTIVE_BIN_ENV = "AGENTPLANE_RUNTIME_ACTIVE_BIN";
 const execFileNodeAsync = promisify(execFile);
 
+function processOutput(value: unknown): string {
+  if (typeof value === "string") return value;
+  return Buffer.isBuffer(value) ? value.toString("utf8") : "";
+}
+
 describe("worktree hook shim", () => {
   it("materializes a shim with the active installed runner before PATH fallback", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-worktree-shim-"));
@@ -43,7 +48,11 @@ describe("worktree hook shim", () => {
     const activeBin = path.join(root, "installed agentplane", "bin", "agentplane.js");
     const previousActiveBin = process.env[ACTIVE_BIN_ENV];
     await mkdir(path.dirname(activeBin), { recursive: true });
-    await writeFile(activeBin, "setInterval(() => {}, 1000);\n", "utf8");
+    await writeFile(
+      activeBin,
+      "if (process.argv.includes('--version')) process.exit(0); setInterval(() => {}, 1000);\n",
+      "utf8",
+    );
     process.env[ACTIVE_BIN_ENV] = activeBin;
     try {
       await materializeHookShimForWorktree(worktreePath);
@@ -79,7 +88,11 @@ describe("worktree hook shim", () => {
     const activeBin = path.join(root, "installed agentplane", "bin", "agentplane.js");
     const previousActiveBin = process.env[ACTIVE_BIN_ENV];
     await mkdir(path.dirname(activeBin), { recursive: true });
-    await writeFile(activeBin, "process.kill(process.pid, 'SIGKILL');\n", "utf8");
+    await writeFile(
+      activeBin,
+      "if (process.argv.includes('--version')) process.exit(0); process.kill(process.pid, 'SIGKILL');\n",
+      "utf8",
+    );
     process.env[ACTIVE_BIN_ENV] = activeBin;
     try {
       await materializeHookShimForWorktree(worktreePath);
@@ -140,6 +153,112 @@ describe("worktree hook shim", () => {
       },
     );
     expect(stdout).toBe(hookInput);
+  });
+
+  it("falls through when the repository-local runner cannot start", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-worktree-shim-fallback-"));
+    const worktreePath = path.join(root, "worktree");
+    const localBin = path.join(worktreePath, "packages", "agentplane", "bin", "agentplane.js");
+    const installedBin = path.join(root, "installed", "agentplane.js");
+    const previousActiveBin = process.env[ACTIVE_BIN_ENV];
+    await mkdir(path.dirname(localBin), { recursive: true });
+    await mkdir(path.dirname(installedBin), { recursive: true });
+    await writeFile(localBin, "import 'missing-hook-runner-dependency';\n", "utf8");
+    await writeFile(
+      installedBin,
+      "if (process.argv.includes('--version')) process.stdout.write('0.6.29\\n'); else process.stdout.write('installed runner\\n');\n",
+      "utf8",
+    );
+    process.env[ACTIVE_BIN_ENV] = installedBin;
+    try {
+      await materializeHookShimForWorktree(worktreePath);
+    } finally {
+      if (previousActiveBin === undefined) delete process.env[ACTIVE_BIN_ENV];
+      else process.env[ACTIVE_BIN_ENV] = previousActiveBin;
+    }
+
+    const shimPath = path.join(worktreePath, ".agentplane", "bin", "agentplane");
+    const { stdout } = await execFileNodeAsync(shimPath, ["hooks", "run", "pre-commit"], {
+      cwd: worktreePath,
+    });
+
+    expect(stdout).toBe("installed runner\n");
+  });
+
+  it("honors an explicit ready runner before repository and installed candidates", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-worktree-shim-env-"));
+    const worktreePath = path.join(root, "worktree");
+    const localBin = path.join(worktreePath, "packages", "agentplane", "bin", "agentplane.js");
+    const installedBin = path.join(root, "installed", "agentplane.js");
+    const envBin = path.join(root, "override", "agentplane.js");
+    const previousActiveBin = process.env[ACTIVE_BIN_ENV];
+    for (const candidate of [localBin, installedBin, envBin]) {
+      await mkdir(path.dirname(candidate), { recursive: true });
+      const label = candidate === envBin ? "env runner" : "unexpected runner";
+      await writeFile(
+        candidate,
+        `if (process.argv.includes('--version')) process.stdout.write('0.6.29\\n'); else process.stdout.write('${label}\\n');\n`,
+        "utf8",
+      );
+    }
+    process.env[ACTIVE_BIN_ENV] = installedBin;
+    try {
+      await materializeHookShimForWorktree(worktreePath);
+    } finally {
+      if (previousActiveBin === undefined) delete process.env[ACTIVE_BIN_ENV];
+      else process.env[ACTIVE_BIN_ENV] = previousActiveBin;
+    }
+
+    const shimPath = path.join(worktreePath, ".agentplane", "bin", "agentplane");
+    const { stdout } = await execFileNodeAsync(shimPath, ["hooks", "run", "pre-commit"], {
+      cwd: worktreePath,
+      env: { ...process.env, AGENTPLANE_HOOK_RUNNER: envBin },
+    });
+
+    expect(stdout).toBe("env runner\n");
+  });
+
+  it("does not fall back after a ready runner rejects the hook command", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-worktree-shim-reject-"));
+    const worktreePath = path.join(root, "worktree");
+    const localBin = path.join(worktreePath, "packages", "agentplane", "bin", "agentplane.js");
+    const installedBin = path.join(root, "installed", "agentplane.js");
+    const previousActiveBin = process.env[ACTIVE_BIN_ENV];
+    await mkdir(path.dirname(localBin), { recursive: true });
+    await mkdir(path.dirname(installedBin), { recursive: true });
+    await writeFile(
+      localBin,
+      "if (process.argv.includes('--version')) process.exit(0); process.stderr.write('hook rejected\\n'); process.exit(7);\n",
+      "utf8",
+    );
+    await writeFile(
+      installedBin,
+      "if (process.argv.includes('--version')) process.exit(0); process.stdout.write('fallback ran\\n');\n",
+      "utf8",
+    );
+    process.env[ACTIVE_BIN_ENV] = installedBin;
+    try {
+      await materializeHookShimForWorktree(worktreePath);
+    } finally {
+      if (previousActiveBin === undefined) delete process.env[ACTIVE_BIN_ENV];
+      else process.env[ACTIVE_BIN_ENV] = previousActiveBin;
+    }
+
+    const shimPath = path.join(worktreePath, ".agentplane", "bin", "agentplane");
+    const result = await execFileNodeAsync(shimPath, ["hooks", "run", "pre-commit"], {
+      cwd: worktreePath,
+    }).then(
+      ({ stdout, stderr }) => ({ code: 0, stdout, stderr }),
+      (error: unknown) => ({
+        code: (error as { code?: number }).code ?? null,
+        stdout: processOutput((error as { stdout?: unknown }).stdout),
+        stderr: processOutput((error as { stderr?: unknown }).stderr),
+      }),
+    );
+
+    expect(result.code).toBe(7);
+    expect(result.stderr).toContain("hook rejected");
+    expect(result.stdout).not.toContain("fallback ran");
   });
 });
 

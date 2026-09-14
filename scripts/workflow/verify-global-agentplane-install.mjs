@@ -56,6 +56,21 @@ function getRepoHead(repoRoot, expectedHead) {
   return execFileSync("git", ["rev-parse", "HEAD"], { cwd: repoRoot, encoding: "utf8" }).trim();
 }
 
+function isInside(parent, candidate) {
+  const relative = path.relative(parent, candidate);
+  return relative === "" || (!relative.startsWith(`..${path.sep}`) && relative !== "..");
+}
+
+function verifyDetachedInstall(packageName, installDir, resolvedRepoRoot) {
+  const resolvedInstallDir = realpathSync(installDir);
+  if (isInside(resolvedRepoRoot, resolvedInstallDir)) {
+    fail(
+      `${packageName} global install resolves inside the mutable source checkout: ${resolvedInstallDir}`,
+    );
+  }
+  return resolvedInstallDir;
+}
+
 function verifyLocalBuildManifest({ packageName, installDir, expectedPackageDir, expectedHead }) {
   const manifestPath = path.join(installDir, "dist", ".build-manifest.json");
   if (!existsSync(manifestPath)) {
@@ -92,9 +107,9 @@ function main() {
       [
         "Usage: node scripts/verify-global-agentplane-install.mjs [options]",
         "",
-        "Verifies that the global agentplane install resolves both agentplane and",
-        "@agentplaneorg/core from the current repository checkout rather than",
-        "from published registry artifacts.",
+        "Verifies that the global agentplane install contains agentplane and",
+        "@agentplaneorg/core artifacts built from the current repository HEAD,",
+        "and that neither installed package resolves into the source checkout.",
         "",
         "Options:",
         "  --repo-root <path>       Repository root (default: cwd)",
@@ -106,6 +121,7 @@ function main() {
   }
 
   const repoRoot = path.resolve(args.repoRoot);
+  const resolvedRepoRoot = realpathSync(repoRoot);
   const npmRoot = getNpmRoot(repoRoot, args.npmRoot);
   const repoHead = getRepoHead(repoRoot, args.expectedHead);
 
@@ -121,6 +137,16 @@ function main() {
   const requireFromAgentplane = createRequire(globalAgentplanePkgPath);
   const resolvedCorePkgPath = requireFromAgentplane.resolve("@agentplaneorg/core/package.json");
   const resolvedCoreDir = path.dirname(resolvedCorePkgPath);
+  const resolvedAgentplaneDir = verifyDetachedInstall(
+    "agentplane",
+    globalAgentplaneDir,
+    resolvedRepoRoot,
+  );
+  const detachedCoreDir = verifyDetachedInstall(
+    "@agentplaneorg/core",
+    resolvedCoreDir,
+    resolvedRepoRoot,
+  );
 
   verifyLocalBuildManifest({
     packageName: "agentplane",
@@ -155,8 +181,8 @@ function main() {
     [
       "verified global framework install",
       `repo_head: ${repoHead}`,
-      `agentplane_install_dir: ${realpathSync(globalAgentplaneDir)}`,
-      `core_runtime_dir: ${realpathSync(resolvedCoreDir)}`,
+      `agentplane_install_dir: ${resolvedAgentplaneDir}`,
+      `core_runtime_dir: ${detachedCoreDir}`,
       `agentplane_source: ${localAgentplaneDir}`,
       `core_source: ${localCoreDir}`,
     ].join("\n") + "\n",

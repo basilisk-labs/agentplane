@@ -4,7 +4,7 @@
   "resolverInput": {
     "taskId": "202609141255-VABJX3",
     "title": "Backport applicable open issue fixes to the 0.6 maintenance branch",
-    "description": "Audit all open GitHub issues against AgentPlane 0.6.28 and backport only confirmed 0.6-relevant fixes for issues #5892, #5887, and #4893. Preserve the v0.6 lifecycle and avoid 0.7 task-kernel or release architecture. Implement and verify the fixes on one dedicated local branch from codex/release-v0.6.27-reclaim-fix. Do not push, open a PR, merge, or release.",
+    "description": "Backport confirmed 0.6-relevant fixes onto the dedicated maintenance branch. Preserve the existing #5892, #5887, and #4893 work; add v0.6-native hook runner readiness and deterministic fallback for #5941; replace mutable source-linked developer global installs with materialized package installs for the applicable #5942 failure mode; update Bun pins from 1.3.6 to 1.4.2 without changing Node, Vitest, tsup, dependencies, or lockfile resolution. Do not push, open a PR, merge, or release.",
     "tags": [
       "backport",
       "bug",
@@ -574,6 +574,6 @@
   ],
   "digest": {
     "algorithm": "sha256",
-    "value": "99ff7dea63ee9e64667c8d4d37c41b627915785637cab75cc6ad27285245a96c"
+    "value": "40202f09d413e42875c6948dabee1280ec84db755295162aad21c96c07153b96"
   }
 }

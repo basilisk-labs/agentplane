@@ -35,10 +35,17 @@ async function setupRepoFixture(root: string, version = "0.3.2") {
   });
 }
 
+async function setupDetachedFixture(version = "0.3.2") {
+  const sandbox = await mkdtemp(path.join(tmpdir(), "agentplane-global-install-"));
+  const root = path.join(sandbox, "repo");
+  const npmRoot = path.join(sandbox, "global-prefix", "lib", "node_modules");
+  await setupRepoFixture(root, version);
+  return { root, npmRoot };
+}
+
 describe("verify-global-agentplane-install script", () => {
   it("passes when the global runtime resolves agentplane and core from this checkout", async () => {
-    const root = await mkdtemp(path.join(tmpdir(), "agentplane-global-install-"));
-    const npmRoot = path.join(root, "global-prefix", "lib", "node_modules");
+    const { root, npmRoot } = await setupDetachedFixture();
     const gitHead = "abc123";
     await setupRepoFixture(root);
 
@@ -76,8 +83,7 @@ describe("verify-global-agentplane-install script", () => {
   });
 
   it("fails when global agentplane resolves core from a non-local nested dependency", async () => {
-    const root = await mkdtemp(path.join(tmpdir(), "agentplane-global-install-"));
-    const npmRoot = path.join(root, "global-prefix", "lib", "node_modules");
+    const { root, npmRoot } = await setupDetachedFixture();
     const gitHead = "abc123";
     await setupRepoFixture(root);
 
@@ -128,5 +134,51 @@ describe("verify-global-agentplane-install script", () => {
 
     expect(result.ok).toBe(false);
     expect(result.stderr).toContain("@agentplaneorg/core was not built from this checkout");
+  });
+
+  it("fails when the global install resolves inside the mutable source checkout", async () => {
+    const root = await mkdtemp(path.join(tmpdir(), "agentplane-global-source-link-"));
+    const npmRoot = path.join(root, "global-prefix", "lib", "node_modules");
+    const gitHead = "abc123";
+    await setupRepoFixture(root);
+
+    const globalAgentplaneDir = path.join(npmRoot, "agentplane");
+    const globalCoreDir = path.join(npmRoot, "@agentplaneorg", "core");
+    await writeJson(path.join(globalAgentplaneDir, "package.json"), {
+      name: "agentplane",
+      version: "0.3.2",
+      dependencies: { "@agentplaneorg/core": "0.3.2" },
+    });
+    await writeBuildManifest(
+      globalAgentplaneDir,
+      path.join(root, "packages", "agentplane"),
+      gitHead,
+    );
+    await writeJson(path.join(globalCoreDir, "package.json"), {
+      name: "@agentplaneorg/core",
+      version: "0.3.2",
+    });
+    await writeBuildManifest(globalCoreDir, path.join(root, "packages", "core"), gitHead);
+
+    const result = await execFileAsync(
+      "node",
+      [SCRIPT_PATH, "--repo-root", root, "--npm-root", npmRoot, "--expected-head", gitHead],
+      { cwd: root },
+    ).then(
+      () => ({ ok: true as const, stderr: "" }),
+      (error: unknown) => {
+        const rawStderr = (error as { stderr?: unknown }).stderr;
+        const stderr =
+          typeof rawStderr === "string"
+            ? rawStderr
+            : Buffer.isBuffer(rawStderr)
+              ? rawStderr.toString("utf8")
+              : "";
+        return { ok: false as const, stderr };
+      },
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.stderr).toContain("global install resolves inside the mutable source checkout");
   });
 });

@@ -29,14 +29,31 @@ Created: 2026-09-14T12:57:53.404Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .github/workflows/ci.yml                           |  18 +--
+ .github/workflows/docs-ci.yml                      |   2 +-
+ .github/workflows/pages-deploy.yml                 |   2 +-
+ .github/workflows/prepublish.yml                   |   2 +-
+ .github/workflows/publish-distribution-module.yml  |   2 +-
+ .github/workflows/publish.yml                      |   2 +-
+ .github/workflows/task-hosted-close.yml            |   2 +-
+ .github/workflows/workflows-lint.yml               |   2 +-
+ package.json                                       |   2 +-
  ...cli.core.route-decision.direct-closeout.test.ts |  65 ++++++++++
+ .../src/cli/verify-global-install-script.test.ts   |  60 ++++++++-
+ .../commands/branch/work-start.hook-shim.test.ts   | 123 ++++++++++++++++++-
+ .../src/commands/doctor.command.runtime.test.ts    |   3 +-
+ .../src/commands/doctor/hook-readiness.ts          |   8 +-
  .../evaluator/evaluator-run.command.test.ts        |  49 +++++---
  .../src/commands/evaluator/evaluator.command.ts    |  18 ++-
+ .../commands/release/release-ci-contract.test.ts   |   5 +-
+ .../src/commands/shared/hook-shim-template.ts      |  26 ++--
  .../src/commands/task/run-render.test.ts           | 135 +++++++++++++++++++++
  .../agentplane/src/commands/task/run-render.ts     |  19 ++-
  .../agentplane/src/commands/task/run.command.ts    |   8 +-
  .../src/runner/usecases/task-run-inspect.ts        | 124 +++++++++++++++++++
- 7 files changed, 393 insertions(+), 25 deletions(-)
+ scripts/workflow/reinstall-global-agentplane.sh    |  34 +++---
+ .../workflow/verify-global-agentplane-install.mjs  |  36 +++++-
+ 24 files changed, 666 insertions(+), 81 deletions(-)
 ```
 
 </details>

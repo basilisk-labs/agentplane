@@ -5,9 +5,9 @@ if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
   cat <<'USAGE'
 Usage: scripts/reinstall-global-agentplane.sh
 
-Builds local @agentplaneorg/core and agentplane runtime bundles, links both
-packages into the global npm prefix from this checkout, and verifies that global
-agentplane resolves local framework bits.
+Builds local @agentplaneorg/core and agentplane runtime bundles, installs
+materialized package tarballs into the global npm prefix, and verifies that the
+installed runtime was built from this checkout without linking back to it.
 USAGE
   exit 0
 fi
@@ -21,17 +21,23 @@ echo "==> Building local packages"
 bun run --filter=@agentplaneorg/core build
 bun run --filter=agentplane build:bundle
 
-echo "==> Linking global framework packages from local source"
-(
-  cd packages/core
-  npm link
-)
-(
-  cd packages/agentplane
-  npm link
-)
+staging_dir="$(mktemp -d "${TMPDIR:-/tmp}/agentplane-global-install.XXXXXX")"
+trap 'rm -rf "$staging_dir"' EXIT
 
-echo "==> Verifying global install resolves local checkout artifacts"
+package_tarball_name() {
+  node -e 'const fs = require("node:fs"); const pkg = JSON.parse(fs.readFileSync(process.argv[1], "utf8")); process.stdout.write(`${pkg.name.replace(/^@/, "").replaceAll("/", "-")}-${pkg.version}.tgz`);' "$1/package.json"
+}
+
+echo "==> Packing immutable framework artifacts"
+core_tarball="$(package_tarball_name "$PWD/packages/core")"
+agentplane_tarball="$(package_tarball_name "$PWD/packages/agentplane")"
+npm pack ./packages/core --pack-destination "$staging_dir" --silent >/dev/null
+npm pack ./packages/agentplane --pack-destination "$staging_dir" --silent >/dev/null
+
+echo "==> Installing materialized framework packages"
+npm install --global "$staging_dir/$core_tarball" "$staging_dir/$agentplane_tarball"
+
+echo "==> Verifying global install is complete and detached from the checkout"
 node scripts/verify-global-agentplane-install.mjs
 
 echo "==> Done"
