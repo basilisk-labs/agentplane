@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 
 import { execFileAsync } from "@agentplaneorg/core/process";
+import { validateCommitSubject } from "@agentplaneorg/core/commit";
 import { describe, expect, it } from "vitest";
 
 import { synchronizeTaskBranchBase } from "./sync-task-base.js";
@@ -61,6 +62,18 @@ describe("task branch base synchronization", () => {
     expect(result.state).toBe("updated");
     expect(await git(f.worktreePath, "rev-list", "--parents", "-n", "1", result.headSha)).toBe(
       `${result.headSha} ${f.expectedHeadSha} ${f.expectedBaseSha}`,
+    );
+    const subject = await git(f.worktreePath, "show", "-s", "--format=%s", result.headSha);
+    expect(
+      validateCommitSubject({
+        subject,
+        taskId: f.taskId,
+        genericTokens: ["update", "tasks"],
+        taskIntent: { taskKind: "code", mutationScope: "code" },
+      }),
+    ).toEqual({ ok: true, errors: [] });
+    expect(await git(f.worktreePath, "show", "-s", "--format=%B", result.headSha)).toMatch(
+      /^Signed-off-by: Test User <test@example\.com>$/mu,
     );
     await expect(
       git(f.worktreePath, "merge-base", "--is-ancestor", f.expectedHeadSha, result.headSha),

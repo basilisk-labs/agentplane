@@ -1,4 +1,5 @@
 import { execFileAsync } from "@agentplaneorg/core/process";
+import { extractTaskSuffix } from "@agentplaneorg/core/commit";
 import { realpath } from "node:fs/promises";
 
 import { CliError } from "../../shared/errors.js";
@@ -115,13 +116,16 @@ export async function synchronizeTaskBranchBase(opts: {
         refuse("the exact head and base require semantic conflict resolution", opts.taskId);
       }
       await assertBoundState();
-      const message = `Merge branch '${opts.baseBranch}' into ${opts.branch}`;
+      const message =
+        `🔀 ${extractTaskSuffix(opts.taskId)} task: sync exact ` +
+        `${opts.baseBranch} into task branch`;
       try {
         await git(opts.worktreePath, [
           "merge",
           "--no-ff",
           "--no-edit",
           "--no-overwrite-ignore",
+          "--signoff",
           "-m",
           message,
           opts.expectedBaseSha,
