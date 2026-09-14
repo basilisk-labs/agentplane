@@ -4,7 +4,7 @@ title: "Add supervisor-owned base synchronization before semantic work on stale 
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -94,10 +94,33 @@ execution_contract:
       - "packages/agentplane/src/commands/task"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/branch/sync-task-base.test.ts"
+      - "packages/agentplane/src/commands/branch/sync-task-base.ts"
+      - "packages/agentplane/src/commands/shared/branch-base-sync-route.test.ts"
+      - "packages/agentplane/src/commands/shared/branch-base-sync-route.ts"
+      - "packages/agentplane/src/commands/shared/route-decision.ts"
+      - "packages/agentplane/src/commands/shared/side-effect-authority.ts"
+      - "packages/agentplane/src/commands/shared/workflow-operation-effects.ts"
+      - "packages/agentplane/src/commands/shared/workflow-operation-prefix.ts"
+      - "packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts"
+      - "packages/agentplane/src/commands/shared/workflow-operation-projection.ts"
+      - "packages/agentplane/src/commands/shared/workflow-postconditions.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-branch-base-sync.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-branch-state.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step.ts"
+      - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+      - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -141,8 +164,23 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:040ac1de64129344db27b6c2141db97030fd8dcf539af1f888502a4aa00786f5"
+      digest: "sha256:5fdb0a83d3fc6fce7383f3b15108008f0232af85b5ce811356b9ffbc44d61200"
       escalation_reasons:
+        - "central_path:packages/agentplane/src/commands/shared/branch-base-sync-route.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/branch-base-sync-route.ts"
+        - "central_path:packages/agentplane/src/commands/shared/route-decision.ts"
+        - "central_path:packages/agentplane/src/commands/shared/side-effect-authority.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-operation-effects.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-operation-prefix.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-operation-projection.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-postconditions.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-branch-base-sync.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-branch-state.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step.ts"
         - "effect_public_api"
         - "effect_release_metadata"
         - "external_effect_requires_real_e2e"
@@ -153,10 +191,33 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/branch/sync-task-base.test.ts"
+          - "packages/agentplane/src/commands/branch/sync-task-base.ts"
+          - "packages/agentplane/src/commands/shared/branch-base-sync-route.test.ts"
+          - "packages/agentplane/src/commands/shared/branch-base-sync-route.ts"
+          - "packages/agentplane/src/commands/shared/route-decision.ts"
+          - "packages/agentplane/src/commands/shared/side-effect-authority.ts"
+          - "packages/agentplane/src/commands/shared/workflow-operation-effects.ts"
+          - "packages/agentplane/src/commands/shared/workflow-operation-prefix.ts"
+          - "packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts"
+          - "packages/agentplane/src/commands/shared/workflow-operation-projection.ts"
+          - "packages/agentplane/src/commands/shared/workflow-postconditions.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-branch-base-sync.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-branch-state.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step.ts"
+          - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+          - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -191,11 +252,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "4be3447ccff551b8f67611538d8d784495a35893"
+  message: "🚧 5REY71 task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 4be3447ccff5. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -204,9 +270,17 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-14T07:47:39.035Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 4be3447ccff5. CLI accepted one state-bound external-agent semantic result."
+    commit: "4be3447ccff551b8f67611538d8d784495a35893"
 doc_version: 3
-doc_updated_at: "2026-09-14T07:01:27.069Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-14T07:47:39.035Z"
+doc_updated_by: "SUPERVISOR"
 description: "Implement a deterministic AgentPlane lifecycle route for an already-started branch_pr task whose approved WorkItem requires its preserved candidate branch to adopt an exact newer qualified base before semantic edits. The supervisor must own the Git or provider synchronization, bind it to exact branch/head/base identities, preserve existing candidate commits and unrelated work, fail closed on conflict or stale identity, and issue the next semantic packet only after verified base ancestry. An external semantic executor must never be asked to rebase, merge, cherry-pick, commit, force-push, or rewrite Git history. Cover the release-task failure demonstrated by task 202609121424-49XXT3, then integrate the fix through protected branch_pr workflow so that release 0.7.9 can resume."
 sections:
   Summary: |-
@@ -717,7 +791,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609140657-5REY71"
-    event_cursor: 3
+    event_cursor: 5
     final_validation: null
     id: "202609140657-5REY71"
     intent:
@@ -737,9 +811,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 5
+    revision: 7
     schema_version: 1
-    updated_at: "2026-09-14T07:01:27.069Z"
+    updated_at: "2026-09-14T07:47:39.035Z"
     work_items:
       implement_branch_base_sync:
         attempt: 0
@@ -803,6 +877,30 @@ extensions:
         previous_revision: 4
         schema_version: 1
         task_id: "202609140657-5REY71"
+      compatibility:sha256:84b458e0035dfaf1f48da567122bb28c9f8301b041305af19bbf63fae11dbe53:
+        aggregate_digest: "sha256:c572d5d1b5e133c12b2be5a8d8ccccf5418714ac0b9f7559c3d83c7788ad0359"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T07:47:39.035Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_a5943a63d5ca14ba4aeb1302"
+          mutation_id: "compatibility:sha256:84b458e0035dfaf1f48da567122bb28c9f8301b041305af19bbf63fae11dbe53"
+          plan_digest: "sha256:05d9e037f315e3dad580662875f670e39118537f5689e20277c16450ce222b81"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140657-5REY71"
+          task_revision: 6
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:84b458e0035dfaf1f48da567122bb28c9f8301b041305af19bbf63fae11dbe53"
+        next_revision: 7
+        previous_revision: 6
+        schema_version: 1
+        task_id: "202609140657-5REY71"
       compatibility:sha256:88f8e8c7a13e6da1188c3ed029f45d09e383c9902a2a25e6bc81c2020d14ddbb:
         aggregate_digest: "sha256:387b99e6f91459273644f1d60c24b93e4239cb799ca6a9518340b6dbe71218e3"
         event:
@@ -827,9 +925,35 @@ extensions:
         previous_revision: 2
         schema_version: 1
         task_id: "202609140657-5REY71"
+      compatibility:sha256:e7598bb4771e8f6809d20485b2a85165ee7e93c2927baa80869f07ab94d495e2:
+        aggregate_digest: "sha256:fb9d2b3ecbd70a36f04b3b586f8e3ef9390e57d10bdebbc69183e6215cf26e50"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T07:47:39.035Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_ce8b26548d4923b966d592b2"
+          mutation_id: "compatibility:sha256:e7598bb4771e8f6809d20485b2a85165ee7e93c2927baa80869f07ab94d495e2"
+          plan_digest: "sha256:05d9e037f315e3dad580662875f670e39118537f5689e20277c16450ce222b81"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140657-5REY71"
+          task_revision: 5
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:e7598bb4771e8f6809d20485b2a85165ee7e93c2927baa80869f07ab94d495e2"
+        next_revision: 6
+        previous_revision: 5
+        schema_version: 1
+        task_id: "202609140657-5REY71"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "4be3447ccff551b8f67611538d8d784495a35893"
   task_execution_context:
     base_ref: "main"
     base_sha: "40368f0ae58774c8cdd80fddb22cb6daacbae8f4"
