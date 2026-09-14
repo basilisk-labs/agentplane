@@ -6,7 +6,7 @@ Created: 2026-09-13T23:35:19.456Z
 
 - Task: `202609132330-RP315R`
 - Title: Repair task-state validation for immutable quality-object directories without task README artifacts so the stable 0.7...
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609132330-RP315R/repair-task-state-validation-for-immutable-quali`
 - Canonical task record: `.agentplane/tasks/202609132330-RP315R/README.md`
 
