@@ -1,4 +1,42 @@
- docs/releases/v0.6.29.md                           |  44 +++++++++++++++++++++
+ .agentplane/WORKFLOW.md                            |   3 +-
+ .agentplane/workflows/last-known-good.md           |   3 +-
+ .github/path-filters.yml                           |   2 +-
+ bun.lock                                           |  12 +-
+ docs/adr/0005-defer-biome-migration.md             |   2 +-
+ docs/assets/header.svg                             |   4 +-
+ docs/assets/readme-headers/adr.svg                 |   4 +-
+ docs/assets/readme-headers/agentplane-cli.svg      |   4 +-
+ docs/assets/readme-headers/agentplane.svg          |   4 +-
+ docs/assets/readme-headers/core.svg                |   4 +-
+ docs/assets/readme-headers/docs.svg                |   4 +-
+ docs/assets/readme-headers/humanizer.svg           |   4 +-
+ docs/assets/readme-headers/recipes.svg             |   4 +-
+ docs/assets/readme-headers/releases.svg            |   4 +-
+ docs/assets/readme-headers/schemas.svg             |   4 +-
+ docs/assets/readme-headers/scripts.svg             |   4 +-
+ docs/assets/readme-headers/skills.svg              |   4 +-
+ docs/assets/readme-headers/spec.svg                |   4 +-
+ docs/assets/readme-headers/testkit.svg             |   4 +-
+ docs/developer/code-quality.mdx                    |   2 +-
+ docs/reference/generated-reference.mdx             |   6 +-
+ docs/releases/v0.6.29.md                           |  45 ++
+ eslint.config.mjs                                  | 561 +++++++++++++++++++++
+ knip.json                                          |   2 +-
+ package.json                                       |   2 +-
+ packages/agentplane/package.json                   |   6 +-
+ .../run-cli.core.hooks.pre-push-full-fast.test.ts  |  20 +
+ .../run-cli.core.pr-flow.worktree-runtime.test.ts  |   1 +
+ packages/agentplane/src/shared/runtime-env.test.ts |   7 +-
+ packages/agentplane/src/shared/runtime-env.ts      |  12 +-
+ packages/core/package.json                         |   2 +-
+ packages/recipes/package.json                      |   2 +-
+ packages/recipes/src/index.ts                      |   2 +-
+ packages/spec/examples/acr.json                    |  22 +-
+ packages/testkit/package.json                      |   2 +-
+ scripts/README.md                                  |   2 +-
+ scripts/checks/check-docs-ia.mjs                   |   2 +-
+ scripts/checks/run-pre-push-hook.mjs               |   6 +-
+ turbo.json                                         |   2 +-
  .../static/img/social/docs/releases/v0.6.29.png    | Bin 0 -> 54128 bytes
- website/static/img/social/manifest.json            |   8 ++++
- 3 files changed, 52 insertions(+)
+ website/static/img/social/manifest.json            |   8 +
+ 41 files changed, 725 insertions(+), 67 deletions(-)

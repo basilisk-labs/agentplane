@@ -2,7 +2,7 @@
   "base": "codex/release-v0.6.27-reclaim-fix",
   "branch": "task/202609141508-B1Z3BG/release-v0-6-29",
   "created_at": "2026-09-14T15:10:38.998Z",
-  "diffstat_sha256": "sha256:735c1bd3704406cfccf9591871cde39510adcc09a0f49c96c406ee435a6d94b2",
+  "diffstat_sha256": "sha256:8f8bfceee576b4d5bfd90616c0a5ceceed87f4627e3368a6241ccd4c4631c4c5",
   "last_verified_at": null,
   "schema_version": 1,
   "task_id": "202609141508-B1Z3BG",
