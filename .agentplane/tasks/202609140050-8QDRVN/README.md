@@ -4,7 +4,7 @@ title: "Recover an external-agent result rejected during supervisor application"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -856,19 +856,64 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609140050-8QDRVN"
-    revision: 17
+    revision: 18
     schema_version: 1
-    updated_at: "2026-09-14T01:10:31.333Z"
+    updated_at: "2026-09-14T01:11:08.412Z"
     work_items:
       recover-rejected-result:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "recover-rejected-result"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:647403c2e4cff19511e2f3373026816ab616549334817ab1880da7c79b71ff40"
+            id: "Verified rejected-result recovery implementation"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 3
+              task_id: "202609140050-8QDRVN"
+              work_item_id: "recover-rejected-result"
+            provenance:
+              - "sha256:2b16226c267922481f3fbdc258d9baea8ef9913e1c78916149211c742291b51a"
+              - ".agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:6d42f89f47c60c87e8420f9136b0b931890cfb7366973d8240b03f9cf9e8bdc6"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:2f9e62dd32be81a8150882328b2f41f1f5754d2ba6058752dc8c3b3367efd41a"
+            id: "Passing focused regression evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 3
+              task_id: "202609140050-8QDRVN"
+              work_item_id: "recover-rejected-result"
+            provenance:
+              - "sha256:2b16226c267922481f3fbdc258d9baea8ef9913e1c78916149211c742291b51a"
+              - ".agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:6d42f89f47c60c87e8420f9136b0b931890cfb7366973d8240b03f9cf9e8bdc6"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json"
+              check_id: "focused-recovery-tests"
+              command_identity: "bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+              detail: "Observed by bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-14T01:11:08.406Z"
+              repository_snapshot_digest: "sha256:6d42f89f47c60c87e8420f9136b0b931890cfb7366973d8240b03f9cf9e8bdc6"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -925,6 +970,23 @@ extensions:
         task_id: "202609140050-8QDRVN"
         task_revision: 12
         work_item_id: null
+      -
+        at: "2026-09-14T01:11:08.412Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:07b27092b0cadfd30add6392b7c14a521b131639f385c1011b7a2106727c63c6"
+        entity: "work_item"
+        id: "event_b37b0389963df4198411dc8d"
+        mutation_id: "external-result:work-order-202609140050-8QDRVN-executor-826f37c8dfbaaec344100a2a"
+        plan_digest: "sha256:964641b14ee083eb612f6346f18943a5d0d25890074dadc3df62c6285d4e04cb"
+        plan_revision: 3
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609140050-8QDRVN"
+        task_revision: 17
+        work_item_id: "recover-rejected-result"
     leases: []
     mutation_receipts:
       compatibility:sha256:0c652b61b54202ca8639d43f4f0f58f5393f9acffcf4f1d2e6cc443fa413ae0e:
@@ -1165,6 +1227,30 @@ extensions:
         mutation_id: "compatibility:sha256:e1bf3038eb7e40566636d26a8f70e78bcb22abdbe872fad67c9a0c5fa685758b"
         next_revision: 17
         previous_revision: 16
+        schema_version: 1
+        task_id: "202609140050-8QDRVN"
+      external-result:work-order-202609140050-8QDRVN-executor-826f37c8dfbaaec344100a2a:
+        aggregate_digest: "sha256:4f69a92b9b681fc35d06ae7810d91835f089133e38050bed890de5d2efbcacd6"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T01:11:08.412Z"
+          cause_refs:
+            - "semantic-result:sha256:07b27092b0cadfd30add6392b7c14a521b131639f385c1011b7a2106727c63c6"
+          entity: "work_item"
+          from: "READY"
+          id: "event_b37b0389963df4198411dc8d"
+          mutation_id: "external-result:work-order-202609140050-8QDRVN-executor-826f37c8dfbaaec344100a2a"
+          plan_digest: "sha256:964641b14ee083eb612f6346f18943a5d0d25890074dadc3df62c6285d4e04cb"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140050-8QDRVN"
+          task_revision: 17
+          to: "COMPLETED"
+          work_item_id: "recover-rejected-result"
+        mutation_id: "external-result:work-order-202609140050-8QDRVN-executor-826f37c8dfbaaec344100a2a"
+        next_revision: 18
+        previous_revision: 17
         schema_version: 1
         task_id: "202609140050-8QDRVN"
       external-result:work-order-202609140050-8QDRVN-executor-f29e1020e62e6a9d053f5bda:
