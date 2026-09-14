@@ -15,14 +15,14 @@ The release task 202609121424-49XXT3 requested exact branch-base synchronization
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-14T10:14:14.692Z
+- Updated: 2026-09-14T10:28:18.689Z
 - Branch: task/202609140925-AWJQMB/make-supervisor-owned-task-branch-base-synchroni
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
