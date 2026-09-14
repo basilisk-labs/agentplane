@@ -4,7 +4,7 @@ title: "Repair task-state validation for immutable quality-object directories wi
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -32,36 +32,34 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-14T00:04:25.466Z"
+  updated_at: "2026-09-14T00:16:40.261Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 5 typed finding(s)."
-  evaluated_sha: "d511f8b8fa9caa06b86a715e8e3f09500cf6086e"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "d80bd0cf3ebde8f350af4bdd4663dd86c5a4426f"
   blueprint_digest: "dd6c228e2c24bd4f6d2b65056f9691f84324a0867b1c6171979423d9d93afd1d"
   evidence_refs:
-    - ".agentplane/tasks/202609132330-RP315R/quality/20260914-000305834-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609132330-RP315R/quality/20260914-000305834-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609132330-RP315R/quality/objects/sha256/0606a566f1e8ece92c4b4ff8b5c3149fde96a6691096cf4353bb5565b62371ac.md"
-    - ".agentplane/tasks/202609132330-RP315R/quality/20260914-000305834-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609132330-RP315R/quality/20260914-000305834-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609132330-RP315R/quality/20260914-000305834-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202609132330-RP315R/quality/20260914-000305834-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609132330-RP315R/quality/20260914-001545750-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609132330-RP315R/quality/20260914-001545750-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609132330-RP315R/quality/objects/sha256/33bf971a63b60bfd95065c6b6e3197e69729abc256f36917ed04cba640b5efe7.md"
+    - ".agentplane/tasks/202609132330-RP315R/quality/20260914-001545750-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609132330-RP315R/quality/20260914-001545750-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609132330-RP315R/quality/20260914-001545750-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609132330-RP315R/README.md"
-    - ".agentplane/tasks/202609132330-RP315R/quality/objects/sha256/8c87ef14fe9c10fb7cc3dd0ab299a5488f57c3a9213ab528e58cae727cd21ce6.patch"
-    - ".agentplane/tasks/202609132330-RP315R/quality/objects/sha256/8f95b5e66dc32f47938a55f425309917860f5af654088dbb61b52b3046bff56b.json"
-    - ".agentplane/tasks/202609132330-RP315R/verification/20260914000256951-fbce6a369f29b1cd.json"
+    - ".agentplane/tasks/202609132330-RP315R/quality/objects/sha256/f2b667d01ac0062ff0d6945c3aa11c2dd521b3d85aed095feced67de45a232f3.patch"
+    - ".agentplane/tasks/202609132330-RP315R/quality/objects/sha256/5fdc349443f9d4c306d66269affb90f089b3f4210965465632669792c49b2c9f.json"
+    - ".agentplane/tasks/202609132330-RP315R/verification/20260914001534469-1a7f6ca2d2732103.json"
     - ".agentplane/tasks/202609132330-RP315R/quality/objects/sha256/fed6cce54d60d18e2430e7cdd9b708ad947f99bb9955a1e4353348622e31047f.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "`hasOnlyValidQualityObjects` correctly validates the exact directory hierarchy, regular-file requirement, filename shape, non-empty object set, and content digest."
-    - "The main loop adds every directory name to `seen` before the README-less object-only case continues."
-    - "A later task whose `depends_on` references the object-only directory ID can therefore pass dependency validation even though the directory was classified as non-task storage."
-    - "The recorded verification is otherwise strong: all four declared commands passed, including `bun run ci:local:full`, and the implementation identity is d511f8b8fa9caa06b86a715e8e3f09500cf6086e."
-    - "Residual risk: Without rework, immutable object storage can mask a missing task dependency and weaken task graph integrity."
+    - "`listTaskDirs` now removes valid quality-object-only directories before the main loop adds task IDs to `seen`."
+    - "The new regression proves that `depends_on` cannot resolve to a quality-object-only directory."
+    - "The existing tests continue to accept hash-verified non-empty object storage and reject empty, malformed, digest-mismatched, and unexpected-artifact directories."
+    - "Supervisor evidence binds the implementation to d80bd0cf3ebde8f350af4bdd4663dd86c5a4426f and records all declared checks plus `bun run ci:local:full` as passed."
 execution_route:
   frozen: true
   reason_codes:
@@ -857,7 +855,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609132330-RP315R"
-    event_cursor: 12
+    event_cursor: 13
     final_validation: null
     id: "202609132330-RP315R"
     intent:
@@ -1449,9 +1447,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609132330-RP315R"
-    revision: 19
+    revision: 20
     schema_version: 1
-    updated_at: "2026-09-14T00:15:36.042Z"
+    updated_at: "2026-09-14T00:15:36.044Z"
     work_items:
       repair_task_state_object_store_classification:
         attempt: 1
@@ -1870,6 +1868,30 @@ extensions:
         mutation_id: "compatibility:sha256:e54cfc31348fc593cefac696d8acd2db59842c467caf279b90a8c6b247dd2e14"
         next_revision: 12
         previous_revision: 11
+        schema_version: 1
+        task_id: "202609132330-RP315R"
+      compatibility:sha256:e5ce552ba75f5e240626d9d338f9280db29c744f165ec12869c901d7fce523f3:
+        aggregate_digest: "sha256:c1fd19679765422db4131840648d499b51f52eca0404aaa01fa6e6017d26a495"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T00:15:36.044Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_8f27dd4db0123e8a4920aa90"
+          mutation_id: "compatibility:sha256:e5ce552ba75f5e240626d9d338f9280db29c744f165ec12869c901d7fce523f3"
+          plan_digest: "sha256:d2d827b02520ca449713d5ac66f10bb428289a4d6fa99e303fcd8ec8d6880dbe"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609132330-RP315R"
+          task_revision: 19
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:e5ce552ba75f5e240626d9d338f9280db29c744f165ec12869c901d7fce523f3"
+        next_revision: 20
+        previous_revision: 19
         schema_version: 1
         task_id: "202609132330-RP315R"
       compatibility:sha256:f261b963f02f0f485dfdb5646c5534409ef2e3c5f1d1e44b2c08f947077fa138:
