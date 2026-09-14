@@ -4,7 +4,7 @@ title: "Repair task-state validation for immutable quality-object directories wi
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 16
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -289,7 +289,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "d511f8b8fa9caa06b86a715e8e3f09500cf6086e"
+  hash: "d80bd0cf3ebde8f350af4bdd4663dd86c5a4426f"
   message: "🚧 RP315R task: apply external agent result"
 comments:
   -
@@ -298,6 +298,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: d511f8b8fa9c. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: d80bd0cf3ebd. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -320,8 +323,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-14T00:07:49.865Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: d80bd0cf3ebd. CLI accepted one state-bound external-agent semantic result."
+    commit: "d80bd0cf3ebde8f350af4bdd4663dd86c5a4426f"
 doc_version: 3
-doc_updated_at: "2026-09-14T00:02:57.935Z"
+doc_updated_at: "2026-09-14T00:07:49.865Z"
 doc_updated_by: "SUPERVISOR"
 description: "Repair task-state validation for immutable quality-object directories without task README artifacts so the stable 0.7.9 release gate passes without weakening validation for real task records"
 sections:
@@ -708,7 +719,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609132330-RP315R"
-    event_cursor: 9
+    event_cursor: 11
     final_validation: null
     id: "202609132330-RP315R"
     intent:
@@ -1300,9 +1311,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609132330-RP315R"
-    revision: 16
+    revision: 18
     schema_version: 1
-    updated_at: "2026-09-14T00:02:57.935Z"
+    updated_at: "2026-09-14T00:07:49.865Z"
     work_items:
       repair_task_state_object_store_classification:
         attempt: 1
@@ -1627,6 +1638,54 @@ extensions:
         previous_revision: 2
         schema_version: 1
         task_id: "202609132330-RP315R"
+      compatibility:sha256:b5908460162c38bf3ea22e094f312fedcd7e105e41e8667846fd6e849859ab0f:
+        aggregate_digest: "sha256:b3ad859eaa660e6ee92d7854afac6e692a2493f174323714fbcc9d4e6f36f8b3"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T00:07:49.865Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_80255bf77b9f5223c5a084e2"
+          mutation_id: "compatibility:sha256:b5908460162c38bf3ea22e094f312fedcd7e105e41e8667846fd6e849859ab0f"
+          plan_digest: "sha256:d2d827b02520ca449713d5ac66f10bb428289a4d6fa99e303fcd8ec8d6880dbe"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609132330-RP315R"
+          task_revision: 17
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b5908460162c38bf3ea22e094f312fedcd7e105e41e8667846fd6e849859ab0f"
+        next_revision: 18
+        previous_revision: 17
+        schema_version: 1
+        task_id: "202609132330-RP315R"
+      compatibility:sha256:b67267ab1520521911ac358e1dd8e6cae00e2d6d6e7792458a3ae8af36124c11:
+        aggregate_digest: "sha256:97de267ebfa3af39ff221a54372e3d952e756802e1e562ef041f471bd23c0631"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T00:07:49.865Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_b1332e5b15a6983af0b227a5"
+          mutation_id: "compatibility:sha256:b67267ab1520521911ac358e1dd8e6cae00e2d6d6e7792458a3ae8af36124c11"
+          plan_digest: "sha256:d2d827b02520ca449713d5ac66f10bb428289a4d6fa99e303fcd8ec8d6880dbe"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609132330-RP315R"
+          task_revision: 16
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b67267ab1520521911ac358e1dd8e6cae00e2d6d6e7792458a3ae8af36124c11"
+        next_revision: 17
+        previous_revision: 16
+        schema_version: 1
+        task_id: "202609132330-RP315R"
       compatibility:sha256:e54cfc31348fc593cefac696d8acd2db59842c467caf279b90a8c6b247dd2e14:
         aggregate_digest: "sha256:220e81fa01d4788d26725c03f664e19571a16a47ae43176bce8a64abcedc922f"
         event:
@@ -1751,7 +1810,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "d511f8b8fa9caa06b86a715e8e3f09500cf6086e"
+    hash: "d80bd0cf3ebde8f350af4bdd4663dd86c5a4426f"
   task_execution_context:
     base_ref: "main"
     base_sha: "ecfccc5ad0230fc1876a319be0af5cdb530c339f"
