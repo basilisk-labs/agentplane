@@ -4,7 +4,7 @@ title: "Make supervisor-owned task branch base synchronization generate a commit
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +24,11 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "host_user_decision=sha256:2bd48595465c7a61fa7e7586b87a52fe2dcf9048a6ba39572b88fd0f7417a7c0"
 verification:
-  state: "needs_rework"
-  updated_at: "2026-09-14T10:50:30.069Z"
+  state: "ok"
+  updated_at: "2026-09-14T10:59:52.042Z"
   updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 2
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 execution_route:
   frozen: true
   reason_codes:
@@ -83,9 +83,7 @@ execution_contract:
       - "packages/agentplane/src/commands/branch/sync-task-base.ts"
       - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
   observed:
-    authority_violations:
-      - "verification:recorded-check-2:fail"
-      - "verification:verification-record:fail"
+    authority_violations: []
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -103,10 +101,31 @@ execution_contract:
         result: "pass"
       -
         id: "recorded-check-2"
-        result: "fail"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
       -
         id: "verification-record"
-        result: "fail"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -193,8 +212,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-2"
-      - "verification_recovery:verification-record"
 commit:
   hash: "b6dae19a727f6516137d85dbdb25f4d6961c05e7"
   message: "🚧 AWJQMB task: apply external agent result"
@@ -277,8 +294,14 @@ events:
     to: "DOING"
     note: "Implementation committed: b6dae19a727f. CLI accepted one state-bound external-agent semantic result."
     commit: "b6dae19a727f6516137d85dbdb25f4d6961c05e7"
+  -
+    type: "verify"
+    at: "2026-09-14T10:59:52.042Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-14T10:52:21.558Z"
+doc_updated_at: "2026-09-14T10:59:53.451Z"
 doc_updated_by: "SUPERVISOR"
 description: "The release task 202609121424-49XXT3 requested exact branch-base synchronization onto main 1a93a9a43da2b714854174491f9672c52bf33e9f. synchronizeTaskBranchBase generated subject 'Merge branch main into task/...' and git hook run commit-msg rejected it because the repository requires '<emoji> <task-suffix> <scope>: <summary>'. Update the supervisor-owned synchronization implementation to create a policy-compliant task-attributed merge subject without weakening or bypassing hooks. Preserve the exact two-parent no-ff merge and ancestry postconditions. Add focused regression coverage for the real hook-compatible subject. Do not touch release candidate content or agentplane-roadmap-r2."
 sections:
@@ -356,6 +379,90 @@ sections:
     Result: fail
     Evidence: .agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json#check-2
     Scope: branch_pr task 202609140925-AWJQMB declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609140925-AWJQMB-make-supervisor-owned-task-branch-base-synchroni/.agentplane/tasks/202609140925-AWJQMB/blueprint/resolved-snapshot.json
+    - old_digest: a6e5b2fab41b3002672a798cbdc5183879cab8758bc252220e9ddbb9e8ce8cc5
+    - current_digest: a6e5b2fab41b3002672a798cbdc5183879cab8758bc252220e9ddbb9e8ce8cc5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609140925-AWJQMB
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609140925-AWJQMB
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-14T10:59:52.042Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:caf6c21d548ad559712ae0b86a33201ebda52f08a24f8d962503cd7828f36f4d, input_digest=sha256:b17ebbaf652ffb6b7bb74462fd4b180132f0ef85bbd14278ca32b31a70d3dcf8
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609140925-AWJQMB Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609140925-AWJQMB Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609140925-AWJQMB Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609140925-AWJQMB Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609140925-AWJQMB Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609140925-AWJQMB Verification Contract check real_e2e (1/2)
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609140925-AWJQMB Verification Contract check real_e2e (2/2)
+
+    Check: task_outcome
+    Command: bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609140925-AWJQMB Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609140925-AWJQMB Verification Contract check task_outcome (2/2)
 
     BlueprintSnapshotRef:
     - state: current
@@ -714,7 +821,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609140925-AWJQMB"
-    event_cursor: 16
+    event_cursor: 17
     final_validation: null
     id: "202609140925-AWJQMB"
     intent:
@@ -753,9 +860,9 @@ extensions:
           scope_roots_added: []
         schema_version: 1
     plan_history: []
-    revision: 21
+    revision: 22
     schema_version: 1
-    updated_at: "2026-09-14T10:52:21.558Z"
+    updated_at: "2026-09-14T10:59:53.450Z"
     work_items:
       repair_sync_merge_message:
         attempt: 3
@@ -1157,6 +1264,30 @@ extensions:
         previous_revision: 13
         schema_version: 1
         task_id: "202609140925-AWJQMB"
+      compatibility:sha256:8ac158b3a82f1f9e3cd0169323f51185264d1da80ca805ec1303964e86ecc5d0:
+        aggregate_digest: "sha256:730c327122370e417fa6cfc100aa7dc18d4de9e47ebf5fa8689c4d2a28b275ad"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T10:59:53.450Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_16d398abd5197e0914d75357"
+          mutation_id: "compatibility:sha256:8ac158b3a82f1f9e3cd0169323f51185264d1da80ca805ec1303964e86ecc5d0"
+          plan_digest: "sha256:2c389272e5f29f9871078eff17e16d5beacad44a28981e9eb54e884794820fcc"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140925-AWJQMB"
+          task_revision: 21
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:8ac158b3a82f1f9e3cd0169323f51185264d1da80ca805ec1303964e86ecc5d0"
+        next_revision: 22
+        previous_revision: 21
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
       compatibility:sha256:8e8f814dd1396f06eb141aa55939ad68d64be985aea849a2c03b02b22d6cbccd:
         aggregate_digest: "sha256:977982929bcb41631928718b698eae3cf3619fafb5c9a6ac7fa33b2491a93cb9"
         event:
@@ -1448,6 +1579,90 @@ Command: bun run ci:local:full
 Result: fail
 Evidence: .agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json#check-2
 Scope: branch_pr task 202609140925-AWJQMB declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609140925-AWJQMB-make-supervisor-owned-task-branch-base-synchroni/.agentplane/tasks/202609140925-AWJQMB/blueprint/resolved-snapshot.json
+- old_digest: a6e5b2fab41b3002672a798cbdc5183879cab8758bc252220e9ddbb9e8ce8cc5
+- current_digest: a6e5b2fab41b3002672a798cbdc5183879cab8758bc252220e9ddbb9e8ce8cc5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609140925-AWJQMB
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609140925-AWJQMB
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-14T10:59:52.042Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:caf6c21d548ad559712ae0b86a33201ebda52f08a24f8d962503cd7828f36f4d, input_digest=sha256:b17ebbaf652ffb6b7bb74462fd4b180132f0ef85bbd14278ca32b31a70d3dcf8
+
+Details:
+
+Check: affected_unit_integration
+Command: bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609140925-AWJQMB Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609140925-AWJQMB Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609140925-AWJQMB Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609140925-AWJQMB Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609140925-AWJQMB Verification Contract check full_regression
+
+Check: real_e2e
+Command: bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609140925-AWJQMB Verification Contract check real_e2e (1/2)
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609140925-AWJQMB Verification Contract check real_e2e (2/2)
+
+Check: task_outcome
+Command: bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609140925-AWJQMB Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609140925-AWJQMB Verification Contract check task_outcome (2/2)
 
 BlueprintSnapshotRef:
 - state: current
