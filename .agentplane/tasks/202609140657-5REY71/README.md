@@ -4,7 +4,7 @@ title: "Add supervisor-owned base synchronization before semantic work on stale 
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -811,22 +811,149 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 7
+    revision: 8
     schema_version: 1
-    updated_at: "2026-09-14T07:47:39.035Z"
+    updated_at: "2026-09-14T07:56:23.891Z"
     work_items:
       implement_branch_base_sync:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "implement_branch_base_sync"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:b542e86ba1cb175b763f7655d30e0a3f88ec13ae95f1e13b8b75be839a19cd31"
+            id: "branch_base_sync_workflow_step"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609140657-5REY71"
+              work_item_id: "implement_branch_base_sync"
+            provenance:
+              - "sha256:847438f2294991e32f89148a7018436592720ea5bf0747cb01d7e6ff59ea8af1"
+              - ".agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:76e137f1ee767ade6e71fbc3913f2831de6768f447faeda870ae1a0e506a1202"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:e0597e637a256800f8e7afd3c1113992c33746435b402eeaa08b20ae0b4d236a"
+            id: "branch_base_sync_supervisor_operation"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609140657-5REY71"
+              work_item_id: "implement_branch_base_sync"
+            provenance:
+              - "sha256:847438f2294991e32f89148a7018436592720ea5bf0747cb01d7e6ff59ea8af1"
+              - ".agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:76e137f1ee767ade6e71fbc3913f2831de6768f447faeda870ae1a0e506a1202"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:53f88ff88558d77581aec1568a2ca621d4aa32cbe28fed613e5048436c2d8c1a"
+            id: "route_and_operation_regression_tests"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609140657-5REY71"
+              work_item_id: "implement_branch_base_sync"
+            provenance:
+              - "sha256:847438f2294991e32f89148a7018436592720ea5bf0747cb01d7e6ff59ea8af1"
+              - ".agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:76e137f1ee767ade6e71fbc3913f2831de6768f447faeda870ae1a0e506a1202"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json"
+              check_id: "focused_route_tests"
+              command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000"
+              detail: "Observed by node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000."
+              exit_code: 0
+              observed_at: "2026-09-14T07:56:23.882Z"
+              repository_snapshot_digest: "sha256:76e137f1ee767ade6e71fbc3913f2831de6768f447faeda870ae1a0e506a1202"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json"
+              check_id: "focused_supervisor_tests"
+              command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000"
+              detail: "Observed by node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000."
+              exit_code: 0
+              observed_at: "2026-09-14T07:56:23.882Z"
+              repository_snapshot_digest: "sha256:76e137f1ee767ade6e71fbc3913f2831de6768f447faeda870ae1a0e506a1202"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json"
+              check_id: "typecheck"
+              command_identity: "bun run typecheck"
+              detail: "Observed by bun run typecheck."
+              exit_code: 0
+              observed_at: "2026-09-14T07:56:23.882Z"
+              repository_snapshot_digest: "sha256:76e137f1ee767ade6e71fbc3913f2831de6768f447faeda870ae1a0e506a1202"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json"
+              check_id: "lint_core"
+              command_identity: "bun run lint:core"
+              detail: "Observed by bun run lint:core."
+              exit_code: 0
+              observed_at: "2026-09-14T07:56:23.882Z"
+              repository_snapshot_digest: "sha256:76e137f1ee767ade6e71fbc3913f2831de6768f447faeda870ae1a0e506a1202"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json"
+              check_id: "full_ci"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-09-14T07:56:23.882Z"
+              repository_snapshot_digest: "sha256:76e137f1ee767ade6e71fbc3913f2831de6768f447faeda870ae1a0e506a1202"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609140657-5REY71/supervision/declared-checks.json"
+              check_id: "diff_hygiene"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-09-14T07:56:23.882Z"
+              repository_snapshot_digest: "sha256:76e137f1ee767ade6e71fbc3913f2831de6768f447faeda870ae1a0e506a1202"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-14T07:56:23.891Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:b0eaf1fe07bb77e0242fea5e29650677739598f8dba7c36a9ae2b257b954bbd7"
+        entity: "work_item"
+        id: "event_315a7607df9a9f8c3d2de456"
+        mutation_id: "external-result:work-order-202609140657-5REY71-executor-ba38a9a7c47922ed4ec0715c"
+        plan_digest: "sha256:05d9e037f315e3dad580662875f670e39118537f5689e20277c16450ce222b81"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609140657-5REY71"
+        task_revision: 7
+        work_item_id: "implement_branch_base_sync"
     leases: []
     mutation_receipts:
       compatibility:sha256:20bb0bdc7d0cf7eb787521d5a30c7f0f8f5b55701101b9f17be94151773121c6:
@@ -947,6 +1074,30 @@ extensions:
         mutation_id: "compatibility:sha256:e7598bb4771e8f6809d20485b2a85165ee7e93c2927baa80869f07ab94d495e2"
         next_revision: 6
         previous_revision: 5
+        schema_version: 1
+        task_id: "202609140657-5REY71"
+      external-result:work-order-202609140657-5REY71-executor-ba38a9a7c47922ed4ec0715c:
+        aggregate_digest: "sha256:57e8c6a4901e2f20048349553b61fbcf5a8e623b7f3afb932b6917c0f70962f5"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T07:56:23.891Z"
+          cause_refs:
+            - "semantic-result:sha256:b0eaf1fe07bb77e0242fea5e29650677739598f8dba7c36a9ae2b257b954bbd7"
+          entity: "work_item"
+          from: "READY"
+          id: "event_315a7607df9a9f8c3d2de456"
+          mutation_id: "external-result:work-order-202609140657-5REY71-executor-ba38a9a7c47922ed4ec0715c"
+          plan_digest: "sha256:05d9e037f315e3dad580662875f670e39118537f5689e20277c16450ce222b81"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140657-5REY71"
+          task_revision: 7
+          to: "COMPLETED"
+          work_item_id: "implement_branch_base_sync"
+        mutation_id: "external-result:work-order-202609140657-5REY71-executor-ba38a9a7c47922ed4ec0715c"
+        next_revision: 8
+        previous_revision: 7
         schema_version: 1
         task_id: "202609140657-5REY71"
     pending_effects: []
