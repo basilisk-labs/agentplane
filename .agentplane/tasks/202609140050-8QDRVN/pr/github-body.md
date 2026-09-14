@@ -15,8 +15,8 @@ When a durable result_received external-agent result is rejected by deterministi
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run ci:local:full
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,11 +27,12 @@ When a durable result_received external-agent result is rejected by deterministi
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...n-cli.core.task-advance-effect-recovery.test.ts | 127 +++++++++++++++++++++
- .../external-agent-result-rejection-recovery.ts    |  88 ++++++++++++++
- .../task/external-agent-supervisor-recovery.ts     |  55 +++++++++
- .../src/commands/task/external-agent-supervisor.ts |  25 ++--
- 4 files changed, 282 insertions(+), 13 deletions(-)
+ ...n-cli.core.task-advance-effect-recovery.test.ts |   5 +
+ ...sk-advance-result-rejection-recovery.testkit.ts | 168 +++++++++++++++++++++
+ .../external-agent-result-rejection-recovery.ts    |  88 +++++++++++
+ .../task/external-agent-supervisor-recovery.ts     |  55 +++++++
+ .../src/commands/task/external-agent-supervisor.ts |  25 ++-
+ 5 files changed, 328 insertions(+), 13 deletions(-)
 ```
 
 </details>
