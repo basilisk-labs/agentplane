@@ -1,10 +1,10 @@
 ---
 id: "202609140050-8QDRVN"
 title: "Recover an external-agent result rejected during supervisor application"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -203,6 +203,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: b4792b0bfad0. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The full regression requires a new focused recovery module to satisfy the 600-line hotspot limit. Recommended action: Approve the single new source path and move rejected-result application orchestration into it. Requested scope: roots=packages/agentplane/src/commands/task/external-agent-result-rejection-recovery.ts; repository effects=repository_write,source_code; request digest=sha256:b8771c7f197270cda0a1858ec1a92226eb7df21754e64541fdfcd90e6d7174bc. Agentplane receipt: external-agent-blocker/tr_f54760a204f63fe7afccddcd01a7afbb/sha256:61de061074e6f8662ae521bf4162a802199bbfe8a7d1cd12afff51da81fdc135/sha256:b8771c7f197270cda0a1858ec1a92226eb7df21754e64541fdfcd90e6d7174bc."
 events:
   -
     type: "status"
@@ -233,8 +236,15 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-09-14T01:20:12.364Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The full regression requires a new focused recovery module to satisfy the 600-line hotspot limit. Recommended action: Approve the single new source path and move rejected-result application orchestration into it. Requested scope: roots=packages/agentplane/src/commands/task/external-agent-result-rejection-recovery.ts; repository effects=repository_write,source_code; request digest=sha256:b8771c7f197270cda0a1858ec1a92226eb7df21754e64541fdfcd90e6d7174bc. Agentplane receipt: external-agent-blocker/tr_f54760a204f63fe7afccddcd01a7afbb/sha256:61de061074e6f8662ae521bf4162a802199bbfe8a7d1cd12afff51da81fdc135/sha256:b8771c7f197270cda0a1858ec1a92226eb7df21754e64541fdfcd90e6d7174bc."
 doc_version: 3
-doc_updated_at: "2026-09-14T01:18:25.139Z"
+doc_updated_at: "2026-09-14T01:20:12.364Z"
 doc_updated_by: "SUPERVISOR"
 description: "When a durable result_received external-agent result is rejected by deterministic supervisor application validation, fail the owning semantic operation without applying the result, retire the exchange, and require the existing exact-key --replacement route. Preserve single-use result integrity and effect-in-doubt behavior. Add focused regression coverage for an implementation result that changes Git history outside the permitted workspace effect."
 sections:
@@ -321,6 +331,22 @@ extensions:
     scope_digest: "sha256:65f818387fe18e2395974d2c9ba0010295d3db8f70b3a9a513cccae132b1d575"
     status: "active"
     task_id: "202609140050-8QDRVN"
+  agentplane.scope_extension_request:
+    blocker_state_fingerprint: "sha256:61de061074e6f8662ae521bf4162a802199bbfe8a7d1cd12afff51da81fdc135"
+    kind: "task_scope_extension_request"
+    request:
+      rationale: "Extract the pre-application snapshot, unchanged-state proof, and terminal failure transition from external-agent-supervisor.ts into one focused recovery module so the central supervisor remains below 600 lines."
+      repository_effects:
+        - "repository_write"
+        - "source_code"
+      schema_version: 1
+      scope_roots:
+        - "packages/agentplane/src/commands/task/external-agent-result-rejection-recovery.ts"
+    request_digest: "sha256:b8771c7f197270cda0a1858ec1a92226eb7df21754e64541fdfcd90e6d7174bc"
+    schema_version: 1
+    status: "pending"
+    transition_id: "tr_f54760a204f63fe7afccddcd01a7afbb"
+    work_item_id: null
   agentplane.task_centric:
     current_plan:
       approval:
@@ -453,7 +479,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609140050-8QDRVN"
-    event_cursor: 13
+    event_cursor: 15
     final_validation: null
     id: "202609140050-8QDRVN"
     intent:
@@ -470,7 +496,7 @@ extensions:
 
         When a durable result_received external-agent result is rejected by deterministic supervisor application validation, fail the owning semantic operation without applying the result, retire the exchange, and require the existing exact-key --replacement route. Preserve single-use result integrity and effect-in-doubt behavior. Add focused regression coverage for an implementation result that changes Git history outside the permitted workspace effect.
       task_id: "202609140050-8QDRVN"
-    lifecycle: "ACTIVE"
+    lifecycle: "BLOCKED"
     plan_amendments: []
     plan_history:
       -
@@ -913,9 +939,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609140050-8QDRVN"
-    revision: 19
+    revision: 21
     schema_version: 1
-    updated_at: "2026-09-14T01:18:25.138Z"
+    updated_at: "2026-09-14T01:20:12.364Z"
     work_items:
       recover-rejected-result:
         attempt: 1
@@ -1262,6 +1288,30 @@ extensions:
         previous_revision: 5
         schema_version: 1
         task_id: "202609140050-8QDRVN"
+      compatibility:sha256:d78ceb2e84cf111e3897ee2b86ff9dccdcdc7507b0ba7543458d8afe19eb2d4f:
+        aggregate_digest: "sha256:7c5ec8d3adc5c5a4a41d400a7bd91323439c35e42b878572be7f8f607918aa97"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T01:20:12.364Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_842f1b71c9e8a45dcfb15657"
+          mutation_id: "compatibility:sha256:d78ceb2e84cf111e3897ee2b86ff9dccdcdc7507b0ba7543458d8afe19eb2d4f"
+          plan_digest: "sha256:964641b14ee083eb612f6346f18943a5d0d25890074dadc3df62c6285d4e04cb"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140050-8QDRVN"
+          task_revision: 19
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:d78ceb2e84cf111e3897ee2b86ff9dccdcdc7507b0ba7543458d8afe19eb2d4f"
+        next_revision: 20
+        previous_revision: 19
+        schema_version: 1
+        task_id: "202609140050-8QDRVN"
       compatibility:sha256:dc43596d8cc2b290396c91f063914998907fe93d1e1b194cfd8e34d42d8d9b88:
         aggregate_digest: "sha256:f13a498ba4aed0ab723b28ef46185e61463cc184d4fa12ea9a51d46e5fcec2b9"
         event:
@@ -1308,6 +1358,30 @@ extensions:
         mutation_id: "compatibility:sha256:e1bf3038eb7e40566636d26a8f70e78bcb22abdbe872fad67c9a0c5fa685758b"
         next_revision: 17
         previous_revision: 16
+        schema_version: 1
+        task_id: "202609140050-8QDRVN"
+      compatibility:sha256:f17f78e586addd2fdaaf424857cf2b85bcf23dbe81ec6577ae9c1a64b745409e:
+        aggregate_digest: "sha256:473d68b75d6d7c0c2c420cffade7effd29b9e40a4671e025ee930d103e9e8566"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T01:20:12.364Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_00afc8e6171155241b15a597"
+          mutation_id: "compatibility:sha256:f17f78e586addd2fdaaf424857cf2b85bcf23dbe81ec6577ae9c1a64b745409e"
+          plan_digest: "sha256:964641b14ee083eb612f6346f18943a5d0d25890074dadc3df62c6285d4e04cb"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140050-8QDRVN"
+          task_revision: 20
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:f17f78e586addd2fdaaf424857cf2b85bcf23dbe81ec6577ae9c1a64b745409e"
+        next_revision: 21
+        previous_revision: 20
         schema_version: 1
         task_id: "202609140050-8QDRVN"
       external-result:work-order-202609140050-8QDRVN-executor-826f37c8dfbaaec344100a2a:
