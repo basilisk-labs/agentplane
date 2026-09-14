@@ -1,10 +1,11 @@
 ---
 id: "202609140050-8QDRVN"
 title: "Recover an external-agent result rejected during supervisor application"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 32
+revision: 33
 origin:
   system: "manual"
 depends_on: []
@@ -58,6 +59,22 @@ quality_review:
     - "Supervisor evidence is bound to implementation 0aa277dd97640bbc2afba29d72adb91fae64021f and records both 44 focused recovery tests and bun run ci:local:full as passing."
     - "Residual risk: A filesystem failure after the failed-operation CAS but before exchange retirement may leave an unretired artifact, but the journal remains fail-closed and requires the existing replacement recovery path."
     - "Residual risk: Hosted integration must still validate the published exact head before merge."
+token_usage:
+  agent_runs: 13
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:b82db4eff44108af0c2847adb65faee753bafa72a18dcc175c62e412a95b853c"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-09-14T01:47:19.188Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -249,8 +266,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "0aa277dd97640bbc2afba29d72adb91fae64021f"
-  message: "🚧 8QDRVN task: apply external agent result"
+  hash: "cadc29e65ddfac905acf22662a45c1d84a32dcc7"
+  message: "🚧 8QDRVN task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -279,6 +296,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 0aa277dd9764. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -351,9 +371,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-14T01:47:19.188Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "cadc29e65ddfac905acf22662a45c1d84a32dcc7"
 doc_version: 3
-doc_updated_at: "2026-09-14T01:44:29.837Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-14T01:47:19.188Z"
+doc_updated_by: "CODER"
 description: "When a durable result_received external-agent result is rejected by deterministic supervisor application validation, fail the owning semantic operation without applying the result, retire the exchange, and require the existing exact-key --replacement route. Preserve single-use result integrity and effect-in-doubt behavior. Add focused regression coverage for an implementation result that changes Git history outside the permitted workspace effect."
 sections:
   Summary: |-
@@ -679,7 +707,23 @@ extensions:
       schema_version: 1
       task_id: "202609140050-8QDRVN"
     event_cursor: 26
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609140050-8QDRVN"
+            - "git:0aa277dd97640bbc2afba29d72adb91fae64021f"
+          check_id: "focused-recovery-tests"
+          command_identity: "bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-14T01:44:28.438Z"
+          repository_snapshot_digest: "sha256:b7cd7b674e777b4571bd5eae16e33bf5179ddec2d77a7683e4e3ba513c17f91a"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609140050-8QDRVN"
     intent:
       acceptance_criteria:
@@ -695,7 +739,7 @@ extensions:
 
         When a durable result_received external-agent result is rejected by deterministic supervisor application validation, fail the owning semantic operation without applying the result, retire the exchange, and require the existing exact-key --replacement route. Preserve single-use result integrity and effect-in-doubt behavior. Add focused regression coverage for an implementation result that changes Git history outside the permitted workspace effect.
       task_id: "202609140050-8QDRVN"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -1138,9 +1182,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609140050-8QDRVN"
-    revision: 32
+    revision: 33
     schema_version: 1
-    updated_at: "2026-09-14T01:44:29.837Z"
+    updated_at: "2026-09-14T01:47:19.188Z"
     work_items:
       recover-rejected-result:
         attempt: 1
@@ -1895,6 +1939,31 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202609140050-8QDRVN"
+      legacy-finish:202609140050-8QDRVN:2026-09-14T01:44:28.438Z:0aa277dd97640bbc2afba29d72adb91fae64021f:
+        aggregate_digest: "sha256:1da7128423b98ea52741b5fe9666d30d159ab48e88f41606518a9810a72725bc"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-14T01:47:19.188Z"
+          cause_refs:
+            - "task-verification:202609140050-8QDRVN"
+            - "git:0aa277dd97640bbc2afba29d72adb91fae64021f"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_d60d79069f8f9ebeddce8c65"
+          mutation_id: "legacy-finish:202609140050-8QDRVN:2026-09-14T01:44:28.438Z:0aa277dd97640bbc2afba29d72adb91fae64021f"
+          plan_digest: "sha256:964641b14ee083eb612f6346f18943a5d0d25890074dadc3df62c6285d4e04cb"
+          plan_revision: 3
+          repository_fingerprint: "sha256:b7cd7b674e777b4571bd5eae16e33bf5179ddec2d77a7683e4e3ba513c17f91a"
+          schema_version: 1
+          task_id: "202609140050-8QDRVN"
+          task_revision: 32
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609140050-8QDRVN:2026-09-14T01:44:28.438Z:0aa277dd97640bbc2afba29d72adb91fae64021f"
+        next_revision: 33
+        previous_revision: 32
+        schema_version: 1
+        task_id: "202609140050-8QDRVN"
       plan-reject-93f90f50aab9ab6c575b9c9bbc6309ac:
         aggregate_digest: "sha256:a059982128632d5f82ce3210c2bed8c51444850241be726d23eabe6635ddeefd"
         event:
@@ -1950,6 +2019,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "0aa277dd97640bbc2afba29d72adb91fae64021f"
+    message: "🚧 8QDRVN task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "9792878934b2c4d068e98056cef3c2c691451a90"
@@ -2145,3 +2215,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/13` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:b82db4eff44108af0c2847adb65faee753bafa72a18dcc175c62e412a95b853c`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-09-14T01:47:19.188Z`

@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:3e9346e34cf77f8b29f18c12a1449098bb759ae8f56d25815a9fd0da7bf7e6c6",
   "pr_number": 5951,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5951",
+  "pre_merge_closure": {
+    "basis_commit": "cadc29e65ddfac905acf22662a45c1d84a32dcc7",
+    "branch": "task/202609140050-8QDRVN/recover-an-external-agent-result-rejected-during",
+    "pr_number": 5951,
+    "recorded_at": "2026-09-14T01:47:19.253Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
