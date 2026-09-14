@@ -47,18 +47,7 @@ describe("task branch base synchronization", () => {
     await mkdir(taskDir, { recursive: true });
     await writeFile(path.join(taskDir, "README.md"), "task artifact\n", "utf8");
     const hookPath = path.join(f.root, ".git", "hooks", "commit-msg");
-    await writeFile(
-      hookPath,
-      [
-        "#!/bin/sh",
-        'subject="$(sed -n \'1p\' "$1")"',
-        'test "$subject" = "🔀 5REY71 task: sync exact main into task branch" || exit 1',
-        "grep -q '^Signed-off-by: Test User <test@example\\.com>$' \"$1\" || exit 1",
-        "printf '%s\\n' \"$subject\" > .commit-msg-invoked",
-        "",
-      ].join("\n"),
-      "utf8",
-    );
+    await writeFile(hookPath, ["#!/bin/sh", 'cp "$1" .commit-msg-invoked', ""].join("\n"), "utf8");
     await chmod(hookPath, 0o755);
 
     const result = await synchronizeTaskBranchBase({
@@ -89,9 +78,9 @@ describe("task branch base synchronization", () => {
     expect(await git(f.worktreePath, "show", "-s", "--format=%B", result.headSha)).toMatch(
       /^Signed-off-by: Test User <test@example\.com>$/mu,
     );
-    expect(await readFile(path.join(f.worktreePath, ".commit-msg-invoked"), "utf8")).toBe(
-      `${subject}\n`,
-    );
+    const hookMessage = await readFile(path.join(f.worktreePath, ".commit-msg-invoked"), "utf8");
+    expect(hookMessage.split(/\r?\n/u)[0]).toBe(subject);
+    expect(hookMessage).toMatch(/^Signed-off-by: Test User <test@example\.com>$/mu);
     await expect(
       git(f.worktreePath, "merge-base", "--is-ancestor", f.expectedHeadSha, result.headSha),
     ).resolves.toBe("");
