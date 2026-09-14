@@ -2,6 +2,7 @@ import { createCliEmitter, infoMessage } from "../../cli/output.js";
 import { RunnerRunRepository } from "../../runner/run-repository.js";
 import { readTraceArtifactText } from "../../runner/trace-artifacts.js";
 import type { LoadedTaskRunnerInspection } from "../../runner/usecases/task-run-inspect.js";
+import { inspectTaskRunnerActivity } from "../../runner/usecases/task-run-inspect.js";
 import type { RunnerLifecycleStatus } from "../../runner/types.js";
 import { isProcessAlive } from "../../runner/process-supervision/signals.js";
 import { CliError } from "../../shared/errors.js";
@@ -55,9 +56,18 @@ function runnerProcessAlive(inspection: LoadedTaskRunnerInspection): boolean | n
   return isProcessAlive(pid);
 }
 
-export function renderRunnerStatusPayload(inspection: LoadedTaskRunnerInspection) {
+export async function renderRunnerStatusPayload(
+  inspection: LoadedTaskRunnerInspection,
+  nowMs?: number,
+) {
   const state = inspection.state;
   const supervision = state.supervision ?? null;
+  const pidAlive = runnerProcessAlive(inspection);
+  const activity = await inspectTaskRunnerActivity({
+    inspection,
+    process_liveness: pidAlive,
+    ...(nowMs === undefined ? {} : { now_ms: nowMs }),
+  });
   return {
     task_id: inspection.task_id,
     run_id: inspection.run_id,
@@ -70,9 +80,10 @@ export function renderRunnerStatusPayload(inspection: LoadedTaskRunnerInspection
     updated_at: state.updated_at,
     started_at: supervision?.started_at ?? null,
     heartbeat_at: supervision?.heartbeat_at ?? null,
+    ...activity,
     ended_at: state.result?.ended_at ?? null,
     pid: supervision?.pid ?? null,
-    pid_alive: runnerProcessAlive(inspection),
+    pid_alive: pidAlive,
     exit_code: state.result?.exit_code ?? null,
     summary: state.result?.summary ?? null,
     paths: {
@@ -88,12 +99,12 @@ export function renderRunnerStatusPayload(inspection: LoadedTaskRunnerInspection
   };
 }
 
-export function renderRunnerInspectPayload(
+export async function renderRunnerInspectPayload(
   inspection: LoadedTaskRunnerInspection,
   eventCount: number,
 ) {
   return {
-    ...renderRunnerStatusPayload(inspection),
+    ...(await renderRunnerStatusPayload(inspection)),
     recent_events: inspection.events.slice(-eventCount),
     result: inspection.state.result ?? null,
     prepared_metadata: inspection.state.prepared_metadata ?? null,

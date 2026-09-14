@@ -259,7 +259,7 @@ export function makeRunTaskRunStatusHandler(getCtx: (cmd: string) => Promise<Com
       task_id: parsed.taskId,
       run_id: parsed.runId,
     });
-    const payload = renderRunnerStatusPayload(inspection);
+    const payload = await renderRunnerStatusPayload(inspection);
     const output = createCliEmitter();
     if (parsed.json) {
       output.json(payload);
@@ -273,6 +273,10 @@ export function makeRunTaskRunStatusHandler(getCtx: (cmd: string) => Promise<Com
           { label: "adapter", value: payload.adapter_id },
           { label: "updated_at", value: payload.updated_at },
           { label: "heartbeat_at", value: payload.heartbeat_at },
+          { label: "last_trace_at", value: payload.last_trace_at },
+          { label: "last_trace_seq", value: payload.last_trace_seq },
+          { label: "seconds_since_activity", value: payload.seconds_since_activity },
+          { label: "health", value: payload.health },
           { label: "pid", value: payload.pid },
           { label: "pid_alive", value: payload.pid_alive },
           { label: "summary", value: payload.summary },
@@ -296,7 +300,7 @@ export function makeRunTaskRunInspectHandler(getCtx: (cmd: string) => Promise<Co
       task_id: parsed.taskId,
       run_id: parsed.runId,
     });
-    const payload = renderRunnerInspectPayload(inspection, parsed.events);
+    const payload = await renderRunnerInspectPayload(inspection, parsed.events);
     const output = createCliEmitter();
     if (parsed.json) {
       output.json(payload);

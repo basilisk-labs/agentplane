@@ -174,6 +174,10 @@ async function resolveEvaluatedSha(opts: {
     if (touchesCurrentTask) {
       return currentTaskArtifactHead ?? current;
     }
+    if (previousEvaluatedSha) {
+      current = parent;
+      continue;
+    }
     return currentTaskArtifactHead;
   }
 
@@ -302,14 +306,24 @@ export const runEvaluatorRun: CommandHandler<EvaluatorRunParsed> = async (ctx, p
     "quality",
     `${stamp}-${safePathSegment(evaluator.id) || "evaluator"}`,
   );
-  await mkdir(reviewDir, { recursive: true });
-
   const evaluatedSha = await resolveEvaluatedSha({
     gitRoot,
     workflowDir: command.config.paths.workflow_dir,
     taskId: p.taskId,
     previousEvaluatedSha: task.quality_review?.evaluated_sha ?? null,
   });
+  if (p.verdict === "pass" && !evaluatedSha) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "EVALUATOR pass requires a committed review target.",
+      context: {
+        task_id: p.taskId,
+        reason_code: "evaluated_sha_missing",
+      },
+    });
+  }
+  await mkdir(reviewDir, { recursive: true });
+
   const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx: command, task }).catch(() => null);
   const reportPath = path.join(reviewDir, QUALITY_REPORT_FILE);
   const promptPath = path.join(reviewDir, EVALUATOR_PROMPT_FILE);

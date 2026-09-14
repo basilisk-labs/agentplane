@@ -213,6 +213,71 @@ describe("runCli route decision direct closeout", () => {
     }
   });
 
+  it("routes direct verification rework back to the current agent", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    await writeConfig(root, config);
+    await commitAll(root, "seed direct workflow config");
+
+    const taskId = await createBranchPrTask(root);
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Exercise direct verification rework routing.",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: exercise direct verification rework routing.",
+      "--root",
+      root,
+    ]);
+    await commitAll(root, "track direct task before verification rework");
+    await runCliSilent([
+      "verify",
+      taskId,
+      "--rework",
+      "--by",
+      "EVALUATOR",
+      "--note",
+      "Implementation needs another pass.",
+      "--root",
+      root,
+    ]);
+
+    const nextIo = captureStdIO();
+    try {
+      expect(await runCli(["task", "next-action", taskId, "--json", "--root", root])).toBe(0);
+      const parsed = JSON.parse(nextIo.stdout) as {
+        route_oracle: { phase: string };
+        next_action: { code: string; command: string | null };
+        operator_guidance: { executor_context: { current_agent_must_execute: boolean } };
+      };
+      expect(parsed.route_oracle.phase).toBe("direct_execution");
+      expect(parsed.next_action).toMatchObject({
+        code: "continue_direct",
+        command: `agentplane task verify-show ${taskId}`,
+      });
+      expect(parsed.operator_guidance.executor_context.current_agent_must_execute).toBe(true);
+    } finally {
+      nextIo.restore();
+    }
+  });
+
   it("persists untracked canonical task artifacts before routing direct runner work", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);

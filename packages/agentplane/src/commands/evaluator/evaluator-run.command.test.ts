@@ -237,6 +237,12 @@ describe("evaluator run command", () => {
       "{}\n",
       "test: refresh PR metadata",
     );
+    await commitPath(
+      root,
+      ".agentplane/tasks/202605240900-OTHER/second-note.md",
+      "unrelated task artifact after review",
+      "test: refresh unrelated task metadata",
+    );
 
     await runReview("Repeated metadata review");
 
@@ -256,23 +262,32 @@ describe("evaluator run command", () => {
       "chore: unrelated task artifact",
     );
 
-    await runEvaluatorRun(
-      { cwd: root, rootOverride: undefined },
-      {
-        taskId,
-        evaluator: "recovery-context",
-        verdict: "pass",
-        summary: "No current committed work unit",
-        findings: ["Unrelated workflow history is not a valid review target."],
-        evidenceRefs: [`.agentplane/tasks/${taskId}/README.md`],
-        missingTests: [],
-        hiddenAssumptions: [],
-        residualRisks: [],
-        json: false,
-        record: true,
-      },
-    );
+    await expect(
+      runEvaluatorRun(
+        { cwd: root, rootOverride: undefined },
+        {
+          taskId,
+          evaluator: "recovery-context",
+          verdict: "pass",
+          summary: "No current committed work unit",
+          findings: ["Unrelated workflow history is not a valid review target."],
+          evidenceRefs: [`.agentplane/tasks/${taskId}/README.md`],
+          missingTests: [],
+          hiddenAssumptions: [],
+          residualRisks: [],
+          json: false,
+          record: true,
+        },
+      ),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: { reason_code: "evaluated_sha_missing" },
+    });
 
-    expect(await readEvaluatedSha(root, taskId)).toBeNull();
+    const taskReadme = await readFile(
+      path.join(root, `.agentplane/tasks/${taskId}/README.md`),
+      "utf8",
+    );
+    expect(taskReadme).not.toContain("quality_review:");
   });
 });

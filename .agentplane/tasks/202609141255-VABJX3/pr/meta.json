@@ -1,0 +1,17 @@
+{
+  "base": "codex/release-v0.6.27-reclaim-fix",
+  "branch": "task/202609141255-VABJX3/backport-applicable-open-issue-fixes-to-the-0-6",
+  "created_at": "2026-09-14T12:57:53.404Z",
+  "diffstat_sha256": "sha256:55377922e7088cefc76d2cf125264cf265179a5a153239ef8774773f0591d7cb",
+  "last_verified_at": "2026-09-14T14:27:53.959Z",
+  "last_verified_diffstat_sha256": "sha256:630e2659f02e6b7fb2a8fe6ce9183a9d7d27e6118f20bb98404624073d0c245d",
+  "pr_number": 5955,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5955",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202609141255-VABJX3",
+  "updated_at": "2026-09-14T14:39:23.076Z",
+  "verify": {
+    "status": "pass"
+  }
+}
