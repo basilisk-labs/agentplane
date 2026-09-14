@@ -4,7 +4,7 @@ title: "Repair managed usage observation and branch-pr finish guard regressions"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -26,10 +26,10 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "host_user_decision=sha256:ce787dbf298e6a9ac7146f33a7bfd0971e383a7b36d309a0c588743e14d1a67f"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-09-14T16:02:15.087Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 execution_route:
   frozen: true
@@ -104,7 +104,37 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
+      -
+        id: "verification-record"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -225,8 +255,14 @@ events:
     to: "DOING"
     note: "Implementation committed: bb5980e80f1b. CLI accepted one state-bound external-agent semantic result."
     commit: "bb5980e80f1b95e3162905ed7304d5da54de66f2"
+  -
+    type: "verify"
+    at: "2026-09-14T16:02:15.087Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-14T15:44:57.093Z"
+doc_updated_at: "2026-09-14T16:02:16.183Z"
 doc_updated_by: "SUPERVISOR"
 description: "Repair two reproducible qualified-main regressions blocking the AgentPlane 0.7.9 prepublish gate. Managed custom runner episodes must durably record an unavailable provider-usage observation when token telemetry is not exposed, without weakening fail-closed accounting. Branch-pr finish from a task branch must reach the intended E_GIT base-checkout guard instead of an earlier E_VALIDATION failure. Add focused regression coverage, run the implicated release-ci-base chunk and complete local CI, integrate through hosted CI, then unblock release task 202609121424-49XXT3. Preserve unrelated user work and never commit agentplane-roadmap-r2."
 sections:
@@ -245,6 +281,90 @@ sections:
     4. Complete hosted integration through the AgentPlane route. Expected: required hosted checks pass on the exact repair commit and the repair reaches qualified `main` before release task `202609121424-49XXT3` resumes.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-14T16:02:15.087Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:ca04894aa14c0c4974612016bba8e14e6106b3f62f38b10f95e02c4c85e11683, input_digest=sha256:4936780e8c5568e5ec5478164f19ad2586c226c3360b31936e8cc357ab55098c
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609141440-VFA9C1 Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609141440-VFA9C1 Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609141440-VFA9C1 Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609141440-VFA9C1 Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609141440-VFA9C1 Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609141440-VFA9C1 Verification Contract check real_e2e (1/2)
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609141440-VFA9C1 Verification Contract check real_e2e (2/2)
+
+    Check: task_outcome
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609141440-VFA9C1 Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609141440-VFA9C1 Verification Contract check task_outcome (2/2)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609141440-VFA9C1-repair-managed-usage-observation-and-branch-pr-f/.agentplane/tasks/202609141440-VFA9C1/blueprint/resolved-snapshot.json
+    - old_digest: a5e2f89fe35a9cb6618947168657d5dbe23402eb8c0915a320f44b2b151c0d57
+    - current_digest: a5e2f89fe35a9cb6618947168657d5dbe23402eb8c0915a320f44b2b151c0d57
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609141440-VFA9C1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609141440-VFA9C1
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -658,7 +778,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609141440-VFA9C1"
-    event_cursor: 5
+    event_cursor: 6
     final_validation: null
     id: "202609141440-VFA9C1"
     intent:
@@ -683,9 +803,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 9
     schema_version: 1
-    updated_at: "2026-09-14T15:53:07.426Z"
+    updated_at: "2026-09-14T16:02:16.182Z"
     work_items:
       repair_release_blocking_regressions:
         attempt: 1
@@ -904,6 +1024,30 @@ extensions:
         previous_revision: 5
         schema_version: 1
         task_id: "202609141440-VFA9C1"
+      compatibility:sha256:9054772d943821bb3d877306373dea0edf7a1f581e4fcf1fec26f813a1ca2b1d:
+        aggregate_digest: "sha256:2f0c772be94fdd998a89459f8f712ffb94e949c740143bb92e51cb53d40bfaa7"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T16:02:16.182Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_b24972434fd4c97c16b37cd8"
+          mutation_id: "compatibility:sha256:9054772d943821bb3d877306373dea0edf7a1f581e4fcf1fec26f813a1ca2b1d"
+          plan_digest: "sha256:f7741223c0c9b53ff1f36aff040f8acd2f05849ba6e4e3fa640d1adbc2f5200c"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609141440-VFA9C1"
+          task_revision: 8
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:9054772d943821bb3d877306373dea0edf7a1f581e4fcf1fec26f813a1ca2b1d"
+        next_revision: 9
+        previous_revision: 8
+        schema_version: 1
+        task_id: "202609141440-VFA9C1"
       compatibility:sha256:b24be80f57bfdeaa1ef7bfabc6a41006cbbd83e06c6fdffb8421e653c2ff34d1:
         aggregate_digest: "sha256:0a0c7a190345353511656151b7946fb7bb5684a29e4a20761723104df4a59c36"
         event:
@@ -993,6 +1137,90 @@ Prepared a bounded repair plan for both release-blocking regressions.
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-14T16:02:15.087Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:ca04894aa14c0c4974612016bba8e14e6106b3f62f38b10f95e02c4c85e11683, input_digest=sha256:4936780e8c5568e5ec5478164f19ad2586c226c3360b31936e8cc357ab55098c
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609141440-VFA9C1 Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609141440-VFA9C1 Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609141440-VFA9C1 Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609141440-VFA9C1 Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609141440-VFA9C1 Verification Contract check full_regression
+
+Check: real_e2e
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609141440-VFA9C1 Verification Contract check real_e2e (1/2)
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609141440-VFA9C1 Verification Contract check real_e2e (2/2)
+
+Check: task_outcome
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609141440-VFA9C1 Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609141440-VFA9C1 Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609141440-VFA9C1-repair-managed-usage-observation-and-branch-pr-f/.agentplane/tasks/202609141440-VFA9C1/blueprint/resolved-snapshot.json
+- old_digest: a5e2f89fe35a9cb6618947168657d5dbe23402eb8c0915a320f44b2b151c0d57
+- current_digest: a5e2f89fe35a9cb6618947168657d5dbe23402eb8c0915a320f44b2b151c0d57
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609141440-VFA9C1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609141440-VFA9C1
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

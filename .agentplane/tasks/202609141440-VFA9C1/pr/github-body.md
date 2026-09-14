@@ -15,14 +15,14 @@ Repair two reproducible qualified-main regressions blocking the AgentPlane 0.7.9
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-14T15:15:16.456Z
+- Updated: 2026-09-14T15:53:17.882Z
 - Branch: task/202609141440-VFA9C1/repair-managed-usage-observation-and-branch-pr-f
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
