@@ -95,6 +95,8 @@ export function applyNextDevelopmentVersion(rootDir, publishedVersion, opts = {}
 
   const referencePath = "docs/reference/generated-reference.mdx";
   const referenceBefore = readOptional(rootDir, referencePath);
+  const compatibilityCandidatePath = "scripts/baselines/v0.7-compatibility-candidate.json";
+  const compatibilityCandidateBefore = readOptional(rootDir, compatibilityCandidatePath);
   const changedPaths = applyReleaseVersionSurfaces(rootDir, plan.nextVersion);
 
   if (opts.skipInstall !== true && existsSync(path.join(rootDir, "bun.lock"))) {
@@ -108,12 +110,39 @@ export function applyNextDevelopmentVersion(rootDir, publishedVersion, opts = {}
   if (referenceBefore !== referenceAfter && referenceAfter !== null)
     changedPaths.push(referencePath);
 
+  const compatibilityCapturePath = path.join(
+    rootDir,
+    "scripts",
+    "bench",
+    "capture-compatibility-candidate.mjs",
+  );
+  if (existsSync(compatibilityCapturePath)) {
+    run("node", [compatibilityCapturePath, "--write"], rootDir, opts.quiet === true);
+  }
+  const compatibilityCandidateAfter = readOptional(rootDir, compatibilityCandidatePath);
+  if (
+    compatibilityCandidateBefore !== compatibilityCandidateAfter &&
+    compatibilityCandidateAfter !== null
+  ) {
+    changedPaths.push(compatibilityCandidatePath);
+  }
+
+  const formattedPaths = [...new Set(changedPaths)].toSorted();
+  if (formattedPaths.length > 0) {
+    run(
+      "bunx",
+      ["--no-install", "prettier", "--write", ...formattedPaths],
+      rootDir,
+      opts.quiet === true,
+    );
+  }
+
   const parityPath = path.join(rootDir, "scripts", "release", "check-release-parity.mjs");
   if (existsSync(parityPath)) run("node", [parityPath], rootDir, opts.quiet === true);
 
   return {
     ...plan,
     dryRun: false,
-    changedPaths: [...new Set(changedPaths)].toSorted(),
+    changedPaths: formattedPaths,
   };
 }
