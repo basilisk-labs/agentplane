@@ -29,10 +29,10 @@ Created: 2026-09-14T10:14:14.692Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/branch/sync-task-base.test.ts     | 32 +++++++++++++++++++++-
- .../src/commands/branch/sync-task-base.ts          |  6 +++-
- .../task/branch-task-supervisor-operations.test.ts |  4 +++
- 3 files changed, 40 insertions(+), 2 deletions(-)
+ .../src/commands/branch/sync-task-base.test.ts      | 21 ++++++++++++++++++++-
+ .../src/commands/branch/sync-task-base.ts           |  6 +++++-
+ .../task/branch-task-supervisor-operations.test.ts  |  4 ++++
+ 3 files changed, 29 insertions(+), 2 deletions(-)
 ```
 
 </details>
