@@ -532,6 +532,7 @@ describe("CustomRunnerAdapter", () => {
     expect(events).toContain('"type":"runner_execute_start"');
     expect(events).toContain('"type":"runner_execute_finish"');
     expect(events).toContain('"stdout_bytes"');
+    expect(events.match(/"type":"runner_provider_usage_observation"/gu)).toHaveLength(1);
     expect(trace).toContain('"stream":"stdout"');
     expect(trace).toContain("custom runner ok");
 

@@ -1,0 +1,78 @@
+diff --git a/packages/agentplane/src/commands/task/finish-command.ts b/packages/agentplane/src/commands/task/finish-command.ts
+index 3f967ef77..158a4340d 100644
+--- a/packages/agentplane/src/commands/task/finish-command.ts
++++ b/packages/agentplane/src/commands/task/finish-command.ts
+@@ -36,7 +36,6 @@ export async function cmdFinish(options: FinishOptions): Promise<number> {
+       event: "finish_started",
+       details: { task_count: options.taskIds.length, backend: ctx.backendId },
+     });
+-    await ensureReconciledBeforeMutation({ ctx, command: "finish", taskIds: options.taskIds });
+     await ensureFinishRunsOnBaseBranch({
+       ctx,
+       cwd: options.cwd,
+@@ -46,6 +45,7 @@ export async function cmdFinish(options: FinishOptions): Promise<number> {
+       preMergeClosure: options.preMergeClosure === true,
+       workflowMode: taskCommand.execution.selected_mode,
+     });
++    await ensureReconciledBeforeMutation({ ctx, command: "finish", taskIds: options.taskIds });
+     if (options.force) {
+       await ensureActionApproved({
+         action: "force_action",
+diff --git a/packages/agentplane/src/runner/adapters/custom.test.ts b/packages/agentplane/src/runner/adapters/custom.test.ts
+index b7379d47c..4239408c7 100644
+--- a/packages/agentplane/src/runner/adapters/custom.test.ts
++++ b/packages/agentplane/src/runner/adapters/custom.test.ts
+@@ -532,6 +532,7 @@ describe("CustomRunnerAdapter", () => {
+     expect(events).toContain('"type":"runner_execute_start"');
+     expect(events).toContain('"type":"runner_execute_finish"');
+     expect(events).toContain('"stdout_bytes"');
++    expect(events.match(/"type":"runner_provider_usage_observation"/gu)).toHaveLength(1);
+     expect(trace).toContain('"stream":"stdout"');
+     expect(trace).toContain("custom runner ok");
+ 
+diff --git a/packages/agentplane/src/runner/adapters/custom.ts b/packages/agentplane/src/runner/adapters/custom.ts
+index ba091657e..c1d31b31c 100644
+--- a/packages/agentplane/src/runner/adapters/custom.ts
++++ b/packages/agentplane/src/runner/adapters/custom.ts
+@@ -26,6 +26,7 @@ import {
+   type SupervisedRunnerArtifactInput,
+ } from "./execute-supervised.js";
+ import { readValidatedPreparedRunnerStdin } from "./prepared-input.js";
++import { appendRunnerProviderUsageObservation } from "../artifacts.js";
+ 
+ function customAdapterLabel(adapterId: CustomRunnerAdapterId): string {
+   return adapterId === "hermes" ? "Hermes" : "Custom";
+@@ -75,8 +76,8 @@ export class CustomRunnerAdapter implements RunnerAdapter {
+     );
+   }
+ 
+-  execute(invocation: RunnerInvocation): Promise<RunnerResult> {
+-    return executeSupervisedRunnerAdapter({
++  async execute(invocation: RunnerInvocation): Promise<RunnerResult> {
++    const result = await executeSupervisedRunnerAdapter({
+       invocation,
+       assertInvocation: (input) =>
+         assertAdapterInvocation({
+@@ -167,5 +168,22 @@ export class CustomRunnerAdapter implements RunnerAdapter {
+         };
+       },
+     });
++    await appendRunnerProviderUsageObservation({
++      events_path: invocation.events_path,
++      observation: {
++        schema_version: 1,
++        kind: "runner_provider_usage_observation",
++        provider: this.id,
++        status: "unavailable",
++        dispatch_id: `dispatch:${invocation.work_order_id}`,
++        run_id: invocation.run_id,
++        work_order_id: invocation.work_order_id,
++        thread_id: null,
++        turn_id: null,
++        usage: null,
++        observed_at: new Date().toISOString(),
++      },
++    });
++    return result;
+   }
+ }

@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202609141440-VFA9C1/repair-managed-usage-observation-and-branch-pr-f",
+  "created_at": "2026-09-14T15:15:16.456Z",
+  "diffstat_sha256": "sha256:2c44b43d3f4633aa01dfbe476d11436c06b195e05e49407521afad622867f547",
+  "last_verified_at": "2026-09-14T16:02:15.087Z",
+  "last_verified_diffstat_sha256": "sha256:2c44b43d3f4633aa01dfbe476d11436c06b195e05e49407521afad622867f547",
+  "pr_number": 5956,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5956",
+  "pre_merge_closure": {
+    "basis_commit": "e3f7ea94c808b1896c74aab39a713b50d704ed81",
+    "branch": "task/202609141440-VFA9C1/repair-managed-usage-observation-and-branch-pr-f",
+    "pr_number": 5956,
+    "recorded_at": "2026-09-14T16:04:44.223Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202609141440-VFA9C1",
+  "updated_at": "2026-09-14T15:53:17.882Z",
+  "verify": {
+    "status": "pass"
+  }
+}
