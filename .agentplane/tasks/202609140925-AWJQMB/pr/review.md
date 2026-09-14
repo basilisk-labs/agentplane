@@ -6,7 +6,7 @@ Created: 2026-09-14T10:14:14.692Z
 
 - Task: `202609140925-AWJQMB`
 - Title: Make supervisor-owned task branch base synchronization generate a commit subject accepted by AgentPlane commit-msg po...
-- Status: DONE
+- Status: DOING
 - Branch: `task/202609140925-AWJQMB/make-supervisor-owned-task-branch-base-synchroni`
 - Canonical task record: `.agentplane/tasks/202609140925-AWJQMB/README.md`
 
@@ -32,7 +32,8 @@ Created: 2026-09-14T10:14:14.692Z
  .../src/commands/branch/sync-task-base.test.ts     | 22 +++++++++++++++++++++-
  .../src/commands/branch/sync-task-base.ts          |  6 +++++-
  .../task/branch-task-supervisor-operations.test.ts |  4 ++++
- 3 files changed, 30 insertions(+), 2 deletions(-)
+ .../src/commands/workflow.verify-hooks.test.ts     | 12 ++++++++++++
+ 4 files changed, 42 insertions(+), 2 deletions(-)
 ```
 
 </details>

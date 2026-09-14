@@ -2,10 +2,10 @@
 id: "202609140925-AWJQMB"
 title: "Make supervisor-owned task branch base synchronization generate a commit subject accepted by AgentPlane commit-msg policy"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -21,9 +21,9 @@ verify:
   - "bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-14T10:14:04.061Z"
+  updated_at: "2026-09-14T11:30:50.365Z"
   updated_by: "HOST:codex-desktop:USER"
-  note: "host_user_decision=sha256:2bd48595465c7a61fa7e7586b87a52fe2dcf9048a6ba39572b88fd0f7417a7c0"
+  note: "host_user_decision=sha256:94c0b7d373b1f6201c268ed5e311db2fd42605c07bbc8f3d25950273f27267c6"
 verification:
   state: "ok"
   updated_at: "2026-09-14T10:59:52.042Z"
@@ -62,8 +62,6 @@ quality_review:
     - "Residual risk: Hosted CI and provider readback must still pass before merge."
 token_usage:
   agent_runs: 10
-  cached_input_observed_agent_runs: 0
-  cached_input_tokens: null
   input_tokens: null
   journal_digest: "sha256:0b510df6ed49a6211ea8d4a57a45ed7489025f2bef98599692ef2eb8ba20606b"
   observed_agent_runs: 0
@@ -112,13 +110,15 @@ execution_contract:
       - "packages/agentplane/src/commands/branch/sync-task-base.test.ts"
       - "packages/agentplane/src/commands/branch/sync-task-base.ts"
       - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+      - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
+      - "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
   declaration:
     external_effects: []
     implementation_uncertainty: "bounded"
     preferred_mode: "branch_pr"
     rationale:
-      - "The defect is isolated to the supervisor-owned exact-base merge command and its focused tests."
-      - "The fix must preserve mandatory commit hooks, exact identities, no-ff topology, and ancestry readback."
+      - "The added work is limited to two hosted-failing concurrency tests and must preserve the accepted sync-base behavior."
+      - "The task remains a release-blocking branch PR with an open provider PR."
     repository_effects:
       - "source_code"
       - "tests"
@@ -129,50 +129,15 @@ execution_contract:
       - "packages/agentplane/src/commands/branch/sync-task-base.test.ts"
       - "packages/agentplane/src/commands/branch/sync-task-base.ts"
       - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+      - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
+      - "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
   observed:
     authority_violations: []
-    changed_components:
-      - "packages/agentplane"
-    changed_paths:
-      - "packages/agentplane/src/commands/branch/sync-task-base.test.ts"
-      - "packages/agentplane/src/commands/branch/sync-task-base.ts"
-      - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+    changed_components: []
+    changed_paths: []
     external_effects: []
-    repository_effects:
-      - "repository_write"
-      - "source_code"
-      - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
-      -
-        id: "recorded-check-7"
-        result: "pass"
-      -
-        id: "recorded-check-8"
-        result: "pass"
-      -
-        id: "recorded-check-9"
-        result: "pass"
-      -
-        id: "verification-record"
-        result: "pass"
+    repository_effects: []
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -192,9 +157,10 @@ execution_contract:
           - "packages/agentplane/src/commands/branch/sync-task-base.test.ts"
           - "packages/agentplane/src/commands/branch/sync-task-base.ts"
           - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+          - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
+          - "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
         evidence_requirements:
           - "hosted_integration"
-          - "repository_effect:repository_write"
           - "repository_effect:source_code"
           - "repository_effect:tests"
           - "task_outcome"
@@ -206,7 +172,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:bb9843b56beb6ee559d385d4c0b48b82365728864d5a1feba4bce9f060b32e93"
+      digest: "sha256:a3fb98332f091f7ef64879daffd52c88457339844e92229aff2e2a0ef426a3d9"
       escalation_reasons:
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
@@ -216,17 +182,10 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components:
-          - "packages/agentplane"
-        changed_files:
-          - "packages/agentplane/src/commands/branch/sync-task-base.test.ts"
-          - "packages/agentplane/src/commands/branch/sync-task-base.ts"
-          - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+        changed_components: []
+        changed_files: []
         external_effects: []
-        repository_effects:
-          - "repository_write"
-          - "source_code"
-          - "tests"
+        repository_effects: []
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -255,7 +214,6 @@ execution_contract:
       source: "execution_contract"
     required_evidence:
       - "hosted_integration"
-      - "repository_effect:repository_write"
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
@@ -359,7 +317,7 @@ events:
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "3746697db0279b3d8011349653cb90e2860e3f91"
 doc_version: 3
-doc_updated_at: "2026-09-14T11:02:21.185Z"
+doc_updated_at: "2026-09-14T11:30:50.392Z"
 doc_updated_by: "CODER"
 description: "The release task 202609121424-49XXT3 requested exact branch-base synchronization onto main 1a93a9a43da2b714854174491f9672c52bf33e9f. synchronizeTaskBranchBase generated subject 'Merge branch main into task/...' and git hook run commit-msg rejected it because the repository requires '<emoji> <task-suffix> <scope>: <summary>'. Update the supervisor-owned synchronization implementation to create a policy-compliant task-attributed merge subject without weakening or bypassing hooks. Preserve the exact two-parent no-ff merge and ancestry postconditions. Add focused regression coverage for the real hook-compatible subject. Do not touch release candidate content or agentplane-roadmap-r2."
 sections:
@@ -370,7 +328,7 @@ sections:
   Scope: |-
     - In scope: The release task 202609121424-49XXT3 requested exact branch-base synchronization onto main 1a93a9a43da2b714854174491f9672c52bf33e9f. synchronizeTaskBranchBase generated subject 'Merge branch main into task/...' and git hook run commit-msg rejected it because the repository requires '<emoji> <task-suffix> <scope>: <summary>'. Update the supervisor-owned synchronization implementation to create a policy-compliant task-attributed merge subject without weakening or bypassing hooks. Preserve the exact two-parent no-ff merge and ancestry postconditions. Add focused regression coverage for the real hook-compatible subject. Do not touch release candidate content or agentplane-roadmap-r2.
     - Out of scope: unrelated refactors not required for "Make supervisor-owned task branch base synchronization generate a commit subject accepted by AgentPlane commit-msg policy".
-  Plan: "The plan repairs the supervisor merge message and proves hook-compatible synchronization without weakening policy."
+  Plan: "The refined plan proves the hosted concurrency failure before applying the smallest test-harness hardening and reruns the complete required verification."
   Verify Steps: |-
     1. Run `bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts`. Expected: focused synchronization and supervisor-operation tests pass.
     2. Inspect the focused fixture merge commit subject, body, and parents. Expected: the subject matches the task-attributed AgentPlane format, the body contains a valid Signed-off-by trailer, and the parents are the exact prior task head followed by the exact plan-bound base SHA.
@@ -549,7 +507,7 @@ sections:
 extensions:
   agentplane.execution_grant:
     actor: "HOST:codex-desktop:USER"
-    approval_evidence_digest: "sha256:2bd48595465c7a61fa7e7586b87a52fe2dcf9048a6ba39572b88fd0f7417a7c0"
+    approval_evidence_digest: "sha256:94c0b7d373b1f6201c268ed5e311db2fd42605c07bbc8f3d25950273f27267c6"
     approval_kind: "host_user_decision"
     capabilities:
       - "provider.merge"
@@ -559,12 +517,12 @@ extensions:
       - "task.lifecycle"
       - "task.scope.extend"
     completion_contract_digest: "sha256:e56f01a07537e5e356add0980ed2cb9f1e3eda790c1e8149342d2e700a736493"
-    digest: "sha256:f0949e6c31265d9bc8a0da4421417dcc0a528f771156b0715d180fa217c27432"
-    grant_id: "aa98795e-9b17-4f76-afbd-a134eab21828"
-    issued_at: "2026-09-14T10:14:04.061Z"
+    digest: "sha256:d65b71d32785e978cf9b17350175025a970ac763bf83f7a08c8cf4307ff7805b"
+    grant_id: "ae5057e6-65ac-4346-8966-78d8f35b2e19"
+    issued_at: "2026-09-14T11:30:50.365Z"
     kind: "agentplane.execution_grant"
-    plan_digest: "sha256:d7c4593554d12354a4d2fa02358bd1df6c4291023576e21dea683b6c3110f443"
-    plan_revision: 3
+    plan_digest: "sha256:cf20eb782200c74ca8dfa5aef2dbcc393d181c03b4e13155592f40c6fce619da"
+    plan_revision: 26
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
     scope_digest: "sha256:ef6d02ec2aac91d97cea1c9d7042c3803e2daef9f79732cf3311ce630ea41291"
@@ -573,203 +531,31 @@ extensions:
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-14T10:14:04.061Z"
+        approved_at: "2026-09-14T11:30:50.365Z"
         approved_by: "HOST:codex-desktop:USER"
-        approved_digest: "sha256:2c389272e5f29f9871078eff17e16d5beacad44a28981e9eb54e884794820fcc"
+        approved_digest: "sha256:c0fcc82c1cd8640ea3e274ea04ce90a2b291327cd89d088e94807312ce3e0d44"
         policy_facts:
           - "host_user_decision"
         state: "approved"
-      created_at: "2026-09-14T09:28:09.969Z"
-      digest: "sha256:2c389272e5f29f9871078eff17e16d5beacad44a28981e9eb54e884794820fcc"
+      created_at: "2026-09-14T11:24:44.846Z"
+      digest: "sha256:c0fcc82c1cd8640ea3e274ea04ce90a2b291327cd89d088e94807312ce3e0d44"
       proposal:
         assumptions:
-          - "The repository commit policy accepts the universal task scope for a task-attributed merge commit."
-          - "Git merge --signoff supplies the required DCO trailer using the configured repository identity."
+          - "If diagnosis proves a production-code defect, the executor must return a new plan refinement before changing any production path outside the approved roots."
         planning_baseline:
-          captured_at: "2026-09-14T09:26:04.828Z"
+          captured_at: "2026-09-14T11:20:53.219Z"
           config_digest: null
           context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
-          digest: "sha256:124ec9fd43d43924ee0744d300fc6a5ae2ec234b3c137dd9f1b5c5a85597e532"
+          digest: "sha256:539af198599013988707a150fa7d02919990d2b53b81bbdbe7c6824833390234"
           dirty_paths:
-            - ".agentplane/tasks/202609072121-9VEHKH/README.md"
-            - ".agentplane/tasks/202609080727-BAWTEE/README.md"
-            - ".agentplane/tasks/202609130146-7AZ4T4/README.md"
-            - ".agentplane/tasks/202609130319-MHRRRF/README.md"
-            - ".agentplane/tasks/202609130319-X96Z3Q/README.md"
-            - ".agentplane/tasks/202609130320-EFMSMR/README.md"
-            - ".agentplane/tasks/202609130320-EFMSMR/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
-            - ".agentplane/tasks/202609130320-EFMSMR/quality/objects/sha256/5404e4f80074675cc911e313ac7ead8157492b68fa4c1a9bc85f094f038d9414.json"
-            - ".agentplane/tasks/202609130320-EFMSMR/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
-            - ".agentplane/tasks/202609130320-EFMSMR/supervision/declared-checks.json"
-            - ".agentplane/tasks/202609130352-Q99M4K/README.md"
-            - ".agentplane/tasks/202609130352-Q99M4K/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
-            - ".agentplane/tasks/202609130352-Q99M4K/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
-            - ".agentplane/tasks/202609130402-QWV6VX/README.md"
-            - ".agentplane/tasks/202609130402-QWV6VX/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
-            - ".agentplane/tasks/202609130402-QWV6VX/quality/objects/sha256/5404e4f80074675cc911e313ac7ead8157492b68fa4c1a9bc85f094f038d9414.json"
-            - ".agentplane/tasks/202609130402-QWV6VX/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
-            - ".agentplane/tasks/202609130402-QWV6VX/supervision/declared-checks.json"
-            - ".agentplane/tasks/202609130414-G8VK36/README.md"
-            - ".agentplane/tasks/202609130414-G8VK36/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
-            - ".agentplane/tasks/202609130414-G8VK36/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
-            - ".agentplane/tasks/202609130420-X9CKTH/README.md"
-            - ".agentplane/tasks/202609130420-X9CKTH/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
-            - ".agentplane/tasks/202609130420-X9CKTH/quality/objects/sha256/5404e4f80074675cc911e313ac7ead8157492b68fa4c1a9bc85f094f038d9414.json"
-            - ".agentplane/tasks/202609130420-X9CKTH/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
-            - ".agentplane/tasks/202609130420-X9CKTH/supervision/declared-checks.json"
-            - ".agentplane/tasks/202609130428-9GY63X/README.md"
-            - ".agentplane/tasks/202609130428-9GY63X/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
-            - ".agentplane/tasks/202609130428-9GY63X/quality/objects/sha256/5404e4f80074675cc911e313ac7ead8157492b68fa4c1a9bc85f094f038d9414.json"
-            - ".agentplane/tasks/202609130428-9GY63X/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
-            - ".agentplane/tasks/202609130428-9GY63X/supervision/declared-checks.json"
             - ".agentplane/tasks/202609140925-AWJQMB/README.md"
-            - "agentplane-roadmap-r2/AGENT-START.md"
-            - "agentplane-roadmap-r2/EXECUTION-CHARTER.md"
-            - "agentplane-roadmap-r2/README.md"
-            - "agentplane-roadmap-r2/agentplane-0.7.9-0.7.14-roadmap-r2.md"
-            - "agentplane-roadmap-r2/checksums.json"
-            - "agentplane-roadmap-r2/coverage-and-gap-audit.md"
-            - "agentplane-roadmap-r2/coverage-map.json"
-            - "agentplane-roadmap-r2/dependency-graph.json"
-            - "agentplane-roadmap-r2/experiment-requirements.json"
-            - "agentplane-roadmap-r2/releases/0.7.10.md"
-            - "agentplane-roadmap-r2/releases/0.7.11.md"
-            - "agentplane-roadmap-r2/releases/0.7.12.md"
-            - "agentplane-roadmap-r2/releases/0.7.13.md"
-            - "agentplane-roadmap-r2/releases/0.7.14.md"
-            - "agentplane-roadmap-r2/releases/0.7.9.md"
-            - "agentplane-roadmap-r2/source-evidence.json"
-            - "agentplane-roadmap-r2/tasks.json"
-            - "agentplane-roadmap-r2/tasks/BP-01.md"
-            - "agentplane-roadmap-r2/tasks/BP-02.md"
-            - "agentplane-roadmap-r2/tasks/BP-03.md"
-            - "agentplane-roadmap-r2/tasks/BP-04.md"
-            - "agentplane-roadmap-r2/tasks/BP-05.md"
-            - "agentplane-roadmap-r2/tasks/BP-06.md"
-            - "agentplane-roadmap-r2/tasks/BP-07.md"
-            - "agentplane-roadmap-r2/tasks/BP-08.md"
-            - "agentplane-roadmap-r2/tasks/BP-09.md"
-            - "agentplane-roadmap-r2/tasks/BP-10.md"
-            - "agentplane-roadmap-r2/tasks/BP-11.md"
-            - "agentplane-roadmap-r2/tasks/BP-12.md"
-            - "agentplane-roadmap-r2/tasks/BP-13.md"
-            - "agentplane-roadmap-r2/tasks/BP-14.md"
-            - "agentplane-roadmap-r2/tasks/BP-15.md"
-            - "agentplane-roadmap-r2/tasks/BP-16.md"
-            - "agentplane-roadmap-r2/tasks/BP-17.md"
-            - "agentplane-roadmap-r2/tasks/BP-18.md"
-            - "agentplane-roadmap-r2/tasks/BP-19.md"
-            - "agentplane-roadmap-r2/tasks/BP-20.md"
-            - "agentplane-roadmap-r2/tasks/BP-21.md"
-            - "agentplane-roadmap-r2/tasks/BP-22.md"
-            - "agentplane-roadmap-r2/tasks/BP-23.md"
-            - "agentplane-roadmap-r2/tasks/BP-24.md"
-            - "agentplane-roadmap-r2/tasks/BP-25.md"
-            - "agentplane-roadmap-r2/tasks/BP-26.md"
-            - "agentplane-roadmap-r2/tasks/BP-27.md"
-            - "agentplane-roadmap-r2/tasks/BP-28.md"
-            - "agentplane-roadmap-r2/tasks/BP-29.md"
-            - "agentplane-roadmap-r2/tasks/BP-30.md"
-            - "agentplane-roadmap-r2/tasks/BP-31.md"
-            - "agentplane-roadmap-r2/tasks/EV-01.md"
-            - "agentplane-roadmap-r2/tasks/EV-02.md"
-            - "agentplane-roadmap-r2/tasks/EV-03.md"
-            - "agentplane-roadmap-r2/tasks/EV-04.md"
-            - "agentplane-roadmap-r2/tasks/EV-05.md"
-            - "agentplane-roadmap-r2/tasks/EV-06.md"
-            - "agentplane-roadmap-r2/tasks/EV-07.md"
-            - "agentplane-roadmap-r2/tasks/EV-08.md"
-            - "agentplane-roadmap-r2/tasks/EV-09.md"
-            - "agentplane-roadmap-r2/tasks/EV-10.md"
-            - "agentplane-roadmap-r2/tasks/EV-11.md"
-            - "agentplane-roadmap-r2/tasks/EV-12.md"
-            - "agentplane-roadmap-r2/tasks/EV-13.md"
-            - "agentplane-roadmap-r2/tasks/LC-01.md"
-            - "agentplane-roadmap-r2/tasks/LC-02.md"
-            - "agentplane-roadmap-r2/tasks/LC-03.md"
-            - "agentplane-roadmap-r2/tasks/LC-04.md"
-            - "agentplane-roadmap-r2/tasks/LC-05.md"
-            - "agentplane-roadmap-r2/tasks/LC-06.md"
-            - "agentplane-roadmap-r2/tasks/LC-07.md"
-            - "agentplane-roadmap-r2/tasks/LC-08.md"
-            - "agentplane-roadmap-r2/tasks/LC-09.md"
-            - "agentplane-roadmap-r2/tasks/LC-10.md"
-            - "agentplane-roadmap-r2/tasks/LC-11.md"
-            - "agentplane-roadmap-r2/tasks/LC-12.md"
-            - "agentplane-roadmap-r2/tasks/LC-13.md"
-            - "agentplane-roadmap-r2/tasks/LC-14.md"
-            - "agentplane-roadmap-r2/tasks/LC-15.md"
-            - "agentplane-roadmap-r2/tasks/LC-16.md"
-            - "agentplane-roadmap-r2/tasks/LC-17.md"
-            - "agentplane-roadmap-r2/tasks/LC-18.md"
-            - "agentplane-roadmap-r2/tasks/LC-19.md"
-            - "agentplane-roadmap-r2/tasks/LC-20.md"
-            - "agentplane-roadmap-r2/tasks/LC-21.md"
-            - "agentplane-roadmap-r2/tasks/LC-22.md"
-            - "agentplane-roadmap-r2/tasks/LC-23.md"
-            - "agentplane-roadmap-r2/tasks/LC-24.md"
-            - "agentplane-roadmap-r2/tasks/PL-01.md"
-            - "agentplane-roadmap-r2/tasks/PL-02.md"
-            - "agentplane-roadmap-r2/tasks/PL-03.md"
-            - "agentplane-roadmap-r2/tasks/PL-04.md"
-            - "agentplane-roadmap-r2/tasks/PL-05.md"
-            - "agentplane-roadmap-r2/tasks/PL-06.md"
-            - "agentplane-roadmap-r2/tasks/PL-07.md"
-            - "agentplane-roadmap-r2/tasks/PL-08.md"
-            - "agentplane-roadmap-r2/tasks/PL-09.md"
-            - "agentplane-roadmap-r2/tasks/PL-10.md"
-            - "agentplane-roadmap-r2/tasks/PL-11.md"
-            - "agentplane-roadmap-r2/tasks/PL-12.md"
-            - "agentplane-roadmap-r2/tasks/RC-01.md"
-            - "agentplane-roadmap-r2/tasks/RC-02.md"
-            - "agentplane-roadmap-r2/tasks/RC-03.md"
-            - "agentplane-roadmap-r2/tasks/RC-04.md"
-            - "agentplane-roadmap-r2/tasks/RC-05.md"
-            - "agentplane-roadmap-r2/tasks/RC-06.md"
-            - "agentplane-roadmap-r2/tasks/RC-07.md"
-            - "agentplane-roadmap-r2/tasks/RC-08.md"
-            - "agentplane-roadmap-r2/tasks/RC-09.md"
-            - "agentplane-roadmap-r2/tasks/RC-10.md"
-            - "agentplane-roadmap-r2/tasks/RC-11.md"
-            - "agentplane-roadmap-r2/tasks/RC-12.md"
-            - "agentplane-roadmap-r2/tasks/RC-13.md"
-            - "agentplane-roadmap-r2/tasks/RC-14.md"
-            - "agentplane-roadmap-r2/tasks/RC-15.md"
-            - "agentplane-roadmap-r2/tasks/RC-16.md"
-            - "agentplane-roadmap-r2/tasks/RC-17.md"
-            - "agentplane-roadmap-r2/tasks/RC-18.md"
-            - "agentplane-roadmap-r2/tasks/ST-01.md"
-            - "agentplane-roadmap-r2/tasks/ST-02.md"
-            - "agentplane-roadmap-r2/tasks/ST-03.md"
-            - "agentplane-roadmap-r2/tasks/ST-04.md"
-            - "agentplane-roadmap-r2/tasks/ST-05.md"
-            - "agentplane-roadmap-r2/tasks/ST-06.md"
-            - "agentplane-roadmap-r2/tasks/ST-07.md"
-            - "agentplane-roadmap-r2/tasks/ST-08.md"
-            - "agentplane-roadmap-r2/tasks/ST-09.md"
-            - "agentplane-roadmap-r2/tasks/ST-10.md"
-            - "agentplane-roadmap-r2/tasks/ST-11.md"
-            - "agentplane-roadmap-r2/tasks/ST-12.md"
-            - "agentplane-roadmap-r2/tasks/ST-13.md"
-            - "agentplane-roadmap-r2/tasks/ST-14.md"
-            - "agentplane-roadmap-r2/tasks/ST-15.md"
-            - "agentplane-roadmap-r2/tasks/ST-16.md"
-            - "agentplane-roadmap-r2/tasks/ST-17.md"
-            - "agentplane-roadmap-r2/tasks/ST-18.md"
-            - "agentplane-roadmap-r2/tasks/ST-19.md"
-            - "agentplane-roadmap-r2/tasks/ST-20.md"
-            - "agentplane-roadmap-r2/tasks/ST-21.md"
-            - "agentplane-roadmap-r2/validate_roadmap.py"
-            - "agentplane-roadmap-r2/validation-report.json"
-            - "packages/agentplane/src/adapters/task-backend/kernel-plan-rejection-recovery.ts"
-            - "packages/agentplane/src/cli/run-cli.roadmap-plan-recovery.test.ts"
           git:
             kind: "commit"
             ref: null
-            sha: "1a93a9a43da2b714854174491f9672c52bf33e9f"
+            sha: "9382fbdfc07cdfc0b00cb7f972b5043fbe08758d"
           policy_digest: null
           schema_version: 1
-          task_history_cursor: "task-revision:1"
+          task_history_cursor: "task-revision:25"
         schema_version: 1
         task_id: "202609140925-AWJQMB"
         top_level_validation:
@@ -777,24 +563,73 @@ extensions:
             -
               capability: "task.verify"
               command: "bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
-              id: "focused_base_sync_tests"
+              id: "focused-sync-base"
               kind: "deterministic"
               required: true
-              timeout_ms: 300000
+              timeout_ms: 120000
             -
               capability: "task.verify"
-              id: "diff_hygiene"
+              command: "bun x vitest run packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
+              id: "implicated-concurrency-suites"
+              kind: "deterministic"
+              required: true
+              timeout_ms: 120000
+            -
+              capability: "task.verify"
+              command: "bun run test:fast:ci"
+              id: "fast-ci"
+              kind: "deterministic"
+              required: true
+              timeout_ms: 900000
+            -
+              capability: "task.verify"
+              command: "bun run ci:local:full"
+              id: "full-local"
+              kind: "deterministic"
+              required: true
+              timeout_ms: 1800000
+            -
+              capability: "task.verify"
+              command: "git diff --check && git status --short --untracked-files=all"
+              id: "diff-status"
               kind: "structural"
+              required: true
+              timeout_ms: 120000
+            -
+              capability: "task.verify"
+              id: "hosted-integration"
+              kind: "provider"
               required: true
           criteria:
             -
               check_ids:
-                - "focused_base_sync_tests"
-                - "diff_hygiene"
-              description: "Supervisor-owned task branch base synchronization creates a task-attributed, DCO-signed merge commit that passes the real AgentPlane commit-msg policy. The merge retains the exact previous task head and plan-bound base as its two parents. Conflict, stale identity, and dirty-worktree behavior remain fail-closed."
-              id: "hook_compatible_base_sync"
+                - "focused-sync-base"
+              description: "The policy-valid signed merge subject, exact two-parent topology, ancestry checks, and refusal paths remain unchanged and passing."
+              id: "sync-base-contract"
               required: true
-          evidence_fingerprint: "sha256:124ec9fd43d43924ee0744d300fc6a5ae2ec234b3c137dd9f1b5c5a85597e532"
+            -
+              check_ids:
+                - "implicated-concurrency-suites"
+                - "fast-ci"
+              description: "Concurrent verification keeps final task state aligned with durable records without accepting stale temporary README state."
+              id: "verify-concurrency"
+              required: true
+            -
+              check_ids:
+                - "implicated-concurrency-suites"
+                - "fast-ci"
+              description: "Parallel direct-task allocation and cleanup leave the shared temporary Git worktree metadata readable and fully cleaned."
+              id: "workspace-concurrency"
+              required: true
+            -
+              check_ids:
+                - "full-local"
+                - "diff-status"
+                - "hosted-integration"
+              description: "The full local regression, clean diff inspection, and hosted integration pass before merge."
+              id: "release-gate"
+              required: true
+          evidence_fingerprint: "sha256:539af198599013988707a150fa7d02919990d2b53b81bbdbe7c6824833390234"
           schema_version: 1
         unresolved_questions: []
         work_items:
@@ -804,110 +639,239 @@ extensions:
               acceptance_criteria:
                 -
                   check_ids:
-                    - "focused_base_sync_tests"
-                    - "diff_hygiene"
-                  description: "Supervisor-owned task branch base synchronization creates a task-attributed, DCO-signed merge commit that passes the real AgentPlane commit-msg policy. The merge retains the exact previous task head and plan-bound base as its two parents. Conflict, stale identity, and dirty-worktree behavior remain fail-closed."
-                  id: "hook_compatible_base_sync"
+                    - "implicated-concurrency-suites"
+                    - "fast-ci"
+                  description: "Concurrent verification keeps final task state aligned with durable records without accepting stale temporary README state."
+                  id: "verify-concurrency"
+                  required: true
+                -
+                  check_ids:
+                    - "implicated-concurrency-suites"
+                    - "fast-ci"
+                  description: "Parallel direct-task allocation and cleanup leave the shared temporary Git worktree metadata readable and fully cleaned."
+                  id: "workspace-concurrency"
                   required: true
               capabilities:
                 - "task.verify"
               context:
-                max_bytes: 500000
+                max_bytes: 32768
                 optional_sources:
-                  - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
-                  - "packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts"
+                  - "packages/agentplane/src/commands/task/verify-record-execute.ts"
+                  - "packages/agentplane/src/runtime/workspace-allocation/allocate.ts"
                 required_sources:
-                  - "packages/agentplane/src/commands/branch/sync-task-base.ts"
-                  - "packages/agentplane/src/commands/branch/sync-task-base.test.ts"
-                  - "packages/core/src/commit/commit-policy.ts"
+                  - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
+                  - "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
                 symbol_hints:
-                  - "synchronizeTaskBranchBase"
-                  - "extractTaskSuffix"
-                  - "commit-msg"
-                  - "--signoff"
+                  - "cmdVerifyParsed"
+                  - "allocateTaskWorkspace"
+                  - "cleanupTaskWorkspace"
               depends_on: []
               expected_outputs:
-                - "hook-compatible supervisor merge implementation"
-                - "focused regression proof"
-              id: "repair_sync_merge_message"
-              objective: "Make synchronizeTaskBranchBase create a policy-compliant task-attributed and DCO-signed merge commit. Preserve exact-base preflight, no-ff topology, parent order, ancestry proof, hook execution, and fail-closed cleanup. Extend the focused integration test so the fixture installs the real commit-msg contract or an equivalent repository-managed hook path and proves the produced subject and trailer are accepted."
+                - "race-analysis"
+                - "correction-decision"
+              id: "prove-hosted-races"
+              objective: "Reproduce or deterministically expose each hosted concurrency failure and identify whether the defect is test cleanup ordering or production behavior."
               optional: false
-              priority: 1
+              priority: 2
               required_inputs: []
               resource_claims:
                 -
                   kind: "path"
-                  mode: "write"
-                  resource: "packages/agentplane/src/commands/branch/sync-task-base.ts"
+                  mode: "read"
+                  resource: "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
                 -
                   kind: "path"
-                  mode: "write"
-                  resource: "packages/agentplane/src/commands/branch/sync-task-base.test.ts"
-                -
-                  kind: "path"
-                  mode: "write"
-                  resource: "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+                  mode: "read"
+                  resource: "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
               risk: "medium"
               scope_roots:
-                - "packages/agentplane/src/commands/branch/sync-task-base.ts"
-                - "packages/agentplane/src/commands/branch/sync-task-base.test.ts"
-                - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+                - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
+                - "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
+              validation:
+                checks:
+                  -
+                    capability: "task.verify"
+                    command: "bun x vitest run packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
+                    id: "implicated-concurrency-suites"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 120000
+                  -
+                    capability: "task.verify"
+                    command: "bun run test:fast:ci"
+                    id: "fast-ci"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 900000
+                criteria:
+                  -
+                    check_ids:
+                      - "implicated-concurrency-suites"
+                      - "fast-ci"
+                    description: "Concurrent verification keeps final task state aligned with durable records without accepting stale temporary README state."
+                    id: "verify-concurrency"
+                    required: true
+                  -
+                    check_ids:
+                      - "implicated-concurrency-suites"
+                      - "fast-ci"
+                    description: "Parallel direct-task allocation and cleanup leave the shared temporary Git worktree metadata readable and fully cleaned."
+                    id: "workspace-concurrency"
+                    required: true
+                evidence_fingerprint: "sha256:539af198599013988707a150fa7d02919990d2b53b81bbdbe7c6824833390234"
+                schema_version: 1
+            -
+              acceptance_criteria:
+                -
+                  check_ids:
+                    - "focused-sync-base"
+                  description: "The policy-valid signed merge subject, exact two-parent topology, ancestry checks, and refusal paths remain unchanged and passing."
+                  id: "sync-base-contract"
+                  required: true
+                -
+                  check_ids:
+                    - "implicated-concurrency-suites"
+                    - "fast-ci"
+                  description: "Concurrent verification keeps final task state aligned with durable records without accepting stale temporary README state."
+                  id: "verify-concurrency"
+                  required: true
+                -
+                  check_ids:
+                    - "implicated-concurrency-suites"
+                    - "fast-ci"
+                  description: "Parallel direct-task allocation and cleanup leave the shared temporary Git worktree metadata readable and fully cleaned."
+                  id: "workspace-concurrency"
+                  required: true
+                -
+                  check_ids:
+                    - "full-local"
+                    - "diff-status"
+                    - "hosted-integration"
+                  description: "The full local regression, clean diff inspection, and hosted integration pass before merge."
+                  id: "release-gate"
+                  required: true
+              capabilities:
+                - "task.verify"
+              context:
+                max_bytes: 49152
+                optional_sources:
+                  - "packages/agentplane/src/commands/task/verify-record-execute.ts"
+                  - "packages/agentplane/src/runtime/workspace-allocation/allocate.ts"
+                required_sources:
+                  - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
+                  - "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
+                  - "packages/agentplane/src/commands/branch/sync-task-base.test.ts"
+                  - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+                symbol_hints:
+                  - "cmdVerifyParsed"
+                  - "cleanupTaskWorkspace"
+              depends_on:
+                - "prove-hosted-races"
+              expected_outputs:
+                - "regression-fix"
+                - "verification-evidence"
+              id: "harden-and-verify"
+              objective: "Apply the smallest proven correction inside the two added test paths, preserve the sync-base contract, and complete local plus hosted verification."
+              optional: false
+              priority: 1
+              required_inputs:
+                - "race-analysis"
+                - "correction-decision"
+              resource_claims:
+                -
+                  kind: "workspace"
+                  mode: "exclusive"
+                  resource: "202609140925-AWJQMB"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
+              risk: "medium"
+              scope_roots:
+                - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
+                - "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
               validation:
                 checks:
                   -
                     capability: "task.verify"
                     command: "bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
-                    id: "focused_base_sync_tests"
+                    id: "focused-sync-base"
                     kind: "deterministic"
                     required: true
-                    timeout_ms: 300000
+                    timeout_ms: 120000
                   -
                     capability: "task.verify"
-                    id: "diff_hygiene"
+                    command: "bun x vitest run packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
+                    id: "implicated-concurrency-suites"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 120000
+                  -
+                    capability: "task.verify"
+                    command: "bun run test:fast:ci"
+                    id: "fast-ci"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 900000
+                  -
+                    capability: "task.verify"
+                    command: "bun run ci:local:full"
+                    id: "full-local"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 1800000
+                  -
+                    capability: "task.verify"
+                    command: "git diff --check && git status --short --untracked-files=all"
+                    id: "diff-status"
                     kind: "structural"
+                    required: true
+                    timeout_ms: 120000
+                  -
+                    capability: "task.verify"
+                    id: "hosted-integration"
+                    kind: "provider"
                     required: true
                 criteria:
                   -
                     check_ids:
-                      - "focused_base_sync_tests"
-                      - "diff_hygiene"
-                    description: "Supervisor-owned task branch base synchronization creates a task-attributed, DCO-signed merge commit that passes the real AgentPlane commit-msg policy. The merge retains the exact previous task head and plan-bound base as its two parents. Conflict, stale identity, and dirty-worktree behavior remain fail-closed."
-                    id: "hook_compatible_base_sync"
+                      - "focused-sync-base"
+                    description: "The policy-valid signed merge subject, exact two-parent topology, ancestry checks, and refusal paths remain unchanged and passing."
+                    id: "sync-base-contract"
                     required: true
-                evidence_fingerprint: "sha256:124ec9fd43d43924ee0744d300fc6a5ae2ec234b3c137dd9f1b5c5a85597e532"
+                  -
+                    check_ids:
+                      - "implicated-concurrency-suites"
+                      - "fast-ci"
+                    description: "Concurrent verification keeps final task state aligned with durable records without accepting stale temporary README state."
+                    id: "verify-concurrency"
+                    required: true
+                  -
+                    check_ids:
+                      - "implicated-concurrency-suites"
+                      - "fast-ci"
+                    description: "Parallel direct-task allocation and cleanup leave the shared temporary Git worktree metadata readable and fully cleaned."
+                    id: "workspace-concurrency"
+                    required: true
+                  -
+                    check_ids:
+                      - "full-local"
+                      - "diff-status"
+                      - "hosted-integration"
+                    description: "The full local regression, clean diff inspection, and hosted integration pass before merge."
+                    id: "release-gate"
+                    required: true
+                evidence_fingerprint: "sha256:539af198599013988707a150fa7d02919990d2b53b81bbdbe7c6824833390234"
                 schema_version: 1
-      revision: 1
+      revision: 2
       schema_version: 1
       task_id: "202609140925-AWJQMB"
-    event_cursor: 18
-    final_validation:
-      evidence:
-        -
-          artifact_refs:
-            - "task-verification:202609140925-AWJQMB"
-            - "git:b6dae19a727f6516137d85dbdb25f4d6961c05e7"
-          check_id: "focused_base_sync_tests"
-          command_identity: "bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
-          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-          exit_code: 0
-          observed_at: "2026-09-14T10:59:52.042Z"
-          repository_snapshot_digest: "sha256:558854ecd311b0dffc2ac76f58b32f5c09f886bfce1ed31f80fc88acd9f53c5d"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609140925-AWJQMB"
-            - "git:b6dae19a727f6516137d85dbdb25f4d6961c05e7"
-          check_id: "diff_hygiene"
-          command_identity: "task.verify"
-          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-          exit_code: 0
-          observed_at: "2026-09-14T10:59:52.042Z"
-          repository_snapshot_digest: "sha256:558854ecd311b0dffc2ac76f58b32f5c09f886bfce1ed31f80fc88acd9f53c5d"
-          status: "passed"
-      schema_version: 1
-      stale_evidence: []
-      status: "passed"
-      unsatisfied_criteria: []
+    event_cursor: 19
+    final_validation: null
     id: "202609140925-AWJQMB"
     intent:
       acceptance_criteria:
@@ -923,96 +887,339 @@ extensions:
 
         The release task 202609121424-49XXT3 requested exact branch-base synchronization onto main 1a93a9a43da2b714854174491f9672c52bf33e9f. synchronizeTaskBranchBase generated subject 'Merge branch main into task/...' and git hook run commit-msg rejected it because the repository requires '<emoji> <task-suffix> <scope>: <summary>'. Update the supervisor-owned synchronization implementation to create a policy-compliant task-attributed merge subject without weakening or bypassing hooks. Preserve the exact two-parent no-ff merge and ancestry postconditions. Add focused regression coverage for the real hook-compatible subject. Do not touch release candidate content or agentplane-roadmap-r2.
       task_id: "202609140925-AWJQMB"
-    lifecycle: "COMPLETED"
-    plan_amendments:
+    lifecycle: "ACTIVE"
+    plan_amendments: []
+    plan_history:
       -
-        actor_id: "external:EXECUTOR"
-        created_at: "2026-09-14T10:24:08.289Z"
-        digest: "sha256:0ae164fe409eada2436a55299d162956ad7eb08ca993fd3a6d33cfa0080483a8"
-        id: "amendment_0ae164fe409eada2436a5529"
-        plan_digest: "sha256:2c389272e5f29f9871078eff17e16d5beacad44a28981e9eb54e884794820fcc"
-        plan_revision: 1
-        refinement:
-          acceptance_changed: false
-          architecture_constraints_changed: false
-          dependencies_changed: false
-          description: "Replace the validation command `bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts` with `bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts`. Keep all acceptance criteria and task scope unchanged."
-          external_effects_added: []
-          operations:
-            - "clarify"
-          outputs_added: []
-          risk_changed: false
-          scope_roots_added: []
-        schema_version: 1
-    plan_history: []
-    revision: 24
-    schema_version: 1
-    updated_at: "2026-09-14T11:02:21.185Z"
-    work_items:
-      repair_sync_merge_message:
-        attempt: 3
-        claim_id: null
-        id: "repair_sync_merge_message"
-        last_failure: null
-        output_manifests:
-          -
-            digest: "sha256:e291a2b43883fe92f4e96730e4c2edbed426319b43464cf1248b3ebf605336df"
-            id: "hook-compatible supervisor merge implementation"
-            kind: "semantic_output"
-            producer:
-              attempt: 3
-              plan_revision: 1
-              task_id: "202609140925-AWJQMB"
-              work_item_id: "repair_sync_merge_message"
-            provenance:
-              - "sha256:ee20cb7957e0de27514e402462456548e873eabb6f5ead16891b3eb2d38f3d56"
-              - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:c467154767ea0b16d071775182f30f3600a56c409821abf3136b5a8841fe0f4a"
-            schema: "agentplane.semantic-output.v1"
+        approval:
+          approved_at: "2026-09-14T10:14:04.061Z"
+          approved_by: "HOST:codex-desktop:USER"
+          approved_digest: "sha256:2c389272e5f29f9871078eff17e16d5beacad44a28981e9eb54e884794820fcc"
+          policy_facts:
+            - "host_user_decision"
+          state: "approved"
+        created_at: "2026-09-14T09:28:09.969Z"
+        digest: "sha256:2c389272e5f29f9871078eff17e16d5beacad44a28981e9eb54e884794820fcc"
+        proposal:
+          assumptions:
+            - "The repository commit policy accepts the universal task scope for a task-attributed merge commit."
+            - "Git merge --signoff supplies the required DCO trailer using the configured repository identity."
+          planning_baseline:
+            captured_at: "2026-09-14T09:26:04.828Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:124ec9fd43d43924ee0744d300fc6a5ae2ec234b3c137dd9f1b5c5a85597e532"
+            dirty_paths:
+              - ".agentplane/tasks/202609072121-9VEHKH/README.md"
+              - ".agentplane/tasks/202609080727-BAWTEE/README.md"
+              - ".agentplane/tasks/202609130146-7AZ4T4/README.md"
+              - ".agentplane/tasks/202609130319-MHRRRF/README.md"
+              - ".agentplane/tasks/202609130319-X96Z3Q/README.md"
+              - ".agentplane/tasks/202609130320-EFMSMR/README.md"
+              - ".agentplane/tasks/202609130320-EFMSMR/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
+              - ".agentplane/tasks/202609130320-EFMSMR/quality/objects/sha256/5404e4f80074675cc911e313ac7ead8157492b68fa4c1a9bc85f094f038d9414.json"
+              - ".agentplane/tasks/202609130320-EFMSMR/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+              - ".agentplane/tasks/202609130320-EFMSMR/supervision/declared-checks.json"
+              - ".agentplane/tasks/202609130352-Q99M4K/README.md"
+              - ".agentplane/tasks/202609130352-Q99M4K/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
+              - ".agentplane/tasks/202609130352-Q99M4K/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+              - ".agentplane/tasks/202609130402-QWV6VX/README.md"
+              - ".agentplane/tasks/202609130402-QWV6VX/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
+              - ".agentplane/tasks/202609130402-QWV6VX/quality/objects/sha256/5404e4f80074675cc911e313ac7ead8157492b68fa4c1a9bc85f094f038d9414.json"
+              - ".agentplane/tasks/202609130402-QWV6VX/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+              - ".agentplane/tasks/202609130402-QWV6VX/supervision/declared-checks.json"
+              - ".agentplane/tasks/202609130414-G8VK36/README.md"
+              - ".agentplane/tasks/202609130414-G8VK36/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
+              - ".agentplane/tasks/202609130414-G8VK36/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+              - ".agentplane/tasks/202609130420-X9CKTH/README.md"
+              - ".agentplane/tasks/202609130420-X9CKTH/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
+              - ".agentplane/tasks/202609130420-X9CKTH/quality/objects/sha256/5404e4f80074675cc911e313ac7ead8157492b68fa4c1a9bc85f094f038d9414.json"
+              - ".agentplane/tasks/202609130420-X9CKTH/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+              - ".agentplane/tasks/202609130420-X9CKTH/supervision/declared-checks.json"
+              - ".agentplane/tasks/202609130428-9GY63X/README.md"
+              - ".agentplane/tasks/202609130428-9GY63X/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
+              - ".agentplane/tasks/202609130428-9GY63X/quality/objects/sha256/5404e4f80074675cc911e313ac7ead8157492b68fa4c1a9bc85f094f038d9414.json"
+              - ".agentplane/tasks/202609130428-9GY63X/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+              - ".agentplane/tasks/202609130428-9GY63X/supervision/declared-checks.json"
+              - ".agentplane/tasks/202609140925-AWJQMB/README.md"
+              - "agentplane-roadmap-r2/AGENT-START.md"
+              - "agentplane-roadmap-r2/EXECUTION-CHARTER.md"
+              - "agentplane-roadmap-r2/README.md"
+              - "agentplane-roadmap-r2/agentplane-0.7.9-0.7.14-roadmap-r2.md"
+              - "agentplane-roadmap-r2/checksums.json"
+              - "agentplane-roadmap-r2/coverage-and-gap-audit.md"
+              - "agentplane-roadmap-r2/coverage-map.json"
+              - "agentplane-roadmap-r2/dependency-graph.json"
+              - "agentplane-roadmap-r2/experiment-requirements.json"
+              - "agentplane-roadmap-r2/releases/0.7.10.md"
+              - "agentplane-roadmap-r2/releases/0.7.11.md"
+              - "agentplane-roadmap-r2/releases/0.7.12.md"
+              - "agentplane-roadmap-r2/releases/0.7.13.md"
+              - "agentplane-roadmap-r2/releases/0.7.14.md"
+              - "agentplane-roadmap-r2/releases/0.7.9.md"
+              - "agentplane-roadmap-r2/source-evidence.json"
+              - "agentplane-roadmap-r2/tasks.json"
+              - "agentplane-roadmap-r2/tasks/BP-01.md"
+              - "agentplane-roadmap-r2/tasks/BP-02.md"
+              - "agentplane-roadmap-r2/tasks/BP-03.md"
+              - "agentplane-roadmap-r2/tasks/BP-04.md"
+              - "agentplane-roadmap-r2/tasks/BP-05.md"
+              - "agentplane-roadmap-r2/tasks/BP-06.md"
+              - "agentplane-roadmap-r2/tasks/BP-07.md"
+              - "agentplane-roadmap-r2/tasks/BP-08.md"
+              - "agentplane-roadmap-r2/tasks/BP-09.md"
+              - "agentplane-roadmap-r2/tasks/BP-10.md"
+              - "agentplane-roadmap-r2/tasks/BP-11.md"
+              - "agentplane-roadmap-r2/tasks/BP-12.md"
+              - "agentplane-roadmap-r2/tasks/BP-13.md"
+              - "agentplane-roadmap-r2/tasks/BP-14.md"
+              - "agentplane-roadmap-r2/tasks/BP-15.md"
+              - "agentplane-roadmap-r2/tasks/BP-16.md"
+              - "agentplane-roadmap-r2/tasks/BP-17.md"
+              - "agentplane-roadmap-r2/tasks/BP-18.md"
+              - "agentplane-roadmap-r2/tasks/BP-19.md"
+              - "agentplane-roadmap-r2/tasks/BP-20.md"
+              - "agentplane-roadmap-r2/tasks/BP-21.md"
+              - "agentplane-roadmap-r2/tasks/BP-22.md"
+              - "agentplane-roadmap-r2/tasks/BP-23.md"
+              - "agentplane-roadmap-r2/tasks/BP-24.md"
+              - "agentplane-roadmap-r2/tasks/BP-25.md"
+              - "agentplane-roadmap-r2/tasks/BP-26.md"
+              - "agentplane-roadmap-r2/tasks/BP-27.md"
+              - "agentplane-roadmap-r2/tasks/BP-28.md"
+              - "agentplane-roadmap-r2/tasks/BP-29.md"
+              - "agentplane-roadmap-r2/tasks/BP-30.md"
+              - "agentplane-roadmap-r2/tasks/BP-31.md"
+              - "agentplane-roadmap-r2/tasks/EV-01.md"
+              - "agentplane-roadmap-r2/tasks/EV-02.md"
+              - "agentplane-roadmap-r2/tasks/EV-03.md"
+              - "agentplane-roadmap-r2/tasks/EV-04.md"
+              - "agentplane-roadmap-r2/tasks/EV-05.md"
+              - "agentplane-roadmap-r2/tasks/EV-06.md"
+              - "agentplane-roadmap-r2/tasks/EV-07.md"
+              - "agentplane-roadmap-r2/tasks/EV-08.md"
+              - "agentplane-roadmap-r2/tasks/EV-09.md"
+              - "agentplane-roadmap-r2/tasks/EV-10.md"
+              - "agentplane-roadmap-r2/tasks/EV-11.md"
+              - "agentplane-roadmap-r2/tasks/EV-12.md"
+              - "agentplane-roadmap-r2/tasks/EV-13.md"
+              - "agentplane-roadmap-r2/tasks/LC-01.md"
+              - "agentplane-roadmap-r2/tasks/LC-02.md"
+              - "agentplane-roadmap-r2/tasks/LC-03.md"
+              - "agentplane-roadmap-r2/tasks/LC-04.md"
+              - "agentplane-roadmap-r2/tasks/LC-05.md"
+              - "agentplane-roadmap-r2/tasks/LC-06.md"
+              - "agentplane-roadmap-r2/tasks/LC-07.md"
+              - "agentplane-roadmap-r2/tasks/LC-08.md"
+              - "agentplane-roadmap-r2/tasks/LC-09.md"
+              - "agentplane-roadmap-r2/tasks/LC-10.md"
+              - "agentplane-roadmap-r2/tasks/LC-11.md"
+              - "agentplane-roadmap-r2/tasks/LC-12.md"
+              - "agentplane-roadmap-r2/tasks/LC-13.md"
+              - "agentplane-roadmap-r2/tasks/LC-14.md"
+              - "agentplane-roadmap-r2/tasks/LC-15.md"
+              - "agentplane-roadmap-r2/tasks/LC-16.md"
+              - "agentplane-roadmap-r2/tasks/LC-17.md"
+              - "agentplane-roadmap-r2/tasks/LC-18.md"
+              - "agentplane-roadmap-r2/tasks/LC-19.md"
+              - "agentplane-roadmap-r2/tasks/LC-20.md"
+              - "agentplane-roadmap-r2/tasks/LC-21.md"
+              - "agentplane-roadmap-r2/tasks/LC-22.md"
+              - "agentplane-roadmap-r2/tasks/LC-23.md"
+              - "agentplane-roadmap-r2/tasks/LC-24.md"
+              - "agentplane-roadmap-r2/tasks/PL-01.md"
+              - "agentplane-roadmap-r2/tasks/PL-02.md"
+              - "agentplane-roadmap-r2/tasks/PL-03.md"
+              - "agentplane-roadmap-r2/tasks/PL-04.md"
+              - "agentplane-roadmap-r2/tasks/PL-05.md"
+              - "agentplane-roadmap-r2/tasks/PL-06.md"
+              - "agentplane-roadmap-r2/tasks/PL-07.md"
+              - "agentplane-roadmap-r2/tasks/PL-08.md"
+              - "agentplane-roadmap-r2/tasks/PL-09.md"
+              - "agentplane-roadmap-r2/tasks/PL-10.md"
+              - "agentplane-roadmap-r2/tasks/PL-11.md"
+              - "agentplane-roadmap-r2/tasks/PL-12.md"
+              - "agentplane-roadmap-r2/tasks/RC-01.md"
+              - "agentplane-roadmap-r2/tasks/RC-02.md"
+              - "agentplane-roadmap-r2/tasks/RC-03.md"
+              - "agentplane-roadmap-r2/tasks/RC-04.md"
+              - "agentplane-roadmap-r2/tasks/RC-05.md"
+              - "agentplane-roadmap-r2/tasks/RC-06.md"
+              - "agentplane-roadmap-r2/tasks/RC-07.md"
+              - "agentplane-roadmap-r2/tasks/RC-08.md"
+              - "agentplane-roadmap-r2/tasks/RC-09.md"
+              - "agentplane-roadmap-r2/tasks/RC-10.md"
+              - "agentplane-roadmap-r2/tasks/RC-11.md"
+              - "agentplane-roadmap-r2/tasks/RC-12.md"
+              - "agentplane-roadmap-r2/tasks/RC-13.md"
+              - "agentplane-roadmap-r2/tasks/RC-14.md"
+              - "agentplane-roadmap-r2/tasks/RC-15.md"
+              - "agentplane-roadmap-r2/tasks/RC-16.md"
+              - "agentplane-roadmap-r2/tasks/RC-17.md"
+              - "agentplane-roadmap-r2/tasks/RC-18.md"
+              - "agentplane-roadmap-r2/tasks/ST-01.md"
+              - "agentplane-roadmap-r2/tasks/ST-02.md"
+              - "agentplane-roadmap-r2/tasks/ST-03.md"
+              - "agentplane-roadmap-r2/tasks/ST-04.md"
+              - "agentplane-roadmap-r2/tasks/ST-05.md"
+              - "agentplane-roadmap-r2/tasks/ST-06.md"
+              - "agentplane-roadmap-r2/tasks/ST-07.md"
+              - "agentplane-roadmap-r2/tasks/ST-08.md"
+              - "agentplane-roadmap-r2/tasks/ST-09.md"
+              - "agentplane-roadmap-r2/tasks/ST-10.md"
+              - "agentplane-roadmap-r2/tasks/ST-11.md"
+              - "agentplane-roadmap-r2/tasks/ST-12.md"
+              - "agentplane-roadmap-r2/tasks/ST-13.md"
+              - "agentplane-roadmap-r2/tasks/ST-14.md"
+              - "agentplane-roadmap-r2/tasks/ST-15.md"
+              - "agentplane-roadmap-r2/tasks/ST-16.md"
+              - "agentplane-roadmap-r2/tasks/ST-17.md"
+              - "agentplane-roadmap-r2/tasks/ST-18.md"
+              - "agentplane-roadmap-r2/tasks/ST-19.md"
+              - "agentplane-roadmap-r2/tasks/ST-20.md"
+              - "agentplane-roadmap-r2/tasks/ST-21.md"
+              - "agentplane-roadmap-r2/validate_roadmap.py"
+              - "agentplane-roadmap-r2/validation-report.json"
+              - "packages/agentplane/src/adapters/task-backend/kernel-plan-rejection-recovery.ts"
+              - "packages/agentplane/src/cli/run-cli.roadmap-plan-recovery.test.ts"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "1a93a9a43da2b714854174491f9672c52bf33e9f"
+            policy_digest: null
             schema_version: 1
-          -
-            digest: "sha256:8ec588e4e0edc0c781f17cded3fdbbc4878d371209846889c297d27d62916422"
-            id: "focused regression proof"
-            kind: "semantic_output"
-            producer:
-              attempt: 3
-              plan_revision: 1
-              task_id: "202609140925-AWJQMB"
-              work_item_id: "repair_sync_merge_message"
-            provenance:
-              - "sha256:ee20cb7957e0de27514e402462456548e873eabb6f5ead16891b3eb2d38f3d56"
-              - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:c467154767ea0b16d071775182f30f3600a56c409821abf3136b5a8841fe0f4a"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-        revision: 4
-        state: "COMPLETED"
-        validation_result:
-          evidence:
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
-              check_id: "focused_base_sync_tests"
-              command_identity: "bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
-              detail: "Observed by bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts."
-              exit_code: 0
-              observed_at: "2026-09-14T10:27:39.211Z"
-              repository_snapshot_digest: "sha256:c467154767ea0b16d071775182f30f3600a56c409821abf3136b5a8841fe0f4a"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
-              check_id: "diff_hygiene"
-              command_identity: "task.verify"
-              detail: "Observed by task.verify."
-              exit_code: 0
-              observed_at: "2026-09-14T10:27:39.211Z"
-              repository_snapshot_digest: "sha256:c467154767ea0b16d071775182f30f3600a56c409821abf3136b5a8841fe0f4a"
-              status: "passed"
+            task_history_cursor: "task-revision:1"
           schema_version: 1
-          stale_evidence: []
-          status: "passed"
-          unsatisfied_criteria: []
+          task_id: "202609140925-AWJQMB"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+                id: "focused_base_sync_tests"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                id: "diff_hygiene"
+                kind: "structural"
+                required: true
+            criteria:
+              -
+                check_ids:
+                  - "focused_base_sync_tests"
+                  - "diff_hygiene"
+                description: "Supervisor-owned task branch base synchronization creates a task-attributed, DCO-signed merge commit that passes the real AgentPlane commit-msg policy. The merge retains the exact previous task head and plan-bound base as its two parents. Conflict, stale identity, and dirty-worktree behavior remain fail-closed."
+                id: "hook_compatible_base_sync"
+                required: true
+            evidence_fingerprint: "sha256:124ec9fd43d43924ee0744d300fc6a5ae2ec234b3c137dd9f1b5c5a85597e532"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "focused_base_sync_tests"
+                      - "diff_hygiene"
+                    description: "Supervisor-owned task branch base synchronization creates a task-attributed, DCO-signed merge commit that passes the real AgentPlane commit-msg policy. The merge retains the exact previous task head and plan-bound base as its two parents. Conflict, stale identity, and dirty-worktree behavior remain fail-closed."
+                    id: "hook_compatible_base_sync"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 500000
+                  optional_sources:
+                    - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+                    - "packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts"
+                  required_sources:
+                    - "packages/agentplane/src/commands/branch/sync-task-base.ts"
+                    - "packages/agentplane/src/commands/branch/sync-task-base.test.ts"
+                    - "packages/core/src/commit/commit-policy.ts"
+                  symbol_hints:
+                    - "synchronizeTaskBranchBase"
+                    - "extractTaskSuffix"
+                    - "commit-msg"
+                    - "--signoff"
+                depends_on: []
+                expected_outputs:
+                  - "hook-compatible supervisor merge implementation"
+                  - "focused regression proof"
+                id: "repair_sync_merge_message"
+                objective: "Make synchronizeTaskBranchBase create a policy-compliant task-attributed and DCO-signed merge commit. Preserve exact-base preflight, no-ff topology, parent order, ancestry proof, hook execution, and fail-closed cleanup. Extend the focused integration test so the fixture installs the real commit-msg contract or an equivalent repository-managed hook path and proves the produced subject and trailer are accepted."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/branch/sync-task-base.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/branch/sync-task-base.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+                risk: "medium"
+                scope_roots:
+                  - "packages/agentplane/src/commands/branch/sync-task-base.ts"
+                  - "packages/agentplane/src/commands/branch/sync-task-base.test.ts"
+                  - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+                      id: "focused_base_sync_tests"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                    -
+                      capability: "task.verify"
+                      id: "diff_hygiene"
+                      kind: "structural"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "focused_base_sync_tests"
+                        - "diff_hygiene"
+                      description: "Supervisor-owned task branch base synchronization creates a task-attributed, DCO-signed merge commit that passes the real AgentPlane commit-msg policy. The merge retains the exact previous task head and plan-bound base as its two parents. Conflict, stale identity, and dirty-worktree behavior remain fail-closed."
+                      id: "hook_compatible_base_sync"
+                      required: true
+                  evidence_fingerprint: "sha256:124ec9fd43d43924ee0744d300fc6a5ae2ec234b3c137dd9f1b5c5a85597e532"
+                  schema_version: 1
+        revision: 1
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
+    revision: 27
+    schema_version: 1
+    updated_at: "2026-09-14T11:24:44.856Z"
+    work_items:
+      harden-and-verify:
+        attempt: 0
+        claim_id: null
+        id: "harden-and-verify"
+        last_failure: null
+        output_manifests: []
+        revision: 1
+        state: "PLANNED"
+        validation_result: null
+      prove-hosted-races:
+        attempt: 0
+        claim_id: null
+        id: "prove-hosted-races"
+        last_failure: null
+        output_manifests: []
+        revision: 1
+        state: "READY"
+        validation_result: null
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -1083,6 +1290,26 @@ extensions:
         task_id: "202609140925-AWJQMB"
         task_revision: 14
         work_item_id: "repair_sync_merge_message"
+      -
+        at: "2026-09-14T11:20:44.029Z"
+        from: "COMPLETED"
+        to: "PLANNING"
+        actor_id: "external:EXECUTOR"
+        cause_refs:
+          - "scope_expanded"
+          - "outputs_changed"
+          - "acceptance_changed"
+          - "risk_changed"
+        entity: "task"
+        id: "event_3fff4567f2099acde79c034d"
+        mutation_id: "plan-refinement:work-order-202609140925-AWJQMB-executor-0ddc55f436d128004cc53ac1"
+        plan_digest: "sha256:2c389272e5f29f9871078eff17e16d5beacad44a28981e9eb54e884794820fcc"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
+        task_revision: 24
+        work_item_id: null
     leases: []
     mutation_receipts:
       compatibility:sha256:0afe412863eee97979a633489ad54b08dc9b6d97367cbe28fbbad823ce1903fe:
@@ -1227,6 +1454,30 @@ extensions:
         mutation_id: "compatibility:sha256:1d24bba766050d21c0f0f0cacfa4f15f9b1a1c960132208ab628a17f38d798a3"
         next_revision: 5
         previous_revision: 4
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
+      compatibility:sha256:368e5bf441786347e8eb514d4328e8b1b78e57688d9ca5eecedfcfd16d27e546:
+        aggregate_digest: "sha256:0cb5cf58c4360b62752b58e700bfa812c8378612752c139f42b744ffd42d362b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T11:24:44.856Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "AWAITING_PLAN_APPROVAL"
+          id: "event_a39e08ea2ddcf251bf71b0b6"
+          mutation_id: "compatibility:sha256:368e5bf441786347e8eb514d4328e8b1b78e57688d9ca5eecedfcfd16d27e546"
+          plan_digest: "sha256:c0fcc82c1cd8640ea3e274ea04ce90a2b291327cd89d088e94807312ce3e0d44"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140925-AWJQMB"
+          task_revision: 26
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:368e5bf441786347e8eb514d4328e8b1b78e57688d9ca5eecedfcfd16d27e546"
+        next_revision: 27
+        previous_revision: 26
         schema_version: 1
         task_id: "202609140925-AWJQMB"
       compatibility:sha256:5a1fa20aff5f3c1ec09df64214c8bfac411173f4b8f07174e4b28b0b2632980a:
@@ -1590,6 +1841,33 @@ extensions:
         previous_revision: 23
         schema_version: 1
         task_id: "202609140925-AWJQMB"
+      plan-refinement:work-order-202609140925-AWJQMB-executor-0ddc55f436d128004cc53ac1:
+        aggregate_digest: "sha256:2fcfc2481f71f68ef45d2ff0dab2c22adec84b7398b014519b64c69702ef0f67"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-14T11:20:44.029Z"
+          cause_refs:
+            - "scope_expanded"
+            - "outputs_changed"
+            - "acceptance_changed"
+            - "risk_changed"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_3fff4567f2099acde79c034d"
+          mutation_id: "plan-refinement:work-order-202609140925-AWJQMB-executor-0ddc55f436d128004cc53ac1"
+          plan_digest: "sha256:2c389272e5f29f9871078eff17e16d5beacad44a28981e9eb54e884794820fcc"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140925-AWJQMB"
+          task_revision: 24
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609140925-AWJQMB-executor-0ddc55f436d128004cc53ac1"
+        next_revision: 25
+        previous_revision: 24
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
       plan-refinement:work-order-202609140925-AWJQMB-executor-9a902b369de69795d062d657:
         aggregate_digest: "sha256:64e60011a250c765fe3495a7699a420c16328a3a51ddd7c77fb59c6c8eb06cca"
         event:
@@ -1643,7 +1921,7 @@ The release task 202609121424-49XXT3 requested exact branch-base synchronization
 
 ## Plan
 
-The plan repairs the supervisor merge message and proves hook-compatible synchronization without weakening policy.
+The refined plan proves the hosted concurrency failure before applying the smallest test-harness hardening and reruns the complete required verification.
 
 ## Verify Steps
 
