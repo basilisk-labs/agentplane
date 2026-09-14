@@ -13,6 +13,26 @@ const PRE_PUSH_HOOK_SCRIPT = path.resolve(
 );
 
 describe("pre-push full-fast guard", () => {
+  it("allows an unknown initial push when no broad local CI script exists", async () => {
+    const root = await mkGitRepoRoot();
+    await writeFile(path.join(root, "README.md"), "# hook test\n", "utf8");
+
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "README.md"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "docs: seed repository"], { cwd: root });
+    const localSha = readFileSync(path.join(root, ".git", "refs", "heads", "main"), "utf8").trim();
+
+    const output = execFileSync("node", [PRE_PUSH_HOOK_SCRIPT], {
+      cwd: root,
+      input: `refs/heads/main ${localSha} refs/heads/main ${"0".repeat(40)}\n`,
+      encoding: "utf8",
+      stdio: ["pipe", "pipe", "pipe"],
+    });
+
+    expect(output).toContain("Skipping format:check: package.json script is not defined.");
+    expect(output).toContain("Skipping ci:local:fast: package.json script is not defined.");
+  });
+
   it("blocks unknown multi-branch push scopes before running local checks", async () => {
     const root = await mkGitRepoRoot();
     await mkdir(path.join(root, "scripts"), { recursive: true });

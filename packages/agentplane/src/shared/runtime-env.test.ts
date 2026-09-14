@@ -18,7 +18,8 @@ describe("withPreferredRuntimePath", () => {
     });
     const entries = String(env.PATH ?? "").split(path.delimiter);
 
-    expect(entries[0]).toBe(nvmBin);
+    expect(entries[0]).toBe(path.dirname(process.execPath));
+    expect(entries).toContain(nvmBin);
     expect(entries).toContain("/tmp/custom/bin");
     expect(entries).toContain("/usr/bin");
   });
@@ -45,13 +46,13 @@ describe("withPreferredRuntimePath", () => {
 });
 
 describe("resolvePreferredNodeExecutable", () => {
-  it("prefers NVM_BIN when available", async () => {
+  it("keeps the supported current runtime ahead of a stale NVM_BIN", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-runtime-node-"));
     const nvmBin = path.join(root, "bin");
     const nodePath = path.join(nvmBin, "node");
     await mkdir(nvmBin, { recursive: true });
     await writeFile(nodePath, "", "utf8");
 
-    expect(resolvePreferredNodeExecutable({ NVM_BIN: nvmBin })).toBe(nodePath);
+    expect(resolvePreferredNodeExecutable({ NVM_BIN: nvmBin })).toBe(process.execPath);
   });
 });
