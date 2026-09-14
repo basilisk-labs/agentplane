@@ -6,7 +6,7 @@ Created: 2026-09-14T07:01:27.176Z
 
 - Task: `202609140657-5REY71`
 - Title: Add supervisor-owned base synchronization before semantic work on stale branch_pr candidates
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609140657-5REY71/add-supervisor-owned-base-synchronization-before`
 - Canonical task record: `.agentplane/tasks/202609140657-5REY71/README.md`
 
