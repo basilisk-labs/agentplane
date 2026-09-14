@@ -1,10 +1,11 @@
 ---
 id: "202609141440-VFA9C1"
 title: "Repair managed usage observation and branch-pr finish guard regressions"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -60,6 +61,22 @@ quality_review:
     - "PASS: cmdFinish performs the branch-pr base-checkout guard before reconciliation, while reconciliation still runs for eligible checkouts."
     - "PASS: supervisor-recorded full local CI passed, and an independent focused rerun passed 13 of 13 tests on committed HEAD a2e1365c9e7db575ba31007ea61d2b96120a198c."
     - "Residual risk: Hosted integration has not yet been observed and must remain fail-closed until the provider checks pass on the published exact head."
+token_usage:
+  agent_runs: 3
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:f28e1c64ef3aa6767b2f301980d4be1fd691066a3340dabcc6eae74689b4fcdb"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-09-14T16:04:44.150Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -259,8 +276,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "bb5980e80f1b95e3162905ed7304d5da54de66f2"
-  message: "🚧 VFA9C1 task: apply external agent result"
+  hash: "e3f7ea94c808b1896c74aab39a713b50d704ed81"
+  message: "🚧 VFA9C1 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -268,6 +285,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: bb5980e80f1b. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -290,9 +310,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-14T16:04:44.150Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "e3f7ea94c808b1896c74aab39a713b50d704ed81"
 doc_version: 3
-doc_updated_at: "2026-09-14T16:02:16.183Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-14T16:04:44.150Z"
+doc_updated_by: "CODER"
 description: "Repair two reproducible qualified-main regressions blocking the AgentPlane 0.7.9 prepublish gate. Managed custom runner episodes must durably record an unavailable provider-usage observation when token telemetry is not exposed, without weakening fail-closed accounting. Branch-pr finish from a task branch must reach the intended E_GIT base-checkout guard instead of an earlier E_VALIDATION failure. Add focused regression coverage, run the implicated release-ci-base chunk and complete local CI, integrate through hosted CI, then unblock release task 202609121424-49XXT3. Preserve unrelated user work and never commit agentplane-roadmap-r2."
 sections:
   Summary: |-
@@ -808,7 +836,56 @@ extensions:
       schema_version: 1
       task_id: "202609141440-VFA9C1"
     event_cursor: 7
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609141440-VFA9C1"
+            - "git:bb5980e80f1b95e3162905ed7304d5da54de66f2"
+          check_id: "focused_regressions"
+          command_identity: "bunx vitest run packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-14T16:02:15.087Z"
+          repository_snapshot_digest: "sha256:b8db865ac273aa9c9724d00000a4b0aa986955c12f74ad95d4a8ad01297150a5"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609141440-VFA9C1"
+            - "git:bb5980e80f1b95e3162905ed7304d5da54de66f2"
+          check_id: "full_local_ci"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-14T16:02:15.087Z"
+          repository_snapshot_digest: "sha256:b8db865ac273aa9c9724d00000a4b0aa986955c12f74ad95d4a8ad01297150a5"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609141440-VFA9C1"
+            - "git:bb5980e80f1b95e3162905ed7304d5da54de66f2"
+          check_id: "scope_hygiene"
+          command_identity: "task.verify"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-14T16:02:15.087Z"
+          repository_snapshot_digest: "sha256:b8db865ac273aa9c9724d00000a4b0aa986955c12f74ad95d4a8ad01297150a5"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609141440-VFA9C1"
+            - "git:bb5980e80f1b95e3162905ed7304d5da54de66f2"
+          check_id: "hosted_integration"
+          command_identity: "task.verify"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-14T16:02:15.087Z"
+          repository_snapshot_digest: "sha256:b8db865ac273aa9c9724d00000a4b0aa986955c12f74ad95d4a8ad01297150a5"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609141440-VFA9C1"
     intent:
       acceptance_criteria:
@@ -829,12 +906,12 @@ extensions:
 
         Repair two reproducible qualified-main regressions blocking the AgentPlane 0.7.9 prepublish gate. Managed custom runner episodes must durably record an unavailable provider-usage observation when token telemetry is not exposed, without weakening fail-closed accounting. Branch-pr finish from a task branch must reach the intended E_GIT base-checkout guard instead of an earlier E_VALIDATION failure. Add focused regression coverage, run the implicated release-ci-base chunk and complete local CI, integrate through hosted CI, then unblock release task 202609121424-49XXT3. Preserve unrelated user work and never commit agentplane-roadmap-r2.
       task_id: "202609141440-VFA9C1"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 10
+    revision: 11
     schema_version: 1
-    updated_at: "2026-09-14T16:02:16.183Z"
+    updated_at: "2026-09-14T16:04:44.150Z"
     work_items:
       repair_release_blocking_regressions:
         attempt: 1
@@ -1149,11 +1226,37 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202609141440-VFA9C1"
+      legacy-finish:202609141440-VFA9C1:2026-09-14T16:02:15.087Z:bb5980e80f1b95e3162905ed7304d5da54de66f2:
+        aggregate_digest: "sha256:5025b41453722976d203b4d80f1a8f6567f83472bfc13fd762e66138bf8aca8b"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-14T16:04:44.150Z"
+          cause_refs:
+            - "task-verification:202609141440-VFA9C1"
+            - "git:bb5980e80f1b95e3162905ed7304d5da54de66f2"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_c2340d400a345ec8ae31f9e8"
+          mutation_id: "legacy-finish:202609141440-VFA9C1:2026-09-14T16:02:15.087Z:bb5980e80f1b95e3162905ed7304d5da54de66f2"
+          plan_digest: "sha256:f7741223c0c9b53ff1f36aff040f8acd2f05849ba6e4e3fa640d1adbc2f5200c"
+          plan_revision: 1
+          repository_fingerprint: "sha256:b8db865ac273aa9c9724d00000a4b0aa986955c12f74ad95d4a8ad01297150a5"
+          schema_version: 1
+          task_id: "202609141440-VFA9C1"
+          task_revision: 10
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609141440-VFA9C1:2026-09-14T16:02:15.087Z:bb5980e80f1b95e3162905ed7304d5da54de66f2"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202609141440-VFA9C1"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "bb5980e80f1b95e3162905ed7304d5da54de66f2"
+    message: "🚧 VFA9C1 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "ed89f946b3058cf290df7a76bec23ab4dcc1fa92"
@@ -1282,3 +1385,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:f28e1c64ef3aa6767b2f301980d4be1fd691066a3340dabcc6eae74689b4fcdb`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-09-14T16:04:44.150Z`
