@@ -4,7 +4,7 @@ title: "Repair managed usage observation and branch-pr finish guard regressions"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -683,22 +683,129 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 7
+    revision: 8
     schema_version: 1
-    updated_at: "2026-09-14T15:44:57.093Z"
+    updated_at: "2026-09-14T15:53:07.426Z"
     work_items:
       repair_release_blocking_regressions:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "repair_release_blocking_regressions"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:a360a425ac03d5c7287fdad6c3523c0278e8bfd54f215b7ceca307500f62d01d"
+            id: "managed_usage_observation_repair"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609141440-VFA9C1"
+              work_item_id: "repair_release_blocking_regressions"
+            provenance:
+              - "sha256:4e31a69b773daf96f8b5850440e00f71fe5d3f74c8213128681045b8bfe74993"
+              - ".agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:0f492f10b5b5657fce977e1f72a1c0acb4cb7f1844823691361b673c46a2cdf1"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:4da995ceec390d58e31e2166db8c7dbaaaa9fefa88cc03558d2c4ebf691f50fe"
+            id: "finish_guard_order_repair"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609141440-VFA9C1"
+              work_item_id: "repair_release_blocking_regressions"
+            provenance:
+              - "sha256:4e31a69b773daf96f8b5850440e00f71fe5d3f74c8213128681045b8bfe74993"
+              - ".agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:0f492f10b5b5657fce977e1f72a1c0acb4cb7f1844823691361b673c46a2cdf1"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:a458c5bedadbfbbd4c0df389a35e664a7594cdf03f10a304b87d68dac04b5b0b"
+            id: "focused_and_full_verification"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609141440-VFA9C1"
+              work_item_id: "repair_release_blocking_regressions"
+            provenance:
+              - "sha256:4e31a69b773daf96f8b5850440e00f71fe5d3f74c8213128681045b8bfe74993"
+              - ".agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:0f492f10b5b5657fce977e1f72a1c0acb4cb7f1844823691361b673c46a2cdf1"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json"
+              check_id: "focused_regressions"
+              command_identity: "bunx vitest run packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts"
+              detail: "Observed by bunx vitest run packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-14T15:53:07.417Z"
+              repository_snapshot_digest: "sha256:0f492f10b5b5657fce977e1f72a1c0acb4cb7f1844823691361b673c46a2cdf1"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json"
+              check_id: "full_local_ci"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-09-14T15:53:07.417Z"
+              repository_snapshot_digest: "sha256:0f492f10b5b5657fce977e1f72a1c0acb4cb7f1844823691361b673c46a2cdf1"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json"
+              check_id: "scope_hygiene"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-09-14T15:53:07.417Z"
+              repository_snapshot_digest: "sha256:0f492f10b5b5657fce977e1f72a1c0acb4cb7f1844823691361b673c46a2cdf1"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json"
+              check_id: "hosted_integration"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-09-14T15:53:07.417Z"
+              repository_snapshot_digest: "sha256:0f492f10b5b5657fce977e1f72a1c0acb4cb7f1844823691361b673c46a2cdf1"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-14T15:53:07.426Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:bb77ca63da4ac91243afbd48d8366d21c6723dacd4299dfc0d53aa190904d118"
+        entity: "work_item"
+        id: "event_7e44032093cbbfffb83edc6b"
+        mutation_id: "external-result:work-order-202609141440-VFA9C1-executor-5a78a0dafaf481259f11bffe"
+        plan_digest: "sha256:f7741223c0c9b53ff1f36aff040f8acd2f05849ba6e4e3fa640d1adbc2f5200c"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609141440-VFA9C1"
+        task_revision: 7
+        work_item_id: "repair_release_blocking_regressions"
     leases: []
     mutation_receipts:
       compatibility:sha256:06d65e62814eb0d779557e07a5541272d5b4933e1a972ead016137b08be30a5c:
@@ -819,6 +926,30 @@ extensions:
         mutation_id: "compatibility:sha256:b24be80f57bfdeaa1ef7bfabc6a41006cbbd83e06c6fdffb8421e653c2ff34d1"
         next_revision: 3
         previous_revision: 2
+        schema_version: 1
+        task_id: "202609141440-VFA9C1"
+      external-result:work-order-202609141440-VFA9C1-executor-5a78a0dafaf481259f11bffe:
+        aggregate_digest: "sha256:52c71c8f6a8c551a31630cafce1e0b67337d1b18674f6e11af30ff625b337324"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T15:53:07.426Z"
+          cause_refs:
+            - "semantic-result:sha256:bb77ca63da4ac91243afbd48d8366d21c6723dacd4299dfc0d53aa190904d118"
+          entity: "work_item"
+          from: "READY"
+          id: "event_7e44032093cbbfffb83edc6b"
+          mutation_id: "external-result:work-order-202609141440-VFA9C1-executor-5a78a0dafaf481259f11bffe"
+          plan_digest: "sha256:f7741223c0c9b53ff1f36aff040f8acd2f05849ba6e4e3fa640d1adbc2f5200c"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609141440-VFA9C1"
+          task_revision: 7
+          to: "COMPLETED"
+          work_item_id: "repair_release_blocking_regressions"
+        mutation_id: "external-result:work-order-202609141440-VFA9C1-executor-5a78a0dafaf481259f11bffe"
+        next_revision: 8
+        previous_revision: 7
         schema_version: 1
         task_id: "202609141440-VFA9C1"
     pending_effects: []
