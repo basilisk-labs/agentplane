@@ -1,10 +1,10 @@
 ---
 id: "202609121424-49XXT3"
 title: "Publish and independently verify AgentPlane 0.7.9 from the exact qualified main SHA"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 47
+revision: 51
 origin:
   system: "manual"
 depends_on:
@@ -26,9 +26,9 @@ verify:
   - "bun run release:prepublish"
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-14T14:04:36.346Z"
+  updated_at: "2026-09-14T22:14:20.074Z"
   updated_by: "HOST:codex-desktop:USER"
-  note: "host_user_decision=sha256:4dd3087f7dcff5a8528ebbc153b5266a668dab93145eca8713da38a0eab54132"
+  note: "host_user_decision=sha256:f356ae8497c1d56eb9988de28911a4c026c457637f6e4f6c31a607f52ca603aa"
 verification:
   state: "pending"
   updated_at: null
@@ -331,6 +331,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The required prepublish gate is blocked by two reproducible qualified-main test regressions outside the release-only mutation contract. Recommended action: Create a separate AgentPlane stabilization task from current qualified main. Repair durable unavailable usage observation for managed custom runners and restore branch_pr finish guard ordering with focused regression coverage. Integrate the repair through hosted CI. Then resynchronize this candidate to the new exact main SHA, refresh the release metadata and baselines, and rerun release:prepublish. Agentplane receipt: external-agent-blocker/tr_f4266b50a2fbe3b9a127ac441fc6f6d7/sha256:a1e70f328dad6407aa986dc52155cf974445434e47575a5e968f2f1c2f285b04."
+  -
+    author: "CODER"
+    body: "Start: release blockers are integrated and hosted-verified on main; resume the approved 0.7.9 release plan against the new qualified base."
 events:
   -
     type: "status"
@@ -432,9 +435,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The required prepublish gate is blocked by two reproducible qualified-main test regressions outside the release-only mutation contract. Recommended action: Create a separate AgentPlane stabilization task from current qualified main. Repair durable unavailable usage observation for managed custom runners and restore branch_pr finish guard ordering with focused regression coverage. Integrate the repair through hosted CI. Then resynchronize this candidate to the new exact main SHA, refresh the release metadata and baselines, and rerun release:prepublish. Agentplane receipt: external-agent-blocker/tr_f4266b50a2fbe3b9a127ac441fc6f6d7/sha256:a1e70f328dad6407aa986dc52155cf974445434e47575a5e968f2f1c2f285b04."
+  -
+    type: "status"
+    at: "2026-09-14T16:26:34.900Z"
+    author: "CODER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Start: release blockers are integrated and hosted-verified on main; resume the approved 0.7.9 release plan against the new qualified base."
 doc_version: 3
-doc_updated_at: "2026-09-14T14:39:25.433Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-14T16:29:27.741Z"
+doc_updated_by: "CODER"
 description: "Release operator task after all 0.7.9 stabilization dependencies are integrated. Prepare exact 0.7.9 version parity and release notes, run the complete release prepublish and incident gates, produce and integrate the release-ready candidate through repository policy, publish v0.7.9 from the exact qualified main SHA, and independently verify the canonical .agentplane/.release/publish/publish-result.json has success=true with an empty failures array for that SHA. Verify GitHub release assets and checksums, package registries, setup-agentplane tag and install, Homebrew and Scoop distribution, both agentplane and ap entrypoints, and default-branch state. Record any unavailable anonymous GHCR check separately. Complete the required post-publish evidence follow-up and next patch beta only through AgentPlane-managed lifecycle. Never commit agentplane-roadmap-r2. Stop only at a genuine provider or evidence boundary; the user explicitly authorized publish, merge, network, credentials, and external-system actions for v0.7.9."
 sections:
   Summary: |-
@@ -444,7 +454,7 @@ sections:
   Scope: |-
     - In scope: Release operator task after all 0.7.9 stabilization dependencies are integrated. Prepare exact 0.7.9 version parity and release notes, run the complete release prepublish and incident gates, produce and integrate the release-ready candidate through repository policy, publish v0.7.9 from the exact qualified main SHA, and independently verify the canonical .agentplane/.release/publish/publish-result.json has success=true with an empty failures array for that SHA. Verify GitHub release assets and checksums, package registries, setup-agentplane tag and install, Homebrew and Scoop distribution, both agentplane and ap entrypoints, and default-branch state. Record any unavailable anonymous GHCR check separately. Complete the required post-publish evidence follow-up and next patch beta only through AgentPlane-managed lifecycle. Never commit agentplane-roadmap-r2. Stop only at a genuine provider or evidence boundary; the user explicitly authorized publish, merge, network, credentials, and external-system actions for v0.7.9.
     - Out of scope: unrelated refactors not required for "Publish and independently verify AgentPlane 0.7.9 from the exact qualified main SHA".
-  Plan: "The release plan now rebinds candidate synchronization to qualified main ed89f946b3058cf290df7a76bec23ab4dcc1fa92 and preserves the remaining 0.7.9 release graph."
+  Plan: "The release plan now rebinds candidate synchronization to qualified main a3ccf6f1927bf5ab3a9cf6612dd7326d68d1f270 and preserves the remaining 0.7.9 release graph."
   Verify Steps: |-
     1. Run `bun run release:check`. Expected: version parity, generated release surfaces, package manifests, and release policy checks pass for 0.7.9.
     2. Run `bun run release:prepublish`. Expected: the complete prepublish gate passes for the exact release candidate without skipped mandatory checks.
@@ -466,7 +476,7 @@ sections:
 extensions:
   agentplane.execution_grant:
     actor: "HOST:codex-desktop:USER"
-    approval_evidence_digest: "sha256:4dd3087f7dcff5a8528ebbc153b5266a668dab93145eca8713da38a0eab54132"
+    approval_evidence_digest: "sha256:f356ae8497c1d56eb9988de28911a4c026c457637f6e4f6c31a607f52ca603aa"
     approval_kind: "host_user_decision"
     capabilities:
       - "provider.merge"
@@ -477,12 +487,12 @@ extensions:
       - "task.lifecycle"
       - "task.scope.extend"
     completion_contract_digest: "sha256:bbf4cae077401bcc2bc11bc9808649831638204423957859914ed29e9e9ff004"
-    digest: "sha256:524dad4a0624336a1258730269800e08536bdfad9be06104a3b4c891913730ea"
-    grant_id: "9dee46d5-8f83-43f0-adfe-904c02b22397"
-    issued_at: "2026-09-14T14:04:36.346Z"
+    digest: "sha256:bbb3011b9b8c5c822f56a533d98a3d7af2293ee6e0b74574d967a2adb9d91720"
+    grant_id: "7244588b-d323-4773-ad31-91cfc96e83c2"
+    issued_at: "2026-09-14T22:14:20.074Z"
     kind: "agentplane.execution_grant"
-    plan_digest: "sha256:d713153405d601ce297209b8f06ec78856bed68ced1e4c78ce86e7dff645e7ff"
-    plan_revision: 42
+    plan_digest: "sha256:52a8ebe7bd16a085d9139822064dadb29c97411030ae9ead65647246d8a2837f"
+    plan_revision: 50
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
     scope_digest: "sha256:fb4fba3cb30b34e5beebbd221d597ac55478d33a14125c906112b0cad8604583"
@@ -509,34 +519,34 @@ extensions:
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-14T14:04:36.346Z"
+        approved_at: "2026-09-14T22:14:20.074Z"
         approved_by: "HOST:codex-desktop:USER"
-        approved_digest: "sha256:daeb3cc4f442055aff876a2c9af17cc066df9b9ea4452819f5284755a61dc80c"
+        approved_digest: "sha256:c37f177171441b358c9a0bde2de1a4f18a7ed0a9a89bba7ce19c1595bcdcd2ce"
         policy_facts:
           - "host_user_decision"
         state: "approved"
-      created_at: "2026-09-14T14:00:41.250Z"
-      digest: "sha256:daeb3cc4f442055aff876a2c9af17cc066df9b9ea4452819f5284755a61dc80c"
+      created_at: "2026-09-14T16:29:27.707Z"
+      digest: "sha256:c37f177171441b358c9a0bde2de1a4f18a7ed0a9a89bba7ce19c1595bcdcd2ce"
       proposal:
         assumptions:
-          - "Qualified main ed89f946b3058cf290df7a76bec23ab4dcc1fa92 is the required release base because PR #5954 is merged and the successful hosted checks for PR #5954 succeeded for that exact SHA."
+          - "Qualified main a3ccf6f1927bf5ab3a9cf6612dd7326d68d1f270 is the required release base because PR #5956 is merged and the successful hosted checks for PR #5956 succeeded for that exact SHA."
           - "The existing release branch contains the prepared stable candidate and must preserve it during synchronization."
           - "Candidate-base synchronization is a supervisor-owned AgentPlane branch lifecycle operation that must complete before semantic release edits."
           - "Repository release tooling owns publication, exact-SHA evidence, and next-beta creation."
         planning_baseline:
-          captured_at: "2026-09-14T13:59:22.486Z"
+          captured_at: "2026-09-14T16:28:06.040Z"
           config_digest: null
           context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
-          digest: "sha256:252142361c1ed374b2814ea4c94cd9098a8eaa6a9aff9a31e89993d05736f7e6"
+          digest: "sha256:27f7a74e220869127547a3ca7a508be7bf9a4460e529f228ace6f5a5d3561a91"
           dirty_paths:
             - ".agentplane/tasks/202609121424-49XXT3/README.md"
           git:
             kind: "commit"
             ref: null
-            sha: "801d545e1e5aaf2c9b4c307d4ca6a19214628a65"
+            sha: "c3c16604c5f8ec39aada2a0803e846dac2ab198f"
           policy_digest: null
           schema_version: 1
-          task_history_cursor: "task-revision:41"
+          task_history_cursor: "task-revision:49"
         schema_version: 1
         task_id: "202609121424-49XXT3"
         top_level_validation:
@@ -600,7 +610,7 @@ extensions:
               check_ids:
                 - "candidate_base_identity"
                 - "scope_hygiene"
-              description: "The existing candidate is synchronized by a supervisor-owned AgentPlane branch lifecycle operation onto ed89f946b3058cf290df7a76bec23ab4dcc1fa92. The synchronization preserves all approved release paths and qualified-main repairs. The synchronization imports no unrelated work. No semantic executor creates or rewrites Git commits."
+              description: "The existing candidate is synchronized by a supervisor-owned AgentPlane branch lifecycle operation onto a3ccf6f1927bf5ab3a9cf6612dd7326d68d1f270. The synchronization preserves all approved release paths and qualified-main repairs. The synchronization imports no unrelated work. No semantic executor creates or rewrites Git commits."
               id: "candidate_base_exact"
               required: true
             -
@@ -641,7 +651,7 @@ extensions:
               description: "AgentPlane records post-publish evidence and starts the next beta only after public proof while preserving unrelated user work."
               id: "post_publish_complete"
               required: true
-          evidence_fingerprint: "sha256:252142361c1ed374b2814ea4c94cd9098a8eaa6a9aff9a31e89993d05736f7e6"
+          evidence_fingerprint: "sha256:27f7a74e220869127547a3ca7a508be7bf9a4460e529f228ace6f5a5d3561a91"
           schema_version: 1
         unresolved_questions: []
         work_items:
@@ -653,7 +663,7 @@ extensions:
                   check_ids:
                     - "candidate_base_identity"
                     - "scope_hygiene"
-                  description: "The existing candidate is synchronized by a supervisor-owned AgentPlane branch lifecycle operation onto ed89f946b3058cf290df7a76bec23ab4dcc1fa92. The synchronization preserves all approved release paths and qualified-main repairs. The synchronization imports no unrelated work. No semantic executor creates or rewrites Git commits."
+                  description: "The existing candidate is synchronized by a supervisor-owned AgentPlane branch lifecycle operation onto a3ccf6f1927bf5ab3a9cf6612dd7326d68d1f270. The synchronization preserves all approved release paths and qualified-main repairs. The synchronization imports no unrelated work. No semantic executor creates or rewrites Git commits."
                   id: "candidate_base_exact"
                   required: true
               capabilities:
@@ -661,8 +671,8 @@ extensions:
               context:
                 max_bytes: 1000000
                 optional_sources:
-                  - "PR #5954 provider state"
-                  - "the successful hosted checks for PR #5954"
+                  - "PR #5956 provider state"
+                  - "the successful hosted checks for PR #5956"
                 required_sources:
                   - ".agentplane/policy/workflow.release.md"
                   - ".agentplane/tasks/202609121424-49XXT3/README.md"
@@ -676,7 +686,7 @@ extensions:
                 - "supervisor_owned_candidate_synchronization_receipt"
                 - "qualified_release_base_sha"
               id: "synchronize_candidate_base"
-              objective: "Establish exact qualified main ed89f946b3058cf290df7a76bec23ab4dcc1fa92 as the release candidate base through a supervisor-owned AgentPlane branch synchronization lifecycle operation. Preserve all approved candidate content and unrelated user work. This WorkItem defines acceptance only. An external semantic executor must not create or rewrite Git commits."
+              objective: "Establish exact qualified main a3ccf6f1927bf5ab3a9cf6612dd7326d68d1f270 as the release candidate base through a supervisor-owned AgentPlane branch synchronization lifecycle operation. Preserve all approved candidate content and unrelated user work. This WorkItem defines acceptance only. An external semantic executor must not create or rewrite Git commits."
               optional: false
               priority: 1
               required_inputs: []
@@ -684,7 +694,7 @@ extensions:
                 -
                   kind: "exclusive"
                   mode: "exclusive"
-                  resource: "branch-base:main@ed89f946b3058cf290df7a76bec23ab4dcc1fa92"
+                  resource: "branch-base:main@a3ccf6f1927bf5ab3a9cf6612dd7326d68d1f270"
                 -
                   kind: "workspace"
                   mode: "exclusive"
@@ -719,10 +729,10 @@ extensions:
                     check_ids:
                       - "candidate_base_identity"
                       - "scope_hygiene"
-                    description: "The existing candidate is synchronized by a supervisor-owned AgentPlane branch lifecycle operation onto ed89f946b3058cf290df7a76bec23ab4dcc1fa92. The synchronization preserves all approved release paths and qualified-main repairs. The synchronization imports no unrelated work. No semantic executor creates or rewrites Git commits."
+                    description: "The existing candidate is synchronized by a supervisor-owned AgentPlane branch lifecycle operation onto a3ccf6f1927bf5ab3a9cf6612dd7326d68d1f270. The synchronization preserves all approved release paths and qualified-main repairs. The synchronization imports no unrelated work. No semantic executor creates or rewrites Git commits."
                     id: "candidate_base_exact"
                     required: true
-                evidence_fingerprint: "sha256:252142361c1ed374b2814ea4c94cd9098a8eaa6a9aff9a31e89993d05736f7e6"
+                evidence_fingerprint: "sha256:27f7a74e220869127547a3ca7a508be7bf9a4460e529f228ace6f5a5d3561a91"
                 schema_version: 1
             -
               acceptance_criteria:
@@ -756,7 +766,7 @@ extensions:
                 - "release_notes_and_evidence"
                 - "exact_candidate_sha"
               id: "prepare_candidate"
-              objective: "Finalize stable 0.7.9 versions, pins, generated surfaces, notes, evidence, formatting, compatibility baselines, and clone baselines only after supervisor-owned synchronization establishes base ed89f946b3058cf290df7a76bec23ab4dcc1fa92."
+              objective: "Finalize stable 0.7.9 versions, pins, generated surfaces, notes, evidence, formatting, compatibility baselines, and clone baselines only after supervisor-owned synchronization establishes base a3ccf6f1927bf5ab3a9cf6612dd7326d68d1f270."
               optional: false
               priority: 2
               required_inputs:
@@ -809,7 +819,7 @@ extensions:
                     description: "The candidate has stable 0.7.9 version parity, complete notes and evidence, fresh generated surfaces and baselines, and no unrelated semantic source change."
                     id: "candidate_exact"
                     required: true
-                evidence_fingerprint: "sha256:252142361c1ed374b2814ea4c94cd9098a8eaa6a9aff9a31e89993d05736f7e6"
+                evidence_fingerprint: "sha256:27f7a74e220869127547a3ca7a508be7bf9a4460e529f228ace6f5a5d3561a91"
                 schema_version: 1
             -
               acceptance_criteria:
@@ -882,7 +892,7 @@ extensions:
                     description: "The exact candidate passes local gates, independent evaluation, hosted CI, protected integration, and hosted close."
                     id: "candidate_qualified"
                     required: true
-                evidence_fingerprint: "sha256:252142361c1ed374b2814ea4c94cd9098a8eaa6a9aff9a31e89993d05736f7e6"
+                evidence_fingerprint: "sha256:27f7a74e220869127547a3ca7a508be7bf9a4460e529f228ace6f5a5d3561a91"
                 schema_version: 1
             -
               acceptance_criteria:
@@ -945,7 +955,7 @@ extensions:
                     description: "The protected workflow publishes v0.7.9 from the exact qualified main SHA and records success=true with an empty failures array."
                     id: "publication_exact"
                     required: true
-                evidence_fingerprint: "sha256:252142361c1ed374b2814ea4c94cd9098a8eaa6a9aff9a31e89993d05736f7e6"
+                evidence_fingerprint: "sha256:27f7a74e220869127547a3ca7a508be7bf9a4460e529f228ace6f5a5d3561a91"
                 schema_version: 1
             -
               acceptance_criteria:
@@ -1041,12 +1051,12 @@ extensions:
                     description: "AgentPlane records post-publish evidence and starts the next beta only after public proof while preserving unrelated user work."
                     id: "post_publish_complete"
                     required: true
-                evidence_fingerprint: "sha256:252142361c1ed374b2814ea4c94cd9098a8eaa6a9aff9a31e89993d05736f7e6"
+                evidence_fingerprint: "sha256:27f7a74e220869127547a3ca7a508be7bf9a4460e529f228ace6f5a5d3561a91"
                 schema_version: 1
-      revision: 9
+      revision: 10
       schema_version: 1
       task_id: "202609121424-49XXT3"
-    event_cursor: 34
+    event_cursor: 36
     final_validation: null
     id: "202609121424-49XXT3"
     intent:
@@ -1068,7 +1078,7 @@ extensions:
 
         Release operator task after all 0.7.9 stabilization dependencies are integrated. Prepare exact 0.7.9 version parity and release notes, run the complete release prepublish and incident gates, produce and integrate the release-ready candidate through repository policy, publish v0.7.9 from the exact qualified main SHA, and independently verify the canonical .agentplane/.release/publish/publish-result.json has success=true with an empty failures array for that SHA. Verify GitHub release assets and checksums, package registries, setup-agentplane tag and install, Homebrew and Scoop distribution, both agentplane and ap entrypoints, and default-branch state. Record any unavailable anonymous GHCR check separately. Complete the required post-publish evidence follow-up and next patch beta only through AgentPlane-managed lifecycle. Never commit agentplane-roadmap-r2. Stop only at a genuine provider or evidence boundary; the user explicitly authorized publish, merge, network, credentials, and external-system actions for v0.7.9.
       task_id: "202609121424-49XXT3"
-    lifecycle: "BLOCKED"
+    lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history:
       -
@@ -5664,9 +5674,548 @@ extensions:
         revision: 8
         schema_version: 1
         task_id: "202609121424-49XXT3"
-    revision: 47
+      -
+        approval:
+          approved_at: "2026-09-14T14:04:36.346Z"
+          approved_by: "HOST:codex-desktop:USER"
+          approved_digest: "sha256:daeb3cc4f442055aff876a2c9af17cc066df9b9ea4452819f5284755a61dc80c"
+          policy_facts:
+            - "host_user_decision"
+          state: "approved"
+        created_at: "2026-09-14T14:00:41.250Z"
+        digest: "sha256:daeb3cc4f442055aff876a2c9af17cc066df9b9ea4452819f5284755a61dc80c"
+        proposal:
+          assumptions:
+            - "Qualified main ed89f946b3058cf290df7a76bec23ab4dcc1fa92 is the required release base because PR #5954 is merged and the successful hosted checks for PR #5954 succeeded for that exact SHA."
+            - "The existing release branch contains the prepared stable candidate and must preserve it during synchronization."
+            - "Candidate-base synchronization is a supervisor-owned AgentPlane branch lifecycle operation that must complete before semantic release edits."
+            - "Repository release tooling owns publication, exact-SHA evidence, and next-beta creation."
+          planning_baseline:
+            captured_at: "2026-09-14T13:59:22.486Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:252142361c1ed374b2814ea4c94cd9098a8eaa6a9aff9a31e89993d05736f7e6"
+            dirty_paths:
+              - ".agentplane/tasks/202609121424-49XXT3/README.md"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "801d545e1e5aaf2c9b4c307d4ca6a19214628a65"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:41"
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                id: "candidate_base_identity"
+                kind: "structural"
+                required: true
+              -
+                capability: "task.verify"
+                command: "bun run release:check"
+                id: "release_check"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1200000
+              -
+                capability: "task.verify"
+                command: "bun run release:prepublish"
+                id: "release_prepublish"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1200000
+              -
+                capability: "task.verify"
+                id: "scope_hygiene"
+                kind: "structural"
+                required: true
+              -
+                capability: "task.verify"
+                id: "hosted_integration"
+                kind: "provider"
+                required: true
+              -
+                capability: "task.verify"
+                id: "publish_manifest"
+                kind: "structural"
+                required: true
+              -
+                capability: "task.verify"
+                id: "github_release"
+                kind: "provider"
+                required: true
+              -
+                capability: "task.verify"
+                id: "registry_readback"
+                kind: "provider"
+                required: true
+              -
+                capability: "task.verify"
+                id: "installer_readback"
+                kind: "provider"
+                required: true
+              -
+                capability: "task.verify"
+                id: "default_branch_readback"
+                kind: "provider"
+                required: true
+            criteria:
+              -
+                check_ids:
+                  - "candidate_base_identity"
+                  - "scope_hygiene"
+                description: "The existing candidate is synchronized by a supervisor-owned AgentPlane branch lifecycle operation onto ed89f946b3058cf290df7a76bec23ab4dcc1fa92. The synchronization preserves all approved release paths and qualified-main repairs. The synchronization imports no unrelated work. No semantic executor creates or rewrites Git commits."
+                id: "candidate_base_exact"
+                required: true
+              -
+                check_ids:
+                  - "release_check"
+                  - "release_prepublish"
+                  - "scope_hygiene"
+                description: "The candidate has stable 0.7.9 version parity, complete notes and evidence, fresh generated surfaces and baselines, and no unrelated semantic source change."
+                id: "candidate_exact"
+                required: true
+              -
+                check_ids:
+                  - "release_check"
+                  - "release_prepublish"
+                  - "hosted_integration"
+                description: "The exact candidate passes local gates, independent evaluation, hosted CI, protected integration, and hosted close."
+                id: "candidate_qualified"
+                required: true
+              -
+                check_ids:
+                  - "publish_manifest"
+                  - "github_release"
+                description: "The protected workflow publishes v0.7.9 from the exact qualified main SHA and records success=true with an empty failures array."
+                id: "publication_exact"
+                required: true
+              -
+                check_ids:
+                  - "registry_readback"
+                  - "installer_readback"
+                  - "default_branch_readback"
+                description: "Independent readback verifies registries, release assets and checksums, setup-agentplane, Homebrew, Scoop, both CLI entrypoints, and final main."
+                id: "distribution_verified"
+                required: true
+              -
+                check_ids:
+                  - "scope_hygiene"
+                  - "default_branch_readback"
+                description: "AgentPlane records post-publish evidence and starts the next beta only after public proof while preserving unrelated user work."
+                id: "post_publish_complete"
+                required: true
+            evidence_fingerprint: "sha256:252142361c1ed374b2814ea4c94cd9098a8eaa6a9aff9a31e89993d05736f7e6"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "candidate_base_identity"
+                      - "scope_hygiene"
+                    description: "The existing candidate is synchronized by a supervisor-owned AgentPlane branch lifecycle operation onto ed89f946b3058cf290df7a76bec23ab4dcc1fa92. The synchronization preserves all approved release paths and qualified-main repairs. The synchronization imports no unrelated work. No semantic executor creates or rewrites Git commits."
+                    id: "candidate_base_exact"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 1000000
+                  optional_sources:
+                    - "PR #5954 provider state"
+                    - "the successful hosted checks for PR #5954"
+                  required_sources:
+                    - ".agentplane/policy/workflow.release.md"
+                    - ".agentplane/tasks/202609121424-49XXT3/README.md"
+                  symbol_hints:
+                    - "qualified main"
+                    - "release candidate base"
+                    - "branch-base"
+                    - "history preservation"
+                depends_on: []
+                expected_outputs:
+                  - "supervisor_owned_candidate_synchronization_receipt"
+                  - "qualified_release_base_sha"
+                id: "synchronize_candidate_base"
+                objective: "Establish exact qualified main ed89f946b3058cf290df7a76bec23ab4dcc1fa92 as the release candidate base through a supervisor-owned AgentPlane branch synchronization lifecycle operation. Preserve all approved candidate content and unrelated user work. This WorkItem defines acceptance only. An external semantic executor must not create or rewrite Git commits."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "exclusive"
+                    mode: "exclusive"
+                    resource: "branch-base:main@ed89f946b3058cf290df7a76bec23ab4dcc1fa92"
+                  -
+                    kind: "workspace"
+                    mode: "exclusive"
+                    resource: "release-candidate-worktree"
+                risk: "high"
+                scope_roots:
+                  - ".agentplane/WORKFLOW.md"
+                  - ".agentplane/config.json"
+                  - ".agentplane/tasks/202609121424-49XXT3"
+                  - "docs/assets"
+                  - "docs/reference/generated-reference.mdx"
+                  - "docs/releases/v0.7.9-evidence"
+                  - "docs/releases/v0.7.9.md"
+                  - "package.json"
+                  - "packages"
+                  - "scripts/baselines"
+                  - "website/static/img/social"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      id: "candidate_base_identity"
+                      kind: "structural"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      id: "scope_hygiene"
+                      kind: "structural"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "candidate_base_identity"
+                        - "scope_hygiene"
+                      description: "The existing candidate is synchronized by a supervisor-owned AgentPlane branch lifecycle operation onto ed89f946b3058cf290df7a76bec23ab4dcc1fa92. The synchronization preserves all approved release paths and qualified-main repairs. The synchronization imports no unrelated work. No semantic executor creates or rewrites Git commits."
+                      id: "candidate_base_exact"
+                      required: true
+                  evidence_fingerprint: "sha256:252142361c1ed374b2814ea4c94cd9098a8eaa6a9aff9a31e89993d05736f7e6"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "release_check"
+                      - "release_prepublish"
+                      - "scope_hygiene"
+                    description: "The candidate has stable 0.7.9 version parity, complete notes and evidence, fresh generated surfaces and baselines, and no unrelated semantic source change."
+                    id: "candidate_exact"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 1000000
+                  optional_sources:
+                    - "docs/releases/v0.7.8-evidence"
+                  required_sources:
+                    - ".agentplane/policy/workflow.release.md"
+                    - ".agentplane/tasks/202609121424-49XXT3/README.md"
+                    - "docs/releases/v0.7.8.md"
+                  symbol_hints:
+                    - "version parity"
+                    - "release notes"
+                    - "compatibility baseline"
+                    - "clone baseline"
+                depends_on:
+                  - "synchronize_candidate_base"
+                expected_outputs:
+                  - "stable_candidate_diff"
+                  - "release_notes_and_evidence"
+                  - "exact_candidate_sha"
+                id: "prepare_candidate"
+                objective: "Finalize stable 0.7.9 versions, pins, generated surfaces, notes, evidence, formatting, compatibility baselines, and clone baselines only after supervisor-owned synchronization establishes base ed89f946b3058cf290df7a76bec23ab4dcc1fa92."
+                optional: false
+                priority: 2
+                required_inputs:
+                  - "qualified_release_base_sha"
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "exclusive"
+                    resource: "release-candidate-worktree"
+                risk: "high"
+                scope_roots:
+                  - ".agentplane/WORKFLOW.md"
+                  - ".agentplane/config.json"
+                  - ".agentplane/tasks/202609121424-49XXT3"
+                  - "docs/assets"
+                  - "docs/reference/generated-reference.mdx"
+                  - "docs/releases/v0.7.9-evidence"
+                  - "docs/releases/v0.7.9.md"
+                  - "package.json"
+                  - "packages"
+                  - "scripts/baselines"
+                  - "website/static/img/social"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run release:check"
+                      id: "release_check"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1200000
+                    -
+                      capability: "task.verify"
+                      command: "bun run release:prepublish"
+                      id: "release_prepublish"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1200000
+                    -
+                      capability: "task.verify"
+                      id: "scope_hygiene"
+                      kind: "structural"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "release_check"
+                        - "release_prepublish"
+                        - "scope_hygiene"
+                      description: "The candidate has stable 0.7.9 version parity, complete notes and evidence, fresh generated surfaces and baselines, and no unrelated semantic source change."
+                      id: "candidate_exact"
+                      required: true
+                  evidence_fingerprint: "sha256:252142361c1ed374b2814ea4c94cd9098a8eaa6a9aff9a31e89993d05736f7e6"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "release_check"
+                      - "release_prepublish"
+                      - "hosted_integration"
+                    description: "The exact candidate passes local gates, independent evaluation, hosted CI, protected integration, and hosted close."
+                    id: "candidate_qualified"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 500000
+                  optional_sources: []
+                  required_sources:
+                    - ".agentplane/tasks/202609121424-49XXT3/README.md"
+                  symbol_hints:
+                    - "verification"
+                    - "hosted integration"
+                depends_on:
+                  - "prepare_candidate"
+                expected_outputs:
+                  - "independent_evaluator_verdict"
+                  - "green_hosted_candidate_checks"
+                  - "qualified_main_sha"
+                id: "qualify_integrate"
+                objective: "Qualify the exact candidate and integrate it through independent review, hosted CI, the protected merge lane, and hosted close."
+                optional: false
+                priority: 3
+                required_inputs:
+                  - "exact_candidate_sha"
+                  - "release_notes_and_evidence"
+                resource_claims:
+                  -
+                    kind: "provider_queue"
+                    mode: "exclusive"
+                    resource: "integration-lane"
+                risk: "high"
+                scope_roots:
+                  - ".agentplane/tasks/202609121424-49XXT3"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run release:check"
+                      id: "release_check"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1200000
+                    -
+                      capability: "task.verify"
+                      command: "bun run release:prepublish"
+                      id: "release_prepublish"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1200000
+                    -
+                      capability: "task.verify"
+                      id: "hosted_integration"
+                      kind: "provider"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "release_check"
+                        - "release_prepublish"
+                        - "hosted_integration"
+                      description: "The exact candidate passes local gates, independent evaluation, hosted CI, protected integration, and hosted close."
+                      id: "candidate_qualified"
+                      required: true
+                  evidence_fingerprint: "sha256:252142361c1ed374b2814ea4c94cd9098a8eaa6a9aff9a31e89993d05736f7e6"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "publish_manifest"
+                      - "github_release"
+                    description: "The protected workflow publishes v0.7.9 from the exact qualified main SHA and records success=true with an empty failures array."
+                    id: "publication_exact"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 500000
+                  optional_sources: []
+                  required_sources:
+                    - ".agentplane/policy/workflow.release.md"
+                    - ".agentplane/tasks/202609121424-49XXT3/README.md"
+                  symbol_hints:
+                    - "publish-result.json"
+                    - "release-ready"
+                depends_on:
+                  - "qualify_integrate"
+                expected_outputs:
+                  - "v0_7_9_github_release"
+                  - "published_npm_packages"
+                  - "exact_sha_publish_result"
+                id: "publish_stable"
+                objective: "Publish v0.7.9 from the exact qualified main SHA through the protected release route and preserve canonical publication evidence."
+                optional: false
+                priority: 4
+                required_inputs:
+                  - "qualified_main_sha"
+                resource_claims:
+                  -
+                    kind: "provider_queue"
+                    mode: "exclusive"
+                    resource: "release-v0.7.9"
+                risk: "high"
+                scope_roots:
+                  - ".agentplane/.release"
+                  - ".agentplane/tasks/202609121424-49XXT3"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      id: "publish_manifest"
+                      kind: "structural"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      id: "github_release"
+                      kind: "provider"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "publish_manifest"
+                        - "github_release"
+                      description: "The protected workflow publishes v0.7.9 from the exact qualified main SHA and records success=true with an empty failures array."
+                      id: "publication_exact"
+                      required: true
+                  evidence_fingerprint: "sha256:252142361c1ed374b2814ea4c94cd9098a8eaa6a9aff9a31e89993d05736f7e6"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "registry_readback"
+                      - "installer_readback"
+                      - "default_branch_readback"
+                    description: "Independent readback verifies registries, release assets and checksums, setup-agentplane, Homebrew, Scoop, both CLI entrypoints, and final main."
+                    id: "distribution_verified"
+                    required: true
+                  -
+                    check_ids:
+                      - "scope_hygiene"
+                      - "default_branch_readback"
+                    description: "AgentPlane records post-publish evidence and starts the next beta only after public proof while preserving unrelated user work."
+                    id: "post_publish_complete"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 500000
+                  optional_sources:
+                    - "public GHCR metadata"
+                  required_sources:
+                    - ".agentplane/.release/publish/publish-result.json"
+                    - ".agentplane/tasks/202609121424-49XXT3/README.md"
+                  symbol_hints:
+                    - "agentplane"
+                    - "ap"
+                    - "Homebrew"
+                    - "Scoop"
+                    - "setup-agentplane"
+                depends_on:
+                  - "publish_stable"
+                expected_outputs:
+                  - "independent_distribution_readback"
+                  - "verified_cli_entrypoints"
+                  - "final_main_and_next_beta_evidence"
+                  - "residual_limitations"
+                id: "verify_distribution"
+                objective: "Independently verify public 0.7.9 artifacts and installers. Record limitations. Complete AgentPlane-managed evidence and next-beta follow-up."
+                optional: false
+                priority: 5
+                required_inputs:
+                  - "exact_sha_publish_result"
+                  - "v0_7_9_github_release"
+                  - "published_npm_packages"
+                resource_claims:
+                  -
+                    kind: "provider_queue"
+                    mode: "read"
+                    resource: "release-readback-v0.7.9"
+                risk: "high"
+                scope_roots:
+                  - ".agentplane/.release"
+                  - ".agentplane/tasks/202609121424-49XXT3"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      id: "registry_readback"
+                      kind: "provider"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      id: "installer_readback"
+                      kind: "provider"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      id: "default_branch_readback"
+                      kind: "provider"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      id: "scope_hygiene"
+                      kind: "structural"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "registry_readback"
+                        - "installer_readback"
+                        - "default_branch_readback"
+                      description: "Independent readback verifies registries, release assets and checksums, setup-agentplane, Homebrew, Scoop, both CLI entrypoints, and final main."
+                      id: "distribution_verified"
+                      required: true
+                    -
+                      check_ids:
+                        - "scope_hygiene"
+                        - "default_branch_readback"
+                      description: "AgentPlane records post-publish evidence and starts the next beta only after public proof while preserving unrelated user work."
+                      id: "post_publish_complete"
+                      required: true
+                  evidence_fingerprint: "sha256:252142361c1ed374b2814ea4c94cd9098a8eaa6a9aff9a31e89993d05736f7e6"
+                  schema_version: 1
+        revision: 9
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+    revision: 51
     schema_version: 1
-    updated_at: "2026-09-14T14:39:25.433Z"
+    updated_at: "2026-09-14T16:29:27.741Z"
     work_items:
       prepare_candidate:
         attempt: 0
@@ -5696,69 +6245,14 @@ extensions:
         state: "PLANNED"
         validation_result: null
       synchronize_candidate_base:
-        attempt: 1
+        attempt: 0
         claim_id: null
         id: "synchronize_candidate_base"
         last_failure: null
-        output_manifests:
-          -
-            digest: "sha256:67b3506ae457eb32e5c77b8090ed876df7ca0d869bb4d5a14756f3644952fdc7"
-            id: "supervisor_owned_candidate_synchronization_receipt"
-            kind: "semantic_output"
-            producer:
-              attempt: 1
-              plan_revision: 9
-              task_id: "202609121424-49XXT3"
-              work_item_id: "synchronize_candidate_base"
-            provenance:
-              - "sha256:8d5f52dd9611485a8737fdca1e97851204bf014f3365ae7cc76b69b9924a56df"
-              - ".agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:92b42e076cd4b9d7bf40c982159b50c172e286871d59aa0becd66e67287b6f1e"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-          -
-            digest: "sha256:d9bbde3af58e00cb8da9874eaf33401812045b5b15ae3028f7782f51d53c3256"
-            id: "qualified_release_base_sha"
-            kind: "semantic_output"
-            producer:
-              attempt: 1
-              plan_revision: 9
-              task_id: "202609121424-49XXT3"
-              work_item_id: "synchronize_candidate_base"
-            provenance:
-              - "sha256:8d5f52dd9611485a8737fdca1e97851204bf014f3365ae7cc76b69b9924a56df"
-              - ".agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:92b42e076cd4b9d7bf40c982159b50c172e286871d59aa0becd66e67287b6f1e"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-        revision: 2
-        state: "COMPLETED"
-        validation_result:
-          evidence:
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json"
-              check_id: "candidate_base_identity"
-              command_identity: "task.verify"
-              detail: "Observed by task.verify."
-              exit_code: 0
-              observed_at: "2026-09-14T14:12:47.133Z"
-              repository_snapshot_digest: "sha256:92b42e076cd4b9d7bf40c982159b50c172e286871d59aa0becd66e67287b6f1e"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json"
-              check_id: "scope_hygiene"
-              command_identity: "task.verify"
-              detail: "Observed by task.verify."
-              exit_code: 0
-              observed_at: "2026-09-14T14:12:47.133Z"
-              repository_snapshot_digest: "sha256:92b42e076cd4b9d7bf40c982159b50c172e286871d59aa0becd66e67287b6f1e"
-              status: "passed"
-          schema_version: 1
-          stale_evidence: []
-          status: "passed"
-          unsatisfied_criteria: []
+        output_manifests: []
+        revision: 1
+        state: "READY"
+        validation_result: null
       verify_distribution:
         attempt: 0
         claim_id: null
@@ -5892,6 +6386,25 @@ extensions:
         task_id: "202609121424-49XXT3"
         task_revision: 45
         work_item_id: "synchronize_candidate_base"
+      -
+        at: "2026-09-14T16:28:04.232Z"
+        from: "ACTIVE"
+        to: "PLANNING"
+        actor_id: "external:EXECUTOR"
+        cause_refs:
+          - "outputs_changed"
+          - "acceptance_changed"
+          - "dependencies_changed"
+        entity: "task"
+        id: "event_6d533a221b7ee824d9db2c99"
+        mutation_id: "plan-refinement:work-order-202609121424-49XXT3-executor-244025d6af0680e5855dcd07"
+        plan_digest: "sha256:daeb3cc4f442055aff876a2c9af17cc066df9b9ea4452819f5284755a61dc80c"
+        plan_revision: 9
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+        task_revision: 48
+        work_item_id: null
     leases: []
     mutation_receipts:
       compatibility:sha256:046ef3d623a69511cecc08b34cefc3449d060dba8558b29211086e726db3ceb3:
@@ -6060,6 +6573,30 @@ extensions:
         mutation_id: "compatibility:sha256:2f261bb198ac6d87ce12c874d2145cfea075cfd7f48d6e7f0f7c9715830a3fe8"
         next_revision: 45
         previous_revision: 44
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+      compatibility:sha256:3179b068ba7457fafe52587f95888c01ba9057e2dd7bfb3bf329230dc2c540e6:
+        aggregate_digest: "sha256:f1a4e327a4c3bb731557b755734c67af66bf1819fd67780c01f8b92f6c4dbfe0"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T16:26:34.900Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_3e79d9f0aa1ced28f1b9f44a"
+          mutation_id: "compatibility:sha256:3179b068ba7457fafe52587f95888c01ba9057e2dd7bfb3bf329230dc2c540e6"
+          plan_digest: "sha256:daeb3cc4f442055aff876a2c9af17cc066df9b9ea4452819f5284755a61dc80c"
+          plan_revision: 9
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          task_revision: 47
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:3179b068ba7457fafe52587f95888c01ba9057e2dd7bfb3bf329230dc2c540e6"
+        next_revision: 48
+        previous_revision: 47
         schema_version: 1
         task_id: "202609121424-49XXT3"
       compatibility:sha256:40aa9856b61c1f1e2ceaf69ea3e5573ff591a44e965b9e2f23dcb008a613cb85:
@@ -6252,6 +6789,30 @@ extensions:
         mutation_id: "compatibility:sha256:7daa3c01d3a379229f881d853a6e69887c12ab509521d329fdb1220a0c9551c1"
         next_revision: 41
         previous_revision: 40
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+      compatibility:sha256:8ced4650bc3274c2b82df701dc9d18d9579cca94b3fd7e101e9d67b4f350e822:
+        aggregate_digest: "sha256:8e04a4713f1bf11a7a49ba7b34f4d21327916c5fc6cbde2532342f72edeb437b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T16:29:27.741Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "AWAITING_PLAN_APPROVAL"
+          id: "event_cfbb186800d7eb1ac283479d"
+          mutation_id: "compatibility:sha256:8ced4650bc3274c2b82df701dc9d18d9579cca94b3fd7e101e9d67b4f350e822"
+          plan_digest: "sha256:c37f177171441b358c9a0bde2de1a4f18a7ed0a9a89bba7ce19c1595bcdcd2ce"
+          plan_revision: 10
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          task_revision: 50
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:8ced4650bc3274c2b82df701dc9d18d9579cca94b3fd7e101e9d67b4f350e822"
+        next_revision: 51
+        previous_revision: 50
         schema_version: 1
         task_id: "202609121424-49XXT3"
       compatibility:sha256:8e5c35cd253fa10e2c4c1dcaa29f3ee2e7be7ec4862aed8cd5f4c93b6e6075d6:
@@ -6710,6 +7271,32 @@ extensions:
         previous_revision: 29
         schema_version: 1
         task_id: "202609121424-49XXT3"
+      plan-refinement:work-order-202609121424-49XXT3-executor-244025d6af0680e5855dcd07:
+        aggregate_digest: "sha256:2d24885be848b20686b3d160b14a14c3a26f5a95557a42d18ba87fc6e07e8b7d"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-14T16:28:04.232Z"
+          cause_refs:
+            - "outputs_changed"
+            - "acceptance_changed"
+            - "dependencies_changed"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_6d533a221b7ee824d9db2c99"
+          mutation_id: "plan-refinement:work-order-202609121424-49XXT3-executor-244025d6af0680e5855dcd07"
+          plan_digest: "sha256:daeb3cc4f442055aff876a2c9af17cc066df9b9ea4452819f5284755a61dc80c"
+          plan_revision: 9
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          task_revision: 48
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609121424-49XXT3-executor-244025d6af0680e5855dcd07"
+        next_revision: 49
+        previous_revision: 48
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
       plan-refinement:work-order-202609121424-49XXT3-executor-357f96ca071f158ceb929079:
         aggregate_digest: "sha256:b31d2c603a5a552f448f5af1c0488402aedc0fc4cf5b392656c4c416a2f881bc"
         event:
@@ -6861,7 +7448,7 @@ Release operator task after all 0.7.9 stabilization dependencies are integrated.
 
 ## Plan
 
-The release plan now rebinds candidate synchronization to qualified main ed89f946b3058cf290df7a76bec23ab4dcc1fa92 and preserves the remaining 0.7.9 release graph.
+The release plan now rebinds candidate synchronization to qualified main a3ccf6f1927bf5ab3a9cf6612dd7326d68d1f270 and preserves the remaining 0.7.9 release graph.
 
 ## Verify Steps
 

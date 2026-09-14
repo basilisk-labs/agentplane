@@ -13,7 +13,7 @@ Created: 2026-09-13T22:57:11.966Z
 ## Verification
 
 - State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

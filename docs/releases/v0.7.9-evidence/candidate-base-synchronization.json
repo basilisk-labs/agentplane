@@ -2,12 +2,12 @@
   "schema_version": 1,
   "release": "v0.7.9",
   "operation": "supervisor_owned_candidate_synchronization",
-  "qualified_release_base_sha": "ed89f946b3058cf290df7a76bec23ab4dcc1fa92",
-  "candidate_sha_before_synchronization": "801d545e1e5aaf2c9b4c307d4ca6a19214628a65",
-  "synchronized_candidate_sha": "c77460462bd0b942eee9fde4380a78501360b485",
+  "qualified_release_base_sha": "a3ccf6f1927bf5ab3a9cf6612dd7326d68d1f270",
+  "candidate_sha_before_synchronization": "c3c16604c5f8ec39aada2a0803e846dac2ab198f",
+  "synchronized_candidate_sha": "867220ed92840ede4a50fde236a427e896d00edd",
   "synchronized_candidate_parents": [
-    "801d545e1e5aaf2c9b4c307d4ca6a19214628a65",
-    "ed89f946b3058cf290df7a76bec23ab4dcc1fa92"
+    "c3c16604c5f8ec39aada2a0803e846dac2ab198f",
+    "a3ccf6f1927bf5ab3a9cf6612dd7326d68d1f270"
   ],
   "verification": {
     "qualified_base_is_ancestor": true,
