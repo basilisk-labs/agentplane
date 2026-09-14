@@ -20,7 +20,7 @@ export type LoadedTaskRunnerInspection = {
   events_text: string;
 };
 
-export type TaskRunnerActivityHealth = "active" | "idle" | "exited" | "unknown";
+type TaskRunnerActivityHealth = "active" | "idle" | "exited" | "unknown";
 
 export type TaskRunnerActivityInspection = {
   last_trace_at: string | null;
