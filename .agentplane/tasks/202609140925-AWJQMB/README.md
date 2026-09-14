@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 32
+revision: 40
 origin:
   system: "manual"
 depends_on: []
@@ -21,9 +21,9 @@ verify:
   - "bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-14T11:30:50.365Z"
+  updated_at: "2026-09-14T12:32:11.587Z"
   updated_by: "HOST:codex-desktop:USER"
-  note: "host_user_decision=sha256:94c0b7d373b1f6201c268ed5e311db2fd42605c07bbc8f3d25950273f27267c6"
+  note: "host_user_decision=sha256:89ba21157e7ef6975319a79f6d9d82b53e5bacd2523ab2bef6ea0721e22e55a7"
 verification:
   state: "pending"
   updated_at: null
@@ -79,6 +79,7 @@ execution_contract:
     writable_roots:
       - "packages/agentplane/src/commands/branch/sync-task-base.test.ts"
       - "packages/agentplane/src/commands/branch/sync-task-base.ts"
+      - "packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts"
       - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
       - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
       - "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
@@ -87,8 +88,9 @@ execution_contract:
     implementation_uncertainty: "bounded"
     preferred_mode: "branch_pr"
     rationale:
-      - "The added work is limited to two hosted-failing concurrency tests and must preserve the accepted sync-base behavior."
-      - "The task remains a release-blocking branch PR with an open provider PR."
+      - "Hosted integration remains a supervisor-owned gate."
+      - "The current baseline contains all previously approved corrections."
+      - "The remaining release blocker is isolated to one test timeout fixture."
     repository_effects:
       - "source_code"
       - "tests"
@@ -98,20 +100,16 @@ execution_contract:
     scope_roots:
       - "packages/agentplane/src/commands/branch/sync-task-base.test.ts"
       - "packages/agentplane/src/commands/branch/sync-task-base.ts"
+      - "packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts"
       - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
       - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
       - "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
   observed:
     authority_violations: []
-    changed_components:
-      - "packages/agentplane"
-    changed_paths:
-      - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
-      - "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
+    changed_components: []
+    changed_paths: []
     external_effects: []
-    repository_effects:
-      - "repository_write"
-      - "tests"
+    repository_effects: []
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -131,12 +129,12 @@ execution_contract:
         components:
           - "packages/agentplane/src/commands/branch/sync-task-base.test.ts"
           - "packages/agentplane/src/commands/branch/sync-task-base.ts"
+          - "packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts"
           - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
           - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
           - "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
         evidence_requirements:
           - "hosted_integration"
-          - "repository_effect:repository_write"
           - "repository_effect:source_code"
           - "repository_effect:tests"
           - "task_outcome"
@@ -148,7 +146,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:74c2689b9871bef6bee421fdd70a6c45f6082c331a963e72833ef4496194190c"
+      digest: "sha256:fe308d734d36e8563f3c0cc8be06b637f3746f3b9756d1ea8913d1b1e1ee4e57"
       escalation_reasons:
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
@@ -158,15 +156,10 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components:
-          - "packages/agentplane"
-        changed_files:
-          - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
-          - "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
+        changed_components: []
+        changed_files: []
         external_effects: []
-        repository_effects:
-          - "repository_write"
-          - "tests"
+        repository_effects: []
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -195,13 +188,10 @@ execution_contract:
       source: "execution_contract"
     required_evidence:
       - "hosted_integration"
-      - "repository_effect:repository_write"
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "b80f7723f6e74bafa214501519fa91ca767dc2e5"
-  message: "🚧 AWJQMB task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -321,7 +311,7 @@ events:
     note: "Implementation committed: b80f7723f6e7. CLI accepted one state-bound external-agent semantic result."
     commit: "b80f7723f6e74bafa214501519fa91ca767dc2e5"
 doc_version: 3
-doc_updated_at: "2026-09-14T12:01:11.034Z"
+doc_updated_at: "2026-09-14T12:32:11.620Z"
 doc_updated_by: "SUPERVISOR"
 description: "The release task 202609121424-49XXT3 requested exact branch-base synchronization onto main 1a93a9a43da2b714854174491f9672c52bf33e9f. synchronizeTaskBranchBase generated subject 'Merge branch main into task/...' and git hook run commit-msg rejected it because the repository requires '<emoji> <task-suffix> <scope>: <summary>'. Update the supervisor-owned synchronization implementation to create a policy-compliant task-attributed merge subject without weakening or bypassing hooks. Preserve the exact two-parent no-ff merge and ancestry postconditions. Add focused regression coverage for the real hook-compatible subject. Do not touch release candidate content or agentplane-roadmap-r2."
 sections:
@@ -332,7 +322,7 @@ sections:
   Scope: |-
     - In scope: The release task 202609121424-49XXT3 requested exact branch-base synchronization onto main 1a93a9a43da2b714854174491f9672c52bf33e9f. synchronizeTaskBranchBase generated subject 'Merge branch main into task/...' and git hook run commit-msg rejected it because the repository requires '<emoji> <task-suffix> <scope>: <summary>'. Update the supervisor-owned synchronization implementation to create a policy-compliant task-attributed merge subject without weakening or bypassing hooks. Preserve the exact two-parent no-ff merge and ancestry postconditions. Add focused regression coverage for the real hook-compatible subject. Do not touch release candidate content or agentplane-roadmap-r2.
     - Out of scope: unrelated refactors not required for "Make supervisor-owned task branch base synchronization generate a commit subject accepted by AgentPlane commit-msg policy".
-  Plan: "The refined plan proves the hosted concurrency failure before applying the smallest test-harness hardening and reruns the complete required verification."
+  Plan: "The executable plan now contains only the new evaluator timeout fixture hardening; prior fixes are baseline evidence."
   Verify Steps: |-
     1. Run `bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts`. Expected: focused synchronization and supervisor-operation tests pass.
     2. Inspect the focused fixture merge commit subject, body, and parents. Expected: the subject matches the task-attributed AgentPlane format, the body contains a valid Signed-off-by trailer, and the parents are the exact prior task head followed by the exact plan-bound base SHA.
@@ -511,7 +501,7 @@ sections:
 extensions:
   agentplane.execution_grant:
     actor: "HOST:codex-desktop:USER"
-    approval_evidence_digest: "sha256:94c0b7d373b1f6201c268ed5e311db2fd42605c07bbc8f3d25950273f27267c6"
+    approval_evidence_digest: "sha256:89ba21157e7ef6975319a79f6d9d82b53e5bacd2523ab2bef6ea0721e22e55a7"
     approval_kind: "host_user_decision"
     capabilities:
       - "provider.merge"
@@ -521,12 +511,12 @@ extensions:
       - "task.lifecycle"
       - "task.scope.extend"
     completion_contract_digest: "sha256:e56f01a07537e5e356add0980ed2cb9f1e3eda790c1e8149342d2e700a736493"
-    digest: "sha256:d65b71d32785e978cf9b17350175025a970ac763bf83f7a08c8cf4307ff7805b"
-    grant_id: "ae5057e6-65ac-4346-8966-78d8f35b2e19"
-    issued_at: "2026-09-14T11:30:50.365Z"
+    digest: "sha256:58649b9856b4b354d3b2cb150e5b0660ab3c691930e371b76225946ae04d5a61"
+    grant_id: "8ddb8641-bc35-4117-8abf-8017fa0fe5cf"
+    issued_at: "2026-09-14T12:32:11.587Z"
     kind: "agentplane.execution_grant"
-    plan_digest: "sha256:cf20eb782200c74ca8dfa5aef2dbcc393d181c03b4e13155592f40c6fce619da"
-    plan_revision: 26
+    plan_digest: "sha256:4484707cd778662c6b23ef6f0ff708b16f6b6ec6400edd73b22c055fc1dd7572"
+    plan_revision: 39
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
     scope_digest: "sha256:ef6d02ec2aac91d97cea1c9d7042c3803e2daef9f79732cf3311ce630ea41291"
@@ -535,31 +525,32 @@ extensions:
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-14T11:30:50.365Z"
+        approved_at: "2026-09-14T12:32:11.587Z"
         approved_by: "HOST:codex-desktop:USER"
-        approved_digest: "sha256:c0fcc82c1cd8640ea3e274ea04ce90a2b291327cd89d088e94807312ce3e0d44"
+        approved_digest: "sha256:17e5cab8ed46d234d598017608d18f9c97c43dddff1331b90dd8fbfe285d403e"
         policy_facts:
           - "host_user_decision"
         state: "approved"
-      created_at: "2026-09-14T11:24:44.846Z"
-      digest: "sha256:c0fcc82c1cd8640ea3e274ea04ce90a2b291327cd89d088e94807312ce3e0d44"
+      created_at: "2026-09-14T12:31:24.471Z"
+      digest: "sha256:17e5cab8ed46d234d598017608d18f9c97c43dddff1331b90dd8fbfe285d403e"
       proposal:
         assumptions:
-          - "If diagnosis proves a production-code defect, the executor must return a new plan refinement before changing any production path outside the approved roots."
+          - "A test-only timeout margin is sufficient because production behavior passed outside the saturated supervisor run."
         planning_baseline:
-          captured_at: "2026-09-14T11:20:53.219Z"
+          captured_at: "2026-09-14T12:29:57.316Z"
           config_digest: null
           context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
-          digest: "sha256:539af198599013988707a150fa7d02919990d2b53b81bbdbe7c6824833390234"
+          digest: "sha256:ddc459a51468f034abca117b25b25bf9142dae0c407607327f783b8bf71c812f"
           dirty_paths:
             - ".agentplane/tasks/202609140925-AWJQMB/README.md"
+            - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
           git:
             kind: "commit"
             ref: null
-            sha: "9382fbdfc07cdfc0b00cb7f972b5043fbe08758d"
+            sha: "2288f5d74b7a3cd9405f469558dfb15ccc8815df"
           policy_digest: null
           schema_version: 1
-          task_history_cursor: "task-revision:25"
+          task_history_cursor: "task-revision:38"
         schema_version: 1
         task_id: "202609140925-AWJQMB"
         top_level_validation:
@@ -578,6 +569,20 @@ extensions:
               kind: "deterministic"
               required: true
               timeout_ms: 120000
+            -
+              capability: "task.verify"
+              command: "bun x vitest run packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts"
+              id: "focused-evaluator-timeout"
+              kind: "deterministic"
+              required: true
+              timeout_ms: 120000
+            -
+              capability: "task.verify"
+              command: "node scripts/checks/run-local-ci-group.mjs core"
+              id: "core-group"
+              kind: "deterministic"
+              required: true
+              timeout_ms: 900000
             -
               capability: "task.verify"
               command: "bun run test:fast:ci"
@@ -608,32 +613,27 @@ extensions:
             -
               check_ids:
                 - "focused-sync-base"
-              description: "The policy-valid signed merge subject, exact two-parent topology, ancestry checks, and refusal paths remain unchanged and passing."
-              id: "sync-base-contract"
-              required: true
-            -
-              check_ids:
                 - "implicated-concurrency-suites"
-                - "fast-ci"
-              description: "Concurrent verification keeps final task state aligned with durable records without accepting stale temporary README state."
-              id: "verify-concurrency"
+              description: "The committed policy-valid sync-base behavior, concurrent verification invariant, and sequential worktree fixture cleanup remain passing."
+              id: "baseline-contracts"
               required: true
             -
               check_ids:
-                - "implicated-concurrency-suites"
-                - "fast-ci"
-              description: "Parallel direct-task allocation and cleanup leave the shared temporary Git worktree metadata readable and fully cleaned."
-              id: "workspace-concurrency"
+                - "focused-evaluator-timeout"
+                - "core-group"
+              description: "The evaluator timeout fixture reliably preserves provider usage emitted at startup under the full core workload while still proving timeout classification."
+              id: "evaluator-timeout-usage"
               required: true
             -
               check_ids:
+                - "fast-ci"
                 - "full-local"
                 - "diff-status"
                 - "hosted-integration"
-              description: "The full local regression, clean diff inspection, and hosted integration pass before merge."
+              description: "Fast and full local regression, clean diff inspection, and hosted integration pass before merge."
               id: "release-gate"
               required: true
-          evidence_fingerprint: "sha256:539af198599013988707a150fa7d02919990d2b53b81bbdbe7c6824833390234"
+          evidence_fingerprint: "sha256:ddc459a51468f034abca117b25b25bf9142dae0c407607327f783b8bf71c812f"
           schema_version: 1
         unresolved_questions: []
         work_items:
@@ -643,144 +643,49 @@ extensions:
               acceptance_criteria:
                 -
                   check_ids:
-                    - "implicated-concurrency-suites"
-                    - "fast-ci"
-                  description: "Concurrent verification keeps final task state aligned with durable records without accepting stale temporary README state."
-                  id: "verify-concurrency"
-                  required: true
-                -
-                  check_ids:
-                    - "implicated-concurrency-suites"
-                    - "fast-ci"
-                  description: "Parallel direct-task allocation and cleanup leave the shared temporary Git worktree metadata readable and fully cleaned."
-                  id: "workspace-concurrency"
-                  required: true
-              capabilities:
-                - "task.verify"
-              context:
-                max_bytes: 32768
-                optional_sources:
-                  - "packages/agentplane/src/commands/task/verify-record-execute.ts"
-                  - "packages/agentplane/src/runtime/workspace-allocation/allocate.ts"
-                required_sources:
-                  - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
-                  - "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
-                symbol_hints:
-                  - "cmdVerifyParsed"
-                  - "allocateTaskWorkspace"
-                  - "cleanupTaskWorkspace"
-              depends_on: []
-              expected_outputs:
-                - "race-analysis"
-                - "correction-decision"
-              id: "prove-hosted-races"
-              objective: "Reproduce or deterministically expose each hosted concurrency failure and identify whether the defect is test cleanup ordering or production behavior."
-              optional: false
-              priority: 2
-              required_inputs: []
-              resource_claims:
-                -
-                  kind: "path"
-                  mode: "read"
-                  resource: "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
-                -
-                  kind: "path"
-                  mode: "read"
-                  resource: "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
-              risk: "medium"
-              scope_roots:
-                - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
-                - "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
-              validation:
-                checks:
-                  -
-                    capability: "task.verify"
-                    command: "bun x vitest run packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
-                    id: "implicated-concurrency-suites"
-                    kind: "deterministic"
-                    required: true
-                    timeout_ms: 120000
-                  -
-                    capability: "task.verify"
-                    command: "bun run test:fast:ci"
-                    id: "fast-ci"
-                    kind: "deterministic"
-                    required: true
-                    timeout_ms: 900000
-                criteria:
-                  -
-                    check_ids:
-                      - "implicated-concurrency-suites"
-                      - "fast-ci"
-                    description: "Concurrent verification keeps final task state aligned with durable records without accepting stale temporary README state."
-                    id: "verify-concurrency"
-                    required: true
-                  -
-                    check_ids:
-                      - "implicated-concurrency-suites"
-                      - "fast-ci"
-                    description: "Parallel direct-task allocation and cleanup leave the shared temporary Git worktree metadata readable and fully cleaned."
-                    id: "workspace-concurrency"
-                    required: true
-                evidence_fingerprint: "sha256:539af198599013988707a150fa7d02919990d2b53b81bbdbe7c6824833390234"
-                schema_version: 1
-            -
-              acceptance_criteria:
-                -
-                  check_ids:
                     - "focused-sync-base"
-                  description: "The policy-valid signed merge subject, exact two-parent topology, ancestry checks, and refusal paths remain unchanged and passing."
-                  id: "sync-base-contract"
-                  required: true
-                -
-                  check_ids:
                     - "implicated-concurrency-suites"
-                    - "fast-ci"
-                  description: "Concurrent verification keeps final task state aligned with durable records without accepting stale temporary README state."
-                  id: "verify-concurrency"
+                  description: "The committed policy-valid sync-base behavior, concurrent verification invariant, and sequential worktree fixture cleanup remain passing."
+                  id: "baseline-contracts"
                   required: true
                 -
                   check_ids:
-                    - "implicated-concurrency-suites"
-                    - "fast-ci"
-                  description: "Parallel direct-task allocation and cleanup leave the shared temporary Git worktree metadata readable and fully cleaned."
-                  id: "workspace-concurrency"
+                    - "focused-evaluator-timeout"
+                    - "core-group"
+                  description: "The evaluator timeout fixture reliably preserves provider usage emitted at startup under the full core workload while still proving timeout classification."
+                  id: "evaluator-timeout-usage"
                   required: true
                 -
                   check_ids:
+                    - "fast-ci"
                     - "full-local"
                     - "diff-status"
                     - "hosted-integration"
-                  description: "The full local regression, clean diff inspection, and hosted integration pass before merge."
+                  description: "Fast and full local regression, clean diff inspection, and hosted integration pass before merge."
                   id: "release-gate"
                   required: true
               capabilities:
                 - "task.verify"
               context:
-                max_bytes: 49152
+                max_bytes: 65536
                 optional_sources:
-                  - "packages/agentplane/src/commands/task/verify-record-execute.ts"
-                  - "packages/agentplane/src/runtime/workspace-allocation/allocate.ts"
+                  - "packages/agentplane/src/commands/evaluator/evaluator-episode.ts"
                 required_sources:
-                  - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
-                  - "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
-                  - "packages/agentplane/src/commands/branch/sync-task-base.test.ts"
-                  - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+                  - "packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts"
+                  - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
                 symbol_hints:
-                  - "cmdVerifyParsed"
-                  - "cleanupTaskWorkspace"
-              depends_on:
-                - "prove-hosted-races"
+                  - "installProvider"
+                  - "wall_clock_ms"
+                  - "provider_usage_status"
+              depends_on: []
               expected_outputs:
-                - "regression-fix"
-                - "verification-evidence"
-              id: "harden-and-verify"
-              objective: "Apply the smallest proven correction inside the two added test paths, preserve the sync-base contract, and complete local plus hosted verification."
+                - "load-tolerant evaluator timeout fixture"
+                - "complete verification evidence"
+              id: "stabilize-evaluator-timeout-fixture"
+              objective: "Increase only the timeout fixture margin needed to retain startup usage observations under load. Preserve timeout classification and evaluator production behavior. Complete focused, core, full-local, diff, and hosted verification."
               optional: false
               priority: 1
-              required_inputs:
-                - "race-analysis"
-                - "correction-decision"
+              required_inputs: []
               resource_claims:
                 -
                   kind: "workspace"
@@ -789,15 +694,10 @@ extensions:
                 -
                   kind: "path"
                   mode: "write"
-                  resource: "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
-                -
-                  kind: "path"
-                  mode: "write"
-                  resource: "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
-              risk: "medium"
+                  resource: "packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts"
+              risk: "low"
               scope_roots:
-                - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
-                - "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
+                - "packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts"
               validation:
                 checks:
                   -
@@ -814,6 +714,20 @@ extensions:
                     kind: "deterministic"
                     required: true
                     timeout_ms: 120000
+                  -
+                    capability: "task.verify"
+                    command: "bun x vitest run packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts"
+                    id: "focused-evaluator-timeout"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 120000
+                  -
+                    capability: "task.verify"
+                    command: "node scripts/checks/run-local-ci-group.mjs core"
+                    id: "core-group"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 900000
                   -
                     capability: "task.verify"
                     command: "bun run test:fast:ci"
@@ -844,37 +758,32 @@ extensions:
                   -
                     check_ids:
                       - "focused-sync-base"
-                    description: "The policy-valid signed merge subject, exact two-parent topology, ancestry checks, and refusal paths remain unchanged and passing."
-                    id: "sync-base-contract"
-                    required: true
-                  -
-                    check_ids:
                       - "implicated-concurrency-suites"
-                      - "fast-ci"
-                    description: "Concurrent verification keeps final task state aligned with durable records without accepting stale temporary README state."
-                    id: "verify-concurrency"
+                    description: "The committed policy-valid sync-base behavior, concurrent verification invariant, and sequential worktree fixture cleanup remain passing."
+                    id: "baseline-contracts"
                     required: true
                   -
                     check_ids:
-                      - "implicated-concurrency-suites"
-                      - "fast-ci"
-                    description: "Parallel direct-task allocation and cleanup leave the shared temporary Git worktree metadata readable and fully cleaned."
-                    id: "workspace-concurrency"
+                      - "focused-evaluator-timeout"
+                      - "core-group"
+                    description: "The evaluator timeout fixture reliably preserves provider usage emitted at startup under the full core workload while still proving timeout classification."
+                    id: "evaluator-timeout-usage"
                     required: true
                   -
                     check_ids:
+                      - "fast-ci"
                       - "full-local"
                       - "diff-status"
                       - "hosted-integration"
-                    description: "The full local regression, clean diff inspection, and hosted integration pass before merge."
+                    description: "Fast and full local regression, clean diff inspection, and hosted integration pass before merge."
                     id: "release-gate"
                     required: true
-                evidence_fingerprint: "sha256:539af198599013988707a150fa7d02919990d2b53b81bbdbe7c6824833390234"
+                evidence_fingerprint: "sha256:ddc459a51468f034abca117b25b25bf9142dae0c407607327f783b8bf71c812f"
                 schema_version: 1
-      revision: 2
+      revision: 4
       schema_version: 1
       task_id: "202609140925-AWJQMB"
-    event_cursor: 23
+    event_cursor: 26
     final_validation: null
     id: "202609140925-AWJQMB"
     intent:
@@ -1202,83 +1111,838 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609140925-AWJQMB"
-    revision: 32
+      -
+        approval:
+          approved_at: "2026-09-14T11:30:50.365Z"
+          approved_by: "HOST:codex-desktop:USER"
+          approved_digest: "sha256:c0fcc82c1cd8640ea3e274ea04ce90a2b291327cd89d088e94807312ce3e0d44"
+          policy_facts:
+            - "host_user_decision"
+          state: "approved"
+        created_at: "2026-09-14T11:24:44.846Z"
+        digest: "sha256:c0fcc82c1cd8640ea3e274ea04ce90a2b291327cd89d088e94807312ce3e0d44"
+        proposal:
+          assumptions:
+            - "If diagnosis proves a production-code defect, the executor must return a new plan refinement before changing any production path outside the approved roots."
+          planning_baseline:
+            captured_at: "2026-09-14T11:20:53.219Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:539af198599013988707a150fa7d02919990d2b53b81bbdbe7c6824833390234"
+            dirty_paths:
+              - ".agentplane/tasks/202609140925-AWJQMB/README.md"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "9382fbdfc07cdfc0b00cb7f972b5043fbe08758d"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:25"
+          schema_version: 1
+          task_id: "202609140925-AWJQMB"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+                id: "focused-sync-base"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 120000
+              -
+                capability: "task.verify"
+                command: "bun x vitest run packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
+                id: "implicated-concurrency-suites"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 120000
+              -
+                capability: "task.verify"
+                command: "bun run test:fast:ci"
+                id: "fast-ci"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                command: "bun run ci:local:full"
+                id: "full-local"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1800000
+              -
+                capability: "task.verify"
+                command: "git diff --check && git status --short --untracked-files=all"
+                id: "diff-status"
+                kind: "structural"
+                required: true
+                timeout_ms: 120000
+              -
+                capability: "task.verify"
+                id: "hosted-integration"
+                kind: "provider"
+                required: true
+            criteria:
+              -
+                check_ids:
+                  - "focused-sync-base"
+                description: "The policy-valid signed merge subject, exact two-parent topology, ancestry checks, and refusal paths remain unchanged and passing."
+                id: "sync-base-contract"
+                required: true
+              -
+                check_ids:
+                  - "implicated-concurrency-suites"
+                  - "fast-ci"
+                description: "Concurrent verification keeps final task state aligned with durable records without accepting stale temporary README state."
+                id: "verify-concurrency"
+                required: true
+              -
+                check_ids:
+                  - "implicated-concurrency-suites"
+                  - "fast-ci"
+                description: "Parallel direct-task allocation and cleanup leave the shared temporary Git worktree metadata readable and fully cleaned."
+                id: "workspace-concurrency"
+                required: true
+              -
+                check_ids:
+                  - "full-local"
+                  - "diff-status"
+                  - "hosted-integration"
+                description: "The full local regression, clean diff inspection, and hosted integration pass before merge."
+                id: "release-gate"
+                required: true
+            evidence_fingerprint: "sha256:539af198599013988707a150fa7d02919990d2b53b81bbdbe7c6824833390234"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "implicated-concurrency-suites"
+                      - "fast-ci"
+                    description: "Concurrent verification keeps final task state aligned with durable records without accepting stale temporary README state."
+                    id: "verify-concurrency"
+                    required: true
+                  -
+                    check_ids:
+                      - "implicated-concurrency-suites"
+                      - "fast-ci"
+                    description: "Parallel direct-task allocation and cleanup leave the shared temporary Git worktree metadata readable and fully cleaned."
+                    id: "workspace-concurrency"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 32768
+                  optional_sources:
+                    - "packages/agentplane/src/commands/task/verify-record-execute.ts"
+                    - "packages/agentplane/src/runtime/workspace-allocation/allocate.ts"
+                  required_sources:
+                    - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
+                    - "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
+                  symbol_hints:
+                    - "cmdVerifyParsed"
+                    - "allocateTaskWorkspace"
+                    - "cleanupTaskWorkspace"
+                depends_on: []
+                expected_outputs:
+                  - "race-analysis"
+                  - "correction-decision"
+                id: "prove-hosted-races"
+                objective: "Reproduce or deterministically expose each hosted concurrency failure and identify whether the defect is test cleanup ordering or production behavior."
+                optional: false
+                priority: 2
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "read"
+                    resource: "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
+                  -
+                    kind: "path"
+                    mode: "read"
+                    resource: "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
+                risk: "medium"
+                scope_roots:
+                  - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
+                  - "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun x vitest run packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
+                      id: "implicated-concurrency-suites"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 120000
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:fast:ci"
+                      id: "fast-ci"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                  criteria:
+                    -
+                      check_ids:
+                        - "implicated-concurrency-suites"
+                        - "fast-ci"
+                      description: "Concurrent verification keeps final task state aligned with durable records without accepting stale temporary README state."
+                      id: "verify-concurrency"
+                      required: true
+                    -
+                      check_ids:
+                        - "implicated-concurrency-suites"
+                        - "fast-ci"
+                      description: "Parallel direct-task allocation and cleanup leave the shared temporary Git worktree metadata readable and fully cleaned."
+                      id: "workspace-concurrency"
+                      required: true
+                  evidence_fingerprint: "sha256:539af198599013988707a150fa7d02919990d2b53b81bbdbe7c6824833390234"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "focused-sync-base"
+                    description: "The policy-valid signed merge subject, exact two-parent topology, ancestry checks, and refusal paths remain unchanged and passing."
+                    id: "sync-base-contract"
+                    required: true
+                  -
+                    check_ids:
+                      - "implicated-concurrency-suites"
+                      - "fast-ci"
+                    description: "Concurrent verification keeps final task state aligned with durable records without accepting stale temporary README state."
+                    id: "verify-concurrency"
+                    required: true
+                  -
+                    check_ids:
+                      - "implicated-concurrency-suites"
+                      - "fast-ci"
+                    description: "Parallel direct-task allocation and cleanup leave the shared temporary Git worktree metadata readable and fully cleaned."
+                    id: "workspace-concurrency"
+                    required: true
+                  -
+                    check_ids:
+                      - "full-local"
+                      - "diff-status"
+                      - "hosted-integration"
+                    description: "The full local regression, clean diff inspection, and hosted integration pass before merge."
+                    id: "release-gate"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 49152
+                  optional_sources:
+                    - "packages/agentplane/src/commands/task/verify-record-execute.ts"
+                    - "packages/agentplane/src/runtime/workspace-allocation/allocate.ts"
+                  required_sources:
+                    - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
+                    - "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
+                    - "packages/agentplane/src/commands/branch/sync-task-base.test.ts"
+                    - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+                  symbol_hints:
+                    - "cmdVerifyParsed"
+                    - "cleanupTaskWorkspace"
+                depends_on:
+                  - "prove-hosted-races"
+                expected_outputs:
+                  - "regression-fix"
+                  - "verification-evidence"
+                id: "harden-and-verify"
+                objective: "Apply the smallest proven correction inside the two added test paths, preserve the sync-base contract, and complete local plus hosted verification."
+                optional: false
+                priority: 1
+                required_inputs:
+                  - "race-analysis"
+                  - "correction-decision"
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "exclusive"
+                    resource: "202609140925-AWJQMB"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
+                risk: "medium"
+                scope_roots:
+                  - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
+                  - "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+                      id: "focused-sync-base"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 120000
+                    -
+                      capability: "task.verify"
+                      command: "bun x vitest run packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
+                      id: "implicated-concurrency-suites"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 120000
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:fast:ci"
+                      id: "fast-ci"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "full-local"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1800000
+                    -
+                      capability: "task.verify"
+                      command: "git diff --check && git status --short --untracked-files=all"
+                      id: "diff-status"
+                      kind: "structural"
+                      required: true
+                      timeout_ms: 120000
+                    -
+                      capability: "task.verify"
+                      id: "hosted-integration"
+                      kind: "provider"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "focused-sync-base"
+                      description: "The policy-valid signed merge subject, exact two-parent topology, ancestry checks, and refusal paths remain unchanged and passing."
+                      id: "sync-base-contract"
+                      required: true
+                    -
+                      check_ids:
+                        - "implicated-concurrency-suites"
+                        - "fast-ci"
+                      description: "Concurrent verification keeps final task state aligned with durable records without accepting stale temporary README state."
+                      id: "verify-concurrency"
+                      required: true
+                    -
+                      check_ids:
+                        - "implicated-concurrency-suites"
+                        - "fast-ci"
+                      description: "Parallel direct-task allocation and cleanup leave the shared temporary Git worktree metadata readable and fully cleaned."
+                      id: "workspace-concurrency"
+                      required: true
+                    -
+                      check_ids:
+                        - "full-local"
+                        - "diff-status"
+                        - "hosted-integration"
+                      description: "The full local regression, clean diff inspection, and hosted integration pass before merge."
+                      id: "release-gate"
+                      required: true
+                  evidence_fingerprint: "sha256:539af198599013988707a150fa7d02919990d2b53b81bbdbe7c6824833390234"
+                  schema_version: 1
+        revision: 2
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
+      -
+        approval:
+          approved_at: "2026-09-14T12:27:50.422Z"
+          approved_by: "HOST:codex-desktop:USER"
+          approved_digest: "sha256:f745a4fa70f06f8e633eab2c7b2754e09707dc35b44bd7c6ef87b3e2e1ff632a"
+          policy_facts:
+            - "host_user_decision"
+          state: "approved"
+        created_at: "2026-09-14T12:26:02.599Z"
+        digest: "sha256:f745a4fa70f06f8e633eab2c7b2754e09707dc35b44bd7c6ef87b3e2e1ff632a"
+        proposal:
+          assumptions:
+            - "The supervisor preserves completion state for the two existing WorkItems when it accepts the refined plan."
+            - "A test-only timeout margin is sufficient because the failure receipt behavior passes outside the saturated run."
+          planning_baseline:
+            captured_at: "2026-09-14T12:23:22.061Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:b3ad745a6fc7bf144fb364ed792e90bafc63372af265128ffa6feecb61872d9d"
+            dirty_paths:
+              - ".agentplane/tasks/202609140925-AWJQMB/README.md"
+              - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "2288f5d74b7a3cd9405f469558dfb15ccc8815df"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:34"
+          schema_version: 1
+          task_id: "202609140925-AWJQMB"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+                id: "focused-sync-base"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 120000
+              -
+                capability: "task.verify"
+                command: "bun x vitest run packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
+                id: "implicated-concurrency-suites"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 120000
+              -
+                capability: "task.verify"
+                command: "bun x vitest run packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts"
+                id: "focused-evaluator-timeout"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 120000
+              -
+                capability: "task.verify"
+                command: "node scripts/checks/run-local-ci-group.mjs core"
+                id: "core-group"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                command: "bun run test:fast:ci"
+                id: "fast-ci"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                command: "bun run ci:local:full"
+                id: "full-local"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1800000
+              -
+                capability: "task.verify"
+                command: "git diff --check && git status --short --untracked-files=all"
+                id: "diff-status"
+                kind: "structural"
+                required: true
+                timeout_ms: 120000
+              -
+                capability: "task.verify"
+                id: "hosted-integration"
+                kind: "provider"
+                required: true
+            criteria:
+              -
+                check_ids:
+                  - "focused-sync-base"
+                description: "The policy-valid signed merge subject, exact two-parent topology, ancestry checks, and refusal paths remain unchanged and passing."
+                id: "sync-base-contract"
+                required: true
+              -
+                check_ids:
+                  - "implicated-concurrency-suites"
+                  - "fast-ci"
+                description: "Concurrent verification keeps final task state aligned with durable records without accepting stale temporary README state."
+                id: "verify-concurrency"
+                required: true
+              -
+                check_ids:
+                  - "implicated-concurrency-suites"
+                  - "fast-ci"
+                description: "Parallel direct-task allocation and sequential fixture cleanup leave the shared temporary Git worktree metadata readable and fully cleaned."
+                id: "workspace-concurrency"
+                required: true
+              -
+                check_ids:
+                  - "focused-evaluator-timeout"
+                  - "core-group"
+                description: "The evaluator timeout fixture reliably preserves provider usage emitted at startup under the full core workload while still proving timeout classification."
+                id: "evaluator-timeout-usage"
+                required: true
+              -
+                check_ids:
+                  - "full-local"
+                  - "diff-status"
+                  - "hosted-integration"
+                description: "The full local regression, clean diff inspection, and hosted integration pass before merge."
+                id: "release-gate"
+                required: true
+            evidence_fingerprint: "sha256:b3ad745a6fc7bf144fb364ed792e90bafc63372af265128ffa6feecb61872d9d"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "implicated-concurrency-suites"
+                      - "fast-ci"
+                    description: "Concurrent verification keeps final task state aligned with durable records without accepting stale temporary README state."
+                    id: "verify-concurrency"
+                    required: true
+                  -
+                    check_ids:
+                      - "implicated-concurrency-suites"
+                      - "fast-ci"
+                    description: "Parallel direct-task allocation and sequential fixture cleanup leave the shared temporary Git worktree metadata readable and fully cleaned."
+                    id: "workspace-concurrency"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 32768
+                  optional_sources: []
+                  required_sources:
+                    - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
+                    - "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
+                  symbol_hints:
+                    - "cmdVerifyParsed"
+                    - "cleanupTaskWorkspace"
+                depends_on: []
+                expected_outputs:
+                  - "race-analysis"
+                  - "correction-decision"
+                id: "prove-hosted-races"
+                objective: "Reproduce or deterministically expose each original hosted concurrency failure and identify whether the defect is test cleanup ordering or production behavior."
+                optional: false
+                priority: 3
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "read"
+                    resource: "202609140925-AWJQMB"
+                risk: "medium"
+                scope_roots:
+                  - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
+                  - "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun x vitest run packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
+                      id: "implicated-concurrency-suites"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 120000
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:fast:ci"
+                      id: "fast-ci"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                  criteria:
+                    -
+                      check_ids:
+                        - "implicated-concurrency-suites"
+                        - "fast-ci"
+                      description: "Concurrent verification keeps final task state aligned with durable records without accepting stale temporary README state."
+                      id: "verify-concurrency"
+                      required: true
+                    -
+                      check_ids:
+                        - "implicated-concurrency-suites"
+                        - "fast-ci"
+                      description: "Parallel direct-task allocation and sequential fixture cleanup leave the shared temporary Git worktree metadata readable and fully cleaned."
+                      id: "workspace-concurrency"
+                      required: true
+                  evidence_fingerprint: "sha256:b3ad745a6fc7bf144fb364ed792e90bafc63372af265128ffa6feecb61872d9d"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "focused-sync-base"
+                    description: "The policy-valid signed merge subject, exact two-parent topology, ancestry checks, and refusal paths remain unchanged and passing."
+                    id: "sync-base-contract"
+                    required: true
+                  -
+                    check_ids:
+                      - "implicated-concurrency-suites"
+                      - "fast-ci"
+                    description: "Concurrent verification keeps final task state aligned with durable records without accepting stale temporary README state."
+                    id: "verify-concurrency"
+                    required: true
+                  -
+                    check_ids:
+                      - "implicated-concurrency-suites"
+                      - "fast-ci"
+                    description: "Parallel direct-task allocation and sequential fixture cleanup leave the shared temporary Git worktree metadata readable and fully cleaned."
+                    id: "workspace-concurrency"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 49152
+                  optional_sources: []
+                  required_sources:
+                    - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
+                    - "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
+                    - "packages/agentplane/src/commands/branch/sync-task-base.test.ts"
+                    - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+                  symbol_hints:
+                    - "cmdVerifyParsed"
+                    - "cleanupTaskWorkspace"
+                depends_on:
+                  - "prove-hosted-races"
+                expected_outputs:
+                  - "regression-fix"
+                  - "verification-evidence"
+                id: "harden-and-verify"
+                objective: "Preserve the committed minimal corrections in the two original hosted-failing test paths and preserve the sync-base contract."
+                optional: false
+                priority: 2
+                required_inputs:
+                  - "race-analysis"
+                  - "correction-decision"
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "read"
+                    resource: "202609140925-AWJQMB"
+                risk: "medium"
+                scope_roots:
+                  - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
+                  - "packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+                      id: "focused-sync-base"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 120000
+                    -
+                      capability: "task.verify"
+                      command: "bun x vitest run packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
+                      id: "implicated-concurrency-suites"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 120000
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:fast:ci"
+                      id: "fast-ci"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                  criteria:
+                    -
+                      check_ids:
+                        - "focused-sync-base"
+                      description: "The policy-valid signed merge subject, exact two-parent topology, ancestry checks, and refusal paths remain unchanged and passing."
+                      id: "sync-base-contract"
+                      required: true
+                    -
+                      check_ids:
+                        - "implicated-concurrency-suites"
+                        - "fast-ci"
+                      description: "Concurrent verification keeps final task state aligned with durable records without accepting stale temporary README state."
+                      id: "verify-concurrency"
+                      required: true
+                    -
+                      check_ids:
+                        - "implicated-concurrency-suites"
+                        - "fast-ci"
+                      description: "Parallel direct-task allocation and sequential fixture cleanup leave the shared temporary Git worktree metadata readable and fully cleaned."
+                      id: "workspace-concurrency"
+                      required: true
+                  evidence_fingerprint: "sha256:b3ad745a6fc7bf144fb364ed792e90bafc63372af265128ffa6feecb61872d9d"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "focused-sync-base"
+                    description: "The policy-valid signed merge subject, exact two-parent topology, ancestry checks, and refusal paths remain unchanged and passing."
+                    id: "sync-base-contract"
+                    required: true
+                  -
+                    check_ids:
+                      - "implicated-concurrency-suites"
+                      - "fast-ci"
+                    description: "Concurrent verification keeps final task state aligned with durable records without accepting stale temporary README state."
+                    id: "verify-concurrency"
+                    required: true
+                  -
+                    check_ids:
+                      - "implicated-concurrency-suites"
+                      - "fast-ci"
+                    description: "Parallel direct-task allocation and sequential fixture cleanup leave the shared temporary Git worktree metadata readable and fully cleaned."
+                    id: "workspace-concurrency"
+                    required: true
+                  -
+                    check_ids:
+                      - "focused-evaluator-timeout"
+                      - "core-group"
+                    description: "The evaluator timeout fixture reliably preserves provider usage emitted at startup under the full core workload while still proving timeout classification."
+                    id: "evaluator-timeout-usage"
+                    required: true
+                  -
+                    check_ids:
+                      - "full-local"
+                      - "diff-status"
+                      - "hosted-integration"
+                    description: "The full local regression, clean diff inspection, and hosted integration pass before merge."
+                    id: "release-gate"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 32768
+                  optional_sources:
+                    - "packages/agentplane/src/commands/evaluator/evaluator-episode.ts"
+                  required_sources:
+                    - "packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts"
+                  symbol_hints:
+                    - "installProvider"
+                    - "wall_clock_ms"
+                    - "provider_usage_status"
+                depends_on:
+                  - "harden-and-verify"
+                expected_outputs:
+                  - "load-tolerant-timeout-fixture"
+                  - "complete-verification-evidence"
+                id: "stabilize-evaluator-timeout-fixture"
+                objective: "Increase only the timeout fixture margin needed to retain startup usage observations under load. Preserve timeout classification and all evaluator production behavior. Run the focused test repeatedly, the core group, and the full release gate."
+                optional: false
+                priority: 1
+                required_inputs:
+                  - "verification-evidence"
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "exclusive"
+                    resource: "202609140925-AWJQMB"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts"
+                risk: "low"
+                scope_roots:
+                  - "packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+                      id: "focused-sync-base"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 120000
+                    -
+                      capability: "task.verify"
+                      command: "bun x vitest run packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
+                      id: "implicated-concurrency-suites"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 120000
+                    -
+                      capability: "task.verify"
+                      command: "bun x vitest run packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts"
+                      id: "focused-evaluator-timeout"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 120000
+                    -
+                      capability: "task.verify"
+                      command: "node scripts/checks/run-local-ci-group.mjs core"
+                      id: "core-group"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:fast:ci"
+                      id: "fast-ci"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "full-local"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1800000
+                    -
+                      capability: "task.verify"
+                      command: "git diff --check && git status --short --untracked-files=all"
+                      id: "diff-status"
+                      kind: "structural"
+                      required: true
+                      timeout_ms: 120000
+                    -
+                      capability: "task.verify"
+                      id: "hosted-integration"
+                      kind: "provider"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "focused-sync-base"
+                      description: "The policy-valid signed merge subject, exact two-parent topology, ancestry checks, and refusal paths remain unchanged and passing."
+                      id: "sync-base-contract"
+                      required: true
+                    -
+                      check_ids:
+                        - "implicated-concurrency-suites"
+                        - "fast-ci"
+                      description: "Concurrent verification keeps final task state aligned with durable records without accepting stale temporary README state."
+                      id: "verify-concurrency"
+                      required: true
+                    -
+                      check_ids:
+                        - "implicated-concurrency-suites"
+                        - "fast-ci"
+                      description: "Parallel direct-task allocation and sequential fixture cleanup leave the shared temporary Git worktree metadata readable and fully cleaned."
+                      id: "workspace-concurrency"
+                      required: true
+                    -
+                      check_ids:
+                        - "focused-evaluator-timeout"
+                        - "core-group"
+                      description: "The evaluator timeout fixture reliably preserves provider usage emitted at startup under the full core workload while still proving timeout classification."
+                      id: "evaluator-timeout-usage"
+                      required: true
+                    -
+                      check_ids:
+                        - "full-local"
+                        - "diff-status"
+                        - "hosted-integration"
+                      description: "The full local regression, clean diff inspection, and hosted integration pass before merge."
+                      id: "release-gate"
+                      required: true
+                  evidence_fingerprint: "sha256:b3ad745a6fc7bf144fb364ed792e90bafc63372af265128ffa6feecb61872d9d"
+                  schema_version: 1
+        revision: 3
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
+    revision: 40
     schema_version: 1
-    updated_at: "2026-09-14T12:01:10.975Z"
+    updated_at: "2026-09-14T12:31:24.487Z"
     work_items:
-      harden-and-verify:
+      stabilize-evaluator-timeout-fixture:
         attempt: 0
         claim_id: null
-        id: "harden-and-verify"
+        id: "stabilize-evaluator-timeout-fixture"
         last_failure: null
         output_manifests: []
         revision: 1
-        state: "PLANNED"
+        state: "READY"
         validation_result: null
-      prove-hosted-races:
-        attempt: 1
-        claim_id: null
-        id: "prove-hosted-races"
-        last_failure: null
-        output_manifests:
-          -
-            digest: "sha256:dfe13378f0dca4f931ba2232c2a9f01a66f30031041b144accdab678b1f81687"
-            id: "race-analysis"
-            kind: "semantic_output"
-            producer:
-              attempt: 1
-              plan_revision: 2
-              task_id: "202609140925-AWJQMB"
-              work_item_id: "prove-hosted-races"
-            provenance:
-              - "sha256:5cf2a4fe8d9c6aa90a4bae1a8f575baede00d03d40e2e640ae0cf70a94f2a984"
-              - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:00ea5d2adeafbe05ed34130bfad02053117e7cdc08280fca0a48dd54b5ebf336"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-          -
-            digest: "sha256:a36e1e11e27baaa95c164565cfcb2e33ceb51da752c7bd1f1faf4e3015974a54"
-            id: "correction-decision"
-            kind: "semantic_output"
-            producer:
-              attempt: 1
-              plan_revision: 2
-              task_id: "202609140925-AWJQMB"
-              work_item_id: "prove-hosted-races"
-            provenance:
-              - "sha256:5cf2a4fe8d9c6aa90a4bae1a8f575baede00d03d40e2e640ae0cf70a94f2a984"
-              - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:00ea5d2adeafbe05ed34130bfad02053117e7cdc08280fca0a48dd54b5ebf336"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-        revision: 2
-        state: "COMPLETED"
-        validation_result:
-          evidence:
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
-              check_id: "implicated-concurrency-suites"
-              command_identity: "bun x vitest run packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts"
-              detail: "Observed by bun x vitest run packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/runtime/workspace-allocation/allocate.test.ts."
-              exit_code: 0
-              observed_at: "2026-09-14T11:49:33.525Z"
-              repository_snapshot_digest: "sha256:00ea5d2adeafbe05ed34130bfad02053117e7cdc08280fca0a48dd54b5ebf336"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
-              check_id: "fast-ci"
-              command_identity: "bun run test:fast:ci"
-              detail: "Observed by bun run test:fast:ci."
-              exit_code: 0
-              observed_at: "2026-09-14T11:49:33.525Z"
-              repository_snapshot_digest: "sha256:00ea5d2adeafbe05ed34130bfad02053117e7cdc08280fca0a48dd54b5ebf336"
-              status: "passed"
-          schema_version: 1
-          stale_evidence: []
-          status: "passed"
-          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -1386,6 +2050,74 @@ extensions:
         task_id: "202609140925-AWJQMB"
         task_revision: 29
         work_item_id: "prove-hosted-races"
+      -
+        at: "2026-09-14T12:13:36.896Z"
+        from: "PLANNED"
+        to: "REWORK_READY"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:840383591a2f03c2596a73a962d7da24437ec61a4cf7da3cfe4cd82120ccf82b"
+        entity: "work_item"
+        id: "event_68d9e1a31dccf5e530d0394d"
+        mutation_id: "external-result:work-order-202609140925-AWJQMB-executor-7459349ba93d7c33390e10ed"
+        plan_digest: "sha256:c0fcc82c1cd8640ea3e274ea04ce90a2b291327cd89d088e94807312ce3e0d44"
+        plan_revision: 2
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
+        task_revision: 32
+        work_item_id: "harden-and-verify"
+      -
+        at: "2026-09-14T12:23:20.412Z"
+        from: "ACTIVE"
+        to: "PLANNING"
+        actor_id: "external:EXECUTOR"
+        cause_refs:
+          - "scope_expanded"
+          - "outputs_changed"
+        entity: "task"
+        id: "event_de5b61791236b320aadccc1c"
+        mutation_id: "plan-refinement:work-order-202609140925-AWJQMB-executor-389f1afac55bb655f813b41e"
+        plan_digest: "sha256:c0fcc82c1cd8640ea3e274ea04ce90a2b291327cd89d088e94807312ce3e0d44"
+        plan_revision: 2
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
+        task_revision: 33
+        work_item_id: null
+      -
+        at: "2026-09-14T12:28:41.697Z"
+        from: "sha256:f745a4fa70f06f8e633eab2c7b2754e09707dc35b44bd7c6ef87b3e2e1ff632a"
+        to: "sha256:7d787636a6404effb2cadae704b57f81e4732baa255ded023c08e9a1ff82ac96"
+        actor_id: "external:EXECUTOR"
+        cause_refs: []
+        entity: "plan"
+        id: "event_b26eb5deafe0fb4f9d68498d"
+        mutation_id: "plan-refinement:work-order-202609140925-AWJQMB-executor-db8e9041c2351be380d5711f"
+        plan_digest: "sha256:f745a4fa70f06f8e633eab2c7b2754e09707dc35b44bd7c6ef87b3e2e1ff632a"
+        plan_revision: 3
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
+        task_revision: 36
+        work_item_id: null
+      -
+        at: "2026-09-14T12:29:55.663Z"
+        from: "ACTIVE"
+        to: "PLANNING"
+        actor_id: "external:EXECUTOR"
+        cause_refs:
+          - "dependencies_changed"
+        entity: "task"
+        id: "event_640153c833c8d22efe37c286"
+        mutation_id: "plan-refinement:work-order-202609140925-AWJQMB-executor-c2dca35be5148001c1f82732"
+        plan_digest: "sha256:f745a4fa70f06f8e633eab2c7b2754e09707dc35b44bd7c6ef87b3e2e1ff632a"
+        plan_revision: 3
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
+        task_revision: 37
+        work_item_id: null
     leases: []
     mutation_receipts:
       compatibility:sha256:0afe412863eee97979a633489ad54b08dc9b6d97367cbe28fbbad823ce1903fe:
@@ -1554,6 +2286,30 @@ extensions:
         mutation_id: "compatibility:sha256:1d24bba766050d21c0f0f0cacfa4f15f9b1a1c960132208ab628a17f38d798a3"
         next_revision: 5
         previous_revision: 4
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
+      compatibility:sha256:2a17bd7ef28a8945b65cedb5de0fc161c93836f3a9ebf890d69d3cd6710bfb3b:
+        aggregate_digest: "sha256:646eaff335ae94bd0caae141ad005e32b53b3ee3bb01b7a0454f0bd1bf13266d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T12:31:24.487Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "AWAITING_PLAN_APPROVAL"
+          id: "event_a7e4b81b73f8c630209646c9"
+          mutation_id: "compatibility:sha256:2a17bd7ef28a8945b65cedb5de0fc161c93836f3a9ebf890d69d3cd6710bfb3b"
+          plan_digest: "sha256:17e5cab8ed46d234d598017608d18f9c97c43dddff1331b90dd8fbfe285d403e"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140925-AWJQMB"
+          task_revision: 39
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:2a17bd7ef28a8945b65cedb5de0fc161c93836f3a9ebf890d69d3cd6710bfb3b"
+        next_revision: 40
+        previous_revision: 39
         schema_version: 1
         task_id: "202609140925-AWJQMB"
       compatibility:sha256:368e5bf441786347e8eb514d4328e8b1b78e57688d9ca5eecedfcfd16d27e546:
@@ -1820,6 +2576,30 @@ extensions:
         previous_revision: 9
         schema_version: 1
         task_id: "202609140925-AWJQMB"
+      compatibility:sha256:d99fa8c0eeefefb490b60528451b74d4dbf9a50c90289cc554e651cca7025fab:
+        aggregate_digest: "sha256:ce714c5f8a5e94c017d2507290720b474c218981966aedde01e6c97a0a79a31a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T12:26:02.614Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "AWAITING_PLAN_APPROVAL"
+          id: "event_1933b8b61b793d4b07212194"
+          mutation_id: "compatibility:sha256:d99fa8c0eeefefb490b60528451b74d4dbf9a50c90289cc554e651cca7025fab"
+          plan_digest: "sha256:f745a4fa70f06f8e633eab2c7b2754e09707dc35b44bd7c6ef87b3e2e1ff632a"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140925-AWJQMB"
+          task_revision: 35
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:d99fa8c0eeefefb490b60528451b74d4dbf9a50c90289cc554e651cca7025fab"
+        next_revision: 36
+        previous_revision: 35
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
       compatibility:sha256:dbebb8a341acedd1692e4a7c47ad81fd67b4af9ebda651dd5009f109f1bc70d5:
         aggregate_digest: "sha256:2d7250eb9d3c6fc10a4c551da9fff413e74411b0c11d40c14a382aad70bc7992"
         event:
@@ -1988,6 +2768,30 @@ extensions:
         previous_revision: 10
         schema_version: 1
         task_id: "202609140925-AWJQMB"
+      external-result:work-order-202609140925-AWJQMB-executor-7459349ba93d7c33390e10ed:
+        aggregate_digest: "sha256:2081eecc473ae5321df462cf65da1b8d2d29bcafacd2a4bb041ae50d545fd701"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T12:13:36.896Z"
+          cause_refs:
+            - "semantic-result:sha256:840383591a2f03c2596a73a962d7da24437ec61a4cf7da3cfe4cd82120ccf82b"
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_68d9e1a31dccf5e530d0394d"
+          mutation_id: "external-result:work-order-202609140925-AWJQMB-executor-7459349ba93d7c33390e10ed"
+          plan_digest: "sha256:c0fcc82c1cd8640ea3e274ea04ce90a2b291327cd89d088e94807312ce3e0d44"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140925-AWJQMB"
+          task_revision: 32
+          to: "REWORK_READY"
+          work_item_id: "harden-and-verify"
+        mutation_id: "external-result:work-order-202609140925-AWJQMB-executor-7459349ba93d7c33390e10ed"
+        next_revision: 33
+        previous_revision: 32
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
       external-result:work-order-202609140925-AWJQMB-executor-e25cae0d612f55dd2db95534:
         aggregate_digest: "sha256:f9c2aec204d27ba174b309213a6baf5ab4cb919741b0c758eb1da6c0b343b690"
         event:
@@ -2064,6 +2868,31 @@ extensions:
         previous_revision: 24
         schema_version: 1
         task_id: "202609140925-AWJQMB"
+      plan-refinement:work-order-202609140925-AWJQMB-executor-389f1afac55bb655f813b41e:
+        aggregate_digest: "sha256:f8d725c44410cb01d1ffa179eaa61af38992cec0950c870211d996e7204a3687"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-14T12:23:20.412Z"
+          cause_refs:
+            - "scope_expanded"
+            - "outputs_changed"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_de5b61791236b320aadccc1c"
+          mutation_id: "plan-refinement:work-order-202609140925-AWJQMB-executor-389f1afac55bb655f813b41e"
+          plan_digest: "sha256:c0fcc82c1cd8640ea3e274ea04ce90a2b291327cd89d088e94807312ce3e0d44"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140925-AWJQMB"
+          task_revision: 33
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609140925-AWJQMB-executor-389f1afac55bb655f813b41e"
+        next_revision: 34
+        previous_revision: 33
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
       plan-refinement:work-order-202609140925-AWJQMB-executor-9a902b369de69795d062d657:
         aggregate_digest: "sha256:64e60011a250c765fe3495a7699a420c16328a3a51ddd7c77fb59c6c8eb06cca"
         event:
@@ -2085,6 +2914,53 @@ extensions:
         mutation_id: "plan-refinement:work-order-202609140925-AWJQMB-executor-9a902b369de69795d062d657"
         next_revision: 12
         previous_revision: 11
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
+      plan-refinement:work-order-202609140925-AWJQMB-executor-c2dca35be5148001c1f82732:
+        aggregate_digest: "sha256:2f8ff7cfe4831f4406dc5b2ecda5cb8e31f95a93a9aa02a4d175cc194062c498"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-14T12:29:55.663Z"
+          cause_refs:
+            - "dependencies_changed"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_640153c833c8d22efe37c286"
+          mutation_id: "plan-refinement:work-order-202609140925-AWJQMB-executor-c2dca35be5148001c1f82732"
+          plan_digest: "sha256:f745a4fa70f06f8e633eab2c7b2754e09707dc35b44bd7c6ef87b3e2e1ff632a"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140925-AWJQMB"
+          task_revision: 37
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609140925-AWJQMB-executor-c2dca35be5148001c1f82732"
+        next_revision: 38
+        previous_revision: 37
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
+      plan-refinement:work-order-202609140925-AWJQMB-executor-db8e9041c2351be380d5711f:
+        aggregate_digest: "sha256:8df0ebc2f1b31b296b68f62427ce6e69c9db856c50bbbd05c63bbe60307dcfd9"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-14T12:28:41.697Z"
+          cause_refs: []
+          entity: "plan"
+          from: "sha256:f745a4fa70f06f8e633eab2c7b2754e09707dc35b44bd7c6ef87b3e2e1ff632a"
+          id: "event_b26eb5deafe0fb4f9d68498d"
+          mutation_id: "plan-refinement:work-order-202609140925-AWJQMB-executor-db8e9041c2351be380d5711f"
+          plan_digest: "sha256:f745a4fa70f06f8e633eab2c7b2754e09707dc35b44bd7c6ef87b3e2e1ff632a"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140925-AWJQMB"
+          task_revision: 36
+          to: "sha256:7d787636a6404effb2cadae704b57f81e4732baa255ded023c08e9a1ff82ac96"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609140925-AWJQMB-executor-db8e9041c2351be380d5711f"
+        next_revision: 37
+        previous_revision: 36
         schema_version: 1
         task_id: "202609140925-AWJQMB"
     pending_effects: []
@@ -2116,7 +2992,7 @@ The release task 202609121424-49XXT3 requested exact branch-base synchronization
 
 ## Plan
 
-The refined plan proves the hosted concurrency failure before applying the smallest test-harness hardening and reruns the complete required verification.
+The executable plan now contains only the new evaluator timeout fixture hardening; prior fixes are baseline evidence.
 
 ## Verify Steps
 
