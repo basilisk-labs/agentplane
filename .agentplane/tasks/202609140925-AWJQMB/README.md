@@ -4,7 +4,7 @@ title: "Make supervisor-owned task branch base synchronization generate a commit
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -25,10 +25,10 @@ plan_approval:
   note: "host_user_decision=sha256:2bd48595465c7a61fa7e7586b87a52fe2dcf9048a6ba39572b88fd0f7417a7c0"
 verification:
   state: "needs_rework"
-  updated_at: "2026-09-14T10:34:55.907Z"
+  updated_at: "2026-09-14T10:50:30.069Z"
   updated_by: "SUPERVISOR"
   note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 1
+  attempts: 2
 execution_route:
   frozen: true
   reason_codes:
@@ -195,9 +195,7 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:recorded-check-2"
       - "verification_recovery:verification-record"
-commit:
-  hash: "a88bbf51753b05ac3da03316f90a7e9c39b536c8"
-  message: "🚧 AWJQMB task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -260,8 +258,14 @@ events:
     to: "DOING"
     note: "Implementation committed: a88bbf51753b. CLI accepted one state-bound external-agent semantic result."
     commit: "a88bbf51753b05ac3da03316f90a7e9c39b536c8"
+  -
+    type: "verify"
+    at: "2026-09-14T10:50:30.069Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-14T10:43:45.609Z"
+doc_updated_at: "2026-09-14T10:50:31.600Z"
 doc_updated_by: "SUPERVISOR"
 description: "The release task 202609121424-49XXT3 requested exact branch-base synchronization onto main 1a93a9a43da2b714854174491f9672c52bf33e9f. synchronizeTaskBranchBase generated subject 'Merge branch main into task/...' and git hook run commit-msg rejected it because the repository requires '<emoji> <task-suffix> <scope>: <summary>'. Update the supervisor-owned synchronization implementation to create a policy-compliant task-attributed merge subject without weakening or bypassing hooks. Preserve the exact two-parent no-ff merge and ancestry postconditions. Add focused regression coverage for the real hook-compatible subject. Do not touch release candidate content or agentplane-roadmap-r2."
 sections:
@@ -287,6 +291,46 @@ sections:
     Attempts: 1
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:caf6c21d548ad559712ae0b86a33201ebda52f08a24f8d962503cd7828f36f4d, input_digest=sha256:d28a2e1880aac7f7427e33ea2618e7f056d4ae6e91fad7b21588529e0af0de39
+
+    Details:
+
+    Command: bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609140925-AWJQMB declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609140925-AWJQMB declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609140925-AWJQMB-make-supervisor-owned-task-branch-base-synchroni/.agentplane/tasks/202609140925-AWJQMB/blueprint/resolved-snapshot.json
+    - old_digest: a6e5b2fab41b3002672a798cbdc5183879cab8758bc252220e9ddbb9e8ce8cc5
+    - current_digest: a6e5b2fab41b3002672a798cbdc5183879cab8758bc252220e9ddbb9e8ce8cc5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609140925-AWJQMB
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609140925-AWJQMB
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-14T10:50:30.069Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 2
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:caf6c21d548ad559712ae0b86a33201ebda52f08a24f8d962503cd7828f36f4d, input_digest=sha256:d762a1fd07ca163675a30f0d7ceb7775ddf42bb22bc65a442d099f15416e2331
 
     Details:
 
@@ -657,7 +701,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609140925-AWJQMB"
-    event_cursor: 13
+    event_cursor: 14
     final_validation: null
     id: "202609140925-AWJQMB"
     intent:
@@ -696,9 +740,9 @@ extensions:
           scope_roots_added: []
         schema_version: 1
     plan_history: []
-    revision: 18
+    revision: 19
     schema_version: 1
-    updated_at: "2026-09-14T10:43:45.609Z"
+    updated_at: "2026-09-14T10:50:31.599Z"
     work_items:
       repair_sync_merge_message:
         attempt: 3
@@ -836,6 +880,30 @@ extensions:
         work_item_id: "repair_sync_merge_message"
     leases: []
     mutation_receipts:
+      compatibility:sha256:0afe412863eee97979a633489ad54b08dc9b6d97367cbe28fbbad823ce1903fe:
+        aggregate_digest: "sha256:ba8159156126d54f77469be3a70c87c41a86db3a1980a80285912d375dbfc169"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T10:50:31.599Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_4a0a61ee2d45d027f85fb44c"
+          mutation_id: "compatibility:sha256:0afe412863eee97979a633489ad54b08dc9b6d97367cbe28fbbad823ce1903fe"
+          plan_digest: "sha256:2c389272e5f29f9871078eff17e16d5beacad44a28981e9eb54e884794820fcc"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140925-AWJQMB"
+          task_revision: 18
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:0afe412863eee97979a633489ad54b08dc9b6d97367cbe28fbbad823ce1903fe"
+        next_revision: 19
+        previous_revision: 18
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
       compatibility:sha256:10454c878c86d6a8032dad45aae9a9b271c6885f44e0bae0a61c1c152dd36ceb:
         aggregate_digest: "sha256:23b6d28cb9fab05d520cb992b22471831807f9c3d82e2fe2fbf3f692c541ae6a"
         event:
@@ -1222,8 +1290,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "a88bbf51753b05ac3da03316f90a7e9c39b536c8"
   task_execution_context:
     base_ref: "main"
     base_sha: "1a93a9a43da2b714854174491f9672c52bf33e9f"
@@ -1267,6 +1333,46 @@ Note: Rework: Declared check failed: bun run ci:local:full
 Attempts: 1
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:caf6c21d548ad559712ae0b86a33201ebda52f08a24f8d962503cd7828f36f4d, input_digest=sha256:d28a2e1880aac7f7427e33ea2618e7f056d4ae6e91fad7b21588529e0af0de39
+
+Details:
+
+Command: bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609140925-AWJQMB declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609140925-AWJQMB declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609140925-AWJQMB-make-supervisor-owned-task-branch-base-synchroni/.agentplane/tasks/202609140925-AWJQMB/blueprint/resolved-snapshot.json
+- old_digest: a6e5b2fab41b3002672a798cbdc5183879cab8758bc252220e9ddbb9e8ce8cc5
+- current_digest: a6e5b2fab41b3002672a798cbdc5183879cab8758bc252220e9ddbb9e8ce8cc5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609140925-AWJQMB
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609140925-AWJQMB
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-14T10:50:30.069Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 2
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:caf6c21d548ad559712ae0b86a33201ebda52f08a24f8d962503cd7828f36f4d, input_digest=sha256:d762a1fd07ca163675a30f0d7ceb7775ddf42bb22bc65a442d099f15416e2331
 
 Details:
 

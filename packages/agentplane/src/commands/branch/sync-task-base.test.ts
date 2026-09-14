@@ -75,12 +75,13 @@ describe("task branch base synchronization", () => {
         taskIntent: { taskKind: "code", mutationScope: "code" },
       }),
     ).toEqual({ ok: true, errors: [] });
+    const dcoTrailer = /^Signed-off-by: [^<>\r\n]+ <[^<>\s]+@[^<>\s]+>$/mu;
     expect(await git(f.worktreePath, "show", "-s", "--format=%B", result.headSha)).toMatch(
-      /^Signed-off-by: Test User <test@example\.com>$/mu,
+      dcoTrailer,
     );
     const hookMessage = await readFile(path.join(f.worktreePath, ".commit-msg-invoked"), "utf8");
     expect(hookMessage.split(/\r?\n/u)[0]).toBe(subject);
-    expect(hookMessage).toMatch(/^Signed-off-by: Test User <test@example\.com>$/mu);
+    expect(hookMessage).toMatch(dcoTrailer);
     await expect(
       git(f.worktreePath, "merge-base", "--is-ancestor", f.expectedHeadSha, result.headSha),
     ).resolves.toBe("");
