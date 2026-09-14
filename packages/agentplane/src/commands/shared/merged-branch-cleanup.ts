@@ -2,6 +2,7 @@ import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitEnv, findWorktreeForBranch } from "@agentplaneorg/core/git";
 import { gitBranchExists } from "./git-ops.js";
 import { isPathWithin, resolvePathFallback } from "./path.js";
+import { unlinkWorktreeInstallLayout } from "./worktree-install-layout-links.js";
 
 export type MergedBranchCleanupResult = {
   removedBranch: boolean;
@@ -64,6 +65,7 @@ export async function cleanupMergedLocalBranch(opts: {
           });
         }
       }
+      await unlinkWorktreeInstallLayout(worktreePath);
       await execFileAsync("git", ["worktree", "remove", "--force", worktreePath], {
         cwd: opts.gitRoot,
         env: gitEnv(),

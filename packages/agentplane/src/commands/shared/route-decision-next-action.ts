@@ -49,6 +49,14 @@ function taskSuffix(taskId: string): string {
 }
 
 function directExecutionAction(resume: TaskResumeContext, taskId: string): RouteNextAction {
+  if (resume.runner.next_action === "cancel_then_resume") {
+    return {
+      code: "cancel_then_resume",
+      command: resume.runner.next_command ?? null,
+      summary: "reclaim the stale direct-workflow runner before current-agent execution",
+      requiresApproval: false,
+    };
+  }
   if (resume.runner.next_action === "wait") {
     return {
       code: "wait_runner",
@@ -57,20 +65,11 @@ function directExecutionAction(resume: TaskResumeContext, taskId: string): Route
       requiresApproval: false,
     };
   }
-  if (resume.runner.next_action === "none") {
-    return {
-      code: "review_direct_verification",
-      command: null,
-      summary:
-        `runner work is complete; execute the declared Verify Steps, then record ` +
-        `agentplane verify ${taskId} --ok|--rework with evidence`,
-      requiresApproval: false,
-    };
-  }
   return {
     code: "continue_direct",
     command: `agentplane task verify-show ${taskId}`,
-    summary: "continue the direct-mode task with the current coding agent in this checkout",
+    summary:
+      "read the declared Verify Steps, then have the current coding agent implement and verify the approved direct-mode task in this checkout",
     requiresApproval: false,
   };
 }

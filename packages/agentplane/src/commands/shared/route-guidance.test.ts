@@ -4,6 +4,64 @@ import type { TaskRouteDecision } from "./route-decision-types.js";
 import { deriveRouteOperatorGuidance, routeRunnerContextIsRelevant } from "./route-guidance.js";
 
 describe("route operator guidance", () => {
+  it("treats verify-show as preparation for current-agent semantic work", () => {
+    const decision = {
+      task: {
+        id: "202609141102-DIRECT",
+        title: "Execute a direct task",
+        status: "DOING",
+        owner: "CODER",
+        planApproval: "approved",
+        verification: "pending",
+        commit: null,
+      },
+      nextAction: {
+        code: "continue_direct",
+        command: "agentplane task verify-show 202609141102-DIRECT",
+        summary: "continue direct execution",
+        requiresApproval: false,
+      },
+      oracle: {
+        phase: "direct_execution",
+        authoritativeCheckout: "base_checkout",
+        authoritativeCheckoutPath: "/repo",
+        mutationPathHint: "/repo",
+        blocker: null,
+        nextCommand: "agentplane task verify-show 202609141102-DIRECT",
+        summary: "continue direct execution",
+      },
+      executionPacket: {
+        actionKind: "local_command",
+        safeToMutate: true,
+        exactArgv: ["agentplane", "task", "verify-show", "202609141102-DIRECT"],
+        stopReason: null,
+        returnControlWhen:
+          "after the current coding agent reads Verify Steps, completes the approved implementation, runs the declared checks, and records verification; then recompute task next-action",
+        staleStateCheck: "agentplane task next-action 202609141102-DIRECT --explain",
+        verificationCandidate: null,
+      },
+    } as TaskRouteDecision;
+
+    const guidance = deriveRouteOperatorGuidance(decision);
+
+    expect(guidance).toMatchObject({
+      canExecuteNow: true,
+      shouldRunNextCommand: true,
+      safeCommand: "agentplane task verify-show 202609141102-DIRECT",
+      repeatPolicy: {
+        allowed: false,
+      },
+      executorContext: {
+        executor: "current_agent",
+        currentAgentMustExecute: true,
+        instruction: "current_agent_performs_semantic_work",
+      },
+    });
+    expect(guidance.repeatPolicy.stopCondition).toContain("do not repeat task verify-show");
+    expect(guidance.afterCommand).toContain("completes the approved implementation");
+    expect(routeRunnerContextIsRelevant(guidance)).toBe(false);
+  });
+
   it("surfaces PR artifact freshness loops separately from executable route commands", () => {
     const decision = {
       task: {
