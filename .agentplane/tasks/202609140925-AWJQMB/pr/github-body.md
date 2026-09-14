@@ -27,9 +27,9 @@ The release task 202609121424-49XXT3 requested exact branch-base synchronization
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../agentplane/src/commands/branch/sync-task-base.test.ts   | 13 +++++++++++++
- packages/agentplane/src/commands/branch/sync-task-base.ts   |  6 +++++-
- 2 files changed, 18 insertions(+), 1 deletion(-)
+ .../src/commands/branch/sync-task-base.test.ts     | 32 +++++++++++++++++++++-
+ .../src/commands/branch/sync-task-base.ts          |  6 +++-
+ 2 files changed, 36 insertions(+), 2 deletions(-)
 ```
 
 </details>

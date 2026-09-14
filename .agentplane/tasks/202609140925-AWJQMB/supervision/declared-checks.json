@@ -1,0 +1,27 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "focused_base_sync_tests"
+      ],
+      "command": "bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts",
+      "duration_ms": 816,
+      "exit_code": 1,
+      "runtime": {
+        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": null,
+      "stderr_tail": "\npackages/agentplane/src/commands/branch/sync-task-base.test.ts:\n(pass) task branch base synchronization > creates one merge commit with the exact previous head and plan-bound base [228.25ms]\n(pass) task branch base synchronization > refuses a semantic conflict without changing task HEAD [149.14ms]\n(pass) task branch base synchronization > refuses stale identity and unrelated dirty content before mutation [145.10ms]\n\npackages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts:\n\n# Unhandled error between tests\n-------------------------------\n4 | import type { TaskRouteDecision } from \"../shared/route-decision-types.js\";\n5 | import type { CommandContext } from \"../shared/task-backend.js\";\n6 | import type { WorkflowOperation } from \"../shared/workflow-step.js\";\n7 | import { executeBranchWorkflowOperation } from \"./branch-task-supervisor-operations.js\";\n8 | \n9 | const mocks = vi.hoisted(() => ({\n                     ^\nTypeError: vi.hoisted is not a function. (In 'vi.hoisted(() => ({\n  cmdFinish: vi.fn(),\n  runNext: vi.fn(),\n  loadCommandContext: vi.fn(),\n  loadTaskFromContext: vi.fn(),\n  loadTaskCommandContext: vi.fn(),\n  cmdWorkStart: vi.fn(),\n  enqueue: vi.fn(),\n  cmdCleanupMerged: vi.fn(),\n  updateProviderBranch: vi.fn(),\n  synchronizeTaskBranchBase: vi.fn()\n}))', 'vi.hoisted' is undefined)\n      at /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609140925-AWJQMB-make-supervisor-owned-task-branch-base-synchroni/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts:9:18\n-------------------------------\n\n\n 3 pass\n 1 fail\n 1 error\n 12 expect() calls\nRan 4 tests across 2 files. [648.00ms]\n",
+      "stdout_tail": "bun test v1.4.2 (744846f84)\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": "Declared check failed: bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts",
+  "schema_version": 1,
+  "status": "failed",
+  "task_id": "202609140925-AWJQMB"
+}

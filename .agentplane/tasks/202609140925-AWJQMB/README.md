@@ -4,7 +4,7 @@ title: "Make supervisor-owned task branch base synchronization generate a commit
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -180,9 +180,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "bcd5c7206dcda4ade485cb1b90836eb2d55d0e64"
-  message: "🚧 AWJQMB task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -583,22 +581,101 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 7
+    revision: 8
     schema_version: 1
-    updated_at: "2026-09-14T10:19:46.970Z"
+    updated_at: "2026-09-14T10:19:50.805Z"
     work_items:
       repair_sync_merge_message:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "repair_sync_merge_message"
-        last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        last_failure:
+          cause_refs:
+            - "hook_compatible_base_sync"
+          code: "validation_failed"
+          kind: "validation"
+          message: "Classified the scoped staged source and test changes as the intended implementation; removed the bootstrap-only bun.lock drift and preserved the task payload for supervisor commit."
+          retryable: true
+        output_manifests:
+          -
+            digest: "sha256:d3ff117f6c7ca221d00999c6fc57f0ee15fd693f69b466243f096fb66ba5cea6"
+            id: "hook-compatible supervisor merge implementation"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609140925-AWJQMB"
+              work_item_id: "repair_sync_merge_message"
+            provenance:
+              - "sha256:e737362a4311983380d502c5a3adfc682f2ae7638ffb2a9e8f5258817c4cf621"
+              - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:f0825f737e1abe90d5ca7c76e5fb78aecc809b542954b84eded7b0e78238b5f7"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:8606e3e0960eca93482bca274e566cc92199bfb4b64416f787d0b92a45f93e65"
+            id: "focused regression proof"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609140925-AWJQMB"
+              work_item_id: "repair_sync_merge_message"
+            provenance:
+              - "sha256:e737362a4311983380d502c5a3adfc682f2ae7638ffb2a9e8f5258817c4cf621"
+              - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:f0825f737e1abe90d5ca7c76e5fb78aecc809b542954b84eded7b0e78238b5f7"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "REWORK_READY"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
+              check_id: "focused_base_sync_tests"
+              command_identity: "bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+              detail: "Declared check failed: bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+              exit_code: 1
+              observed_at: "2026-09-14T10:19:50.799Z"
+              repository_snapshot_digest: "sha256:f0825f737e1abe90d5ca7c76e5fb78aecc809b542954b84eded7b0e78238b5f7"
+              status: "failed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
+              check_id: "diff_hygiene"
+              command_identity: "task.verify"
+              detail: "Declared check failed: bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+              exit_code: 1
+              observed_at: "2026-09-14T10:19:50.799Z"
+              repository_snapshot_digest: "sha256:f0825f737e1abe90d5ca7c76e5fb78aecc809b542954b84eded7b0e78238b5f7"
+              status: "failed"
+          schema_version: 1
+          stale_evidence: []
+          status: "failed"
+          unsatisfied_criteria:
+            - "hook_compatible_base_sync"
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-14T10:19:50.805Z"
+        from: "READY"
+        to: "REWORK_READY"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:090e9604953818d5fb1bf8e70b9c306b1f13b5119e1249c8dbc89eda697e7ce6"
+        entity: "work_item"
+        id: "event_9bb249388fcc01b365bb7b51"
+        mutation_id: "external-result:work-order-202609140925-AWJQMB-executor-09108b3a400c752081a39c43"
+        plan_digest: "sha256:2c389272e5f29f9871078eff17e16d5beacad44a28981e9eb54e884794820fcc"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
+        task_revision: 7
+        work_item_id: "repair_sync_merge_message"
     leases: []
     mutation_receipts:
       compatibility:sha256:10454c878c86d6a8032dad45aae9a9b271c6885f44e0bae0a61c1c152dd36ceb:
@@ -719,6 +796,30 @@ extensions:
         mutation_id: "compatibility:sha256:debfb1be45c658078eb6f7eb622fcdb194a79eb2d120070117277424280c49a7"
         next_revision: 6
         previous_revision: 5
+        schema_version: 1
+        task_id: "202609140925-AWJQMB"
+      external-result:work-order-202609140925-AWJQMB-executor-09108b3a400c752081a39c43:
+        aggregate_digest: "sha256:23144cf5cad1cb82acbbff670acc31d50a730319aaf487eb92cd52d46aececa1"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-14T10:19:50.805Z"
+          cause_refs:
+            - "semantic-result:sha256:090e9604953818d5fb1bf8e70b9c306b1f13b5119e1249c8dbc89eda697e7ce6"
+          entity: "work_item"
+          from: "READY"
+          id: "event_9bb249388fcc01b365bb7b51"
+          mutation_id: "external-result:work-order-202609140925-AWJQMB-executor-09108b3a400c752081a39c43"
+          plan_digest: "sha256:2c389272e5f29f9871078eff17e16d5beacad44a28981e9eb54e884794820fcc"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609140925-AWJQMB"
+          task_revision: 7
+          to: "REWORK_READY"
+          work_item_id: "repair_sync_merge_message"
+        mutation_id: "external-result:work-order-202609140925-AWJQMB-executor-09108b3a400c752081a39c43"
+        next_revision: 8
+        previous_revision: 7
         schema_version: 1
         task_id: "202609140925-AWJQMB"
     pending_effects: []
