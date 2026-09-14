@@ -23,6 +23,7 @@ import { makeRunTaskHostedClosePrHandler } from "./hosted-close-pr.command.js";
 import { cmdTaskStartReady } from "./start-ready.js";
 import { cmdTaskScopeExtend } from "./scope-extend.js";
 import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
+import { synchronizeTaskBranchBase } from "../branch/sync-task-base.js";
 
 function observedPostconditions(operation: WorkflowOperation): string[] {
   return operation.expectedPostconditions
@@ -82,6 +83,25 @@ export async function executeBranchWorkflowOperation(opts: {
   let exitCode: number;
 
   switch (operation.id) {
+    case "task.branch.sync_base": {
+      const result = await synchronizeTaskBranchBase({
+        gitRoot: command.resolvedProject.gitRoot,
+        worktreePath: cwd,
+        workflowDir: command.config.paths.workflow_dir,
+        tasksPath: command.config.paths.tasks_path,
+        taskId: operation.params.taskId,
+        branch: operation.params.branch,
+        baseBranch: operation.params.baseBranch,
+        expectedHeadSha: operation.params.expectedHeadSha,
+        expectedBaseSha: operation.params.expectedBaseSha,
+      });
+      return succeeded(
+        operation,
+        result.state === "updated"
+          ? `merged exact base ${operation.params.expectedBaseSha} into ${operation.params.branch}; readback proved new head ${result.headSha} contains the previous task head and base`
+          : `task branch ${operation.params.branch} already contains exact base ${operation.params.expectedBaseSha}`,
+      );
+    }
     case "worktree.prepare": {
       exitCode = await cmdWorkStart({
         ctx: command,

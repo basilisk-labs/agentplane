@@ -56,6 +56,7 @@ import { inspectTaskWorktreeRouteState } from "./task-worktree-foreign-artifact-
 import { stabilizeWorkflowStepAfterFingerprint } from "./route-decision-fingerprint-stabilization.js";
 import { hydrateTaskSideEffectAuthority } from "./side-effect-authority-store.js";
 import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
+import { observeBranchBaseSync } from "./branch-base-sync-route.js";
 export { stabilizeWorkflowStepAfterFingerprint } from "./route-decision-fingerprint-stabilization.js";
 
 const routeGitSnapshots = new WeakMap<TaskRouteDecision, GitSnapshot>();
@@ -396,6 +397,15 @@ export async function buildTaskRouteDecision(opts: {
       baseBranch: resume.base_branch,
       taskBranch: taskWorktreeBranch,
     });
+  const branchBaseSync =
+    workflowMode === "branch_pr"
+      ? await observeBranchBaseSync({
+          gitRoot: ctx.resolvedProject.gitRoot,
+          task,
+          configuredBaseBranch: resume.base_branch,
+          taskWorktree: taskWorktreeCleanliness,
+        })
+      : { state: "not_requested" as const };
   const conflictRework: ConflictReworkPreparation | null =
     prFlow && needsProviderConflictReworkPreparation(prFlow)
       ? await prepareConflictReworkPacket({
@@ -450,6 +460,7 @@ export async function buildTaskRouteDecision(opts: {
     remoteEnabled,
     taskWorktree: taskWorktreeCleanliness,
     foreignTaskReadmeReplicaRepair,
+    branchBaseSync,
     conflictRework,
   };
   const provisionalWorkflowStep = reduceRouteState(

@@ -8,6 +8,7 @@ type WorkflowOperationEffect = "mutating" | "read_only" | "mode_dependent";
  * while status/verify are observational.
  */
 export const WORKFLOW_OPERATION_EFFECTS = {
+  "task.branch.sync_base": "mutating",
   "task.artifacts.commit": "mutating",
   "task.start": "mutating",
   "task.branch.start": "mutating",

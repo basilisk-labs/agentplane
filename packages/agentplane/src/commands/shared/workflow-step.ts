@@ -11,7 +11,9 @@ import type { RouteCleanupProbe, RouteNextAction } from "./route-decision-types.
 import type { RouteBlocker, RouteExecutionPacket, RouteOracle } from "./route-oracle.js";
 import type { TaskWorktreeCleanliness } from "./task-worktree-cleanliness.js";
 import type { ForeignTaskReadmeReplicaRepair } from "./task-worktree-foreign-artifact-repair.js";
+import type { BranchBaseSyncObservation } from "./branch-base-sync-route.js";
 import { foreignTaskReadmeReplicaRepairOperation } from "./workflow-step-foreign-task-readme-repair.js";
+import { BASE_SYNC_SPEC, type BaseSyncParams } from "./workflow-step-branch-base-sync.js";
 import { PROVIDER_UPDATE_BRANCH_OPERATION_SPEC } from "./workflow-step-provider-update-branch-spec.js";
 import { POSTCONDITION, type WorkflowPostcondition } from "./workflow-postconditions.js";
 
@@ -39,6 +41,7 @@ export type WorkflowRouteState = {
   remoteEnabled?: boolean;
   taskWorktree?: TaskWorktreeCleanliness;
   foreignTaskReadmeReplicaRepair?: ForeignTaskReadmeReplicaRepair;
+  branchBaseSync?: BranchBaseSyncObservation;
   conflictRework?: ConflictReworkPreparation | null;
   preconditionFingerprint: StateFingerprint;
 };
@@ -55,6 +58,7 @@ type WorkflowOperationType =
   | "provider_update_branch"
   | "runner_follow"
   | "task_record_result"
+  | "task_branch_base_sync"
   | "task_scope_extend"
   | "task_start"
   | "task_view"
@@ -78,6 +82,7 @@ export type WorkflowOperationId =
   | "route.remote.refresh"
   | "runner.follow"
   | "task.artifacts.commit"
+  | "task.branch.sync_base"
   | "task.branch.start"
   | "task.hosted_close.open"
   | "task.hosted_close.finalize"
@@ -115,6 +120,7 @@ export type WorkflowOperationParams = {
     | { mode: "status"; taskId: string; runId: string | null }
     | { mode: "run"; taskId: string };
   "task.artifacts.commit": { taskId: string };
+  "task.branch.sync_base": BaseSyncParams;
   "task.branch.start": { taskId: string; author: string; body: string };
   "task.hosted_close.open": { taskId: string };
   "task.hosted_close.finalize": { taskId: string; base: string };
@@ -155,6 +161,7 @@ const PR_AUTOMATION_GUARD = [
 ] as const;
 
 export const WORKFLOW_OPERATION_REGISTRY = {
+  "task.branch.sync_base": BASE_SYNC_SPEC,
   "task.artifacts.commit": {
     type: "task_record_result",
     phase: "direct_done_pending_artifact_commit",

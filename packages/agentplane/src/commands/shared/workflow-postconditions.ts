@@ -12,6 +12,7 @@ type WorkflowPostconditionId =
   | "route_state_recomputed"
   | "runner_state_observed"
   | "task_artifacts_committed"
+  | "task_branch_contains_base"
   | "task_brief_loaded"
   | "task_status_done"
   | "task_status_doing"
@@ -35,6 +36,11 @@ export const POSTCONDITION = {
     id: "task_artifacts_committed",
     subject: "task",
     expected: "tracked task artifacts are committed",
+  },
+  taskBranchContainsBase: {
+    id: "task_branch_contains_base",
+    subject: "task",
+    expected: "task branch contains the exact plan-bound base SHA and previous task head",
   },
   taskDoing: {
     id: "task_status_doing",
