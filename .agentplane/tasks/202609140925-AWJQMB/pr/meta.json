@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202609140925-AWJQMB/make-supervisor-owned-task-branch-base-synchroni",
+  "created_at": "2026-09-14T10:14:14.692Z",
+  "diffstat_sha256": "sha256:ca53a3d6a3ba5891afd3386c6496e1200a19d65533915ce791292cdb82fedfca",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202609140925-AWJQMB",
+  "updated_at": "2026-09-14T10:14:14.692Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
