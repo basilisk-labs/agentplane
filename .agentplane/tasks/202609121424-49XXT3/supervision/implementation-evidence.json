@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check fe5b1fb0db6c2f69d1a25be4e171fcd023bcbe25..38f03c299cd54ed306caeded77c71f9edf1377eb",
+      "command": "git diff --check e4b7b794e581a137024cc0cc2590050452fa6727..9228105c498124a0435460fc3e109e1645e30029",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB fe5b1fb0db6c2f69d1a25be4e171fcd023bcbe25..38f03c299cd54ed306caeded77c71f9edf1377eb",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB e4b7b794e581a137024cc0cc2590050452fa6727..9228105c498124a0435460fc3e109e1645e30029",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -22,6 +22,7 @@
         "M\t.agentplane/tasks/202609121424-49XXT3/pr/github-body.md",
         "M\t.agentplane/tasks/202609121424-49XXT3/pr/meta.json",
         "M\t.agentplane/tasks/202609121424-49XXT3/pr/review.md",
+        "M\t.agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json",
         "M\tdocs/releases/v0.7.9-evidence/preparation.md"
       ]
     },
@@ -32,23 +33,29 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "fe5b1fb0db6c2f69d1a25be4e171fcd023bcbe25",
-  "implementation_commit": "38f03c299cd54ed306caeded77c71f9edf1377eb",
+  "execution_base_commit": "e4b7b794e581a137024cc0cc2590050452fa6727",
+  "implementation_commit": "9228105c498124a0435460fc3e109e1645e30029",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
-      " M .agentplane/tasks/202609121424-49XXT3/README.md"
+      " M .agentplane/tasks/202609121424-49XXT3/README.md",
+      " M .agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json"
     ],
     "classification": [
       {
         "classification": "removed_during_execution",
         "line": " M .agentplane/tasks/202609121424-49XXT3/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
-      " M .agentplane/tasks/202609121424-49XXT3/README.md"
+      " M .agentplane/tasks/202609121424-49XXT3/README.md",
+      " M .agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json"
     ],
     "unchanged_from_execution_baseline": []
   },
