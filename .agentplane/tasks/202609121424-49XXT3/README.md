@@ -1,10 +1,10 @@
 ---
 id: "202609121424-49XXT3"
 title: "Publish and independently verify AgentPlane 0.7.9 from the exact qualified main SHA"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 71
+revision: 73
 origin:
   system: "manual"
 depends_on:
@@ -31,9 +31,9 @@ plan_approval:
   note: "host_user_decision=sha256:f356ae8497c1d56eb9988de28911a4c026c457637f6e4f6c31a607f52ca603aa"
 verification:
   state: "pending"
-  updated_at: "2026-09-15T01:28:25.828Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
+  updated_at: null
+  updated_by: null
+  note: null
   attempts: 0
 execution_route:
   frozen: true
@@ -358,9 +358,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "227836c53ace3ccbfa6d7e828a7f79cd5fa62bdf"
-  message: "🚧 49XXT3 task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -455,6 +453,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 227836c53ace. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The committed 0.7.9 candidate passed every observed release:prepublish sub-check, but the supervisor terminated the wrapper after 2171380 ms because the WorkItem check timeout is only 1200000 ms. Recommended action: Refine only the prepare_candidate release_prepublish check timeout from 1200000 ms to at least 3600000 ms, preserve the committed candidate unchanged, and rerun the supervisor-owned declared checks. Agentplane receipt: external-agent-blocker/tr_073ae625c26af9dae64a1c9ce5e01cee/sha256:205111bdbbcd9eafe09e03f7373711a3a26148e4832476ef68164aebb2e53392."
 events:
   -
     type: "status"
@@ -614,8 +615,15 @@ events:
     to: "DOING"
     note: "Implementation committed: 227836c53ace. CLI accepted one state-bound external-agent semantic result."
     commit: "227836c53ace3ccbfa6d7e828a7f79cd5fa62bdf"
+  -
+    type: "status"
+    at: "2026-09-15T02:56:31.767Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The committed 0.7.9 candidate passed every observed release:prepublish sub-check, but the supervisor terminated the wrapper after 2171380 ms because the WorkItem check timeout is only 1200000 ms. Recommended action: Refine only the prepare_candidate release_prepublish check timeout from 1200000 ms to at least 3600000 ms, preserve the committed candidate unchanged, and rerun the supervisor-owned declared checks. Agentplane receipt: external-agent-blocker/tr_073ae625c26af9dae64a1c9ce5e01cee/sha256:205111bdbbcd9eafe09e03f7373711a3a26148e4832476ef68164aebb2e53392."
 doc_version: 3
-doc_updated_at: "2026-09-15T02:18:15.103Z"
+doc_updated_at: "2026-09-15T02:56:31.767Z"
 doc_updated_by: "SUPERVISOR"
 description: "Release operator task after all 0.7.9 stabilization dependencies are integrated. Prepare exact 0.7.9 version parity and release notes, run the complete release prepublish and incident gates, produce and integrate the release-ready candidate through repository policy, publish v0.7.9 from the exact qualified main SHA, and independently verify the canonical .agentplane/.release/publish/publish-result.json has success=true with an empty failures array for that SHA. Verify GitHub release assets and checksums, package registries, setup-agentplane tag and install, Homebrew and Scoop distribution, both agentplane and ap entrypoints, and default-branch state. Record any unavailable anonymous GHCR check separately. Complete the required post-publish evidence follow-up and next patch beta only through AgentPlane-managed lifecycle. Never commit agentplane-roadmap-r2. Stop only at a genuine provider or evidence boundary; the user explicitly authorized publish, merge, network, credentials, and external-system actions for v0.7.9."
 sections:
@@ -1238,7 +1246,7 @@ extensions:
       revision: 15
       schema_version: 1
       task_id: "202609121424-49XXT3"
-    event_cursor: 55
+    event_cursor: 56
     final_validation: null
     id: "202609121424-49XXT3"
     intent:
@@ -1260,7 +1268,7 @@ extensions:
 
         Release operator task after all 0.7.9 stabilization dependencies are integrated. Prepare exact 0.7.9 version parity and release notes, run the complete release prepublish and incident gates, produce and integrate the release-ready candidate through repository policy, publish v0.7.9 from the exact qualified main SHA, and independently verify the canonical .agentplane/.release/publish/publish-result.json has success=true with an empty failures array for that SHA. Verify GitHub release assets and checksums, package registries, setup-agentplane tag and install, Homebrew and Scoop distribution, both agentplane and ap entrypoints, and default-branch state. Record any unavailable anonymous GHCR check separately. Complete the required post-publish evidence follow-up and next patch beta only through AgentPlane-managed lifecycle. Never commit agentplane-roadmap-r2. Stop only at a genuine provider or evidence boundary; the user explicitly authorized publish, merge, network, credentials, and external-system actions for v0.7.9.
       task_id: "202609121424-49XXT3"
-    lifecycle: "ACTIVE"
+    lifecycle: "BLOCKED"
     plan_amendments: []
     plan_history:
       -
@@ -9175,19 +9183,106 @@ extensions:
         revision: 14
         schema_version: 1
         task_id: "202609121424-49XXT3"
-    revision: 71
+    revision: 73
     schema_version: 1
-    updated_at: "2026-09-15T02:18:15.103Z"
+    updated_at: "2026-09-15T02:56:31.767Z"
     work_items:
       prepare_candidate:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "prepare_candidate"
-        last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        last_failure:
+          cause_refs:
+            - "candidate_exact"
+          code: "validation_failed"
+          kind: "validation"
+          message: "Prepared the stable 0.7.9 candidate from synchronized head 54a197116f195be3a5ad64bb42e922c0682cebbf, refreshed the complete 632-change release record and baselines, and stabilized only stale release-gate test fixtures. The full release prepublish gate passes."
+          retryable: true
+        output_manifests:
+          -
+            digest: "sha256:1072e5d9c700fa0dcd1218ee6ea5d2d898d075c1e66be423e19930d606e68631"
+            id: "stable_candidate_diff"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 15
+              task_id: "202609121424-49XXT3"
+              work_item_id: "prepare_candidate"
+            provenance:
+              - "sha256:cff3e20ab86dc697d0059afcb09599810c18e6753d28e14fd964af096cbe5c1e"
+              - ".agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:9438e05369c43649e838221c644234b07853cdfbfaa2df1fcfa0ffad35d03661"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:381a0fd5fe49cba64289a7251b6bdc4160281c8dc5f5d1efaf5779bbd604f7e0"
+            id: "release_notes_and_evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 15
+              task_id: "202609121424-49XXT3"
+              work_item_id: "prepare_candidate"
+            provenance:
+              - "sha256:cff3e20ab86dc697d0059afcb09599810c18e6753d28e14fd964af096cbe5c1e"
+              - ".agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:9438e05369c43649e838221c644234b07853cdfbfaa2df1fcfa0ffad35d03661"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:f3e4c6f6ed0d0c5e639d15d288c070c8c6525da4aa7431cfc1274031c4125102"
+            id: "exact_candidate_sha"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 15
+              task_id: "202609121424-49XXT3"
+              work_item_id: "prepare_candidate"
+            provenance:
+              - "sha256:cff3e20ab86dc697d0059afcb09599810c18e6753d28e14fd964af096cbe5c1e"
+              - ".agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:9438e05369c43649e838221c644234b07853cdfbfaa2df1fcfa0ffad35d03661"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "REWORK_READY"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json"
+              check_id: "release_check"
+              command_identity: "bun run release:check"
+              detail: "Declared check failed: bun run release:prepublish"
+              exit_code: 0
+              observed_at: "2026-09-15T02:54:57.602Z"
+              repository_snapshot_digest: "sha256:9438e05369c43649e838221c644234b07853cdfbfaa2df1fcfa0ffad35d03661"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json"
+              check_id: "release_prepublish"
+              command_identity: "bun run release:prepublish"
+              detail: "Declared check failed: bun run release:prepublish"
+              exit_code: 1
+              observed_at: "2026-09-15T02:54:57.602Z"
+              repository_snapshot_digest: "sha256:9438e05369c43649e838221c644234b07853cdfbfaa2df1fcfa0ffad35d03661"
+              status: "failed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json"
+              check_id: "scope_hygiene"
+              command_identity: "task.verify"
+              detail: "Declared check failed: bun run release:prepublish"
+              exit_code: 1
+              observed_at: "2026-09-15T02:54:57.602Z"
+              repository_snapshot_digest: "sha256:9438e05369c43649e838221c644234b07853cdfbfaa2df1fcfa0ffad35d03661"
+              status: "failed"
+          schema_version: 1
+          stale_evidence: []
+          status: "failed"
+          unsatisfied_criteria:
+            - "candidate_exact"
       publish_stable:
         attempt: 0
         claim_id: null
@@ -9439,6 +9534,23 @@ extensions:
         task_id: "202609121424-49XXT3"
         task_revision: 53
         work_item_id: "synchronize_candidate_base"
+      -
+        at: "2026-09-15T02:54:57.674Z"
+        from: "PLANNED"
+        to: "REWORK_READY"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:bc3ff0c97f4a4438484f28d5374a0bca0cb1ab647479b0a451251029f7257068"
+        entity: "work_item"
+        id: "event_8f4a7c4121e94d2cb1de46cc"
+        mutation_id: "external-result:work-order-202609121424-49XXT3-executor-a8eec6925bf5d6ee97c95b6f"
+        plan_digest: "sha256:1e6b519aa0d9b23e51baa81a959870a55949aff6eaef4e073584bcee60f19f53"
+        plan_revision: 15
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+        task_revision: 71
+        work_item_id: "prepare_candidate"
     leases: []
     mutation_receipts:
       compatibility:sha256:046ef3d623a69511cecc08b34cefc3449d060dba8558b29211086e726db3ceb3:
@@ -9703,6 +9815,30 @@ extensions:
         mutation_id: "compatibility:sha256:318084961a397b3419e1d9154faeed0f46632c1ba74637b53d9cfd60e0d5f4ad"
         next_revision: 66
         previous_revision: 65
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+      compatibility:sha256:3d9cbd63561a9e275cd69eea03a51a6769513de19867914c7bcace7bff7579f2:
+        aggregate_digest: "sha256:79af6d4b3c969b0e72e333de5bd55e690d96de352d4aa67ac765387612c78ddc"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-15T02:56:31.767Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_da6f6c31fcf2025cac536918"
+          mutation_id: "compatibility:sha256:3d9cbd63561a9e275cd69eea03a51a6769513de19867914c7bcace7bff7579f2"
+          plan_digest: "sha256:1e6b519aa0d9b23e51baa81a959870a55949aff6eaef4e073584bcee60f19f53"
+          plan_revision: 15
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          task_revision: 72
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:3d9cbd63561a9e275cd69eea03a51a6769513de19867914c7bcace7bff7579f2"
+        next_revision: 73
+        previous_revision: 72
         schema_version: 1
         task_id: "202609121424-49XXT3"
       compatibility:sha256:40aa9856b61c1f1e2ceaf69ea3e5573ff591a44e965b9e2f23dcb008a613cb85:
@@ -10735,6 +10871,30 @@ extensions:
         mutation_id: "external-result:work-order-202609121424-49XXT3-executor-00afd788a39e4976554119c6"
         next_revision: 46
         previous_revision: 45
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+      external-result:work-order-202609121424-49XXT3-executor-a8eec6925bf5d6ee97c95b6f:
+        aggregate_digest: "sha256:d98f099609db33d7b9e2375095e3898ef511dfbccfd1ba9561fea24a07aff312"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-15T02:54:57.674Z"
+          cause_refs:
+            - "semantic-result:sha256:bc3ff0c97f4a4438484f28d5374a0bca0cb1ab647479b0a451251029f7257068"
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_8f4a7c4121e94d2cb1de46cc"
+          mutation_id: "external-result:work-order-202609121424-49XXT3-executor-a8eec6925bf5d6ee97c95b6f"
+          plan_digest: "sha256:1e6b519aa0d9b23e51baa81a959870a55949aff6eaef4e073584bcee60f19f53"
+          plan_revision: 15
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          task_revision: 71
+          to: "REWORK_READY"
+          work_item_id: "prepare_candidate"
+        mutation_id: "external-result:work-order-202609121424-49XXT3-executor-a8eec6925bf5d6ee97c95b6f"
+        next_revision: 72
+        previous_revision: 71
         schema_version: 1
         task_id: "202609121424-49XXT3"
       external-result:work-order-202609121424-49XXT3-executor-b52af39d3d1a16f646ddb191:
