@@ -4,7 +4,7 @@ title: "Fix active-runtime install reuse on v0.6"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -168,7 +168,9 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:recorded-check-1"
       - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "4efe98151697964fc9b87a3a6441ca6960cee26e"
+  message: "🚧 H0X3YJ task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -191,6 +193,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 72149ad2afe7. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 4efe98151697. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -248,8 +253,16 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-09-15T20:30:15.072Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 4efe98151697. CLI accepted one state-bound external-agent semantic result."
+    commit: "4efe98151697964fc9b87a3a6441ca6960cee26e"
 doc_version: 3
-doc_updated_at: "2026-09-15T20:20:33.606Z"
+doc_updated_at: "2026-09-15T20:30:15.072Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the reusable workspace install-layout guard so work start can reuse a valid active repo-local runtime from a separate repository root while still rejecting dangling, task-worktree-owned, and external dependency layouts. Add regression coverage for the cross-repository bootstrap path required by release:prepublish."
 sections:
@@ -370,6 +383,8 @@ extensions:
     status: "applied"
     transition_id: "tr_fa80cb8b461c2e6d9c12db8e35e9e036"
     work_item_id: null
+  implementation_commit:
+    hash: "4efe98151697964fc9b87a3a6441ca6960cee26e"
   task_execution_context:
     base_ref: "codex/release-v0.6.27-reclaim-fix"
     base_sha: "cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9"
