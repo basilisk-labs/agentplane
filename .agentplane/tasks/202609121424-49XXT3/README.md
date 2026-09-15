@@ -1,10 +1,10 @@
 ---
 id: "202609121424-49XXT3"
 title: "Publish and independently verify AgentPlane 0.7.9 from the exact qualified main SHA"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 60
+revision: 62
 origin:
   system: "manual"
 depends_on:
@@ -371,6 +371,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts, packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts; repository effects: tests."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The repaired route and recovery chunks passed, but the next release chunk exposed one stale prompt-contract assertion. Recommended action: Extend the test-only scope to run-cli.core.task-create-base-intent.test.ts, replace the obsolete result.task_intent literal with the current task_intent contract, preserve all prior fixture repairs, and rerun the focused test plus release:prepublish. Requested scope: roots=packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts; repository effects=tests; request digest=sha256:d3b6cf988ac605d144b6104370ab639a919cd2ffc480f46c756531beb496da15. Agentplane receipt: external-agent-blocker/tr_396ecaf9ea7c4304e9f987dd03c49a2d/sha256:397a13112f8b151deda66b600275df2b1fecef21a83b595e6eeeb5bf3b319906/sha256:d3b6cf988ac605d144b6104370ab639a919cd2ffc480f46c756531beb496da15."
 events:
   -
     type: "status"
@@ -501,8 +504,15 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The repaired route-decision chunk passed, but the next release chunk exposed two additional deterministic test-fixture compatibility gaps. Recommended action: Extend the approved test-only scope to the verification and evidence-rework files, preserve the first fixture repair, align the four deterministic expectations with existing lifecycle helpers and explicit exact-key replacement, then rerun focused tests and release:prepublish. Requested scope: roots=packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts,packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts; repository effects=tests; request digest=sha256:3dccde82a5eeae4425495e7d56596433c6069179dfcdb610a58b10fbf183ae66. Agentplane receipt: external-agent-blocker/tr_b401592dda9fd81dde93d4eda3fb42a3/sha256:0ac0e0e7bed730e3439ff5831521098bd50e1489d5e5869c8c77fedb914260dc/sha256:3dccde82a5eeae4425495e7d56596433c6069179dfcdb610a58b10fbf183ae66."
+  -
+    type: "status"
+    at: "2026-09-15T00:06:32.254Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The repaired route and recovery chunks passed, but the next release chunk exposed one stale prompt-contract assertion. Recommended action: Extend the test-only scope to run-cli.core.task-create-base-intent.test.ts, replace the obsolete result.task_intent literal with the current task_intent contract, preserve all prior fixture repairs, and rerun the focused test plus release:prepublish. Requested scope: roots=packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts; repository effects=tests; request digest=sha256:d3b6cf988ac605d144b6104370ab639a919cd2ffc480f46c756531beb496da15. Agentplane receipt: external-agent-blocker/tr_396ecaf9ea7c4304e9f987dd03c49a2d/sha256:397a13112f8b151deda66b600275df2b1fecef21a83b595e6eeeb5bf3b319906/sha256:d3b6cf988ac605d144b6104370ab639a919cd2ffc480f46c756531beb496da15."
 doc_version: 3
-doc_updated_at: "2026-09-14T23:29:25.923Z"
+doc_updated_at: "2026-09-15T00:06:32.254Z"
 doc_updated_by: "SUPERVISOR"
 description: "Release operator task after all 0.7.9 stabilization dependencies are integrated. Prepare exact 0.7.9 version parity and release notes, run the complete release prepublish and incident gates, produce and integrate the release-ready candidate through repository policy, publish v0.7.9 from the exact qualified main SHA, and independently verify the canonical .agentplane/.release/publish/publish-result.json has success=true with an empty failures array for that SHA. Verify GitHub release assets and checksums, package registries, setup-agentplane tag and install, Homebrew and Scoop distribution, both agentplane and ap entrypoints, and default-branch state. Record any unavailable anonymous GHCR check separately. Complete the required post-publish evidence follow-up and next patch beta only through AgentPlane-managed lifecycle. Never commit agentplane-roadmap-r2. Stop only at a genuine provider or evidence boundary; the user explicitly authorized publish, merge, network, credentials, and external-system actions for v0.7.9."
 sections:
@@ -534,22 +544,19 @@ sections:
   Findings: ""
 extensions:
   agentplane.scope_extension_request:
-    applied_at: "2026-09-14T23:29:50.328Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:0ac0e0e7bed730e3439ff5831521098bd50e1489d5e5869c8c77fedb914260dc"
+    blocker_state_fingerprint: "sha256:397a13112f8b151deda66b600275df2b1fecef21a83b595e6eeeb5bf3b319906"
     kind: "task_scope_extension_request"
     request:
-      rationale: "The next isolated release chunk exposed two more stale test fixtures after the first bounded repair passed its complete chunk."
+      rationale: "The next isolated release chunk exposed a one-line test expectation that predates the current semantic payload schema wording."
       repository_effects:
         - "tests"
       schema_version: 1
       scope_roots:
-        - "packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
-        - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
-    request_digest: "sha256:3dccde82a5eeae4425495e7d56596433c6069179dfcdb610a58b10fbf183ae66"
+        - "packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts"
+    request_digest: "sha256:d3b6cf988ac605d144b6104370ab639a919cd2ffc480f46c756531beb496da15"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_b401592dda9fd81dde93d4eda3fb42a3"
+    status: "pending"
+    transition_id: "tr_396ecaf9ea7c4304e9f987dd03c49a2d"
     work_item_id: "prepare_candidate"
   agentplane.task_centric:
     current_plan:
@@ -1111,7 +1118,7 @@ extensions:
       revision: 12
       schema_version: 1
       task_id: "202609121424-49XXT3"
-    event_cursor: 44
+    event_cursor: 46
     final_validation: null
     id: "202609121424-49XXT3"
     intent:
@@ -1133,7 +1140,7 @@ extensions:
 
         Release operator task after all 0.7.9 stabilization dependencies are integrated. Prepare exact 0.7.9 version parity and release notes, run the complete release prepublish and incident gates, produce and integrate the release-ready candidate through repository policy, publish v0.7.9 from the exact qualified main SHA, and independently verify the canonical .agentplane/.release/publish/publish-result.json has success=true with an empty failures array for that SHA. Verify GitHub release assets and checksums, package registries, setup-agentplane tag and install, Homebrew and Scoop distribution, both agentplane and ap entrypoints, and default-branch state. Record any unavailable anonymous GHCR check separately. Complete the required post-publish evidence follow-up and next patch beta only through AgentPlane-managed lifecycle. Never commit agentplane-roadmap-r2. Stop only at a genuine provider or evidence boundary; the user explicitly authorized publish, merge, network, credentials, and external-system actions for v0.7.9.
       task_id: "202609121424-49XXT3"
-    lifecycle: "ACTIVE"
+    lifecycle: "BLOCKED"
     plan_amendments: []
     plan_history:
       -
@@ -7356,9 +7363,9 @@ extensions:
         revision: 11
         schema_version: 1
         task_id: "202609121424-49XXT3"
-    revision: 60
+    revision: 62
     schema_version: 1
-    updated_at: "2026-09-14T23:29:25.923Z"
+    updated_at: "2026-09-15T00:06:32.254Z"
     work_items:
       prepare_candidate:
         attempt: 0
@@ -7788,6 +7795,30 @@ extensions:
         mutation_id: "compatibility:sha256:16549760ade2ff969316ba2531557a3218fedce7a8803627141e8d272abe1301"
         next_revision: 22
         previous_revision: 21
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+      compatibility:sha256:25ebe0223d646bb935d6e6f07c84ece9cc2759e7d3c12b13950ee02b4fb5beb8:
+        aggregate_digest: "sha256:bc225c9a4987941b4a19c1fb229f8cab7e4c7cfb745784043739cb5c556b2fdf"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-15T00:06:32.254Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_b2fb4374442de6341209aee3"
+          mutation_id: "compatibility:sha256:25ebe0223d646bb935d6e6f07c84ece9cc2759e7d3c12b13950ee02b4fb5beb8"
+          plan_digest: "sha256:7d82cb0a3ff017d01f1e483a7e98de884c7cc9bcbe6b36096355c9b05327a84d"
+          plan_revision: 12
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          task_revision: 60
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:25ebe0223d646bb935d6e6f07c84ece9cc2759e7d3c12b13950ee02b4fb5beb8"
+        next_revision: 61
+        previous_revision: 60
         schema_version: 1
         task_id: "202609121424-49XXT3"
       compatibility:sha256:2f261bb198ac6d87ce12c874d2145cfea075cfd7f48d6e7f0f7c9715830a3fe8:
@@ -8412,6 +8443,30 @@ extensions:
         mutation_id: "compatibility:sha256:d235f5333939dc9ff195fadd1180abfe75d12db918a97c634e63eae18a8599fd"
         next_revision: 12
         previous_revision: 11
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+      compatibility:sha256:d70c8fdb48193614020930a05ce2c460b895bca3ab433f7a8b2465f62135acef:
+        aggregate_digest: "sha256:2c00d232a257fdca63fd5f7eb92d4d580c5ddab99f86beda902c23c9cfcd1faa"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-15T00:06:32.254Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_f9721a3c8bb1cf9af41dec43"
+          mutation_id: "compatibility:sha256:d70c8fdb48193614020930a05ce2c460b895bca3ab433f7a8b2465f62135acef"
+          plan_digest: "sha256:7d82cb0a3ff017d01f1e483a7e98de884c7cc9bcbe6b36096355c9b05327a84d"
+          plan_revision: 12
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          task_revision: 61
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:d70c8fdb48193614020930a05ce2c460b895bca3ab433f7a8b2465f62135acef"
+        next_revision: 62
+        previous_revision: 61
         schema_version: 1
         task_id: "202609121424-49XXT3"
       compatibility:sha256:de2094d53b7dc3aff3e2338d3eed355bf2d209869e1bbecd169452eea0de4054:
