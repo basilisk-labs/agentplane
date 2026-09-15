@@ -18,6 +18,7 @@ The candidate changes only canonical version surfaces, exact internal package pi
 - `bun run release:check:registry -- --version 0.7.9`: passed; the stable version is available for every public npm package.
 - `bun run release:check`: passed on the complete candidate.
 - `bun run release:prepublish`: passed on the synchronized candidate.
+- Supervisor requalification: every observed prepublish sub-check passed before the original 1,200,000 ms verification budget terminated the wrapper; the approved rerun budget is 3,600,000 ms.
 - `git diff --check` and exact scope review: passed on the complete candidate.
 
 ## Boundaries
