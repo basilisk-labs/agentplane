@@ -4,7 +4,7 @@ title: "Fix active-runtime install reuse on v0.6"
 status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -177,6 +177,12 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The implementation is unchanged and the full regression suite passes. Formal verification cannot recover until the legacy execution contract permits the test effect already required by the approved task. Recommended action: Approve the pending scope extension for repository effect tests. Replace the focused Verify Step with the already-passing workspace command. Requested scope: roots=unchanged; repository effects=tests; request digest=sha256:25af6765bf66fbbdacb33df7be8d1ed39c78a1895de49b154712485d032dc360. Agentplane receipt: external-agent-blocker/tr_74db211e7aa895c6e7fcd95e1705d3c1/sha256:fa39f2df3da07470ade3a50cfe16c6ce0a6ebe03a047146df2559d997df7f076/sha256:25af6765bf66fbbdacb33df7be8d1ed39c78a1895de49b154712485d032dc360."
+  -
+    author: "SUPERVISOR"
+    body: "Resume implementation rework to replace the invalid rootless scope-extension request with the approved test scope."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The implementation remains complete. Formal recovery requires a corrected scope extension that includes the approved implementation and test root. Recommended action: Apply the exact USER-approved scope extension and issue a freshly scoped executor episode. Requested scope: roots=packages/agentplane/src; repository effects=tests; request digest=sha256:b2eae1a392340b123fd25c6db7fe2d613f430a9080566071c39d1e4eaaf70853. Agentplane receipt: external-agent-blocker/tr_fa80cb8b461c2e6d9c12db8e35e9e036/sha256:5ec8130d629288581d70bdb4b203dc1ada60f6224b1f1e3975a36ebe57642212/sha256:b2eae1a392340b123fd25c6db7fe2d613f430a9080566071c39d1e4eaaf70853."
 events:
   -
     type: "status"
@@ -206,8 +212,22 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The implementation is unchanged and the full regression suite passes. Formal verification cannot recover until the legacy execution contract permits the test effect already required by the approved task. Recommended action: Approve the pending scope extension for repository effect tests. Replace the focused Verify Step with the already-passing workspace command. Requested scope: roots=unchanged; repository effects=tests; request digest=sha256:25af6765bf66fbbdacb33df7be8d1ed39c78a1895de49b154712485d032dc360. Agentplane receipt: external-agent-blocker/tr_74db211e7aa895c6e7fcd95e1705d3c1/sha256:fa39f2df3da07470ade3a50cfe16c6ce0a6ebe03a047146df2559d997df7f076/sha256:25af6765bf66fbbdacb33df7be8d1ed39c78a1895de49b154712485d032dc360."
+  -
+    type: "status"
+    at: "2026-09-15T20:04:04.956Z"
+    author: "SUPERVISOR"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Resume implementation rework to replace the invalid rootless scope-extension request with the approved test scope."
+  -
+    type: "status"
+    at: "2026-09-15T20:04:55.731Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The implementation remains complete. Formal recovery requires a corrected scope extension that includes the approved implementation and test root. Recommended action: Apply the exact USER-approved scope extension and issue a freshly scoped executor episode. Requested scope: roots=packages/agentplane/src; repository effects=tests; request digest=sha256:b2eae1a392340b123fd25c6db7fe2d613f430a9080566071c39d1e4eaaf70853. Agentplane receipt: external-agent-blocker/tr_fa80cb8b461c2e6d9c12db8e35e9e036/sha256:5ec8130d629288581d70bdb4b203dc1ada60f6224b1f1e3975a36ebe57642212/sha256:b2eae1a392340b123fd25c6db7fe2d613f430a9080566071c39d1e4eaaf70853."
 doc_version: 3
-doc_updated_at: "2026-09-15T07:18:33.419Z"
+doc_updated_at: "2026-09-15T20:04:55.731Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the reusable workspace install-layout guard so work start can reuse a valid active repo-local runtime from a separate repository root while still rejecting dangling, task-worktree-owned, and external dependency layouts. Add regression coverage for the cross-repository bootstrap path required by release:prepublish."
 sections:
@@ -277,18 +297,19 @@ sections:
   Findings: ""
 extensions:
   agentplane.scope_extension_request:
-    blocker_state_fingerprint: "sha256:fa39f2df3da07470ade3a50cfe16c6ce0a6ebe03a047146df2559d997df7f076"
+    blocker_state_fingerprint: "sha256:5ec8130d629288581d70bdb4b203dc1ada60f6224b1f1e3975a36ebe57642212"
     kind: "task_scope_extension_request"
     request:
-      rationale: "Regression tests are an explicit part of the approved task objective and plan. The observed test-file change must be admitted before formal verification can pass."
+      rationale: "The approved task changes implementation and regression tests under packages/agentplane/src. The legacy rootless execution declaration must be migrated to that exact root and allow tests."
       repository_effects:
         - "tests"
       schema_version: 1
-      scope_roots: []
-    request_digest: "sha256:25af6765bf66fbbdacb33df7be8d1ed39c78a1895de49b154712485d032dc360"
+      scope_roots:
+        - "packages/agentplane/src"
+    request_digest: "sha256:b2eae1a392340b123fd25c6db7fe2d613f430a9080566071c39d1e4eaaf70853"
     schema_version: 1
     status: "pending"
-    transition_id: "tr_74db211e7aa895c6e7fcd95e1705d3c1"
+    transition_id: "tr_fa80cb8b461c2e6d9c12db8e35e9e036"
     work_item_id: null
   task_execution_context:
     base_ref: "codex/release-v0.6.27-reclaim-fix"
