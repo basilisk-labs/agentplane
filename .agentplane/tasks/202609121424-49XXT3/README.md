@@ -1,10 +1,10 @@
 ---
 id: "202609121424-49XXT3"
 title: "Publish and independently verify AgentPlane 0.7.9 from the exact qualified main SHA"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 84
+revision: 85
 origin:
   system: "manual"
 depends_on:
@@ -465,6 +465,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 9228105c4981. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The candidate passed the supervisor-owned local gates, but independent evaluation, hosted CI, protected integration, and hosted close are control-plane operations forbidden by this semantic episode. Recommended action: Request a fresh route packet and execute only the exact supervisor-owned evaluator, authority, PR, hosted CI, integration, and close operations it emits. Agentplane receipt: external-agent-blocker/tr_5ada17d26c3c6fedcb37d664eb72dd09/sha256:b52d20de288b570749731bea3cd8c63fe9bc3a57fef650ce3fcf04bc2dc7dec1."
 events:
   -
     type: "status"
@@ -654,8 +657,15 @@ events:
     to: "DOING"
     note: "Implementation committed: 9228105c4981. CLI accepted one state-bound external-agent semantic result."
     commit: "9228105c498124a0435460fc3e109e1645e30029"
+  -
+    type: "status"
+    at: "2026-09-15T13:59:39.876Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The candidate passed the supervisor-owned local gates, but independent evaluation, hosted CI, protected integration, and hosted close are control-plane operations forbidden by this semantic episode. Recommended action: Request a fresh route packet and execute only the exact supervisor-owned evaluator, authority, PR, hosted CI, integration, and close operations it emits. Agentplane receipt: external-agent-blocker/tr_5ada17d26c3c6fedcb37d664eb72dd09/sha256:b52d20de288b570749731bea3cd8c63fe9bc3a57fef650ce3fcf04bc2dc7dec1."
 doc_version: 3
-doc_updated_at: "2026-09-15T13:19:49.317Z"
+doc_updated_at: "2026-09-15T13:59:39.876Z"
 doc_updated_by: "SUPERVISOR"
 description: "Release operator task after all 0.7.9 stabilization dependencies are integrated. Prepare exact 0.7.9 version parity and release notes, run the complete release prepublish and incident gates, produce and integrate the release-ready candidate through repository policy, publish v0.7.9 from the exact qualified main SHA, and independently verify the canonical .agentplane/.release/publish/publish-result.json has success=true with an empty failures array for that SHA. Verify GitHub release assets and checksums, package registries, setup-agentplane tag and install, Homebrew and Scoop distribution, both agentplane and ap entrypoints, and default-branch state. Record any unavailable anonymous GHCR check separately. Complete the required post-publish evidence follow-up and next patch beta only through AgentPlane-managed lifecycle. Never commit agentplane-roadmap-r2. Stop only at a genuine provider or evidence boundary; the user explicitly authorized publish, merge, network, credentials, and external-system actions for v0.7.9."
 sections:
@@ -1302,7 +1312,7 @@ extensions:
       revision: 16
       schema_version: 1
       task_id: "202609121424-49XXT3"
-    event_cursor: 63
+    event_cursor: 64
     final_validation: null
     id: "202609121424-49XXT3"
     intent:
@@ -1324,7 +1334,7 @@ extensions:
 
         Release operator task after all 0.7.9 stabilization dependencies are integrated. Prepare exact 0.7.9 version parity and release notes, run the complete release prepublish and incident gates, produce and integrate the release-ready candidate through repository policy, publish v0.7.9 from the exact qualified main SHA, and independently verify the canonical .agentplane/.release/publish/publish-result.json has success=true with an empty failures array for that SHA. Verify GitHub release assets and checksums, package registries, setup-agentplane tag and install, Homebrew and Scoop distribution, both agentplane and ap entrypoints, and default-branch state. Record any unavailable anonymous GHCR check separately. Complete the required post-publish evidence follow-up and next patch beta only through AgentPlane-managed lifecycle. Never commit agentplane-roadmap-r2. Stop only at a genuine provider or evidence boundary; the user explicitly authorized publish, merge, network, credentials, and external-system actions for v0.7.9.
       task_id: "202609121424-49XXT3"
-    lifecycle: "ACTIVE"
+    lifecycle: "BLOCKED"
     plan_amendments: []
     plan_history:
       -
@@ -9813,9 +9823,9 @@ extensions:
         revision: 15
         schema_version: 1
         task_id: "202609121424-49XXT3"
-    revision: 84
+    revision: 85
     schema_version: 1
-    updated_at: "2026-09-15T13:58:34.125Z"
+    updated_at: "2026-09-15T13:59:39.876Z"
     work_items:
       prepare_candidate:
         attempt: 2
@@ -11105,6 +11115,30 @@ extensions:
         mutation_id: "compatibility:sha256:9fc7e01fcedeac2875da423dae996ddb66abde5797cb89b3454b2c228ed9466c"
         next_revision: 69
         previous_revision: 68
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+      compatibility:sha256:a1df72a61d9d9e706a62bda5b13ea010548906cadbd9b90d9173854e8b961d56:
+        aggregate_digest: "sha256:80880056389745e14bc734f233801ac3b796b67e473c555c0c4e73a6e1ad9349"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-15T13:59:39.876Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_5c608a3acfd6a16a8b911042"
+          mutation_id: "compatibility:sha256:a1df72a61d9d9e706a62bda5b13ea010548906cadbd9b90d9173854e8b961d56"
+          plan_digest: "sha256:eb75b3e3586323a4e8a409eb2d9d24029ec32ebe63975bab32c2feb8684d30c6"
+          plan_revision: 16
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          task_revision: 84
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:a1df72a61d9d9e706a62bda5b13ea010548906cadbd9b90d9173854e8b961d56"
+        next_revision: 85
+        previous_revision: 84
         schema_version: 1
         task_id: "202609121424-49XXT3"
       compatibility:sha256:a4e8af16000182bb3defcc27c9b65970284720f516617d5c0d22dac114c2142c:
