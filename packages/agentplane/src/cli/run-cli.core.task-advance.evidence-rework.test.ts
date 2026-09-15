@@ -23,7 +23,6 @@ import { recordedTaskImplementationCommitSha } from "../commands/shared/quality-
 import * as refinement from "../commands/task/external-agent-plan-refinement.js";
 import * as verification from "../commands/task/direct-task-verification-record.js";
 import * as fingerprints from "../commands/shared/workflow-step-fingerprint.js";
-import * as exchanges from "../commands/task/external-agent-exchange.js";
 import { resolveRecordedImplementationRecovery } from "../commands/task/external-agent-implementation-recovery.js";
 import { recoveryPlanningProposal } from "./task-advance-effect-recovery.testkit.js";
 import { defaultConfig } from "./core-imports.js";
@@ -270,106 +269,88 @@ async function completedFixture(initialized = true) {
 }
 
 describe("task-level evidence-only rework", { timeout: 180_000 }, () => {
-  it.each([false, true])(
-    "replaces provider-only stale results without replaying implementation (interrupted=%s)",
-    async (interrupted) => {
-      const f = await completedFixture();
-      await report(f.rework, "Preserve the completed implementation and refresh checks.");
-      const resultBytes = await readFile(f.rework.exchange.result_path, "utf8");
-      const source = recordedTaskImplementationCommitSha(f.current);
-      const items = taskCentricAggregateFromExtensions(f.current.extensions)?.work_items;
-      const capture = fingerprints.captureWorkflowStepFingerprint;
-      let providerOnly = false;
-      const drift = vi
-        .spyOn(fingerprints, "captureWorkflowStepFingerprint")
-        .mockImplementation(async (options) => {
-          const flow = options.state.prFlow;
-          const observed = await capture(
-            options.state.task.id === f.taskId && flow
-              ? {
-                  ...options,
-                  state: {
-                    ...options.state,
-                    prFlow: {
-                      ...flow,
-                      reviewThreads: {
-                        ...flow.reviewThreads,
-                        checked: !flow.reviewThreads.checked,
-                      },
+  it("requires explicit replacement for provider-only stale results without replaying implementation", async () => {
+    const f = await completedFixture();
+    await report(f.rework, "Preserve the completed implementation and refresh checks.");
+    const resultBytes = await readFile(f.rework.exchange.result_path, "utf8");
+    const source = recordedTaskImplementationCommitSha(f.current);
+    const items = taskCentricAggregateFromExtensions(f.current.extensions)?.work_items;
+    const capture = fingerprints.captureWorkflowStepFingerprint;
+    let providerOnly = false;
+    const drift = vi
+      .spyOn(fingerprints, "captureWorkflowStepFingerprint")
+      .mockImplementation(async (options) => {
+        const flow = options.state.prFlow;
+        const observed = await capture(
+          options.state.task.id === f.taskId && flow
+            ? {
+                ...options,
+                state: {
+                  ...options.state,
+                  prFlow: {
+                    ...flow,
+                    reviewThreads: {
+                      ...flow.reviewThreads,
+                      checked: !flow.reviewThreads.checked,
                     },
                   },
-                }
-              : options,
+                },
+              }
+            : options,
+        );
+        if (!providerOnly && options.state.task.id === f.taskId && flow) {
+          const unchanged = await capture(options);
+          expect({
+            ...observed,
+            digest: unchanged.digest,
+            components: {
+              ...observed.components,
+              provider: unchanged.components.provider,
+            },
+          }).toEqual(unchanged);
+          expect(observed.components.provider.digest).not.toBe(
+            unchanged.components.provider.digest,
           );
-          if (!providerOnly && options.state.task.id === f.taskId && flow) {
-            const unchanged = await capture(options);
-            expect({
-              ...observed,
-              digest: unchanged.digest,
-              components: {
-                ...observed.components,
-                provider: unchanged.components.provider,
-              },
-            }).toEqual(unchanged);
-            expect(observed.components.provider.digest).not.toBe(
-              unchanged.components.provider.digest,
-            );
-            providerOnly = true;
-          }
-          return observed;
-        });
-      try {
-        const stale = await invoke(f.checkout, f.rework.exchange.resume_argv.slice(1));
-        expect(stale.code).not.toBe(0);
-        expect(stale.stderr).toContain("stale against current task authority");
-        expect(providerOnly).toBe(true);
-        const write = exchanges.writeExternalAgentExchange;
-        const failure = vi
-          .spyOn(exchanges, "writeExternalAgentExchange")
-          .mockImplementation(async (file, value) => {
-            if (interrupted && value.status === "retired") {
-              throw new Error("injected retirement interruption");
-            }
-            return write(file, value);
-          });
-        try {
-          const retired = await invoke(f.checkout, ["task", "advance", f.taskId, "--agent-json"]);
-          expect(retired.code).not.toBe(0);
-          expect(retired.stderr).toContain(
-            interrupted ? "injected retirement interruption" : "retired the stale result",
-          );
-        } finally {
-          failure.mockRestore();
+          providerOnly = true;
         }
-        const replaced = await invoke(f.checkout, [
-          "task",
-          "advance",
-          f.taskId,
-          "--replacement",
-          "--agent-json",
-        ]);
-        expect(replaced.code, replaced.stderr).toBe(0);
-        const fresh = JSON.parse(replaced.stdout) as Packet;
-        expect(fresh.exchange.directory).not.toBe(f.rework.exchange.directory);
-        const repeated = await packet(f.checkout, f.taskId);
-        expect(repeated.exchange.directory).toBe(fresh.exchange.directory);
-        expect(await readFile(f.rework.exchange.result_path, "utf8")).toBe(resultBytes);
-        const rejected = await invoke(f.checkout, f.rework.exchange.resume_argv.slice(1));
-        expect(rejected.code).not.toBe(0);
-        await report(fresh, "Preserve the completed implementation and refresh checks.");
-        await resume(f.checkout, fresh);
-        const evaluator = await packet(f.checkout, f.taskId);
-        const evaluatorOrder = await order(evaluator);
-        expect(evaluatorOrder.role).toBe("EVALUATOR");
-        const after = await f.ctx.taskBackend.getTask(f.taskId);
-        expect(recordedTaskImplementationCommitSha(after!)).toBe(source);
-        expect(taskCentricAggregateFromExtensions(after?.extensions)?.work_items).toEqual(items);
-        expect(after?.verification?.state).toBe("ok");
-      } finally {
-        drift.mockRestore();
-      }
-    },
-  );
+        return observed;
+      });
+    try {
+      const stale = await invoke(f.checkout, f.rework.exchange.resume_argv.slice(1));
+      expect(stale.code).not.toBe(0);
+      expect(stale.stderr).toContain("stale against current task authority");
+      expect(providerOnly).toBe(true);
+      const retired = await invoke(f.checkout, ["task", "advance", f.taskId, "--agent-json"]);
+      expect(retired.code).not.toBe(0);
+      expect(retired.stderr).toContain("rerun task advance with --replacement");
+      const replaced = await invoke(f.checkout, [
+        "task",
+        "advance",
+        f.taskId,
+        "--replacement",
+        "--agent-json",
+      ]);
+      expect(replaced.code, replaced.stderr).toBe(0);
+      const fresh = JSON.parse(replaced.stdout) as Packet;
+      expect(fresh.exchange.directory).not.toBe(f.rework.exchange.directory);
+      const repeated = await packet(f.checkout, f.taskId);
+      expect(repeated.exchange.directory).toBe(fresh.exchange.directory);
+      expect(await readFile(f.rework.exchange.result_path, "utf8")).toBe(resultBytes);
+      const rejected = await invoke(f.checkout, f.rework.exchange.resume_argv.slice(1));
+      expect(rejected.code).not.toBe(0);
+      await report(fresh, "Preserve the completed implementation and refresh checks.");
+      await resume(f.checkout, fresh);
+      const evaluator = await packet(f.checkout, f.taskId);
+      const evaluatorOrder = await order(evaluator);
+      expect(evaluatorOrder.role).toBe("EVALUATOR");
+      const after = await f.ctx.taskBackend.getTask(f.taskId);
+      expect(recordedTaskImplementationCommitSha(after!)).toBe(source);
+      expect(taskCentricAggregateFromExtensions(after?.extensions)?.work_items).toEqual(items);
+      expect(after?.verification?.state).toBe("ok");
+    } finally {
+      drift.mockRestore();
+    }
+  });
 
   it("recovers a second implementation after failed verification without adopting older history", async () => {
     const f = await completedFixture();
@@ -746,7 +727,20 @@ describe("pure external plan refinement", { timeout: 180_000 }, () => {
         expect(await ctx.taskBackend.getTask(f.taskId)).toEqual(applied);
         await rm(driftPath);
       }
-      const next = await packet(f.checkout, f.taskId);
+      let next: Packet;
+      if (sourceDrift) {
+        const replacement = await invoke(f.checkout, [
+          "task",
+          "advance",
+          f.taskId,
+          "--replacement",
+          "--agent-json",
+        ]);
+        expect(replacement.code, replacement.stderr).toBe(0);
+        next = JSON.parse(replacement.stdout) as Packet;
+      } else {
+        next = await packet(f.checkout, f.taskId);
+      }
       const nextOrder = await order(next);
       expect(nextOrder.role).toBe("PLANNER");
       expect(await ctx.taskBackend.getTask(f.taskId)).toEqual(applied);

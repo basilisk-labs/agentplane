@@ -260,7 +260,9 @@ describe("runCli task run", () => {
       expect(bootstrap.split("\n")[0]).toBe(
         `/goal Execute AgentPlane task ${taskId}: Run task through Codex goal`,
       );
-      expect(bootstrap).toContain("complete provider-facing projection for this episode");
+      expect(bootstrap).toContain(
+        "complete context manifest preserves all required constraints and input references",
+      );
       expect(bootstrap).not.toContain("bundle_path");
       expect(bootstrap).toContain("Return one AgentSemanticResult v2 object");
       expect(bootstrap).not.toContain("result_path");

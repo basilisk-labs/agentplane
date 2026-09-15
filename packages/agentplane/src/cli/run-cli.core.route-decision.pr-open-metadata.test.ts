@@ -4,7 +4,11 @@ import path from "node:path";
 import { promisify } from "node:util";
 
 import { describe } from "vitest";
-import { approveRouteTaskPlan, recordRouteVerification } from "./route-decision.testkit.js";
+import {
+  approveRouteTaskPlan,
+  completeRouteWorkItem,
+  recordRouteVerification,
+} from "./route-decision.testkit.js";
 import { mkGitRepoRootWithCommit, recordQualityReviewPass } from "@agentplane/testkit";
 
 import {
@@ -192,6 +196,7 @@ describe("runCli route decision open PR metadata", () => {
       "--root",
       worktreePath,
     ]);
+    await completeRouteWorkItem(worktreePath, taskId);
     await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: worktreePath });
     await execFileAsync("git", ["commit", "-m", "test: record implementation commit"], {
       cwd: worktreePath,
@@ -314,6 +319,7 @@ describe("runCli route decision open PR metadata", () => {
       "--root",
       root,
     ]);
+    await completeRouteWorkItem(root, taskId);
 
     await recordRouteVerification(
       root,
