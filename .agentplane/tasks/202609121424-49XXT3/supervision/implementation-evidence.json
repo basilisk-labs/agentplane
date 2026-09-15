@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 867220ed92840ede4a50fde236a427e896d00edd..529d2a93fa0636f31830be894a727866e788e23a",
+      "command": "git diff --check 54a197116f195be3a5ad64bb42e922c0682cebbf..227836c53ace3ccbfa6d7e828a7f79cd5fa62bdf",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,14 +13,28 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 867220ed92840ede4a50fde236a427e896d00edd..529d2a93fa0636f31830be894a727866e788e23a",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 54a197116f195be3a5ad64bb42e922c0682cebbf..227836c53ace3ccbfa6d7e828a7f79cd5fa62bdf",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "M\t.agentplane/tasks/202609121424-49XXT3/README.md",
+        "M\t.agentplane/tasks/202609121424-49XXT3/pr/diffstat.txt",
         "M\t.agentplane/tasks/202609121424-49XXT3/pr/github-body.md",
+        "M\t.agentplane/tasks/202609121424-49XXT3/pr/meta.json",
         "M\t.agentplane/tasks/202609121424-49XXT3/pr/review.md",
-        "M\tdocs/releases/v0.7.9-evidence/candidate-base-synchronization.json"
+        "M\tdocs/releases/v0.7.9-evidence/preparation.md",
+        "M\tdocs/releases/v0.7.9-evidence/release-plan-changes.json",
+        "M\tdocs/releases/v0.7.9-evidence/release-plan-version.json",
+        "M\tdocs/releases/v0.7.9.md",
+        "M\tpackages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-run.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+        "M\tpackages/spec/examples/acr.json",
+        "M\tscripts/baselines/clone-baseline.json",
+        "M\tscripts/baselines/v0.7-compatibility-candidate.json"
       ]
     },
     {
@@ -30,24 +44,15 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "867220ed92840ede4a50fde236a427e896d00edd",
-  "implementation_commit": "529d2a93fa0636f31830be894a727866e788e23a",
+  "execution_base_commit": "54a197116f195be3a5ad64bb42e922c0682cebbf",
+  "implementation_commit": "227836c53ace3ccbfa6d7e828a7f79cd5fa62bdf",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [
-      " M .agentplane/tasks/202609121424-49XXT3/README.md"
-    ],
-    "classification": [
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202609121424-49XXT3/README.md"
-      }
-    ],
+    "baseline": [],
+    "classification": [],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [
-      " M .agentplane/tasks/202609121424-49XXT3/README.md"
-    ],
+    "removed_after_execution_baseline": [],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
