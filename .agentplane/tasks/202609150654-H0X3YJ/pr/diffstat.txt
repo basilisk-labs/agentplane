@@ -1,3 +1,3 @@
- .../commands/branch/work-start.materialize.test.ts |  9 ++++
+ .../commands/branch/work-start.materialize.test.ts | 28 +++++++++++-
  .../src/commands/branch/work-start.materialize.ts  | 51 +++++++++++++++++++---
- 2 files changed, 54 insertions(+), 6 deletions(-)
+ 2 files changed, 71 insertions(+), 8 deletions(-)

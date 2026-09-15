@@ -12,8 +12,8 @@ Created: 2026-09-15T06:55:01.035Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bunx vitest run --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,9 +29,9 @@ Created: 2026-09-15T06:55:01.035Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../commands/branch/work-start.materialize.test.ts |  9 ++++
+ .../commands/branch/work-start.materialize.test.ts | 28 +++++++++++-
  .../src/commands/branch/work-start.materialize.ts  | 51 +++++++++++++++++++---
- 2 files changed, 54 insertions(+), 6 deletions(-)
+ 2 files changed, 71 insertions(+), 8 deletions(-)
 ```
 
 </details>

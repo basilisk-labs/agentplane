@@ -1,10 +1,13 @@
-import { mkdtemp, mkdir, rm, symlink, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, readlink, realpath, rm, symlink, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
 import { afterEach, describe, expect, it } from "vitest";
 
-import { isReusableWorkspaceInstallLayout } from "./work-start.materialize.js";
+import {
+  isReusableWorkspaceInstallLayout,
+  materializeRepoLocalInstallLayoutForWorktree,
+} from "./work-start.materialize.js";
 
 const tempRoots: string[] = [];
 
@@ -58,6 +61,18 @@ describe("reusable workspace install layout", () => {
     await writeDependency(sourceRoot);
 
     await expect(isReusableWorkspaceInstallLayout({ repoRoot, sourceRoot })).resolves.toBe(true);
+  });
+
+  it("links an active-runtime install to its canonical target", async () => {
+    const repoRoot = await temporaryRepo();
+    const worktreePath = path.join(repoRoot, ".agentplane", "worktrees", "target");
+    await mkdir(worktreePath, { recursive: true });
+
+    await materializeRepoLocalInstallLayoutForWorktree({ repoRoot, worktreePath });
+
+    await expect(readlink(path.join(worktreePath, "node_modules"))).resolves.toBe(
+      await realpath(path.join(process.cwd(), "node_modules")),
+    );
   });
 
   it("rejects a node_modules source owned by another task worktree", async () => {

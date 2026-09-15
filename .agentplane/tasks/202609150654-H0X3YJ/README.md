@@ -4,7 +4,7 @@ title: "Fix active-runtime install reuse on v0.6"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -16,7 +16,7 @@ mutation_scope: "code"
 blueprint_request: "code.branch_pr"
 verify:
   - "bun run ci:local:full"
-  - "bunx vitest run --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+  - "bunx vitest --config vitest.workspace.ts run --project agentplane --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
 plan_approval:
   state: "approved"
   updated_at: "2026-09-15T06:54:26.249Z"
@@ -222,8 +222,8 @@ events:
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The implementation remains complete. Formal recovery requires a corrected scope extension that includes the approved implementation and test root. Recommended action: Apply the exact USER-approved scope extension and issue a freshly scoped executor episode. Requested scope: roots=packages/agentplane/src; repository effects=tests; request digest=sha256:b2eae1a392340b123fd25c6db7fe2d613f430a9080566071c39d1e4eaaf70853. Agentplane receipt: external-agent-blocker/tr_fa80cb8b461c2e6d9c12db8e35e9e036/sha256:5ec8130d629288581d70bdb4b203dc1ada60f6224b1f1e3975a36ebe57642212/sha256:b2eae1a392340b123fd25c6db7fe2d613f430a9080566071c39d1e4eaaf70853."
 doc_version: 3
-doc_updated_at: "2026-09-15T20:04:55.731Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-15T20:07:12.166Z"
+doc_updated_by: "USER"
 description: "Fix the reusable workspace install-layout guard so work start can reuse a valid active repo-local runtime from a separate repository root while still rejecting dangling, task-worktree-owned, and external dependency layouts. Add regression coverage for the cross-repository bootstrap path required by release:prepublish."
 sections:
   Summary: |-
@@ -239,9 +239,9 @@ sections:
     3. Add focused coverage for valid cross-repository reuse and retain the existing runtime bootstrap integration cases.
     4. Run focused tests and `bun run ci:local:full`; then open a PR only to `codex/release-v0.6.27-reclaim-fix` and require hosted CI.
   Verify Steps: |-
-    1. Run `bunx vitest run --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts`. Expected: cross-repository active-runtime reuse passes while dangling, task-worktree-owned, and external layouts remain rejected.
-    2. Run `bun run ci:local:full`. Expected: the complete local regression suite passes.
-    3. Inspect the final diff. Expected: only the three approved implementation and test paths plus task evidence change; no release metadata or unrelated refactor is included.
+    1. Run `bun run ci:local:full`. Expected: the complete local regression suite passes.
+    2. Run `bunx vitest --config vitest.workspace.ts run --project agentplane --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts`. Expected: cross-repository active-runtime reuse passes while dangling, task-worktree-owned, and external layouts remain rejected.
+    3. Inspect the final diff. Expected: only the two approved implementation and test paths plus task evidence change; no release metadata or unrelated refactor is included.
     4. Verify hosted CI on the exact PR head. Expected: all required checks pass before merge to `codex/release-v0.6.27-reclaim-fix`.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
@@ -338,9 +338,9 @@ Fix the reusable workspace install-layout guard so work start can reuse a valid 
 
 ## Verify Steps
 
-1. Run `bunx vitest run --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts`. Expected: cross-repository active-runtime reuse passes while dangling, task-worktree-owned, and external layouts remain rejected.
-2. Run `bun run ci:local:full`. Expected: the complete local regression suite passes.
-3. Inspect the final diff. Expected: only the three approved implementation and test paths plus task evidence change; no release metadata or unrelated refactor is included.
+1. Run `bun run ci:local:full`. Expected: the complete local regression suite passes.
+2. Run `bunx vitest --config vitest.workspace.ts run --project agentplane --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts`. Expected: cross-repository active-runtime reuse passes while dangling, task-worktree-owned, and external layouts remain rejected.
+3. Inspect the final diff. Expected: only the two approved implementation and test paths plus task evidence change; no release metadata or unrelated refactor is included.
 4. Verify hosted CI on the exact PR head. Expected: all required checks pass before merge to `codex/release-v0.6.27-reclaim-fix`.
 
 ## Verification
