@@ -15,8 +15,14 @@ Fix the reusable workspace install-layout guard so work start can reuse a valid 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note:
+
+```text
+Rework: Declared check failed: bunx vitest run --project cli-core
+packages/agentplane/src/commands/branch/work-start.materialize.test.ts
+packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
+```
 - Canonical workflow state lives in the task README.
 
 <details>

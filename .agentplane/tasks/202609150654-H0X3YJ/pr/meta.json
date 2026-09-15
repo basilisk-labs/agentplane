@@ -3,7 +3,8 @@
   "branch": "task/202609150654-H0X3YJ/fix-active-runtime-reuse-v0-6",
   "created_at": "2026-09-15T06:55:01.035Z",
   "diffstat_sha256": "sha256:64d7830ac7bf62abbc657b7657119d332442e76220d0e818c9007cbca2b3ccd5",
-  "last_verified_at": null,
+  "last_verified_at": "2026-09-15T07:15:58.142Z",
+  "last_verified_diffstat_sha256": "sha256:64d7830ac7bf62abbc657b7657119d332442e76220d0e818c9007cbca2b3ccd5",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202609150654-H0X3YJ",
   "updated_at": "2026-09-15T06:55:01.035Z",
   "verify": {
-    "status": "skipped"
+    "status": "fail"
   }
 }

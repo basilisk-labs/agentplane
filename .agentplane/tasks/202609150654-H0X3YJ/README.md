@@ -1,10 +1,10 @@
 ---
 id: "202609150654-H0X3YJ"
 title: "Fix active-runtime install reuse on v0.6"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -23,14 +23,150 @@ plan_approval:
   updated_by: "USER"
   note: "Approved in the current conversation for the bounded guard repair and v0.6.30 release continuation."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
-commit:
-  hash: "7ac9524bb5af81a6adc418cd6143aac5f6704fe1"
-  message: "🚧 H0X3YJ task: apply external agent result"
+  state: "needs_rework"
+  updated_at: "2026-09-15T07:15:58.142Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bunx vitest run --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+  attempts: 1
+execution_contract:
+  authority:
+    allowed_external_effects: []
+    allowed_repository_effects:
+      - "repository_write"
+      - "source_code"
+    forbidden_external_effects:
+      - "network_read"
+      - "external_write"
+      - "credentials"
+      - "publish"
+      - "deploy"
+      - "destructive_git"
+    forbidden_repository_effects:
+      - "documentation"
+      - "tests"
+      - "public_api"
+      - "schema"
+      - "dependencies"
+      - "ci"
+      - "release_metadata"
+      - "security_boundary"
+    writable_roots: []
+  declaration:
+    external_effects: []
+    implementation_uncertainty: "bounded"
+    preferred_mode: "branch_pr"
+    rationale:
+      - "legacy structured task fields mapped to the execution contract"
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+    requirements_uncertainty: "bounded"
+    reversibility: "reversible"
+    schema_version: 2
+    scope_roots: []
+  observed:
+    authority_violations:
+      - "repository_effect:tests"
+      - "verification:recorded-check-2:fail"
+      - "verification:verification-record:fail"
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
+      - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
+    external_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "fail"
+      -
+        id: "verification-record"
+        result: "fail"
+  reason_codes:
+    - "agent_preferred_branch_pr"
+    - "repository_branch_pr_floor"
+  repository_mode: "branch_pr"
+  safety:
+    approval_effects: []
+    requires_user_approval: false
+    requires_worktree: true
+  schema_version: 1
+  selected_mode: "branch_pr"
+  source: "legacy_compatibility"
+  verification:
+    contract:
+      declared:
+        components: []
+        evidence_requirements:
+          - "hosted_integration"
+          - "repository_effect:repository_write"
+          - "repository_effect:source_code"
+          - "repository_effect:tests"
+          - "task_outcome"
+        external_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+        risk:
+          implementation_uncertainty: "bounded"
+          requirements_uncertainty: "bounded"
+          reversibility: "reversible"
+      digest: "sha256:98daf9c7102a026581511bfa1bf1dc040bea575ad43efa5bfed2353d460ad9e4"
+      escalation_reasons: []
+      execution_groups:
+        - "core"
+        - "cli"
+      observed:
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
+          - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
+        external_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
+      phase: "task"
+      policy_floor:
+        monotonic_strengthening: true
+        pr_full_regression: true
+        unknown_or_central_full_regression: true
+      requires_full_regression: false
+      requires_real_e2e: false
+      schema_version: 2
+      selected_checks:
+        - "affected_unit_integration"
+        - "critical_paths"
+        - "hosted_integration"
+        - "task_outcome"
+      selector:
+        bucket: null
+        buckets: []
+        execution_mode: "semantic"
+        kind: "semantic"
+        lint_targets: []
+        reason: "execution_declaration"
+        run_cli_docs_check: false
+        selected_test_files: []
+        vitest_pool: "forks"
+      source: "execution_contract"
+    required_evidence:
+      - "hosted_integration"
+      - "repository_effect:repository_write"
+      - "repository_effect:source_code"
+      - "repository_effect:tests"
+      - "task_outcome"
+      - "verification_recovery:recorded-check-2"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -38,6 +174,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 7ac9524bb5af. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The implementation is unchanged and the full regression suite passes. Formal verification cannot recover until the legacy execution contract permits the test effect already required by the approved task. Recommended action: Approve the pending scope extension for repository effect tests. Replace the focused Verify Step with the already-passing workspace command. Requested scope: roots=unchanged; repository effects=tests; request digest=sha256:25af6765bf66fbbdacb33df7be8d1ed39c78a1895de49b154712485d032dc360. Agentplane receipt: external-agent-blocker/tr_74db211e7aa895c6e7fcd95e1705d3c1/sha256:fa39f2df3da07470ade3a50cfe16c6ce0a6ebe03a047146df2559d997df7f076/sha256:25af6765bf66fbbdacb33df7be8d1ed39c78a1895de49b154712485d032dc360."
 events:
   -
     type: "status"
@@ -54,8 +193,21 @@ events:
     to: "DOING"
     note: "Implementation committed: 7ac9524bb5af. CLI accepted one state-bound external-agent semantic result."
     commit: "7ac9524bb5af81a6adc418cd6143aac5f6704fe1"
+  -
+    type: "verify"
+    at: "2026-09-15T07:15:58.142Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bunx vitest run --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+  -
+    type: "status"
+    at: "2026-09-15T07:18:33.419Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The implementation is unchanged and the full regression suite passes. Formal verification cannot recover until the legacy execution contract permits the test effect already required by the approved task. Recommended action: Approve the pending scope extension for repository effect tests. Replace the focused Verify Step with the already-passing workspace command. Requested scope: roots=unchanged; repository effects=tests; request digest=sha256:25af6765bf66fbbdacb33df7be8d1ed39c78a1895de49b154712485d032dc360. Agentplane receipt: external-agent-blocker/tr_74db211e7aa895c6e7fcd95e1705d3c1/sha256:fa39f2df3da07470ade3a50cfe16c6ce0a6ebe03a047146df2559d997df7f076/sha256:25af6765bf66fbbdacb33df7be8d1ed39c78a1895de49b154712485d032dc360."
 doc_version: 3
-doc_updated_at: "2026-09-15T07:13:13.670Z"
+doc_updated_at: "2026-09-15T07:18:33.419Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the reusable workspace install-layout guard so work start can reuse a valid active repo-local runtime from a separate repository root while still rejecting dangling, task-worktree-owned, and external dependency layouts. Add regression coverage for the cross-repository bootstrap path required by release:prepublish."
 sections:
@@ -78,14 +230,71 @@ sections:
     4. Verify hosted CI on the exact PR head. Expected: all required checks pass before merge to `codex/release-v0.6.27-reclaim-fix`.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-15T07:15:58.142Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bunx vitest run --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:90a655d46980e7603d596905d420e1fd68e573465809fdbe7d4444004e728b69, input_digest=sha256:8b0ef1494333123576dbe1ab008ba000c23f2a1b4ce0f228c3cb12d725de9107
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609150654-H0X3YJ declared verification
+
+    Command: bunx vitest run --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
+    Result: fail
+    Evidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609150654-H0X3YJ declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/v0-6-issues-base/.agentplane/worktrees/202609150654-H0X3YJ-fix-active-runtime-reuse-v0-6/.agentplane/tasks/202609150654-H0X3YJ/blueprint/resolved-snapshot.json
+    - old_digest: a07deb437a1312a6ee3031ad1aae4d775183554bbc915015d13bd085e2efb485
+    - current_digest: a07deb437a1312a6ee3031ad1aae4d775183554bbc915015d13bd085e2efb485
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609150654-H0X3YJ
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
-  implementation_commit:
-    hash: "7ac9524bb5af81a6adc418cd6143aac5f6704fe1"
+  agentplane.scope_extension_request:
+    blocker_state_fingerprint: "sha256:fa39f2df3da07470ade3a50cfe16c6ce0a6ebe03a047146df2559d997df7f076"
+    kind: "task_scope_extension_request"
+    request:
+      rationale: "Regression tests are an explicit part of the approved task objective and plan. The observed test-file change must be admitted before formal verification can pass."
+      repository_effects:
+        - "tests"
+      schema_version: 1
+      scope_roots: []
+    request_digest: "sha256:25af6765bf66fbbdacb33df7be8d1ed39c78a1895de49b154712485d032dc360"
+    schema_version: 1
+    status: "pending"
+    transition_id: "tr_74db211e7aa895c6e7fcd95e1705d3c1"
+    work_item_id: null
+  task_execution_context:
+    base_ref: "codex/release-v0.6.27-reclaim-fix"
+    base_sha: "cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9"
+    repository_identity: null
+    schema_version: 1
   workflow_route_baseline:
     start_head_sha: "cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9"
     version: 1
@@ -119,6 +328,46 @@ Fix the reusable workspace install-layout guard so work start can reuse a valid 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-15T07:15:58.142Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bunx vitest run --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:90a655d46980e7603d596905d420e1fd68e573465809fdbe7d4444004e728b69, input_digest=sha256:8b0ef1494333123576dbe1ab008ba000c23f2a1b4ce0f228c3cb12d725de9107
+
+Details:
+
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609150654-H0X3YJ declared verification
+
+Command: bunx vitest run --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
+Result: fail
+Evidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609150654-H0X3YJ declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/v0-6-issues-base/.agentplane/worktrees/202609150654-H0X3YJ-fix-active-runtime-reuse-v0-6/.agentplane/tasks/202609150654-H0X3YJ/blueprint/resolved-snapshot.json
+- old_digest: a07deb437a1312a6ee3031ad1aae4d775183554bbc915015d13bd085e2efb485
+- current_digest: a07deb437a1312a6ee3031ad1aae4d775183554bbc915015d13bd085e2efb485
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609150654-H0X3YJ
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
