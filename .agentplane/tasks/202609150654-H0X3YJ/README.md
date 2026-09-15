@@ -4,7 +4,7 @@ title: "Fix active-runtime install reuse on v0.6"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -158,7 +158,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "72149ad2afe79e37a30a3df9f1bd24f39f5684b1"
+  message: "🚧 H0X3YJ task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -178,6 +180,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/src; repository effects: tests."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 72149ad2afe7. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -221,9 +226,17 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The implementation remains complete. Formal recovery requires a corrected scope extension that includes the approved implementation and test root. Recommended action: Apply the exact USER-approved scope extension and issue a freshly scoped executor episode. Requested scope: roots=packages/agentplane/src; repository effects=tests; request digest=sha256:b2eae1a392340b123fd25c6db7fe2d613f430a9080566071c39d1e4eaaf70853. Agentplane receipt: external-agent-blocker/tr_fa80cb8b461c2e6d9c12db8e35e9e036/sha256:5ec8130d629288581d70bdb4b203dc1ada60f6224b1f1e3975a36ebe57642212/sha256:b2eae1a392340b123fd25c6db7fe2d613f430a9080566071c39d1e4eaaf70853."
+  -
+    type: "status"
+    at: "2026-09-15T20:18:37.716Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 72149ad2afe7. CLI accepted one state-bound external-agent semantic result."
+    commit: "72149ad2afe79e37a30a3df9f1bd24f39f5684b1"
 doc_version: 3
-doc_updated_at: "2026-09-15T20:07:12.166Z"
-doc_updated_by: "USER"
+doc_updated_at: "2026-09-15T20:18:37.716Z"
+doc_updated_by: "SUPERVISOR"
 description: "Fix the reusable workspace install-layout guard so work start can reuse a valid active repo-local runtime from a separate repository root while still rejecting dangling, task-worktree-owned, and external dependency layouts. Add regression coverage for the cross-repository bootstrap path required by release:prepublish."
 sections:
   Summary: |-
@@ -308,6 +321,8 @@ extensions:
     status: "applied"
     transition_id: "tr_fa80cb8b461c2e6d9c12db8e35e9e036"
     work_item_id: null
+  implementation_commit:
+    hash: "72149ad2afe79e37a30a3df9f1bd24f39f5684b1"
   task_execution_context:
     base_ref: "codex/release-v0.6.27-reclaim-fix"
     base_sha: "cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9"
