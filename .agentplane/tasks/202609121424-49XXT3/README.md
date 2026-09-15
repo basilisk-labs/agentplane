@@ -4,7 +4,7 @@ title: "Publish and independently verify AgentPlane 0.7.9 from the exact qualifi
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 80
+revision: 81
 origin:
   system: "manual"
 depends_on:
@@ -358,9 +358,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "38f03c299cd54ed306caeded77c71f9edf1377eb"
-  message: "🚧 49XXT3 task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -9804,19 +9802,106 @@ extensions:
         revision: 15
         schema_version: 1
         task_id: "202609121424-49XXT3"
-    revision: 80
+    revision: 81
     schema_version: 1
-    updated_at: "2026-09-15T06:47:19.154Z"
+    updated_at: "2026-09-15T07:16:23.852Z"
     work_items:
       prepare_candidate:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "prepare_candidate"
-        last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        last_failure:
+          cause_refs:
+            - "candidate_exact"
+          code: "validation_failed"
+          kind: "validation"
+          message: "Preserved the prepared 0.7.9 candidate and recorded the supervisor requalification budget correction. The candidate remains release-ready for the supervisor-owned full gate."
+          retryable: true
+        output_manifests:
+          -
+            digest: "sha256:a64d315d7c68f6c6018d8a1c1ef94dccd88b5739187244273b53a71e7d599d2b"
+            id: "stable_candidate_diff"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 16
+              task_id: "202609121424-49XXT3"
+              work_item_id: "prepare_candidate"
+            provenance:
+              - "sha256:9e99e9bef1350722762dd80c17eb3dfefbf76ba19a2a8c701977d3834c99ce85"
+              - ".agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:545ebd93cd24631271cf80ada0fd30ccfca31aba791cd4fda64e3dee835bcbf6"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:a31540e3ab921bb8711c32f8067bdac3e4d70f61f054d70266d8991af7a82060"
+            id: "release_notes_and_evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 16
+              task_id: "202609121424-49XXT3"
+              work_item_id: "prepare_candidate"
+            provenance:
+              - "sha256:9e99e9bef1350722762dd80c17eb3dfefbf76ba19a2a8c701977d3834c99ce85"
+              - ".agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:545ebd93cd24631271cf80ada0fd30ccfca31aba791cd4fda64e3dee835bcbf6"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:391c8faee7634b37acf2df5a31a33c50fd546003f475886377cb2c932779a01e"
+            id: "exact_candidate_sha"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 16
+              task_id: "202609121424-49XXT3"
+              work_item_id: "prepare_candidate"
+            provenance:
+              - "sha256:9e99e9bef1350722762dd80c17eb3dfefbf76ba19a2a8c701977d3834c99ce85"
+              - ".agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:545ebd93cd24631271cf80ada0fd30ccfca31aba791cd4fda64e3dee835bcbf6"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "REWORK_READY"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json"
+              check_id: "release_check"
+              command_identity: "bun run release:check"
+              detail: "Declared check failed: bun run release:prepublish"
+              exit_code: 0
+              observed_at: "2026-09-15T07:16:23.769Z"
+              repository_snapshot_digest: "sha256:545ebd93cd24631271cf80ada0fd30ccfca31aba791cd4fda64e3dee835bcbf6"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json"
+              check_id: "release_prepublish"
+              command_identity: "bun run release:prepublish"
+              detail: "Declared check failed: bun run release:prepublish"
+              exit_code: 1
+              observed_at: "2026-09-15T07:16:23.769Z"
+              repository_snapshot_digest: "sha256:545ebd93cd24631271cf80ada0fd30ccfca31aba791cd4fda64e3dee835bcbf6"
+              status: "failed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json"
+              check_id: "scope_hygiene"
+              command_identity: "task.verify"
+              detail: "Declared check failed: bun run release:prepublish"
+              exit_code: 1
+              observed_at: "2026-09-15T07:16:23.769Z"
+              repository_snapshot_digest: "sha256:545ebd93cd24631271cf80ada0fd30ccfca31aba791cd4fda64e3dee835bcbf6"
+              status: "failed"
+          schema_version: 1
+          stale_evidence: []
+          status: "failed"
+          unsatisfied_criteria:
+            - "candidate_exact"
       publish_stable:
         attempt: 0
         claim_id: null
@@ -10118,6 +10203,23 @@ extensions:
         task_id: "202609121424-49XXT3"
         task_revision: 75
         work_item_id: null
+      -
+        at: "2026-09-15T07:16:23.852Z"
+        from: "READY"
+        to: "REWORK_READY"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:246631c8f98de94e80a9704475a97ffd6a9b5cab695adb7dfa3a8a8802bd4fb4"
+        entity: "work_item"
+        id: "event_2e2bccc890a76c92d18da588"
+        mutation_id: "external-result:work-order-202609121424-49XXT3-executor-8213cb77d95bec5dba1a29e9"
+        plan_digest: "sha256:eb75b3e3586323a4e8a409eb2d9d24029ec32ebe63975bab32c2feb8684d30c6"
+        plan_revision: 16
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+        task_revision: 80
+        work_item_id: "prepare_candidate"
     leases: []
     mutation_receipts:
       compatibility:sha256:046ef3d623a69511cecc08b34cefc3449d060dba8558b29211086e726db3ceb3:
@@ -11534,6 +11636,30 @@ extensions:
         mutation_id: "external-result:work-order-202609121424-49XXT3-executor-00afd788a39e4976554119c6"
         next_revision: 46
         previous_revision: 45
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+      external-result:work-order-202609121424-49XXT3-executor-8213cb77d95bec5dba1a29e9:
+        aggregate_digest: "sha256:dcf14ebe1271344edbff3e4a46c83686562ecdb52ab7f17686c4d2a255ce0772"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-15T07:16:23.852Z"
+          cause_refs:
+            - "semantic-result:sha256:246631c8f98de94e80a9704475a97ffd6a9b5cab695adb7dfa3a8a8802bd4fb4"
+          entity: "work_item"
+          from: "READY"
+          id: "event_2e2bccc890a76c92d18da588"
+          mutation_id: "external-result:work-order-202609121424-49XXT3-executor-8213cb77d95bec5dba1a29e9"
+          plan_digest: "sha256:eb75b3e3586323a4e8a409eb2d9d24029ec32ebe63975bab32c2feb8684d30c6"
+          plan_revision: 16
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          task_revision: 80
+          to: "REWORK_READY"
+          work_item_id: "prepare_candidate"
+        mutation_id: "external-result:work-order-202609121424-49XXT3-executor-8213cb77d95bec5dba1a29e9"
+        next_revision: 81
+        previous_revision: 80
         schema_version: 1
         task_id: "202609121424-49XXT3"
       external-result:work-order-202609121424-49XXT3-executor-a8eec6925bf5d6ee97c95b6f:

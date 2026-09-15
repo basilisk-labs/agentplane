@@ -19,6 +19,7 @@ The candidate changes only canonical version surfaces, exact internal package pi
 - `bun run release:check`: passed on the complete candidate.
 - `bun run release:prepublish`: passed on the synchronized candidate.
 - Supervisor requalification: every observed prepublish sub-check passed before the original 1,200,000 ms verification budget terminated the wrapper; the approved rerun budget is 3,600,000 ms.
+- Supervisor requalification rerun: release-ci-base chunk 56 stopped only after the host reached `No space left on device`; removing 58,256 stale `agentplane-*` test directories restored 26 GiB of free space, and the exact 10-file chunk then passed all 111 tests.
 - `git diff --check` and exact scope review: passed on the complete candidate.
 
 ## Boundaries
