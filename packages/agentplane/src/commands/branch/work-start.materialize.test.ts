@@ -51,6 +51,15 @@ describe("reusable workspace install layout", () => {
     ).resolves.toBe(true);
   });
 
+  it("accepts a complete active-runtime layout from another repository root", async () => {
+    const repoRoot = await temporaryRepo();
+    const sourceRoot = await temporaryRepo();
+    await writeRootManifest(sourceRoot);
+    await writeDependency(sourceRoot);
+
+    await expect(isReusableWorkspaceInstallLayout({ repoRoot, sourceRoot })).resolves.toBe(true);
+  });
+
   it("rejects a node_modules source owned by another task worktree", async () => {
     const repoRoot = await temporaryRepo();
     const sourceRoot = path.join(repoRoot, ".agentplane", "worktrees", "foreign");
