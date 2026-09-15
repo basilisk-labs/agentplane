@@ -4,7 +4,11 @@ import path from "node:path";
 import { promisify } from "node:util";
 
 import { describe } from "vitest";
-import { approveRouteTaskPlan, recordRouteVerification } from "./route-decision.testkit.js";
+import {
+  approveRouteTaskPlan,
+  completeRouteWorkItem,
+  recordRouteVerification,
+} from "./route-decision.testkit.js";
 
 import {
   captureStdIO,
@@ -106,6 +110,7 @@ async function createVerifiedOpenPrFixture(
     "--root",
     checkout,
   ]);
+  await completeRouteWorkItem(checkout, taskId);
   await execFileAsync("git", ["add", "-A"], { cwd: checkout });
   await execFileAsync("git", ["commit", "-m", "task: seed verified lifecycle state"], {
     cwd: checkout,

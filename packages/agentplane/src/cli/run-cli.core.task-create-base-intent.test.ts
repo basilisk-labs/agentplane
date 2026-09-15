@@ -227,7 +227,7 @@ describe("task creation intent and long-lived bases", { timeout: 60_000 }, () =>
       taskId,
       "--agent-json",
     ])) as AgentPacket;
-    expect(issued.action.instruction).toContain("result.task_intent");
+    expect(issued.action.instruction).toContain("return task_intent");
     const plan = "1. Inspect the parser. 2. Implement the fix. 3. Run the declared checks.";
 
     const incompletePath = await writePlannerResult({

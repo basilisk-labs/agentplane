@@ -30,14 +30,14 @@
     "compare_contract": "current metrics must not exceed baseline clones, duplicatedLines, or duplicatedTokens"
   },
   "metrics": {
-    "sources": 1468,
-    "lines": 281117,
-    "tokens": 1605630,
-    "clones": 91,
-    "duplicatedLines": 1436,
-    "duplicatedTokens": 10001,
-    "percentage": 0.5108193385672157,
-    "percentageTokens": 0.622870773465867
+    "sources": 1592,
+    "lines": 313346,
+    "tokens": 1806068,
+    "clones": 95,
+    "duplicatedLines": 1488,
+    "duplicatedTokens": 10362,
+    "percentage": 0.47487441997025653,
+    "percentageTokens": 0.5737325504909007
   },
   "top_duplicates": [
     {
@@ -78,8 +78,8 @@
       },
       "secondFile": {
         "path": "packages/core/src/tasks/index.ts",
-        "start": 147,
-        "end": 178
+        "start": 149,
+        "end": 180
       }
     },
     {
@@ -148,8 +148,8 @@
       },
       "secondFile": {
         "path": "packages/testkit/src/cli-harness.ts",
-        "start": 715,
-        "end": 733
+        "start": 743,
+        "end": 761
       }
     },
     {
@@ -164,6 +164,20 @@
         "path": "packages/agentplane/src/commands/task/shared/direct-work-lock.ts",
         "start": 12,
         "end": 34
+      }
+    },
+    {
+      "lines": 24,
+      "tokens": 105,
+      "firstFile": {
+        "path": "scripts/bench/paired-production-driver.mjs",
+        "start": 20,
+        "end": 43
+      },
+      "secondFile": {
+        "path": "scripts/bench/paired-result-report.mjs",
+        "start": 7,
+        "end": 31
       }
     },
     {
@@ -192,20 +206,6 @@
         "path": "scripts/workflow/run-workflow-coverage-suite.mjs",
         "start": 5,
         "end": 28
-      }
-    },
-    {
-      "lines": 23,
-      "tokens": 113,
-      "firstFile": {
-        "path": "packages/agentplane/src/commands/task/verify-record.ts",
-        "start": 84,
-        "end": 106
-      },
-      "secondFile": {
-        "path": "packages/agentplane/src/commands/task/verify-record.ts",
-        "start": 118,
-        "end": 140
       }
     },
     {
@@ -350,6 +350,20 @@
     },
     {
       "lines": 20,
+      "tokens": 97,
+      "firstFile": {
+        "path": "packages/agentplane/src/commands/task/verify-record.ts",
+        "start": 84,
+        "end": 103
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/commands/task/verify-record.ts",
+        "start": 120,
+        "end": 139
+      }
+    },
+    {
+      "lines": 20,
       "tokens": 81,
       "firstFile": {
         "path": "packages/agentplane/src/runner/context/base-prompt-sources.ts",
@@ -400,8 +414,8 @@
       },
       "secondFile": {
         "path": "packages/agentplane/src/backends/task-backend/shared/types.ts",
-        "start": 190,
-        "end": 208
+        "start": 192,
+        "end": 210
       }
     },
     {
@@ -416,6 +430,20 @@
         "path": "packages/core/src/tasks/tasks-export.ts",
         "start": 55,
         "end": 73
+      }
+    },
+    {
+      "lines": 19,
+      "tokens": 89,
+      "firstFile": {
+        "path": "packages/agentplane/src/cli/run-cli.core.task-advance.testkit.ts",
+        "start": 165,
+        "end": 183
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts",
+        "start": 377,
+        "end": 395
       }
     },
     {
@@ -479,13 +507,13 @@
       "tokens": 96,
       "firstFile": {
         "path": "packages/agentplane/src/commands/task/plan.ts",
-        "start": 237,
-        "end": 255
+        "start": 253,
+        "end": 271
       },
       "secondFile": {
         "path": "packages/agentplane/src/commands/task/plan.ts",
-        "start": 442,
-        "end": 460
+        "start": 451,
+        "end": 469
       }
     },
     {
@@ -616,25 +644,11 @@
     },
     {
       "lines": 17,
-      "tokens": 85,
-      "firstFile": {
-        "path": "packages/testkit/src/release.ts",
-        "start": 133,
-        "end": 149
-      },
-      "secondFile": {
-        "path": "packages/testkit/src/release.ts",
-        "start": 196,
-        "end": 212
-      }
-    },
-    {
-      "lines": 17,
       "tokens": 86,
       "firstFile": {
         "path": "scripts/checks/run-local-ci.mjs",
-        "start": 14,
-        "end": 30
+        "start": 18,
+        "end": 34
       },
       "secondFile": {
         "path": "scripts/checks/run-pre-push-hook.mjs",
@@ -724,20 +738,6 @@
         "path": "packages/agentplane/src/commands/guard/impl/commit-runner.ts",
         "start": 99,
         "end": 113
-      }
-    },
-    {
-      "lines": 15,
-      "tokens": 83,
-      "firstFile": {
-        "path": "scripts/bench/cli-benchmark-runner.mjs",
-        "start": 232,
-        "end": 246
-      },
-      "secondFile": {
-        "path": "scripts/bench/measure-cli-walltime.mjs",
-        "start": 183,
-        "end": 197
       }
     }
   ]

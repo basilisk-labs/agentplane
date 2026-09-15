@@ -1,5 +1,525 @@
 [
   {
+    "hash": "54a197116f195be3a5ad64bb42e922c0682cebbf",
+    "authorDateIso": "2026-09-15T04:28:26+03:00",
+    "subject": "🚧 49XXT3 task: extend approved execution scope"
+  },
+  {
+    "hash": "5feaef45d72a5e925e05e21da6e47a6df0eedb7a",
+    "authorDateIso": "2026-09-15T04:27:09+03:00",
+    "subject": "🚧 49XXT3 task: record external blocker"
+  },
+  {
+    "hash": "de8a6d5601fcfdcfab2238ccc6fbf34202112683",
+    "authorDateIso": "2026-09-15T03:52:21+03:00",
+    "subject": "🚧 49XXT3 task: extend approved execution scope"
+  },
+  {
+    "hash": "fbeaa05062b799f5fe3e3139872c1198a4a7e2c2",
+    "authorDateIso": "2026-09-15T03:51:42+03:00",
+    "subject": "🚧 49XXT3 task: record external blocker"
+  },
+  {
+    "hash": "f7b0dc6528a6b2d87ca63b6f2363576fae789754",
+    "authorDateIso": "2026-09-15T03:06:51+03:00",
+    "subject": "🚧 49XXT3 task: extend approved execution scope"
+  },
+  {
+    "hash": "6d813f373740efe16b750ccc7a7c1032c857414b",
+    "authorDateIso": "2026-09-15T03:06:33+03:00",
+    "subject": "🚧 49XXT3 task: record external blocker"
+  },
+  {
+    "hash": "af1eb2841413679030dc498a9510e6c9a0bf9a86",
+    "authorDateIso": "2026-09-15T02:29:51+03:00",
+    "subject": "🚧 49XXT3 task: extend approved execution scope"
+  },
+  {
+    "hash": "de87125a9c248bba915b6fc6e2669b5aa1deab0b",
+    "authorDateIso": "2026-09-15T02:29:27+03:00",
+    "subject": "🚧 49XXT3 task: record external blocker"
+  },
+  {
+    "hash": "51350eb1f51d4ceddcaf9e1a24c8396d78904a6b",
+    "authorDateIso": "2026-09-15T01:52:43+03:00",
+    "subject": "🚧 49XXT3 task: extend approved execution scope"
+  },
+  {
+    "hash": "7848142f215518af919dce571a96eadd95aa33aa",
+    "authorDateIso": "2026-09-15T01:52:07+03:00",
+    "subject": "🚧 49XXT3 task: record external blocker"
+  },
+  {
+    "hash": "491db265ab897e6c21420724ac0fea2e7cebc99a",
+    "authorDateIso": "2026-09-15T01:15:52+03:00",
+    "subject": "🚧 49XXT3 task: record external implementation evidence"
+  },
+  {
+    "hash": "1a053b357a26625255f95190bfe702e161b7c44c",
+    "authorDateIso": "2026-09-15T01:15:49+03:00",
+    "subject": "🚧 49XXT3 task: record implementation before verification"
+  },
+  {
+    "hash": "529d2a93fa0636f31830be894a727866e788e23a",
+    "authorDateIso": "2026-09-15T01:15:43+03:00",
+    "subject": "🚧 49XXT3 task: apply external agent result"
+  },
+  {
+    "hash": "a3ccf6f1927bf5ab3a9cf6612dd7326d68d1f270",
+    "authorDateIso": "2026-09-14T19:06:24+03:00",
+    "subject": "🧩 VFA9C1 task: refresh task artifacts after commit"
+  },
+  {
+    "hash": "fb232c800c6c8829d63c6a80b143d3428828d275",
+    "authorDateIso": "2026-09-14T19:04:45+03:00",
+    "subject": "🚧 VFA9C1 task: pre-merge closure"
+  },
+  {
+    "hash": "90292102776f2270d3391adb112ab5aca27511e9",
+    "authorDateIso": "2026-09-14T19:04:35+03:00",
+    "subject": "🚧 VFA9C1 task: record external evaluator result"
+  },
+  {
+    "hash": "74b140ee3c90cb32915bb25212e08b259bb4eb27",
+    "authorDateIso": "2026-09-14T19:02:21+03:00",
+    "subject": "✅ VFA9C1 task: record branch verification"
+  },
+  {
+    "hash": "eb2e6a4c1d7c7fdd337cafa1c182a0819e899ffe",
+    "authorDateIso": "2026-09-14T18:53:09+03:00",
+    "subject": "🚧 VFA9C1 task: record external implementation evidence"
+  },
+  {
+    "hash": "28bc049eee944559791ce993da8438ef7c68a870",
+    "authorDateIso": "2026-09-14T18:44:57+03:00",
+    "subject": "🚧 VFA9C1 task: record implementation before verification"
+  },
+  {
+    "hash": "801546899c1b6fb968b939becbc7004e92732edc",
+    "authorDateIso": "2026-09-14T18:44:51+03:00",
+    "subject": "🚧 VFA9C1 task: apply external agent result"
+  },
+  {
+    "hash": "c3c16604c5f8ec39aada2a0803e846dac2ab198f",
+    "authorDateIso": "2026-09-14T17:39:26+03:00",
+    "subject": "🚧 49XXT3 task: record external blocker"
+  },
+  {
+    "hash": "8f8a32178b5f87de92955ae2079265271daa541f",
+    "authorDateIso": "2026-09-14T17:12:48+03:00",
+    "subject": "🚧 49XXT3 task: record external implementation evidence"
+  },
+  {
+    "hash": "61c358bc16c1d69e2cadf577d7c91bb348c176cb",
+    "authorDateIso": "2026-09-14T17:12:44+03:00",
+    "subject": "🚧 49XXT3 task: record implementation before verification"
+  },
+  {
+    "hash": "dea7d66178a082498a8f40f9e892c656fe59bad5",
+    "authorDateIso": "2026-09-14T17:12:38+03:00",
+    "subject": "🚧 49XXT3 task: apply external agent result"
+  },
+  {
+    "hash": "ed89f946b3058cf290df7a76bec23ab4dcc1fa92",
+    "authorDateIso": "2026-09-14T16:43:12+03:00",
+    "subject": "🧩 AWJQMB task: refresh task artifacts after commit"
+  },
+  {
+    "hash": "4daa1384d9b5ed9d97f8da7b4b03f6270244d90a",
+    "authorDateIso": "2026-09-14T16:42:16+03:00",
+    "subject": "🚧 AWJQMB task: pre-merge closure"
+  },
+  {
+    "hash": "54f64b991011bb854240b812817b7277e4c94689",
+    "authorDateIso": "2026-09-14T16:40:37+03:00",
+    "subject": "🚧 AWJQMB task: record external evaluator result"
+  },
+  {
+    "hash": "ef27748609fc5cc2502e455ad86701b980634e84",
+    "authorDateIso": "2026-09-14T16:38:06+03:00",
+    "subject": "✅ AWJQMB task: record branch verification"
+  },
+  {
+    "hash": "c7167760e96969a78d15fa07e283236544ddc0fb",
+    "authorDateIso": "2026-09-14T16:17:20+03:00",
+    "subject": "🚧 AWJQMB task: record external implementation evidence"
+  },
+  {
+    "hash": "6b30e635396d9991d66774d8f6d2720d47868b7f",
+    "authorDateIso": "2026-09-14T15:57:55+03:00",
+    "subject": "🚧 AWJQMB task: record implementation before verification"
+  },
+  {
+    "hash": "968692b2859cb34da63370f08c6b72b34b36df42",
+    "authorDateIso": "2026-09-14T15:57:46+03:00",
+    "subject": "🚧 AWJQMB task: apply external agent result"
+  },
+  {
+    "hash": "0c141e0527baacf6612d54e262c78353fb12146a",
+    "authorDateIso": "2026-09-14T15:01:11+03:00",
+    "subject": "🚧 AWJQMB task: record implementation before verification"
+  },
+  {
+    "hash": "c7ec68ee991848c76bc3574768f13ed90c545298",
+    "authorDateIso": "2026-09-14T15:01:02+03:00",
+    "subject": "🚧 AWJQMB task: apply external agent result"
+  },
+  {
+    "hash": "4f19feceb2ddcde9afe7d3074febee7cdc0ee02c",
+    "authorDateIso": "2026-09-14T14:49:35+03:00",
+    "subject": "🚧 AWJQMB task: record external implementation evidence"
+  },
+  {
+    "hash": "c42e2064b017049ddb904e4f8941044664a09021",
+    "authorDateIso": "2026-09-14T14:43:32+03:00",
+    "subject": "🚧 AWJQMB task: record implementation before verification"
+  },
+  {
+    "hash": "7befcebf271f26c04d17e07e2de75a73e62dafa6",
+    "authorDateIso": "2026-09-14T14:43:23+03:00",
+    "subject": "🚧 AWJQMB task: apply external agent result"
+  },
+  {
+    "hash": "7a1b372633e2d3cace70b4b0b39fe641136cdc72",
+    "authorDateIso": "2026-09-14T14:04:15+03:00",
+    "subject": "🧩 AWJQMB task: refresh task artifacts after commit"
+  },
+  {
+    "hash": "63aa7d51495dbd3e315575a58d9a8ac9dcfdaac5",
+    "authorDateIso": "2026-09-14T14:02:22+03:00",
+    "subject": "🚧 AWJQMB task: pre-merge closure"
+  },
+  {
+    "hash": "084f56d4dadc68933ba5b23a5cccacac9d3af314",
+    "authorDateIso": "2026-09-14T14:02:02+03:00",
+    "subject": "🚧 AWJQMB task: record external evaluator result"
+  },
+  {
+    "hash": "e050765ee31bf9c6bb34142838035540fa4c9e8b",
+    "authorDateIso": "2026-09-14T13:59:58+03:00",
+    "subject": "🚧 AWJQMB task: record external implementation evidence"
+  },
+  {
+    "hash": "1734759e8b91e96019d469c204d1b61ef2bec82a",
+    "authorDateIso": "2026-09-14T13:52:22+03:00",
+    "subject": "🚧 AWJQMB task: record implementation before verification"
+  },
+  {
+    "hash": "c49cf59927876575afe017dbee24a2b477517208",
+    "authorDateIso": "2026-09-14T13:52:13+03:00",
+    "subject": "🚧 AWJQMB task: apply external agent result"
+  },
+  {
+    "hash": "d319f6580a34eebc433bdc2a9007aabae4cf1465",
+    "authorDateIso": "2026-09-14T13:43:46+03:00",
+    "subject": "🚧 AWJQMB task: record implementation before verification"
+  },
+  {
+    "hash": "a0217fd70c12e1f84f9126c64f51a1105a5357b2",
+    "authorDateIso": "2026-09-14T13:43:38+03:00",
+    "subject": "🚧 AWJQMB task: apply external agent result"
+  },
+  {
+    "hash": "55932ea5f6dcdf97cdfa65fa262dfb97e5396ae9",
+    "authorDateIso": "2026-09-14T13:35:01+03:00",
+    "subject": "🧪 AWJQMB task: record verification rework"
+  },
+  {
+    "hash": "2aba9480e50627f71a9f37d539acf268abb91547",
+    "authorDateIso": "2026-09-14T13:27:40+03:00",
+    "subject": "🚧 AWJQMB task: record external implementation evidence"
+  },
+  {
+    "hash": "9cc98ce4a0c62e7b2968bf329f01adf6033abeac",
+    "authorDateIso": "2026-09-14T13:27:35+03:00",
+    "subject": "🚧 AWJQMB task: record implementation before verification"
+  },
+  {
+    "hash": "1133e18a4c5f7b7e4a9f4bda6fbf410a83898a97",
+    "authorDateIso": "2026-09-14T13:27:30+03:00",
+    "subject": "🚧 AWJQMB task: apply external agent result"
+  },
+  {
+    "hash": "1806c1712eb3b5a5d7f8578bfc510b975f0c8ab7",
+    "authorDateIso": "2026-09-14T13:22:35+03:00",
+    "subject": "🚧 AWJQMB task: record implementation before verification"
+  },
+  {
+    "hash": "cf48186c2e64fec608844039bfd6d945b4aeae4b",
+    "authorDateIso": "2026-09-14T13:22:29+03:00",
+    "subject": "🚧 AWJQMB task: apply external agent result"
+  },
+  {
+    "hash": "9e35d51ed68a4ee38b95ec9cfd16dec73879b373",
+    "authorDateIso": "2026-09-14T13:19:47+03:00",
+    "subject": "🚧 AWJQMB task: record implementation before verification"
+  },
+  {
+    "hash": "911260447046c53dd13ba16ad251372eb5902454",
+    "authorDateIso": "2026-09-14T13:19:42+03:00",
+    "subject": "🚧 AWJQMB task: apply external agent result"
+  },
+  {
+    "hash": "801d545e1e5aaf2c9b4c307d4ca6a19214628a65",
+    "authorDateIso": "2026-09-14T12:13:36+03:00",
+    "subject": "🚀 49XXT3 release: resume on qualified main"
+  },
+  {
+    "hash": "1a93a9a43da2b714854174491f9672c52bf33e9f",
+    "authorDateIso": "2026-09-14T11:49:52+03:00",
+    "subject": "🚧 5REY71 task: pre-merge closure"
+  },
+  {
+    "hash": "287123c109d63ebae5184253ce03d4399f7e658d",
+    "authorDateIso": "2026-09-14T11:49:34+03:00",
+    "subject": "🚧 5REY71 task: record external evaluator result"
+  },
+  {
+    "hash": "1ab5ccb18beb656675e23e6ba31dcd5b4c758e2d",
+    "authorDateIso": "2026-09-14T11:46:18+03:00",
+    "subject": "✅ 5REY71 task: record branch verification"
+  },
+  {
+    "hash": "2220f3aee21a52253b5c7aae4232550b2d03bc35",
+    "authorDateIso": "2026-09-14T11:37:24+03:00",
+    "subject": "♻️ 5REY71 task: break workflow-step dependency cycle"
+  },
+  {
+    "hash": "508d0eda404d36e5c3d3a12c2d87e49b5ff2e13a",
+    "authorDateIso": "2026-09-14T11:36:43+03:00",
+    "subject": "🚧 5REY71 task: record worktree observation"
+  },
+  {
+    "hash": "ed411d43829416a9ae9b0dcb8fbe67b78639cb21",
+    "authorDateIso": "2026-09-14T11:34:41+03:00",
+    "subject": "🚧 5REY71 task: record worktree observation"
+  },
+  {
+    "hash": "41c494ff5710d0d01c7064ceaaec4b0c46fd8ac2",
+    "authorDateIso": "2026-09-14T11:27:39+03:00",
+    "subject": "🚧 5REY71 task: record worktree observation"
+  },
+  {
+    "hash": "e597563f2da074beeab2ec8d718fb59040b8b37e",
+    "authorDateIso": "2026-09-14T11:10:00+03:00",
+    "subject": "🧩 5REY71 task: refresh task artifacts after commit"
+  },
+  {
+    "hash": "4b851938940df65e3d280fabafcb2de6bc132e0b",
+    "authorDateIso": "2026-09-14T11:07:50+03:00",
+    "subject": "🚧 5REY71 task: pre-merge closure"
+  },
+  {
+    "hash": "1131ea9b92cdb9657a38b543583b6d409e4473ee",
+    "authorDateIso": "2026-09-14T11:07:41+03:00",
+    "subject": "🚧 5REY71 task: record external evaluator result"
+  },
+  {
+    "hash": "0dd8be88c07a1b1531a7541d97a288da68d4be9e",
+    "authorDateIso": "2026-09-14T11:05:07+03:00",
+    "subject": "✅ 5REY71 task: record branch verification"
+  },
+  {
+    "hash": "aceb6b6b4b6d9f05631fecfdf1cec3ff263612c8",
+    "authorDateIso": "2026-09-14T10:56:25+03:00",
+    "subject": "🚧 5REY71 task: record external implementation evidence"
+  },
+  {
+    "hash": "e0087c6415b76d664465131a69ed1f281f2a47e1",
+    "authorDateIso": "2026-09-14T10:47:39+03:00",
+    "subject": "🚧 5REY71 task: record implementation before verification"
+  },
+  {
+    "hash": "530001b5460fe8d2760f9515dbf132e8dad1b1fc",
+    "authorDateIso": "2026-09-14T10:47:33+03:00",
+    "subject": "🚧 5REY71 task: apply external agent result"
+  },
+  {
+    "hash": "aada4b24b57ca0df8d1530a14cdba0c39930df6e",
+    "authorDateIso": "2026-09-14T05:08:42+03:00",
+    "subject": "🚧 49XXT3 task: record external blocker"
+  },
+  {
+    "hash": "40368f0ae58774c8cdd80fddb22cb6daacbae8f4",
+    "authorDateIso": "2026-09-14T04:48:00+03:00",
+    "subject": "🧩 8QDRVN task: refresh task artifacts after commit"
+  },
+  {
+    "hash": "66faee1b0f120a4147a04c0f54cbd9d5a7fc0bc0",
+    "authorDateIso": "2026-09-14T04:47:20+03:00",
+    "subject": "🚧 8QDRVN task: pre-merge closure"
+  },
+  {
+    "hash": "deed44607430ba0348a7f80b81c7f3cc1697f901",
+    "authorDateIso": "2026-09-14T04:46:11+03:00",
+    "subject": "🚧 8QDRVN task: record external evaluator result"
+  },
+  {
+    "hash": "caa89e758801442b12b19496aa17d8665d9a981f",
+    "authorDateIso": "2026-09-14T04:44:34+03:00",
+    "subject": "🚧 8QDRVN task: record external implementation evidence"
+  },
+  {
+    "hash": "36712ecfd66504bda34de20115e586e22821f73d",
+    "authorDateIso": "2026-09-14T04:36:41+03:00",
+    "subject": "🚧 8QDRVN task: record implementation before verification"
+  },
+  {
+    "hash": "588bb7ad25e37529e8daee06678f43a5bb4cbde6",
+    "authorDateIso": "2026-09-14T04:36:33+03:00",
+    "subject": "🚧 8QDRVN task: apply external agent result"
+  },
+  {
+    "hash": "df32d16708011cbe769508b5605ee1ba94627bd1",
+    "authorDateIso": "2026-09-14T04:32:15+03:00",
+    "subject": "🚧 8QDRVN task: extend approved execution scope"
+  },
+  {
+    "hash": "66b1dfaadc9274f0e7f8708db040c1b06a6047e0",
+    "authorDateIso": "2026-09-14T04:31:52+03:00",
+    "subject": "🚧 8QDRVN task: record external blocker"
+  },
+  {
+    "hash": "b1e27a130266d6dd04f1a380209882a770044af3",
+    "authorDateIso": "2026-09-14T04:24:07+03:00",
+    "subject": "🚧 8QDRVN task: record implementation before verification"
+  },
+  {
+    "hash": "07b7e86c9c3855288c31bff11e7488f5887512f5",
+    "authorDateIso": "2026-09-14T04:23:59+03:00",
+    "subject": "🚧 8QDRVN task: apply external agent result"
+  },
+  {
+    "hash": "3b359d15ee275c22b33af46866af00211207b6fc",
+    "authorDateIso": "2026-09-14T04:20:47+03:00",
+    "subject": "🚧 8QDRVN task: extend approved execution scope"
+  },
+  {
+    "hash": "ae6816dc50fea4c9e3297512269caae9e3ad8f8b",
+    "authorDateIso": "2026-09-14T04:20:16+03:00",
+    "subject": "🚧 8QDRVN task: record external blocker"
+  },
+  {
+    "hash": "b5b3b73efe28780bff3a988843b9995902502602",
+    "authorDateIso": "2026-09-14T04:18:28+03:00",
+    "subject": "🧪 8QDRVN task: record verification rework"
+  },
+  {
+    "hash": "8aa0d619d1f4b2a69e011fe5b8de96d65e0427e1",
+    "authorDateIso": "2026-09-14T04:11:10+03:00",
+    "subject": "🚧 8QDRVN task: record external implementation evidence"
+  },
+  {
+    "hash": "5c30f00548850fcaea911f9ff546a348d0edffeb",
+    "authorDateIso": "2026-09-14T04:10:35+03:00",
+    "subject": "🚧 8QDRVN task: record implementation before verification"
+  },
+  {
+    "hash": "0b7dbf94961de8fb03621f4bda0f80959ff601d9",
+    "authorDateIso": "2026-09-14T04:04:16+03:00",
+    "subject": "🚧 8QDRVN task: record implementation before verification"
+  },
+  {
+    "hash": "8a7184b4a208d7aaaa6e4e9184edae03c7183c63",
+    "authorDateIso": "2026-09-14T04:04:10+03:00",
+    "subject": "🚧 8QDRVN task: apply external agent result"
+  },
+  {
+    "hash": "9792878934b2c4d068e98056cef3c2c691451a90",
+    "authorDateIso": "2026-09-14T03:18:00+03:00",
+    "subject": "🧩 RP315R task: refresh task artifacts after commit"
+  },
+  {
+    "hash": "ee6f7528abbb1c978dcc34f04c28c2df37b0b776",
+    "authorDateIso": "2026-09-14T03:16:47+03:00",
+    "subject": "🚧 RP315R task: pre-merge closure"
+  },
+  {
+    "hash": "c5c03b93c0b33c54d6894e79aff0e2e18a7412d2",
+    "authorDateIso": "2026-09-14T03:16:41+03:00",
+    "subject": "🚧 RP315R task: record external evaluator result"
+  },
+  {
+    "hash": "3ccb57ebc1a7a4ec145986678be4ce21b5d9ec87",
+    "authorDateIso": "2026-09-14T03:15:42+03:00",
+    "subject": "🚧 RP315R task: record external implementation evidence"
+  },
+  {
+    "hash": "484a4ba2b350ce2a2978dcf31b4db35ec341921c",
+    "authorDateIso": "2026-09-14T03:07:50+03:00",
+    "subject": "🚧 RP315R task: record implementation before verification"
+  },
+  {
+    "hash": "50ec22501e99bf0188163f2ea99174d15138cd5b",
+    "authorDateIso": "2026-09-14T03:07:42+03:00",
+    "subject": "🚧 RP315R task: apply external agent result"
+  },
+  {
+    "hash": "733b14697da5bc503631e59398d17dc7cc24606a",
+    "authorDateIso": "2026-09-14T03:04:26+03:00",
+    "subject": "🚧 RP315R task: record external evaluator result"
+  },
+  {
+    "hash": "3ea1e5636519ed78230af86caf654d2f3de52c01",
+    "authorDateIso": "2026-09-14T03:03:02+03:00",
+    "subject": "✅ RP315R task: record branch verification"
+  },
+  {
+    "hash": "0478881a65cafd97d14454140918f90baf26fa43",
+    "authorDateIso": "2026-09-14T02:45:19+03:00",
+    "subject": "🚧 RP315R task: record external implementation evidence"
+  },
+  {
+    "hash": "c437659caacb9d5f5d124bf3c9c572bcf39abcbb",
+    "authorDateIso": "2026-09-14T02:44:48+03:00",
+    "subject": "🚧 RP315R task: record implementation before verification"
+  },
+  {
+    "hash": "276e0aee4854067e587cf352066e99e780094b83",
+    "authorDateIso": "2026-09-14T02:44:42+03:00",
+    "subject": "🚧 RP315R task: apply external agent result"
+  },
+  {
+    "hash": "e567297b0f86d69bfb9a939764ed4aef90fcc1d3",
+    "authorDateIso": "2026-09-14T02:30:12+03:00",
+    "subject": "🚧 49XXT3 task: record external blocker"
+  },
+  {
+    "hash": "e1ed6c9adc3f669718422b6fea3ab2f4ab341102",
+    "authorDateIso": "2026-09-14T02:22:12+03:00",
+    "subject": "🚧 49XXT3 task: extend approved execution scope"
+  },
+  {
+    "hash": "8a3e72c6338b30cf889506eabddae0b4f66ae970",
+    "authorDateIso": "2026-09-14T02:21:42+03:00",
+    "subject": "🚧 49XXT3 task: record external blocker"
+  },
+  {
+    "hash": "1e0f3ea01052bd2226fe1fd31079eecafac8f116",
+    "authorDateIso": "2026-09-14T02:20:16+03:00",
+    "subject": "🚧 49XXT3 task: apply external agent result"
+  },
+  {
+    "hash": "eb795c7343ef1a8404341643fab0a7ec96d9e14c",
+    "authorDateIso": "2026-09-14T02:17:42+03:00",
+    "subject": "🚧 49XXT3 task: extend approved execution scope"
+  },
+  {
+    "hash": "62d73b5272ab6e858a2e0a857339f64ae1e75b12",
+    "authorDateIso": "2026-09-14T02:17:36+03:00",
+    "subject": "🚧 49XXT3 task: record external blocker"
+  },
+  {
+    "hash": "44926e8ef7b32e85a3d2cca9615c39eff3c99fab",
+    "authorDateIso": "2026-09-14T02:13:17+03:00",
+    "subject": "🚧 49XXT3 task: extend approved execution scope"
+  },
+  {
+    "hash": "6506a9e798247875228acc6f1a605414fdf94d42",
+    "authorDateIso": "2026-09-14T02:13:12+03:00",
+    "subject": "🚧 49XXT3 task: record external blocker"
+  },
+  {
     "hash": "2296ddc6ddba0d79f40e28868f45d2d191890217",
     "authorDateIso": "2026-09-14T02:07:24+03:00",
     "subject": "🚧 49XXT3 task: record external blocker"

@@ -2,7 +2,7 @@
 
 ## Source and scope
 
-The release plan fixes stable version 0.7.9, previous tag v0.7.8, and protected base commit `ecfccc5ad0230fc1876a319be0af5cdb530c339f`. The copied `release-plan-version.json` and `release-plan-changes.json` preserve the native planner inputs. Release notes preserve every planned non-merge change as a one-for-one detailed record and add user-facing summaries for the stable release.
+The release plan fixes stable version 0.7.9, previous tag v0.7.8, and protected base commit `a3ccf6f1927bf5ab3a9cf6612dd7326d68d1f270`. The copied `release-plan-version.json` and `release-plan-changes.json` preserve the native planner inputs. Release notes preserve every planned non-merge change as a one-for-one detailed record and add user-facing summaries for the stable release. The synchronized candidate head before preparation is `54a197116f195be3a5ad64bb42e922c0682cebbf`.
 
 The candidate changes only canonical version surfaces, exact internal package pins, generated package references, release headers, release notes, and release evidence. It does not add a semantic source-code change. The source-only `agentplane-roadmap-r2` checkout is not part of this task worktree or candidate.
 
@@ -14,10 +14,10 @@ The candidate changes only canonical version surfaces, exact internal package pi
 - `bun run docs:site:generate:check`: passed; generated package reference and `website/static/llms-full.txt` are fresh.
 - `bun run docs:social:generate`: passed and generated the complete canonical set of 234 documentation social images.
 - `bun run docs:social:check`: passed and verified 236 documentation social images.
-- `node scripts/check-release-notes.mjs --tag v0.7.9 --min-bullets 528`: passed.
+- `node scripts/check-release-notes.mjs --tag v0.7.9 --min-bullets 632`: passed.
 - `bun run release:check:registry -- --version 0.7.9`: passed; the stable version is available for every public npm package.
 - `bun run release:check`: passed on the complete candidate.
-- `bun run release:prepublish`: pending as the formal committed-candidate verification gate.
+- `bun run release:prepublish`: passed on the synchronized candidate.
 - `git diff --check` and exact scope review: passed on the complete candidate.
 
 ## Boundaries

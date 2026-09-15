@@ -7,6 +7,7 @@ import { describe } from "vitest";
 import { recordQualityReviewPass } from "@agentplane/testkit";
 import {
   approveRouteTaskPlan,
+  completeRouteWorkItem,
   recordRouteVerification,
   routeVerificationDetails,
 } from "./route-decision.testkit.js";
@@ -265,6 +266,7 @@ describe("runCli route decision verification freshness", () => {
       "--root",
       root,
     ]);
+    await completeRouteWorkItem(root, taskId);
     const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
     await mkdir(prDir, { recursive: true });
     await writeFile(
