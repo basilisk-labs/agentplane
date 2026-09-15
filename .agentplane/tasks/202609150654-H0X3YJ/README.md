@@ -1,10 +1,10 @@
 ---
 id: "202609150654-H0X3YJ"
 title: "Fix active-runtime install reuse on v0.6"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -23,10 +23,10 @@ plan_approval:
   updated_by: "USER"
   note: "Approved in the current conversation for the bounded guard repair and v0.6.30 release continuation."
 verification:
-  state: "needs_rework"
-  updated_at: "2026-09-15T07:15:58.142Z"
-  updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bunx vitest run --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+  state: "pending"
+  updated_at: "2026-09-15T20:05:47.419Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 1
 execution_contract:
   authority:
@@ -34,6 +34,7 @@ execution_contract:
     allowed_repository_effects:
       - "repository_write"
       - "source_code"
+      - "tests"
     forbidden_external_effects:
       - "network_read"
       - "external_write"
@@ -43,32 +44,32 @@ execution_contract:
       - "destructive_git"
     forbidden_repository_effects:
       - "documentation"
-      - "tests"
       - "public_api"
       - "schema"
       - "dependencies"
       - "ci"
       - "release_metadata"
       - "security_boundary"
-    writable_roots: []
+    writable_roots:
+      - "packages/agentplane/src"
   declaration:
     external_effects: []
     implementation_uncertainty: "bounded"
     preferred_mode: "branch_pr"
     rationale:
+      - "USER-approved blocked-result scope extension: roots=packages/agentplane/src; repository_effects=tests"
       - "legacy structured task fields mapped to the execution contract"
     repository_effects:
       - "repository_write"
       - "source_code"
+      - "tests"
     requirements_uncertainty: "bounded"
     reversibility: "reversible"
     schema_version: 2
-    scope_roots: []
+    scope_roots:
+      - "packages/agentplane/src"
   observed:
-    authority_violations:
-      - "repository_effect:tests"
-      - "verification:recorded-check-2:fail"
-      - "verification:verification-record:fail"
+    authority_violations: []
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -79,16 +80,7 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "fail"
-      -
-        id: "verification-record"
-        result: "fail"
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -99,11 +91,12 @@ execution_contract:
     requires_worktree: true
   schema_version: 1
   selected_mode: "branch_pr"
-  source: "legacy_compatibility"
+  source: "agent_declared"
   verification:
     contract:
       declared:
-        components: []
+        components:
+          - "packages/agentplane/src"
         evidence_requirements:
           - "hosted_integration"
           - "repository_effect:repository_write"
@@ -114,11 +107,12 @@ execution_contract:
         repository_effects:
           - "repository_write"
           - "source_code"
+          - "tests"
         risk:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:98daf9c7102a026581511bfa1bf1dc040bea575ad43efa5bfed2353d460ad9e4"
+      digest: "sha256:5fa31af598327a352ab2fe51b808b6ceccff0a6e4870d09b3e4de2271a377bf7"
       escalation_reasons: []
       execution_groups:
         - "core"
@@ -164,8 +158,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-2"
-      - "verification_recovery:verification-record"
 commit: null
 comments:
   -
@@ -183,6 +175,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The implementation remains complete. Formal recovery requires a corrected scope extension that includes the approved implementation and test root. Recommended action: Apply the exact USER-approved scope extension and issue a freshly scoped executor episode. Requested scope: roots=packages/agentplane/src; repository effects=tests; request digest=sha256:b2eae1a392340b123fd25c6db7fe2d613f430a9080566071c39d1e4eaaf70853. Agentplane receipt: external-agent-blocker/tr_fa80cb8b461c2e6d9c12db8e35e9e036/sha256:5ec8130d629288581d70bdb4b203dc1ada60f6224b1f1e3975a36ebe57642212/sha256:b2eae1a392340b123fd25c6db7fe2d613f430a9080566071c39d1e4eaaf70853."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: packages/agentplane/src; repository effects: tests."
 events:
   -
     type: "status"
@@ -297,6 +292,8 @@ sections:
   Findings: ""
 extensions:
   agentplane.scope_extension_request:
+    applied_at: "2026-09-15T20:05:47.419Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:5ec8130d629288581d70bdb4b203dc1ada60f6224b1f1e3975a36ebe57642212"
     kind: "task_scope_extension_request"
     request:
@@ -308,7 +305,7 @@ extensions:
         - "packages/agentplane/src"
     request_digest: "sha256:b2eae1a392340b123fd25c6db7fe2d613f430a9080566071c39d1e4eaaf70853"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_fa80cb8b461c2e6d9c12db8e35e9e036"
     work_item_id: null
   task_execution_context:
