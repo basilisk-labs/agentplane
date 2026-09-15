@@ -12,8 +12,8 @@ Created: 2026-09-15T06:55:01.035Z
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,9 +29,9 @@ Created: 2026-09-15T06:55:01.035Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../commands/branch/work-start.materialize.test.ts | 28 +++++++++++-
+ .../commands/branch/work-start.materialize.test.ts | 37 +++++++++++++++-
  .../src/commands/branch/work-start.materialize.ts  | 51 +++++++++++++++++++---
- 2 files changed, 71 insertions(+), 8 deletions(-)
+ 2 files changed, 80 insertions(+), 8 deletions(-)
 ```
 
 </details>

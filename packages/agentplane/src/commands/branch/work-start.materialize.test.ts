@@ -65,13 +65,22 @@ describe("reusable workspace install layout", () => {
 
   it("links an active-runtime install to its canonical target", async () => {
     const repoRoot = await temporaryRepo();
+    const installRoot = path.join(repoRoot, "install");
     const worktreePath = path.join(repoRoot, ".agentplane", "worktrees", "target");
+    await writeRootManifest(repoRoot);
+    await mkdir(path.join(installRoot, "eslint"), { recursive: true });
+    await writeFile(
+      path.join(installRoot, "eslint", "package.json"),
+      '{"name":"eslint"}\n',
+      "utf8",
+    );
+    await symlink(installRoot, path.join(repoRoot, "node_modules"), "dir");
     await mkdir(worktreePath, { recursive: true });
 
     await materializeRepoLocalInstallLayoutForWorktree({ repoRoot, worktreePath });
 
     await expect(readlink(path.join(worktreePath, "node_modules"))).resolves.toBe(
-      await realpath(path.join(process.cwd(), "node_modules")),
+      await realpath(installRoot),
     );
   });
 

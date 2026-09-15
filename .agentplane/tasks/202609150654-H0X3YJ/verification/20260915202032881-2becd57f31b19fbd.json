@@ -1,0 +1,109 @@
+{
+  "details": "Command: bun run ci:local:full\nResult: fail\nEvidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609150654-H0X3YJ declared verification",
+  "digest": "sha256:2becd57f31b19fbdd21bebf4e5fcd2b42f687ffb38e8079f6b7be5a548a75155",
+  "implementation_sha": "72149ad2afe79e37a30a3df9f1bd24f39f5684b1",
+  "input": {
+    "context": {
+      "digest": "sha256:51042e3153ba2f976eaeee5f631a314fee7f297b5dc048528d0078ced40ed4d8",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.mjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:a4a94ed2d7f1d6e37e3aece1b6373796d95efa5be501c8978e77d09dffa93886",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:39032842ed662faee972b7a8c320e0be96a93fec478514bfb751cfd3491fd298",
+      "digest": "sha256:8a14cc4469b5af719e42366a365f674e342912d1a301c34ec2ea44ffa4ff2fd8",
+      "references": [
+        {
+          "digest": "sha256:97bba12d9cc281c448072fa43bdd260aff1ad2dc4ca5c7d2c39cbbb77d9f3aaf",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "codex/release-v0.6.27-reclaim-fix",
+      "base_sha": "cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9",
+      "digest": "sha256:c4f7344f794a43efe4e664708a4b24ab15aca5b15c0ecd41466835d23a5f9cec",
+      "primary_task_id": "202609150654-H0X3YJ",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "auto",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609150654-H0X3YJ"
+      ]
+    },
+    "implementation": {
+      "base_sha": "cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9",
+      "digest": "sha256:4519bfe25b325ec1928827ceaca3388b1e54e2d7ee7e2d930c196b2045003590",
+      "strategy": "branch_diff",
+      "target_sha": "72149ad2afe79e37a30a3df9f1bd24f39f5684b1"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:5fa31af598327a352ab2fe51b808b6ceccff0a6e4870d09b3e4de2271a377bf7",
+    "verify_steps_digest": "sha256:aec20a37d124f7eaf8fdf0805aaa798d6fb454fbb66364aa82e138c9b1beb721"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check failed: bun run ci:local:full",
+  "recorded_at": "2026-09-15T20:20:32.881Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "1. Run `bun run ci:local:full`. Expected: the complete local regression suite passes.\n2. Run `bunx vitest --config vitest.workspace.ts run --project agentplane --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts`. Expected: cross-repository active-runtime reuse passes while dangling, task-worktree-owned, and external layouts remain rejected.\n3. Inspect the final diff. Expected: only the two approved implementation and test paths plus task evidence change; no release metadata or unrelated refactor is included.\n4. Verify hosted CI on the exact PR head. Expected: all required checks pass before merge to `codex/release-v0.6.27-reclaim-fix`.",
+  "scope_digest": "sha256:aec20a37d124f7eaf8fdf0805aaa798d6fb454fbb66364aa82e138c9b1beb721",
+  "task_id": "202609150654-H0X3YJ",
+  "verification_command": "agentplane verify 202609150654-H0X3YJ --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

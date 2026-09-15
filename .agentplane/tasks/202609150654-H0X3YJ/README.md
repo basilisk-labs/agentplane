@@ -4,7 +4,7 @@ title: "Fix active-runtime install reuse on v0.6"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +23,11 @@ plan_approval:
   updated_by: "USER"
   note: "Approved in the current conversation for the bounded guard repair and v0.6.30 release continuation."
 verification:
-  state: "pending"
-  updated_at: "2026-09-15T20:05:47.419Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
-  attempts: 1
+  state: "needs_rework"
+  updated_at: "2026-09-15T20:20:32.881Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bun run ci:local:full"
+  attempts: 2
 execution_contract:
   authority:
     allowed_external_effects: []
@@ -69,7 +69,9 @@ execution_contract:
     scope_roots:
       - "packages/agentplane/src"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-1:fail"
+      - "verification:verification-record:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -80,7 +82,13 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "fail"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -158,9 +166,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "72149ad2afe79e37a30a3df9f1bd24f39f5684b1"
-  message: "🚧 H0X3YJ task: apply external agent result"
+      - "verification_recovery:recorded-check-1"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -234,8 +242,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 72149ad2afe7. CLI accepted one state-bound external-agent semantic result."
     commit: "72149ad2afe79e37a30a3df9f1bd24f39f5684b1"
+  -
+    type: "verify"
+    at: "2026-09-15T20:20:32.881Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-15T20:18:37.716Z"
+doc_updated_at: "2026-09-15T20:20:33.606Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the reusable workspace install-layout guard so work start can reuse a valid active repo-local runtime from a separate repository root while still rejecting dangling, task-worktree-owned, and external dependency layouts. Add regression coverage for the cross-repository bootstrap path required by release:prepublish."
 sections:
@@ -298,6 +312,41 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-09-15T20:20:32.881Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 2
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:aec20a37d124f7eaf8fdf0805aaa798d6fb454fbb66364aa82e138c9b1beb721, input_digest=sha256:a4a94ed2d7f1d6e37e3aece1b6373796d95efa5be501c8978e77d09dffa93886
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609150654-H0X3YJ declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/v0-6-issues-base/.agentplane/worktrees/202609150654-H0X3YJ-fix-active-runtime-reuse-v0-6/.agentplane/tasks/202609150654-H0X3YJ/blueprint/resolved-snapshot.json
+    - old_digest: a07deb437a1312a6ee3031ad1aae4d775183554bbc915015d13bd085e2efb485
+    - current_digest: a07deb437a1312a6ee3031ad1aae4d775183554bbc915015d13bd085e2efb485
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609150654-H0X3YJ
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -321,8 +370,6 @@ extensions:
     status: "applied"
     transition_id: "tr_fa80cb8b461c2e6d9c12db8e35e9e036"
     work_item_id: null
-  implementation_commit:
-    hash: "72149ad2afe79e37a30a3df9f1bd24f39f5684b1"
   task_execution_context:
     base_ref: "codex/release-v0.6.27-reclaim-fix"
     base_sha: "cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9"
@@ -380,6 +427,41 @@ Scope: branch_pr task 202609150654-H0X3YJ declared verification
 Command: bunx vitest run --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
 Result: fail
 Evidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609150654-H0X3YJ declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/v0-6-issues-base/.agentplane/worktrees/202609150654-H0X3YJ-fix-active-runtime-reuse-v0-6/.agentplane/tasks/202609150654-H0X3YJ/blueprint/resolved-snapshot.json
+- old_digest: a07deb437a1312a6ee3031ad1aae4d775183554bbc915015d13bd085e2efb485
+- current_digest: a07deb437a1312a6ee3031ad1aae4d775183554bbc915015d13bd085e2efb485
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609150654-H0X3YJ
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-15T20:20:32.881Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 2
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:aec20a37d124f7eaf8fdf0805aaa798d6fb454fbb66364aa82e138c9b1beb721, input_digest=sha256:a4a94ed2d7f1d6e37e3aece1b6373796d95efa5be501c8978e77d09dffa93886
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-1
 Scope: branch_pr task 202609150654-H0X3YJ declared verification
 
 BlueprintSnapshotRef:
