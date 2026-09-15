@@ -4,7 +4,7 @@ title: "Fix active-runtime install reuse on v0.6"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -28,11 +28,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "7ac9524bb5af81a6adc418cd6143aac5f6704fe1"
+  message: "🚧 H0X3YJ task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 7ac9524bb5af. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -41,9 +46,17 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-15T07:13:13.670Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 7ac9524bb5af. CLI accepted one state-bound external-agent semantic result."
+    commit: "7ac9524bb5af81a6adc418cd6143aac5f6704fe1"
 doc_version: 3
-doc_updated_at: "2026-09-15T06:55:00.939Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-15T07:13:13.670Z"
+doc_updated_by: "SUPERVISOR"
 description: "Fix the reusable workspace install-layout guard so work start can reuse a valid active repo-local runtime from a separate repository root while still rejecting dangling, task-worktree-owned, and external dependency layouts. Add regression coverage for the cross-repository bootstrap path required by release:prepublish."
 sections:
   Summary: |-
@@ -71,6 +84,8 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "7ac9524bb5af81a6adc418cd6143aac5f6704fe1"
   workflow_route_baseline:
     start_head_sha: "cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9"
     version: 1
