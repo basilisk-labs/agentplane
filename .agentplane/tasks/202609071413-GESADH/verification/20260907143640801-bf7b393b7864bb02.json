@@ -1,0 +1,101 @@
+{
+  "details": "Command: GitHub Actions verify-contract, run 34132922617, job 101777228343\nResult: fail\nEvidence: oversized test baseline rejects evaluator-run.command.test.ts at 1001 lines and quality-review-target.test.ts at 1035 lines; budget count 12 exceeds 10.\nScope: issue #5892 test placement; no acceptance or implementation behavior change.",
+  "digest": "sha256:bf7b393b7864bb02887c5ca4308c25638a5ea8231972c27c74e3b05cb2abc070",
+  "implementation_sha": "265e3c4ac88eece4c99b3d203653b93e93849180",
+  "input": {
+    "context": {
+      "digest": "sha256:c59f15672b9a3b8d43130b18b274b5e3c58c5b4b87fe53a644febc8ff3e09663",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:b3bab0b7958fe848d9663d6f00f341249c296a41866f2506853c329b9b9b4449",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:6a638efa636fdd1f14a07f72b207205dc9093313ef0d8a7944eecbd42fde422f",
+      "digest": "sha256:c63938049355519c4a2163ec1f32515de232c16fcd806b356585ba310b0ed715",
+      "references": []
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "2639130b3181867f53fa37121783c67c9ef1d064",
+      "digest": "sha256:2b36dfeb6ca84eea7fbbaed4453ae168ed7ae3ccc1d3a7d6ab9ce6073521fef8",
+      "primary_task_id": "202609071413-GESADH",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609071413-GESADH"
+      ]
+    },
+    "implementation": {
+      "base_sha": "2639130b3181867f53fa37121783c67c9ef1d064",
+      "digest": "sha256:4e6759af991898e6023fb4580d7e3e391c8999d12d59f416f5d7df1be7586ac4",
+      "strategy": "branch_diff",
+      "target_sha": "265e3c4ac88eece4c99b3d203653b93e93849180"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:8ae39b6e221321b881c8f7fd565846d6f03d0921c3186227bbd328b3be171e7b",
+    "verify_steps_digest": "sha256:67c3bdd6046ae8c73d982ef9fef0b85e48aa3241791be3adb79ac959d570c323"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework required: GitHub verify-contract failed because new direct regressions pushed two existing test files over the oversized-test budget. Move the direct cases to the already approved direct-closeout suite and rerun the unchanged declared checks.",
+  "recorded_at": "2026-09-07T14:36:40.801Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "1. Run `bunx --no-install vitest run packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts --maxWorkers=1`. Expected: all tests pass, including direct first review and repeated review across A/B artifacts, rejection of pass without SHA, and normal finish with a clean tracked tree.\n2. Run `bun run typecheck`. Expected: TypeScript build passes.\n3. Review the scoped diff. Expected: branch_pr target selection remains unchanged and no unrelated implementation changes are present.",
+  "scope_digest": "sha256:67c3bdd6046ae8c73d982ef9fef0b85e48aa3241791be3adb79ac959d570c323",
+  "task_id": "202609071413-GESADH",
+  "verification_command": "agentplane verify 202609071413-GESADH --rework --by TESTER",
+  "verifier": "TESTER"
+}

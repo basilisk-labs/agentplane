@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609071413-GESADH-b9e83d102bb1e48f6d9be0cc",
+  "prepared_at": "2026-09-07T14:56:05.181Z",
+  "task": {
+    "id": "202609071413-GESADH",
+    "revision": 12,
+    "objective": "Repair evaluator review identity for interleaved task artifact commits in GitHub issue #5892\n\nUser approved testing and sequential fixes for the seven audited open GitHub issues, with issue comments and closure after verified resolution. Handle issue #5892 first. Reproduce a verified direct task A evaluated while HEAD contains only task B artifacts. Define a coherent reviewed SHA contract, prevent a recorded passing review with missing identity, preserve implementation versus review snapshot semantics, and cover evaluator to normal finish behavior without force or fabricated commits. Preserve unrelated work. Other issues remain follow-up work; do not expand this implementation to them.",
+    "acceptance_criteria": [
+      "- In scope: User approved testing and sequential fixes for the seven audited open GitHub issues, with issue comments and closure after verified resolution. Handle issue #5892 first. Reproduce a verified direct task A evaluated while HEAD contains only task B artifacts. Define a coherent reviewed SHA contract, prevent a recorded passing review with missing identity, preserve implementation versus review snapshot semantics, and cover evaluator to normal finish behavior without force or fabricated commits. Preserve unrelated work. Other issues remain follow-up work; do not expand this implementation to them.\n- Out of scope: unrelated refactors not required for \"Repair evaluator review identity for interleaved task artifact commits in GitHub issue #5892\".",
+      "Plan one bounded implementation WorkItem for direct review SHA identity in issue #5892. Existing target, evaluator, and finish suites pass 66 tests. Add the missing exact direct reproduction before implementation.",
+      "1. Run `bunx --no-install vitest run packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts --maxWorkers=1`. Expected: all tests pass, including direct first review and repeated review across A/B artifacts, rejection of pass without SHA, and normal finish with a clean tracked tree.\n2. Run `bun run typecheck`. Expected: TypeScript build passes.\n3. Review the scoped diff. Expected: branch_pr target selection remains unchanged and no unrelated implementation changes are present."
+    ]
+  },
+  "evaluated_sha": "1bb30cf8640ca2cf7aea27469b11f0ff9cd159b6",
+  "diff_base_sha": "2639130b3181867f53fa37121783c67c9ef1d064",
+  "blueprint_digest": "9944f672d9708d6b4936c7da58449fc763ffad14a26e683fb913ec0c355befdc",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609071413-GESADH/quality/20260907-145605181-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:7e4f216dd4f1eed92692c99247cfdbd7ac8984f28aa2879ad8ad80fd84fdc63a",
+    "prompt_path": ".agentplane/tasks/202609071413-GESADH/quality/objects/sha256/b9c1c5ea47739864080c1cd0f55400611067a56bc587d13114953c8b1be8a728.md",
+    "result_schema_path": ".agentplane/tasks/202609071413-GESADH/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609071413-GESADH/README.md",
+      "sha256": "sha256:f3845d99fc14f3f180f81ae5cc8ba5ba208ef66c812eec9436b9331823e40e6c",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609071413-GESADH/quality/objects/sha256/d12745bf4013744db0b5c0b2d0811071b0395197215b97da2689be883aece1a7.patch",
+      "sha256": "sha256:d12745bf4013744db0b5c0b2d0811071b0395197215b97da2689be883aece1a7",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609071413-GESADH/quality/objects/sha256/b1b668e835b2d064660871014c457dbbbcc82740ed8ef0485dadcb0c51cdc27e.json",
+      "sha256": "sha256:b1b668e835b2d064660871014c457dbbbcc82740ed8ef0485dadcb0c51cdc27e",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609071413-GESADH/verification/20260907145556024-96dac1a26ae064c8.json",
+      "sha256": "sha256:73e92f45a09baf876101c9448be7fefe7a4330eb9ba80101cb57d9639078b743",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609071413-GESADH/quality/objects/sha256/caa3b4ad34552dd39b20efa311d14d5f4ce0809655b99fa9b1c23675e5a5a998.json",
+      "sha256": "sha256:caa3b4ad34552dd39b20efa311d14d5f4ce0809655b99fa9b1c23675e5a5a998",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
