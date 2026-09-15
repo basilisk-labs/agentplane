@@ -4,7 +4,7 @@ title: "Publish and independently verify AgentPlane 0.7.9 from the exact qualifi
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 69
+revision: 71
 origin:
   system: "manual"
 depends_on:
@@ -154,13 +154,31 @@ execution_contract:
     authority_violations: []
     changed_components:
       - "docs"
+      - "packages/agentplane"
+      - "packages/spec"
+      - "scripts"
     changed_paths:
       - "docs/releases/v0.7.9-evidence/candidate-base-synchronization.json"
+      - "docs/releases/v0.7.9-evidence/preparation.md"
+      - "docs/releases/v0.7.9-evidence/release-plan-changes.json"
+      - "docs/releases/v0.7.9-evidence/release-plan-version.json"
+      - "docs/releases/v0.7.9.md"
+      - "packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-run.test.ts"
+      - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+      - "packages/spec/examples/acr.json"
+      - "scripts/baselines/clone-baseline.json"
+      - "scripts/baselines/v0.7-compatibility-candidate.json"
     external_effects: []
     repository_effects:
       - "documentation"
       - "release_metadata"
       - "repository_write"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -241,7 +259,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:fdad2479d33bf3893b6b0300d47d02c0f7023e1d3f735fd12e84e3e939aa1f73"
+      digest: "sha256:769899f5974fc0e7c900072902f3d49fa90457500cdd23d21b41ce0236ef9424"
       escalation_reasons:
         - "central_component:package.json"
         - "central_component:packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts"
@@ -251,11 +269,21 @@ execution_contract:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-run.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-run.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
         - "effect_dependencies"
         - "effect_public_api"
         - "effect_release_metadata"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
+        - "unknown_path:packages/spec/examples/acr.json"
+        - "unknown_path:scripts/baselines/clone-baseline.json"
+        - "unknown_path:scripts/baselines/v0.7-compatibility-candidate.json"
       execution_groups:
         - "docs-schema"
         - "core"
@@ -264,13 +292,31 @@ execution_contract:
       observed:
         changed_components:
           - "docs"
+          - "packages/agentplane"
+          - "packages/spec"
+          - "scripts"
         changed_files:
           - "docs/releases/v0.7.9-evidence/candidate-base-synchronization.json"
+          - "docs/releases/v0.7.9-evidence/preparation.md"
+          - "docs/releases/v0.7.9-evidence/release-plan-changes.json"
+          - "docs/releases/v0.7.9-evidence/release-plan-version.json"
+          - "docs/releases/v0.7.9.md"
+          - "packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-run.test.ts"
+          - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+          - "packages/spec/examples/acr.json"
+          - "scripts/baselines/clone-baseline.json"
+          - "scripts/baselines/v0.7-compatibility-candidate.json"
         external_effects: []
         repository_effects:
           - "documentation"
           - "release_metadata"
           - "repository_write"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -312,7 +358,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "227836c53ace3ccbfa6d7e828a7f79cd5fa62bdf"
+  message: "🚧 49XXT3 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -404,6 +452,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts; repository effects: tests."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 227836c53ace. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -555,8 +606,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The task-run fixture repair passed through chunk 54, but chunk 56 exposed one additional stale compatibility metric assertion. Recommended action: Extend the approved test-only scope to run-cli.critical.agent-efficiency-baseline.test.ts, update its exact CLI surface count to the value emitted by the passing canonical checker, run the focused test and lint checks, then rerun release:prepublish. Requested scope: roots=packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts; repository effects=tests; request digest=sha256:820ab0aabb99b4c4e68f2f1342ac73403a0e552856bd36e505c8c5beb48fb8f4. Agentplane receipt: external-agent-blocker/tr_f6af5edd463b74a987c1352cf9844924/sha256:4583973395ed337e35afd41e33d7a6e7b653733cb0c28b80b1b09b2ca550fa4f/sha256:820ab0aabb99b4c4e68f2f1342ac73403a0e552856bd36e505c8c5beb48fb8f4."
+  -
+    type: "status"
+    at: "2026-09-15T02:18:15.103Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 227836c53ace. CLI accepted one state-bound external-agent semantic result."
+    commit: "227836c53ace3ccbfa6d7e828a7f79cd5fa62bdf"
 doc_version: 3
-doc_updated_at: "2026-09-15T01:27:08.271Z"
+doc_updated_at: "2026-09-15T02:18:15.103Z"
 doc_updated_by: "SUPERVISOR"
 description: "Release operator task after all 0.7.9 stabilization dependencies are integrated. Prepare exact 0.7.9 version parity and release notes, run the complete release prepublish and incident gates, produce and integrate the release-ready candidate through repository policy, publish v0.7.9 from the exact qualified main SHA, and independently verify the canonical .agentplane/.release/publish/publish-result.json has success=true with an empty failures array for that SHA. Verify GitHub release assets and checksums, package registries, setup-agentplane tag and install, Homebrew and Scoop distribution, both agentplane and ap entrypoints, and default-branch state. Record any unavailable anonymous GHCR check separately. Complete the required post-publish evidence follow-up and next patch beta only through AgentPlane-managed lifecycle. Never commit agentplane-roadmap-r2. Stop only at a genuine provider or evidence boundary; the user explicitly authorized publish, merge, network, credentials, and external-system actions for v0.7.9."
 sections:
@@ -1179,7 +1238,7 @@ extensions:
       revision: 15
       schema_version: 1
       task_id: "202609121424-49XXT3"
-    event_cursor: 53
+    event_cursor: 55
     final_validation: null
     id: "202609121424-49XXT3"
     intent:
@@ -9116,9 +9175,9 @@ extensions:
         revision: 14
         schema_version: 1
         task_id: "202609121424-49XXT3"
-    revision: 69
+    revision: 71
     schema_version: 1
-    updated_at: "2026-09-15T01:27:08.271Z"
+    updated_at: "2026-09-15T02:18:15.103Z"
     work_items:
       prepare_candidate:
         attempt: 0
@@ -9692,6 +9751,54 @@ extensions:
         mutation_id: "compatibility:sha256:513db44108e85ed87cef39a830dfbd3d911d3bebe2881381d70cdee02d5bb181"
         next_revision: 19
         previous_revision: 18
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+      compatibility:sha256:5609801b4f53a1272093222c447c1a4320b63cdc038b744f743ebd4c2ec8a192:
+        aggregate_digest: "sha256:e802f9279c4b990b3aecd16c2f566bcc5bae9261601158374dd74078c77a27f6"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-15T02:18:15.103Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_0330c09fbfaf9d90087c18c0"
+          mutation_id: "compatibility:sha256:5609801b4f53a1272093222c447c1a4320b63cdc038b744f743ebd4c2ec8a192"
+          plan_digest: "sha256:1e6b519aa0d9b23e51baa81a959870a55949aff6eaef4e073584bcee60f19f53"
+          plan_revision: 15
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          task_revision: 70
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:5609801b4f53a1272093222c447c1a4320b63cdc038b744f743ebd4c2ec8a192"
+        next_revision: 71
+        previous_revision: 70
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+      compatibility:sha256:56c23ecfcf99c6ad9e61c417630450b442c1a0b4a2d429c9752b2035bfeaefc0:
+        aggregate_digest: "sha256:1c7f42ee05b7b6a5dfebc45323c850b3617a69f2f6704b49a23a438c87d2d298"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-15T02:18:15.103Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_93db1291829eb6fac2acb08b"
+          mutation_id: "compatibility:sha256:56c23ecfcf99c6ad9e61c417630450b442c1a0b4a2d429c9752b2035bfeaefc0"
+          plan_digest: "sha256:1e6b519aa0d9b23e51baa81a959870a55949aff6eaef4e073584bcee60f19f53"
+          plan_revision: 15
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          task_revision: 69
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:56c23ecfcf99c6ad9e61c417630450b442c1a0b4a2d429c9752b2035bfeaefc0"
+        next_revision: 70
+        previous_revision: 69
         schema_version: 1
         task_id: "202609121424-49XXT3"
       compatibility:sha256:61f02ff91468050eeda24345627a94091b29b5f7d3dcbe93ed180359a45b320a:
@@ -10830,7 +10937,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "529d2a93fa0636f31830be894a727866e788e23a"
+    hash: "227836c53ace3ccbfa6d7e828a7f79cd5fa62bdf"
   task_execution_context:
     base_ref: "main"
     base_sha: "f3c1991ddd92943775b6b4b4688009afc3d523bc"
