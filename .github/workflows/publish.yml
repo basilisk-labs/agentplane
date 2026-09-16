@@ -32,7 +32,9 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.event.inputs.sha || github.event.inputs.ref || github.ref }}
+  # Serialize all release candidates so the observed stable-channel head cannot
+  # change between the SemVer decision and publication.
+  group: ${{ github.workflow }}-stable-channel
   cancel-in-progress: false
 
 jobs:
@@ -52,6 +54,9 @@ jobs:
       release_ready_run_id: ${{ steps.source.outputs.release_ready_run_id }}
       release_ready_artifact_name: ${{ steps.source.outputs.release_ready_artifact_name }}
       release_ready_state: ${{ steps.source.outputs.release_ready_state }}
+      promote_stable: ${{ steps.promotion.outputs.promote_stable }}
+      npm_tag: ${{ steps.promotion.outputs.npm_tag }}
+      stable_channel_reason: ${{ steps.promotion.outputs.reason_code }}
     steps:
       - name: Resolve publish target
         id: ref
@@ -93,6 +98,40 @@ jobs:
               echo "stable=true"
             fi
           } >> "$GITHUB_OUTPUT"
+      - name: Plan stable channel promotion
+        id: promotion
+        if: steps.channel.outputs.stable == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .agentplane/.release/channel
+          VERSION="${{ steps.channel.outputs.version }}"
+          CORE_LATEST="$(npm view @agentplaneorg/core dist-tags.latest)"
+          RECIPES_LATEST="$(npm view @agentplaneorg/recipes dist-tags.latest)"
+          CLI_LATEST="$(npm view agentplane dist-tags.latest)"
+          gh api --paginate --slurp "repos/${{ github.repository }}/releases" \
+            > .agentplane/.release/channel/github-releases.json
+          node scripts/release/stable-channel-policy.mjs \
+            --candidate "$VERSION" \
+            --observed "npm:@agentplaneorg/core=$CORE_LATEST" \
+            --observed "npm:@agentplaneorg/recipes=$RECIPES_LATEST" \
+            --observed "npm:agentplane=$CLI_LATEST" \
+            --github-releases .agentplane/.release/channel/github-releases.json \
+            > .agentplane/.release/channel/plan.json
+          node -e '
+            const fs = require("node:fs");
+            const plan = JSON.parse(fs.readFileSync(".agentplane/.release/channel/plan.json", "utf8"));
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, [
+              "promote_stable=" + plan.promotesStableChannel,
+              "npm_tag=" + plan.npmTag,
+              "reason_code=" + plan.reasonCode,
+              "highest_observed=" + (plan.highestObservedStable ?? ""),
+              "",
+            ].join("\n"));
+            console.log("stable channel promotion=" + plan.promotesStableChannel + " reason=" + plan.reasonCode + " highest=" + (plan.highestObservedStable ?? "none"));
+          '
       - name: Resolve release-ready source
         id: source
         if: steps.channel.outputs.stable == 'true'
@@ -568,7 +607,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npm publish --provenance --access public --tag latest
+          npm publish --provenance --access public --tag "${{ needs.detect.outputs.npm_tag }}"
       - name: Publish @agentplaneorg/recipes
         id: publish_recipes
         if: needs.detect.outputs.recipes_published != 'true'
@@ -576,7 +615,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npm publish --provenance --access public --tag latest
+          npm publish --provenance --access public --tag "${{ needs.detect.outputs.npm_tag }}"
       - name: Publish agentplane
         id: publish_cli
         if: needs.detect.outputs.cli_published != 'true'
@@ -584,7 +623,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npm publish --provenance --access public --tag latest
+          npm publish --provenance --access public --tag "${{ needs.detect.outputs.npm_tag }}"
       - name: Post-publish npm smoke
         id: post_publish_smoke
         run: bun run release:smoke:published
@@ -597,26 +636,27 @@ jobs:
           set -euo pipefail
           node scripts/render-ghcr-image-metadata.mjs \
             --manifest .agentplane/.release/publish/distribution/release-distribution.json \
-            --out .agentplane/.release/publish/ghcr
+            --out .agentplane/.release/publish/ghcr \
+            --promote-stable "${{ needs.detect.outputs.promote_stable }}"
           set -a
           . .agentplane/.release/publish/ghcr/docker-build-args.env
           set +a
           echo "${GITHUB_TOKEN}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          mapfile -t GHCR_TAGS < .agentplane/.release/publish/ghcr/docker-tags.txt
+          TAG_ARGS=()
+          for tag in "${GHCR_TAGS[@]}"; do TAG_ARGS+=(--tag "$tag"); done
           docker build \
             -f packages/agentplane/Dockerfile \
             --build-arg "AGENTPLANE_VERSION=${AGENTPLANE_VERSION}" \
             --build-arg "AGENTPLANE_TARBALL_FILE=${AGENTPLANE_TARBALL_FILE}" \
             --build-arg "AGENTPLANE_TARBALL_SHA256_FILE=${AGENTPLANE_TARBALL_SHA256_FILE}" \
-            -t "${GHCR_VERSION_TAG}" \
-            -t "${GHCR_RELEASE_TAG}" \
-            -t "${GHCR_LATEST_TAG}" \
+            "${TAG_ARGS[@]}" \
             .
-          docker push "${GHCR_VERSION_TAG}"
-          docker push "${GHCR_RELEASE_TAG}"
-          docker push "${GHCR_LATEST_TAG}"
+          for tag in "${GHCR_TAGS[@]}"; do docker push "$tag"; done
           node scripts/render-ghcr-image-metadata.mjs \
             --manifest .agentplane/.release/publish/distribution/release-distribution.json \
             --out .agentplane/.release/publish/ghcr \
+            --promote-stable "${{ needs.detect.outputs.promote_stable }}" \
             --status published
       - name: Push release tag
         id: push_tag
@@ -633,6 +673,7 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ needs.detect.outputs.tag }}
+          make_latest: ${{ needs.detect.outputs.promote_stable }}
           body_path: docs/releases/${{ needs.detect.outputs.tag }}.md
           files: |
             .agentplane/.release/publish/distribution/agentplane-bun-v${{ needs.detect.outputs.version }}-darwin-arm64.tar.gz
@@ -648,6 +689,7 @@ jobs:
             .agentplane/.release/publish/distribution/release-distribution.json
             .agentplane/.release/publish/distribution/bun-assets.json
       - name: Publish Homebrew tap PR
+        if: needs.detect.outputs.promote_stable == 'true'
         continue-on-error: true
         shell: bash
         env:
@@ -668,6 +710,7 @@ jobs:
             --token-env HOMEBREW_TAP_TOKEN \
             --out .agentplane/.release/publish/homebrew/homebrew-publish-result.json
       - name: Publish Scoop bucket PR
+        if: needs.detect.outputs.promote_stable == 'true'
         continue-on-error: true
         shell: bash
         env:
@@ -688,6 +731,7 @@ jobs:
             --token-env SCOOP_BUCKET_TOKEN \
             --out .agentplane/.release/publish/scoop/scoop-publish-result.json
       - name: Publish setup-agentplane PR
+        if: needs.detect.outputs.promote_stable == 'true'
         continue-on-error: true
         shell: bash
         env:
@@ -756,6 +800,14 @@ jobs:
           AGENTPLANE_PUBLISH_JOB_STATUS: ${{ job.status }}
         run: |
           set -euo pipefail
+          EXTERNAL_RESULTS=()
+          if [ "${{ needs.detect.outputs.promote_stable }}" = "true" ]; then
+            EXTERNAL_RESULTS+=(
+              --external-result .agentplane/.release/publish/homebrew/homebrew-publish-result.json
+              --external-result .agentplane/.release/publish/scoop/scoop-publish-result.json
+              --external-result .agentplane/.release/publish/setup-agentplane/setup-agentplane-publish-result.json
+            )
+          fi
           node scripts/manifest.mjs publish-result \
             --out .agentplane/.release/publish/publish-result.json \
             --sha "${{ needs.detect.outputs.sha }}" \
@@ -775,9 +827,10 @@ jobs:
             --tag-exists "${{ steps.tag_state.outputs.tag_exists || 'false' }}" \
             --tag-outcome "${{ steps.push_tag.outcome }}" \
             --release-outcome "${{ steps.create_release.outcome }}" \
-            --external-result .agentplane/.release/publish/homebrew/homebrew-publish-result.json \
-            --external-result .agentplane/.release/publish/scoop/scoop-publish-result.json \
-            --external-result .agentplane/.release/publish/setup-agentplane/setup-agentplane-publish-result.json
+            --stable-channel-promotion "${{ needs.detect.outputs.promote_stable }}" \
+            --stable-channel-reason "${{ needs.detect.outputs.stable_channel_reason }}" \
+            --npm-tag "${{ needs.detect.outputs.npm_tag }}" \
+            "${EXTERNAL_RESULTS[@]}"
           node -e "const fs=require('node:fs'); const payload=JSON.parse(fs.readFileSync('.agentplane/.release/publish/publish-result.json','utf8')); console.log(payload.message);"
       - name: Upload publish-result artifact
         if: always()
