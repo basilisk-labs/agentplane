@@ -140,6 +140,9 @@ function publishResultUsage() {
     "  --tag-exists <bool>         Whether the release tag already existed on origin",
     "  --tag-outcome <outcome>     Step outcome for pushing the release tag",
     "  --release-outcome <outcome> Step outcome for GitHub release creation",
+    "  --stable-channel-promotion <bool> Whether mutable stable aliases were promoted",
+    "  --stable-channel-reason <code> Stable channel promotion decision reason",
+    "  --npm-tag <tag>             npm dist-tag used for exact package publication",
     "  --json                      Emit JSON to stdout",
     "  --help, -h                  Show this help text",
   ].join("\n");
@@ -186,6 +189,9 @@ function parsePublishResultArgs(argv) {
     tagExists: false,
     tagOutcome: "unknown",
     releaseOutcome: "unknown",
+    stableChannelPromotion: true,
+    stableChannelReason: "legacy_unrecorded",
+    npmTag: "latest",
     json: false,
     help: false,
   };
@@ -285,6 +291,21 @@ function parsePublishResultArgs(argv) {
     }
     if (arg === "--release-outcome") {
       out.releaseOutcome = next ?? out.releaseOutcome;
+      index += 1;
+      continue;
+    }
+    if (arg === "--stable-channel-promotion") {
+      out.stableChannelPromotion = parseBoolean(next, "stable-channel-promotion");
+      index += 1;
+      continue;
+    }
+    if (arg === "--stable-channel-reason") {
+      out.stableChannelReason = next ?? out.stableChannelReason;
+      index += 1;
+      continue;
+    }
+    if (arg === "--npm-tag") {
+      out.npmTag = next ?? out.npmTag;
       index += 1;
       continue;
     }
@@ -415,6 +436,15 @@ function buildPublishResultManifest(args) {
       core,
       recipes,
       cli,
+    },
+    channels: {
+      stable: {
+        promoted: args.stableChannelPromotion,
+        reasonCode: assertNonEmpty(args.stableChannelReason, "stable channel reason"),
+      },
+      npm: {
+        tag: assertNonEmpty(args.npmTag, "npm tag"),
+      },
     },
     checks: {
       npmSmoke: {
