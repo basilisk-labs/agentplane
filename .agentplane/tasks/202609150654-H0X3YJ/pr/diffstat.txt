@@ -1,3 +1,18 @@
- .../commands/branch/work-start.materialize.test.ts | 37 +++++++++++++++-
- .../src/commands/branch/work-start.materialize.ts  | 51 +++++++++++++++++++---
- 2 files changed, 80 insertions(+), 8 deletions(-)
+ .agentplane/tasks/202609150654-H0X3YJ/README.md    | 747 +++++++++++++++++++++
+ .../blueprint/resolved-snapshot.json               | 578 ++++++++++++++++
+ .../tasks/202609150654-H0X3YJ/pr/diffstat.txt      |   3 +
+ .../tasks/202609150654-H0X3YJ/pr/github-body.md    |  40 ++
+ .../tasks/202609150654-H0X3YJ/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202609150654-H0X3YJ/pr/meta.json |  32 +
+ .agentplane/tasks/202609150654-H0X3YJ/pr/review.md |  38 ++
+ .../evaluator-opinion.md                           |  18 +
+ .../evaluator-prompt.md                            |  74 ++
+ .../quality-report.json                            |  20 +
+ .../supervision/declared-checks.json               |  49 ++
+ .../supervision/implementation-evidence.json       |  89 +++
+ .../20260915071558142-4a32aeba4d53ef9b.json        | 116 ++++
+ .../20260915202032881-2becd57f31b19fbd.json        | 109 +++
+ .../20260915203234639-07fdfd9c0cdff3fb.json        | 116 ++++
+ .../commands/branch/work-start.materialize.test.ts |  37 +-
+ .../src/commands/branch/work-start.materialize.ts  |  51 +-
+ 17 files changed, 2110 insertions(+), 8 deletions(-)
