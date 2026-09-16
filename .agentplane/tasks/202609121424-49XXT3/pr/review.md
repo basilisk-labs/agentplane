@@ -6,7 +6,7 @@ Created: 2026-09-13T22:57:11.966Z
 
 - Task: `202609121424-49XXT3`
 - Title: Publish and independently verify AgentPlane 0.7.9 from the exact qualified main SHA
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609121424-49XXT3/publish-and-independently-verify-agentplane-0-7`
 - Canonical task record: `.agentplane/tasks/202609121424-49XXT3/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-09-13T22:57:11.966Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-13T22:57:11.966Z
+- Updated: 2026-09-16T20:22:38.777Z
 - Branch: task/202609121424-49XXT3/publish-and-independently-verify-agentplane-0-7
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

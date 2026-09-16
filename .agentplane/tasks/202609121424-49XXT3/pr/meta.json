@@ -5,6 +5,15 @@
   "diffstat_sha256": "sha256:95153a2c473ca3e42d9f65a266e64876b493bdd1a8702d53be08f154ef1dc0d2",
   "last_verified_at": "2026-09-16T20:19:06.057Z",
   "last_verified_diffstat_sha256": "sha256:95153a2c473ca3e42d9f65a266e64876b493bdd1a8702d53be08f154ef1dc0d2",
+  "pr_number": 5960,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5960",
+  "pre_merge_closure": {
+    "basis_commit": "76f4ca2eaf6b6d5955496679f2339864cff3a28b",
+    "branch": "task/202609121424-49XXT3/publish-and-independently-verify-agentplane-0-7",
+    "pr_number": 5960,
+    "recorded_at": "2026-09-16T20:34:05.944Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -14,8 +23,9 @@
     "target_project": "basilisk-labs/agentplane"
   },
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202609121424-49XXT3",
-  "updated_at": "2026-09-13T22:57:11.966Z",
+  "updated_at": "2026-09-16T20:22:38.777Z",
   "verify": {
     "status": "pass"
   }

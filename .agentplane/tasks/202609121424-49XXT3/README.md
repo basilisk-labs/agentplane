@@ -1,10 +1,11 @@
 ---
 id: "202609121424-49XXT3"
 title: "Publish and independently verify AgentPlane 0.7.9 from the exact qualified main SHA"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 95
+revision: 98
 origin:
   system: "manual"
 depends_on:
@@ -26,15 +27,57 @@ verify:
   - "bun run release:prepublish"
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-16T19:28:59.343Z"
-  updated_by: "HOST:codex-desktop:USER"
-  note: "host_user_decision=sha256:c8bf070aafffd47b54b60e09eecd6ba4d2bd3e3dfd6c9a0f916cc118a72cf7d9"
+  updated_at: "2026-09-16T20:33:46.579Z"
+  updated_by: "USER"
+  note: "Refresh the execution grant under the user's explicit authorization for all operations necessary to complete release 0.7.9."
 verification:
   state: "ok"
   updated_at: "2026-09-16T20:19:06.057Z"
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-16T20:30:27.531Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "026c97813bc53dabe636fd957e4e6961278b45a3"
+  blueprint_digest: "b868d5c39ecfa4e9a069b687877b066b738e575f2bfcceb04210173b98273663"
+  evidence_refs:
+    - ".agentplane/tasks/202609121424-49XXT3/quality/20260916-203026099-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609121424-49XXT3/quality/20260916-203026099-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609121424-49XXT3/quality/objects/sha256/cd79972a67ce308407026ddaf3ce3453a8c5e7c1ea9a24f061ee68aa5bc190ed.md"
+    - ".agentplane/tasks/202609121424-49XXT3/quality/20260916-203026099-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609121424-49XXT3/quality/20260916-203026099-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609121424-49XXT3/quality/20260916-203026099-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609121424-49XXT3/README.md"
+    - ".agentplane/tasks/202609121424-49XXT3/quality/objects/sha256/b8d0862a586d68e56a22420d42d97896bb9568629e8a3ebee4f144236e631268.patch"
+    - ".agentplane/tasks/202609121424-49XXT3/quality/objects/sha256/0b92cc0adf31148aef3481d01d6f954dadcb3f82372a0989e65fe3c780a92ca0.json"
+    - ".agentplane/tasks/202609121424-49XXT3/verification/20260916201906057-de98762f65da07cc.json"
+    - ".agentplane/tasks/202609121424-49XXT3/quality/objects/sha256/ae9a85c6edc7a94cea7dbb713864d6087dd669b4dc65703052c08129089b90ad.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.release.md"
+  findings:
+    - "No actionable defect was found: version surfaces and release evidence agree, agentplane-roadmap-r2 is absent, and the required local release gates passed for the evaluated SHA."
+token_usage:
+  agent_runs: 50
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:c226c40da8cbe91cf78dc5f111e69af485ac8f10f5a0a37a41484ec31514fc6e"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-09-16T20:34:05.784Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -2092,8 +2135,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "026c97813bc53dabe636fd957e4e6961278b45a3"
-  message: "🚧 49XXT3 task: apply external agent result"
+  hash: "76f4ca2eaf6b6d5955496679f2339864cff3a28b"
+  message: "🚧 49XXT3 task: record external implementation evidence"
 comments:
   -
     author: "CODER"
@@ -2209,6 +2252,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 026c97813bc5. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -2426,9 +2472,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-16T20:34:05.784Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "76f4ca2eaf6b6d5955496679f2339864cff3a28b"
 doc_version: 3
-doc_updated_at: "2026-09-16T20:19:08.343Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-16T20:34:05.784Z"
+doc_updated_by: "CODER"
 description: "Release operator task after all 0.7.9 stabilization dependencies are integrated. Prepare exact 0.7.9 version parity and release notes, run the complete release prepublish and incident gates, produce and integrate the release-ready candidate through repository policy, publish v0.7.9 from the exact qualified main SHA, and independently verify the canonical .agentplane/.release/publish/publish-result.json has success=true with an empty failures array for that SHA. Verify GitHub release assets and checksums, package registries, setup-agentplane tag and install, Homebrew and Scoop distribution, both agentplane and ap entrypoints, and default-branch state. Record any unavailable anonymous GHCR check separately. Complete the required post-publish evidence follow-up and next patch beta only through AgentPlane-managed lifecycle. Never commit agentplane-roadmap-r2. Stop only at a genuine provider or evidence boundary; the user explicitly authorized publish, merge, network, credentials, and external-system actions for v0.7.9."
 sections:
   Summary: |-
@@ -2585,9 +2639,9 @@ sections:
   Findings: ""
 extensions:
   agentplane.execution_grant:
-    actor: "HOST:codex-desktop:USER"
-    approval_evidence_digest: "sha256:c8bf070aafffd47b54b60e09eecd6ba4d2bd3e3dfd6c9a0f916cc118a72cf7d9"
-    approval_kind: "host_user_decision"
+    actor: "USER"
+    approval_evidence_digest: null
+    approval_kind: "manual_operator"
     capabilities:
       - "provider.merge"
       - "provider.pr"
@@ -2596,13 +2650,13 @@ extensions:
       - "repository.write"
       - "task.lifecycle"
       - "task.scope.extend"
-    completion_contract_digest: "sha256:1b67289116a77dd85bf0b32205a0a2e899ba8b72500c294b0158c277cdfb1527"
-    digest: "sha256:93ebca68a93c927dbc8287d97e7cce5f2554211895e90dd6c31d419d7a880b60"
-    grant_id: "5d3dc2f0-d688-422f-a64d-262ecd74a26e"
-    issued_at: "2026-09-16T19:28:59.343Z"
+    completion_contract_digest: "sha256:8af048e93d9e9e8707775c78fa82748b1e3cf1e5acb455d648e73d475defe207"
+    digest: "sha256:b5c0e51356efdb9b8bfd8e5302e273df3df158224637cbdad85f8bbeac67bf50"
+    grant_id: "cc9adca9-dc46-433c-b04d-4b4ac2668053"
+    issued_at: "2026-09-16T20:33:46.579Z"
     kind: "agentplane.execution_grant"
     plan_digest: "sha256:36dad33ad32e10b697fb1b044e5abf042405109a77a9e731690c39eff1ef7ffc"
-    plan_revision: 91
+    plan_revision: 96
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
     scope_digest: "sha256:e3f3826d5073ce6e2dd21c232105decf7d3503e0fbfc821a4d02ebcbff91adcf"
@@ -2908,8 +2962,57 @@ extensions:
       revision: 18
       schema_version: 1
       task_id: "202609121424-49XXT3"
-    event_cursor: 70
-    final_validation: null
+    event_cursor: 72
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609121424-49XXT3"
+            - "git:026c97813bc53dabe636fd957e4e6961278b45a3"
+          check_id: "candidate_base_identity"
+          command_identity: "task.verify"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-16T20:19:06.057Z"
+          repository_snapshot_digest: "sha256:c721bed7bdbec455bc24f36dd59cdddedd9bae00effd56abc6bf53f7706a5dbc"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-49XXT3"
+            - "git:026c97813bc53dabe636fd957e4e6961278b45a3"
+          check_id: "release_check"
+          command_identity: "bun run release:check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-16T20:19:06.057Z"
+          repository_snapshot_digest: "sha256:c721bed7bdbec455bc24f36dd59cdddedd9bae00effd56abc6bf53f7706a5dbc"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-49XXT3"
+            - "git:026c97813bc53dabe636fd957e4e6961278b45a3"
+          check_id: "release_prepublish"
+          command_identity: "bun run release:prepublish"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-16T20:19:06.057Z"
+          repository_snapshot_digest: "sha256:c721bed7bdbec455bc24f36dd59cdddedd9bae00effd56abc6bf53f7706a5dbc"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121424-49XXT3"
+            - "git:026c97813bc53dabe636fd957e4e6961278b45a3"
+          check_id: "scope_hygiene"
+          command_identity: "task.verify"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-16T20:19:06.057Z"
+          repository_snapshot_digest: "sha256:c721bed7bdbec455bc24f36dd59cdddedd9bae00effd56abc6bf53f7706a5dbc"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609121424-49XXT3"
     intent:
       acceptance_criteria:
@@ -2930,7 +3033,7 @@ extensions:
 
         Release operator task after all 0.7.9 stabilization dependencies are integrated. Prepare exact 0.7.9 version parity and release notes, run the complete release prepublish and incident gates, produce and integrate the release-ready candidate through repository policy, publish v0.7.9 from the exact qualified main SHA, and independently verify the canonical .agentplane/.release/publish/publish-result.json has success=true with an empty failures array for that SHA. Verify GitHub release assets and checksums, package registries, setup-agentplane tag and install, Homebrew and Scoop distribution, both agentplane and ap entrypoints, and default-branch state. Record any unavailable anonymous GHCR check separately. Complete the required post-publish evidence follow-up and next patch beta only through AgentPlane-managed lifecycle. Never commit agentplane-roadmap-r2. Stop only at a genuine provider or evidence boundary; the user explicitly authorized publish, merge, network, credentials, and external-system actions for v0.7.9.
       task_id: "202609121424-49XXT3"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -12357,9 +12460,9 @@ extensions:
         revision: 17
         schema_version: 1
         task_id: "202609121424-49XXT3"
-    revision: 95
+    revision: 98
     schema_version: 1
-    updated_at: "2026-09-16T20:19:08.330Z"
+    updated_at: "2026-09-16T20:34:05.784Z"
     work_items:
       prepare_candidate:
         attempt: 2
@@ -13637,6 +13740,30 @@ extensions:
         previous_revision: 73
         schema_version: 1
         task_id: "202609121424-49XXT3"
+      compatibility:sha256:8bbe43264b510f130a6265df7632ff85090886615a5e80619357d2b6d5d493a4:
+        aggregate_digest: "sha256:23da957dbfe18d3fdffc063a23cd6a8dd2e3a6218903e667f2946323b069ce8f"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-16T20:19:08.343Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_99b63ed4b7e585b46c90fafa"
+          mutation_id: "compatibility:sha256:8bbe43264b510f130a6265df7632ff85090886615a5e80619357d2b6d5d493a4"
+          plan_digest: "sha256:8920e7832b179b3e49ac6e0ac4d450744a7638de7ead87f7d48550eeefc1858b"
+          plan_revision: 18
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          task_revision: 96
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:8bbe43264b510f130a6265df7632ff85090886615a5e80619357d2b6d5d493a4"
+        next_revision: 97
+        previous_revision: 96
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
       compatibility:sha256:8ced4650bc3274c2b82df701dc9d18d9579cca94b3fd7e101e9d67b4f350e822:
         aggregate_digest: "sha256:8e04a4713f1bf11a7a49ba7b34f4d21327916c5fc6cbde2532342f72edeb437b"
         event:
@@ -14237,6 +14364,30 @@ extensions:
         previous_revision: 17
         schema_version: 1
         task_id: "202609121424-49XXT3"
+      compatibility:sha256:efb34c0fc94b9986bd01e7908cdfd0061d8d08655c8f1cf96d158f53eb7e6e6a:
+        aggregate_digest: "sha256:4628034e1999a0af8ece2e0e99007972b9f178cb55ed5029158bc92e2dc56d71"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-16T20:19:08.343Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_efb9b19e189b63aa5b6129d9"
+          mutation_id: "compatibility:sha256:efb34c0fc94b9986bd01e7908cdfd0061d8d08655c8f1cf96d158f53eb7e6e6a"
+          plan_digest: "sha256:8920e7832b179b3e49ac6e0ac4d450744a7638de7ead87f7d48550eeefc1858b"
+          plan_revision: 18
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          task_revision: 95
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:efb34c0fc94b9986bd01e7908cdfd0061d8d08655c8f1cf96d158f53eb7e6e6a"
+        next_revision: 96
+        previous_revision: 95
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
       compatibility:sha256:f03af7a31da8d893b1460a148258a988f9ae521e8ff765e8b4577c70f51d13c4:
         aggregate_digest: "sha256:b3ddac01873d010923232adcfef354bba7c2e79d5c743e61d197916f4e46bb52"
         event:
@@ -14525,6 +14676,31 @@ extensions:
         previous_revision: 53
         schema_version: 1
         task_id: "202609121424-49XXT3"
+      legacy-finish:202609121424-49XXT3:2026-09-16T20:19:06.057Z:026c97813bc53dabe636fd957e4e6961278b45a3:
+        aggregate_digest: "sha256:aa1fa5f1f93e46e9cdfcc8bd24b1ac87d06232430ea79d4aafb5d33f91e56d35"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-16T20:34:05.784Z"
+          cause_refs:
+            - "task-verification:202609121424-49XXT3"
+            - "git:026c97813bc53dabe636fd957e4e6961278b45a3"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_0a565bee0cc00c0ce7bebb06"
+          mutation_id: "legacy-finish:202609121424-49XXT3:2026-09-16T20:19:06.057Z:026c97813bc53dabe636fd957e4e6961278b45a3"
+          plan_digest: "sha256:8920e7832b179b3e49ac6e0ac4d450744a7638de7ead87f7d48550eeefc1858b"
+          plan_revision: 18
+          repository_fingerprint: "sha256:c721bed7bdbec455bc24f36dd59cdddedd9bae00effd56abc6bf53f7706a5dbc"
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          task_revision: 97
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609121424-49XXT3:2026-09-16T20:19:06.057Z:026c97813bc53dabe636fd957e4e6961278b45a3"
+        next_revision: 98
+        previous_revision: 97
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
       plan-refinement:work-order-202609121424-49XXT3-executor-0abaa4e4bfeb153cdcdd51a6:
         aggregate_digest: "sha256:2099ae2049cd5115b8745c9bdb56d889e1592e0314283a76101c9d6e950e82b2"
         event:
@@ -14800,6 +14976,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "026c97813bc53dabe636fd957e4e6961278b45a3"
+    message: "🚧 49XXT3 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "f3c1991ddd92943775b6b4b4688009afc3d523bc"
@@ -14976,3 +15153,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/50` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:c226c40da8cbe91cf78dc5f111e69af485ac8f10f5a0a37a41484ec31514fc6e`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-09-16T20:34:05.784Z`

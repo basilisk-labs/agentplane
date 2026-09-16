@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "No actionable defect was found: version surfaces and release evidence agree, agentplane-roadmap-r2 is absent, and the required local release gates passed for the evaluated SHA.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609121424-49XXT3/quality/objects/sha256/b8d0862a586d68e56a22420d42d97896bb9568629e8a3ebee4f144236e631268.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
