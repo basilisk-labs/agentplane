@@ -1,0 +1,24 @@
+{
+  "base": "codex/release-v0.6.27-reclaim-fix",
+  "branch": "task/202609170039-R630/fix-v0-6-30-distribution-recovery-checkout",
+  "created_at": "2026-09-16T21:41:01.215Z",
+  "diffstat_sha256": "sha256:36abed06f259d4647993f8fe0fa3576c087f1e0facb2b47a77facbfbb7e87320",
+  "last_verified_at": "2026-09-16T21:43:32.268Z",
+  "last_verified_diffstat_sha256": "sha256:36abed06f259d4647993f8fe0fa3576c087f1e0facb2b47a77facbfbb7e87320",
+  "pr_number": 5963,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5963",
+  "pre_merge_closure": {
+    "basis_commit": "70d9383d33c64d25c151fd2c58fb4cf89828253d",
+    "branch": "task/202609170039-R630/fix-v0-6-30-distribution-recovery-checkout",
+    "pr_number": 5963,
+    "recorded_at": "2026-09-16T21:44:01.871Z",
+    "state": "closed_before_merge"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202609170039-R630",
+  "updated_at": "2026-09-16T21:41:04.298Z",
+  "verify": {
+    "status": "pass"
+  }
+}

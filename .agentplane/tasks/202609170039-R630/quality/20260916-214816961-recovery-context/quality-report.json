@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202609170039-R630",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-16T21:48:16.961Z",
+  "verdict": "pass",
+  "summary": "Revalidated the unchanged one-line recovery fix after applying the hook-prescribed deploy-fix commit metadata.",
+  "evaluated_sha": "2aae72e366bc9f8a901410ce539d91839ee9cbd9",
+  "blueprint_digest": "efc492849641c35e80e36c18881cef6dc5f65e0080c1f613e972b91781978226",
+  "findings": [
+    "Pass: recursive optional submodule checkout is disabled; exact SHA, tag, validation, GHCR, GitHub Release, and external distribution logic are unchanged."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609170039-R630/README.md",
+    ".github/workflows/publish-distribution-module.yml sets submodules false",
+    "bun run workflows:lint passed before the metadata-only rewrite",
+    "GitHub Actions run 35153428113 is the reproduced checkout failure"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Hosted recovery run remains the end-to-end validation."
+  ]
+}
