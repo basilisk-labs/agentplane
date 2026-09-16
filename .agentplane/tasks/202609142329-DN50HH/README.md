@@ -4,7 +4,7 @@ title: "Release AgentPlane 0.6.30 from the 0.6 maintenance branch"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ verify:
   - "bun run release:prepublish"
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-14T23:29:55.648Z"
-  updated_by: "ORCHESTRATOR"
-  note: null
+  updated_at: "2026-09-16T19:46:07.399Z"
+  updated_by: "USER"
+  note: "Approved exact-base refinement to 9001433ac67aa2973b6e3323de041216864eed61 and all actions necessary for the correct 0.6.30 release."
 verification:
   state: "pending"
   updated_at: null
@@ -82,23 +82,20 @@ events:
     to: "DOING"
     note: "Resume: PR #5959 merged the corrected runtime guard into codex/release-v0.6.27-reclaim-fix at exact base 9001433ac67aa2973b6e3323de041216864eed61. | details: Rebase the prepared 0.6.30 candidate onto that base, rerun all release gates, merge only to the maintenance branch, and publish from the exact merged SHA."
 doc_version: 3
-doc_updated_at: "2026-09-16T19:42:54.571Z"
+doc_updated_at: "2026-09-16T19:46:01.654Z"
 doc_updated_by: "USER"
 description: "Prepare, qualify, merge, publish, and verify AgentPlane 0.6.30 from exact maintenance SHA cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9. Do not modify main. Include the safe reusable node_modules layout guard merged by PR #5958."
 sections:
-  Summary: |-
-    Release AgentPlane 0.6.30 from the 0.6 maintenance branch
-
-    Prepare, qualify, merge, publish, and verify AgentPlane 0.6.30 from exact maintenance SHA cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9. Do not modify main. Include the safe reusable node_modules layout guard merged by PR #5958.
+  Summary: "Release AgentPlane 0.6.30 from exact maintenance base 9001433ac67aa2973b6e3323de041216864eed61. Do not modify main. Include the install-layout guard from PR #5958 and its active-runtime correction from PR #5959."
   Scope: |-
-    - In scope: Prepare, qualify, merge, publish, and verify AgentPlane 0.6.30 from exact maintenance SHA cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9. Do not modify main. Include the safe reusable node_modules layout guard merged by PR #5958.
-    - Out of scope: unrelated refactors not required for "Release AgentPlane 0.6.30 from the 0.6 maintenance branch".
-  Plan: "Release plan: version=0.6.30, tag=v0.6.30, base=codex/release-v0.6.27-reclaim-fix at cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9. Generate the patch plan and release notes. Bump all synchronized package versions. Run the full prepublish and local regression gates. Create and publish a branch_pr release candidate only to the maintenance branch. Require hosted CI and evaluator approval on the final candidate head. Merge the PR without touching main. Dispatch Publish to npm with the exact provider merge SHA. Verify npm packages, agentplane and ap install smoke, v0.6.30 tag, GitHub Release assets, GHCR, and the v0.6 moving tag. Preserve explicit evidence for any credential-gated optional channels."
+    - In scope: rebase and qualify the prepared 0.6.30 candidate on exact maintenance SHA 9001433ac67aa2973b6e3323de041216864eed61, merge only to codex/release-v0.6.27-reclaim-fix, publish from the exact merged SHA, and verify all required channels.
+    - Out of scope: main and unrelated refactors.
+  Plan: "Release plan: version=0.6.30, tag=v0.6.30, base=codex/release-v0.6.27-reclaim-fix at 9001433ac67aa2973b6e3323de041216864eed61. Rebase the prepared candidate onto the exact maintenance base that contains PR #5958 and corrective PR #5959. Regenerate the patch plan and confirm release notes and synchronized package versions. Run release:prepublish and ci:local:full on the final candidate head. Publish a branch_pr release candidate only to codex/release-v0.6.27-reclaim-fix. Require evaluator approval and stable hosted CI. Merge without touching main. Dispatch Publish to npm with the exact merged SHA. Verify npm packages, agentplane and ap install smoke, v0.6.30 tag, GitHub Release assets, GHCR, and the v0.6 moving tag. Report optional credential-gated channels explicitly."
   Verify Steps: |-
-    1. Run `agentplane release plan --patch`. Expected: the plan freezes version 0.6.30 and tag v0.6.30 from maintenance base cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9.
-    2. Run the release candidate command and its required prepublish gate. Expected: synchronized package versions, release notes, parity checks, distribution generation, and the full release gate pass on the candidate commit.
+    1. Run `agentplane release plan --patch`. Expected: the plan freezes version 0.6.30 and tag v0.6.30 from maintenance base 9001433ac67aa2973b6e3323de041216864eed61.
+    2. Run `bun run release:prepublish`. Expected: synchronized package versions, release notes, parity checks, distribution generation, and the full release gate pass on the final candidate head.
     3. Run `bun run ci:local:full`. Expected: the complete local regression suite passes on the final candidate head.
-    4. Inspect the final diff and repository status. Expected: only 0.6.30 release metadata, notes, task evidence, and the already-merged guard are present; main is unchanged.
+    4. Inspect the final diff and repository status. Expected: only 0.6.30 release metadata, notes, task evidence, and the already-merged guard corrections are present; main is unchanged.
     5. Verify the final release-candidate PR. Expected: all hosted checks pass on the exact final head and the PR targets only codex/release-v0.6.27-reclaim-fix.
     6. After provider merge, dispatch Publish to npm with the exact merged SHA. Expected: npm packages, CLI install smoke for agentplane and ap, v0.6.30 tag, GitHub Release assets, GHCR, and v0.6 tag are confirmed; optional credential-gated channels are reported explicitly.
   Verification: |-
@@ -134,25 +131,23 @@ id_source: "generated"
 ---
 ## Summary
 
-Release AgentPlane 0.6.30 from the 0.6 maintenance branch
-
-Prepare, qualify, merge, publish, and verify AgentPlane 0.6.30 from exact maintenance SHA cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9. Do not modify main. Include the safe reusable node_modules layout guard merged by PR #5958.
+Release AgentPlane 0.6.30 from exact maintenance base 9001433ac67aa2973b6e3323de041216864eed61. Do not modify main. Include the install-layout guard from PR #5958 and its active-runtime correction from PR #5959.
 
 ## Scope
 
-- In scope: Prepare, qualify, merge, publish, and verify AgentPlane 0.6.30 from exact maintenance SHA cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9. Do not modify main. Include the safe reusable node_modules layout guard merged by PR #5958.
-- Out of scope: unrelated refactors not required for "Release AgentPlane 0.6.30 from the 0.6 maintenance branch".
+- In scope: rebase and qualify the prepared 0.6.30 candidate on exact maintenance SHA 9001433ac67aa2973b6e3323de041216864eed61, merge only to codex/release-v0.6.27-reclaim-fix, publish from the exact merged SHA, and verify all required channels.
+- Out of scope: main and unrelated refactors.
 
 ## Plan
 
-Release plan: version=0.6.30, tag=v0.6.30, base=codex/release-v0.6.27-reclaim-fix at cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9. Generate the patch plan and release notes. Bump all synchronized package versions. Run the full prepublish and local regression gates. Create and publish a branch_pr release candidate only to the maintenance branch. Require hosted CI and evaluator approval on the final candidate head. Merge the PR without touching main. Dispatch Publish to npm with the exact provider merge SHA. Verify npm packages, agentplane and ap install smoke, v0.6.30 tag, GitHub Release assets, GHCR, and the v0.6 moving tag. Preserve explicit evidence for any credential-gated optional channels.
+Release plan: version=0.6.30, tag=v0.6.30, base=codex/release-v0.6.27-reclaim-fix at 9001433ac67aa2973b6e3323de041216864eed61. Rebase the prepared candidate onto the exact maintenance base that contains PR #5958 and corrective PR #5959. Regenerate the patch plan and confirm release notes and synchronized package versions. Run release:prepublish and ci:local:full on the final candidate head. Publish a branch_pr release candidate only to codex/release-v0.6.27-reclaim-fix. Require evaluator approval and stable hosted CI. Merge without touching main. Dispatch Publish to npm with the exact merged SHA. Verify npm packages, agentplane and ap install smoke, v0.6.30 tag, GitHub Release assets, GHCR, and the v0.6 moving tag. Report optional credential-gated channels explicitly.
 
 ## Verify Steps
 
-1. Run `agentplane release plan --patch`. Expected: the plan freezes version 0.6.30 and tag v0.6.30 from maintenance base cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9.
-2. Run the release candidate command and its required prepublish gate. Expected: synchronized package versions, release notes, parity checks, distribution generation, and the full release gate pass on the candidate commit.
+1. Run `agentplane release plan --patch`. Expected: the plan freezes version 0.6.30 and tag v0.6.30 from maintenance base 9001433ac67aa2973b6e3323de041216864eed61.
+2. Run `bun run release:prepublish`. Expected: synchronized package versions, release notes, parity checks, distribution generation, and the full release gate pass on the final candidate head.
 3. Run `bun run ci:local:full`. Expected: the complete local regression suite passes on the final candidate head.
-4. Inspect the final diff and repository status. Expected: only 0.6.30 release metadata, notes, task evidence, and the already-merged guard are present; main is unchanged.
+4. Inspect the final diff and repository status. Expected: only 0.6.30 release metadata, notes, task evidence, and the already-merged guard corrections are present; main is unchanged.
 5. Verify the final release-candidate PR. Expected: all hosted checks pass on the exact final head and the PR targets only codex/release-v0.6.27-reclaim-fix.
 6. After provider merge, dispatch Publish to npm with the exact merged SHA. Expected: npm packages, CLI install smoke for agentplane and ap, v0.6.30 tag, GitHub Release assets, GHCR, and v0.6 tag are confirmed; optional credential-gated channels are reported explicitly.
 
