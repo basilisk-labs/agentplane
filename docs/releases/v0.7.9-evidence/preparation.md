@@ -24,4 +24,6 @@ The candidate changes only canonical version surfaces, exact internal package pi
 
 ## Boundaries
 
+The locally qualified candidate commit is `9cbf8849066f8a3167e17023411642fdc31caa8c`. AgentPlane owns independent evaluation, verification persistence, PR publication, hosted CI, protected integration, and hosted close from this handoff.
+
 Publication is absent from candidate preparation. It requires protected integration, a fresh exact-SHA publish authority grant, the hosted release workflow, canonical `publish-result.json`, and independent distribution readback. Anonymous GHCR availability is recorded separately if the provider does not expose it.
