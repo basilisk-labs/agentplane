@@ -18,6 +18,10 @@
  docs/reference/generated-reference.mdx             |   6 ++--
  docs/releases/v0.6.30.md                           |  34 +++++++++++++++++++++
  packages/agentplane/package.json                   |   6 ++--
+ .../run-cli.core.hooks.pre-push-full-fast.test.ts  |   8 ++---
+ .../src/cli/run-cli.core.incidents.test.ts         |   4 +--
+ .../cli/run-cli.core.task-hosted-close-pr.test.ts  |   1 +
+ .../src/cli/run-cli.core.task-hosted-close.test.ts |   1 +
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
  packages/recipes/src/index.ts                      |   2 +-
@@ -25,4 +29,4 @@
  packages/testkit/package.json                      |   2 +-
  .../static/img/social/docs/releases/v0.6.30.png    | Bin 0 -> 54283 bytes
  website/static/img/social/manifest.json            |   8 +++++
- 27 files changed, 92 insertions(+), 48 deletions(-)
+ 31 files changed, 100 insertions(+), 54 deletions(-)

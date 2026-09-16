@@ -13,9 +13,9 @@ import {
   configureGitUser,
   installRunCliIntegrationHarness,
   mkGitRepoRoot,
+  mkGitRepoRootWithBranch,
   writeConfig,
 } from "@agentplane/testkit";
-
 installRunCliIntegrationHarness();
 const INCIDENTS_CLI_TIMEOUT_MS = 120_000;
 
@@ -930,7 +930,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
   });
 
   it("finish does not promote explicit incidents before blueprint evidence is valid", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";

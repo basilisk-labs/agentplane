@@ -13,13 +13,8 @@ Release AgentPlane 0.6.30 from exact maintenance base 9001433ac67aa2973b6e3323de
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Rework: Declared check could not run: Verify hosted CI on the final release-candidate head and
-exact-SHA publication for every claimed channel.
-```
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -50,6 +45,10 @@ exact-SHA publication for every claimed channel.
  docs/reference/generated-reference.mdx             |   6 ++--
  docs/releases/v0.6.30.md                           |  34 +++++++++++++++++++++
  packages/agentplane/package.json                   |   6 ++--
+ .../run-cli.core.hooks.pre-push-full-fast.test.ts  |   8 ++---
+ .../src/cli/run-cli.core.incidents.test.ts         |   4 +--
+ .../cli/run-cli.core.task-hosted-close-pr.test.ts  |   1 +
+ .../src/cli/run-cli.core.task-hosted-close.test.ts |   1 +
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
  packages/recipes/src/index.ts                      |   2 +-
@@ -57,7 +56,7 @@ exact-SHA publication for every claimed channel.
  packages/testkit/package.json                      |   2 +-
  .../static/img/social/docs/releases/v0.6.30.png    | Bin 0 -> 54283 bytes
  website/static/img/social/manifest.json            |   8 +++++
- 27 files changed, 92 insertions(+), 48 deletions(-)
+ 31 files changed, 100 insertions(+), 54 deletions(-)
 ```
 
 </details>
