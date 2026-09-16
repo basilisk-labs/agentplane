@@ -1,10 +1,10 @@
 ---
 id: "202609142329-DN50HH"
 title: "Release AgentPlane 0.6.30 from the 0.6 maintenance branch"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -48,6 +48,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The release contract is corrected, but the candidate branch still descends from cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9 instead of the required exact base 9001433ac67aa2973b6e3323de041216864eed61. Recommended action: Perform the approved Git lifecycle recovery outside the semantic episode, confirm the candidate merge-base is 9001433ac67aa2973b6e3323de041216864eed61, then issue a replacement EXECUTOR packet and rerun release:prepublish and ci:local:full. Agentplane receipt: external-agent-blocker/tr_dcb9b4835b0d8591906fa13919580226/sha256:e8cf7dcfb5200781a36427bbcf5b351caf25ae59105c3bdda209d3276cc43498."
+  -
+    author: "CODER"
+    body: "Resume: rebased the prepared 0.6.30 candidate onto exact maintenance base 9001433ac67aa2973b6e3323de041216864eed61. Continue with release plan regeneration and the declared gates."
 events:
   -
     type: "status"
@@ -91,9 +94,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The release contract is corrected, but the candidate branch still descends from cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9 instead of the required exact base 9001433ac67aa2973b6e3323de041216864eed61. Recommended action: Perform the approved Git lifecycle recovery outside the semantic episode, confirm the candidate merge-base is 9001433ac67aa2973b6e3323de041216864eed61, then issue a replacement EXECUTOR packet and rerun release:prepublish and ci:local:full. Agentplane receipt: external-agent-blocker/tr_dcb9b4835b0d8591906fa13919580226/sha256:e8cf7dcfb5200781a36427bbcf5b351caf25ae59105c3bdda209d3276cc43498."
+  -
+    type: "status"
+    at: "2026-09-16T19:47:51.214Z"
+    author: "CODER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Resume: rebased the prepared 0.6.30 candidate onto exact maintenance base 9001433ac67aa2973b6e3323de041216864eed61. Continue with release plan regeneration and the declared gates."
 doc_version: 3
-doc_updated_at: "2026-09-16T19:46:58.265Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-16T19:47:51.214Z"
+doc_updated_by: "CODER"
 description: "Prepare, qualify, merge, publish, and verify AgentPlane 0.6.30 from exact maintenance SHA cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9. Do not modify main. Include the safe reusable node_modules layout guard merged by PR #5958."
 sections:
   Summary: "Release AgentPlane 0.6.30 from exact maintenance base 9001433ac67aa2973b6e3323de041216864eed61. Do not modify main. Include the install-layout guard from PR #5958 and its active-runtime correction from PR #5959."
