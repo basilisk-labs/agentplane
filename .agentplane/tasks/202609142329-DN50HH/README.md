@@ -4,7 +4,7 @@ title: "Release AgentPlane 0.6.30 from the 0.6 maintenance branch"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -28,7 +28,9 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "715a7747381fd120547c1059da6973e62f574c41"
+  message: "🚧 DN50HH task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -51,6 +53,9 @@ comments:
   -
     author: "CODER"
     body: "Resume: rebased the prepared 0.6.30 candidate onto exact maintenance base 9001433ac67aa2973b6e3323de041216864eed61. Continue with release plan regeneration and the declared gates."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 715a7747381f. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -101,9 +106,17 @@ events:
     from: "BLOCKED"
     to: "DOING"
     note: "Resume: rebased the prepared 0.6.30 candidate onto exact maintenance base 9001433ac67aa2973b6e3323de041216864eed61. Continue with release plan regeneration and the declared gates."
+  -
+    type: "status"
+    at: "2026-09-16T19:52:45.562Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 715a7747381f. CLI accepted one state-bound external-agent semantic result."
+    commit: "715a7747381fd120547c1059da6973e62f574c41"
 doc_version: 3
-doc_updated_at: "2026-09-16T19:47:51.214Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-16T19:52:45.562Z"
+doc_updated_by: "SUPERVISOR"
 description: "Prepare, qualify, merge, publish, and verify AgentPlane 0.6.30 from exact maintenance SHA cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9. Do not modify main. Include the safe reusable node_modules layout guard merged by PR #5958."
 sections:
   Summary: "Release AgentPlane 0.6.30 from exact maintenance base 9001433ac67aa2973b6e3323de041216864eed61. Do not modify main. Include the install-layout guard from PR #5958 and its active-runtime correction from PR #5959."
@@ -144,6 +157,8 @@ extensions:
     status: "pending"
     transition_id: "tr_37aba4fcff770d68dd683414acc1d192"
     work_item_id: null
+  implementation_commit:
+    hash: "715a7747381fd120547c1059da6973e62f574c41"
   workflow_route_baseline:
     start_head_sha: "cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9"
     version: 1
