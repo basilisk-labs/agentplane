@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "No actionable defect was found. HEAD bf71e823f30ece826f1895ea0cc6edcf546b5b1b descends from exact maintenance base 9001433ac67aa2973b6e3323de041216864eed61, and only the task branch contains the candidate head.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609142329-DN50HH/quality/objects/sha256/5d0fc760de3e859d2b2cd07c485956ea82161ee255879ce4cf0e8ca23449b652.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The release diff synchronizes agentplane, @agentplaneorg/core, and @agentplaneorg/recipes at 0.6.30. The remaining changes are release artifacts, task evidence, generated documentation assets, and four narrow test-fixture corrections that make the test repositories independent of the host Git default branch.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609142329-DN50HH/quality/objects/sha256/5d0fc760de3e859d2b2cd07c485956ea82161ee255879ce4cf0e8ca23449b652.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Supervisor evidence records exit code 0 for bun run release:prepublish and bun run ci:local:full. The final candidate also passes git diff --check.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609142329-DN50HH/quality/objects/sha256/5d0fc760de3e859d2b2cd07c485956ea82161ee255879ce4cf0e8ca23449b652.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Residual risk: The PR must target only codex/release-v0.6.27-reclaim-fix and all hosted checks must pass on its exact final head.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609142329-DN50HH/quality/objects/sha256/5d0fc760de3e859d2b2cd07c485956ea82161ee255879ce4cf0e8ca23449b652.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: Publication must be dispatched only from the exact merged maintenance SHA, and every required distribution channel must be verified independently.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609142329-DN50HH/quality/objects/sha256/5d0fc760de3e859d2b2cd07c485956ea82161ee255879ce4cf0e8ca23449b652.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

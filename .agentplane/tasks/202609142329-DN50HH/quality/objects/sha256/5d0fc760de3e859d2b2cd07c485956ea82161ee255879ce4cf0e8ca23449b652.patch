@@ -1,0 +1,2924 @@
+diff --git a/.agentplane/WORKFLOW.md b/.agentplane/WORKFLOW.md
+index 22c96361a..9eed984af 100644
+--- a/.agentplane/WORKFLOW.md
++++ b/.agentplane/WORKFLOW.md
+@@ -62,7 +62,7 @@ framework:
+   source: https://github.com/basilisk-labs/agentplane
+   last_update: null
+   cli:
+-    expected_version: 0.6.29
++    expected_version: 0.6.30
+ feedback:
+   github_issues:
+     enabled: true
+@@ -139,6 +139,7 @@ in_scope_paths:
+ 
+ 
+ 
++
+ 
+ 
+ ## Prompt Template
+diff --git a/.agentplane/tasks/202609150654-H0X3YJ/README.md b/.agentplane/tasks/202609150654-H0X3YJ/README.md
+new file mode 100644
+index 000000000..d84772c1f
+--- /dev/null
++++ b/.agentplane/tasks/202609150654-H0X3YJ/README.md
+@@ -0,0 +1,747 @@
++---
++id: "202609150654-H0X3YJ"
++title: "Fix active-runtime install reuse on v0.6"
++result_summary: "pre-merge closure"
++status: "DONE"
++priority: "high"
++owner: "CODER"
++revision: 25
++origin:
++  system: "manual"
++depends_on: []
++tags:
++  - "code"
++  - "workflow"
++task_kind: "code"
++mutation_scope: "code"
++blueprint_request: "code.branch_pr"
++verify:
++  - "bun run ci:local:full"
++  - "bunx vitest --config vitest.workspace.ts run --project agentplane --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
++plan_approval:
++  state: "approved"
++  updated_at: "2026-09-15T06:54:26.249Z"
++  updated_by: "USER"
++  note: "Approved in the current conversation for the bounded guard repair and v0.6.30 release continuation."
++verification:
++  state: "ok"
++  updated_at: "2026-09-16T19:34:54.317Z"
++  updated_by: "CODER"
++  note: "Verified: refreshed blueprint snapshot after quality evidence; declared local checks and hosted CI passed on exact PR head f1812244cda2702c92dad22dc159e1f4afc01b60."
++  attempts: 0
++quality_review:
++  state: "pass"
++  updated_at: "2026-09-15T20:33:44.271Z"
++  updated_by: "EVALUATOR"
++  note: "Quality review passed."
++  evaluated_sha: "4efe98151697964fc9b87a3a6441ca6960cee26e"
++  blueprint_digest: "d539653fa7913736ead798f543627bccebd858284d1d1826decdcca7f8cb22c9"
++  evidence_refs:
++    - ".agentplane/tasks/202609150654-H0X3YJ/README.md"
++    - ".agentplane/tasks/202609150654-H0X3YJ/quality/20260915-203344271-recovery-context/quality-report.json"
++    - ".agentplane/tasks/202609150654-H0X3YJ/quality/20260915-203344271-recovery-context/evaluator-prompt.md"
++    - ".agentplane/tasks/202609150654-H0X3YJ/quality/20260915-203344271-recovery-context/evaluator-opinion.md"
++    - ".agentplane/tasks/202609150654-H0X3YJ/blueprint/resolved-snapshot.json"
++  findings:
++    - "No blocking findings; current diff is limited to the runtime guard, deterministic regression tests, and task evidence, and both declared checks pass."
++commit:
++  hash: "f1812244cda2702c92dad22dc159e1f4afc01b60"
++  message: "🚧 H0X3YJ task: record external implementation evidence"
++comments:
++  -
++    author: "CODER"
++    body: "Start: continue branch_pr task in the dedicated task worktree."
++  -
++    author: "SUPERVISOR"
++    body: "Implementation committed: 7ac9524bb5af. CLI accepted one state-bound external-agent semantic result."
++  -
++    author: "SUPERVISOR"
++    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The implementation is unchanged and the full regression suite passes. Formal verification cannot recover until the legacy execution contract permits the test effect already required by the approved task. Recommended action: Approve the pending scope extension for repository effect tests. Replace the focused Verify Step with the already-passing workspace command. Requested scope: roots=unchanged; repository effects=tests; request digest=sha256:25af6765bf66fbbdacb33df7be8d1ed39c78a1895de49b154712485d032dc360. Agentplane receipt: external-agent-blocker/tr_74db211e7aa895c6e7fcd95e1705d3c1/sha256:fa39f2df3da07470ade3a50cfe16c6ce0a6ebe03a047146df2559d997df7f076/sha256:25af6765bf66fbbdacb33df7be8d1ed39c78a1895de49b154712485d032dc360."
++  -
++    author: "SUPERVISOR"
++    body: "Resume implementation rework to replace the invalid rootless scope-extension request with the approved test scope."
++  -
++    author: "SUPERVISOR"
++    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The implementation remains complete. Formal recovery requires a corrected scope extension that includes the approved implementation and test root. Recommended action: Apply the exact USER-approved scope extension and issue a freshly scoped executor episode. Requested scope: roots=packages/agentplane/src; repository effects=tests; request digest=sha256:b2eae1a392340b123fd25c6db7fe2d613f430a9080566071c39d1e4eaaf70853. Agentplane receipt: external-agent-blocker/tr_fa80cb8b461c2e6d9c12db8e35e9e036/sha256:5ec8130d629288581d70bdb4b203dc1ada60f6224b1f1e3975a36ebe57642212/sha256:b2eae1a392340b123fd25c6db7fe2d613f430a9080566071c39d1e4eaaf70853."
++  -
++    author: "USER"
++    body: "Approved state-bound execution scope extension: packages/agentplane/src; repository effects: tests."
++  -
++    author: "SUPERVISOR"
++    body: "Implementation committed: 72149ad2afe7. CLI accepted one state-bound external-agent semantic result."
++  -
++    author: "SUPERVISOR"
++    body: "Implementation committed: 4efe98151697. CLI accepted one state-bound external-agent semantic result."
++  -
++    author: "CODER"
++    body: "Verified: pre-merge closure packet is ready for the task PR."
++events:
++  -
++    type: "status"
++    at: "2026-09-15T06:55:00.939Z"
++    author: "CODER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: continue branch_pr task in the dedicated task worktree."
++  -
++    type: "status"
++    at: "2026-09-15T07:13:13.670Z"
++    author: "SUPERVISOR"
++    from: "DOING"
++    to: "DOING"
++    note: "Implementation committed: 7ac9524bb5af. CLI accepted one state-bound external-agent semantic result."
++  -
++    type: "verify"
++    at: "2026-09-15T07:15:58.142Z"
++    author: "SUPERVISOR"
++    state: "needs_rework"
++    note: "Rework: Declared check failed: bunx vitest run --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
++  -
++    type: "status"
++    at: "2026-09-15T07:18:33.419Z"
++    author: "SUPERVISOR"
++    from: "DOING"
++    to: "BLOCKED"
++    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The implementation is unchanged and the full regression suite passes. Formal verification cannot recover until the legacy execution contract permits the test effect already required by the approved task. Recommended action: Approve the pending scope extension for repository effect tests. Replace the focused Verify Step with the already-passing workspace command. Requested scope: roots=unchanged; repository effects=tests; request digest=sha256:25af6765bf66fbbdacb33df7be8d1ed39c78a1895de49b154712485d032dc360. Agentplane receipt: external-agent-blocker/tr_74db211e7aa895c6e7fcd95e1705d3c1/sha256:fa39f2df3da07470ade3a50cfe16c6ce0a6ebe03a047146df2559d997df7f076/sha256:25af6765bf66fbbdacb33df7be8d1ed39c78a1895de49b154712485d032dc360."
++  -
++    type: "status"
++    at: "2026-09-15T20:04:04.956Z"
++    author: "SUPERVISOR"
++    from: "BLOCKED"
++    to: "DOING"
++    note: "Resume implementation rework to replace the invalid rootless scope-extension request with the approved test scope."
++  -
++    type: "status"
++    at: "2026-09-15T20:04:55.731Z"
++    author: "SUPERVISOR"
++    from: "DOING"
++    to: "BLOCKED"
++    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The implementation remains complete. Formal recovery requires a corrected scope extension that includes the approved implementation and test root. Recommended action: Apply the exact USER-approved scope extension and issue a freshly scoped executor episode. Requested scope: roots=packages/agentplane/src; repository effects=tests; request digest=sha256:b2eae1a392340b123fd25c6db7fe2d613f430a9080566071c39d1e4eaaf70853. Agentplane receipt: external-agent-blocker/tr_fa80cb8b461c2e6d9c12db8e35e9e036/sha256:5ec8130d629288581d70bdb4b203dc1ada60f6224b1f1e3975a36ebe57642212/sha256:b2eae1a392340b123fd25c6db7fe2d613f430a9080566071c39d1e4eaaf70853."
++  -
++    type: "status"
++    at: "2026-09-15T20:18:37.716Z"
++    author: "SUPERVISOR"
++    from: "DOING"
++    to: "DOING"
++    note: "Implementation committed: 72149ad2afe7. CLI accepted one state-bound external-agent semantic result."
++  -
++    type: "verify"
++    at: "2026-09-15T20:20:32.881Z"
++    author: "SUPERVISOR"
++    state: "needs_rework"
++    note: "Rework: Declared check failed: bun run ci:local:full"
++  -
++    type: "status"
++    at: "2026-09-15T20:30:15.072Z"
++    author: "SUPERVISOR"
++    from: "DOING"
++    to: "DOING"
++    note: "Implementation committed: 4efe98151697. CLI accepted one state-bound external-agent semantic result."
++  -
++    type: "verify"
++    at: "2026-09-15T20:32:34.639Z"
++    author: "SUPERVISOR"
++    state: "ok"
++    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
++  -
++    type: "verify"
++    at: "2026-09-16T19:34:54.317Z"
++    author: "CODER"
++    state: "ok"
++    note: "Verified: refreshed blueprint snapshot after quality evidence; declared local checks and hosted CI passed on exact PR head f1812244cda2702c92dad22dc159e1f4afc01b60."
++  -
++    type: "status"
++    at: "2026-09-16T19:35:06.164Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DONE"
++    note: "Verified: pre-merge closure packet is ready for the task PR."
++doc_version: 3
++doc_updated_at: "2026-09-16T19:35:06.165Z"
++doc_updated_by: "CODER"
++description: "Fix the reusable workspace install-layout guard so work start can reuse a valid active repo-local runtime from a separate repository root while still rejecting dangling, task-worktree-owned, and external dependency layouts. Add regression coverage for the cross-repository bootstrap path required by release:prepublish."
++sections:
++  Summary: |-
++    Fix active-runtime install reuse on v0.6
++
++    Fix the reusable workspace install-layout guard so work start can reuse a valid active repo-local runtime from a separate repository root while still rejecting dangling, task-worktree-owned, and external dependency layouts. Add regression coverage for the cross-repository bootstrap path required by release:prepublish.
++  Scope: |-
++    - In scope: Fix the reusable workspace install-layout guard so work start can reuse a valid active repo-local runtime from a separate repository root while still rejecting dangling, task-worktree-owned, and external dependency layouts. Add regression coverage for the cross-repository bootstrap path required by release:prepublish.
++    - Out of scope: unrelated refactors not required for "Fix active-runtime install reuse on v0.6".
++  Plan: |-
++    1. Update `isReusableWorkspaceInstallLayout` to validate `node_modules` and declared dependency roots against the repository that owns `sourceRoot`, not the unrelated target repository.
++    2. Preserve fail-closed rejection for missing manifests, dangling targets, task-worktree-owned targets, and targets outside the source repository.
++    3. Add focused coverage for valid cross-repository reuse and retain the existing runtime bootstrap integration cases.
++    4. Run focused tests and `bun run ci:local:full`; then open a PR only to `codex/release-v0.6.27-reclaim-fix` and require hosted CI.
++  Verify Steps: |-
++    1. Run `bun run ci:local:full`. Expected: the complete local regression suite passes.
++    2. Run `bunx vitest --config vitest.workspace.ts run --project agentplane --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts`. Expected: cross-repository active-runtime reuse passes while dangling, task-worktree-owned, and external layouts remain rejected.
++    3. Inspect the final diff. Expected: only the two approved implementation and test paths plus task evidence change; no release metadata or unrelated refactor is included.
++    4. Verify hosted CI on the exact PR head. Expected: all required checks pass before merge to `codex/release-v0.6.27-reclaim-fix`.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    ### 2026-09-15T07:15:58.142Z — VERIFY — needs_rework
++
++    By: SUPERVISOR
++
++    Note: Rework: Declared check failed: bunx vitest run --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
++    Attempts: 1
++
++    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:90a655d46980e7603d596905d420e1fd68e573465809fdbe7d4444004e728b69, input_digest=sha256:8b0ef1494333123576dbe1ab008ba000c23f2a1b4ce0f228c3cb12d725de9107
++
++    Details:
++
++    Command: bun run ci:local:full
++    Result: pass
++    Evidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-1
++    Scope: branch_pr task 202609150654-H0X3YJ declared verification
++
++    Command: bunx vitest run --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
++    Result: fail
++    Evidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-2
++    Scope: branch_pr task 202609150654-H0X3YJ declared verification
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/v0-6-issues-base/.agentplane/worktrees/202609150654-H0X3YJ-fix-active-runtime-reuse-v0-6/.agentplane/tasks/202609150654-H0X3YJ/blueprint/resolved-snapshot.json
++    - old_digest: a07deb437a1312a6ee3031ad1aae4d775183554bbc915015d13bd085e2efb485
++    - current_digest: a07deb437a1312a6ee3031ad1aae4d775183554bbc915015d13bd085e2efb485
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202609150654-H0X3YJ
++
++    DecisionContextRef:
++    - operator_action: provider_action
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    ### 2026-09-15T20:20:32.881Z — VERIFY — needs_rework
++
++    By: SUPERVISOR
++
++    Note: Rework: Declared check failed: bun run ci:local:full
++    Attempts: 2
++
++    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:aec20a37d124f7eaf8fdf0805aaa798d6fb454fbb66364aa82e138c9b1beb721, input_digest=sha256:a4a94ed2d7f1d6e37e3aece1b6373796d95efa5be501c8978e77d09dffa93886
++
++    Details:
++
++    Command: bun run ci:local:full
++    Result: fail
++    Evidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-1
++    Scope: branch_pr task 202609150654-H0X3YJ declared verification
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/v0-6-issues-base/.agentplane/worktrees/202609150654-H0X3YJ-fix-active-runtime-reuse-v0-6/.agentplane/tasks/202609150654-H0X3YJ/blueprint/resolved-snapshot.json
++    - old_digest: a07deb437a1312a6ee3031ad1aae4d775183554bbc915015d13bd085e2efb485
++    - current_digest: a07deb437a1312a6ee3031ad1aae4d775183554bbc915015d13bd085e2efb485
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202609150654-H0X3YJ
++
++    DecisionContextRef:
++    - operator_action: provider_action
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    ### 2026-09-15T20:32:34.639Z — VERIFY — ok
++
++    By: SUPERVISOR
++
++    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:aec20a37d124f7eaf8fdf0805aaa798d6fb454fbb66364aa82e138c9b1beb721, input_digest=sha256:90d3f0194465ceb4d15c388e0d06ee1949790c827aa499510c3c34146703ffd2
++
++    Details:
++
++    Check: affected_unit_integration
++    Command: bun run ci:local:full
++    Result: pass
++    Evidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-1
++    Scope: branch_pr task 202609150654-H0X3YJ Verification Contract check affected_unit_integration (1/2)
++
++    Check: affected_unit_integration
++    Command: bunx vitest --config vitest.workspace.ts run --project agentplane --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
++    Result: pass
++    Evidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-2
++    Scope: branch_pr task 202609150654-H0X3YJ Verification Contract check affected_unit_integration (2/2)
++
++    Check: critical_paths
++    Command: bun run ci:local:full
++    Result: pass
++    Evidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-1
++    Scope: branch_pr task 202609150654-H0X3YJ Verification Contract check critical_paths (1/2)
++
++    Check: critical_paths
++    Command: bunx vitest --config vitest.workspace.ts run --project agentplane --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
++    Result: pass
++    Evidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-2
++    Scope: branch_pr task 202609150654-H0X3YJ Verification Contract check critical_paths (2/2)
++
++    Check: task_outcome
++    Command: bun run ci:local:full
++    Result: pass
++    Evidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-1
++    Scope: branch_pr task 202609150654-H0X3YJ Verification Contract check task_outcome (1/2)
++
++    Check: task_outcome
++    Command: bunx vitest --config vitest.workspace.ts run --project agentplane --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
++    Result: pass
++    Evidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-2
++    Scope: branch_pr task 202609150654-H0X3YJ Verification Contract check task_outcome (2/2)
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/v0-6-issues-base/.agentplane/worktrees/202609150654-H0X3YJ-fix-active-runtime-reuse-v0-6/.agentplane/tasks/202609150654-H0X3YJ/blueprint/resolved-snapshot.json
++    - old_digest: a07deb437a1312a6ee3031ad1aae4d775183554bbc915015d13bd085e2efb485
++    - current_digest: a07deb437a1312a6ee3031ad1aae4d775183554bbc915015d13bd085e2efb485
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202609150654-H0X3YJ
++
++    DecisionContextRef:
++    - operator_action: provider_action
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    ### 2026-09-16T19:34:54.317Z — VERIFY — ok
++
++    By: CODER
++
++    Note: Verified: refreshed blueprint snapshot after quality evidence; declared local checks and hosted CI passed on exact PR head f1812244cda2702c92dad22dc159e1f4afc01b60.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-09-15T20:32:35.360Z, excerpt_hash=sha256:aec20a37d124f7eaf8fdf0805aaa798d6fb454fbb66364aa82e138c9b1beb721
++
++    Details:
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/v0-6-issues-base/.agentplane/worktrees/202609150654-H0X3YJ-fix-active-runtime-reuse-v0-6/.agentplane/tasks/202609150654-H0X3YJ/blueprint/resolved-snapshot.json
++    - old_digest: d539653fa7913736ead798f543627bccebd858284d1d1826decdcca7f8cb22c9
++    - current_digest: d539653fa7913736ead798f543627bccebd858284d1d1826decdcca7f8cb22c9
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202609150654-H0X3YJ
++
++    DecisionContextRef:
++    - operator_action: run_exact_argv
++    - can_execute_now: true
++    - safe_command: agentplane finish 202609150654-H0X3YJ --author CODER --body Verified: pre-merge closure packet is ready for the task PR. --result pre-merge closure --commit f1812244cda2702c92dad22dc159e1f4afc01b60 --pre-merge-closure
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: true
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: git_hook_side_effect
++
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: ""
++extensions:
++  agentplane.scope_extension_request:
++    applied_at: "2026-09-15T20:05:47.419Z"
++    applied_by: "USER"
++    blocker_state_fingerprint: "sha256:5ec8130d629288581d70bdb4b203dc1ada60f6224b1f1e3975a36ebe57642212"
++    kind: "task_scope_extension_request"
++    request:
++      rationale: "The approved task changes implementation and regression tests under packages/agentplane/src. The legacy rootless execution declaration must be migrated to that exact root and allow tests."
++      repository_effects:
++        - "tests"
++      schema_version: 1
++      scope_roots:
++        - "packages/agentplane/src"
++    request_digest: "sha256:b2eae1a392340b123fd25c6db7fe2d613f430a9080566071c39d1e4eaaf70853"
++    schema_version: 1
++    status: "applied"
++    transition_id: "tr_fa80cb8b461c2e6d9c12db8e35e9e036"
++    work_item_id: null
++  implementation_commit:
++    hash: "4efe98151697964fc9b87a3a6441ca6960cee26e"
++    message: "🚧 H0X3YJ task: apply external agent result"
++  task_execution_context:
++    base_ref: "codex/release-v0.6.27-reclaim-fix"
++    base_sha: "cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9"
++    repository_identity: null
++    schema_version: 1
++  workflow_route_baseline:
++    start_head_sha: "cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9"
++    version: 1
++id_source: "generated"
++execution_contract:
++  authority:
++    allowed_external_effects: []
++    allowed_repository_effects:
++      - "repository_write"
++      - "source_code"
++      - "tests"
++    forbidden_external_effects:
++      - "network_read"
++      - "external_write"
++      - "credentials"
++      - "publish"
++      - "deploy"
++      - "destructive_git"
++    forbidden_repository_effects:
++      - "documentation"
++      - "public_api"
++      - "schema"
++      - "dependencies"
++      - "ci"
++      - "release_metadata"
++      - "security_boundary"
++    writable_roots:
++      - "packages/agentplane/src"
++  declaration:
++    external_effects: []
++    implementation_uncertainty: "bounded"
++    preferred_mode: "branch_pr"
++    rationale:
++      - "USER-approved blocked-result scope extension: roots=packages/agentplane/src; repository_effects=tests"
++      - "legacy structured task fields mapped to the execution contract"
++    repository_effects:
++      - "repository_write"
++      - "source_code"
++      - "tests"
++    requirements_uncertainty: "bounded"
++    reversibility: "reversible"
++    schema_version: 2
++    scope_roots:
++      - "packages/agentplane/src"
++  observed:
++    authority_violations: []
++    changed_components:
++      - "packages/agentplane"
++    changed_paths:
++      - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
++      - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
++    external_effects: []
++    repository_effects:
++      - "repository_write"
++      - "source_code"
++      - "tests"
++    verification_results:
++      -
++        id: "recorded-check-1"
++        result: "pass"
++      -
++        id: "recorded-check-2"
++        result: "pass"
++      -
++        id: "recorded-check-3"
++        result: "pass"
++      -
++        id: "recorded-check-4"
++        result: "pass"
++      -
++        id: "recorded-check-5"
++        result: "pass"
++      -
++        id: "recorded-check-6"
++        result: "pass"
++      -
++        id: "verification-record"
++        result: "pass"
++  reason_codes:
++    - "agent_preferred_branch_pr"
++    - "repository_branch_pr_floor"
++  repository_mode: "branch_pr"
++  safety:
++    approval_effects: []
++    requires_user_approval: false
++    requires_worktree: true
++  schema_version: 1
++  selected_mode: "branch_pr"
++  source: "agent_declared"
++  verification:
++    contract:
++      declared:
++        components:
++          - "packages/agentplane/src"
++        evidence_requirements:
++          - "hosted_integration"
++          - "repository_effect:repository_write"
++          - "repository_effect:source_code"
++          - "repository_effect:tests"
++          - "task_outcome"
++        external_effects: []
++        repository_effects:
++          - "repository_write"
++          - "source_code"
++          - "tests"
++        risk:
++          implementation_uncertainty: "bounded"
++          requirements_uncertainty: "bounded"
++          reversibility: "reversible"
++      digest: "sha256:5fa31af598327a352ab2fe51b808b6ceccff0a6e4870d09b3e4de2271a377bf7"
++      escalation_reasons: []
++      execution_groups:
++        - "core"
++        - "cli"
++      observed:
++        changed_components:
++          - "packages/agentplane"
++        changed_files:
++          - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
++          - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
++        external_effects: []
++        repository_effects:
++          - "repository_write"
++          - "source_code"
++          - "tests"
++      phase: "task"
++      policy_floor:
++        monotonic_strengthening: true
++        pr_full_regression: true
++        unknown_or_central_full_regression: true
++      requires_full_regression: false
++      requires_real_e2e: false
++      schema_version: 2
++      selected_checks:
++        - "affected_unit_integration"
++        - "critical_paths"
++        - "hosted_integration"
++        - "task_outcome"
++      selector:
++        bucket: null
++        buckets: []
++        execution_mode: "semantic"
++        kind: "semantic"
++        lint_targets: []
++        reason: "execution_declaration"
++        run_cli_docs_check: false
++        selected_test_files: []
++        vitest_pool: "forks"
++      source: "execution_contract"
++    required_evidence:
++      - "hosted_integration"
++      - "repository_effect:repository_write"
++      - "repository_effect:source_code"
++      - "repository_effect:tests"
++      - "task_outcome"
++---
++## Summary
++
++Fix active-runtime install reuse on v0.6
++
++Fix the reusable workspace install-layout guard so work start can reuse a valid active repo-local runtime from a separate repository root while still rejecting dangling, task-worktree-owned, and external dependency layouts. Add regression coverage for the cross-repository bootstrap path required by release:prepublish.
++
++## Scope
++
++- In scope: Fix the reusable workspace install-layout guard so work start can reuse a valid active repo-local runtime from a separate repository root while still rejecting dangling, task-worktree-owned, and external dependency layouts. Add regression coverage for the cross-repository bootstrap path required by release:prepublish.
++- Out of scope: unrelated refactors not required for "Fix active-runtime install reuse on v0.6".
++
++## Plan
++
++1. Update `isReusableWorkspaceInstallLayout` to validate `node_modules` and declared dependency roots against the repository that owns `sourceRoot`, not the unrelated target repository.
++2. Preserve fail-closed rejection for missing manifests, dangling targets, task-worktree-owned targets, and targets outside the source repository.
++3. Add focused coverage for valid cross-repository reuse and retain the existing runtime bootstrap integration cases.
++4. Run focused tests and `bun run ci:local:full`; then open a PR only to `codex/release-v0.6.27-reclaim-fix` and require hosted CI.
++
++## Verify Steps
++
++1. Run `bun run ci:local:full`. Expected: the complete local regression suite passes.
++2. Run `bunx vitest --config vitest.workspace.ts run --project agentplane --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts`. Expected: cross-repository active-runtime reuse passes while dangling, task-worktree-owned, and external layouts remain rejected.
++3. Inspect the final diff. Expected: only the two approved implementation and test paths plus task evidence change; no release metadata or unrelated refactor is included.
++4. Verify hosted CI on the exact PR head. Expected: all required checks pass before merge to `codex/release-v0.6.27-reclaim-fix`.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++### 2026-09-15T07:15:58.142Z — VERIFY — needs_rework
++
++By: SUPERVISOR
++
++Note: Rework: Declared check failed: bunx vitest run --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
++Attempts: 1
++
++VerifyStepsRef: doc_version=3, excerpt_hash=sha256:90a655d46980e7603d596905d420e1fd68e573465809fdbe7d4444004e728b69, input_digest=sha256:8b0ef1494333123576dbe1ab008ba000c23f2a1b4ce0f228c3cb12d725de9107
++
++Details:
++
++Command: bun run ci:local:full
++Result: pass
++Evidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-1
++Scope: branch_pr task 202609150654-H0X3YJ declared verification
++
++Command: bunx vitest run --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
++Result: fail
++Evidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-2
++Scope: branch_pr task 202609150654-H0X3YJ declared verification
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/v0-6-issues-base/.agentplane/worktrees/202609150654-H0X3YJ-fix-active-runtime-reuse-v0-6/.agentplane/tasks/202609150654-H0X3YJ/blueprint/resolved-snapshot.json
++- old_digest: a07deb437a1312a6ee3031ad1aae4d775183554bbc915015d13bd085e2efb485
++- current_digest: a07deb437a1312a6ee3031ad1aae4d775183554bbc915015d13bd085e2efb485
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202609150654-H0X3YJ
++
++DecisionContextRef:
++- operator_action: provider_action
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++### 2026-09-15T20:20:32.881Z — VERIFY — needs_rework
++
++By: SUPERVISOR
++
++Note: Rework: Declared check failed: bun run ci:local:full
++Attempts: 2
++
++VerifyStepsRef: doc_version=3, excerpt_hash=sha256:aec20a37d124f7eaf8fdf0805aaa798d6fb454fbb66364aa82e138c9b1beb721, input_digest=sha256:a4a94ed2d7f1d6e37e3aece1b6373796d95efa5be501c8978e77d09dffa93886
++
++Details:
++
++Command: bun run ci:local:full
++Result: fail
++Evidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-1
++Scope: branch_pr task 202609150654-H0X3YJ declared verification
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/v0-6-issues-base/.agentplane/worktrees/202609150654-H0X3YJ-fix-active-runtime-reuse-v0-6/.agentplane/tasks/202609150654-H0X3YJ/blueprint/resolved-snapshot.json
++- old_digest: a07deb437a1312a6ee3031ad1aae4d775183554bbc915015d13bd085e2efb485
++- current_digest: a07deb437a1312a6ee3031ad1aae4d775183554bbc915015d13bd085e2efb485
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202609150654-H0X3YJ
++
++DecisionContextRef:
++- operator_action: provider_action
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++### 2026-09-15T20:32:34.639Z — VERIFY — ok
++
++By: SUPERVISOR
++
++Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, excerpt_hash=sha256:aec20a37d124f7eaf8fdf0805aaa798d6fb454fbb66364aa82e138c9b1beb721, input_digest=sha256:90d3f0194465ceb4d15c388e0d06ee1949790c827aa499510c3c34146703ffd2
++
++Details:
++
++Check: affected_unit_integration
++Command: bun run ci:local:full
++Result: pass
++Evidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-1
++Scope: branch_pr task 202609150654-H0X3YJ Verification Contract check affected_unit_integration (1/2)
++
++Check: affected_unit_integration
++Command: bunx vitest --config vitest.workspace.ts run --project agentplane --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
++Result: pass
++Evidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-2
++Scope: branch_pr task 202609150654-H0X3YJ Verification Contract check affected_unit_integration (2/2)
++
++Check: critical_paths
++Command: bun run ci:local:full
++Result: pass
++Evidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-1
++Scope: branch_pr task 202609150654-H0X3YJ Verification Contract check critical_paths (1/2)
++
++Check: critical_paths
++Command: bunx vitest --config vitest.workspace.ts run --project agentplane --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
++Result: pass
++Evidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-2
++Scope: branch_pr task 202609150654-H0X3YJ Verification Contract check critical_paths (2/2)
++
++Check: task_outcome
++Command: bun run ci:local:full
++Result: pass
++Evidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-1
++Scope: branch_pr task 202609150654-H0X3YJ Verification Contract check task_outcome (1/2)
++
++Check: task_outcome
++Command: bunx vitest --config vitest.workspace.ts run --project agentplane --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
++Result: pass
++Evidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-2
++Scope: branch_pr task 202609150654-H0X3YJ Verification Contract check task_outcome (2/2)
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/v0-6-issues-base/.agentplane/worktrees/202609150654-H0X3YJ-fix-active-runtime-reuse-v0-6/.agentplane/tasks/202609150654-H0X3YJ/blueprint/resolved-snapshot.json
++- old_digest: a07deb437a1312a6ee3031ad1aae4d775183554bbc915015d13bd085e2efb485
++- current_digest: a07deb437a1312a6ee3031ad1aae4d775183554bbc915015d13bd085e2efb485
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202609150654-H0X3YJ
++
++DecisionContextRef:
++- operator_action: provider_action
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++### 2026-09-16T19:34:54.317Z — VERIFY — ok
++
++By: CODER
++
++Note: Verified: refreshed blueprint snapshot after quality evidence; declared local checks and hosted CI passed on exact PR head f1812244cda2702c92dad22dc159e1f4afc01b60.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-09-15T20:32:35.360Z, excerpt_hash=sha256:aec20a37d124f7eaf8fdf0805aaa798d6fb454fbb66364aa82e138c9b1beb721
++
++Details:
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/v0-6-issues-base/.agentplane/worktrees/202609150654-H0X3YJ-fix-active-runtime-reuse-v0-6/.agentplane/tasks/202609150654-H0X3YJ/blueprint/resolved-snapshot.json
++- old_digest: d539653fa7913736ead798f543627bccebd858284d1d1826decdcca7f8cb22c9
++- current_digest: d539653fa7913736ead798f543627bccebd858284d1d1826decdcca7f8cb22c9
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202609150654-H0X3YJ
++
++DecisionContextRef:
++- operator_action: run_exact_argv
++- can_execute_now: true
++- safe_command: agentplane finish 202609150654-H0X3YJ --author CODER --body Verified: pre-merge closure packet is ready for the task PR. --result pre-merge closure --commit f1812244cda2702c92dad22dc159e1f4afc01b60 --pre-merge-closure
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: true
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: git_hook_side_effect
++
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
+diff --git a/.agentplane/tasks/202609150654-H0X3YJ/blueprint/resolved-snapshot.json b/.agentplane/tasks/202609150654-H0X3YJ/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..d4757b805
+--- /dev/null
++++ b/.agentplane/tasks/202609150654-H0X3YJ/blueprint/resolved-snapshot.json
+@@ -0,0 +1,578 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202609150654-H0X3YJ",
++    "title": "Fix active-runtime install reuse on v0.6",
++    "description": "Fix the reusable workspace install-layout guard so work start can reuse a valid active repo-local runtime from a separate repository root while still rejecting dangling, task-worktree-owned, and external dependency layouts. Add regression coverage for the cross-repository bootstrap path required by release:prepublish.",
++    "tags": [
++      "code",
++      "workflow"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "code.branch_pr"
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202609150654-H0X3YJ",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "code.branch_pr"
++    },
++    "whySelected": [
++      "explicit blueprint requested: code.branch_pr",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: code.branch_pr",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "d539653fa7913736ead798f543627bccebd858284d1d1826decdcca7f8cb22c9"
++  }
++}
+diff --git a/.agentplane/tasks/202609150654-H0X3YJ/pr/diffstat.txt b/.agentplane/tasks/202609150654-H0X3YJ/pr/diffstat.txt
+new file mode 100644
+index 000000000..fd5d5858c
+--- /dev/null
++++ b/.agentplane/tasks/202609150654-H0X3YJ/pr/diffstat.txt
+@@ -0,0 +1,18 @@
++ .agentplane/tasks/202609150654-H0X3YJ/README.md    | 747 +++++++++++++++++++++
++ .../blueprint/resolved-snapshot.json               | 578 ++++++++++++++++
++ .../tasks/202609150654-H0X3YJ/pr/diffstat.txt      |   3 +
++ .../tasks/202609150654-H0X3YJ/pr/github-body.md    |  40 ++
++ .../tasks/202609150654-H0X3YJ/pr/github-title.txt  |   1 +
++ .agentplane/tasks/202609150654-H0X3YJ/pr/meta.json |  32 +
++ .agentplane/tasks/202609150654-H0X3YJ/pr/review.md |  38 ++
++ .../evaluator-opinion.md                           |  18 +
++ .../evaluator-prompt.md                            |  74 ++
++ .../quality-report.json                            |  20 +
++ .../supervision/declared-checks.json               |  49 ++
++ .../supervision/implementation-evidence.json       |  89 +++
++ .../20260915071558142-4a32aeba4d53ef9b.json        | 116 ++++
++ .../20260915202032881-2becd57f31b19fbd.json        | 109 +++
++ .../20260915203234639-07fdfd9c0cdff3fb.json        | 116 ++++
++ .../commands/branch/work-start.materialize.test.ts |  37 +-
++ .../src/commands/branch/work-start.materialize.ts  |  51 +-
++ 17 files changed, 2110 insertions(+), 8 deletions(-)
+diff --git a/.agentplane/tasks/202609150654-H0X3YJ/pr/github-body.md b/.agentplane/tasks/202609150654-H0X3YJ/pr/github-body.md
+new file mode 100644
+index 000000000..1ef7ea1f7
+--- /dev/null
++++ b/.agentplane/tasks/202609150654-H0X3YJ/pr/github-body.md
+@@ -0,0 +1,40 @@
++Task: `202609150654-H0X3YJ`
++Title: Fix active-runtime install reuse on v0.6
++Canonical task record: `.agentplane/tasks/202609150654-H0X3YJ/README.md`
++
++## Summary
++
++Fix active-runtime install reuse on v0.6
++
++Fix the reusable workspace install-layout guard so work start can reuse a valid active repo-local runtime from a separate repository root while still rejecting dangling, task-worktree-owned, and external dependency layouts. Add regression coverage for the cross-repository bootstrap path required by release:prepublish.
++
++## Scope
++
++- In scope: Fix the reusable workspace install-layout guard so work start can reuse a valid active repo-local runtime from a separate repository root while still rejecting dangling, task-worktree-owned, and external dependency layouts. Add regression coverage for the cross-repository bootstrap path required by release:prepublish.
++- Out of scope: unrelated refactors not required for "Fix active-runtime install reuse on v0.6".
++
++## Verification
++
++- State: ok
++- Note:
++
++```text
++Verified: refreshed blueprint snapshot after quality evidence; declared local checks and hosted CI
++passed on exact PR head f1812244cda2702c92dad22dc159e1f4afc01b60.
++```
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-09-16T19:29:04.838Z
++- Branch: task/202609150654-H0X3YJ/fix-active-runtime-reuse-v0-6
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../commands/branch/work-start.materialize.test.ts | 37 +++++++++++++++-
++ .../src/commands/branch/work-start.materialize.ts  | 51 +++++++++++++++++++---
++ 2 files changed, 80 insertions(+), 8 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202609150654-H0X3YJ/pr/github-title.txt b/.agentplane/tasks/202609150654-H0X3YJ/pr/github-title.txt
+new file mode 100644
+index 000000000..91f30c1ea
+--- /dev/null
++++ b/.agentplane/tasks/202609150654-H0X3YJ/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 H0X3YJ task: Fix active-runtime install reuse on v0.6 [202609150654-H0X3YJ]
+diff --git a/.agentplane/tasks/202609150654-H0X3YJ/pr/meta.json b/.agentplane/tasks/202609150654-H0X3YJ/pr/meta.json
+new file mode 100644
+index 000000000..e5464091c
+--- /dev/null
++++ b/.agentplane/tasks/202609150654-H0X3YJ/pr/meta.json
+@@ -0,0 +1,37 @@
++{
++  "artifact_state": "merged",
++  "artifact_state_updated_at": "2026-09-16T19:36:25.006Z",
++  "base": "codex/release-v0.6.27-reclaim-fix",
++  "branch": "task/202609150654-H0X3YJ/fix-active-runtime-reuse-v0-6",
++  "created_at": "2026-09-15T06:55:01.035Z",
++  "diffstat_sha256": "sha256:bd230140d3fc9386964b05bf6174c1cd2203dc83bd91bffc8b362f85f450582a",
++  "last_verified_at": "2026-09-16T19:36:25.006Z",
++  "last_verified_diffstat_sha256": "sha256:bd230140d3fc9386964b05bf6174c1cd2203dc83bd91bffc8b362f85f450582a",
++  "merge_commit": "658100a125034a517268b2e500abc83c179dd230",
++  "merge_strategy": "merge",
++  "merged_at": "2026-09-16T19:36:25.006Z",
++  "pr_number": 5959,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5959",
++  "pre_merge_closure": {
++    "basis_commit": "f1812244cda2702c92dad22dc159e1f4afc01b60",
++    "branch": "task/202609150654-H0X3YJ/fix-active-runtime-reuse-v0-6",
++    "pr_number": 5959,
++    "recorded_at": "2026-09-16T19:35:06.185Z",
++    "state": "closed_before_merge"
++  },
++  "provider": {
++    "hostname": "github.com",
++    "kind": "github",
++    "remote": "origin",
++    "schema_version": 1,
++    "source_project": "basilisk-labs/agentplane",
++    "target_project": "basilisk-labs/agentplane"
++  },
++  "schema_version": 1,
++  "status": "MERGED",
++  "task_id": "202609150654-H0X3YJ",
++  "updated_at": "2026-09-16T19:36:25.006Z",
++  "verify": {
++    "status": "pass"
++  }
++}
+diff --git a/.agentplane/tasks/202609150654-H0X3YJ/pr/review.md b/.agentplane/tasks/202609150654-H0X3YJ/pr/review.md
+new file mode 100644
+index 000000000..3e4dda1c9
+--- /dev/null
++++ b/.agentplane/tasks/202609150654-H0X3YJ/pr/review.md
+@@ -0,0 +1,38 @@
++# PR Review
++
++Created: 2026-09-15T06:55:01.035Z
++
++## Task
++
++- Task: `202609150654-H0X3YJ`
++- Title: Fix active-runtime install reuse on v0.6
++- Status: DOING
++- Branch: `task/202609150654-H0X3YJ/fix-active-runtime-reuse-v0-6`
++- Canonical task record: `.agentplane/tasks/202609150654-H0X3YJ/README.md`
++
++## Verification
++
++- State: ok
++- Note: Verified: refreshed blueprint snapshot after quality evidence; declared local checks and hosted CI passed on exact PR head f1812244cda2702c92dad22dc159e1f4afc01b60.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-09-16T19:29:04.838Z
++- Branch: task/202609150654-H0X3YJ/fix-active-runtime-reuse-v0-6
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../commands/branch/work-start.materialize.test.ts | 37 +++++++++++++++-
++ .../src/commands/branch/work-start.materialize.ts  | 51 +++++++++++++++++++---
++ 2 files changed, 80 insertions(+), 8 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/.agentplane/tasks/202609150654-H0X3YJ/quality/20260915-203344271-recovery-context/evaluator-opinion.md b/.agentplane/tasks/202609150654-H0X3YJ/quality/20260915-203344271-recovery-context/evaluator-opinion.md
+new file mode 100644
+index 000000000..0f71cc1d7
+--- /dev/null
++++ b/.agentplane/tasks/202609150654-H0X3YJ/quality/20260915-203344271-recovery-context/evaluator-opinion.md
+@@ -0,0 +1,18 @@
++# EVALUATOR opinion: pass
++
++Quality review passed.
++
++## Findings
++- No blocking findings; current diff is limited to the runtime guard, deterministic regression tests, and task evidence, and both declared checks pass.
++
++## Evidence
++- .agentplane/tasks/202609150654-H0X3YJ/README.md
++
++## Missing Tests
++- none recorded
++
++## Hidden Assumptions
++- none recorded
++
++## Residual Risks
++- none recorded
+diff --git a/.agentplane/tasks/202609150654-H0X3YJ/quality/20260915-203344271-recovery-context/evaluator-prompt.md b/.agentplane/tasks/202609150654-H0X3YJ/quality/20260915-203344271-recovery-context/evaluator-prompt.md
+new file mode 100644
+index 000000000..15c0bc03d
+--- /dev/null
++++ b/.agentplane/tasks/202609150654-H0X3YJ/quality/20260915-203344271-recovery-context/evaluator-prompt.md
+@@ -0,0 +1,74 @@
++# AgentPlane EVALUATOR quality review
++
++Use the evaluator module below as binding review procedure.
++Do not edit implementation files. Inspect task scope, diff, verification evidence, and residual risk.
++Write the final structured review to the report path as JSON matching the requested report shape.
++
++- task_id: 202609150654-H0X3YJ
++- task_readme: .agentplane/tasks/202609150654-H0X3YJ/README.md
++- report_path: .agentplane/tasks/202609150654-H0X3YJ/quality/20260915-203344271-recovery-context/quality-report.json
++
++Required report fields:
++- verdict: pass | rework | blocked | human_review
++- summary: concise judgement
++- findings: non-empty list for pass/rework/blocked
++- evidence_refs: concrete files, checks, PRs, traces, or reports inspected
++- missing_tests: tests or checks that should exist but do not
++- hidden_assumptions: assumptions the implementation relies on
++- residual_risks: known remaining risks
++
++## Evaluator module
++
++---
++id: recovery-context
++title: Recovery Context Invariant Review
++version: 1
++status: preview
++profile: EVALUATOR
++tags:
++  - recovery
++  - invariants
++  - concurrency
++---
++
++# Recovery Context Invariant Review
++
++Use this evaluator only when the primary implementation path already produced a concrete change or when recovery context is needed after an interruption.
++
++## Inputs
++
++- Task id, task README, approved plan, and Verify Steps.
++- Current diff or PR patch.
++- Relevant comments, review findings, incidents, and recovery/handoff context.
++- Known concurrent-agent activity and task-artifact drift classification, if present.
++
++## Review Procedure
++
++1. Reconstruct the intended contract from the task, not from the implementation summary.
++2. Compare the diff against explicit invariants, stop rules, negative cases, and user constraints.
++3. Check whether recovery context changes the interpretation of the task or exposes stale assumptions.
++4. Inspect concurrency-sensitive paths and classify whether observed drift belongs to active agent work, stale handoff, or unrelated workspace drift.
++5. Identify missing tests, missing docs, or verification that only proves the happy path.
++6. Do not execute fixes. Return review findings only.
++7. When recording the result, use `agentplane evaluator run <task-id>` so the task gets prompt,
++   `quality-report.json`, and opinion artifacts. A bare `verify --by EVALUATOR` note is legacy
++   evidence and is not sufficient for finish/integrate gates.
++
++## Output
++
++Return a concise structured review:
++
++- `verdict`: `pass`, `rework`, `blocked`, or `human_review`.
++- `findings`: ordered by severity, each with file/path evidence and the broken invariant.
++- `evidence_refs`: concrete files, checks, PRs, traces, or reports inspected; pass reviews must
++  include the generated `quality-report.json`.
++- `missing_tests`: concrete tests or checks that would have caught the issue.
++- `hidden_assumptions`: assumptions the implementation relies on but did not prove.
++- `residual_risks`: known risks after the review.
++- `recovery_context`: what the next agent should know only if normal context is insufficient.
++
++## Stop Rules
++
++- Use `blocked` when required task context, diff, or recovery context is missing.
++- Use `rework` when behavior diverges from the approved contract even if local checks pass.
++- Use `pass` only when the implementation and verification evidence cover positive, negative, and concurrency-sensitive paths relevant to the task.
+diff --git a/.agentplane/tasks/202609150654-H0X3YJ/quality/20260915-203344271-recovery-context/quality-report.json b/.agentplane/tasks/202609150654-H0X3YJ/quality/20260915-203344271-recovery-context/quality-report.json
+new file mode 100644
+index 000000000..ad26accca
+--- /dev/null
++++ b/.agentplane/tasks/202609150654-H0X3YJ/quality/20260915-203344271-recovery-context/quality-report.json
+@@ -0,0 +1,20 @@
++{
++  "schema_version": 1,
++  "task_id": "202609150654-H0X3YJ",
++  "evaluator_id": "recovery-context",
++  "evaluator_profile": "EVALUATOR",
++  "generated_at": "2026-09-15T20:33:44.271Z",
++  "verdict": "pass",
++  "summary": "Quality review passed.",
++  "evaluated_sha": "4efe98151697964fc9b87a3a6441ca6960cee26e",
++  "blueprint_digest": "d539653fa7913736ead798f543627bccebd858284d1d1826decdcca7f8cb22c9",
++  "findings": [
++    "No blocking findings; current diff is limited to the runtime guard, deterministic regression tests, and task evidence, and both declared checks pass."
++  ],
++  "evidence_refs": [
++    ".agentplane/tasks/202609150654-H0X3YJ/README.md"
++  ],
++  "missing_tests": [],
++  "hidden_assumptions": [],
++  "residual_risks": []
++}
+diff --git a/.agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json b/.agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json
+new file mode 100644
+index 000000000..7538e66f7
+--- /dev/null
++++ b/.agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json
+@@ -0,0 +1,49 @@
++{
++  "checks": [
++    {
++      "check_ids": [
++        "affected_unit_integration",
++        "critical_paths",
++        "task_outcome"
++      ],
++      "command": "bun run ci:local:full",
++      "duration_ms": 130098,
++      "exit_code": 0,
++      "runtime": {
++        "environment_digest": "sha256:e5be9d78f3d9bae7f401933eca9b9cd4297855a6df309bac94de6cfaeb8c4b13",
++        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
++        "kind": "local_runtime_resolution",
++        "status": "resolved",
++        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
++      },
++      "script": "ci:local:full",
++      "stderr_tail": "id input: expected string, received number at \"title\"; task README frontmatter schema validation failed: Invalid input: expected object, received string at \"comments[1]\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"doc_updated_at\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"doc_updated_by\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"description\"\nwarning: skipped 1 invalid task README; local task state may be incomplete\n- 202601010101-ABCDE: task README frontmatter schema validation failed: Invalid input: expected string, received number at \"title\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"tags[1]\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"verify[1]\"; task README frontmatter schema validation failed: Too small: expected string to have >=1 characters at \"commit.hash\"; task README frontmatter schema validation failed: Too small: expected string to have >=1 characters at \"commit.message\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"description\"\n{\"ts\":\"2026-09-15T20:31:42.779Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-RCsfds/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-RCsfds/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-15T20:31:42.789Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-F7iKXo/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-F7iKXo/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-15T20:31:42.792Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-F7iKXo/.agentplane/WORKFLOW.md\",\"from\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-F7iKXo/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-15T20:31:44.106Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-15T20:31:44.117Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":1}}\n{\"ts\":\"2026-09-15T20:31:44.117Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-15T20:31:44.120Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":2}}\n{\"ts\":\"2026-09-15T20:31:44.120Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-15T20:31:44.121Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n$ bun run docs:site:generate:check && bun run docs:site:typecheck && bun run docs:site:build:check && bun run docs:site:check:design\n$ node scripts/generate/generate-website-docs.mjs --check && node scripts/generate/generate-llms-full.mjs --check\n$ bun run --cwd website typecheck\n$ tsc --noEmit\n$ bun run --cwd website build:check\n$ bun run check-content && bun run check-social-images && docusaurus build\n$ node scripts/check-site-content.mjs\n$ node scripts/generate-social-images.mjs --check\n$ node scripts/checks/check-design-language.mjs\n$ node scripts/workflow/run-workflows-lint.mjs && node scripts/checks/check-workflow-command-contract.mjs && bun scripts/checks/check-lifecycle-parity.ts && node scripts/checks/check-critical-test-route.mjs\n$ node scripts/checks/run-vitest-suite.mjs platform-critical\n$ node scripts/checks/check-significant-coverage.mjs\n",
++      "stdout_tail": "ent 16ms)\n\n\n== CLI E2E (critical) ==\nVitest suite critical-cli: chunk 1/5 (1 files): packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts\nVitest suite critical-cli: chunk 1/5 passed in 2374ms (Test Files  1 passed (1); Tests  2 passed (2); Duration  2.21s (transform 1.12s, setup 0ms, import 1.42s, tests 730ms, environment 0ms))\nVitest suite critical-cli: chunk 2/5 (1 files): packages/agentplane/src/cli/run-cli.critical.git-edge.test.ts\nVitest suite critical-cli: chunk 2/5 passed in 2277ms (Test Files  1 passed (1); Tests  2 passed (2); Duration  2.11s (transform 1.11s, setup 0ms, import 1.42s, tests 634ms, environment 0ms))\nVitest suite critical-cli: chunk 3/5 (1 files): packages/agentplane/src/cli/run-cli.critical.protected-paths.test.ts\nVitest suite critical-cli: chunk 3/5 passed in 2554ms (Test Files  1 passed (1); Tests  3 passed (3); Duration  2.38s (transform 1.12s, setup 0ms, import 1.43s, tests 897ms, environment 0ms))\nVitest suite critical-cli: chunk 4/5 (1 files): packages/agentplane/src/cli/run-cli.critical.scope-leak.test.ts\nVitest suite critical-cli: chunk 4/5 passed in 2733ms (Test Files  1 passed (1); Tests  5 passed (5); Duration  2.57s (transform 1.12s, setup 0ms, import 1.44s, tests 1.06s, environment 0ms))\nVitest suite critical-cli: chunk 5/5 (1 files): packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts\nVitest suite critical-cli: chunk 5/5 passed in 2263ms (Test Files  1 passed (1); Tests  2 passed (2); Duration  2.10s (transform 1.12s, setup 0ms, import 1.42s, tests 612ms, environment 0ms))\n\n== Docs site pipeline (generate + typecheck + build + design) ==\nok: docs/reference/generated-reference.mdx is fresh\nok: website/static/llms-full.txt is fresh\n[site-content] ok\nchecked 223 docs social images\n\n ------------------------------------------------------------------------------                                                                                                         Update available 3.10.1 → 3.10.2                                                                                                                To upgrade Docusaurus packages with the latest version, run the                                       following command:                                           `npm i @docusaurus/core@latest @docusaurus/faster@latest                    @docusaurus/preset-classic@latest @docusaurus/theme-common@latest            @docusaurus/theme-mermaid@latest @docusaurus/module-type-aliases@latest                  @docusaurus/tsconfig@latest @docusaurus/types@latest`                                                                                               ------------------------------------------------------------------------------ \n\n[INFO] [en] Creating an optimized production build...\n[navigation-check] ok: checked 6 docs targets from website/build\n[SUCCESS] Generated static files in \"build\".\n[INFO] Use `npm run serve` command to test your build locally.\nDESIGN.md compliance check passed\n\n== Workflows lint (actionlint) ==\nworkflow and command guidance contract OK\nworkflow lifecycle parity OK\ncritical Vitest route OK\n\n== Windows platform-critical tests ==\n\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/v0-6-issues-base/.agentplane/worktrees/202609150654-H0X3YJ-fix-active-runtime-reuse-v0-6\n\n\n Test Files  6 passed (6)\n      Tests  92 passed (92)\n   Start at  23:32:08\n   Duration  17.05s (transform 5.19s, setup 0ms, import 6.72s, tests 28.77s, environment 0ms)\n\n\n== Significant file coverage (guard) ==\n\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/v0-6-issues-base/.agentplane/worktrees/202609150654-H0X3YJ-fix-active-runtime-reuse-v0-6\n      Coverage enabled with v8\n\n\n Test Files  8 passed (8)\n      Tests  101 passed (101)\n   Start at  23:32:25\n   Duration  2.29s (transform 3.26s, setup 0ms, import 4.24s, tests 1.98s, environment 0ms)\n\n\n== Coverage threshold (significant) ==\nSignificant suite contract OK (17 source targets).\n"
++    },
++    {
++      "check_ids": [
++        "affected_unit_integration",
++        "critical_paths",
++        "task_outcome"
++      ],
++      "command": "bunx vitest --config vitest.workspace.ts run --project agentplane --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts",
++      "duration_ms": 6557,
++      "exit_code": 0,
++      "runtime": {
++        "environment_digest": "sha256:e5be9d78f3d9bae7f401933eca9b9cd4297855a6df309bac94de6cfaeb8c4b13",
++        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
++        "kind": "local_runtime_resolution",
++        "status": "resolved",
++        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
++      },
++      "script": null,
++      "stderr_tail": "",
++      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/v0-6-issues-base/.agentplane/worktrees/202609150654-H0X3YJ-fix-active-runtime-reuse-v0-6\n\n\n Test Files  2 passed (2)\n      Tests  12 passed (12)\n   Start at  23:32:28\n   Duration  6.18s (transform 1.35s, setup 0ms, import 1.78s, tests 4.68s, environment 0ms)\n\n"
++    }
++  ],
++  "kind": "direct_task_declared_checks",
++  "reason": null,
++  "schema_version": 1,
++  "status": "passed",
++  "task_id": "202609150654-H0X3YJ"
++}
+diff --git a/.agentplane/tasks/202609150654-H0X3YJ/supervision/implementation-evidence.json b/.agentplane/tasks/202609150654-H0X3YJ/supervision/implementation-evidence.json
+new file mode 100644
+index 000000000..59c24deaa
+--- /dev/null
++++ b/.agentplane/tasks/202609150654-H0X3YJ/supervision/implementation-evidence.json
+@@ -0,0 +1,89 @@
++{
++  "checks": [
++    {
++      "command": "git diff --check 124fa982ebde749cc349126673e223ce167bcd55..4efe98151697964fc9b87a3a6441ca6960cee26e",
++      "id": "committed-diff-check",
++      "result": "pass",
++      "stdout": []
++    },
++    {
++      "command": "git diff --cached --check",
++      "id": "staged-diff-check",
++      "result": "pass",
++      "stdout": []
++    },
++    {
++      "command": "git diff --name-status --diff-filter=ACDMRTUXB 124fa982ebde749cc349126673e223ce167bcd55..4efe98151697964fc9b87a3a6441ca6960cee26e",
++      "id": "commit-paths",
++      "result": "pass",
++      "stdout": [
++        "M\t.agentplane/tasks/202609150654-H0X3YJ/README.md",
++        "M\t.agentplane/tasks/202609150654-H0X3YJ/pr/diffstat.txt",
++        "M\t.agentplane/tasks/202609150654-H0X3YJ/pr/github-body.md",
++        "M\t.agentplane/tasks/202609150654-H0X3YJ/pr/meta.json",
++        "M\t.agentplane/tasks/202609150654-H0X3YJ/pr/review.md",
++        "M\t.agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json",
++        "A\t.agentplane/tasks/202609150654-H0X3YJ/verification/20260915202032881-2becd57f31b19fbd.json",
++        "M\tpackages/agentplane/src/commands/branch/work-start.materialize.test.ts"
++      ]
++    },
++    {
++      "command": "git status --short --untracked-files=all",
++      "id": "final-repository-status",
++      "result": "pass",
++      "stdout": []
++    }
++  ],
++  "execution_base_commit": "124fa982ebde749cc349126673e223ce167bcd55",
++  "implementation_commit": "4efe98151697964fc9b87a3a6441ca6960cee26e",
++  "kind": "direct_task_implementation_evidence",
++  "repository_status": {
++    "baseline": [
++      " M .agentplane/tasks/202609150654-H0X3YJ/README.md",
++      " M .agentplane/tasks/202609150654-H0X3YJ/pr/github-body.md",
++      " M .agentplane/tasks/202609150654-H0X3YJ/pr/meta.json",
++      " M .agentplane/tasks/202609150654-H0X3YJ/pr/review.md",
++      " M .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json",
++      "?? .agentplane/tasks/202609150654-H0X3YJ/verification/20260915202032881-2becd57f31b19fbd.json"
++    ],
++    "classification": [
++      {
++        "classification": "removed_during_execution",
++        "line": " M .agentplane/tasks/202609150654-H0X3YJ/README.md"
++      },
++      {
++        "classification": "removed_during_execution",
++        "line": " M .agentplane/tasks/202609150654-H0X3YJ/pr/github-body.md"
++      },
++      {
++        "classification": "removed_during_execution",
++        "line": " M .agentplane/tasks/202609150654-H0X3YJ/pr/meta.json"
++      },
++      {
++        "classification": "removed_during_execution",
++        "line": " M .agentplane/tasks/202609150654-H0X3YJ/pr/review.md"
++      },
++      {
++        "classification": "removed_during_execution",
++        "line": " M .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json"
++      },
++      {
++        "classification": "removed_during_execution",
++        "line": "?? .agentplane/tasks/202609150654-H0X3YJ/verification/20260915202032881-2becd57f31b19fbd.json"
++      }
++    ],
++    "final": [],
++    "introduced_after_execution_baseline": [],
++    "removed_after_execution_baseline": [
++      " M .agentplane/tasks/202609150654-H0X3YJ/README.md",
++      " M .agentplane/tasks/202609150654-H0X3YJ/pr/github-body.md",
++      " M .agentplane/tasks/202609150654-H0X3YJ/pr/meta.json",
++      " M .agentplane/tasks/202609150654-H0X3YJ/pr/review.md",
++      " M .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json",
++      "?? .agentplane/tasks/202609150654-H0X3YJ/verification/20260915202032881-2becd57f31b19fbd.json"
++    ],
++    "unchanged_from_execution_baseline": []
++  },
++  "schema_version": 1,
++  "task_id": "202609150654-H0X3YJ"
++}
+diff --git a/.agentplane/tasks/202609150654-H0X3YJ/verification/20260915071558142-4a32aeba4d53ef9b.json b/.agentplane/tasks/202609150654-H0X3YJ/verification/20260915071558142-4a32aeba4d53ef9b.json
+new file mode 100644
+index 000000000..1f609fcf9
+--- /dev/null
++++ b/.agentplane/tasks/202609150654-H0X3YJ/verification/20260915071558142-4a32aeba4d53ef9b.json
+@@ -0,0 +1,116 @@
++{
++  "details": "Command: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609150654-H0X3YJ declared verification\n\nCommand: bunx vitest run --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts\nResult: fail\nEvidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609150654-H0X3YJ declared verification",
++  "digest": "sha256:4a32aeba4d53ef9bb581c5a314eb37d7e61bf35cd030edc11608f610ad41f2a6",
++  "implementation_sha": "7ac9524bb5af81a6adc418cd6143aac5f6704fe1",
++  "input": {
++    "context": {
++      "digest": "sha256:51042e3153ba2f976eaeee5f631a314fee7f297b5dc048528d0078ced40ed4d8",
++      "paths": [
++        ".agentplane/WORKFLOW.md",
++        ".github/ISSUE_TEMPLATE/config.yml",
++        "bun.lock",
++        "depcruise.config.cjs",
++        "eslint.config.mjs",
++        "knip.json",
++        "package.json",
++        "packages/agentplane/package.json",
++        "packages/agentplane/src/cli/run-cli/commands/config.ts",
++        "packages/agentplane/src/runner/config.test.ts",
++        "packages/agentplane/src/runner/config.ts",
++        "packages/agentplane/tsconfig.json",
++        "packages/agentplane/tsup.config.ts",
++        "packages/core/package.json",
++        "packages/core/schemas/config.schema.json",
++        "packages/core/src/config/config.test.ts",
++        "packages/core/src/config/config.ts",
++        "packages/core/tsconfig.json",
++        "packages/core/tsup.config.ts",
++        "packages/recipes/package.json",
++        "packages/recipes/tsconfig.json",
++        "packages/recipes/tsup.config.ts",
++        "packages/spec/examples/config.json",
++        "packages/spec/package.json",
++        "packages/spec/schemas/config.schema.json",
++        "packages/testkit/package.json",
++        "packages/testkit/tsconfig.json",
++        "schemas/config.schema.json",
++        "tsconfig.json",
++        "turbo.json",
++        "vitest.config.ts",
++        "vitest.workspace.ts",
++        "website/bun.lock",
++        "website/docusaurus.config.ts",
++        "website/package.json",
++        "website/tsconfig.json"
++      ]
++    },
++    "digest": "sha256:8b0ef1494333123576dbe1ab008ba000c23f2a1b4ce0f228c3cb12d725de9107",
++    "environment": {
++      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
++      "runtime": {
++        "architecture": "arm64",
++        "bun_major": null,
++        "node_major": "24",
++        "platform": "darwin"
++      }
++    },
++    "evidence": {
++      "details_digest": "sha256:3c09eff5c9b04786af3a8148a6eb19620bcde70af826b4465181b8ac06ad8ec2",
++      "digest": "sha256:be358a23e0816a1f856d610c85ae30364b8033b55b45a0fa51c59e0c3a7c257d",
++      "references": [
++        {
++          "digest": "sha256:553c01a3d2f1e380f2e7984600c8ed61dcd2aebcc0d5459d90589b06465af758",
++          "fragment": "check-1",
++          "path": ".agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json",
++          "reference": ".agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-1",
++          "source": "filesystem"
++        },
++        {
++          "digest": "sha256:553c01a3d2f1e380f2e7984600c8ed61dcd2aebcc0d5459d90589b06465af758",
++          "fragment": "check-2",
++          "path": ".agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json",
++          "reference": ".agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-2",
++          "source": "filesystem"
++        }
++      ]
++    },
++    "execution": {
++      "authoritative_task_source": "task_worktree",
++      "base_ref": "codex/release-v0.6.27-reclaim-fix",
++      "base_sha": "cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9",
++      "digest": "sha256:c4f7344f794a43efe4e664708a4b24ab15aca5b15c0ecd41466835d23a5f9cec",
++      "primary_task_id": "202609150654-H0X3YJ",
++      "reason_codes": [
++        "agent_preferred_branch_pr",
++        "repository_branch_pr_floor"
++      ],
++      "repository_mode": "branch_pr",
++      "requested_mode": "auto",
++      "route_source": "execution_contract",
++      "selected_mode": "branch_pr",
++      "task_ids": [
++        "202609150654-H0X3YJ"
++      ]
++    },
++    "implementation": {
++      "base_sha": "cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9",
++      "digest": "sha256:f58d23d94248709e2562adb8b98e4e06010fb2cfdfc1da75c806234196c818bc",
++      "strategy": "branch_diff",
++      "target_sha": "7ac9524bb5af81a6adc418cd6143aac5f6704fe1"
++    },
++    "kind": "task_verification_input",
++    "schema_version": 4,
++    "verification_contract_digest": "sha256:98daf9c7102a026581511bfa1bf1dc040bea575ad43efa5bfed2353d460ad9e4",
++    "verify_steps_digest": "sha256:90a655d46980e7603d596905d420e1fd68e573465809fdbe7d4444004e728b69"
++  },
++  "kind": "task_verification_record",
++  "note": "Rework: Declared check failed: bunx vitest run --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts",
++  "recorded_at": "2026-09-15T07:15:58.142Z",
++  "result": "needs_rework",
++  "schema_version": 2,
++  "scope": "1. Run `bunx vitest run --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts`. Expected: cross-repository active-runtime reuse passes while dangling, task-worktree-owned, and external layouts remain rejected.\n2. Run `bun run ci:local:full`. Expected: the complete local regression suite passes.\n3. Inspect the final diff. Expected: only the three approved implementation and test paths plus task evidence change; no release metadata or unrelated refactor is included.\n4. Verify hosted CI on the exact PR head. Expected: all required checks pass before merge to `codex/release-v0.6.27-reclaim-fix`.",
++  "scope_digest": "sha256:90a655d46980e7603d596905d420e1fd68e573465809fdbe7d4444004e728b69",
++  "task_id": "202609150654-H0X3YJ",
++  "verification_command": "agentplane verify 202609150654-H0X3YJ --rework --by SUPERVISOR",
++  "verifier": "SUPERVISOR"
++}
+diff --git a/.agentplane/tasks/202609150654-H0X3YJ/verification/20260915202032881-2becd57f31b19fbd.json b/.agentplane/tasks/202609150654-H0X3YJ/verification/20260915202032881-2becd57f31b19fbd.json
+new file mode 100644
+index 000000000..0bb90ea16
+--- /dev/null
++++ b/.agentplane/tasks/202609150654-H0X3YJ/verification/20260915202032881-2becd57f31b19fbd.json
+@@ -0,0 +1,109 @@
++{
++  "details": "Command: bun run ci:local:full\nResult: fail\nEvidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609150654-H0X3YJ declared verification",
++  "digest": "sha256:2becd57f31b19fbdd21bebf4e5fcd2b42f687ffb38e8079f6b7be5a548a75155",
++  "implementation_sha": "72149ad2afe79e37a30a3df9f1bd24f39f5684b1",
++  "input": {
++    "context": {
++      "digest": "sha256:51042e3153ba2f976eaeee5f631a314fee7f297b5dc048528d0078ced40ed4d8",
++      "paths": [
++        ".agentplane/WORKFLOW.md",
++        ".github/ISSUE_TEMPLATE/config.yml",
++        "bun.lock",
++        "depcruise.config.cjs",
++        "eslint.config.mjs",
++        "knip.json",
++        "package.json",
++        "packages/agentplane/package.json",
++        "packages/agentplane/src/cli/run-cli/commands/config.ts",
++        "packages/agentplane/src/runner/config.test.ts",
++        "packages/agentplane/src/runner/config.ts",
++        "packages/agentplane/tsconfig.json",
++        "packages/agentplane/tsup.config.ts",
++        "packages/core/package.json",
++        "packages/core/schemas/config.schema.json",
++        "packages/core/src/config/config.test.ts",
++        "packages/core/src/config/config.ts",
++        "packages/core/tsconfig.json",
++        "packages/core/tsup.config.ts",
++        "packages/recipes/package.json",
++        "packages/recipes/tsconfig.json",
++        "packages/recipes/tsup.config.ts",
++        "packages/spec/examples/config.json",
++        "packages/spec/package.json",
++        "packages/spec/schemas/config.schema.json",
++        "packages/testkit/package.json",
++        "packages/testkit/tsconfig.json",
++        "schemas/config.schema.json",
++        "tsconfig.json",
++        "turbo.json",
++        "vitest.config.ts",
++        "vitest.workspace.ts",
++        "website/bun.lock",
++        "website/docusaurus.config.ts",
++        "website/package.json",
++        "website/tsconfig.json"
++      ]
++    },
++    "digest": "sha256:a4a94ed2d7f1d6e37e3aece1b6373796d95efa5be501c8978e77d09dffa93886",
++    "environment": {
++      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
++      "runtime": {
++        "architecture": "arm64",
++        "bun_major": null,
++        "node_major": "24",
++        "platform": "darwin"
++      }
++    },
++    "evidence": {
++      "details_digest": "sha256:39032842ed662faee972b7a8c320e0be96a93fec478514bfb751cfd3491fd298",
++      "digest": "sha256:8a14cc4469b5af719e42366a365f674e342912d1a301c34ec2ea44ffa4ff2fd8",
++      "references": [
++        {
++          "digest": "sha256:97bba12d9cc281c448072fa43bdd260aff1ad2dc4ca5c7d2c39cbbb77d9f3aaf",
++          "fragment": "check-1",
++          "path": ".agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json",
++          "reference": ".agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-1",
++          "source": "filesystem"
++        }
++      ]
++    },
++    "execution": {
++      "authoritative_task_source": "task_worktree",
++      "base_ref": "codex/release-v0.6.27-reclaim-fix",
++      "base_sha": "cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9",
++      "digest": "sha256:c4f7344f794a43efe4e664708a4b24ab15aca5b15c0ecd41466835d23a5f9cec",
++      "primary_task_id": "202609150654-H0X3YJ",
++      "reason_codes": [
++        "agent_preferred_branch_pr",
++        "repository_branch_pr_floor"
++      ],
++      "repository_mode": "branch_pr",
++      "requested_mode": "auto",
++      "route_source": "execution_contract",
++      "selected_mode": "branch_pr",
++      "task_ids": [
++        "202609150654-H0X3YJ"
++      ]
++    },
++    "implementation": {
++      "base_sha": "cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9",
++      "digest": "sha256:4519bfe25b325ec1928827ceaca3388b1e54e2d7ee7e2d930c196b2045003590",
++      "strategy": "branch_diff",
++      "target_sha": "72149ad2afe79e37a30a3df9f1bd24f39f5684b1"
++    },
++    "kind": "task_verification_input",
++    "schema_version": 4,
++    "verification_contract_digest": "sha256:5fa31af598327a352ab2fe51b808b6ceccff0a6e4870d09b3e4de2271a377bf7",
++    "verify_steps_digest": "sha256:aec20a37d124f7eaf8fdf0805aaa798d6fb454fbb66364aa82e138c9b1beb721"
++  },
++  "kind": "task_verification_record",
++  "note": "Rework: Declared check failed: bun run ci:local:full",
++  "recorded_at": "2026-09-15T20:20:32.881Z",
++  "result": "needs_rework",
++  "schema_version": 2,
++  "scope": "1. Run `bun run ci:local:full`. Expected: the complete local regression suite passes.\n2. Run `bunx vitest --config vitest.workspace.ts run --project agentplane --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts`. Expected: cross-repository active-runtime reuse passes while dangling, task-worktree-owned, and external layouts remain rejected.\n3. Inspect the final diff. Expected: only the two approved implementation and test paths plus task evidence change; no release metadata or unrelated refactor is included.\n4. Verify hosted CI on the exact PR head. Expected: all required checks pass before merge to `codex/release-v0.6.27-reclaim-fix`.",
++  "scope_digest": "sha256:aec20a37d124f7eaf8fdf0805aaa798d6fb454fbb66364aa82e138c9b1beb721",
++  "task_id": "202609150654-H0X3YJ",
++  "verification_command": "agentplane verify 202609150654-H0X3YJ --rework --by SUPERVISOR",
++  "verifier": "SUPERVISOR"
++}
+diff --git a/.agentplane/tasks/202609150654-H0X3YJ/verification/20260915203234639-07fdfd9c0cdff3fb.json b/.agentplane/tasks/202609150654-H0X3YJ/verification/20260915203234639-07fdfd9c0cdff3fb.json
+new file mode 100644
+index 000000000..6afc800b2
+--- /dev/null
++++ b/.agentplane/tasks/202609150654-H0X3YJ/verification/20260915203234639-07fdfd9c0cdff3fb.json
+@@ -0,0 +1,116 @@
++{
++  "details": "Check: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609150654-H0X3YJ Verification Contract check affected_unit_integration (1/2)\n\nCheck: affected_unit_integration\nCommand: bunx vitest --config vitest.workspace.ts run --project agentplane --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609150654-H0X3YJ Verification Contract check affected_unit_integration (2/2)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609150654-H0X3YJ Verification Contract check critical_paths (1/2)\n\nCheck: critical_paths\nCommand: bunx vitest --config vitest.workspace.ts run --project agentplane --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609150654-H0X3YJ Verification Contract check critical_paths (2/2)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609150654-H0X3YJ Verification Contract check task_outcome (1/2)\n\nCheck: task_outcome\nCommand: bunx vitest --config vitest.workspace.ts run --project agentplane --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609150654-H0X3YJ Verification Contract check task_outcome (2/2)",
++  "digest": "sha256:07fdfd9c0cdff3fbfeb8425260ee43d2bb801cc698edcdeea11a8ab9070d0b63",
++  "implementation_sha": "4efe98151697964fc9b87a3a6441ca6960cee26e",
++  "input": {
++    "context": {
++      "digest": "sha256:51042e3153ba2f976eaeee5f631a314fee7f297b5dc048528d0078ced40ed4d8",
++      "paths": [
++        ".agentplane/WORKFLOW.md",
++        ".github/ISSUE_TEMPLATE/config.yml",
++        "bun.lock",
++        "depcruise.config.cjs",
++        "eslint.config.mjs",
++        "knip.json",
++        "package.json",
++        "packages/agentplane/package.json",
++        "packages/agentplane/src/cli/run-cli/commands/config.ts",
++        "packages/agentplane/src/runner/config.test.ts",
++        "packages/agentplane/src/runner/config.ts",
++        "packages/agentplane/tsconfig.json",
++        "packages/agentplane/tsup.config.ts",
++        "packages/core/package.json",
++        "packages/core/schemas/config.schema.json",
++        "packages/core/src/config/config.test.ts",
++        "packages/core/src/config/config.ts",
++        "packages/core/tsconfig.json",
++        "packages/core/tsup.config.ts",
++        "packages/recipes/package.json",
++        "packages/recipes/tsconfig.json",
++        "packages/recipes/tsup.config.ts",
++        "packages/spec/examples/config.json",
++        "packages/spec/package.json",
++        "packages/spec/schemas/config.schema.json",
++        "packages/testkit/package.json",
++        "packages/testkit/tsconfig.json",
++        "schemas/config.schema.json",
++        "tsconfig.json",
++        "turbo.json",
++        "vitest.config.ts",
++        "vitest.workspace.ts",
++        "website/bun.lock",
++        "website/docusaurus.config.ts",
++        "website/package.json",
++        "website/tsconfig.json"
++      ]
++    },
++    "digest": "sha256:90d3f0194465ceb4d15c388e0d06ee1949790c827aa499510c3c34146703ffd2",
++    "environment": {
++      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
++      "runtime": {
++        "architecture": "arm64",
++        "bun_major": null,
++        "node_major": "24",
++        "platform": "darwin"
++      }
++    },
++    "evidence": {
++      "details_digest": "sha256:6ab72585a52fbdbf3fd6ccde4eb2c00c0edaf4acefb944f9293d9bfb0eb78bd9",
++      "digest": "sha256:a23f8ce061ef10975faac11a7105742a07b69868285ae914dea9f267ee6d61c0",
++      "references": [
++        {
++          "digest": "sha256:82b433af3c1a1edb713ca970d9b14d136f73ff99fb3a17cd802d7fbe9cc87de7",
++          "fragment": "check-1",
++          "path": ".agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json",
++          "reference": ".agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-1",
++          "source": "filesystem"
++        },
++        {
++          "digest": "sha256:82b433af3c1a1edb713ca970d9b14d136f73ff99fb3a17cd802d7fbe9cc87de7",
++          "fragment": "check-2",
++          "path": ".agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json",
++          "reference": ".agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json#check-2",
++          "source": "filesystem"
++        }
++      ]
++    },
++    "execution": {
++      "authoritative_task_source": "task_worktree",
++      "base_ref": "codex/release-v0.6.27-reclaim-fix",
++      "base_sha": "cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9",
++      "digest": "sha256:c4f7344f794a43efe4e664708a4b24ab15aca5b15c0ecd41466835d23a5f9cec",
++      "primary_task_id": "202609150654-H0X3YJ",
++      "reason_codes": [
++        "agent_preferred_branch_pr",
++        "repository_branch_pr_floor"
++      ],
++      "repository_mode": "branch_pr",
++      "requested_mode": "auto",
++      "route_source": "execution_contract",
++      "selected_mode": "branch_pr",
++      "task_ids": [
++        "202609150654-H0X3YJ"
++      ]
++    },
++    "implementation": {
++      "base_sha": "cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9",
++      "digest": "sha256:309f645d466bbfb5aecd21b73ae04cad3e2d28e800323378dd6e1c9b7e8b5580",
++      "strategy": "branch_diff",
++      "target_sha": "4efe98151697964fc9b87a3a6441ca6960cee26e"
++    },
++    "kind": "task_verification_input",
++    "schema_version": 4,
++    "verification_contract_digest": "sha256:5fa31af598327a352ab2fe51b808b6ceccff0a6e4870d09b3e4de2271a377bf7",
++    "verify_steps_digest": "sha256:aec20a37d124f7eaf8fdf0805aaa798d6fb454fbb66364aa82e138c9b1beb721"
++  },
++  "kind": "task_verification_record",
++  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
++  "recorded_at": "2026-09-15T20:32:34.639Z",
++  "result": "ok",
++  "schema_version": 2,
++  "scope": "1. Run `bun run ci:local:full`. Expected: the complete local regression suite passes.\n2. Run `bunx vitest --config vitest.workspace.ts run --project agentplane --project cli-core packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts`. Expected: cross-repository active-runtime reuse passes while dangling, task-worktree-owned, and external layouts remain rejected.\n3. Inspect the final diff. Expected: only the two approved implementation and test paths plus task evidence change; no release metadata or unrelated refactor is included.\n4. Verify hosted CI on the exact PR head. Expected: all required checks pass before merge to `codex/release-v0.6.27-reclaim-fix`.",
++  "scope_digest": "sha256:aec20a37d124f7eaf8fdf0805aaa798d6fb454fbb66364aa82e138c9b1beb721",
++  "task_id": "202609150654-H0X3YJ",
++  "verification_command": "agentplane verify 202609150654-H0X3YJ --ok --by SUPERVISOR",
++  "verifier": "SUPERVISOR"
++}
+diff --git a/.agentplane/workflows/last-known-good.md b/.agentplane/workflows/last-known-good.md
+index 22c96361a..9eed984af 100644
+--- a/.agentplane/workflows/last-known-good.md
++++ b/.agentplane/workflows/last-known-good.md
+@@ -62,7 +62,7 @@ framework:
+   source: https://github.com/basilisk-labs/agentplane
+   last_update: null
+   cli:
+-    expected_version: 0.6.29
++    expected_version: 0.6.30
+ feedback:
+   github_issues:
+     enabled: true
+@@ -139,6 +139,7 @@ in_scope_paths:
+ 
+ 
+ 
++
+ 
+ 
+ ## Prompt Template
+diff --git a/bun.lock b/bun.lock
+index 581bc874b..3f31ca18c 100644
+--- a/bun.lock
++++ b/bun.lock
+@@ -31,14 +31,14 @@
+     },
+     "packages/agentplane": {
+       "name": "agentplane",
+-      "version": "0.6.29",
++      "version": "0.6.30",
+       "bin": {
+         "ap": "bin/ap.js",
+         "agentplane": "bin/agentplane.js",
+       },
+       "dependencies": {
+-        "@agentplaneorg/core": "0.6.29",
+-        "@agentplaneorg/recipes": "0.6.29",
++        "@agentplaneorg/core": "0.6.30",
++        "@agentplaneorg/recipes": "0.6.30",
+         "@clack/prompts": "^1.5.1",
+         "yaml": "^2.7.1",
+         "yauzl": "^3.4.0",
+@@ -52,7 +52,7 @@
+     },
+     "packages/core": {
+       "name": "@agentplaneorg/core",
+-      "version": "0.6.29",
++      "version": "0.6.30",
+       "dependencies": {
+         "canonicalize": "^3.0.0",
+         "execa": "^9.6.1",
+@@ -63,7 +63,7 @@
+     },
+     "packages/recipes": {
+       "name": "@agentplaneorg/recipes",
+-      "version": "0.6.29",
++      "version": "0.6.30",
+     },
+     "packages/spec": {
+       "name": "@agentplane/spec",
+@@ -73,7 +73,7 @@
+       "name": "@agentplane/testkit",
+       "version": "0.0.0",
+       "dependencies": {
+-        "@agentplaneorg/core": "0.6.29",
++        "@agentplaneorg/core": "0.6.30",
+       },
+     },
+     "website": {
+diff --git a/docs/assets/header.svg b/docs/assets/header.svg
+index d326612e4..03e52f37b 100644
+--- a/docs/assets/header.svg
++++ b/docs/assets/header.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.6.29 README header</title>
++<title>Agentplane v0.6.30 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.29</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.30</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/adr.svg b/docs/assets/readme-headers/adr.svg
+index d326612e4..03e52f37b 100644
+--- a/docs/assets/readme-headers/adr.svg
++++ b/docs/assets/readme-headers/adr.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.6.29 README header</title>
++<title>Agentplane v0.6.30 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.29</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.30</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/agentplane-cli.svg b/docs/assets/readme-headers/agentplane-cli.svg
+index d326612e4..03e52f37b 100644
+--- a/docs/assets/readme-headers/agentplane-cli.svg
++++ b/docs/assets/readme-headers/agentplane-cli.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.6.29 README header</title>
++<title>Agentplane v0.6.30 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.29</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.30</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/agentplane.svg b/docs/assets/readme-headers/agentplane.svg
+index d326612e4..03e52f37b 100644
+--- a/docs/assets/readme-headers/agentplane.svg
++++ b/docs/assets/readme-headers/agentplane.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.6.29 README header</title>
++<title>Agentplane v0.6.30 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.29</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.30</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/core.svg b/docs/assets/readme-headers/core.svg
+index d326612e4..03e52f37b 100644
+--- a/docs/assets/readme-headers/core.svg
++++ b/docs/assets/readme-headers/core.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.6.29 README header</title>
++<title>Agentplane v0.6.30 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.29</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.30</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/docs.svg b/docs/assets/readme-headers/docs.svg
+index d326612e4..03e52f37b 100644
+--- a/docs/assets/readme-headers/docs.svg
++++ b/docs/assets/readme-headers/docs.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.6.29 README header</title>
++<title>Agentplane v0.6.30 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.29</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.30</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/humanizer.svg b/docs/assets/readme-headers/humanizer.svg
+index d326612e4..03e52f37b 100644
+--- a/docs/assets/readme-headers/humanizer.svg
++++ b/docs/assets/readme-headers/humanizer.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.6.29 README header</title>
++<title>Agentplane v0.6.30 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.29</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.30</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/recipes.svg b/docs/assets/readme-headers/recipes.svg
+index d326612e4..03e52f37b 100644
+--- a/docs/assets/readme-headers/recipes.svg
++++ b/docs/assets/readme-headers/recipes.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.6.29 README header</title>
++<title>Agentplane v0.6.30 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.29</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.30</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/releases.svg b/docs/assets/readme-headers/releases.svg
+index d326612e4..03e52f37b 100644
+--- a/docs/assets/readme-headers/releases.svg
++++ b/docs/assets/readme-headers/releases.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.6.29 README header</title>
++<title>Agentplane v0.6.30 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.29</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.30</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/schemas.svg b/docs/assets/readme-headers/schemas.svg
+index d326612e4..03e52f37b 100644
+--- a/docs/assets/readme-headers/schemas.svg
++++ b/docs/assets/readme-headers/schemas.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.6.29 README header</title>
++<title>Agentplane v0.6.30 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.29</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.30</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/scripts.svg b/docs/assets/readme-headers/scripts.svg
+index d326612e4..03e52f37b 100644
+--- a/docs/assets/readme-headers/scripts.svg
++++ b/docs/assets/readme-headers/scripts.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.6.29 README header</title>
++<title>Agentplane v0.6.30 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.29</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.30</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/skills.svg b/docs/assets/readme-headers/skills.svg
+index d326612e4..03e52f37b 100644
+--- a/docs/assets/readme-headers/skills.svg
++++ b/docs/assets/readme-headers/skills.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.6.29 README header</title>
++<title>Agentplane v0.6.30 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.29</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.30</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/spec.svg b/docs/assets/readme-headers/spec.svg
+index d326612e4..03e52f37b 100644
+--- a/docs/assets/readme-headers/spec.svg
++++ b/docs/assets/readme-headers/spec.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.6.29 README header</title>
++<title>Agentplane v0.6.30 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.29</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.30</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/assets/readme-headers/testkit.svg b/docs/assets/readme-headers/testkit.svg
+index d326612e4..03e52f37b 100644
+--- a/docs/assets/readme-headers/testkit.svg
++++ b/docs/assets/readme-headers/testkit.svg
+@@ -1,5 +1,5 @@
+ <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
+-<title>Agentplane v0.6.29 README header</title>
++<title>Agentplane v0.6.30 README header</title>
+ <style>
+   .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+   .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+@@ -27,7 +27,7 @@
+ <line x1="10" y1="779.00" x2="1450" y2="779.00" stroke="#EBEBEB" stroke-width="1"/>
+ <path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+ <text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+-<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.29</text>
++<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">v0.6.30</text>
+ <text class="display" font-size="96" font-weight="500" line-height="114" letter-spacing="-0.04em" fill="#000000">
+ <tspan x="52" y="480">Ship agent work faster with</tspan>
+ <tspan x="52" y="594">repo-local plans, checks, traces,</tspan>
+diff --git a/docs/reference/generated-reference.mdx b/docs/reference/generated-reference.mdx
+index 147096fa5..498b15cce 100644
+--- a/docs/reference/generated-reference.mdx
++++ b/docs/reference/generated-reference.mdx
+@@ -10,9 +10,9 @@ This page is generated by `scripts/generate-website-docs.mjs`.
+ 
+ | Package                  | Version    | Folder                |
+ | ------------------------ | ---------- | --------------------- |
+-| `agentplane`             | `0.6.29`   | `packages/agentplane` |
+-| `@agentplaneorg/core`    | `0.6.29`   | `packages/core`       |
+-| `@agentplaneorg/recipes` | `0.6.29`   | `packages/recipes`    |
++| `agentplane`             | `0.6.30`   | `packages/agentplane` |
++| `@agentplaneorg/core`    | `0.6.30`   | `packages/core`       |
++| `@agentplaneorg/recipes` | `0.6.30`   | `packages/recipes`    |
+ | `@agentplane/spec`       | `internal` | `packages/spec`       |
+ | `@agentplane/testkit`    | `internal` | `packages/testkit`    |
+ 
+diff --git a/docs/releases/v0.6.30.md b/docs/releases/v0.6.30.md
+new file mode 100644
+index 000000000..04d23dd6e
+--- /dev/null
++++ b/docs/releases/v0.6.30.md
+@@ -0,0 +1,34 @@
++# Release Notes — v0.6.30
++
++## Summary
++
++- Windows task worktrees now reuse a repository `node_modules` layout only when AgentPlane can prove that the layout and every declared direct dependency remain owned by the repository.
++- Worktree startup still supports the existing junction-based fast path for a valid repository-local install, while unsafe or incomplete candidates fall back without creating a junction.
++- The 0.6 maintenance line now carries the same proven install-layout ownership guard used by the newer runtime, without importing unrelated v0.7 behavior.
++
++## Added
++
++- Added focused coverage for a complete repository-local install, another task worktree as a source, external workspace and dependency targets, and missing or incomplete dependency packages.
++
++## Improved
++
++- Reusable install discovery now checks the real paths of the source layout and each direct dependency before linking them into a task worktree.
++- Release task evidence records the exact implementation commit, local declared checks, hosted Linux and Windows checks, and the independent evaluator verdict used for the maintenance merge.
++
++## Fixed
++
++- Fixed task worktree materialization accepting a `node_modules` directory that resolves into another task worktree or outside the repository.
++- Fixed incomplete install candidates being treated as reusable when a declared dependency directory or its package manifest is missing.
++- Preserved the existing pre-removal unlink defense so cleanup cannot recursively traverse a linked or junction-backed install layout.
++
++## Upgrade Notes
++
++- No configuration or data migration is required.
++- The published package set moves from `0.6.29` to `0.6.30`.
++- Projects with a valid repository-local install keep the fast reuse path; other layouts are skipped and can be installed normally inside the task worktree.
++
++## Verification
++
++- The implementation task completed focused guard tests, the 92-test platform-critical suite, policy routing, and the full local CI suite before merge.
++- GitHub Core CI passed contract, static, unit, critical CLI, workflow, coverage, Windows, and aggregate PR verification on the final maintenance PR head.
++- Release planning stopped when the local `v0.6.29` reference was unavailable, then resumed only after the exact published tag was restored and verified against commit `69d023b1de5450a63244e8443662021fba484f81`.
+diff --git a/packages/agentplane/package.json b/packages/agentplane/package.json
+index 4a2a85cd2..209fc3401 100644
+--- a/packages/agentplane/package.json
++++ b/packages/agentplane/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "agentplane",
+-  "version": "0.6.29",
++  "version": "0.6.30",
+   "description": "CLI-first operational workflows and traces for AI agents.",
+   "keywords": [
+     "agentplane",
+@@ -70,8 +70,8 @@
+     "prepublishOnly": "node ../../scripts/release/enforce-github-publish.mjs && npm run prepack"
+   },
+   "dependencies": {
+-    "@agentplaneorg/core": "0.6.29",
+-    "@agentplaneorg/recipes": "0.6.29",
++    "@agentplaneorg/core": "0.6.30",
++    "@agentplaneorg/recipes": "0.6.30",
+     "@clack/prompts": "^1.5.1",
+     "yaml": "^2.7.1",
+     "yauzl": "^3.4.0",
+diff --git a/packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts b/packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts
+index f602750b7..ba6959fc8 100644
+--- a/packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts
+@@ -5,7 +5,7 @@ import path from "node:path";
+ import { fileURLToPath } from "node:url";
+ import { promisify } from "node:util";
+ import { describe, expect, it } from "vitest";
+-import { mkGitRepoRoot, pathExists } from "@agentplane/testkit";
++import { mkGitRepoRootWithBranch, pathExists } from "@agentplane/testkit";
+ 
+ const PRE_PUSH_HOOK_SCRIPT = path.resolve(
+   path.dirname(fileURLToPath(import.meta.url)),
+@@ -14,7 +14,7 @@ const PRE_PUSH_HOOK_SCRIPT = path.resolve(
+ 
+ describe("pre-push full-fast guard", () => {
+   it("allows an unknown initial push when no broad local CI script exists", async () => {
+-    const root = await mkGitRepoRoot();
++    const root = await mkGitRepoRootWithBranch("main");
+     await writeFile(path.join(root, "README.md"), "# hook test\n", "utf8");
+ 
+     const execFileAsync = promisify(execFile);
+@@ -34,7 +34,7 @@ describe("pre-push full-fast guard", () => {
+   });
+ 
+   it("blocks unknown multi-branch push scopes before running local checks", async () => {
+-    const root = await mkGitRepoRoot();
++    const root = await mkGitRepoRootWithBranch("main");
+     await mkdir(path.join(root, "scripts"), { recursive: true });
+     await writeFile(
+       path.join(root, "package.json"),
+@@ -98,7 +98,7 @@ describe("pre-push full-fast guard", () => {
+   });
+ 
+   it("fails fast when changed files require full-fast local CI", async () => {
+-    const root = await mkGitRepoRoot();
++    const root = await mkGitRepoRootWithBranch("main");
+     await mkdir(path.join(root, ".agentplane", "tasks", "202601010101-ABCDEF"), {
+       recursive: true,
+     });
+diff --git a/packages/agentplane/src/cli/run-cli.core.incidents.test.ts b/packages/agentplane/src/cli/run-cli.core.incidents.test.ts
+index 53e52f294..eb4a35bc0 100644
+--- a/packages/agentplane/src/cli/run-cli.core.incidents.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.incidents.test.ts
+@@ -13,9 +13,9 @@ import {
+   configureGitUser,
+   installRunCliIntegrationHarness,
+   mkGitRepoRoot,
++  mkGitRepoRootWithBranch,
+   writeConfig,
+ } from "@agentplane/testkit";
+-
+ installRunCliIntegrationHarness();
+ const INCIDENTS_CLI_TIMEOUT_MS = 120_000;
+ 
+@@ -930,7 +930,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
+   });
+ 
+   it("finish does not promote explicit incidents before blueprint evidence is valid", async () => {
+-    const root = await mkGitRepoRoot();
++    const root = await mkGitRepoRootWithBranch("main");
+     await configureGitUser(root);
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-hosted-close-pr.test.ts b/packages/agentplane/src/cli/run-cli.core.task-hosted-close-pr.test.ts
+index 01e2be4f1..36b5add7f 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-hosted-close-pr.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-hosted-close-pr.test.ts
+@@ -517,6 +517,7 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
+ 
+   it("task hosted-close-pr recovers merge metadata from GitHub when base pr meta is stale", async () => {
+     const root = await writeAndConfigureRoot();
++    await execFileAsync("git", ["branch", "-M", "main"], { cwd: root });
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+     await writeConfig(root, config);
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts b/packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts
+index 58c619a32..896c390bb 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts
+@@ -104,6 +104,7 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
+     "task hosted-close closes a merged branch_pr task exactly once",
+     async () => {
+       const root = await writeAndConfigureRoot();
++      await execFileAsync("git", ["branch", "-M", "main"], { cwd: root });
+       const config = defaultConfig();
+       config.workflow_mode = "branch_pr";
+       config.acr.enabled = true;
+diff --git a/packages/agentplane/src/commands/branch/work-start.materialize.test.ts b/packages/agentplane/src/commands/branch/work-start.materialize.test.ts
+index ba3e38807..14e4f0c25 100644
+--- a/packages/agentplane/src/commands/branch/work-start.materialize.test.ts
++++ b/packages/agentplane/src/commands/branch/work-start.materialize.test.ts
+@@ -1,10 +1,13 @@
+-import { mkdtemp, mkdir, rm, symlink, writeFile } from "node:fs/promises";
++import { mkdtemp, mkdir, readlink, realpath, rm, symlink, writeFile } from "node:fs/promises";
+ import os from "node:os";
+ import path from "node:path";
+ 
+ import { afterEach, describe, expect, it } from "vitest";
+ 
+-import { isReusableWorkspaceInstallLayout } from "./work-start.materialize.js";
++import {
++  isReusableWorkspaceInstallLayout,
++  materializeRepoLocalInstallLayoutForWorktree,
++} from "./work-start.materialize.js";
+ 
+ const tempRoots: string[] = [];
+ 
+@@ -51,6 +54,36 @@ describe("reusable workspace install layout", () => {
+     ).resolves.toBe(true);
+   });
+ 
++  it("accepts a complete active-runtime layout from another repository root", async () => {
++    const repoRoot = await temporaryRepo();
++    const sourceRoot = await temporaryRepo();
++    await writeRootManifest(sourceRoot);
++    await writeDependency(sourceRoot);
++
++    await expect(isReusableWorkspaceInstallLayout({ repoRoot, sourceRoot })).resolves.toBe(true);
++  });
++
++  it("links an active-runtime install to its canonical target", async () => {
++    const repoRoot = await temporaryRepo();
++    const installRoot = path.join(repoRoot, "install");
++    const worktreePath = path.join(repoRoot, ".agentplane", "worktrees", "target");
++    await writeRootManifest(repoRoot);
++    await mkdir(path.join(installRoot, "eslint"), { recursive: true });
++    await writeFile(
++      path.join(installRoot, "eslint", "package.json"),
++      '{"name":"eslint"}\n',
++      "utf8",
++    );
++    await symlink(installRoot, path.join(repoRoot, "node_modules"), "dir");
++    await mkdir(worktreePath, { recursive: true });
++
++    await materializeRepoLocalInstallLayoutForWorktree({ repoRoot, worktreePath });
++
++    await expect(readlink(path.join(worktreePath, "node_modules"))).resolves.toBe(
++      await realpath(installRoot),
++    );
++  });
++
+   it("rejects a node_modules source owned by another task worktree", async () => {
+     const repoRoot = await temporaryRepo();
+     const sourceRoot = path.join(repoRoot, ".agentplane", "worktrees", "foreign");
+diff --git a/packages/agentplane/src/commands/branch/work-start.materialize.ts b/packages/agentplane/src/commands/branch/work-start.materialize.ts
+index 9b2f946a2..897f11123 100644
+--- a/packages/agentplane/src/commands/branch/work-start.materialize.ts
++++ b/packages/agentplane/src/commands/branch/work-start.materialize.ts
+@@ -1,10 +1,22 @@
+-import { copyFile, cp, mkdir, readdir, readFile, realpath, rm, symlink } from "node:fs/promises";
++import {
++  copyFile,
++  cp,
++  lstat,
++  mkdir,
++  readdir,
++  readFile,
++  realpath,
++  rm,
++  symlink,
++} from "node:fs/promises";
+ import path from "node:path";
+ 
+ import { LocalBackend } from "../../backends/task-backend.js";
+ import { fileExists } from "../../cli/fs-utils.js";
+ import { resolveRuntimeSourceInfo } from "../../runtime/shared/runtime-source.js";
+ import type { CommandContext } from "../shared/task-backend.js";
++import { gitConfigGet, gitCurrentBranch } from "@agentplaneorg/core/git";
++import { findGitRoot } from "@agentplaneorg/core/project";
+ import { isPathWithin } from "../shared/path.js";
+ import { WORKTREE_INSTALL_LAYOUT_LINKS } from "../shared/worktree-install-layout-links.js";
+ 
+@@ -24,6 +36,17 @@ function declaredDirectDependencies(manifest: unknown): string[] {
+   return [...new Set(names)].toSorted();
+ }
+ 
++async function isTrustedInstallOwnerRoot(ownerRoot: string): Promise<boolean> {
++  const gitEntry = await lstat(path.join(ownerRoot, ".git")).catch(() => null);
++  if (!gitEntry?.isFile()) return true;
++
++  const [currentBranch, pinnedBase] = await Promise.all([
++    gitCurrentBranch(ownerRoot).catch(() => null),
++    gitConfigGet(ownerRoot, "agentplane.basebranch").catch(() => null),
++  ]);
++  return currentBranch !== null && currentBranch === pinnedBase;
++}
++
+ export async function isReusableWorkspaceInstallLayout(opts: {
+   repoRoot: string;
+   sourceRoot: string;
+@@ -35,20 +58,36 @@ export async function isReusableWorkspaceInstallLayout(opts: {
+   if (manifest === null) return false;
+ 
+   const resolvedRepoRoot = await realpath(opts.repoRoot).catch(() => path.resolve(opts.repoRoot));
++  const resolvedSourceRoot = await realpath(opts.sourceRoot).catch(() =>
++    path.resolve(opts.sourceRoot),
++  );
+   const resolvedSource = await realpath(sourcePath).catch(() => null);
+-  if (!resolvedSource || !isPathWithin(resolvedRepoRoot, resolvedSource)) return false;
+-  const taskWorktreesRoot = path.join(opts.repoRoot, ".agentplane", "worktrees");
++  if (!resolvedSource) return false;
++  const ownerRoot = isPathWithin(resolvedRepoRoot, resolvedSourceRoot)
++    ? resolvedRepoRoot
++    : ((await findGitRoot(resolvedSource)) ??
++      (isPathWithin(resolvedSourceRoot, resolvedSource) ? resolvedSourceRoot : null));
++  if (
++    !ownerRoot ||
++    !isPathWithin(ownerRoot, resolvedSource) ||
++    !(await isTrustedInstallOwnerRoot(ownerRoot))
++  ) {
++    return false;
++  }
++  const taskWorktreesRoot = path.join(ownerRoot, ".agentplane", "worktrees");
+   const resolvedTaskWorktreesRoot = await realpath(taskWorktreesRoot).catch(() =>
+     path.resolve(taskWorktreesRoot),
+   );
+-  if (isPathWithin(resolvedTaskWorktreesRoot, resolvedSource)) return false;
++  if (isPathWithin(resolvedTaskWorktreesRoot, resolvedSource)) {
++    return false;
++  }
+ 
+   for (const dependency of declaredDirectDependencies(manifest)) {
+     const dependencyRoot = path.join(sourcePath, ...dependency.split("/"));
+     const resolvedDependency = await realpath(dependencyRoot).catch(() => null);
+     if (
+       !resolvedDependency ||
+-      !isPathWithin(resolvedRepoRoot, resolvedDependency) ||
++      !isPathWithin(ownerRoot, resolvedDependency) ||
+       isPathWithin(resolvedTaskWorktreesRoot, resolvedDependency) ||
+       !(await fileExists(path.join(dependencyRoot, "package.json")))
+     ) {
+@@ -166,7 +205,7 @@ async function linkDirectoryIntoWorktree(opts: {
+       opts.relativePath !== "node_modules" ||
+       (await isReusableWorkspaceInstallLayout({ repoRoot: opts.repoRoot, sourceRoot }));
+     if ((await fileExists(candidate)) && reusable) {
+-      sourcePath = candidate;
++      sourcePath = opts.relativePath === "node_modules" ? await realpath(candidate) : candidate;
+       break;
+     }
+   }
+diff --git a/packages/core/package.json b/packages/core/package.json
+index 844312af2..377352527 100644
+--- a/packages/core/package.json
++++ b/packages/core/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@agentplaneorg/core",
+-  "version": "0.6.29",
++  "version": "0.6.30",
+   "description": "Core libraries for Agentplane repository-native task, policy, and verification workflows.",
+   "keywords": [
+     "agentplane",
+diff --git a/packages/recipes/package.json b/packages/recipes/package.json
+index dd18d749d..20b8f05f9 100644
+--- a/packages/recipes/package.json
++++ b/packages/recipes/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@agentplaneorg/recipes",
+-  "version": "0.6.29",
++  "version": "0.6.30",
+   "description": "Recipe modules for repeatable Agentplane audit-layer workflows.",
+   "keywords": [
+     "agentplane",
+diff --git a/packages/recipes/src/index.ts b/packages/recipes/src/index.ts
+index 3771f420c..f01aae9ef 100644
+--- a/packages/recipes/src/index.ts
++++ b/packages/recipes/src/index.ts
+@@ -1,4 +1,4 @@
+-export const RECIPES_VERSION = "0.6.29";
++export const RECIPES_VERSION = "0.6.30";
+ 
+ export * from "./constants.js";
+ export * from "./blueprint-extensions.js";
+diff --git a/packages/spec/examples/acr.json b/packages/spec/examples/acr.json
+index 90a417670..05d9d72dc 100644
+--- a/packages/spec/examples/acr.json
++++ b/packages/spec/examples/acr.json
+@@ -5,7 +5,7 @@
+   "created_at": "2026-05-03T12:00:00.000Z",
+   "producer": {
+     "name": "agentplane",
+-    "version": "0.6.29"
++    "version": "0.6.30"
+   },
+   "repository": {
+     "vcs": "git",
+@@ -31,7 +31,7 @@
+     "toolchain": [
+       {
+         "name": "agentplane",
+-        "version": "0.6.29"
++        "version": "0.6.30"
+       }
+     ]
+   },
+diff --git a/packages/testkit/package.json b/packages/testkit/package.json
+index d961feb84..1333137ad 100644
+--- a/packages/testkit/package.json
++++ b/packages/testkit/package.json
+@@ -70,7 +70,7 @@
+   },
+   "types": "./dist/index.d.ts",
+   "dependencies": {
+-    "@agentplaneorg/core": "0.6.29"
++    "@agentplaneorg/core": "0.6.30"
+   },
+   "scripts": {
+     "build": "node ../../scripts/checks/run-typescript-build.mjs -p tsconfig.json",
+diff --git a/website/static/img/social/docs/releases/v0.6.30.png b/website/static/img/social/docs/releases/v0.6.30.png
+new file mode 100644
+index 000000000..f9fa7cde0
+Binary files /dev/null and b/website/static/img/social/docs/releases/v0.6.30.png differ
+diff --git a/website/static/img/social/manifest.json b/website/static/img/social/manifest.json
+index 0bf76048a..3b18c1982 100644
+--- a/website/static/img/social/manifest.json
++++ b/website/static/img/social/manifest.json
+@@ -1500,6 +1500,14 @@
+       "title": "V0.6.3",
+       "svgSha256": "401feb95960d335bdad082641b47c38765b77ae57df679ad1dd40181d5a1d8d0"
+     },
++    {
++      "route": "/docs/releases/v0.6.30",
++      "output": "static/img/social/docs/releases/v0.6.30.png",
++      "section": "Releases",
++      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
++      "title": "V0.6.30",
++      "svgSha256": "cfc1db01c4b20364a6c6105ba1d7aca967c579735f33c1ef6ffb17dcaffe52cd"
++    },
+     {
+       "route": "/docs/releases/v0.6.4",
+       "output": "static/img/social/docs/releases/v0.6.4.png",

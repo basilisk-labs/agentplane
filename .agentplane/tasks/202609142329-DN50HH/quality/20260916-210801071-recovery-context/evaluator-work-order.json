@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609142329-DN50HH-06f3560d9d8ba0933a46c3e4",
+  "prepared_at": "2026-09-16T21:08:01.071Z",
+  "task": {
+    "id": "202609142329-DN50HH",
+    "revision": 29,
+    "objective": "Release AgentPlane 0.6.30 from exact maintenance base 9001433ac67aa2973b6e3323de041216864eed61. Do not modify main. Include the install-layout guard from PR #5958 and its active-runtime correction from PR #5959.",
+    "acceptance_criteria": [
+      "bun run release:prepublish",
+      "bun run ci:local:full",
+      "- In scope: rebase and qualify the prepared 0.6.30 candidate on exact maintenance SHA 9001433ac67aa2973b6e3323de041216864eed61, merge only to codex/release-v0.6.27-reclaim-fix, publish from the exact merged SHA, and verify all required channels.\n- Out of scope: main and unrelated refactors.",
+      "Release plan: version=0.6.30, tag=v0.6.30, base=codex/release-v0.6.27-reclaim-fix at 9001433ac67aa2973b6e3323de041216864eed61. Rebase the prepared candidate onto the exact maintenance base that contains PR #5958 and corrective PR #5959. Regenerate the patch plan and confirm release notes and synchronized package versions. Run release:prepublish and ci:local:full on the final candidate head. Publish a branch_pr release candidate only to codex/release-v0.6.27-reclaim-fix. Require evaluator approval and stable hosted CI. Merge without touching main. Dispatch Publish to npm with the exact merged SHA. Verify npm packages, agentplane and ap install smoke, v0.6.30 tag, GitHub Release assets, GHCR, and the v0.6 moving tag. Report optional credential-gated channels explicitly.",
+      "1. Run `agentplane release plan --patch`. Expected: the plan freezes version 0.6.30 and tag v0.6.30 from maintenance base 9001433ac67aa2973b6e3323de041216864eed61.\n2. Run `bun run release:prepublish`. Expected: synchronized package versions, release notes, parity checks, distribution generation, and the full release gate pass on the final candidate head.\n3. Run `bun run ci:local:full`. Expected: the complete local regression suite passes on the final candidate head.\n4. Inspect the final diff and repository status. Expected: only 0.6.30 release metadata, notes, task evidence, and the already-merged guard corrections are present; main is unchanged.\n5. Verify the final release-candidate PR. Expected: all hosted checks pass on the exact final head and the PR targets only codex/release-v0.6.27-reclaim-fix.\n6. After provider merge, dispatch Publish to npm with the exact merged SHA. Expected: npm packages, CLI install smoke for agentplane and ap, v0.6.30 tag, GitHub Release assets, GHCR, and v0.6 tag are confirmed; optional credential-gated channels are reported explicitly."
+    ]
+  },
+  "evaluated_sha": "9ba4e58542d6250f907496e97fe132e245ea8d55",
+  "diff_base_sha": "cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9",
+  "blueprint_digest": "350c37aa2b1b4fd7cbd6a334f393454261f9acea776bc1f577ef1a0842a0092c",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609142329-DN50HH/quality/20260916-210801071-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:1c1aece6b79cc6d69a8ec31dbe2b865bad855a2f695455477ab1a0ae26ad752a",
+    "prompt_path": ".agentplane/tasks/202609142329-DN50HH/quality/objects/sha256/25e9a0b9585a45a6e5df4d4830f29d338e6bc364c66c146ec36e2229f2eb6218.md",
+    "result_schema_path": ".agentplane/tasks/202609142329-DN50HH/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609142329-DN50HH/README.md",
+      "sha256": "sha256:2ba0c29378091922e1385d7f5491f80ba50d0044def56a5252931ae5b52f4500",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609142329-DN50HH/quality/objects/sha256/5d0fc760de3e859d2b2cd07c485956ea82161ee255879ce4cf0e8ca23449b652.patch",
+      "sha256": "sha256:5d0fc760de3e859d2b2cd07c485956ea82161ee255879ce4cf0e8ca23449b652",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609142329-DN50HH/quality/objects/sha256/8ef7283523c6151311fcceab5e2dc78bb374a3affaf650f0c807a6cdaa8c3a90.json",
+      "sha256": "sha256:8ef7283523c6151311fcceab5e2dc78bb374a3affaf650f0c807a6cdaa8c3a90",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609142329-DN50HH/verification/20260916210720516-0d219aa44fc934fd.json",
+      "sha256": "sha256:6da38d248dfd65d57ea216b25748e5ac63ff604e60a504904871d09ee9183c41",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609142329-DN50HH/quality/objects/sha256/39c0d919f3f69b6e4937572699900df0f331f57307f52f38f70bff446b11ae7b.json",
+      "sha256": "sha256:39c0d919f3f69b6e4937572699900df0f331f57307f52f38f70bff446b11ae7b",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.release.md",
+      "sha256": "sha256:94a0fcabe77fef35ff6f32edea35ce0da7754a9f7c740a148c3d24a1b96dfa8d",
+      "required": true
+    }
+  ]
+}
