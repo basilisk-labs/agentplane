@@ -15,8 +15,8 @@ Release operator task after all 0.7.9 stabilization dependencies are integrated.
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
