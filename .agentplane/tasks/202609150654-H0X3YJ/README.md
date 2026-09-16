@@ -1,10 +1,11 @@
 ---
 id: "202609150654-H0X3YJ"
 title: "Fix active-runtime install reuse on v0.6"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -24,9 +25,9 @@ plan_approval:
   note: "Approved in the current conversation for the bounded guard repair and v0.6.30 release continuation."
 verification:
   state: "ok"
-  updated_at: "2026-09-15T20:32:34.639Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  updated_at: "2026-09-16T19:34:54.317Z"
+  updated_by: "CODER"
+  note: "Verified: refreshed blueprint snapshot after quality evidence; declared local checks and hosted CI passed on exact PR head f1812244cda2702c92dad22dc159e1f4afc01b60."
   attempts: 0
 quality_review:
   state: "pass"
@@ -44,8 +45,8 @@ quality_review:
   findings:
     - "No blocking findings; current diff is limited to the runtime guard, deterministic regression tests, and task evidence, and both declared checks pass."
 commit:
-  hash: "4efe98151697964fc9b87a3a6441ca6960cee26e"
-  message: "🚧 H0X3YJ task: apply external agent result"
+  hash: "f1812244cda2702c92dad22dc159e1f4afc01b60"
+  message: "🚧 H0X3YJ task: record external implementation evidence"
 comments:
   -
     author: "CODER"
@@ -71,6 +72,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 4efe98151697. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -139,9 +143,22 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "verify"
+    at: "2026-09-16T19:34:54.317Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: refreshed blueprint snapshot after quality evidence; declared local checks and hosted CI passed on exact PR head f1812244cda2702c92dad22dc159e1f4afc01b60."
+  -
+    type: "status"
+    at: "2026-09-16T19:35:06.164Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-09-15T20:32:35.360Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-16T19:35:06.165Z"
+doc_updated_by: "CODER"
 description: "Fix the reusable workspace install-layout guard so work start can reuse a valid active repo-local runtime from a separate repository root while still rejecting dangling, task-worktree-owned, and external dependency layouts. Add regression coverage for the cross-repository bootstrap path required by release:prepublish."
 sections:
   Summary: |-
@@ -304,6 +321,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-09-16T19:34:54.317Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: refreshed blueprint snapshot after quality evidence; declared local checks and hosted CI passed on exact PR head f1812244cda2702c92dad22dc159e1f4afc01b60.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-09-15T20:32:35.360Z, excerpt_hash=sha256:aec20a37d124f7eaf8fdf0805aaa798d6fb454fbb66364aa82e138c9b1beb721
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/v0-6-issues-base/.agentplane/worktrees/202609150654-H0X3YJ-fix-active-runtime-reuse-v0-6/.agentplane/tasks/202609150654-H0X3YJ/blueprint/resolved-snapshot.json
+    - old_digest: d539653fa7913736ead798f543627bccebd858284d1d1826decdcca7f8cb22c9
+    - current_digest: d539653fa7913736ead798f543627bccebd858284d1d1826decdcca7f8cb22c9
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609150654-H0X3YJ
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane finish 202609150654-H0X3YJ --author CODER --body Verified: pre-merge closure packet is ready for the task PR. --result pre-merge closure --commit f1812244cda2702c92dad22dc159e1f4afc01b60 --pre-merge-closure
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -329,6 +376,7 @@ extensions:
     work_item_id: null
   implementation_commit:
     hash: "4efe98151697964fc9b87a3a6441ca6960cee26e"
+    message: "🚧 H0X3YJ task: apply external agent result"
   task_execution_context:
     base_ref: "codex/release-v0.6.27-reclaim-fix"
     base_sha: "cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9"
@@ -658,6 +706,36 @@ DecisionContextRef:
 - repeat_allowed: false
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
+
+### 2026-09-16T19:34:54.317Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: refreshed blueprint snapshot after quality evidence; declared local checks and hosted CI passed on exact PR head f1812244cda2702c92dad22dc159e1f4afc01b60.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-09-15T20:32:35.360Z, excerpt_hash=sha256:aec20a37d124f7eaf8fdf0805aaa798d6fb454fbb66364aa82e138c9b1beb721
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/v0-6-issues-base/.agentplane/worktrees/202609150654-H0X3YJ-fix-active-runtime-reuse-v0-6/.agentplane/tasks/202609150654-H0X3YJ/blueprint/resolved-snapshot.json
+- old_digest: d539653fa7913736ead798f543627bccebd858284d1d1826decdcca7f8cb22c9
+- current_digest: d539653fa7913736ead798f543627bccebd858284d1d1826decdcca7f8cb22c9
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609150654-H0X3YJ
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane finish 202609150654-H0X3YJ --author CODER --body Verified: pre-merge closure packet is ready for the task PR. --result pre-merge closure --commit f1812244cda2702c92dad22dc159e1f4afc01b60 --pre-merge-closure
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
 
 <!-- END VERIFICATION RESULTS -->
 

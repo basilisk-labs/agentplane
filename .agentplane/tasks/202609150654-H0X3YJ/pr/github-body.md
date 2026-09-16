@@ -16,13 +16,18 @@ Fix the reusable workspace install-layout guard so work start can reuse a valid 
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- Note:
+
+```text
+Verified: refreshed blueprint snapshot after quality evidence; declared local checks and hosted CI
+passed on exact PR head f1812244cda2702c92dad22dc159e1f4afc01b60.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-15T06:55:01.035Z
+- Updated: 2026-09-16T19:29:04.838Z
 - Branch: task/202609150654-H0X3YJ/fix-active-runtime-reuse-v0-6
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

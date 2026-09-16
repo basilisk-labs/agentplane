@@ -3,8 +3,17 @@
   "branch": "task/202609150654-H0X3YJ/fix-active-runtime-reuse-v0-6",
   "created_at": "2026-09-15T06:55:01.035Z",
   "diffstat_sha256": "sha256:bd230140d3fc9386964b05bf6174c1cd2203dc83bd91bffc8b362f85f450582a",
-  "last_verified_at": "2026-09-15T20:32:34.639Z",
+  "last_verified_at": "2026-09-16T19:34:54.317Z",
   "last_verified_diffstat_sha256": "sha256:bd230140d3fc9386964b05bf6174c1cd2203dc83bd91bffc8b362f85f450582a",
+  "pr_number": 5959,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5959",
+  "pre_merge_closure": {
+    "basis_commit": "f1812244cda2702c92dad22dc159e1f4afc01b60",
+    "branch": "task/202609150654-H0X3YJ/fix-active-runtime-reuse-v0-6",
+    "pr_number": 5959,
+    "recorded_at": "2026-09-16T19:35:06.185Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -14,8 +23,9 @@
     "target_project": "basilisk-labs/agentplane"
   },
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202609150654-H0X3YJ",
-  "updated_at": "2026-09-15T06:55:01.035Z",
+  "updated_at": "2026-09-16T19:29:04.838Z",
   "verify": {
     "status": "pass"
   }

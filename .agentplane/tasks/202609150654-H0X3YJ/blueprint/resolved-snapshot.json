@@ -191,7 +191,7 @@
         "required": true,
         "protected": true,
         "allowedCommands": [
-          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
+          "agentplane evaluator run <task-id> --verdict pass|rework|blocked|human_review"
         ],
         "policyModules": [],
         "evidenceKinds": [
@@ -297,7 +297,7 @@
       ".agentplane/policy/workflow.branch_pr.md"
     ],
     "allowedCommands": [
-      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
+      "agentplane evaluator run <task-id> --verdict pass|rework|blocked|human_review",
       "agentplane integrate <task-id> --branch <branch> --run-verify",
       "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
       "agentplane task verify-show <task-id>",
@@ -442,7 +442,7 @@
       "required": true,
       "protected": true,
       "allowedCommands": [
-        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
+        "agentplane evaluator run <task-id> --verdict pass|rework|blocked|human_review"
       ],
       "policyModules": [],
       "evidenceKinds": [
@@ -548,7 +548,7 @@
     ".agentplane/policy/workflow.branch_pr.md"
   ],
   "allowedCommands": [
-    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
+    "agentplane evaluator run <task-id> --verdict pass|rework|blocked|human_review",
     "agentplane integrate <task-id> --branch <branch> --run-verify",
     "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
     "agentplane task verify-show <task-id>",
@@ -573,6 +573,6 @@
   ],
   "digest": {
     "algorithm": "sha256",
-    "value": "a07deb437a1312a6ee3031ad1aae4d775183554bbc915015d13bd085e2efb485"
+    "value": "d539653fa7913736ead798f543627bccebd858284d1d1826decdcca7f8cb22c9"
   }
 }
