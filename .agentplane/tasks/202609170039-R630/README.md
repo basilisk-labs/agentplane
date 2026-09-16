@@ -6,7 +6,7 @@ risk_level: "low"
 status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -30,22 +30,22 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-09-16T21:43:44.295Z"
+  updated_at: "2026-09-16T21:48:16.961Z"
   updated_by: "EVALUATOR"
-  note: "The exact-SHA recovery workflow now avoids the unavailable optional marketing submodule while preserving the candidate checkout and all release validations."
-  evaluated_sha: "70d9383d33c64d25c151fd2c58fb4cf89828253d"
+  note: "Revalidated the unchanged one-line recovery fix after applying the hook-prescribed deploy-fix commit metadata."
+  evaluated_sha: "2aae72e366bc9f8a901410ce539d91839ee9cbd9"
   blueprint_digest: "efc492849641c35e80e36c18881cef6dc5f65e0080c1f613e972b91781978226"
   evidence_refs:
     - ".agentplane/tasks/202609170039-R630/README.md"
-    - ".agentplane/tasks/202609170039-R630/quality/20260916-214344295-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609170039-R630/quality/20260916-214344295-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202609170039-R630/quality/20260916-214344295-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609170039-R630/quality/20260916-214816961-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609170039-R630/quality/20260916-214816961-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202609170039-R630/quality/20260916-214816961-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202609170039-R630/blueprint/resolved-snapshot.json"
-    - ".github/workflows/publish-distribution-module.yml: checkout changed from recursive submodules to false"
-    - "bun run workflows:lint passed"
-    - "pre-commit suite passed 16 files and 146 tests"
+    - ".github/workflows/publish-distribution-module.yml sets submodules false"
+    - "bun run workflows:lint passed before the metadata-only rewrite"
+    - "GitHub Actions run 35153428113 is the reproduced checkout failure"
   findings:
-    - "Pass: the only functional change disables recursive submodule checkout in the recovery job; no release payload, SHA, tag, or publication logic changed."
+    - "Pass: recursive optional submodule checkout is disabled; exact SHA, tag, validation, GHCR, GitHub Release, and external distribution logic are unchanged."
 commit:
   hash: "70d9383d33c64d25c151fd2c58fb4cf89828253d"
   message: "🔧 R630 task: skip optional submodules in release recovery"
