@@ -4,7 +4,7 @@ title: "Release AgentPlane 0.6.30 from the 0.6 maintenance branch"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -120,6 +120,10 @@ execution_contract:
       - "docs/reference/generated-reference.mdx"
       - "docs/releases/v0.6.30.md"
       - "packages/agentplane/package.json"
+      - "packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.incidents.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-hosted-close-pr.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts"
       - "packages/core/package.json"
       - "packages/recipes/package.json"
       - "packages/recipes/src/index.ts"
@@ -135,6 +139,7 @@ execution_contract:
       - "release_metadata"
       - "repository_write"
       - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -187,10 +192,14 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:8e743e912c541d5ea70d99dd20f521c17efdb17967d1f4a969d2672d3f9af001"
+      digest: "sha256:be0929d352cbaa2856a565addc9f339572dd2072d586a3eee8616b4fd3a0339e"
       escalation_reasons:
         - "central_component:bun.lock"
         - "central_path:bun.lock"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.incidents.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-hosted-close-pr.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts"
         - "central_path:packages/core/package.json"
         - "effect_dependencies"
         - "effect_public_api"
@@ -235,6 +244,10 @@ execution_contract:
           - "docs/reference/generated-reference.mdx"
           - "docs/releases/v0.6.30.md"
           - "packages/agentplane/package.json"
+          - "packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.incidents.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-hosted-close-pr.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts"
           - "packages/core/package.json"
           - "packages/recipes/package.json"
           - "packages/recipes/src/index.ts"
@@ -250,6 +263,7 @@ execution_contract:
           - "release_metadata"
           - "repository_write"
           - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -287,7 +301,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "9ba4e58542d6250f907496e97fe132e245ea8d55"
+  message: "🚧 DN50HH task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -325,6 +341,9 @@ comments:
   -
     author: "USER"
     body: "Resume after correcting the local verification contract. Hosted CI, exact-head PR validation, provider merge, and exact-SHA publication remain lifecycle acceptance requirements. The executable verify list now contains only bun run release:prepublish and bun run ci:local:full."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 9ba4e58542d6. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -410,9 +429,17 @@ events:
     from: "BLOCKED"
     to: "DOING"
     note: "Resume after correcting the local verification contract. Hosted CI, exact-head PR validation, provider merge, and exact-SHA publication remain lifecycle acceptance requirements. The executable verify list now contains only bun run release:prepublish and bun run ci:local:full."
+  -
+    type: "status"
+    at: "2026-09-16T20:56:36.562Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 9ba4e58542d6. CLI accepted one state-bound external-agent semantic result."
+    commit: "9ba4e58542d6250f907496e97fe132e245ea8d55"
 doc_version: 3
-doc_updated_at: "2026-09-16T19:57:48.781Z"
-doc_updated_by: "USER"
+doc_updated_at: "2026-09-16T20:56:36.562Z"
+doc_updated_by: "SUPERVISOR"
 description: "Prepare, qualify, merge, publish, and verify AgentPlane 0.6.30 from exact maintenance SHA cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9. Do not modify main. Include the safe reusable node_modules layout guard merged by PR #5958."
 sections:
   Summary: "Release AgentPlane 0.6.30 from exact maintenance base 9001433ac67aa2973b6e3323de041216864eed61. Do not modify main. Include the install-layout guard from PR #5958 and its active-runtime correction from PR #5959."
@@ -501,6 +528,8 @@ extensions:
     status: "applied"
     transition_id: "tr_49aab755bf2ea50a788f7075557469f5"
     work_item_id: null
+  implementation_commit:
+    hash: "9ba4e58542d6250f907496e97fe132e245ea8d55"
   task_execution_context:
     base_ref: "codex/release-v0.6.27-reclaim-fix"
     base_sha: "cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9"
