@@ -4,14 +4,12 @@ Canonical task record: `.agentplane/tasks/202609142329-DN50HH/README.md`
 
 ## Summary
 
-Release AgentPlane 0.6.30 from the 0.6 maintenance branch
-
-Prepare, qualify, merge, publish, and verify AgentPlane 0.6.30 from exact maintenance SHA cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9. Do not modify main. Include the safe reusable node_modules layout guard merged by PR #5958.
+Release AgentPlane 0.6.30 from exact maintenance base 9001433ac67aa2973b6e3323de041216864eed61. Do not modify main. Include the install-layout guard from PR #5958 and its active-runtime correction from PR #5959.
 
 ## Scope
 
-- In scope: Prepare, qualify, merge, publish, and verify AgentPlane 0.6.30 from exact maintenance SHA cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9. Do not modify main. Include the safe reusable node_modules layout guard merged by PR #5958.
-- Out of scope: unrelated refactors not required for "Release AgentPlane 0.6.30 from the 0.6 maintenance branch".
+- In scope: rebase and qualify the prepared 0.6.30 candidate on exact maintenance SHA 9001433ac67aa2973b6e3323de041216864eed61, merge only to codex/release-v0.6.27-reclaim-fix, publish from the exact merged SHA, and verify all required channels.
+- Out of scope: main and unrelated refactors.
 
 ## Verification
 
@@ -27,7 +25,34 @@ Prepare, qualify, merge, publish, and verify AgentPlane 0.6.30 from exact mainte
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .agentplane/WORKFLOW.md                            |   3 +-
+ .agentplane/workflows/last-known-good.md           |   3 +-
+ bun.lock                                           |  12 ++++----
+ docs/assets/header.svg                             |   4 +--
+ docs/assets/readme-headers/adr.svg                 |   4 +--
+ docs/assets/readme-headers/agentplane-cli.svg      |   4 +--
+ docs/assets/readme-headers/agentplane.svg          |   4 +--
+ docs/assets/readme-headers/core.svg                |   4 +--
+ docs/assets/readme-headers/docs.svg                |   4 +--
+ docs/assets/readme-headers/humanizer.svg           |   4 +--
+ docs/assets/readme-headers/recipes.svg             |   4 +--
+ docs/assets/readme-headers/releases.svg            |   4 +--
+ docs/assets/readme-headers/schemas.svg             |   4 +--
+ docs/assets/readme-headers/scripts.svg             |   4 +--
+ docs/assets/readme-headers/skills.svg              |   4 +--
+ docs/assets/readme-headers/spec.svg                |   4 +--
+ docs/assets/readme-headers/testkit.svg             |   4 +--
+ docs/reference/generated-reference.mdx             |   6 ++--
+ docs/releases/v0.6.30.md                           |  34 +++++++++++++++++++++
+ packages/agentplane/package.json                   |   6 ++--
+ packages/core/package.json                         |   2 +-
+ packages/recipes/package.json                      |   2 +-
+ packages/recipes/src/index.ts                      |   2 +-
+ packages/spec/examples/acr.json                    |   4 +--
+ packages/testkit/package.json                      |   2 +-
+ .../static/img/social/docs/releases/v0.6.30.png    | Bin 0 -> 54283 bytes
+ website/static/img/social/manifest.json            |   8 +++++
+ 27 files changed, 92 insertions(+), 48 deletions(-)
 ```
 
 </details>
