@@ -44,7 +44,7 @@ Release operator task after all 0.7.9 stabilization dependencies are integrated.
  docs/assets/readme-headers/testkit.svg             |    4 +-
  docs/reference/generated-reference.mdx             |   14 +-
  .../candidate-base-synchronization.json            |   17 +
- docs/releases/v0.7.9-evidence/preparation.md       |   27 +
+ docs/releases/v0.7.9-evidence/preparation.md       |   29 +
  .../v0.7.9-evidence/release-plan-changes.json      | 3162 ++++++++++++++++++++
  .../v0.7.9-evidence/release-plan-version.json      |    8 +
  docs/releases/v0.7.9.md                            |  679 +++++
@@ -298,7 +298,7 @@ Release operator task after all 0.7.9 stabilization dependencies are integrated.
  .../social/docs/workflow-guides/github-actions.png |  Bin 60625 -> 60142 bytes
  .../social/docs/workflow-guides/hermes-kanban.png  |  Bin 61420 -> 62057 bytes
  website/static/img/social/manifest.json            |   16 +
- 271 files changed, 4134 insertions(+), 215 deletions(-)
+ 271 files changed, 4136 insertions(+), 215 deletions(-)
 ```
 
 </details>
