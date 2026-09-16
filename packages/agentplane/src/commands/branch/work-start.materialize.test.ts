@@ -1,10 +1,13 @@
-import { mkdtemp, mkdir, rm, symlink, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, readlink, realpath, rm, symlink, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
 import { afterEach, describe, expect, it } from "vitest";
 
-import { isReusableWorkspaceInstallLayout } from "./work-start.materialize.js";
+import {
+  isReusableWorkspaceInstallLayout,
+  materializeRepoLocalInstallLayoutForWorktree,
+} from "./work-start.materialize.js";
 
 const tempRoots: string[] = [];
 
@@ -49,6 +52,36 @@ describe("reusable workspace install layout", () => {
     await expect(
       isReusableWorkspaceInstallLayout({ repoRoot, sourceRoot: repoRoot }),
     ).resolves.toBe(true);
+  });
+
+  it("accepts a complete active-runtime layout from another repository root", async () => {
+    const repoRoot = await temporaryRepo();
+    const sourceRoot = await temporaryRepo();
+    await writeRootManifest(sourceRoot);
+    await writeDependency(sourceRoot);
+
+    await expect(isReusableWorkspaceInstallLayout({ repoRoot, sourceRoot })).resolves.toBe(true);
+  });
+
+  it("links an active-runtime install to its canonical target", async () => {
+    const repoRoot = await temporaryRepo();
+    const installRoot = path.join(repoRoot, "install");
+    const worktreePath = path.join(repoRoot, ".agentplane", "worktrees", "target");
+    await writeRootManifest(repoRoot);
+    await mkdir(path.join(installRoot, "eslint"), { recursive: true });
+    await writeFile(
+      path.join(installRoot, "eslint", "package.json"),
+      '{"name":"eslint"}\n',
+      "utf8",
+    );
+    await symlink(installRoot, path.join(repoRoot, "node_modules"), "dir");
+    await mkdir(worktreePath, { recursive: true });
+
+    await materializeRepoLocalInstallLayoutForWorktree({ repoRoot, worktreePath });
+
+    await expect(readlink(path.join(worktreePath, "node_modules"))).resolves.toBe(
+      await realpath(installRoot),
+    );
   });
 
   it("rejects a node_modules source owned by another task worktree", async () => {

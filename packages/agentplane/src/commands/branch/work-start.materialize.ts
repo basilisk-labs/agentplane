@@ -1,10 +1,22 @@
-import { copyFile, cp, mkdir, readdir, readFile, realpath, rm, symlink } from "node:fs/promises";
+import {
+  copyFile,
+  cp,
+  lstat,
+  mkdir,
+  readdir,
+  readFile,
+  realpath,
+  rm,
+  symlink,
+} from "node:fs/promises";
 import path from "node:path";
 
 import { LocalBackend } from "../../backends/task-backend.js";
 import { fileExists } from "../../cli/fs-utils.js";
 import { resolveRuntimeSourceInfo } from "../../runtime/shared/runtime-source.js";
 import type { CommandContext } from "../shared/task-backend.js";
+import { gitConfigGet, gitCurrentBranch } from "@agentplaneorg/core/git";
+import { findGitRoot } from "@agentplaneorg/core/project";
 import { isPathWithin } from "../shared/path.js";
 import { WORKTREE_INSTALL_LAYOUT_LINKS } from "../shared/worktree-install-layout-links.js";
 
@@ -24,6 +36,17 @@ function declaredDirectDependencies(manifest: unknown): string[] {
   return [...new Set(names)].toSorted();
 }
 
+async function isTrustedInstallOwnerRoot(ownerRoot: string): Promise<boolean> {
+  const gitEntry = await lstat(path.join(ownerRoot, ".git")).catch(() => null);
+  if (!gitEntry?.isFile()) return true;
+
+  const [currentBranch, pinnedBase] = await Promise.all([
+    gitCurrentBranch(ownerRoot).catch(() => null),
+    gitConfigGet(ownerRoot, "agentplane.basebranch").catch(() => null),
+  ]);
+  return currentBranch !== null && currentBranch === pinnedBase;
+}
+
 export async function isReusableWorkspaceInstallLayout(opts: {
   repoRoot: string;
   sourceRoot: string;
@@ -35,20 +58,36 @@ export async function isReusableWorkspaceInstallLayout(opts: {
   if (manifest === null) return false;
 
   const resolvedRepoRoot = await realpath(opts.repoRoot).catch(() => path.resolve(opts.repoRoot));
+  const resolvedSourceRoot = await realpath(opts.sourceRoot).catch(() =>
+    path.resolve(opts.sourceRoot),
+  );
   const resolvedSource = await realpath(sourcePath).catch(() => null);
-  if (!resolvedSource || !isPathWithin(resolvedRepoRoot, resolvedSource)) return false;
-  const taskWorktreesRoot = path.join(opts.repoRoot, ".agentplane", "worktrees");
+  if (!resolvedSource) return false;
+  const ownerRoot = isPathWithin(resolvedRepoRoot, resolvedSourceRoot)
+    ? resolvedRepoRoot
+    : ((await findGitRoot(resolvedSource)) ??
+      (isPathWithin(resolvedSourceRoot, resolvedSource) ? resolvedSourceRoot : null));
+  if (
+    !ownerRoot ||
+    !isPathWithin(ownerRoot, resolvedSource) ||
+    !(await isTrustedInstallOwnerRoot(ownerRoot))
+  ) {
+    return false;
+  }
+  const taskWorktreesRoot = path.join(ownerRoot, ".agentplane", "worktrees");
   const resolvedTaskWorktreesRoot = await realpath(taskWorktreesRoot).catch(() =>
     path.resolve(taskWorktreesRoot),
   );
-  if (isPathWithin(resolvedTaskWorktreesRoot, resolvedSource)) return false;
+  if (isPathWithin(resolvedTaskWorktreesRoot, resolvedSource)) {
+    return false;
+  }
 
   for (const dependency of declaredDirectDependencies(manifest)) {
     const dependencyRoot = path.join(sourcePath, ...dependency.split("/"));
     const resolvedDependency = await realpath(dependencyRoot).catch(() => null);
     if (
       !resolvedDependency ||
-      !isPathWithin(resolvedRepoRoot, resolvedDependency) ||
+      !isPathWithin(ownerRoot, resolvedDependency) ||
       isPathWithin(resolvedTaskWorktreesRoot, resolvedDependency) ||
       !(await fileExists(path.join(dependencyRoot, "package.json")))
     ) {
@@ -166,7 +205,7 @@ async function linkDirectoryIntoWorktree(opts: {
       opts.relativePath !== "node_modules" ||
       (await isReusableWorkspaceInstallLayout({ repoRoot: opts.repoRoot, sourceRoot }));
     if ((await fileExists(candidate)) && reusable) {
-      sourcePath = candidate;
+      sourcePath = opts.relativePath === "node_modules" ? await realpath(candidate) : candidate;
       break;
     }
   }
