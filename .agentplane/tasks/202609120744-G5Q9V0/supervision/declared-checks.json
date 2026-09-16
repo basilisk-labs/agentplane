@@ -1,0 +1,63 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "create-tests"
+      ],
+      "command": "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts",
+      "duration_ms": 8755,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:0411089f412f516b315e09379422dd6195ec26967a975f4567d580d6275680a1",
+        "executable_digest": "sha256:41a74efb34cbde5c7632cdac0cf8bd1a14d0b8d73dc1e82755014d9a9ce70f5c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:499f029971a59d022231459485617dcbafeaa293ea13cb13d62f1bbde876419f"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /srv/projects/agentplane/.agentplane/worktrees/202609120744-G5Q9V0-fail-fast-on-incomplete-ops-task-intent\n\n\n Test Files  1 passed (1)\n      Tests  23 passed (23)\n   Start at  08:23:32\n   Duration  8.02s (transform 4.65s, setup 0ms, import 4.24s, tests 3.65s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "brief-tests"
+      ],
+      "command": "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.route-decision.test.ts",
+      "duration_ms": 19383,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:0411089f412f516b315e09379422dd6195ec26967a975f4567d580d6275680a1",
+        "executable_digest": "sha256:41a74efb34cbde5c7632cdac0cf8bd1a14d0b8d73dc1e82755014d9a9ce70f5c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:499f029971a59d022231459485617dcbafeaa293ea13cb13d62f1bbde876419f"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /srv/projects/agentplane/.agentplane/worktrees/202609120744-G5Q9V0-fail-fast-on-incomplete-ops-task-intent\n\n\n Test Files  1 passed (1)\n      Tests  9 passed (9)\n   Start at  08:23:41\n   Duration  18.67s (transform 5.58s, setup 0ms, import 4.00s, tests 14.54s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "typecheck"
+      ],
+      "command": "node scripts/checks/run-typescript-build.mjs",
+      "duration_ms": 401,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:0411089f412f516b315e09379422dd6195ec26967a975f4567d580d6275680a1",
+        "executable_digest": "sha256:41a74efb34cbde5c7632cdac0cf8bd1a14d0b8d73dc1e82755014d9a9ce70f5c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:499f029971a59d022231459485617dcbafeaa293ea13cb13d62f1bbde876419f"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202609120744-G5Q9V0"
+}
