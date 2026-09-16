@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202609121424-49XXT3",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-16T20:30:27.531Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "026c97813bc53dabe636fd957e4e6961278b45a3",
+  "blueprint_digest": "b868d5c39ecfa4e9a069b687877b066b738e575f2bfcceb04210173b98273663",
+  "findings": [
+    "No actionable defect was found: version surfaces and release evidence agree, agentplane-roadmap-r2 is absent, and the required local release gates passed for the evaluated SHA."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609121424-49XXT3/quality/objects/sha256/b8d0862a586d68e56a22420d42d97896bb9568629e8a3ebee4f144236e631268.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
