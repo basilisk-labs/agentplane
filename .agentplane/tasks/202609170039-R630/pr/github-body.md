@@ -20,8 +20,9 @@ Make the maintenance distribution recovery workflow skip the unavailable marketi
 
 ```bash
 bun run workflows:lint; Result: pass; Evidence: workflow and command guidance contract OK, workflow \
-  lifecycle parity OK, critical Vitest route OK. Command: git diff --check; Result: pass. Scope: \
-  publish-distribution-module checkout no longer recurses into optional marketing submodule.
+  lifecycle parity OK, critical Vitest route OK. Command: git diff --check; Result: pass. Hook \
+  evidence: 16 test files and 146 tests passed. Scope: exact one-line checkout setting for \
+  publish-distribution-module.
 ```
 - Canonical workflow state lives in the task README.
 
