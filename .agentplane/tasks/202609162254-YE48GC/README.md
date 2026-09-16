@@ -4,7 +4,7 @@ title: "Implement and qualify AgentPlane 0.7.10 Blueprint retirement"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -276,9 +276,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "8456ad88c80d3d66b797e20bb256d72b385b02e2"
-  message: "🚧 YE48GC task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -1218,19 +1216,89 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 7
+    revision: 8
     schema_version: 1
-    updated_at: "2026-09-16T23:15:37.571Z"
+    updated_at: "2026-09-16T23:15:40.039Z"
     work_items:
       channel-and-owner-map:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "channel-and-owner-map"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:026a9ebcd7be80d090310854b5cfbf8c4c064b5f4bb06405ad9323153da5cc24"
+            id: "SemVer-aware release channel policy"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609162254-YE48GC"
+              work_item_id: "channel-and-owner-map"
+            provenance:
+              - "sha256:feed10da72090d4591e44f46a4edb96cbda6ce89c365d5ddcfbb7c5f166666ba"
+              - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:f9ad61227cd56652f9964381ca4e55974432acb27f7f8a652e69a67dabe9e044"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:5c8337a522d4a2869b374091f7ced33160ec4773e00aefd87c9e40ed412a3037"
+            id: "Executable Blueprint retirement inventory guard"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609162254-YE48GC"
+              work_item_id: "channel-and-owner-map"
+            provenance:
+              - "sha256:feed10da72090d4591e44f46a4edb96cbda6ce89c365d5ddcfbb7c5f166666ba"
+              - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:f9ad61227cd56652f9964381ca4e55974432acb27f7f8a652e69a67dabe9e044"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:d41d93c31ad15facc8dbf4ae7b42411192c2e1539e504bdac29689c1b57ddfd0"
+            id: "Native owner and compatibility map"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609162254-YE48GC"
+              work_item_id: "channel-and-owner-map"
+            provenance:
+              - "sha256:feed10da72090d4591e44f46a4edb96cbda6ce89c365d5ddcfbb7c5f166666ba"
+              - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:f9ad61227cd56652f9964381ca4e55974432acb27f7f8a652e69a67dabe9e044"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+              check_id: "channel-tests"
+              command_identity: "node --test scripts/release/*.test.mjs"
+              detail: "Observed by node --test scripts/release/*.test.mjs."
+              exit_code: 0
+              observed_at: "2026-09-16T23:15:40.029Z"
+              repository_snapshot_digest: "sha256:f9ad61227cd56652f9964381ca4e55974432acb27f7f8a652e69a67dabe9e044"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+              check_id: "retirement-map"
+              command_identity: "node --test scripts/checks/blueprint-retirement-map.test.mjs"
+              detail: "Observed by node --test scripts/checks/blueprint-retirement-map.test.mjs."
+              exit_code: 0
+              observed_at: "2026-09-16T23:15:40.029Z"
+              repository_snapshot_digest: "sha256:f9ad61227cd56652f9964381ca4e55974432acb27f7f8a652e69a67dabe9e044"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       migration-and-cutover:
         attempt: 0
         claim_id: null
@@ -1287,7 +1355,24 @@ extensions:
         validation_result: null
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-16T23:15:40.039Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:2232ab0a3e9d1b52e784943203ff89564cccb75b974b07cbe4c851ac4bfd3228"
+        entity: "work_item"
+        id: "event_9a0e5edbcc29583c41c5b191"
+        mutation_id: "external-result:work-order-202609162254-YE48GC-executor-5bdef45ba2f2464245fcfd4d"
+        plan_digest: "sha256:d9b152a969152dd6cfaecb84aa966a466f3bb52795de73c2e49684358bdd2cfd"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+        task_revision: 7
+        work_item_id: "channel-and-owner-map"
     leases: []
     mutation_receipts:
       compatibility:sha256:03ad382df371fb10a3fda0b3d74c85baaa1cbfcc47fa5298b2773c99d5104eda:
@@ -1408,6 +1493,30 @@ extensions:
         mutation_id: "compatibility:sha256:dc3da83107777c5ca588d41c5782275c05cc7b8e92e31bd8bfc375f707fb7c36"
         next_revision: 6
         previous_revision: 5
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+      external-result:work-order-202609162254-YE48GC-executor-5bdef45ba2f2464245fcfd4d:
+        aggregate_digest: "sha256:40c17bb222cc02e228e7bda1dd39395eb70b649e8a50f6432d3b5fd3ae121266"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-16T23:15:40.039Z"
+          cause_refs:
+            - "semantic-result:sha256:2232ab0a3e9d1b52e784943203ff89564cccb75b974b07cbe4c851ac4bfd3228"
+          entity: "work_item"
+          from: "READY"
+          id: "event_9a0e5edbcc29583c41c5b191"
+          mutation_id: "external-result:work-order-202609162254-YE48GC-executor-5bdef45ba2f2464245fcfd4d"
+          plan_digest: "sha256:d9b152a969152dd6cfaecb84aa966a466f3bb52795de73c2e49684358bdd2cfd"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 7
+          to: "COMPLETED"
+          work_item_id: "channel-and-owner-map"
+        mutation_id: "external-result:work-order-202609162254-YE48GC-executor-5bdef45ba2f2464245fcfd4d"
+        next_revision: 8
+        previous_revision: 7
         schema_version: 1
         task_id: "202609162254-YE48GC"
     pending_effects: []
