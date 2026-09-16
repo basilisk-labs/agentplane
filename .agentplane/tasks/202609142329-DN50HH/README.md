@@ -1,10 +1,10 @@
 ---
 id: "202609142329-DN50HH"
 title: "Release AgentPlane 0.6.30 from the 0.6 maintenance branch"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -320,6 +320,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: .agentplane, bun.lock, docs, packages/agentplane, packages/core, packages/recipes, packages/spec, packages/testkit, website; repository effects: dependencies, documentation, public_api, release_metadata, repository_write, source_code, tests."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The approved repository scope now matches the release candidate. The remaining blocker is the invalid executable verify entry for hosted lifecycle work. Recommended action: Use the supported task update command to replace the verify list with `bun run release:prepublish` and `bun run ci:local:full`. Keep hosted CI, exact-head PR validation, provider merge, and exact-SHA publication in the task acceptance criteria and lifecycle evidence. Agentplane receipt: external-agent-blocker/tr_ac05ab6f77ddcafb6af8b265ac23688f/sha256:712cad2dbea317da348a98927025ab8dcad2484300162e79588203c1aba523ce."
 events:
   -
     type: "status"
@@ -391,8 +394,15 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The release candidate does not need implementation rework. Verification is blocked by the legacy task contract: it treats a hosted lifecycle requirement as a local executable and excludes repository effects already required by the approved release diff. Recommended action: Keep all existing acceptance criteria. Remove the hosted lifecycle sentence from the executable verify list. Keep only `bun run release:prepublish` and `bun run ci:local:full` as local executable checks. Add the approved candidate paths and repository effects to the execution declaration. Preserve maintenance base 9001433ac67aa2973b6e3323de041216864eed61 and do not modify main. Requested scope: roots=.agentplane,bun.lock,docs,packages/agentplane,packages/core,packages/recipes,packages/spec,packages/testkit,website; repository effects=dependencies,documentation,public_api,release_metadata,repository_write,source_code,tests; request digest=sha256:123345f707c09f90bc5f697c9d179caf661ba96d5862a0981ffd939e8e262609. Agentplane receipt: external-agent-blocker/tr_49aab755bf2ea50a788f7075557469f5/sha256:3c1f91a61cc24aac3dc42a1f26cf46ed266cc4e2fd01ba6992008c37742f048d/sha256:123345f707c09f90bc5f697c9d179caf661ba96d5862a0981ffd939e8e262609."
+  -
+    type: "status"
+    at: "2026-09-16T19:57:04.992Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The approved repository scope now matches the release candidate. The remaining blocker is the invalid executable verify entry for hosted lifecycle work. Recommended action: Use the supported task update command to replace the verify list with `bun run release:prepublish` and `bun run ci:local:full`. Keep hosted CI, exact-head PR validation, provider merge, and exact-SHA publication in the task acceptance criteria and lifecycle evidence. Agentplane receipt: external-agent-blocker/tr_ac05ab6f77ddcafb6af8b265ac23688f/sha256:712cad2dbea317da348a98927025ab8dcad2484300162e79588203c1aba523ce."
 doc_version: 3
-doc_updated_at: "2026-09-16T19:54:58.684Z"
+doc_updated_at: "2026-09-16T19:57:04.992Z"
 doc_updated_by: "SUPERVISOR"
 description: "Prepare, qualify, merge, publish, and verify AgentPlane 0.6.30 from exact maintenance SHA cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9. Do not modify main. Include the safe reusable node_modules layout guard merged by PR #5958."
 sections:
