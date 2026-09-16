@@ -1,0 +1,45 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "channel-tests"
+      ],
+      "command": "node --test scripts/release/*.test.mjs",
+      "duration_ms": 639,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
+        "executable_digest": "sha256:ee6fb0e015284d83a91e8ec5213f43a157f8a392b58555301682892ba928c04a",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "✔ advances stable aliases only when the candidate is not older (1.039209ms)\n✔ publishes an older maintenance release without moving stable aliases (0.067125ms)\n✔ filters GitHub releases and fails closed on malformed channel observations (0.231916ms)\n✔ selects numeric stable patches and peels annotated tags (1.175625ms)\n✔ real Git creation, advancement, rerun and atomic stale rejection (374.896459ms)\nℹ tests 5\nℹ suites 0\nℹ pass 5\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 409.623\n"
+    },
+    {
+      "check_ids": [
+        "retirement-map"
+      ],
+      "command": "node --test scripts/checks/blueprint-retirement-map.test.mjs",
+      "duration_ms": 386,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
+        "executable_digest": "sha256:ee6fb0e015284d83a91e8ec5213f43a157f8a392b58555301682892ba928c04a",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "✔ maps every Blueprint contract field and Recipe V1 extension kind (0.638834ms)\n✔ freezes mandatory lifecycle obligations independently of Blueprint (0.065625ms)\n✔ pins and classifies every active production consumer (182.196375ms)\nℹ tests 3\nℹ suites 0\nℹ pass 3\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 217.692583\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202609162254-YE48GC"
+}
