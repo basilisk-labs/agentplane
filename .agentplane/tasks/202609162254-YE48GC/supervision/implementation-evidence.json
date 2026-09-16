@@ -1,0 +1,101 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 19ff39fd292c30f0958131c35200a6268b7a285d..8456ad88c80d3d66b797e20bb256d72b385b02e2",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 19ff39fd292c30f0958131c35200a6268b7a285d..8456ad88c80d3d66b797e20bb256d72b385b02e2",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202609162254-YE48GC/README.md",
+        "A\t.agentplane/tasks/202609162254-YE48GC/blueprint/resolved-snapshot.json",
+        "A\t.agentplane/tasks/202609162254-YE48GC/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202609162254-YE48GC/pr/github-body.md",
+        "A\t.agentplane/tasks/202609162254-YE48GC/pr/github-title.txt",
+        "A\t.agentplane/tasks/202609162254-YE48GC/pr/meta.json",
+        "A\t.agentplane/tasks/202609162254-YE48GC/pr/review.md",
+        "M\t.github/workflows/publish.yml",
+        "A\tscripts/checks/blueprint-retirement-map.json",
+        "A\tscripts/checks/blueprint-retirement-map.test.mjs",
+        "M\tscripts/generate/render-ghcr-image-metadata.mjs",
+        "M\tscripts/release/manifest.mjs",
+        "A\tscripts/release/stable-channel-policy.mjs",
+        "A\tscripts/release/stable-channel-policy.test.mjs"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "19ff39fd292c30f0958131c35200a6268b7a285d",
+  "implementation_commit": "8456ad88c80d3d66b797e20bb256d72b385b02e2",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "?? .agentplane/tasks/202609162254-YE48GC/README.md",
+      "?? .agentplane/tasks/202609162254-YE48GC/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202609162254-YE48GC/pr/diffstat.txt",
+      "?? .agentplane/tasks/202609162254-YE48GC/pr/github-body.md",
+      "?? .agentplane/tasks/202609162254-YE48GC/pr/github-title.txt",
+      "?? .agentplane/tasks/202609162254-YE48GC/pr/meta.json",
+      "?? .agentplane/tasks/202609162254-YE48GC/pr/review.md"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609162254-YE48GC/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609162254-YE48GC/blueprint/resolved-snapshot.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609162254-YE48GC/pr/diffstat.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609162254-YE48GC/pr/github-body.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609162254-YE48GC/pr/github-title.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609162254-YE48GC/pr/meta.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609162254-YE48GC/pr/review.md"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "?? .agentplane/tasks/202609162254-YE48GC/README.md",
+      "?? .agentplane/tasks/202609162254-YE48GC/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202609162254-YE48GC/pr/diffstat.txt",
+      "?? .agentplane/tasks/202609162254-YE48GC/pr/github-body.md",
+      "?? .agentplane/tasks/202609162254-YE48GC/pr/github-title.txt",
+      "?? .agentplane/tasks/202609162254-YE48GC/pr/meta.json",
+      "?? .agentplane/tasks/202609162254-YE48GC/pr/review.md"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609162254-YE48GC"
+}
