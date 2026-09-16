@@ -2481,8 +2481,8 @@ events:
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "76f4ca2eaf6b6d5955496679f2339864cff3a28b"
 doc_version: 3
-doc_updated_at: "2026-09-16T20:34:05.784Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-16T21:26:33.064Z"
+doc_updated_by: "DEUS"
 description: "Release operator task after all 0.7.9 stabilization dependencies are integrated. Prepare exact 0.7.9 version parity and release notes, run the complete release prepublish and incident gates, produce and integrate the release-ready candidate through repository policy, publish v0.7.9 from the exact qualified main SHA, and independently verify the canonical .agentplane/.release/publish/publish-result.json has success=true with an empty failures array for that SHA. Verify GitHub release assets and checksums, package registries, setup-agentplane tag and install, Homebrew and Scoop distribution, both agentplane and ap entrypoints, and default-branch state. Record any unavailable anonymous GHCR check separately. Complete the required post-publish evidence follow-up and next patch beta only through AgentPlane-managed lifecycle. Never commit agentplane-roadmap-r2. Stop only at a genuine provider or evidence boundary; the user explicitly authorized publish, merge, network, credentials, and external-system actions for v0.7.9."
 sections:
   Summary: |-
@@ -2632,6 +2632,27 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    <!-- BEGIN HOSTED PUBLISH EVIDENCE -->
+    ### Hosted publish
+
+    - State: ok
+    - Note: Hosted publish confirmed for v0.7.9.
+    - Details:
+      - release_sha: bdd79f0ab1fc91debde267a220403f8212c3a12b
+      - version: 0.7.9
+      - tag: v0.7.9
+      - @agentplaneorg/core: preexisting
+      - @agentplaneorg/recipes: preexisting
+      - agentplane: preexisting
+      - npm_smoke: pass
+      - github_release: created
+      - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.7.9
+      - ghcr: published
+      - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/35151631278
+      - external_homebrew: published | basilisk-labs/homebrew-tap | 802ed8f66c3b66e3d67ad5205d6e5bf1448b436e | https://github.com/basilisk-labs/homebrew-tap/pull/47
+      - external_scoop: published | basilisk-labs/scoop-bucket | 8d9f2e3321c4e24f34919797e835824b784b8c9e | https://github.com/basilisk-labs/scoop-bucket/pull/46
+      - external_setup-agentplane: published | basilisk-labs/setup-agentplane | 8a1161efcea1a129b56fc6e5e06d31ce99759868 | https://github.com/basilisk-labs/setup-agentplane/pull/46
+    <!-- END HOSTED PUBLISH EVIDENCE -->
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -15145,6 +15166,27 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+<!-- BEGIN HOSTED PUBLISH EVIDENCE -->
+### Hosted publish
+
+- State: ok
+- Note: Hosted publish confirmed for v0.7.9.
+- Details:
+  - release_sha: bdd79f0ab1fc91debde267a220403f8212c3a12b
+  - version: 0.7.9
+  - tag: v0.7.9
+  - @agentplaneorg/core: preexisting
+  - @agentplaneorg/recipes: preexisting
+  - agentplane: preexisting
+  - npm_smoke: pass
+  - github_release: created
+  - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.7.9
+  - ghcr: published
+  - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/35151631278
+  - external_homebrew: published | basilisk-labs/homebrew-tap | 802ed8f66c3b66e3d67ad5205d6e5bf1448b436e | https://github.com/basilisk-labs/homebrew-tap/pull/47
+  - external_scoop: published | basilisk-labs/scoop-bucket | 8d9f2e3321c4e24f34919797e835824b784b8c9e | https://github.com/basilisk-labs/scoop-bucket/pull/46
+  - external_setup-agentplane: published | basilisk-labs/setup-agentplane | 8a1161efcea1a129b56fc6e5e06d31ce99759868 | https://github.com/basilisk-labs/setup-agentplane/pull/46
+<!-- END HOSTED PUBLISH EVIDENCE -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
