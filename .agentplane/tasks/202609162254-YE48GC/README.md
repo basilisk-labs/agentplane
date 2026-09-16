@@ -4,7 +4,7 @@ title: "Implement and qualify AgentPlane 0.7.10 Blueprint retirement"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -117,10 +117,23 @@ execution_contract:
       - "scripts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - ".github"
+      - "scripts"
+    changed_paths:
+      - ".github/workflows/publish.yml"
+      - "scripts/checks/blueprint-retirement-map.json"
+      - "scripts/checks/blueprint-retirement-map.test.mjs"
+      - "scripts/generate/render-ghcr-image-metadata.mjs"
+      - "scripts/release/manifest.mjs"
+      - "scripts/release/stable-channel-policy.mjs"
+      - "scripts/release/stable-channel-policy.test.mjs"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "ci"
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -181,11 +194,17 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:ab3375c8d8e4a7a384a383635644b3f1c43e6bc6d235bec5f07e7e14eb65e1e2"
+      digest: "sha256:848bcb387b2a48f9a8cda2521f8bacbf2e74747156079a5f5c8b8513e7480a43"
       escalation_reasons:
         - "central_component:.github/workflows"
         - "central_component:bun.lock"
         - "central_component:package.json"
+        - "central_path:.github/workflows/publish.yml"
+        - "central_path:scripts/checks/blueprint-retirement-map.json"
+        - "central_path:scripts/checks/blueprint-retirement-map.test.mjs"
+        - "central_path:scripts/release/manifest.mjs"
+        - "central_path:scripts/release/stable-channel-policy.mjs"
+        - "central_path:scripts/release/stable-channel-policy.test.mjs"
         - "effect_ci"
         - "effect_dependencies"
         - "effect_public_api"
@@ -193,16 +212,30 @@ execution_contract:
         - "effect_schema"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
+        - "unknown_path:scripts/checks/blueprint-retirement-map.json"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - ".github"
+          - "scripts"
+        changed_files:
+          - ".github/workflows/publish.yml"
+          - "scripts/checks/blueprint-retirement-map.json"
+          - "scripts/checks/blueprint-retirement-map.test.mjs"
+          - "scripts/generate/render-ghcr-image-metadata.mjs"
+          - "scripts/release/manifest.mjs"
+          - "scripts/release/stable-channel-policy.mjs"
+          - "scripts/release/stable-channel-policy.test.mjs"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "ci"
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -243,11 +276,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "8456ad88c80d3d66b797e20bb256d72b385b02e2"
+  message: "🚧 YE48GC task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 8456ad88c80d. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -256,9 +294,17 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-16T23:15:37.571Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 8456ad88c80d. CLI accepted one state-bound external-agent semantic result."
+    commit: "8456ad88c80d3d66b797e20bb256d72b385b02e2"
 doc_version: 3
-doc_updated_at: "2026-09-16T23:02:04.360Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-16T23:15:37.571Z"
+doc_updated_by: "SUPERVISOR"
 description: "Implement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task."
 sections:
   Summary: |-
@@ -1117,7 +1163,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609162254-YE48GC"
-    event_cursor: 3
+    event_cursor: 5
     final_validation: null
     id: "202609162254-YE48GC"
     intent:
@@ -1172,9 +1218,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 5
+    revision: 7
     schema_version: 1
-    updated_at: "2026-09-16T23:02:04.360Z"
+    updated_at: "2026-09-16T23:15:37.571Z"
     work_items:
       channel-and-owner-map:
         attempt: 0
@@ -1316,9 +1362,59 @@ extensions:
         previous_revision: 3
         schema_version: 1
         task_id: "202609162254-YE48GC"
+      compatibility:sha256:c46ff176c8880d44cff5bcd36f48699931fc4d0a1b8f09f1e98fb5fdd94711a5:
+        aggregate_digest: "sha256:bc2474c1f98a4d9a2a6ef2862983186dfd4fe7965ce5539aa09eb418545ec49f"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-16T23:15:37.571Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_9c18666800b1e9b95f237c0c"
+          mutation_id: "compatibility:sha256:c46ff176c8880d44cff5bcd36f48699931fc4d0a1b8f09f1e98fb5fdd94711a5"
+          plan_digest: "sha256:d9b152a969152dd6cfaecb84aa966a466f3bb52795de73c2e49684358bdd2cfd"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 6
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:c46ff176c8880d44cff5bcd36f48699931fc4d0a1b8f09f1e98fb5fdd94711a5"
+        next_revision: 7
+        previous_revision: 6
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+      compatibility:sha256:dc3da83107777c5ca588d41c5782275c05cc7b8e92e31bd8bfc375f707fb7c36:
+        aggregate_digest: "sha256:5051047c62a02b2cf0668e0b814ee9c41f3ea424b61d45ca86e017165ac6e888"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-16T23:15:37.571Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_2aac97c99daaadaa92d898c1"
+          mutation_id: "compatibility:sha256:dc3da83107777c5ca588d41c5782275c05cc7b8e92e31bd8bfc375f707fb7c36"
+          plan_digest: "sha256:d9b152a969152dd6cfaecb84aa966a466f3bb52795de73c2e49684358bdd2cfd"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 5
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:dc3da83107777c5ca588d41c5782275c05cc7b8e92e31bd8bfc375f707fb7c36"
+        next_revision: 6
+        previous_revision: 5
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "8456ad88c80d3d66b797e20bb256d72b385b02e2"
   task_execution_context:
     base_ref: "main"
     base_sha: "19ff39fd292c30f0958131c35200a6268b7a285d"
