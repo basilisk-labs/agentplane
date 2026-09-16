@@ -4,7 +4,7 @@ title: "Publish and independently verify AgentPlane 0.7.9 from the exact qualifi
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 92
+revision: 94
 origin:
   system: "manual"
 depends_on:
@@ -358,7 +358,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "026c97813bc53dabe636fd957e4e6961278b45a3"
+  message: "🚧 49XXT3 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -471,6 +473,9 @@ comments:
   -
     author: "USER"
     body: "Resume after the host-space blocker was removed and the supervisor-owned release:prepublish gate passed. Replan the remaining lifecycle so hosted integration and publication stay supervisor-owned."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 026c97813bc5. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -674,9 +679,17 @@ events:
     from: "BLOCKED"
     to: "DOING"
     note: "Resume after the host-space blocker was removed and the supervisor-owned release:prepublish gate passed. Replan the remaining lifecycle so hosted integration and publication stay supervisor-owned."
+  -
+    type: "status"
+    at: "2026-09-16T19:31:10.070Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 026c97813bc5. CLI accepted one state-bound external-agent semantic result."
+    commit: "026c97813bc53dabe636fd957e4e6961278b45a3"
 doc_version: 3
-doc_updated_at: "2026-09-15T20:06:13.842Z"
-doc_updated_by: "USER"
+doc_updated_at: "2026-09-16T19:31:10.070Z"
+doc_updated_by: "SUPERVISOR"
 description: "Release operator task after all 0.7.9 stabilization dependencies are integrated. Prepare exact 0.7.9 version parity and release notes, run the complete release prepublish and incident gates, produce and integrate the release-ready candidate through repository policy, publish v0.7.9 from the exact qualified main SHA, and independently verify the canonical .agentplane/.release/publish/publish-result.json has success=true with an empty failures array for that SHA. Verify GitHub release assets and checksums, package registries, setup-agentplane tag and install, Homebrew and Scoop distribution, both agentplane and ap entrypoints, and default-branch state. Record any unavailable anonymous GHCR check separately. Complete the required post-publish evidence follow-up and next patch beta only through AgentPlane-managed lifecycle. Never commit agentplane-roadmap-r2. Stop only at a genuine provider or evidence boundary; the user explicitly authorized publish, merge, network, credentials, and external-system actions for v0.7.9."
 sections:
   Summary: |-
@@ -1030,7 +1043,7 @@ extensions:
       revision: 18
       schema_version: 1
       task_id: "202609121424-49XXT3"
-    event_cursor: 67
+    event_cursor: 69
     final_validation: null
     id: "202609121424-49XXT3"
     intent:
@@ -10479,9 +10492,9 @@ extensions:
         revision: 17
         schema_version: 1
         task_id: "202609121424-49XXT3"
-    revision: 92
+    revision: 94
     schema_version: 1
-    updated_at: "2026-09-15T20:06:13.842Z"
+    updated_at: "2026-09-16T19:31:10.070Z"
     work_items:
       prepare_candidate:
         attempt: 2
@@ -11255,6 +11268,30 @@ extensions:
         previous_revision: 72
         schema_version: 1
         task_id: "202609121424-49XXT3"
+      compatibility:sha256:3f1110efb8886676f9568d1dd4195b497f8ecd69412c64d6741b05f1f8e5fe28:
+        aggregate_digest: "sha256:f9d17d8aa8b1895cfffae1b21fed1b435d817f9a17baf7fc3f15d9600df6b985"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-16T19:31:10.070Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_6650ec79fab18078f10a6485"
+          mutation_id: "compatibility:sha256:3f1110efb8886676f9568d1dd4195b497f8ecd69412c64d6741b05f1f8e5fe28"
+          plan_digest: "sha256:8920e7832b179b3e49ac6e0ac4d450744a7638de7ead87f7d48550eeefc1858b"
+          plan_revision: 18
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          task_revision: 93
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:3f1110efb8886676f9568d1dd4195b497f8ecd69412c64d6741b05f1f8e5fe28"
+        next_revision: 94
+        previous_revision: 93
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
       compatibility:sha256:40aa9856b61c1f1e2ceaf69ea3e5573ff591a44e965b9e2f23dcb008a613cb85:
         aggregate_digest: "sha256:e1cccc9ca91d522b64933292e4c6f08c8fd746c044e6cc0288524b79ece5bdc8"
         event:
@@ -11301,6 +11338,30 @@ extensions:
         mutation_id: "compatibility:sha256:4189b605d2d5194187195bc51f94ea3c17229da5eb7cd4fce1c1e2df02ef778d"
         next_revision: 79
         previous_revision: 78
+        schema_version: 1
+        task_id: "202609121424-49XXT3"
+      compatibility:sha256:4ccd26ae9a7de3906437bef1f5853fcd8e3826385470123e7e2e14213a1cc6e8:
+        aggregate_digest: "sha256:3f0739e980260606f883ac31c9e33c7572a5ac2988a1259289ca5f7b2484fe76"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-16T19:31:10.070Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_7d1d25ea54d890717d5bbaf6"
+          mutation_id: "compatibility:sha256:4ccd26ae9a7de3906437bef1f5853fcd8e3826385470123e7e2e14213a1cc6e8"
+          plan_digest: "sha256:8920e7832b179b3e49ac6e0ac4d450744a7638de7ead87f7d48550eeefc1858b"
+          plan_revision: 18
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-49XXT3"
+          task_revision: 92
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:4ccd26ae9a7de3906437bef1f5853fcd8e3826385470123e7e2e14213a1cc6e8"
+        next_revision: 93
+        previous_revision: 92
         schema_version: 1
         task_id: "202609121424-49XXT3"
       compatibility:sha256:513db44108e85ed87cef39a830dfbd3d911d3bebe2881381d70cdee02d5bb181:
@@ -12849,7 +12910,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "9228105c498124a0435460fc3e109e1645e30029"
+    hash: "026c97813bc53dabe636fd957e4e6961278b45a3"
   task_execution_context:
     base_ref: "main"
     base_sha: "f3c1991ddd92943775b6b4b4688009afc3d523bc"
