@@ -13,8 +13,8 @@ Release AgentPlane 0.6.30 from exact maintenance base 9001433ac67aa2973b6e3323de
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
