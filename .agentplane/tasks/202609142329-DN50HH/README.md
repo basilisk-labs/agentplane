@@ -1,10 +1,10 @@
 ---
 id: "202609142329-DN50HH"
 title: "Release AgentPlane 0.6.30 from the 0.6 maintenance branch"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -23,17 +23,22 @@ plan_approval:
   updated_by: "USER"
   note: "Approved exact-base refinement to 9001433ac67aa2973b6e3323de041216864eed61 and all actions necessary for the correct 0.6.30 release."
 verification:
-  state: "needs_rework"
-  updated_at: "2026-09-16T19:52:47.582Z"
-  updated_by: "SUPERVISOR"
-  note: "Rework: Declared check could not run: Verify hosted CI on the final release-candidate head and exact-SHA publication for every claimed channel."
+  state: "pending"
+  updated_at: "2026-09-16T19:55:42.312Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 1
 execution_contract:
   authority:
     allowed_external_effects: []
     allowed_repository_effects:
+      - "dependencies"
+      - "documentation"
+      - "public_api"
       - "release_metadata"
       - "repository_write"
+      - "source_code"
+      - "tests"
     forbidden_external_effects:
       - "network_read"
       - "external_write"
@@ -42,36 +47,49 @@ execution_contract:
       - "deploy"
       - "destructive_git"
     forbidden_repository_effects:
-      - "documentation"
-      - "source_code"
-      - "tests"
-      - "public_api"
       - "schema"
-      - "dependencies"
       - "ci"
       - "security_boundary"
-    writable_roots: []
+    writable_roots:
+      - ".agentplane"
+      - "bun.lock"
+      - "docs"
+      - "packages/agentplane"
+      - "packages/core"
+      - "packages/recipes"
+      - "packages/spec"
+      - "packages/testkit"
+      - "website"
   declaration:
     external_effects: []
     implementation_uncertainty: "bounded"
     preferred_mode: "branch_pr"
     rationale:
+      - "USER-approved blocked-result scope extension: roots=.agentplane,bun.lock,docs,packages/agentplane,packages/core,packages/recipes,packages/spec,packages/testkit,website; repository_effects=dependencies,documentation,public_api,release_metadata,repository_write,source_code,tests"
       - "legacy structured task fields mapped to the execution contract"
     repository_effects:
+      - "dependencies"
+      - "documentation"
+      - "public_api"
       - "release_metadata"
       - "repository_write"
+      - "source_code"
+      - "tests"
     requirements_uncertainty: "bounded"
     reversibility: "recovery_required"
     schema_version: 2
-    scope_roots: []
+    scope_roots:
+      - ".agentplane"
+      - "bun.lock"
+      - "docs"
+      - "packages/agentplane"
+      - "packages/core"
+      - "packages/recipes"
+      - "packages/spec"
+      - "packages/testkit"
+      - "website"
   observed:
-    authority_violations:
-      - "repository_effect:dependencies"
-      - "repository_effect:documentation"
-      - "repository_effect:public_api"
-      - "repository_effect:source_code"
-      - "verification:recorded-check-1:fail"
-      - "verification:verification-record:fail"
+    authority_violations: []
     changed_components:
       - ".agentplane"
       - "bun.lock"
@@ -118,18 +136,12 @@ execution_contract:
       - "release_metadata"
       - "repository_write"
       - "source_code"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "fail"
-      -
-        id: "verification-record"
-        result: "fail"
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
+    - "effect_dependencies"
+    - "effect_public_api"
     - "effect_release_metadata"
-    - "observed_effect_dependencies"
-    - "observed_effect_public_api"
     - "repository_branch_pr_floor"
     - "reversibility_recovery_required"
   repository_mode: "branch_pr"
@@ -139,11 +151,20 @@ execution_contract:
     requires_worktree: true
   schema_version: 1
   selected_mode: "branch_pr"
-  source: "legacy_compatibility"
+  source: "agent_declared"
   verification:
     contract:
       declared:
-        components: []
+        components:
+          - ".agentplane"
+          - "bun.lock"
+          - "docs"
+          - "packages/agentplane"
+          - "packages/core"
+          - "packages/recipes"
+          - "packages/spec"
+          - "packages/testkit"
+          - "website"
         evidence_requirements:
           - "hosted_integration"
           - "repository_effect:dependencies"
@@ -156,14 +177,20 @@ execution_contract:
           - "task_outcome"
         external_effects: []
         repository_effects:
+          - "dependencies"
+          - "documentation"
+          - "public_api"
           - "release_metadata"
           - "repository_write"
+          - "source_code"
+          - "tests"
         risk:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:c200eb19a56a51b62492ff0ecd466835eb8cfb2eb4d6c3016dc6077511664e2f"
+      digest: "sha256:8e743e912c541d5ea70d99dd20f521c17efdb17967d1f4a969d2672d3f9af001"
       escalation_reasons:
+        - "central_component:bun.lock"
         - "central_path:bun.lock"
         - "central_path:packages/core/package.json"
         - "effect_dependencies"
@@ -171,16 +198,6 @@ execution_contract:
         - "effect_release_metadata"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
-        - "unknown_path:.agentplane/tasks/202609150654-H0X3YJ/blueprint/resolved-snapshot.json"
-        - "unknown_path:.agentplane/tasks/202609150654-H0X3YJ/pr/diffstat.txt"
-        - "unknown_path:.agentplane/tasks/202609150654-H0X3YJ/pr/github-title.txt"
-        - "unknown_path:.agentplane/tasks/202609150654-H0X3YJ/pr/meta.json"
-        - "unknown_path:.agentplane/tasks/202609150654-H0X3YJ/quality/20260915-203344271-recovery-context/quality-report.json"
-        - "unknown_path:.agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json"
-        - "unknown_path:.agentplane/tasks/202609150654-H0X3YJ/supervision/implementation-evidence.json"
-        - "unknown_path:.agentplane/tasks/202609150654-H0X3YJ/verification/20260915071558142-4a32aeba4d53ef9b.json"
-        - "unknown_path:.agentplane/tasks/202609150654-H0X3YJ/verification/20260915202032881-2becd57f31b19fbd.json"
-        - "unknown_path:.agentplane/tasks/202609150654-H0X3YJ/verification/20260915203234639-07fdfd9c0cdff3fb.json"
         - "unknown_path:packages/spec/examples/acr.json"
       execution_groups:
         - "docs-schema"
@@ -200,21 +217,6 @@ execution_contract:
           - "website"
         changed_files:
           - ".agentplane/WORKFLOW.md"
-          - ".agentplane/tasks/202609150654-H0X3YJ/README.md"
-          - ".agentplane/tasks/202609150654-H0X3YJ/blueprint/resolved-snapshot.json"
-          - ".agentplane/tasks/202609150654-H0X3YJ/pr/diffstat.txt"
-          - ".agentplane/tasks/202609150654-H0X3YJ/pr/github-body.md"
-          - ".agentplane/tasks/202609150654-H0X3YJ/pr/github-title.txt"
-          - ".agentplane/tasks/202609150654-H0X3YJ/pr/meta.json"
-          - ".agentplane/tasks/202609150654-H0X3YJ/pr/review.md"
-          - ".agentplane/tasks/202609150654-H0X3YJ/quality/20260915-203344271-recovery-context/evaluator-opinion.md"
-          - ".agentplane/tasks/202609150654-H0X3YJ/quality/20260915-203344271-recovery-context/evaluator-prompt.md"
-          - ".agentplane/tasks/202609150654-H0X3YJ/quality/20260915-203344271-recovery-context/quality-report.json"
-          - ".agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json"
-          - ".agentplane/tasks/202609150654-H0X3YJ/supervision/implementation-evidence.json"
-          - ".agentplane/tasks/202609150654-H0X3YJ/verification/20260915071558142-4a32aeba4d53ef9b.json"
-          - ".agentplane/tasks/202609150654-H0X3YJ/verification/20260915202032881-2becd57f31b19fbd.json"
-          - ".agentplane/tasks/202609150654-H0X3YJ/verification/20260915203234639-07fdfd9c0cdff3fb.json"
           - ".agentplane/workflows/last-known-good.md"
           - "bun.lock"
           - "docs/assets/header.svg"
@@ -234,8 +236,6 @@ execution_contract:
           - "docs/reference/generated-reference.mdx"
           - "docs/releases/v0.6.30.md"
           - "packages/agentplane/package.json"
-          - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
-          - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
           - "packages/core/package.json"
           - "packages/recipes/package.json"
           - "packages/recipes/src/index.ts"
@@ -251,7 +251,6 @@ execution_contract:
           - "release_metadata"
           - "repository_write"
           - "source_code"
-          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -289,8 +288,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
-      - "verification_recovery:verification-record"
 commit: null
 comments:
   -
@@ -320,6 +317,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The release candidate does not need implementation rework. Verification is blocked by the legacy task contract: it treats a hosted lifecycle requirement as a local executable and excludes repository effects already required by the approved release diff. Recommended action: Keep all existing acceptance criteria. Remove the hosted lifecycle sentence from the executable verify list. Keep only `bun run release:prepublish` and `bun run ci:local:full` as local executable checks. Add the approved candidate paths and repository effects to the execution declaration. Preserve maintenance base 9001433ac67aa2973b6e3323de041216864eed61 and do not modify main. Requested scope: roots=.agentplane,bun.lock,docs,packages/agentplane,packages/core,packages/recipes,packages/spec,packages/testkit,website; repository effects=dependencies,documentation,public_api,release_metadata,repository_write,source_code,tests; request digest=sha256:123345f707c09f90bc5f697c9d179caf661ba96d5862a0981ffd939e8e262609. Agentplane receipt: external-agent-blocker/tr_49aab755bf2ea50a788f7075557469f5/sha256:3c1f91a61cc24aac3dc42a1f26cf46ed266cc4e2fd01ba6992008c37742f048d/sha256:123345f707c09f90bc5f697c9d179caf661ba96d5862a0981ffd939e8e262609."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: .agentplane, bun.lock, docs, packages/agentplane, packages/core, packages/recipes, packages/spec, packages/testkit, website; repository effects: dependencies, documentation, public_api, release_metadata, repository_write, source_code, tests."
 events:
   -
     type: "status"
@@ -452,6 +452,8 @@ sections:
   Findings: ""
 extensions:
   agentplane.scope_extension_request:
+    applied_at: "2026-09-16T19:55:42.312Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:3c1f91a61cc24aac3dc42a1f26cf46ed266cc4e2fd01ba6992008c37742f048d"
     kind: "task_scope_extension_request"
     request:
@@ -477,7 +479,7 @@ extensions:
         - "website"
     request_digest: "sha256:123345f707c09f90bc5f697c9d179caf661ba96d5862a0981ffd939e8e262609"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_49aab755bf2ea50a788f7075557469f5"
     work_item_id: null
   task_execution_context:
