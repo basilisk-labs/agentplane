@@ -1,10 +1,11 @@
 ---
 id: "202609142329-DN50HH"
 title: "Release AgentPlane 0.6.30 from the 0.6 maintenance branch"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 30
+revision: 31
 origin:
   system: "manual"
 depends_on: []
@@ -57,6 +58,22 @@ quality_review:
     - "Supervisor evidence records exit code 0 for bun run release:prepublish and bun run ci:local:full. The final candidate also passes git diff --check."
     - "Residual risk: The PR must target only codex/release-v0.6.27-reclaim-fix and all hosted checks must pass on its exact final head."
     - "Residual risk: Publication must be dispatched only from the exact merged maintenance SHA, and every required distribution channel must be verified independently."
+token_usage:
+  agent_runs: 12
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:62b8ad10677d2c6c2a2aa49a8a629012a0513ad9ff17df788764e86346a4918b"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-09-16T21:10:59.882Z"
 execution_contract:
   authority:
     allowed_external_effects: []
@@ -425,8 +442,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "9ba4e58542d6250f907496e97fe132e245ea8d55"
-  message: "🚧 DN50HH task: apply external agent result"
+  hash: "728a431b14e15a66e2199ba1f8e5f85d8d59e405"
+  message: "🚧 DN50HH task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -467,6 +484,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 9ba4e58542d6. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -566,9 +586,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-16T21:10:59.882Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "728a431b14e15a66e2199ba1f8e5f85d8d59e405"
 doc_version: 3
-doc_updated_at: "2026-09-16T21:07:21.167Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-16T21:10:59.882Z"
+doc_updated_by: "CODER"
 description: "Prepare, qualify, merge, publish, and verify AgentPlane 0.6.30 from exact maintenance SHA cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9. Do not modify main. Include the safe reusable node_modules layout guard merged by PR #5958."
 sections:
   Summary: "Release AgentPlane 0.6.30 from exact maintenance base 9001433ac67aa2973b6e3323de041216864eed61. Do not modify main. Include the install-layout guard from PR #5958 and its active-runtime correction from PR #5959."
@@ -815,6 +843,7 @@ extensions:
     work_item_id: null
   implementation_commit:
     hash: "9ba4e58542d6250f907496e97fe132e245ea8d55"
+    message: "🚧 DN50HH task: apply external agent result"
   task_execution_context:
     base_ref: "codex/release-v0.6.27-reclaim-fix"
     base_sha: "cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9"
@@ -1049,3 +1078,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/12` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:62b8ad10677d2c6c2a2aa49a8a629012a0513ad9ff17df788764e86346a4918b`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-09-16T21:10:59.882Z`

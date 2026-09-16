@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:9f31a05c1f0726764d55ff4bd25a11694dc3130aad2c386f45462d7fa5fd4129",
   "pr_number": 5961,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5961",
+  "pre_merge_closure": {
+    "basis_commit": "728a431b14e15a66e2199ba1f8e5f85d8d59e405",
+    "branch": "task/202609142329-DN50HH/release-agentplane-0-6-30-from-the-0-6-maintenan",
+    "pr_number": 5961,
+    "recorded_at": "2026-09-16T21:10:59.945Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
