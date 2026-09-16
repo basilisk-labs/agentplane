@@ -104,6 +104,7 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
     "task hosted-close closes a merged branch_pr task exactly once",
     async () => {
       const root = await writeAndConfigureRoot();
+      await execFileAsync("git", ["branch", "-M", "main"], { cwd: root });
       const config = defaultConfig();
       config.workflow_mode = "branch_pr";
       config.acr.enabled = true;

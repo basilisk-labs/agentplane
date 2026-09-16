@@ -1,0 +1,60 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 8c395cf4dd3bd998c5b309ed20e3b16df835fdda..9ba4e58542d6250f907496e97fe132e245ea8d55",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 8c395cf4dd3bd998c5b309ed20e3b16df835fdda..9ba4e58542d6250f907496e97fe132e245ea8d55",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202609142329-DN50HH/README.md",
+        "M\t.agentplane/tasks/202609142329-DN50HH/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609142329-DN50HH/pr/github-body.md",
+        "M\t.agentplane/tasks/202609142329-DN50HH/pr/meta.json",
+        "M\t.agentplane/tasks/202609142329-DN50HH/pr/review.md",
+        "M\tpackages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.incidents.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-hosted-close-pr.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "8c395cf4dd3bd998c5b309ed20e3b16df835fdda",
+  "implementation_commit": "9ba4e58542d6250f907496e97fe132e245ea8d55",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M .agentplane/tasks/202609142329-DN50HH/README.md"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609142329-DN50HH/README.md"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M .agentplane/tasks/202609142329-DN50HH/README.md"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609142329-DN50HH"
+}

@@ -517,6 +517,7 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
 
   it("task hosted-close-pr recovers merge metadata from GitHub when base pr meta is stale", async () => {
     const root = await writeAndConfigureRoot();
+    await execFileAsync("git", ["branch", "-M", "main"], { cwd: root });
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);

@@ -5,7 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
-import { mkGitRepoRoot, pathExists } from "@agentplane/testkit";
+import { mkGitRepoRootWithBranch, pathExists } from "@agentplane/testkit";
 
 const PRE_PUSH_HOOK_SCRIPT = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -14,7 +14,7 @@ const PRE_PUSH_HOOK_SCRIPT = path.resolve(
 
 describe("pre-push full-fast guard", () => {
   it("allows an unknown initial push when no broad local CI script exists", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithBranch("main");
     await writeFile(path.join(root, "README.md"), "# hook test\n", "utf8");
 
     const execFileAsync = promisify(execFile);
@@ -34,7 +34,7 @@ describe("pre-push full-fast guard", () => {
   });
 
   it("blocks unknown multi-branch push scopes before running local checks", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithBranch("main");
     await mkdir(path.join(root, "scripts"), { recursive: true });
     await writeFile(
       path.join(root, "package.json"),
@@ -98,7 +98,7 @@ describe("pre-push full-fast guard", () => {
   });
 
   it("fails fast when changed files require full-fast local CI", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithBranch("main");
     await mkdir(path.join(root, ".agentplane", "tasks", "202601010101-ABCDEF"), {
       recursive: true,
     });
