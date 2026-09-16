@@ -20,7 +20,7 @@ Release AgentPlane 0.6.30 from exact maintenance base 9001433ac67aa2973b6e3323de
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-14T23:30:40.071Z
+- Updated: 2026-09-16T21:07:56.022Z
 - Branch: task/202609142329-DN50HH/release-agentplane-0-6-30-from-the-0-6-maintenan
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

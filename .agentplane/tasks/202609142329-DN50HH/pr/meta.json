@@ -14,14 +14,6 @@
     "recorded_at": "2026-09-16T21:10:59.945Z",
     "state": "closed_before_merge"
   },
-  "provider": {
-    "hostname": "github.com",
-    "kind": "github",
-    "remote": "origin",
-    "schema_version": 1,
-    "source_project": "basilisk-labs/agentplane",
-    "target_project": "basilisk-labs/agentplane"
-  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202609142329-DN50HH",

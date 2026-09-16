@@ -6,7 +6,7 @@ Created: 2026-09-14T23:30:40.071Z
 
 - Task: `202609142329-DN50HH`
 - Title: Release AgentPlane 0.6.30 from the 0.6 maintenance branch
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609142329-DN50HH/release-agentplane-0-6-30-from-the-0-6-maintenan`
 - Canonical task record: `.agentplane/tasks/202609142329-DN50HH/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-09-14T23:30:40.071Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-14T23:30:40.071Z
+- Updated: 2026-09-16T21:07:56.022Z
 - Branch: task/202609142329-DN50HH/release-agentplane-0-6-30-from-the-0-6-maintenan
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
