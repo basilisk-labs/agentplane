@@ -1,10 +1,10 @@
 ---
 id: "202609142329-DN50HH"
 title: "Release AgentPlane 0.6.30 from the 0.6 maintenance branch"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -42,6 +42,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The v0.6.30 candidate is prepared, but the required prepublish gate exposed a source-code regression in the newly backported install-layout guard; publishing is unsafe until that guard is corrected and requalified. Recommended action: Create a bounded source-code fix task on the 0.6 maintenance branch. Qualify the source layout against its owning repository/worktree boundary, add the missing cross-repository regression test, merge that fix into the maintenance branch, then restart the v0.6.30 candidate from the new exact base SHA. Requested scope: roots=packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts,packages/agentplane/src/commands/branch/work-start.materialize.test.ts,packages/agentplane/src/commands/branch/work-start.materialize.ts; repository effects=source_code,tests; request digest=sha256:be74f5c4b03bfc9b19939132b7b86b934c29f90118a42a33eaf847c1f0d11531. Agentplane receipt: external-agent-blocker/tr_37aba4fcff770d68dd683414acc1d192/sha256:bb54d7703951dce7a53a99b39b2d5932806a6ee5c05c47bf13e148305d471f4e/sha256:be74f5c4b03bfc9b19939132b7b86b934c29f90118a42a33eaf847c1f0d11531."
+  -
+    author: "USER"
+    body: "Resume: PR #5959 merged the corrected runtime guard into codex/release-v0.6.27-reclaim-fix at exact base 9001433ac67aa2973b6e3323de041216864eed61. | details: Rebase the prepared 0.6.30 candidate onto that base, rerun all release gates, merge only to the maintenance branch, and publish from the exact merged SHA."
 events:
   -
     type: "status"
@@ -71,9 +74,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The v0.6.30 candidate is prepared, but the required prepublish gate exposed a source-code regression in the newly backported install-layout guard; publishing is unsafe until that guard is corrected and requalified. Recommended action: Create a bounded source-code fix task on the 0.6 maintenance branch. Qualify the source layout against its owning repository/worktree boundary, add the missing cross-repository regression test, merge that fix into the maintenance branch, then restart the v0.6.30 candidate from the new exact base SHA. Requested scope: roots=packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts,packages/agentplane/src/commands/branch/work-start.materialize.test.ts,packages/agentplane/src/commands/branch/work-start.materialize.ts; repository effects=source_code,tests; request digest=sha256:be74f5c4b03bfc9b19939132b7b86b934c29f90118a42a33eaf847c1f0d11531. Agentplane receipt: external-agent-blocker/tr_37aba4fcff770d68dd683414acc1d192/sha256:bb54d7703951dce7a53a99b39b2d5932806a6ee5c05c47bf13e148305d471f4e/sha256:be74f5c4b03bfc9b19939132b7b86b934c29f90118a42a33eaf847c1f0d11531."
+  -
+    type: "status"
+    at: "2026-09-16T19:42:54.571Z"
+    author: "USER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Resume: PR #5959 merged the corrected runtime guard into codex/release-v0.6.27-reclaim-fix at exact base 9001433ac67aa2973b6e3323de041216864eed61. | details: Rebase the prepared 0.6.30 candidate onto that base, rerun all release gates, merge only to the maintenance branch, and publish from the exact merged SHA."
 doc_version: 3
-doc_updated_at: "2026-09-14T23:50:38.731Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-16T19:42:54.571Z"
+doc_updated_by: "USER"
 description: "Prepare, qualify, merge, publish, and verify AgentPlane 0.6.30 from exact maintenance SHA cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9. Do not modify main. Include the safe reusable node_modules layout guard merged by PR #5958."
 sections:
   Summary: |-
