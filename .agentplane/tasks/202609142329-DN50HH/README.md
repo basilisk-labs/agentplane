@@ -1,10 +1,10 @@
 ---
 id: "202609142329-DN50HH"
 title: "Release AgentPlane 0.6.30 from the 0.6 maintenance branch"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -23,14 +23,275 @@ plan_approval:
   updated_by: "USER"
   note: "Approved exact-base refinement to 9001433ac67aa2973b6e3323de041216864eed61 and all actions necessary for the correct 0.6.30 release."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
-commit:
-  hash: "715a7747381fd120547c1059da6973e62f574c41"
-  message: "🚧 DN50HH task: apply external agent result"
+  state: "needs_rework"
+  updated_at: "2026-09-16T19:52:47.582Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check could not run: Verify hosted CI on the final release-candidate head and exact-SHA publication for every claimed channel."
+  attempts: 1
+execution_contract:
+  authority:
+    allowed_external_effects: []
+    allowed_repository_effects:
+      - "release_metadata"
+      - "repository_write"
+    forbidden_external_effects:
+      - "network_read"
+      - "external_write"
+      - "credentials"
+      - "publish"
+      - "deploy"
+      - "destructive_git"
+    forbidden_repository_effects:
+      - "documentation"
+      - "source_code"
+      - "tests"
+      - "public_api"
+      - "schema"
+      - "dependencies"
+      - "ci"
+      - "security_boundary"
+    writable_roots: []
+  declaration:
+    external_effects: []
+    implementation_uncertainty: "bounded"
+    preferred_mode: "branch_pr"
+    rationale:
+      - "legacy structured task fields mapped to the execution contract"
+    repository_effects:
+      - "release_metadata"
+      - "repository_write"
+    requirements_uncertainty: "bounded"
+    reversibility: "recovery_required"
+    schema_version: 2
+    scope_roots: []
+  observed:
+    authority_violations:
+      - "repository_effect:dependencies"
+      - "repository_effect:documentation"
+      - "repository_effect:public_api"
+      - "repository_effect:source_code"
+      - "verification:recorded-check-1:fail"
+      - "verification:verification-record:fail"
+    changed_components:
+      - ".agentplane"
+      - "bun.lock"
+      - "docs"
+      - "packages/agentplane"
+      - "packages/core"
+      - "packages/recipes"
+      - "packages/spec"
+      - "packages/testkit"
+      - "website"
+    changed_paths:
+      - ".agentplane/WORKFLOW.md"
+      - ".agentplane/workflows/last-known-good.md"
+      - "bun.lock"
+      - "docs/assets/header.svg"
+      - "docs/assets/readme-headers/adr.svg"
+      - "docs/assets/readme-headers/agentplane-cli.svg"
+      - "docs/assets/readme-headers/agentplane.svg"
+      - "docs/assets/readme-headers/core.svg"
+      - "docs/assets/readme-headers/docs.svg"
+      - "docs/assets/readme-headers/humanizer.svg"
+      - "docs/assets/readme-headers/recipes.svg"
+      - "docs/assets/readme-headers/releases.svg"
+      - "docs/assets/readme-headers/schemas.svg"
+      - "docs/assets/readme-headers/scripts.svg"
+      - "docs/assets/readme-headers/skills.svg"
+      - "docs/assets/readme-headers/spec.svg"
+      - "docs/assets/readme-headers/testkit.svg"
+      - "docs/reference/generated-reference.mdx"
+      - "docs/releases/v0.6.30.md"
+      - "packages/agentplane/package.json"
+      - "packages/core/package.json"
+      - "packages/recipes/package.json"
+      - "packages/recipes/src/index.ts"
+      - "packages/spec/examples/acr.json"
+      - "packages/testkit/package.json"
+      - "website/static/img/social/docs/releases/v0.6.30.png"
+      - "website/static/img/social/manifest.json"
+    external_effects: []
+    repository_effects:
+      - "dependencies"
+      - "documentation"
+      - "public_api"
+      - "release_metadata"
+      - "repository_write"
+      - "source_code"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "fail"
+      -
+        id: "verification-record"
+        result: "fail"
+  reason_codes:
+    - "agent_preferred_branch_pr"
+    - "effect_release_metadata"
+    - "observed_effect_dependencies"
+    - "observed_effect_public_api"
+    - "repository_branch_pr_floor"
+    - "reversibility_recovery_required"
+  repository_mode: "branch_pr"
+  safety:
+    approval_effects: []
+    requires_user_approval: false
+    requires_worktree: true
+  schema_version: 1
+  selected_mode: "branch_pr"
+  source: "legacy_compatibility"
+  verification:
+    contract:
+      declared:
+        components: []
+        evidence_requirements:
+          - "hosted_integration"
+          - "repository_effect:dependencies"
+          - "repository_effect:documentation"
+          - "repository_effect:public_api"
+          - "repository_effect:release_metadata"
+          - "repository_effect:repository_write"
+          - "repository_effect:source_code"
+          - "repository_effect:tests"
+          - "task_outcome"
+        external_effects: []
+        repository_effects:
+          - "release_metadata"
+          - "repository_write"
+        risk:
+          implementation_uncertainty: "bounded"
+          requirements_uncertainty: "bounded"
+          reversibility: "recovery_required"
+      digest: "sha256:c200eb19a56a51b62492ff0ecd466835eb8cfb2eb4d6c3016dc6077511664e2f"
+      escalation_reasons:
+        - "central_path:bun.lock"
+        - "central_path:packages/core/package.json"
+        - "effect_dependencies"
+        - "effect_public_api"
+        - "effect_release_metadata"
+        - "external_effect_requires_real_e2e"
+        - "reversibility_recovery_required"
+        - "unknown_path:.agentplane/tasks/202609150654-H0X3YJ/blueprint/resolved-snapshot.json"
+        - "unknown_path:.agentplane/tasks/202609150654-H0X3YJ/pr/diffstat.txt"
+        - "unknown_path:.agentplane/tasks/202609150654-H0X3YJ/pr/github-title.txt"
+        - "unknown_path:.agentplane/tasks/202609150654-H0X3YJ/pr/meta.json"
+        - "unknown_path:.agentplane/tasks/202609150654-H0X3YJ/quality/20260915-203344271-recovery-context/quality-report.json"
+        - "unknown_path:.agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json"
+        - "unknown_path:.agentplane/tasks/202609150654-H0X3YJ/supervision/implementation-evidence.json"
+        - "unknown_path:.agentplane/tasks/202609150654-H0X3YJ/verification/20260915071558142-4a32aeba4d53ef9b.json"
+        - "unknown_path:.agentplane/tasks/202609150654-H0X3YJ/verification/20260915202032881-2becd57f31b19fbd.json"
+        - "unknown_path:.agentplane/tasks/202609150654-H0X3YJ/verification/20260915203234639-07fdfd9c0cdff3fb.json"
+        - "unknown_path:packages/spec/examples/acr.json"
+      execution_groups:
+        - "docs-schema"
+        - "core"
+        - "runtime"
+        - "cli"
+      observed:
+        changed_components:
+          - ".agentplane"
+          - "bun.lock"
+          - "docs"
+          - "packages/agentplane"
+          - "packages/core"
+          - "packages/recipes"
+          - "packages/spec"
+          - "packages/testkit"
+          - "website"
+        changed_files:
+          - ".agentplane/WORKFLOW.md"
+          - ".agentplane/tasks/202609150654-H0X3YJ/README.md"
+          - ".agentplane/tasks/202609150654-H0X3YJ/blueprint/resolved-snapshot.json"
+          - ".agentplane/tasks/202609150654-H0X3YJ/pr/diffstat.txt"
+          - ".agentplane/tasks/202609150654-H0X3YJ/pr/github-body.md"
+          - ".agentplane/tasks/202609150654-H0X3YJ/pr/github-title.txt"
+          - ".agentplane/tasks/202609150654-H0X3YJ/pr/meta.json"
+          - ".agentplane/tasks/202609150654-H0X3YJ/pr/review.md"
+          - ".agentplane/tasks/202609150654-H0X3YJ/quality/20260915-203344271-recovery-context/evaluator-opinion.md"
+          - ".agentplane/tasks/202609150654-H0X3YJ/quality/20260915-203344271-recovery-context/evaluator-prompt.md"
+          - ".agentplane/tasks/202609150654-H0X3YJ/quality/20260915-203344271-recovery-context/quality-report.json"
+          - ".agentplane/tasks/202609150654-H0X3YJ/supervision/declared-checks.json"
+          - ".agentplane/tasks/202609150654-H0X3YJ/supervision/implementation-evidence.json"
+          - ".agentplane/tasks/202609150654-H0X3YJ/verification/20260915071558142-4a32aeba4d53ef9b.json"
+          - ".agentplane/tasks/202609150654-H0X3YJ/verification/20260915202032881-2becd57f31b19fbd.json"
+          - ".agentplane/tasks/202609150654-H0X3YJ/verification/20260915203234639-07fdfd9c0cdff3fb.json"
+          - ".agentplane/workflows/last-known-good.md"
+          - "bun.lock"
+          - "docs/assets/header.svg"
+          - "docs/assets/readme-headers/adr.svg"
+          - "docs/assets/readme-headers/agentplane-cli.svg"
+          - "docs/assets/readme-headers/agentplane.svg"
+          - "docs/assets/readme-headers/core.svg"
+          - "docs/assets/readme-headers/docs.svg"
+          - "docs/assets/readme-headers/humanizer.svg"
+          - "docs/assets/readme-headers/recipes.svg"
+          - "docs/assets/readme-headers/releases.svg"
+          - "docs/assets/readme-headers/schemas.svg"
+          - "docs/assets/readme-headers/scripts.svg"
+          - "docs/assets/readme-headers/skills.svg"
+          - "docs/assets/readme-headers/spec.svg"
+          - "docs/assets/readme-headers/testkit.svg"
+          - "docs/reference/generated-reference.mdx"
+          - "docs/releases/v0.6.30.md"
+          - "packages/agentplane/package.json"
+          - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
+          - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
+          - "packages/core/package.json"
+          - "packages/recipes/package.json"
+          - "packages/recipes/src/index.ts"
+          - "packages/spec/examples/acr.json"
+          - "packages/testkit/package.json"
+          - "website/static/img/social/docs/releases/v0.6.30.png"
+          - "website/static/img/social/manifest.json"
+        external_effects: []
+        repository_effects:
+          - "dependencies"
+          - "documentation"
+          - "public_api"
+          - "release_metadata"
+          - "repository_write"
+          - "source_code"
+          - "tests"
+      phase: "task"
+      policy_floor:
+        monotonic_strengthening: true
+        pr_full_regression: true
+        unknown_or_central_full_regression: true
+      requires_full_regression: true
+      requires_real_e2e: true
+      schema_version: 2
+      selected_checks:
+        - "affected_unit_integration"
+        - "critical_paths"
+        - "docs_contract"
+        - "full_regression"
+        - "hosted_integration"
+        - "real_e2e"
+        - "task_outcome"
+      selector:
+        bucket: null
+        buckets: []
+        execution_mode: "semantic"
+        kind: "semantic"
+        lint_targets: []
+        reason: "execution_declaration"
+        run_cli_docs_check: false
+        selected_test_files: []
+        vitest_pool: "forks"
+      source: "execution_contract"
+    required_evidence:
+      - "hosted_integration"
+      - "repository_effect:dependencies"
+      - "repository_effect:documentation"
+      - "repository_effect:public_api"
+      - "repository_effect:release_metadata"
+      - "repository_effect:repository_write"
+      - "repository_effect:source_code"
+      - "repository_effect:tests"
+      - "task_outcome"
+      - "verification_recovery:recorded-check-1"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -56,6 +317,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 715a7747381f. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The release candidate does not need implementation rework. Verification is blocked by the legacy task contract: it treats a hosted lifecycle requirement as a local executable and excludes repository effects already required by the approved release diff. Recommended action: Keep all existing acceptance criteria. Remove the hosted lifecycle sentence from the executable verify list. Keep only `bun run release:prepublish` and `bun run ci:local:full` as local executable checks. Add the approved candidate paths and repository effects to the execution declaration. Preserve maintenance base 9001433ac67aa2973b6e3323de041216864eed61 and do not modify main. Requested scope: roots=.agentplane,bun.lock,docs,packages/agentplane,packages/core,packages/recipes,packages/spec,packages/testkit,website; repository effects=dependencies,documentation,public_api,release_metadata,repository_write,source_code,tests; request digest=sha256:123345f707c09f90bc5f697c9d179caf661ba96d5862a0981ffd939e8e262609. Agentplane receipt: external-agent-blocker/tr_49aab755bf2ea50a788f7075557469f5/sha256:3c1f91a61cc24aac3dc42a1f26cf46ed266cc4e2fd01ba6992008c37742f048d/sha256:123345f707c09f90bc5f697c9d179caf661ba96d5862a0981ffd939e8e262609."
 events:
   -
     type: "status"
@@ -114,8 +378,21 @@ events:
     to: "DOING"
     note: "Implementation committed: 715a7747381f. CLI accepted one state-bound external-agent semantic result."
     commit: "715a7747381fd120547c1059da6973e62f574c41"
+  -
+    type: "verify"
+    at: "2026-09-16T19:52:47.582Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check could not run: Verify hosted CI on the final release-candidate head and exact-SHA publication for every claimed channel."
+  -
+    type: "status"
+    at: "2026-09-16T19:54:58.684Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The release candidate does not need implementation rework. Verification is blocked by the legacy task contract: it treats a hosted lifecycle requirement as a local executable and excludes repository effects already required by the approved release diff. Recommended action: Keep all existing acceptance criteria. Remove the hosted lifecycle sentence from the executable verify list. Keep only `bun run release:prepublish` and `bun run ci:local:full` as local executable checks. Add the approved candidate paths and repository effects to the execution declaration. Preserve maintenance base 9001433ac67aa2973b6e3323de041216864eed61 and do not modify main. Requested scope: roots=.agentplane,bun.lock,docs,packages/agentplane,packages/core,packages/recipes,packages/spec,packages/testkit,website; repository effects=dependencies,documentation,public_api,release_metadata,repository_write,source_code,tests; request digest=sha256:123345f707c09f90bc5f697c9d179caf661ba96d5862a0981ffd939e8e262609. Agentplane receipt: external-agent-blocker/tr_49aab755bf2ea50a788f7075557469f5/sha256:3c1f91a61cc24aac3dc42a1f26cf46ed266cc4e2fd01ba6992008c37742f048d/sha256:123345f707c09f90bc5f697c9d179caf661ba96d5862a0981ffd939e8e262609."
 doc_version: 3
-doc_updated_at: "2026-09-16T19:52:45.562Z"
+doc_updated_at: "2026-09-16T19:54:58.684Z"
 doc_updated_by: "SUPERVISOR"
 description: "Prepare, qualify, merge, publish, and verify AgentPlane 0.6.30 from exact maintenance SHA cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9. Do not modify main. Include the safe reusable node_modules layout guard merged by PR #5958."
 sections:
@@ -133,6 +410,41 @@ sections:
     6. After provider merge, dispatch Publish to npm with the exact merged SHA. Expected: npm packages, CLI install smoke for agentplane and ap, v0.6.30 tag, GitHub Release assets, GHCR, and v0.6 tag are confirmed; optional credential-gated channels are reported explicitly.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-16T19:52:47.582Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check could not run: Verify hosted CI on the final release-candidate head and exact-SHA publication for every claimed channel.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0f99ea74cb2ed8de5703289ba5eadbbc819cb252b1724b284489e989f6f5f447, input_digest=sha256:e281cdf513cb1c1111c3d547b8d58c1b2848da884d51de35da961d2663503211
+
+    Details:
+
+    Command: Verify hosted CI on the final release-candidate head and exact-SHA publication for every claimed channel.
+    Result: fail
+    Evidence: .agentplane/tasks/202609142329-DN50HH/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609142329-DN50HH declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/v0-6-issues-base/.agentplane/worktrees/202609142329-DN50HH-release-agentplane-0-6-30-from-the-0-6-maintenan/.agentplane/tasks/202609142329-DN50HH/blueprint/resolved-snapshot.json
+    - old_digest: 350c37aa2b1b4fd7cbd6a334f393454261f9acea776bc1f577ef1a0842a0092c
+    - current_digest: 350c37aa2b1b4fd7cbd6a334f393454261f9acea776bc1f577ef1a0842a0092c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609142329-DN50HH
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -140,25 +452,39 @@ sections:
   Findings: ""
 extensions:
   agentplane.scope_extension_request:
-    blocker_state_fingerprint: "sha256:bb54d7703951dce7a53a99b39b2d5932806a6ee5c05c47bf13e148305d471f4e"
+    blocker_state_fingerprint: "sha256:3c1f91a61cc24aac3dc42a1f26cf46ed266cc4e2fd01ba6992008c37742f048d"
     kind: "task_scope_extension_request"
     request:
-      rationale: "The release cannot pass its required prepublish gate without correcting the guard implementation and tests outside release metadata."
+      rationale: "The approved release candidate already contains these path classes and effects. The current legacy declaration incorrectly reports them as authority violations."
       repository_effects:
+        - "dependencies"
+        - "documentation"
+        - "public_api"
+        - "release_metadata"
+        - "repository_write"
         - "source_code"
         - "tests"
       schema_version: 1
       scope_roots:
-        - "packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
-        - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
-        - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
-    request_digest: "sha256:be74f5c4b03bfc9b19939132b7b86b934c29f90118a42a33eaf847c1f0d11531"
+        - ".agentplane"
+        - "bun.lock"
+        - "docs"
+        - "packages/agentplane"
+        - "packages/core"
+        - "packages/recipes"
+        - "packages/spec"
+        - "packages/testkit"
+        - "website"
+    request_digest: "sha256:123345f707c09f90bc5f697c9d179caf661ba96d5862a0981ffd939e8e262609"
     schema_version: 1
     status: "pending"
-    transition_id: "tr_37aba4fcff770d68dd683414acc1d192"
+    transition_id: "tr_49aab755bf2ea50a788f7075557469f5"
     work_item_id: null
-  implementation_commit:
-    hash: "715a7747381fd120547c1059da6973e62f574c41"
+  task_execution_context:
+    base_ref: "codex/release-v0.6.27-reclaim-fix"
+    base_sha: "cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9"
+    repository_identity: null
+    schema_version: 1
   workflow_route_baseline:
     start_head_sha: "cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9"
     version: 1
@@ -189,6 +515,41 @@ Release plan: version=0.6.30, tag=v0.6.30, base=codex/release-v0.6.27-reclaim-fi
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-16T19:52:47.582Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check could not run: Verify hosted CI on the final release-candidate head and exact-SHA publication for every claimed channel.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0f99ea74cb2ed8de5703289ba5eadbbc819cb252b1724b284489e989f6f5f447, input_digest=sha256:e281cdf513cb1c1111c3d547b8d58c1b2848da884d51de35da961d2663503211
+
+Details:
+
+Command: Verify hosted CI on the final release-candidate head and exact-SHA publication for every claimed channel.
+Result: fail
+Evidence: .agentplane/tasks/202609142329-DN50HH/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609142329-DN50HH declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/v0-6-issues-base/.agentplane/worktrees/202609142329-DN50HH-release-agentplane-0-6-30-from-the-0-6-maintenan/.agentplane/tasks/202609142329-DN50HH/blueprint/resolved-snapshot.json
+- old_digest: 350c37aa2b1b4fd7cbd6a334f393454261f9acea776bc1f577ef1a0842a0092c
+- current_digest: 350c37aa2b1b4fd7cbd6a334f393454261f9acea776bc1f577ef1a0842a0092c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609142329-DN50HH
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

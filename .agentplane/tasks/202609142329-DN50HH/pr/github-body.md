@@ -13,8 +13,13 @@ Release AgentPlane 0.6.30 from exact maintenance base 9001433ac67aa2973b6e3323de
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note:
+
+```text
+Rework: Declared check could not run: Verify hosted CI on the final release-candidate head and
+exact-SHA publication for every claimed channel.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

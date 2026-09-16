@@ -1,0 +1,31 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "Verify hosted CI on the final release-candidate head and exact-SHA publication for every claimed channel.",
+      "duration_ms": 166,
+      "exit_code": null,
+      "runtime": {
+        "environment_digest": "sha256:e5be9d78f3d9bae7f401933eca9b9cd4297855a6df309bac94de6cfaeb8c4b13",
+        "executable_digest": null,
+        "kind": "local_runtime_resolution",
+        "status": "unavailable",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": null,
+      "stderr_tail": "process command is not in the allowed executable set: Verify",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": "Declared check could not run: Verify hosted CI on the final release-candidate head and exact-SHA publication for every claimed channel.",
+  "schema_version": 1,
+  "status": "failed",
+  "task_id": "202609142329-DN50HH"
+}

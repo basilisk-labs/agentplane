@@ -12,8 +12,8 @@ Created: 2026-09-14T23:30:40.071Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check could not run: Verify hosted CI on the final release-candidate head and exact-SHA publication for every claimed channel.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

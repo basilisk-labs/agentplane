@@ -1,0 +1,113 @@
+{
+  "details": "Command: Verify hosted CI on the final release-candidate head and exact-SHA publication for every claimed channel.\nResult: fail\nEvidence: .agentplane/tasks/202609142329-DN50HH/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609142329-DN50HH declared verification",
+  "digest": "sha256:e1211dfbc65ac0502eddc7a719868a5c0f1ada0a362a695a9c48e838508d1fa6",
+  "implementation_sha": "715a7747381fd120547c1059da6973e62f574c41",
+  "input": {
+    "context": {
+      "digest": "sha256:4a2a11c8da7452c58ae6ff2ffb5b108a3204ed0779bf7932e7cebfcf296c06b1",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.mjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:e281cdf513cb1c1111c3d547b8d58c1b2848da884d51de35da961d2663503211",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:551172c42be77b860ecbf9e13fe8632de8f09a6570ff72f9af6e58974371f4e8",
+      "digest": "sha256:ee354c6788ea68a32b85a616ee003393df7a5623ab8f7dbea77a6ebd8c40f030",
+      "references": [
+        {
+          "digest": "sha256:146a4b5bbe2fcdc23601d71a55417b8217ca39c06b7e9f686aae6acd33f97f3d",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202609142329-DN50HH/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609142329-DN50HH/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "codex/release-v0.6.27-reclaim-fix",
+      "base_sha": "cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9",
+      "digest": "sha256:3e91e90504a9260b8ce2a7bc204eb84295066989dc053c2df990b0017eccc8a1",
+      "primary_task_id": "202609142329-DN50HH",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_release_metadata",
+        "observed_effect_dependencies",
+        "observed_effect_public_api",
+        "repository_branch_pr_floor",
+        "reversibility_recovery_required"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "auto",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609142329-DN50HH"
+      ]
+    },
+    "implementation": {
+      "base_sha": "cc2da20eb21f3bde90d1d8f35fe2ba7acaa763c9",
+      "digest": "sha256:2fa6688c8c1d54f79a83f80ee31b50b30cee529630ddaf1eab73f7de0686a198",
+      "strategy": "branch_diff",
+      "target_sha": "715a7747381fd120547c1059da6973e62f574c41"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:c200eb19a56a51b62492ff0ecd466835eb8cfb2eb4d6c3016dc6077511664e2f",
+    "verify_steps_digest": "sha256:0f99ea74cb2ed8de5703289ba5eadbbc819cb252b1724b284489e989f6f5f447"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check could not run: Verify hosted CI on the final release-candidate head and exact-SHA publication for every claimed channel.",
+  "recorded_at": "2026-09-16T19:52:47.582Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "1. Run `agentplane release plan --patch`. Expected: the plan freezes version 0.6.30 and tag v0.6.30 from maintenance base 9001433ac67aa2973b6e3323de041216864eed61.\n2. Run `bun run release:prepublish`. Expected: synchronized package versions, release notes, parity checks, distribution generation, and the full release gate pass on the final candidate head.\n3. Run `bun run ci:local:full`. Expected: the complete local regression suite passes on the final candidate head.\n4. Inspect the final diff and repository status. Expected: only 0.6.30 release metadata, notes, task evidence, and the already-merged guard corrections are present; main is unchanged.\n5. Verify the final release-candidate PR. Expected: all hosted checks pass on the exact final head and the PR targets only codex/release-v0.6.27-reclaim-fix.\n6. After provider merge, dispatch Publish to npm with the exact merged SHA. Expected: npm packages, CLI install smoke for agentplane and ap, v0.6.30 tag, GitHub Release assets, GHCR, and v0.6 tag are confirmed; optional credential-gated channels are reported explicitly.",
+  "scope_digest": "sha256:0f99ea74cb2ed8de5703289ba5eadbbc819cb252b1724b284489e989f6f5f447",
+  "task_id": "202609142329-DN50HH",
+  "verification_command": "agentplane verify 202609142329-DN50HH --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
