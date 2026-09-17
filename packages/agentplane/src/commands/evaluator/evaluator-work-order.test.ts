@@ -47,7 +47,9 @@ describe("EvaluatorWorkOrder compatibility", () => {
     });
 
     expect(order.schema_version).toBe(1);
-    expect(evaluatorWorkOrderReviewDigest(order)).toBe(digest);
+    expect(() => evaluatorWorkOrderReviewDigest(order)).toThrow(
+      /requires a canonical v2 work order/u,
+    );
   });
 
   it("reads native v2 work orders and rejects unknown versions", () => {

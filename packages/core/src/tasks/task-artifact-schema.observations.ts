@@ -16,7 +16,7 @@ export const TASK_OBSERVATION_KIND_VALUES = [
   "incident_candidate",
   "context_candidate",
   "agent_improvement_candidate",
-  "blueprint_improvement_candidate",
+  "workflow_improvement_candidate",
 ] as const;
 
 export const TASK_OBSERVATION_PHASE_VALUES = [
@@ -37,7 +37,7 @@ export const TASK_OBSERVATION_ACTION_VALUES = [
   "incident",
   "context",
   "skill",
-  "blueprint_change",
+  "workflow_change",
   "agent_prompt_change",
   "test_gap",
 ] as const;

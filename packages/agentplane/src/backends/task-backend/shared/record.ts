@@ -23,7 +23,6 @@ import {
 import { toStringArray } from "./strings.js";
 import type { TaskData } from "./types.js";
 import {
-  BLUEPRINT_REQUEST_VALUES,
   MUTATION_SCOPE_VALUES,
   RISK_FLAG_VALUES,
   TASK_KIND_VALUES,
@@ -400,10 +399,6 @@ export function taskRecordToData(record: TaskRecord): TaskData {
     risk_flags: stringEnumArray<NonNullable<TaskData["risk_flags"]>[number]>(
       fm.risk_flags,
       RISK_FLAG_VALUES,
-    ),
-    blueprint_request: stringEnumValue<TaskData["blueprint_request"] & string>(
-      fm.blueprint_request,
-      BLUEPRINT_REQUEST_VALUES,
     ),
     verify: toStringArray(fm.verify),
     plan_approval: planApproval ?? undefined,

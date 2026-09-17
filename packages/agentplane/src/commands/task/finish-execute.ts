@@ -5,9 +5,9 @@ import { throwIfPolicyDecisionDenied } from "../shared/policy-deny.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 import {
-  assertBlueprintEvidenceBeforeFinish,
+  assertNativeTaskIdentityBeforeFinish,
   assertQualityReviewBeforeFinish,
-} from "./finish-blueprint-evidence.js";
+} from "./finish-quality-evidence.js";
 import {
   existingCommitInfo,
   loadTaskForFinish,
@@ -55,7 +55,7 @@ export async function executeFinishPlan(opts: {
     const loadedState = await loadFinishTasks({ ctx, options, plan });
     if (!taskStateAlreadyWritten) {
       assertFinishPhasePolicy({ ctx, loadedTasks: loadedState.loadedTasks, plan });
-      await assertBlueprintEvidenceBeforeFinish({ ctx, loadedTasks: loadedState.loadedTasks });
+      await assertNativeTaskIdentityBeforeFinish({ ctx, loadedTasks: loadedState.loadedTasks });
     }
     let incidentOutcome = await collectIncidentsForLoadedTasks({
       ctx,

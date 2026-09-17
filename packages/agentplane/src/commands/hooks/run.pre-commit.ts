@@ -37,7 +37,6 @@ function isGeneratedTaskArtifact(filePath: string, workflowDir: string, taskId: 
   const prefix = taskPathPrefix(workflowDir, taskId);
   if (!normalized.startsWith(prefix)) return false;
   const relative = normalized.slice(prefix.length);
-  if (relative === "blueprint/resolved-snapshot.json") return true;
   if (!relative.startsWith("quality/")) return false;
   return (
     relative.includes("/objects/sha256/") ||

@@ -170,14 +170,12 @@ async function loadContextTaskForVerification(opts: {
       message: `Task ${opts.taskId} has invalid mutation scope: ${task.mutation_scope ?? "unknown"}`,
     });
   }
-  if (
-    task.blueprint_request !== "context.assimilation" &&
-    task.blueprint_request !== "context.maximum_assimilation"
-  ) {
+  const contextExtension = task.extensions?.["agentplane.context"];
+  if (!contextExtension || typeof contextExtension !== "object") {
     throw new CliError({
       exitCode: 3,
       code: "E_VALIDATION",
-      message: `Task ${opts.taskId} has unexpected blueprint request: ${task.blueprint_request ?? "unknown"}`,
+      message: `Task ${opts.taskId} is missing extensions.agentplane.context.`,
     });
   }
   return task as VerificationInput;

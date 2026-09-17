@@ -1,4 +1,5 @@
-import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
+import type { TaskData } from "../../backends/task-backend.js";
+import { CliError } from "../../shared/errors.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
 import {
   deriveRouteOperatorGuidance,
@@ -12,46 +13,27 @@ function appendDetailsBlock(details: string | null | undefined, lines: readonly 
   return [existing, lines.join("\n")].filter(Boolean).join("\n\n");
 }
 
-export async function appendBlueprintSnapshotReference(
+export function appendNativeTaskIdentityReference(
   details: string | null | undefined,
   opts: {
-    ctx: CommandContext;
-    task: Parameters<typeof checkTaskBlueprintSnapshotDrift>[0]["task"];
+    task: TaskData;
   },
-): Promise<string> {
+): string {
   const nativeIdentity = resolveNativeTaskIdentity(opts.task);
-  if (nativeIdentity) {
-    return appendDetailsBlock(details, [
-      "NativeTaskIdentityRef:",
-      `- plan_digest: ${nativeIdentity.plan.digest}`,
-      `- policy_digest: ${nativeIdentity.policy.digest}`,
-      `- capability_digest: ${nativeIdentity.capability.digest}`,
-      `- checks_digest: ${nativeIdentity.checks.digest}`,
-      `- identity_digest: ${nativeIdentity.digest}`,
-    ]);
+  if (!nativeIdentity) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: `Verification requires a canonical Task Kernel identity. Run: agentplane task kernel-migrate ${opts.task.id}`,
+    });
   }
-  try {
-    const snapshot = await checkTaskBlueprintSnapshotDrift(opts);
-    return appendDetailsBlock(details, [
-      "BlueprintSnapshotRef:",
-      `- state: ${snapshot.state}`,
-      `- path: ${snapshot.path}`,
-      `- old_digest: ${snapshot.previous.digest ?? "none"}`,
-      `- current_digest: ${snapshot.current.digest}`,
-      `- route_changed: ${
-        snapshot.routeChanged === null ? "unknown" : snapshot.routeChanged ? "yes" : "no"
-      }`,
-      `- safe_command: ${snapshot.safeCommand}`,
-    ]);
-  } catch (err) {
-    const message = err instanceof Error && err.message.trim() ? err.message.trim() : String(err);
-    return appendDetailsBlock(details, [
-      "BlueprintSnapshotRef:",
-      "- state: unavailable",
-      `- error: ${message}`,
-      `- safe_command: agentplane blueprint snapshot ${opts.task.id}`,
-    ]);
-  }
+  return appendDetailsBlock(details, [
+    "NativeTaskIdentityRef:",
+    `- plan_digest: ${nativeIdentity.plan.digest}`,
+    `- policy_digest: ${nativeIdentity.policy.digest}`,
+    `- capability_digest: ${nativeIdentity.capability.digest}`,
+    `- checks_digest: ${nativeIdentity.checks.digest}`,
+    `- identity_digest: ${nativeIdentity.digest}`,
+  ]);
 }
 
 export async function appendDecisionContextReference(

@@ -14,7 +14,6 @@ import type {
 import type { TaskExecutionContract } from "@agentplaneorg/core/tasks";
 
 import type { TaskEvent } from "../../backends/task-backend.js";
-import type { BlueprintPlanArtifact } from "../../blueprints/index.js";
 import type { TaskRouteDecision } from "../../commands/shared/route-decision-types.js";
 import type { AgentplaneCapabilityRegistry } from "../../runtime/capabilities/index.js";
 import type { ResolvedExecutionProfileRuntime } from "../../runtime/execution-profile/index.js";
@@ -72,7 +71,6 @@ type TaskEpisodeMetadata = {
   tags: string[];
   task_kind: string | null;
   mutation_scope: string | null;
-  blueprint_request: string | null;
   execution_contract?: TaskExecutionContract;
 };
 
@@ -152,9 +150,6 @@ export type RunnerArtifactPaths = {
   artifact_root?: string;
   run_dir: string;
   bundle_path: string;
-  blueprint_plan_path: string;
-  blueprint_execution_plan_path: string;
-  blueprint_execution_state_path: string;
   context_manifest_path: string;
   bootstrap_path: string;
   state_path: string;
@@ -201,7 +196,6 @@ export type RunnerContextBundle = {
   repository: RunnerRepositoryContext;
   task?: RunnerTaskContext;
   recipe?: RunnerRecipeContext;
-  blueprint?: BlueprintPlanArtifact;
   /** Native policy, lifecycle, evidence, and stop floors for current execution. */
   task_obligations?: NativeTaskObligations;
   playbook?: RunnerExecutionPlaybookContract;

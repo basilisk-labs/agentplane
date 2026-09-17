@@ -58,7 +58,7 @@ export function buildWikiAgentsMarkdown(profile: ContextInitParsed["profile"]): 
       ? `
 ## Maximum assimilation mode
 
-- Use the \`context.maximum_assimilation\` blueprint for new context assimilation tasks.
+- Use the maximum-assimilation context profile for new context assimilation tasks.
 - Goal: after assimilation, the maintained wiki and derived artifacts preserve all significant
   source meaning without relying on raw files for semantic recall.
 - Keep original hashes in the source-set lock and cite source content with concrete line refs such as

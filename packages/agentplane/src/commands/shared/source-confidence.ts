@@ -4,8 +4,7 @@ type SourceConfidenceSource =
   | "local_git"
   | "pr_artifact"
   | "task_doc"
-  | "blueprint_resolver"
-  | "snapshot_digest"
+  | "task_execution_contract"
   | "remote_provider";
 
 type SourceConfidenceFreshness =

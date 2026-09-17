@@ -7,7 +7,7 @@ export type TaskRunExecutionPreview = {
     reason_codes: string[];
   };
   context: {
-    blueprint_id: string | null;
+    task_profile: string | null;
     task_sections: number;
     task_context_bytes: number;
     duplicate_bytes_removed: number;
@@ -38,7 +38,7 @@ export type TaskRunExecutionPreview = {
 export function buildTaskRunExecutionPreview(bundle: RunnerContextBundle): TaskRunExecutionPreview {
   const persistedRoute = bundle.route_decision?.task.execution_route;
   const persistedContract = bundle.route_decision?.task.execution_contract;
-  const fallbackRoute = bundle.blueprint?.workflowMode ?? "direct";
+  const fallbackRoute = bundle.task_obligations?.route.selected_mode ?? "direct";
   const toolBudget = Object.fromEntries(
     Object.entries(bundle.execution.profile_runtime?.budget ?? {}).map(([phase, budget]) => [
       phase,
@@ -56,15 +56,12 @@ export function buildTaskRunExecutionPreview(bundle: RunnerContextBundle): TaskR
       ],
     },
     context: {
-      blueprint_id: bundle.blueprint?.blueprintId ?? null,
+      task_profile: bundle.task_obligations?.profile ?? null,
       task_sections: bundle.task?.narrative.sections.length ?? 0,
       task_context_bytes: bundle.task?.compaction.serialized.emitted_bytes ?? 0,
       duplicate_bytes_removed: bundle.task?.compaction.serialized.duplicate_bytes_removed ?? 0,
       prompt_blocks: bundle.base_prompts.length,
-      policy_modules:
-        bundle.task_obligations?.policy_modules.length ??
-        bundle.blueprint?.policyModules.length ??
-        0,
+      policy_modules: bundle.task_obligations?.policy_modules.length ?? 0,
       knowledge_refs: bundle.knowledge_refs?.length ?? 0,
     },
     approvals: {
@@ -84,12 +81,7 @@ export function buildTaskRunExecutionPreview(bundle: RunnerContextBundle): TaskR
             max_policy_modules: bundle.task_obligations.context_budget.max_policy_modules,
             max_prompt_blocks: bundle.task_obligations.context_budget.max_prompt_blocks,
           }
-        : bundle.blueprint
-          ? {
-              max_policy_modules: bundle.blueprint.contextBudget.maxPolicyModules,
-              max_prompt_blocks: bundle.blueprint.contextBudget.maxPromptBlocks ?? null,
-            }
-          : null,
+        : null,
       tools: toolBudget,
     },
   };

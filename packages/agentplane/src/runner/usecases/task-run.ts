@@ -43,8 +43,6 @@ import {
   recordActiveClaimCleanupFailure,
 } from "./task-run-active-claim-runtime.js";
 export { renderTaskRunnerBootstrap } from "./task-run-bootstrap.js";
-export { assertRunnerBlueprintPolicyModuleBudget } from "./task-run-blueprint-plan.js";
-import { writeTaskBlueprintSnapshot } from "./task-run-blueprint-plan.js";
 export { assertRunnerNativeContextBudget } from "./task-run-obligations.js";
 import { assertRunnerNativeContextBudget } from "./task-run-obligations.js";
 import { prepareTaskRunnerAgentWorkOrder } from "./task-run-work-order.js";
@@ -130,7 +128,6 @@ export async function prepareTaskRunnerExecution(
   executionProfile = preparedWorkOrder.execution_profile;
   const taskEnvelope = preparedWorkOrder.task_envelope;
   const base_prompts = preparedWorkOrder.provider_prompts;
-  const blueprint = preparedWorkOrder.blueprint;
   const task_obligations = preparedWorkOrder.task_obligations;
   const route_decision = preparedWorkOrder.route_decision;
   if (opts.task_execution) {
@@ -182,7 +179,6 @@ export async function prepareTaskRunnerExecution(
     repository: taskEnvelope.repository,
     task: taskEnvelope.task,
     recipe,
-    blueprint,
     task_obligations,
     work_order: preparedWorkOrder.work_order,
     route_decision,
@@ -259,11 +255,6 @@ export async function prepareTaskRunnerExecution(
   let bootstrapMarkdown: string;
   try {
     assertRunnerPolicyCompatibility(bundle);
-    await repository.assertBoundary("before writing the blueprint snapshot");
-    await writeTaskBlueprintSnapshot(bundle, {
-      assert_artifact_boundary: async (phase) => await repository.assertBoundary(phase),
-    });
-    await repository.assertBoundary("after writing the blueprint snapshot");
     invocation = await adapter.prepare(bundle);
     attachRunnerPhaseToolBrokerEnv({ bundle, invocation, grant: phaseToolGrant });
     bootstrapMarkdown = renderSemanticBootstrap(bundle, invocation);

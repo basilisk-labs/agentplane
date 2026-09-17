@@ -295,7 +295,6 @@ export function buildExtractionTaskPlans(
         tags: ["context", "assimilation", "task-harvest", "knowledge-proposal"],
         taskKind: "context",
         mutationScope: "context",
-        blueprintRequest: "context.maximum_assimilation",
         extensions: {
           "agentplane.context": {
             schema_version: 1,
@@ -400,7 +399,6 @@ export function buildExtractionTaskPlans(
         },
         dependsOn: [],
         verify: buildVerifySteps(),
-        showBlueprint: false,
         allowDuplicate: true,
         riskFlags: [],
       },

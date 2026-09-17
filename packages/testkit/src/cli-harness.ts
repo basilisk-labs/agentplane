@@ -501,13 +501,6 @@ export async function prepareHostedIntegrateFixture(opts: {
     [`.agentplane/tasks/${opts.taskId}`],
     `${opts.taskId} link hosted PR fixture`,
   );
-  await runFixtureStep("Blueprint snapshot", [
-    "blueprint",
-    "snapshot",
-    opts.taskId,
-    "--root",
-    opts.root,
-  ]);
   await recordVerificationOk(opts.root, opts.taskId);
   await commitPathsIfChanged(
     opts.root,
@@ -547,13 +540,6 @@ export async function prepareHostedIntegrateFixture(opts: {
     opts.root,
   ];
   await runFixtureStep("Pre-merge closure", closureArgs(await reviewedSha()));
-  await runFixtureStep("Post-closure blueprint snapshot", [
-    "blueprint",
-    "snapshot",
-    opts.taskId,
-    "--root",
-    opts.root,
-  ]);
   await recordVerificationOk(opts.root, opts.taskId);
   const postClosurePaths = [`.agentplane/tasks/${opts.taskId}`];
   if (await pathExists(path.join(opts.root, ".agentplane", "policy", "incidents.md"))) {

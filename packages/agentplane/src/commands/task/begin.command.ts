@@ -18,7 +18,6 @@ export type TaskBeginParsed = {
   verify: string[];
   taskKind?: TaskNewParsed["taskKind"];
   mutationScope?: TaskNewParsed["mutationScope"];
-  blueprintRequest?: TaskNewParsed["blueprintRequest"];
   json: boolean;
 };
 
@@ -74,34 +73,14 @@ export const taskBeginSpec: CommandSpec<TaskBeginParsed> = {
       name: "task-kind",
       valueHint: "<analysis|content|docs|code|release|ops|context>",
       choices: ["analysis", "content", "docs", "code", "release", "ops", "context"],
-      description: "Structured blueprint task-kind intent.",
+      description: "Structured task-kind intent.",
     },
     {
       kind: "string",
       name: "mutation-scope",
       valueHint: "<none|docs|code|release|ops|context|unknown>",
       choices: ["none", "docs", "code", "release", "ops", "context", "unknown"],
-      description: "Structured mutation scope used by blueprint resolution.",
-    },
-    {
-      kind: "string",
-      name: "blueprint-request",
-      valueHint: "<id>",
-      choices: [
-        "analysis.light",
-        "content.light",
-        "docs.change",
-        "code.direct",
-        "code.branch_pr",
-        "performance.benchmark",
-        "quality.regression",
-        "context.assimilation",
-        "context.maximum_assimilation",
-        "post_run.improvement_review",
-        "release.strict",
-        "ops.approval",
-      ],
-      description: "Explicit blueprint request stored on the task.",
+      description: "Structured task mutation scope.",
     },
     { kind: "boolean", name: "json", default: false, description: "Emit machine-readable JSON." },
   ],
@@ -132,7 +111,6 @@ export const taskBeginSpec: CommandSpec<TaskBeginParsed> = {
     verify: Array.isArray(raw.opts.verify) ? (raw.opts.verify as string[]) : [],
     taskKind: raw.opts["task-kind"] as TaskBeginParsed["taskKind"],
     mutationScope: raw.opts["mutation-scope"] as TaskBeginParsed["mutationScope"],
-    blueprintRequest: raw.opts["blueprint-request"] as TaskBeginParsed["blueprintRequest"],
     json: raw.opts.json === true,
   }),
 };
@@ -163,11 +141,9 @@ export function makeRunTaskBeginHandler(
         taskKind: p.taskKind,
         mutationScope: p.mutationScope,
         riskFlags: [],
-        blueprintRequest: p.blueprintRequest,
         route: "auto",
         dependsOn: [],
         verify: p.verify,
-        showBlueprint: false,
         allowDuplicate: false,
       },
     });

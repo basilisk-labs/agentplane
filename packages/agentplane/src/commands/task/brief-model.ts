@@ -14,10 +14,10 @@ import type {
 import {
   prepareAgentWorkOrder,
   requirePreparedAgentWorkOrder,
-  type AgentWorkOrderLegacyBriefProjection,
   type AgentWorkOrderPreparationView,
   type PreparedAgentWorkOrder,
 } from "../../runner/usecases/agent-work-order.js";
+import type { NativeTaskObligations } from "../../runtime/task-obligations/index.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import {
   agentWorkContextContract,
@@ -130,11 +130,7 @@ type TaskBriefLegacyProjection = {
   };
   decision_context: RouteOperatorGuidance;
   verify_steps: TaskBriefVerifySteps;
-  blueprint: AgentWorkOrderLegacyBriefProjection["blueprint"];
-  policy_modules: string[];
-  evidence_required: string[];
-  snapshot: AgentWorkOrderLegacyBriefProjection["snapshot"];
-  stop_rules: string[];
+  task_obligations: NativeTaskObligations;
   remote: {
     enabled: boolean;
     note: string;
@@ -153,10 +149,8 @@ export type TaskBriefWithWorkflowStep = TaskBriefLegacyProjection & {
 };
 
 function buildSourceConfidence(opts: {
-  blueprintError?: string;
   remoteEnabled: boolean;
   remoteResolved: boolean;
-  snapshotState: string;
   verifyStepsQuality: TaskBriefVerifySteps["quality"];
 }): TaskBriefLegacyProjection["source_confidence"] {
   const routeSourceConfidence = buildRouteSourceConfidenceBase({
@@ -164,15 +158,6 @@ function buildSourceConfidence(opts: {
     remoteEnabled: opts.remoteEnabled,
     remoteResolved: opts.remoteResolved,
   });
-  const snapshotConfidence =
-    opts.snapshotState === "current" ? "high" : opts.snapshotState === "invalid" ? "low" : "medium";
-  const snapshotFreshness = opts.snapshotState === "missing" ? "computed_local" : "cached_artifact";
-  const snapshotNote =
-    opts.snapshotState === "current"
-      ? undefined
-      : opts.snapshotState === "missing"
-        ? "resolved snapshot artifact is missing"
-        : `resolved snapshot artifact is ${opts.snapshotState}`;
   const verifyStepsConfidence =
     opts.verifyStepsQuality === "specific"
       ? "high"
@@ -194,32 +179,10 @@ function buildSourceConfidence(opts: {
       confidence: verifyStepsConfidence,
       ...(verifyStepsNote ? { note: verifyStepsNote } : {}),
     },
-    blueprint: {
-      source: "blueprint_resolver",
+    task_obligations: {
+      source: "task_execution_contract",
       freshness: "computed_local",
-      confidence: opts.blueprintError ? "low" : "high",
-      ...(opts.blueprintError ? { note: opts.blueprintError } : {}),
-    },
-    policy_modules: {
-      source: "blueprint_resolver",
-      freshness: "computed_local",
-      confidence: opts.blueprintError ? "low" : "high",
-    },
-    evidence_required: {
-      source: "blueprint_resolver",
-      freshness: "computed_local",
-      confidence: opts.blueprintError ? "low" : "high",
-    },
-    snapshot: {
-      source: "snapshot_digest",
-      freshness: snapshotFreshness,
-      confidence: snapshotConfidence,
-      ...(snapshotNote ? { note: snapshotNote } : {}),
-    },
-    stop_rules: {
-      source: "blueprint_resolver",
-      freshness: "computed_local",
-      confidence: opts.blueprintError ? "low" : "high",
+      confidence: "high",
     },
     remote: { ...routeSourceConfidence.remote },
   };
@@ -252,9 +215,6 @@ export function projectTaskBriefFromPreparedWorkOrder(
   const verifyQuality = verifyStepsQuality(verifySteps);
   const route = preparedWorkOrder.route_decision;
   const decisionContext = deriveRouteOperatorGuidance(route);
-  const legacy = preparedWorkOrder.brief_projection;
-  const blueprint = legacy.blueprint;
-  const snapshot = legacy.snapshot;
   const batchOwnership =
     route.batchOwnership.role === "none"
       ? ({ role: "none" } as const)
@@ -345,11 +305,7 @@ export function projectTaskBriefFromPreparedWorkOrder(
       quality: verifyQuality,
       text: verifySteps,
     },
-    blueprint,
-    policy_modules: blueprint.policy_modules ?? [],
-    evidence_required: blueprint.required_evidence ?? [],
-    snapshot,
-    stop_rules: blueprint.stop_reasons ?? [],
+    task_obligations: preparedWorkOrder.task_obligations,
     remote: {
       enabled: preparedWorkOrder.preparation.remote_policy.requested,
       note: preparedWorkOrder.preparation.remote_policy.requested
@@ -357,10 +313,8 @@ export function projectTaskBriefFromPreparedWorkOrder(
         : "remote lookup skipped; pass --remote for hosted PR/check/review truth",
     },
     source_confidence: buildSourceConfidence({
-      blueprintError: blueprint.error,
       remoteEnabled: preparedWorkOrder.preparation.remote_policy.requested,
       remoteResolved: hasRemoteProviderEvidence(route),
-      snapshotState: snapshot.state,
       verifyStepsQuality: verifyQuality,
     }),
   };

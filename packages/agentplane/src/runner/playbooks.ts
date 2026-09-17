@@ -1,6 +1,6 @@
 import type { RunnerContextBundle } from "./types/context.js";
 import type {
-  RunnerExecutionBlueprintStateId,
+  RunnerExecutionStateId,
   RunnerExecutionPlaybookContract,
   RunnerFinalVerifierCheck,
   RunnerFinalVerifierResult,
@@ -25,7 +25,7 @@ const KNOWLEDGE_CAPTURE_PLAYBOOK: RunnerTaskPlaybookContract = {
   id: "knowledge_capture_pipeline",
   version: 1,
   title: "Knowledge capture pipeline",
-  applies_to_blueprint: "knowledge_capture_result",
+  applies_to_outcome: "knowledge_capture_result",
   match_signals: ["inbox", "capture", "distill", "thread", "knowledge"],
   required_steps: [
     "read_policy",
@@ -34,7 +34,7 @@ const KNOWLEDGE_CAPTURE_PLAYBOOK: RunnerTaskPlaybookContract = {
     "write_card",
     "update_retrieval_index",
     "retire_source",
-    "verify_blueprint",
+    "verify_result",
   ],
   required_capabilities: ["file.read", "file.write", "file.delete", "file.search"],
   allowed_outcomes: ["OUTCOME_OK", "OUTCOME_NONE_CLARIFICATION", "OUTCOME_NONE_UNSUPPORTED"],
@@ -49,8 +49,6 @@ function textFromBundle(bundle: RunnerContextBundle): string {
     bundle.task?.narrative.title,
     bundle.task?.narrative.description,
     ...(bundle.task?.metadata.tags ?? []),
-    bundle.task?.metadata.blueprint_request,
-    bundle.blueprint?.blueprintId,
     bundle.recipe?.scenario_id,
     bundle.recipe?.recipe_name,
   ]
@@ -106,12 +104,12 @@ function resolveRunnerRuntimeCapabilityContract(
 }
 
 function checksForRequiredState(
-  requiredState: readonly RunnerExecutionBlueprintStateId[],
+  requiredState: readonly RunnerExecutionStateId[],
 ): RunnerFinalVerifierCheck[] {
   return requiredState.map((id) => ({
     id,
     required: true,
-    description: `Required execution blueprint state ${id} must be observed before success.`,
+    description: `Required execution state ${id} must be observed before success.`,
   }));
 }
 
@@ -119,7 +117,7 @@ export function buildRunnerExecutionPlaybookContract(
   bundle: RunnerContextBundle,
 ): RunnerExecutionPlaybookContract {
   const selected = resolveRunnerTaskPlaybook(bundle);
-  const requiredState: readonly RunnerExecutionBlueprintStateId[] = selected.playbook
+  const requiredState: readonly RunnerExecutionStateId[] = selected.playbook
     ? [
         "capture_artifact_exists",
         "distill_card_exists",
@@ -131,11 +129,8 @@ export function buildRunnerExecutionPlaybookContract(
     schema_version: 1,
     artifact_kind: "agentplane.runner.execution_playbook_contract",
     ...(selected.playbook ? { selected_playbook: selected.playbook } : {}),
-    execution_blueprint: {
-      id: selected.playbook?.applies_to_blueprint ?? "generic_runner_execution_result",
-      ...(bundle.blueprint?.blueprintId
-        ? { source_blueprint_id: bundle.blueprint.blueprintId }
-        : {}),
+    execution_outcome: {
+      id: selected.playbook?.applies_to_outcome ?? "generic_runner_execution_result",
       required_state: requiredState,
       success_outcome: "OUTCOME_OK",
     },

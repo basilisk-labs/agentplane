@@ -4,7 +4,7 @@ function uniqueSorted(values: readonly string[]): string[] {
 
 export function workflowFingerprintPolicyPaths(
   workflowMode: string,
-  blueprintPolicyModules: readonly string[],
+  taskPolicyModules: readonly string[],
   changedPaths: readonly string[],
 ): string[] {
   const policyMutation = changedPaths.some(
@@ -16,7 +16,7 @@ export function workflowFingerprintPolicyPaths(
     workflowMode === "branch_pr"
       ? ".agentplane/policy/workflow.branch_pr.md"
       : ".agentplane/policy/workflow.direct.md",
-    ...blueprintPolicyModules,
+    ...taskPolicyModules,
     ...(changedPaths.some((changedPath) => changedPath.startsWith(".agentplane/.upgrade/"))
       ? [".agentplane/policy/workflow.upgrade.md"]
       : []),

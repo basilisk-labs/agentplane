@@ -8,10 +8,6 @@ import {
 import { resolveExecutionProfileRuntime } from "../../runtime/execution-profile/index.js";
 import { resolveNativeTaskObligations } from "../../runtime/task-obligations/index.js";
 import { CliError } from "../../shared/errors.js";
-import {
-  checkTaskBlueprintSnapshotDrift,
-  buildTaskBlueprintResolvedSnapshot,
-} from "../blueprint/snapshot-artifact.js";
 import { normalizeBranchPrBatchTaskIds } from "../pr/internal/sync-batch-ownership.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import { recordedTaskImplementationCommitSha } from "../shared/quality-review-target.js";
@@ -210,23 +206,29 @@ async function prepareEvaluatorReviewLocked(
     });
   }
   const nativeIdentity = resolveNativeTaskIdentity(opts.task);
-  const blueprint = nativeIdentity
-    ? null
-    : await buildTaskBlueprintResolvedSnapshot({ ctx: opts.ctx, task: opts.task });
-  const reviewIdentity = nativeIdentity
-    ? buildNativeQualityReviewIdentity({
-        task: opts.task,
-        native_identity: nativeIdentity,
-        verification_input_digest: latestVerificationInputDigest(opts.task),
-        acceptance_criteria: evaluatorAcceptanceCriteria(opts.task),
-        implementation_sha: evaluatedSha,
-      })
-    : null;
+  if (!nativeIdentity) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: `Task ${opts.task.id} has no canonical execution identity; migrate it before evaluator preparation.`,
+    });
+  }
+  const reviewIdentity = buildNativeQualityReviewIdentity({
+    task: opts.task,
+    native_identity: nativeIdentity,
+    verification_input_digest: latestVerificationInputDigest(opts.task),
+    acceptance_criteria: evaluatorAcceptanceCriteria(opts.task),
+    implementation_sha: evaluatedSha,
+  });
+  if (!reviewIdentity) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: `Task ${opts.task.id} has no canonical quality-review identity.`,
+    });
+  }
   const taskObligations = resolveNativeTaskObligations({
     task_kind: opts.task.task_kind,
     mutation_scope: opts.task.mutation_scope,
     risk_flags: opts.task.risk_flags,
-    compatibility_preference: opts.task.blueprint_request,
     execution_contract: opts.task.execution_contract,
     selected_mode: opts.execution.selected_mode,
     route_reason_codes: opts.execution.reason_codes,
@@ -356,17 +358,11 @@ async function prepareEvaluatorReviewLocked(
     putEvaluatorEvidenceObject({
       gitRoot,
       taskQualityRoot,
-      logicalName: nativeIdentity ? "evaluator-native-identity" : "evaluator-blueprint",
-      kind: nativeIdentity ? "plan" : "blueprint",
+      logicalName: "evaluator-native-identity",
+      kind: "plan",
       extension: ".json",
       mediaType: "application/json",
-      contents: `${JSON.stringify(
-        nativeIdentity
-          ? { native_identity: nativeIdentity, review_identity: reviewIdentity }
-          : blueprint,
-        null,
-        2,
-      )}\n`,
+      contents: `${JSON.stringify({ native_identity: nativeIdentity, review_identity: reviewIdentity }, null, 2)}\n`,
     }),
   ]);
 
@@ -404,8 +400,8 @@ async function prepareEvaluatorReviewLocked(
         ]
       : []),
     frozenObjectEvidence({
-      id: nativeIdentity ? "native-identity" : "blueprint",
-      kind: nativeIdentity ? "plan" : "blueprint",
+      id: "native-identity",
+      kind: "plan",
       artifact: identityArtifact,
       required: true,
     }),
@@ -485,7 +481,7 @@ async function prepareEvaluatorReviewLocked(
     ],
   });
   const workOrder = EVALUATOR_WORK_ORDER_SCHEMA.parse({
-    schema_version: nativeIdentity ? 2 : 1,
+    schema_version: 2,
     kind: "evaluator_work_order",
     work_order_id: nextWorkOrderId,
     prepared_at: at,
@@ -497,9 +493,7 @@ async function prepareEvaluatorReviewLocked(
     },
     evaluated_sha: evaluatedSha,
     diff_base_sha: diffBaseSha,
-    ...(nativeIdentity
-      ? { review_identity: reviewIdentity }
-      : { blueprint_digest: blueprint?.digest.value ?? null }),
+    review_identity: reviewIdentity,
     evaluator: {
       id: opts.evaluator.id,
       profile: opts.evaluator.profile,
@@ -594,28 +588,23 @@ export async function assertWorkOrderCurrent(opts: {
       message: "Evaluator work order is stale because the evaluated SHA changed after preparation.",
     });
   }
-  if (opts.workOrder.schema_version === 2) {
-    const currentIdentity = buildNativeQualityReviewIdentity({
-      task: opts.task,
-      verification_input_digest: latestVerificationInputDigest(opts.task),
-      acceptance_criteria: evaluatorAcceptanceCriteria(opts.task),
-      implementation_sha: currentSha,
+  if (opts.workOrder.schema_version !== 2) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "Legacy evaluator work orders cannot execute; prepare a canonical v2 work order.",
     });
-    if (currentIdentity?.digest !== opts.workOrder.review_identity.digest) {
-      throw new CliError({
-        code: "E_VALIDATION",
-        message: "Evaluator work order is stale because the native review identity changed.",
-      });
-    }
-  } else {
-    const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx: opts.ctx, task: opts.task });
-    if (snapshot.current.digest !== opts.workOrder.blueprint_digest) {
-      throw new CliError({
-        code: "E_VALIDATION",
-        message:
-          "Evaluator work order is stale because the resolved blueprint changed after preparation.",
-      });
-    }
+  }
+  const currentIdentity = buildNativeQualityReviewIdentity({
+    task: opts.task,
+    verification_input_digest: latestVerificationInputDigest(opts.task),
+    acceptance_criteria: evaluatorAcceptanceCriteria(opts.task),
+    implementation_sha: currentSha,
+  });
+  if (currentIdentity?.digest !== opts.workOrder.review_identity.digest) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "Evaluator work order is stale because the native review identity changed.",
+    });
   }
   await assertFrozenEvaluatorArtifactsCurrent({ gitRoot, workOrder: opts.workOrder });
 }

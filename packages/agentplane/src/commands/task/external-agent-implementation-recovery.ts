@@ -89,7 +89,7 @@ export async function resolveVerifiedEvidenceOnlyReworkCommit(opts: {
     (await gitIsAncestor(opts.exchange.checkout, recordedCommit, opts.head))
   ) {
     const prefix = `${opts.command.config.paths.workflow_dir}/${opts.exchange.task_id}/`;
-    const managed = ["pr/", "quality/", "blueprint/", "verification/", "evidence/", "supervision/"];
+    const managed = ["pr/", "quality/", "verification/", "evidence/", "supervision/"];
     const changed = await gitDiffNames(opts.exchange.checkout, recordedCommit, opts.head);
     headIsManagedDescendant = changed.every(
       (name) =>
@@ -469,7 +469,7 @@ export async function resolveRecordedImplementationRecovery(opts: {
   }
   if (!(await gitIsAncestor(root, commit, opts.head))) return null;
   const subsequentPaths = await exactChangedPaths(root, commit, opts.head);
-  const managed = ["pr/", "quality/", "blueprint/", "verification/", "evidence/", "supervision/"];
+  const managed = ["pr/", "quality/", "verification/", "evidence/", "supervision/"];
   if (
     !subsequentPaths ||
     subsequentPaths.some(

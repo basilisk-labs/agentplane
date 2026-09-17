@@ -31,23 +31,6 @@ import {
 } from "./state-fingerprint-observation.js";
 import type { RunnerContextBundle, RunnerPromptBlock } from "./types.js";
 
-export const RUNNER_STATE_FINGERPRINT_POLICY = {
-  required_components: [
-    "task",
-    "git",
-    "backend_projection",
-    "policy",
-    "blueprint",
-    "knowledge",
-    "authority",
-  ],
-  provider: {
-    required: false,
-    unavailable: "allow_if_unchanged",
-    reject_reason_codes: ["provider_projection_stale"],
-  },
-} as const satisfies StateFingerprintPolicy;
-
 export const RUNNER_STATE_FINGERPRINT_V2_POLICY = {
   fingerprint_schema_version: 2,
   required_components: [
@@ -67,14 +50,13 @@ export const RUNNER_STATE_FINGERPRINT_V2_POLICY = {
   },
 } as const satisfies StateFingerprintPolicy;
 
+export const RUNNER_STATE_FINGERPRINT_POLICY = RUNNER_STATE_FINGERPRINT_V2_POLICY;
+
 export function resolveRunnerStateFingerprintPolicy(
   ctx: CommandContext,
   fingerprint?: StateFingerprint,
 ): StateFingerprintPolicy {
-  const base =
-    fingerprint?.schema_version === 2
-      ? RUNNER_STATE_FINGERPRINT_V2_POLICY
-      : RUNNER_STATE_FINGERPRINT_POLICY;
+  const base = RUNNER_STATE_FINGERPRINT_V2_POLICY;
   return {
     ...base,
     provider: {
@@ -176,7 +158,7 @@ function buildRunnerStateFingerprint(opts: {
   components: RunnerStateFingerprintObservedComponents;
   git: GitSnapshot;
 }): StateFingerprint {
-  const { task_revision: taskRevision, blueprint, ...legacyComponents } = opts.components;
+  const { task_revision: taskRevision, ...components } = opts.components;
   const semanticProjectionPaths = runnerSemanticProjectionPaths({
     ctx: opts.ctx,
     bundle: opts.bundle,
@@ -192,24 +174,18 @@ function buildRunnerStateFingerprint(opts: {
     git_head: opts.git.head_commit,
     worktree: opts.git.repository_root,
   };
-  return nativeFingerprint
-    ? buildStateFingerprint({
-        ...base,
-        components: {
-          ...legacyComponents,
-          git: gitComponent(opts.git, semanticProjectionPaths),
-          plan: boundRouteComponent("plan", nativeFingerprint.components.plan),
-          capability: boundRouteComponent("capability", nativeFingerprint.components.capability),
-        },
-      })
-    : buildStateFingerprint({
-        ...base,
-        components: {
-          ...legacyComponents,
-          blueprint,
-          git: gitComponent(opts.git, semanticProjectionPaths),
-        },
-      });
+  if (!nativeFingerprint) {
+    throw new Error("Runner state fingerprint requires a canonical v2 work order.");
+  }
+  return buildStateFingerprint({
+    ...base,
+    components: {
+      ...components,
+      git: gitComponent(opts.git, semanticProjectionPaths),
+      plan: boundRouteComponent("plan", nativeFingerprint.components.plan),
+      capability: boundRouteComponent("capability", nativeFingerprint.components.capability),
+    },
+  });
 }
 
 function recordValue(value: unknown): Record<string, unknown> | null {
@@ -313,6 +289,15 @@ function runnerSemanticProjectionPaths(opts: {
   const repositoryRoot = opts.ctx.resolvedProject.gitRoot;
   const paths = new Set<string>();
 
+  for (const runtimePath of [
+    ".agentplane/cache.sqlite",
+    ".agentplane/cache.sqlite-wal",
+    ".agentplane/cache.sqlite-shm",
+    ".agentplane/workspaces",
+  ]) {
+    addRepositoryPath(paths, repositoryRoot, runtimePath);
+  }
+
   addRepositoryPath(
     paths,
     repositoryRoot,
@@ -337,9 +322,7 @@ function runnerSemanticProjectionPaths(opts: {
     paths,
     repositoryRoot,
     prompts: opts.bundle.base_prompts,
-    modules: (
-      opts.bundle.task_obligations?.policy_modules ?? opts.bundle.blueprint?.policyModules
-    )?.map((modulePath) => ({
+    modules: opts.bundle.task_obligations?.policy_modules.map((modulePath) => ({
       path: modulePath,
       state: "present",
     })),

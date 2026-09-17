@@ -377,13 +377,13 @@ export function workflowAuthorityStateScopeDigest(
   operationId?: WorkflowOperationId,
 ): string {
   const includeProvider = operationId !== "task.scope.extend";
-  const identity =
-    fingerprint.schema_version === 2
-      ? {
-          plan: fingerprint.components.plan,
-          capability: fingerprint.components.capability,
-        }
-      : { blueprint: fingerprint.components.blueprint };
+  if (fingerprint.schema_version !== 2) {
+    throw new Error("Side-effect authority requires a canonical v2 state fingerprint.");
+  }
+  const identity = {
+    plan: fingerprint.components.plan,
+    capability: fingerprint.components.capability,
+  };
   return sha256({
     schemaVersion: fingerprint.schema_version,
     kind: fingerprint.kind,

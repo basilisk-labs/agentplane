@@ -4,7 +4,7 @@
   "description": "Decompose the requested outcome into the smallest valid graph of internal WorkItems.",
   "inputs": {
     "high.level.goal": "High-level goals, features, bugs, or refactors to plan.",
-    "planning.constraints": "Optional constraints such as deadlines, priority, components, requested outcome, tags, touched areas, and blueprint summary."
+    "planning.constraints": "Optional constraints such as deadlines, priority, components, requested outcome, tags, and touched areas."
   },
   "outputs": {
     "task.plan.proposal": "A TaskPlanProposal with internal WorkItems, acceptance criteria, validation, and unresolved questions.",

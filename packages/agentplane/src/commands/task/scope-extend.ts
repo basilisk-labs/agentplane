@@ -73,6 +73,32 @@ function approvedWorkItemScopeRoots(task: TaskData, workItemId: string | null): 
   return uniqueSorted((workItem?.scope_roots ?? []).map((root) => normalizeTaskScopeRoot(root)));
 }
 
+function hasPreviouslyApprovedExactScopeExtension(opts: {
+  task: TaskData;
+  scope_roots: readonly string[];
+  repository_effects: readonly TaskRepositoryEffect[];
+}): boolean {
+  const roots = uniqueSorted(opts.scope_roots.map((root) => normalizeTaskScopeRoot(root)));
+  const effects = uniqueSorted(opts.repository_effects);
+  const summary = [
+    roots.length > 0 ? `roots=${roots.join(",")}` : null,
+    effects.length > 0 ? `repository_effects=${effects.join(",")}` : null,
+  ]
+    .filter((value): value is string => value !== null)
+    .join("; ");
+  const approval =
+    `Approved state-bound execution scope extension: ${roots.join(", ")}; ` +
+    `repository effects: ${effects.join(", ") || "unchanged"}.`;
+  return (
+    opts.task.execution_contract?.declaration.rationale.includes(
+      `USER-approved blocked-result scope extension: ${summary}`,
+    ) === true &&
+    (opts.task.comments ?? []).some(
+      (comment) => comment.author === "USER" && comment.body === approval,
+    )
+  );
+}
+
 export function extendBlockedTaskExecutionContract(opts: {
   command: CommandContext;
   task: NonNullable<Awaited<ReturnType<CommandContext["taskBackend"]["getTask"]>>>;
@@ -160,6 +186,11 @@ export function extendBlockedTaskExecutionContract(opts: {
       task: opts.task,
       work_item_id: pending.work_item_id,
       scope_roots: addedRoots,
+    }) &&
+    !hasPreviouslyApprovedExactScopeExtension({
+      task: opts.task,
+      scope_roots: addedRoots,
+      repository_effects: addedEffects,
     })
   ) {
     throw new CliError({

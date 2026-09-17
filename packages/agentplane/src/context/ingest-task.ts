@@ -13,8 +13,6 @@ export type ContextWorkspaceMode =
   | "research"
   | "maximum-assimilation";
 
-const MAXIMUM_ASSIMILATION_BLUEPRINT = "context.maximum_assimilation" as const;
-
 function deprecatedModeNote(mode?: ContextWorkspaceMode): string[] {
   if (mode === undefined || mode === "maximum-assimilation") return [];
   return [
@@ -65,8 +63,6 @@ function buildIngestMetadata(
     sources: "explicit sources",
   }[opts.mode];
   const modeSource = selectedSourceRows(opts, sourceRows);
-  const blueprintId: NonNullable<TaskNewParsed["blueprintRequest"]> =
-    MAXIMUM_ASSIMILATION_BLUEPRINT;
   const title = `context assimilation (${modeLabel}${buildTitleSourceHint(modeSource)})`;
   const promptRef = CONTEXT_ASSIMILATION_PROMPT_ADDRESS;
   const description = [
@@ -74,7 +70,7 @@ function buildIngestMetadata(
     "This task is created by `context ingest`.",
     `Selection: mode=${opts.mode}; selected=${modeSource.length}; tracked=${sourceRows.length}.`,
     `Sources: ${JSON.stringify(modeSource.map((row) => row.path))}`,
-    `Owner: CURATOR; prompt: ${promptRef}; blueprint: ${blueprintId}.`,
+    `Owner: CURATOR; prompt: ${promptRef}.`,
     ...deprecatedModeNote(workspaceMode),
     "",
     "Read the task-bound `context-pack.md`, CLI-owned `task-creation.json` (treat it as immutable), `source-set.lock.json`, `source-spans.skeleton.jsonl`, `canonical-snapshot.json`, `canonical-entity-catalog.json`, `canonical-reconciliation-candidates.json`, `extraction-contract.json`, and `expected-artifacts.json` before mutation.",
@@ -122,8 +118,6 @@ export function createTaskNewParsed(
   const now = new Date().toISOString();
   const selectedRows = selectedSourceRows(opts, sourceRows);
   const allowCapabilities = false;
-  const blueprintId: NonNullable<TaskNewParsed["blueprintRequest"]> =
-    MAXIMUM_ASSIMILATION_BLUEPRINT;
   const allowedOutputs = [
     "context/wiki/**",
     ".agentplane/context/derived/claims/**",
@@ -158,7 +152,6 @@ export function createTaskNewParsed(
     tags: ["meta", "context", "assimilation"],
     taskKind: "context",
     mutationScope: "context",
-    blueprintRequest: blueprintId,
     extensions: {
       "agentplane.context": {
         schema_version: 1,
@@ -177,9 +170,7 @@ export function createTaskNewParsed(
             size_bytes: row.size_bytes,
           })),
         },
-        blueprint: {
-          id: blueprintId,
-          required_gates: [
+        required_gates: [
             "source_set_locked",
             "prewrite_context_search",
             "semantic_entity_reconciliation_recorded",
@@ -201,8 +192,8 @@ export function createTaskNewParsed(
             "verify_task",
             "doctor_clean",
             "smoke_search",
-          ],
-          stop_rules: [
+        ],
+        stop_rules: [
             "empty_source_set",
             "pipeline_order_skipped",
             "missing_source_refs",
@@ -227,8 +218,7 @@ export function createTaskNewParsed(
             "empty_derived_outputs_without_reason",
             "unresolved_conflict_candidate",
             "agent_handoff_missing_after_stalled_work",
-          ],
-        },
+        ],
         prompt_modules: [promptModule],
         prompt_module_ref: promptModule.address.value,
         allowed_outputs: allowedOutputs,
@@ -273,7 +263,6 @@ export function createTaskNewParsed(
     dependsOn: [],
     verify: metadata.verify,
     taskDocSections: buildContextTaskDocSections(),
-    showBlueprint: false,
     allowDuplicate: true,
     riskFlags: [],
   };

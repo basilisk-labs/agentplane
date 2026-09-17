@@ -44,15 +44,13 @@ function isDocsOrContentIntent(intent?: CommitTaskIntent): boolean {
   if (!intent) return false;
   return (
     intent.mutationScope === "docs" ||
-    intent.taskKind === "content" ||
-    intent.blueprintRequest === "docs.change" ||
-    intent.blueprintRequest === "content.light"
+    intent.taskKind === "content"
   );
 }
 
 function isNonMutatingIntent(intent?: CommitTaskIntent): boolean {
   if (!intent) return false;
-  return intent.mutationScope === "none" || intent.blueprintRequest === "analysis.light";
+  return intent.mutationScope === "none";
 }
 
 function hasDeployFixEvidence(subject: string, body?: string): boolean {

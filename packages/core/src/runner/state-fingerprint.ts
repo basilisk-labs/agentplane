@@ -192,6 +192,20 @@ export const STATE_FINGERPRINT_POLICY_ZOD_SCHEMA = z
   })
   .strict();
 
+export const STATE_FINGERPRINT_V2_POLICY_ZOD_SCHEMA = z
+  .object({
+    fingerprint_schema_version: z.literal(STATE_FINGERPRINT_SCHEMA_VERSION),
+    required_components: z.array(z.enum(STATE_FINGERPRINT_COMPONENT_NAMES)).readonly(),
+    provider: z
+      .object({
+        required: z.boolean(),
+        unavailable: z.enum(["reject", "allow_if_unchanged"]),
+        reject_reason_codes: z.array(NON_EMPTY_STRING).readonly().optional(),
+      })
+      .strict(),
+  })
+  .strict();
+
 export type StateFingerprintPolicy = z.infer<typeof STATE_FINGERPRINT_POLICY_ZOD_SCHEMA>;
 
 export type StateFingerprintChange = {

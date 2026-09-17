@@ -61,7 +61,7 @@ function renderEvaluatorSkepticismLines(level: EvaluatorSkepticismLevel): string
   if (level === "strict") {
     return [
       ...common,
-      "- Strict review: actively search for counterexamples, happy-path-only tests, stale task/blueprint evidence, and category mismatches between requested behavior and implementation.",
+      "- Strict review: actively search for counterexamples, happy-path-only tests, stale task evidence, and category mismatches between requested behavior and implementation.",
       "- Use rework when correctness depends on an assumption the implementation did not prove.",
     ];
   }
@@ -279,8 +279,7 @@ export function renderTaskRunnerBootstrap(
       ? `task ${bundle.target.task_id}`
       : `recipe scenario ${bundle.target.recipe_id}:${bundle.target.scenario_id}`;
   const codexGoalLine = renderCodexGoalLine(bundle, targetLabel);
-  const stopRules = bundle.task_obligations?.stop_rules ?? bundle.blueprint?.stopReasons ?? [];
-  const stopRuleHeading = bundle.task_obligations ? "Native stop rules:" : "Blueprint stop rules:";
+  const stopRules = bundle.task_obligations?.stop_rules ?? [];
   const verifierChecks = bundle.playbook?.final_verifier.checks ?? [];
   const evaluatorSkepticismLevel =
     bundle.execution.evaluator_skepticism_level ?? ("standard" satisfies EvaluatorSkepticismLevel);
@@ -329,7 +328,7 @@ export function renderTaskRunnerBootstrap(
     ...(stopRules.length > 0
       ? [
           "",
-          stopRuleHeading,
+          "Native stop rules:",
           ...stopRules.map((rule) => `- ${rule.severity}: ${rule.reason} (${rule.id})`),
         ]
       : []),

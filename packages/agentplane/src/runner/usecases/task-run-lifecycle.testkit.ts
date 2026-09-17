@@ -257,13 +257,11 @@ export async function createDoingRunnerTask(opts: {
     verify: task?.verify ?? [],
     status: "DOING",
   });
-  if (opts.structured_work_item === true) {
-    await materializeRunnerTaskWorkItemFixture({
-      root: opts.root,
-      task_id: taskId,
-      objective: opts.plan_text,
-    });
-  }
+  await materializeRunnerTaskWorkItemFixture({
+    root: opts.root,
+    task_id: taskId,
+    objective: opts.plan_text,
+  });
   return taskId;
 }
 

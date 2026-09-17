@@ -32,7 +32,6 @@ export type TaskEvidence = {
   tags: string[];
   task_kind: string | null;
   mutation_scope: string | null;
-  blueprint_request: string | null;
   commit: { hash?: string; message?: string } | null;
   source_refs: string[];
   provenance_refs: string[];

@@ -22,7 +22,7 @@ export const taskBriefSpec: CommandSpec<TaskBriefParsed> = {
   examples: [
     {
       cmd: "agentplane task brief 202602030608-F1Q8AB",
-      why: "Get local route, Verify Steps, blueprint, blockers, and next command in one view.",
+      why: "Get local route, Verify Steps, blockers, and next command in one view.",
     },
     {
       cmd: "agentplane task brief 202602030608-F1Q8AB --json",

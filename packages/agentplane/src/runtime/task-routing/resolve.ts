@@ -24,10 +24,7 @@ import {
 } from "./effects.js";
 import { componentForPath, structuralEffectsForPath } from "./observed-path.js";
 
-type RouteTaskInput = Pick<
-  TaskData,
-  "task_kind" | "mutation_scope" | "risk_flags" | "blueprint_request"
->;
+type RouteTaskInput = Pick<TaskData, "task_kind" | "mutation_scope" | "risk_flags">;
 
 const LEGACY_BRANCH_PR_RISK_FLAGS = new Set([
   "credentials",
@@ -82,9 +79,6 @@ function legacyDeclaration(opts: {
     if (risk === "external_system") externalEffects.push("external_write");
     if (risk === "security") repositoryEffects.push("security_boundary");
     if (risk === "merge") repositoryEffects.push("release_metadata");
-  }
-  if (opts.task.blueprint_request === "release.strict") {
-    repositoryEffects.push("release_metadata");
   }
   return {
     schema_version: 2,
@@ -357,9 +351,6 @@ function routeFromContract(
 
 function legacyAutoRouteReasons(task: RouteTaskInput): string[] {
   const reasons: string[] = [];
-  if (task.blueprint_request === "code.branch_pr" || task.blueprint_request === "release.strict") {
-    reasons.push("blueprint_requires_branch_pr");
-  }
   if (
     task.task_kind === "release" ||
     task.task_kind === "ops" ||

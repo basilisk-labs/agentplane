@@ -3,7 +3,6 @@ import { isDeepStrictEqual } from "node:util";
 import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 import type { StateFingerprintComponentInput } from "@agentplaneorg/core/schemas";
 
-import type { TaskRouteDecision } from "../commands/shared/route-decision-types.js";
 import { isRecord } from "../shared/guards.js";
 import { RUNNER_DANGER_FULL_ACCESS_SANDBOX } from "./types.js";
 import type {
@@ -26,7 +25,6 @@ type RunnerExecutionConfigProjection = {
     allowed_doc_sections: AgentplaneConfig["tasks"]["doc"]["sections"];
     required_doc_sections: AgentplaneConfig["tasks"]["doc"]["required_sections"];
   };
-  route_evidence: Record<string, unknown>;
   ambient_env_matches_prepared: boolean;
   default_adapter: AgentplaneConfig["runner"]["default_adapter"];
   custom: {
@@ -57,51 +55,6 @@ function selectedRunnerEnv(config: AgentplaneConfig["runner"]): Record<string, s
   return config.default_adapter === "custom" || config.default_adapter === "hermes"
     ? structuredClone(config.custom?.env ?? {})
     : {};
-}
-
-function routeEvidenceProjection(routeDecision: TaskRouteDecision): Record<string, unknown> {
-  const prFlow = isRecord(routeDecision.prFlow)
-    ? (() => {
-        const { task: _task, branch, ...rest } = structuredClone(routeDecision.prFlow);
-        const branchProjection = isRecord(branch)
-          ? (() => {
-              const { headSha: _headSha, ...projection } = branch;
-              return projection;
-            })()
-          : null;
-        return { ...rest, branch: branchProjection };
-      })()
-    : null;
-  // Legacy bundles can carry a route shell without a resolved workspace.
-  // Preserve that missing authority input explicitly in the fingerprint instead
-  // of treating it as a runtime error or silently replacing it with an object.
-  const workspace = isRecord(routeDecision.workspace)
-    ? (() => {
-        const {
-          root: _root,
-          headSha: _headSha,
-          ...projection
-        } = structuredClone(routeDecision.workspace);
-        return projection;
-      })()
-    : null;
-  return {
-    workflow_mode: routeDecision.workflowMode,
-    agent_contract: {
-      workspace,
-      approval: structuredClone(routeDecision.approval),
-      blockers: structuredClone(routeDecision.blockers),
-      ambiguities: structuredClone(routeDecision.ambiguities),
-      next_action: structuredClone(routeDecision.nextAction),
-      oracle: structuredClone(routeDecision.oracle),
-      execution_packet: structuredClone(routeDecision.executionPacket),
-      repair_plan: structuredClone(routeDecision.repairPlan),
-    },
-    pr_flow: prFlow,
-    batch_ownership: structuredClone(routeDecision.batchOwnership),
-    cleanup_probe: structuredClone(routeDecision.cleanupProbe),
-    source_confidence: structuredClone(routeDecision.sourceConfidence),
-  };
 }
 
 function runnerExecutionConfigProjection(opts: {
@@ -148,7 +101,6 @@ function runnerExecutionConfigProjection(opts: {
       allowed_doc_sections: [...opts.config.tasks.doc.sections],
       required_doc_sections: [...opts.config.tasks.doc.required_sections],
     },
-    route_evidence: routeEvidenceProjection(opts.route_decision),
     ambient_env_matches_prepared:
       expectedAmbientEnv !== undefined && isDeepStrictEqual(currentAmbientEnv, expectedAmbientEnv),
     default_adapter: opts.config.runner.default_adapter,

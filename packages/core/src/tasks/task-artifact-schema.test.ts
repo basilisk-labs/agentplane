@@ -303,7 +303,7 @@ describe("task-artifact-schema", () => {
         },
         impact: "Post-task mining would be ambiguous without a recommended action.",
         recommended_action: {
-          type: "blueprint_change",
+          type: "workflow_change",
           title: "Define observation triage gate",
         },
         status: "open",
@@ -622,7 +622,7 @@ describe("task-artifact-schema", () => {
         updated_by: "HUMAN",
         note: "Supplied review",
         evaluated_sha: "abcdef1",
-        blueprint_digest: null,
+        review_identity_digest: null,
         evidence_refs: [".agentplane/tasks/202603251535-DPZ4NN/quality/run/quality-report.json"],
         findings: ["Human supplied finding"],
       },

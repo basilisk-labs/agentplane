@@ -12,7 +12,6 @@ import {
   type StateFingerprintPolicy,
 } from "@agentplaneorg/core/schemas";
 
-import type { BlueprintPlanArtifact } from "../../blueprints/index.js";
 import {
   createRepositorySnapshot,
   taskCentricAggregateFromExtensions,
@@ -21,11 +20,8 @@ import {
   type WorkItem,
 } from "@agentplaneorg/core/tasks";
 import { readTaskRouteGitSnapshot } from "../../commands/shared/route-decision.js";
-import { checkTaskBlueprintSnapshotDrift } from "../../commands/blueprint/snapshot-artifact.js";
 import type { TaskRouteDecision } from "../../commands/shared/route-decision-types.js";
 import { conflictReworkRequiredInputs } from "../../commands/pr/conflict-rework-semantic-input.js";
-import type { CommandContext } from "../../commands/shared/task-backend.js";
-import type { TaskBlueprintLifecycleSummary } from "../../commands/task/blueprint-summary.js";
 import type { ReadOnlyExecutionContext } from "../../runtime/execution-context.js";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import {
@@ -35,14 +31,11 @@ import {
 import type { RunnerPromptBlock } from "../types.js";
 import type { RunnerTaskContextEnvelope } from "../context/task-context.js";
 
-import type {
-  AgentWorkOrderLegacyBriefProjection,
-  AgentWorkOrderSourceManifest,
-} from "./agent-work-order-projection.js";
+import type { AgentWorkOrderSourceManifest } from "./agent-work-order-projection.js";
 import type { TaskKnowledgeRetrieval } from "./task-knowledge-retrieval.js";
 
 /**
- * A work order carries the resolved prompt, policy, and blueprint manifests as
+ * A work order carries the resolved prompt, policy, and native obligation manifests as
  * prepared inputs. Their route observations may legitimately be unavailable in
  * a minimal project, but a later change still produces a stale fingerprint.
  * The durable invocation gate therefore requires only live identity and
@@ -126,65 +119,10 @@ function workOrderRole(owner: string): AgentWorkOrderRole {
   return "EXECUTOR";
 }
 
-function legacyBlueprintSummary(opts: {
-  task_id: string;
-  blueprint: BlueprintPlanArtifact;
-}): TaskBlueprintLifecycleSummary {
-  const workflowGit = opts.blueprint.workflowGitCapabilities;
-  return {
-    blueprint_id: opts.blueprint.blueprintId,
-    blueprint_version: opts.blueprint.blueprintVersion,
-    ...(opts.blueprint.workflowMode ? { workflow_mode: opts.blueprint.workflowMode } : {}),
-    ...(workflowGit
-      ? {
-          workflow_git: [
-            `implementation_commit_location=${workflowGit.implementationCommitLocation}`,
-            `finish_commit_source=${workflowGit.finishCommitSource}`,
-            `close_tail_required=${workflowGit.closeTailRequired ? "yes" : "no"}`,
-            `finish_commit_from_comment=${workflowGit.finishCommitFromComment ? "yes" : "no"}`,
-          ].join(" "),
-        }
-      : {}),
-    route: opts.blueprint.states.map((state) => state.kind),
-    selection_reasons: [...opts.blueprint.whySelected],
-    policy_modules: [...opts.blueprint.policyModules],
-    required_evidence: opts.blueprint.requiredEvidence.map((item) => item.id),
-    stop_reasons: opts.blueprint.stopReasons.map((reason) => reason.id),
-    explain_command: `agentplane blueprint explain ${opts.task_id}`,
-    snapshot_command: `agentplane blueprint snapshot ${opts.task_id}`,
-  };
-}
-
-export async function buildAgentWorkOrderLegacyBriefProjection(opts: {
-  command_ctx: CommandContext;
-  task_envelope: RunnerTaskContextEnvelope;
-  blueprint: BlueprintPlanArtifact;
-}): Promise<AgentWorkOrderLegacyBriefProjection> {
-  const snapshot = await checkTaskBlueprintSnapshotDrift({
-    ctx: opts.command_ctx,
-    task: opts.task_envelope.source_task,
-  });
-  return {
-    blueprint: legacyBlueprintSummary({
-      task_id: opts.task_envelope.task.metadata.task_id,
-      blueprint: opts.blueprint,
-    }),
-    snapshot: {
-      state: snapshot.state,
-      path: snapshot.path,
-      digest: snapshot.previous.digest,
-      current_digest: snapshot.current.digest,
-      route_changed: snapshot.routeChanged,
-      safe_command: snapshot.safeCommand,
-    },
-  };
-}
-
 export function buildAgentWorkOrderSourceManifest(opts: {
   prepared: {
     task_envelope: RunnerTaskContextEnvelope;
     base_prompts: RunnerPromptBlock[];
-    blueprint: BlueprintPlanArtifact;
     task_obligations: NativeTaskObligations;
     execution_context: ReadOnlyExecutionContext;
   };
@@ -192,7 +130,6 @@ export function buildAgentWorkOrderSourceManifest(opts: {
   const {
     task_envelope: taskEnvelope,
     base_prompts: basePrompts,
-    blueprint,
     task_obligations: taskObligations,
     execution_context,
   } = opts.prepared;
@@ -201,13 +138,6 @@ export function buildAgentWorkOrderSourceManifest(opts: {
       id: prompt.id,
       source: stableSourcePath(prompt.source, execution_context.repo.git_root),
       content_digest: sha256(prompt.content),
-    }))
-    .toSorted((left, right) => left.id.localeCompare(right.id));
-  const blueprintContext = blueprint.contextManifest
-    .map((entry) => ({
-      id: entry.id,
-      kind: entry.kind,
-      source: stableSourcePath(entry.source, execution_context.repo.git_root),
     }))
     .toSorted((left, right) => left.id.localeCompare(right.id));
   const verifySteps = verifyStepLines(
@@ -222,13 +152,9 @@ export function buildAgentWorkOrderSourceManifest(opts: {
       taskReadme ?? "",
       ...taskObligations.policy_modules,
       ...promptModules.flatMap((prompt) => (prompt.source ? [prompt.source] : [])),
-      ...blueprintContext.flatMap((entry) =>
-        entry.kind !== "policy_module" && entry.source ? [entry.source] : [],
-      ),
     ]),
     policy_modules: uniqueSorted(taskObligations.policy_modules),
     prompt_modules: promptModules,
-    blueprint_context: blueprintContext,
     verification_context: {
       task_verify: uniqueSorted(taskEnvelope.task.verification.commands),
       verify_steps: verifySteps,
@@ -446,7 +372,9 @@ export function buildCanonicalAgentWorkOrder(opts: {
         ? (stateFingerprint.components.knowledge.digest as `sha256:${string}`)
         : null,
     task_history_cursor:
-      task.metadata.revision === null ? null : `task-revision:${String(task.metadata.revision)}`,
+      stateFingerprint.task_revision === null
+        ? null
+        : `task-revision:${String(stateFingerprint.task_revision)}`,
     captured_at: routeGit?.captured_at ?? new Date().toISOString(),
   });
   const planningRetrievals: NonNullable<AgentWorkOrderV2["planning_context"]>["retrievals"] = [
@@ -557,7 +485,7 @@ export function buildCanonicalAgentWorkOrder(opts: {
     role,
     task: {
       id: task.metadata.task_id,
-      revision: task.metadata.revision,
+      revision: stateFingerprint.task_revision,
       objective: compactText(
         conflictEpisode && decision.workflowStep.kind === "agent_episode"
           ? decision.workflowStep.episode.objective

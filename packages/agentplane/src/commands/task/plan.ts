@@ -54,7 +54,6 @@ type PlanningTaskFields = Pick<
   | "task_kind"
   | "mutation_scope"
   | "risk_flags"
-  | "blueprint_request"
   | "tags"
   | "execution_route"
   | "execution_contract"

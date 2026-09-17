@@ -115,7 +115,7 @@ async function persistReview(opts: {
           updated_by: opts.report.provenance === "human_supplied" ? "HUMAN" : "EVALUATOR",
           note: opts.report.summary,
           evaluated_sha: opts.report.evaluated_sha,
-          blueprint_digest: opts.report.blueprint_digest,
+          review_identity_digest: opts.report.review_identity_digest,
           evidence_refs: evidenceRefs,
           findings: opts.report.findings,
           ...(opts.resultPayload?.recovery_reason
@@ -207,7 +207,7 @@ export async function applyEvaluatorSgrReview(opts: {
     verdict: result.verdict,
     summary: `EVALUATOR returned ${result.verdict} with ${result.findings.length} typed finding(s).`,
     evaluated_sha: workOrder.evaluated_sha,
-    blueprint_digest: evaluatorWorkOrderReviewDigest(workOrder),
+    review_identity_digest: evaluatorWorkOrderReviewDigest(workOrder),
     findings: result.findings.map((finding) => finding.summary),
     evidence_refs: uniqueStrings(
       result.findings.flatMap((finding) => finding.evidence_refs.map((entry) => entry.path)),
@@ -258,7 +258,7 @@ export async function applyHumanEvaluatorReview(opts: {
     verdict: opts.input.verdict,
     summary: opts.input.summary,
     evaluated_sha: workOrder.evaluated_sha,
-    blueprint_digest: evaluatorWorkOrderReviewDigest(workOrder),
+    review_identity_digest: evaluatorWorkOrderReviewDigest(workOrder),
     findings: opts.input.findings,
     evidence_refs: opts.input.evidence_refs,
     missing_tests: opts.input.missing_tests,

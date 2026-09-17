@@ -919,6 +919,42 @@ describe("blocked task execution scope extension", () => {
     });
   });
 
+  it("recovers a repeated exact request after the same scope was already USER-approved", () => {
+    const noOp = taskContractNoOp("active");
+    const roots = noOp.pending.request.scope_roots;
+    const effects = noOp.pending.request.repository_effects;
+    noOp.task.comments = [
+      ...(noOp.task.comments ?? []),
+      {
+        author: "USER",
+        body:
+          `Approved state-bound execution scope extension: ${roots.join(", ")}; ` +
+          `repository effects: ${effects.join(", ")}.`,
+      },
+    ];
+    noOp.task.execution_contract = {
+      ...noOp.task.execution_contract!,
+      declaration: {
+        ...noOp.task.execution_contract!.declaration,
+        rationale: [
+          ...noOp.task.execution_contract!.declaration.rationale,
+          `USER-approved blocked-result scope extension: roots=${roots.join(",")}; repository_effects=${effects.join(",")}`,
+        ],
+      },
+    };
+
+    expect(() =>
+      extendBlockedTaskExecutionContract({
+        command: noOp.command,
+        task: noOp.task,
+        scope_roots: roots,
+        repository_effects: effects,
+        request_digest: noOp.pending.request_digest,
+        by: "USER",
+      }),
+    ).not.toThrow();
+  });
+
   it.each([
     [null, "READY"],
     ["missing", "READY"],

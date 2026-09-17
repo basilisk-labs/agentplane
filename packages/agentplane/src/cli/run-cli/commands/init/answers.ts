@@ -12,13 +12,11 @@ import type {
   SetupProfilePreset,
 } from "./model.js";
 import { INIT_DEFAULTS, setupProfilePresets } from "./presets.js";
-import { listCachedBlueprintCatalogItems } from "./blueprints.js";
 import { listCachedRecipes } from "./recipes.js";
 import type { PolicyGatewayFlavor } from "../../../../shared/policy-gateway.js";
 import {
   promptAdvancedSettingsStep,
   promptBackendStep,
-  promptBlueprintSelectionStep,
   promptIdeStep,
   promptInitModeStep,
   promptPolicyGatewayStep,
@@ -59,7 +57,6 @@ export type InitAnswers = {
   evaluatorSkepticism: EvaluatorSkepticismLevel;
   strictUnsafeConfirm: boolean;
   compatibilityWarnings?: string[];
-  blueprints: string[];
   runnerProfile: "codex" | "hermes";
   decisionReasons: string[];
 };
@@ -99,7 +96,6 @@ export function buildNonInteractiveAnswers(flags: InitParsed): InitAnswers {
     evaluatorSkepticism: flags.evaluatorSkepticism ?? preset.defaultEvaluatorSkepticism,
     strictUnsafeConfirm: flags.strictUnsafeConfirm ?? preset.defaultStrictUnsafeConfirm,
     compatibilityWarnings: [...(flags.compatibilityWarnings ?? [])],
-    blueprints: flags.blueprints ?? INIT_DEFAULTS.blueprints,
     runnerProfile: resolveRunnerProfileFromFlags(flags, "codex"),
     decisionReasons: [
       "Automation mode: non-interactive flags and stable defaults determine every value.",
@@ -126,7 +122,7 @@ function quickDecisionReasons(opts: {
     `Workflow: ${opts.workflow}${opts.workflowExplicit ? " selected explicitly" : " selected in this dialog"}.`,
     "Process policy: standard AgentPlane lifecycle and safety rules apply; explicit project settings remain independent.",
     `Storage: ${opts.backend}${opts.backend === "local" ? " keeps the project self-contained" : " was selected explicitly"}.`,
-    "Optional recipes and blueprints stay disabled until requested through advanced setup or explicit flags.",
+    "Optional recipes stay disabled until requested through advanced setup or explicit flags.",
   ];
 }
 
@@ -187,7 +183,6 @@ async function promptQuickAnswers(opts: {
     evaluatorSkepticism: advanced.evaluatorSkepticism,
     strictUnsafeConfirm: advanced.strictUnsafeConfirm,
     compatibilityWarnings: [...(opts.flags.compatibilityWarnings ?? [])],
-    blueprints: opts.flags.blueprints ?? INIT_DEFAULTS.blueprints,
     runnerProfile: toolDefaults.runnerProfile ?? "codex",
     decisionReasons: quickDecisionReasons({
       tool,
@@ -248,14 +243,6 @@ async function promptDetailedAnswers(opts: {
     setupProfileMode: promptMode,
     cachedRecipes,
   });
-  const cachedBlueprints = await listCachedBlueprintCatalogItems({ cwd: opts.targetRoot });
-  const blueprintSelection = await promptBlueprintSelectionStep({
-    clack: opts.clack,
-    flags: opts.flags,
-    setupProfilePreset: setup.setupProfilePreset,
-    setupProfileMode: promptMode,
-    cachedBlueprints,
-  });
   return {
     setupProfile: setup.setupProfilePreset,
     setupProfileDescription: selectedPreset.description,
@@ -275,7 +262,6 @@ async function promptDetailedAnswers(opts: {
     evaluatorSkepticism: advanced.evaluatorSkepticism,
     strictUnsafeConfirm: advanced.strictUnsafeConfirm,
     compatibilityWarnings: [...(opts.flags.compatibilityWarnings ?? [])],
-    blueprints: blueprintSelection.blueprints,
     runnerProfile: toolDefaults.runnerProfile ?? "codex",
     decisionReasons: [
       `Setup depth: ${opts.initMode} exposes individual policy and integration controls.`,

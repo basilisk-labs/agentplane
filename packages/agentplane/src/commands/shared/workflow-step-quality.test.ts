@@ -10,8 +10,30 @@ import {
   type WorkflowRouteStateInput,
 } from "./workflow-step-fingerprint.js";
 
+const identityDigest = `sha256:${"b".repeat(64)}` as const;
+const TASK_ID = "202607250100-QUALITY";
+
+function nativeExecutionContract(): NonNullable<TaskData["execution_contract"]> {
+  return {
+    schema_version: 1,
+    source: "agent_declared",
+    selected_mode: "branch_pr",
+    repository_mode: "branch_pr",
+    reason_codes: [],
+    safety: { requires_worktree: true },
+    authority: {},
+    verification: {
+      contract: {
+        digest: identityDigest,
+        selected_checks: [],
+        policy_floor: {},
+      },
+    },
+  } as unknown as NonNullable<TaskData["execution_contract"]>;
+}
+
 const task = {
-  id: "202607250100-QUALITY",
+  id: TASK_ID,
   title: "Quality route fixture",
   description: "Exercise quality evidence refresh.",
   status: "DOING",
@@ -27,6 +49,8 @@ const task = {
     approved_at: "2026-07-25T00:00:00.000Z",
   },
   verification: { state: "pending" },
+  execution_contract: nativeExecutionContract(),
+  extensions: taskCentricExtensions("COMPLETED"),
 } satisfies TaskData;
 
 const resume = {
@@ -105,7 +129,7 @@ function deterministicEvidenceGapReview(evaluatedSha = resume.head_sha) {
     updated_by: "EVALUATOR",
     note: "Frozen verification evidence is missing.",
     evaluated_sha: evaluatedSha,
-    blueprint_digest: "fixture-blueprint",
+    review_identity_digest: identityDigest,
     evidence_refs: [".agentplane/tasks/T-1/quality/current/quality-report.json"],
     findings: ["Frozen deterministic verification evidence is missing."],
     recovery_reason: "deterministic_evidence_gap",
@@ -117,11 +141,11 @@ function taskCentricExtensions(workItemState: "READY" | "REWORK_READY" | "COMPLE
   return {
     "agentplane.task_centric": {
       schema_version: 1,
-      id: task.id,
+      id: TASK_ID,
       revision: 4,
       intent: {
-        task_id: task.id,
-        request: task.description,
+        task_id: TASK_ID,
+        request: "Exercise quality evidence refresh.",
         constraints: [],
         acceptance_criteria: [],
         captured_at: "2026-07-25T00:00:00.000Z",
@@ -129,7 +153,7 @@ function taskCentricExtensions(workItemState: "READY" | "REWORK_READY" | "COMPLE
       lifecycle: "ACTIVE",
       current_plan: {
         schema_version: 1,
-        task_id: task.id,
+        task_id: TASK_ID,
         revision: 1,
         digest,
         proposal: {
@@ -137,7 +161,7 @@ function taskCentricExtensions(workItemState: "READY" | "REWORK_READY" | "COMPLE
             work_items: [{ id: "required-route-fix", optional: false }],
           },
         },
-        approval: { state: "approved" },
+        approval: { state: "approved", approved_digest: digest },
         created_at: "2026-07-25T00:00:00.000Z",
       },
       work_items: {
@@ -175,9 +199,9 @@ describe("quality evidence refresh route", () => {
       id: expected.id,
       kind: expected.kind,
     });
-    expect(
-      reduceRouteState(routeState({ task: { ...stale, extensions: undefined } })),
-    ).toMatchObject({ id: "agent.planning" });
+    expect(() => routeState({ task: { ...stale, extensions: undefined } })).toThrow(
+      /no canonical execution identity/u,
+    );
     expect(
       reduceRouteState(
         routeState({

@@ -191,14 +191,13 @@ function planningTaskFields(opts: {
     (!sameValue(opts.task.task_kind, intent.task_kind) ||
       !sameValue(opts.task.mutation_scope, intent.mutation_scope) ||
       !sameStringSet(opts.task.risk_flags, intent.risk_flags) ||
-      !sameStringSet(opts.task.tags, intent.tags) ||
-      !sameValue(opts.task.blueprint_request, intent.blueprint_request))
+      !sameStringSet(opts.task.tags, intent.tags))
   ) {
     throw new CliError({
       code: "E_VALIDATION",
       message:
         "PLANNER result cannot override caller-supplied structured classification fields. " +
-        "Keep task_kind, mutation_scope, risk_flags, tags, and blueprint_request unchanged; " +
+        "Keep task_kind, mutation_scope, risk_flags, and tags unchanged; " +
         "result.task_intent.execution may refine the execution contract.",
     });
   }
@@ -210,7 +209,6 @@ function planningTaskFields(opts: {
       task_kind: intent.task_kind,
       mutation_scope: intent.mutation_scope,
       risk_flags: intent.risk_flags,
-      blueprint_request: intent.blueprint_request,
     },
     ...(intent.execution ? { declaration: intent.execution } : {}),
   });
@@ -221,7 +219,6 @@ function planningTaskFields(opts: {
       task_kind: intent.task_kind,
       mutation_scope: intent.mutation_scope,
       risk_flags: intent.risk_flags,
-      blueprint_request: intent.blueprint_request,
     },
     ...(intent.execution ? { declaration: intent.execution } : {}),
   });
@@ -230,7 +227,6 @@ function planningTaskFields(opts: {
     mutation_scope: intent.mutation_scope,
     risk_flags: intent.risk_flags,
     tags: intent.tags,
-    blueprint_request: intent.blueprint_request,
     execution_route: route,
     execution_contract: executionContract,
     ...(structuredExtensions ? { extensions: structuredExtensions } : {}),
@@ -310,8 +306,7 @@ export async function isExternalPlanningResultApplied(opts: {
     (!sameValue(task.task_kind, intent.task_kind) ||
       !sameValue(task.mutation_scope, intent.mutation_scope) ||
       !sameStringSet(task.risk_flags, intent.risk_flags) ||
-      !sameStringSet(task.tags, intent.tags) ||
-      !sameValue(task.blueprint_request, intent.blueprint_request))
+      !sameStringSet(task.tags, intent.tags))
   ) {
     return false;
   }
@@ -323,7 +318,6 @@ export async function isExternalPlanningResultApplied(opts: {
         task_kind: intent.task_kind,
         mutation_scope: intent.mutation_scope,
         risk_flags: intent.risk_flags,
-        blueprint_request: intent.blueprint_request,
       },
       declaration: intent.execution,
     });

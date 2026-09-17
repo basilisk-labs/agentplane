@@ -46,7 +46,7 @@ export const TASK_QUALITY_REVIEW_SCHEMA = z
     updated_by: z.string().nullable(),
     note: z.string().nullable(),
     evaluated_sha: z.string().nullable(),
-    blueprint_digest: z.string().nullable(),
+    review_identity_digest: z.string().nullable(),
     evidence_refs: z.array(z.string()).default([]),
     findings: z.array(z.string()).default([]),
   })

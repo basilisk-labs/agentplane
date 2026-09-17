@@ -20,7 +20,6 @@ export const INIT_DEFAULTS: InitDefaults = {
   executionProfile: CANONICAL_EXECUTION_PROFILE,
   evaluatorSkepticism: "standard",
   strictUnsafeConfirm: false,
-  blueprints: [],
   runnerProfile: "codex",
 };
 

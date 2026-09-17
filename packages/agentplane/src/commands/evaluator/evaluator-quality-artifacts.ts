@@ -16,7 +16,7 @@ export type EvaluatorQualityReport = {
   verdict: EvaluatorRunParsed["verdict"];
   summary: string;
   evaluated_sha: string | null;
-  blueprint_digest: string | null;
+  review_identity_digest: string;
   findings: string[];
   evidence_refs: string[];
   missing_tests: string[];

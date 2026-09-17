@@ -183,7 +183,6 @@ describe("agent semantic result contract", () => {
           mutation_scope: "code",
           risk_flags: ["security"],
           tags: ["cli", "parser"],
-          blueprint_request: "code.branch_pr",
           execution: {
             schema_version: 2,
             preferred_mode: "branch_pr",
@@ -202,7 +201,6 @@ describe("agent semantic result contract", () => {
       mutation_scope: "code",
       risk_flags: ["security"],
       tags: ["cli", "parser"],
-      blueprint_request: "code.branch_pr",
       execution: {
         schema_version: 2,
         preferred_mode: "branch_pr",

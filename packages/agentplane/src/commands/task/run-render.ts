@@ -497,7 +497,7 @@ export function reportPreparedTaskRun(payload: TaskRunRendererPayload, taskId: s
                 `selected=${preview.route.selected_mode}`,
             },
             { label: "route_reasons", value: preview.route.reason_codes.join(", ") },
-            { label: "blueprint", value: preview.context.blueprint_id },
+            { label: "task_profile", value: preview.context.task_profile },
             {
               label: "context",
               value:

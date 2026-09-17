@@ -1,12 +1,21 @@
 import { execFile } from "node:child_process";
-import { readdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import {
+  TASK_CENTRIC_EXTENSION_KEY,
+  createLegacyTaskAggregate,
+  createRepositorySnapshot,
+  createTaskPlanRevision,
+  taskCentricDigest,
+} from "@agentplaneorg/core/tasks";
 
 import {
   cmdTaskAdd,
   cmdTaskDocSet,
+  cmdTaskPlanApprove,
+  cmdTaskPlanSet,
   cmdTaskVerifyOk,
   cmdTaskVerifyRework,
   cmdFinish,
@@ -25,8 +34,11 @@ import {
 import { loadCommandContext, loadTaskFromContext } from "./shared/task-backend.js";
 import { verifySpec } from "./verify.spec.js";
 import { cmdVerifyParsed } from "./task/verify-record.js";
-import { writeTaskBlueprintResolvedSnapshot } from "./blueprint/snapshot-artifact.js";
 import { runEvaluatorRun } from "./evaluator/evaluator.command.js";
+import {
+  resolveTaskExecutionContract,
+  resolveTaskExecutionRoute,
+} from "../runtime/task-routing/index.js";
 
 const execFileAsync = promisify(execFile);
 const VERIFY_REWORK_FULL_GATE_TIMEOUT_MS = 60_000;
@@ -34,6 +46,13 @@ const VERIFY_REWORK_FULL_GATE_TIMEOUT_MS = 60_000;
 async function makeRepo(): Promise<string> {
   const root = await mkGitRepoRootWithCommit();
   await writeDefaultConfig(root);
+  const policyDir = path.join(root, ".agentplane", "policy");
+  await mkdir(policyDir, { recursive: true });
+  await Promise.all(
+    ["dod.code.md", "dod.core.md", "security.must.md", "workflow.direct.md"].map((name) =>
+      writeFile(path.join(policyDir, name), "# Test policy\n", "utf8"),
+    ),
+  );
   return root;
 }
 
@@ -61,6 +80,79 @@ async function addTask(root: string, taskId: string): Promise<void> {
     updatedBy: "TEST",
     fullDoc: false,
   });
+  const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+  const task = await loadTaskFromContext({ ctx, taskId });
+  const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+  const now = "2026-09-17T00:00:00.000Z";
+  const verification = {
+    schema_version: 1 as const,
+    criteria: [],
+    checks: [],
+    evidence_fingerprint: taskCentricDigest({ task_id: taskId, fixture: "workflow-verify" }),
+  };
+  const aggregate = createLegacyTaskAggregate({
+    id: taskId,
+    revision: task.revision ?? 1,
+    title: task.title,
+    description: task.description,
+    status: task.status,
+    acceptance_criteria: [],
+    captured_at: now,
+    updated_at: now,
+  });
+  const plan = createTaskPlanRevision({
+    revision: 1,
+    created_at: now,
+    proposal: {
+      schema_version: 1,
+      task_id: taskId,
+      planning_baseline: createRepositorySnapshot({
+        git: { kind: "commit", sha: stdout.trim(), ref: "main" },
+        dirty_paths: [],
+        policy_digest: null,
+        config_digest: null,
+        context_digest: null,
+        task_history_cursor: null,
+        captured_at: now,
+      }),
+      work_items: { schema_version: 1, work_items: [] },
+      assumptions: [],
+      unresolved_questions: [],
+      top_level_validation: verification,
+    },
+  });
+  const route = resolveTaskExecutionRoute({
+    config: ctx.config,
+    requestedMode: "direct",
+    task: { task_kind: "code", mutation_scope: "code", risk_flags: [] },
+  });
+  const contract = resolveTaskExecutionContract({
+    config: ctx.config,
+    requestedMode: "direct",
+    task: { task_kind: "code", mutation_scope: "code", risk_flags: [] },
+  });
+  await cmdTaskPlanSet({
+    ctx,
+    cwd: root,
+    taskId,
+    text: "Execute and verify the workflow fixture.",
+    taskFields: {
+      task_kind: "code",
+      mutation_scope: "code",
+      risk_flags: [],
+      execution_route: route,
+      execution_contract: contract,
+      extensions: {
+        ...(task.extensions ?? {}),
+        [TASK_CENTRIC_EXTENSION_KEY]: {
+          ...aggregate,
+          lifecycle: "AWAITING_PLAN_APPROVAL",
+          current_plan: plan,
+        },
+      },
+    },
+  });
+  await cmdTaskPlanApprove({ cwd: root, taskId, by: "USER" });
 }
 
 async function gitCommitFile(root: string, file: string, message: string): Promise<void> {
@@ -388,10 +480,6 @@ describe("commands/workflow", () => {
       await addTask(root, taskId);
       await gitCommitFile(root, "seed.txt", "chore: seed");
       const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
-      await writeTaskBlueprintResolvedSnapshot({
-        ctx,
-        task: await loadTaskFromContext({ ctx, taskId }),
-      });
       await cmdVerifyParsed({
         ctx,
         cwd: root,
@@ -465,7 +553,7 @@ describe("commands/workflow", () => {
     VERIFY_REWORK_FULL_GATE_TIMEOUT_MS,
   );
 
-  it("task verify ok records ok state without changing status or commit", async () => {
+  it("task verify ok records ok state without changing active status or commit", async () => {
     const root = await makeRepo();
     const taskId = "202602050900-V1F6";
     await addTask(root, taskId);
@@ -481,7 +569,7 @@ describe("commands/workflow", () => {
 
     const { backend } = await taskBackend.loadTaskBackend({ cwd: root, rootOverride: null });
     const task = await backend.getTask(taskId);
-    expect(task?.status).toBe("TODO");
+    expect(task?.status).toBe("DOING");
     expect(task?.commit ?? null).toBeNull();
     expect(task?.verification?.state).toBe("ok");
   });
@@ -561,14 +649,12 @@ describe("commands/workflow", () => {
     const taskId = "202605150900-SNAP01";
     await addTask(root, taskId);
 
-    const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
-    await writeTaskBlueprintResolvedSnapshot({
-      ctx,
-      task: await loadTaskFromContext({ ctx, taskId }),
-    });
+    const artifactPath = `.agentplane/tasks/${taskId}/quality/review.json`;
+    await mkdir(path.dirname(path.join(root, artifactPath)), { recursive: true });
+    await writeFile(path.join(root, artifactPath), '{"verdict":"pass"}\n', "utf8");
     await execFileAsync(
       "git",
-      ["add", `.agentplane/tasks/${taskId}/blueprint/resolved-snapshot.json`],
+      ["add", artifactPath],
       { cwd: root },
     );
 
