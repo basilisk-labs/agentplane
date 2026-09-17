@@ -1,10 +1,10 @@
 ---
 id: "202609162254-YE48GC"
 title: "Implement and qualify AgentPlane 0.7.10 Blueprint retirement"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 46
+revision: 48
 origin:
   system: "manual"
 depends_on: []
@@ -1000,6 +1000,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: .agentplane/WORKFLOW.md, .agentplane/config.json, packages/agentplane/src, packages/core/package.json, packages/recipes/package.json, packages/recipes/src/index.ts, packages/spec/examples/acr.json, packages/testkit/package.json, packages/testkit/src; repository effects: release_metadata, repository_write, source_code, tests."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The qualified 0.7.10 candidate is complete, but the supervisor rejected the result because required generated schema, installed-migration, test-registry, and docs-site artifacts are outside the current WorkItem writable roots. Recommended action: Approve the exact scope extension, then issue a replacement EXECUTOR packet so the completed qualification result can be admitted without weakening the authority check. Requested scope: roots=packages/core/schemas,packages/recipes/src/index.test.ts,packages/spec/schemas,schemas,scripts/lib,website; repository effects=ci,documentation,release_metadata,schema,tests; request digest=sha256:7c06b43bef49a7d635d546b94dad655d93c3a826db0da7b4ba6e77637bedf6d7. Agentplane receipt: external-agent-blocker/tr_050a62b4809c70b7f3447666d27284b7/sha256:8ccab0b7d90e28c99707d103ce476f3fcd29857068e652b420adbb99314d4037/sha256:7c06b43bef49a7d635d546b94dad655d93c3a826db0da7b4ba6e77637bedf6d7."
 events:
   -
     type: "status"
@@ -1121,8 +1124,15 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. Qualification found stale pre-retirement tests and stable-version metadata targets outside the current WorkOrder writable roots. Recommended action: Extend the approved scope to the observed test/harness and canonical stable-version targets, then issue a replacement qualification episode. Requested scope: roots=.agentplane/WORKFLOW.md,.agentplane/config.json,packages/agentplane/src,packages/core/package.json,packages/recipes/package.json,packages/recipes/src/index.ts,packages/spec/examples/acr.json,packages/testkit/package.json,packages/testkit/src; repository effects=release_metadata,repository_write,source_code,tests; request digest=sha256:0442f8b2c9d298c15aa150f1b041f870ed8ea4599c766a14709e0b6b1bb193a4. Agentplane receipt: external-agent-blocker/tr_1c8ea24d4abbb753acca37f0a209d59e/sha256:56ae5e76da94aa1a24a8eee69a31394f565bbf3088bb1e79281b2cfc615a183e/sha256:0442f8b2c9d298c15aa150f1b041f870ed8ea4599c766a14709e0b6b1bb193a4."
+  -
+    type: "status"
+    at: "2026-09-17T15:42:07.259Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The qualified 0.7.10 candidate is complete, but the supervisor rejected the result because required generated schema, installed-migration, test-registry, and docs-site artifacts are outside the current WorkItem writable roots. Recommended action: Approve the exact scope extension, then issue a replacement EXECUTOR packet so the completed qualification result can be admitted without weakening the authority check. Requested scope: roots=packages/core/schemas,packages/recipes/src/index.test.ts,packages/spec/schemas,schemas,scripts/lib,website; repository effects=ci,documentation,release_metadata,schema,tests; request digest=sha256:7c06b43bef49a7d635d546b94dad655d93c3a826db0da7b4ba6e77637bedf6d7. Agentplane receipt: external-agent-blocker/tr_050a62b4809c70b7f3447666d27284b7/sha256:8ccab0b7d90e28c99707d103ce476f3fcd29857068e652b420adbb99314d4037/sha256:7c06b43bef49a7d635d546b94dad655d93c3a826db0da7b4ba6e77637bedf6d7."
 doc_version: 3
-doc_updated_at: "2026-09-17T12:20:20.157Z"
+doc_updated_at: "2026-09-17T15:42:07.259Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task."
 sections:
@@ -1177,32 +1187,28 @@ extensions:
     status: "active"
     task_id: "202609162254-YE48GC"
   agentplane.scope_extension_request:
-    applied_at: "2026-09-17T12:20:25.570Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:56ae5e76da94aa1a24a8eee69a31394f565bbf3088bb1e79281b2cfc615a183e"
+    blocker_state_fingerprint: "sha256:8ccab0b7d90e28c99707d103ce476f3fcd29857068e652b420adbb99314d4037"
     kind: "task_scope_extension_request"
     request:
-      rationale: "Full regression is a required acceptance criterion, and the canonical 0.7.10 version-bump dry run proves these additional repository paths are necessary for release-ready metadata."
+      rationale: "The approved 0.7.10 qualification requires synchronized schema mirrors, installed-migration and test-routing checks, the Recipe regression test, and generated docs-site outputs. The supervisor correctly rejected these paths because the current packet omitted them."
       repository_effects:
+        - "ci"
+        - "documentation"
         - "release_metadata"
-        - "repository_write"
-        - "source_code"
+        - "schema"
         - "tests"
       schema_version: 1
       scope_roots:
-        - ".agentplane/WORKFLOW.md"
-        - ".agentplane/config.json"
-        - "packages/agentplane/src"
-        - "packages/core/package.json"
-        - "packages/recipes/package.json"
-        - "packages/recipes/src/index.ts"
-        - "packages/spec/examples/acr.json"
-        - "packages/testkit/package.json"
-        - "packages/testkit/src"
-    request_digest: "sha256:0442f8b2c9d298c15aa150f1b041f870ed8ea4599c766a14709e0b6b1bb193a4"
+        - "packages/core/schemas"
+        - "packages/recipes/src/index.test.ts"
+        - "packages/spec/schemas"
+        - "schemas"
+        - "scripts/lib"
+        - "website"
+    request_digest: "sha256:7c06b43bef49a7d635d546b94dad655d93c3a826db0da7b4ba6e77637bedf6d7"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_1c8ea24d4abbb753acca37f0a209d59e"
+    status: "pending"
+    transition_id: "tr_050a62b4809c70b7f3447666d27284b7"
     work_item_id: "qualification-and-release-readiness"
   agentplane.task_centric:
     current_plan:
@@ -2085,7 +2091,7 @@ extensions:
       revision: 7
       schema_version: 1
       task_id: "202609162254-YE48GC"
-    event_cursor: 37
+    event_cursor: 39
     final_validation: null
     id: "202609162254-YE48GC"
     intent:
@@ -2137,7 +2143,7 @@ extensions:
 
         Implement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task.
       task_id: "202609162254-YE48GC"
-    lifecycle: "ACTIVE"
+    lifecycle: "BLOCKED"
     plan_amendments: []
     plan_history:
       -
@@ -7070,9 +7076,9 @@ extensions:
         revision: 6
         schema_version: 1
         task_id: "202609162254-YE48GC"
-    revision: 46
+    revision: 48
     schema_version: 1
-    updated_at: "2026-09-17T12:20:20.157Z"
+    updated_at: "2026-09-17T15:42:07.259Z"
     work_items:
       channel-and-owner-map:
         attempt: 1
@@ -8089,6 +8095,30 @@ extensions:
         previous_revision: 21
         schema_version: 1
         task_id: "202609162254-YE48GC"
+      compatibility:sha256:5c8f3cfdeff3d398a6a7e2cca839aaebdeba6c7914edb14c89eb04aa1c78b20c:
+        aggregate_digest: "sha256:6336a4398afe77e90c6b1d8aab45b397a2abd93dd8f53175bded8eeb0cb26c6f"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T15:42:07.259Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_15851cbb9155357b51518aaf"
+          mutation_id: "compatibility:sha256:5c8f3cfdeff3d398a6a7e2cca839aaebdeba6c7914edb14c89eb04aa1c78b20c"
+          plan_digest: "sha256:f7af6f9097ebbea114a2d7a2c52007b1476760d57bcf9ebb90a156beb9cef3ba"
+          plan_revision: 7
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 47
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:5c8f3cfdeff3d398a6a7e2cca839aaebdeba6c7914edb14c89eb04aa1c78b20c"
+        next_revision: 48
+        previous_revision: 47
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
       compatibility:sha256:610f7b694f1c375242d25d6bd6194cae260a1ba6737c36f396bf93684e5c9dcf:
         aggregate_digest: "sha256:9ce2d412efc5d2107062835d3a1705f5c14bb39256d20585de65b10077332b67"
         event:
@@ -8471,6 +8501,30 @@ extensions:
         mutation_id: "compatibility:sha256:c46ff176c8880d44cff5bcd36f48699931fc4d0a1b8f09f1e98fb5fdd94711a5"
         next_revision: 7
         previous_revision: 6
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+      compatibility:sha256:cbae6a5248b6e4bf2eb5febb6a8fa6170f826f759aa9e273b6469e5745b2f5fb:
+        aggregate_digest: "sha256:5587b23aea4252c4e08152a279be0369735f42fc7da8f19539381c136fc52c44"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T15:42:07.259Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_9ee4e24753ab34f660f238b9"
+          mutation_id: "compatibility:sha256:cbae6a5248b6e4bf2eb5febb6a8fa6170f826f759aa9e273b6469e5745b2f5fb"
+          plan_digest: "sha256:f7af6f9097ebbea114a2d7a2c52007b1476760d57bcf9ebb90a156beb9cef3ba"
+          plan_revision: 7
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 46
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:cbae6a5248b6e4bf2eb5febb6a8fa6170f826f759aa9e273b6469e5745b2f5fb"
+        next_revision: 47
+        previous_revision: 46
         schema_version: 1
         task_id: "202609162254-YE48GC"
       compatibility:sha256:cf928ddf02e3e5d6413d5b5aa5a9fc2e07ef2ca858cfae93f78fd77ad7df6a8a:
