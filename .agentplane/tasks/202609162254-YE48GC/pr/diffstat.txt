@@ -2,6 +2,9 @@
  .../commands/evaluator/evaluator-review-usecase.ts |  14 +-
  .../release/publish-workflow-contract.test.ts      |  12 +-
  .../src/commands/task/run-execution-preview.ts     |  18 +-
+ .../agentplane/src/runner/context/base-prompts.ts  |   2 +
+ .../runner/context/recipe-prompt-blocks.test.ts    | 122 ++++
+ .../src/runner/context/recipe-prompt-blocks.ts     |  81 ++-
  .../runner/context/semantic-prompt-projection.ts   |   3 +-
  packages/agentplane/src/runner/types/context.ts    |   3 +
  .../src/runner/usecases/agent-work-order-build.ts  |  65 +-
@@ -20,10 +23,12 @@
  .../src/runtime/task-obligations/model.ts          | 112 +++
  .../src/runtime/task-obligations/resolve.test.ts   | 180 +++++
  .../src/runtime/task-obligations/resolve.ts        | 305 ++++++++
+ packages/recipes/src/blueprint-extensions.test.ts  | 195 +++++
+ packages/recipes/src/blueprint-extensions.ts       | 373 ++++++++++
  scripts/checks/blueprint-retirement-map.json       | 796 +++++++++++++++++++++
  scripts/checks/blueprint-retirement-map.test.mjs   | 203 ++++++
  scripts/generate/render-ghcr-image-metadata.mjs    |  19 +-
  scripts/release/manifest.mjs                       |  30 +
  scripts/release/stable-channel-policy.mjs          | 127 ++++
  scripts/release/stable-channel-policy.test.mjs     |  77 ++
- 28 files changed, 2541 insertions(+), 59 deletions(-)
+ 33 files changed, 3313 insertions(+), 60 deletions(-)
