@@ -7,23 +7,23 @@
   },
   "candidate": {
     "section_digests": {
-      "agent_facing_context_contracts": "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
-      "cli_topology": "d4eb172b2293e15dfc6d0f5fd44aeff11f989fae084dd1f51e388b4d454ed856",
+      "agent_facing_context_contracts": "7710a5217ea614a3da8b4e99fe61e16fb738179797eba64c75c9537bc33f7785",
+      "cli_topology": "6ecce3aae9ae72125bac331d030a1a308b8fef8d02a2b89391c9f65d54a80088",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "package_manifests": "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
       "tarball_policy": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
       "workflow_schema": "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452"
     },
-    "surface_sha256": "6d3ec2801ecc4958cf802e8930492071e364777ac863a66bcea230a9c8994632"
+    "surface_sha256": "f4f77cd4eea48de1df93d175f387468fffa7dba84c83cf7feca801863b3de71e"
   },
   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
   "contract_artifacts": {
     "agent_work_order_schema": {
       "comparison": "canonical_json_exact",
       "path": "schemas/agent-work-order-v2.schema.json",
-      "sha256": "59ba5559d26e8f70271d78dca89f78a6f82461f16c711d9c9b8031ec150f97f0",
-      "source_task": "202609071501-VN1FN4"
+      "sha256": "901bf3d2c40447b953a5f750cd02db64f21d860083668121f68ca2de43747660",
+      "source_task": "202609162254-YE48GC"
     },
     "core_agent_work_order_exports": {
       "comparison": "required_named_reexports",
@@ -320,7 +320,7 @@
   },
   "deltas": [
     {
-      "classification": "compatible_with_visibility_and_profile_simplification",
+      "classification": "intentional_breaking_retirement",
       "evidence": {
         "added_command_descriptors": [
           {
@@ -582,25 +582,6 @@
                 "name": "risk",
                 "repeatable": true,
                 "valueHint": "<risk>"
-              },
-              {
-                "choices": [
-                  "analysis.light",
-                  "content.light",
-                  "docs.change",
-                  "code.direct",
-                  "code.branch_pr",
-                  "performance.benchmark",
-                  "quality.regression",
-                  "context.assimilation",
-                  "context.maximum_assimilation",
-                  "post_run.improvement_review",
-                  "release.strict",
-                  "ops.approval"
-                ],
-                "kind": "string",
-                "name": "blueprint-request",
-                "valueHint": "<id>"
               },
               { "kind": "string", "name": "tag", "repeatable": true, "valueHint": "<tag>" },
               { "kind": "string", "name": "verify", "repeatable": true, "valueHint": "<command>" },
@@ -1212,26 +1193,6 @@
             "valueHint": "<branch-or-ref>"
           },
           {
-            "choices": [
-              "analysis.light",
-              "content.light",
-              "docs.change",
-              "code.direct",
-              "code.branch_pr",
-              "performance.benchmark",
-              "quality.regression",
-              "context.assimilation",
-              "context.maximum_assimilation",
-              "post_run.improvement_review",
-              "release.strict",
-              "ops.approval"
-            ],
-            "command": "task create",
-            "kind": "string",
-            "name": "blueprint-request",
-            "valueHint": "<id>"
-          },
-          {
             "command": "task create",
             "kind": "string",
             "name": "description",
@@ -1337,7 +1298,6 @@
             "name": "yes",
             "valueHint": null
           },
-          { "command": "task new", "kind": "boolean", "name": "canonical", "valueHint": null },
           {
             "choices": ["auto", "direct", "branch_pr"],
             "command": "task new",
@@ -2076,12 +2036,6 @@
           {
             "command": "task create",
             "kind": "option",
-            "name": "blueprint-request",
-            "source_task": "202608110235-WCJJRD"
-          },
-          {
-            "command": "task create",
-            "kind": "option",
             "name": "description",
             "source_task": "202608061646-30TKV4"
           },
@@ -2391,12 +2345,6 @@
             "source_task": "202608291006-2A6BJC"
           },
           {
-            "command": "task new",
-            "kind": "option",
-            "name": "canonical",
-            "source_task": "202608291006-255K66"
-          },
-          {
             "command": "work resume",
             "kind": "option",
             "name": "apply",
@@ -2462,7 +2410,7 @@
             "source_task": "202609060720-NZXQ0E"
           }
         ],
-        "command_count": { "from": 243, "to": 267 },
+        "command_count": { "from": 243, "to": 252 },
         "mutated_command_shells": [
           {
             "after": {
@@ -2659,11 +2607,474 @@
             "identity": "task plan approve --by"
           }
         ],
-        "option_count": { "from": 767, "to": 882 },
-        "positional_count": { "from": 165, "to": 184 },
-        "removed_command_descriptors": [],
-        "removed_commands": [],
-        "removed_options": []
+        "option_count": { "from": 767, "to": 844 },
+        "positional_count": { "from": 165, "to": 174 },
+        "removed_command_descriptors": [
+          {
+            "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
+            "group": "Blueprints",
+            "id": ["blueprint"],
+            "options": [],
+            "visibility": "user"
+          },
+          {
+            "args": [
+              { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+            ],
+            "group": "Blueprints",
+            "id": ["blueprint", "drift"],
+            "options": [{ "default": false, "kind": "boolean", "name": "json", "valueHint": null }],
+            "visibility": "user"
+          },
+          {
+            "args": [],
+            "group": "Blueprints",
+            "id": ["blueprint", "examples"],
+            "options": [{ "default": false, "kind": "boolean", "name": "json", "valueHint": null }],
+            "visibility": "user"
+          },
+          {
+            "args": [
+              { "name": "task-id", "required": false, "valueHint": "<task-id>", "variadic": false }
+            ],
+            "group": "Blueprints",
+            "id": ["blueprint", "explain"],
+            "options": [
+              {
+                "kind": "string",
+                "name": "kind",
+                "valueHint": "<analysis|content|docs|code|release|ops|context>"
+              },
+              {
+                "choices": ["none", "docs", "code", "release", "ops", "unknown"],
+                "default": "unknown",
+                "kind": "string",
+                "name": "mutation",
+                "valueHint": "<none|docs|code|release|ops|unknown>"
+              },
+              {
+                "choices": ["direct", "branch_pr"],
+                "kind": "string",
+                "name": "workflow-mode",
+                "valueHint": "<direct|branch_pr>"
+              },
+              { "kind": "string", "name": "tag", "valueHint": "<tag>" },
+              { "kind": "string", "name": "title", "valueHint": "<text>" },
+              { "kind": "string", "name": "description", "valueHint": "<text>" },
+              { "kind": "string", "name": "risk", "valueHint": "<risk>" },
+              { "kind": "string", "name": "blueprint", "valueHint": "<id>" },
+              { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+            ],
+            "visibility": "user"
+          },
+          {
+            "args": [],
+            "group": "Blueprints",
+            "id": ["blueprint", "list"],
+            "options": [
+              { "default": false, "kind": "boolean", "name": "project", "valueHint": null },
+              { "default": false, "kind": "boolean", "name": "trusted", "valueHint": null },
+              { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+            ],
+            "visibility": "user"
+          },
+          {
+            "args": [],
+            "group": "Blueprints",
+            "id": ["blueprint", "report"],
+            "options": [{ "default": false, "kind": "boolean", "name": "json", "valueHint": null }],
+            "visibility": "user"
+          },
+          {
+            "args": [
+              { "name": "id", "required": true, "valueHint": "<blueprint-id>", "variadic": false }
+            ],
+            "group": "Blueprints",
+            "id": ["blueprint", "scaffold"],
+            "options": [
+              { "kind": "string", "name": "from", "valueHint": "<builtin-blueprint-id>" },
+              { "kind": "string", "name": "out", "valueHint": "<path>" },
+              { "default": false, "kind": "boolean", "name": "force", "valueHint": null },
+              { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+            ],
+            "visibility": "user"
+          },
+          {
+            "args": [
+              { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+            ],
+            "group": "Blueprints",
+            "id": ["blueprint", "snapshot"],
+            "options": [{ "default": false, "kind": "boolean", "name": "json", "valueHint": null }],
+            "visibility": "user"
+          },
+          {
+            "args": [
+              { "name": "path", "required": false, "valueHint": "<path>", "variadic": false }
+            ],
+            "group": "Blueprints",
+            "id": ["blueprint", "validate"],
+            "options": [
+              { "default": false, "kind": "boolean", "name": "project", "valueHint": null },
+              { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+            ],
+            "visibility": "user"
+          },
+          {
+            "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
+            "group": "Blueprints",
+            "id": ["blueprints"],
+            "options": [],
+            "visibility": "user"
+          },
+          {
+            "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
+            "group": "Blueprints",
+            "id": ["blueprints", "catalog"],
+            "options": [],
+            "visibility": "user"
+          },
+          {
+            "args": [{ "name": "id", "required": true, "valueHint": "<id>", "variadic": false }],
+            "group": "Blueprints",
+            "id": ["blueprints", "catalog", "info"],
+            "options": [
+              {
+                "choices": ["blueprint", "pack"],
+                "kind": "string",
+                "name": "kind",
+                "valueHint": "<blueprint|pack>"
+              },
+              { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+            ],
+            "visibility": "user"
+          },
+          {
+            "args": [],
+            "group": "Blueprints",
+            "id": ["blueprints", "catalog", "list"],
+            "options": [{ "default": false, "kind": "boolean", "name": "json", "valueHint": null }],
+            "visibility": "user"
+          },
+          {
+            "args": [],
+            "group": "Blueprints",
+            "id": ["blueprints", "catalog", "refresh"],
+            "options": [
+              { "kind": "string", "name": "index", "required": true, "valueHint": "<path|url>" },
+              { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+            ],
+            "visibility": "user"
+          },
+          {
+            "args": [
+              {
+                "name": "id",
+                "required": true,
+                "valueHint": "<blueprint-or-pack-id>",
+                "variadic": false
+              }
+            ],
+            "group": "Blueprints",
+            "id": ["blueprints", "install"],
+            "options": [
+              {
+                "choices": ["blueprint", "pack"],
+                "kind": "string",
+                "name": "kind",
+                "valueHint": "<blueprint|pack>"
+              },
+              { "kind": "string", "name": "index", "valueHint": "<path|url>" },
+              { "default": false, "kind": "boolean", "name": "refresh", "valueHint": null },
+              { "default": false, "kind": "boolean", "name": "activate", "valueHint": null },
+              { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
+            ],
+            "visibility": "user"
+          }
+        ],
+        "removed_commands": [
+          "blueprint",
+          "blueprint drift",
+          "blueprint examples",
+          "blueprint explain",
+          "blueprint list",
+          "blueprint report",
+          "blueprint scaffold",
+          "blueprint snapshot",
+          "blueprint validate",
+          "blueprints",
+          "blueprints catalog",
+          "blueprints catalog info",
+          "blueprints catalog list",
+          "blueprints catalog refresh",
+          "blueprints install"
+        ],
+        "removed_options": [
+          {
+            "command": "blueprint drift",
+            "default": false,
+            "kind": "boolean",
+            "name": "json",
+            "valueHint": null
+          },
+          {
+            "command": "blueprint examples",
+            "default": false,
+            "kind": "boolean",
+            "name": "json",
+            "valueHint": null
+          },
+          {
+            "command": "blueprint explain",
+            "kind": "string",
+            "name": "blueprint",
+            "valueHint": "<id>"
+          },
+          {
+            "command": "blueprint explain",
+            "kind": "string",
+            "name": "description",
+            "valueHint": "<text>"
+          },
+          {
+            "command": "blueprint explain",
+            "default": false,
+            "kind": "boolean",
+            "name": "json",
+            "valueHint": null
+          },
+          {
+            "command": "blueprint explain",
+            "kind": "string",
+            "name": "kind",
+            "valueHint": "<analysis|content|docs|code|release|ops|context>"
+          },
+          {
+            "choices": ["none", "docs", "code", "release", "ops", "unknown"],
+            "command": "blueprint explain",
+            "default": "unknown",
+            "kind": "string",
+            "name": "mutation",
+            "valueHint": "<none|docs|code|release|ops|unknown>"
+          },
+          {
+            "command": "blueprint explain",
+            "kind": "string",
+            "name": "risk",
+            "valueHint": "<risk>"
+          },
+          { "command": "blueprint explain", "kind": "string", "name": "tag", "valueHint": "<tag>" },
+          {
+            "command": "blueprint explain",
+            "kind": "string",
+            "name": "title",
+            "valueHint": "<text>"
+          },
+          {
+            "choices": ["direct", "branch_pr"],
+            "command": "blueprint explain",
+            "kind": "string",
+            "name": "workflow-mode",
+            "valueHint": "<direct|branch_pr>"
+          },
+          {
+            "command": "blueprint list",
+            "default": false,
+            "kind": "boolean",
+            "name": "json",
+            "valueHint": null
+          },
+          {
+            "command": "blueprint list",
+            "default": false,
+            "kind": "boolean",
+            "name": "project",
+            "valueHint": null
+          },
+          {
+            "command": "blueprint list",
+            "default": false,
+            "kind": "boolean",
+            "name": "trusted",
+            "valueHint": null
+          },
+          {
+            "command": "blueprint report",
+            "default": false,
+            "kind": "boolean",
+            "name": "json",
+            "valueHint": null
+          },
+          {
+            "command": "blueprint scaffold",
+            "default": false,
+            "kind": "boolean",
+            "name": "force",
+            "valueHint": null
+          },
+          {
+            "command": "blueprint scaffold",
+            "kind": "string",
+            "name": "from",
+            "valueHint": "<builtin-blueprint-id>"
+          },
+          {
+            "command": "blueprint scaffold",
+            "default": false,
+            "kind": "boolean",
+            "name": "json",
+            "valueHint": null
+          },
+          {
+            "command": "blueprint scaffold",
+            "kind": "string",
+            "name": "out",
+            "valueHint": "<path>"
+          },
+          {
+            "command": "blueprint snapshot",
+            "default": false,
+            "kind": "boolean",
+            "name": "json",
+            "valueHint": null
+          },
+          {
+            "command": "blueprint validate",
+            "default": false,
+            "kind": "boolean",
+            "name": "json",
+            "valueHint": null
+          },
+          {
+            "command": "blueprint validate",
+            "default": false,
+            "kind": "boolean",
+            "name": "project",
+            "valueHint": null
+          },
+          {
+            "command": "blueprints catalog info",
+            "default": false,
+            "kind": "boolean",
+            "name": "json",
+            "valueHint": null
+          },
+          {
+            "choices": ["blueprint", "pack"],
+            "command": "blueprints catalog info",
+            "kind": "string",
+            "name": "kind",
+            "valueHint": "<blueprint|pack>"
+          },
+          {
+            "command": "blueprints catalog list",
+            "default": false,
+            "kind": "boolean",
+            "name": "json",
+            "valueHint": null
+          },
+          {
+            "command": "blueprints catalog refresh",
+            "kind": "string",
+            "name": "index",
+            "required": true,
+            "valueHint": "<path|url>"
+          },
+          {
+            "command": "blueprints catalog refresh",
+            "default": false,
+            "kind": "boolean",
+            "name": "json",
+            "valueHint": null
+          },
+          {
+            "command": "blueprints install",
+            "default": false,
+            "kind": "boolean",
+            "name": "activate",
+            "valueHint": null
+          },
+          {
+            "command": "blueprints install",
+            "kind": "string",
+            "name": "index",
+            "valueHint": "<path|url>"
+          },
+          {
+            "command": "blueprints install",
+            "default": false,
+            "kind": "boolean",
+            "name": "json",
+            "valueHint": null
+          },
+          {
+            "choices": ["blueprint", "pack"],
+            "command": "blueprints install",
+            "kind": "string",
+            "name": "kind",
+            "valueHint": "<blueprint|pack>"
+          },
+          {
+            "command": "blueprints install",
+            "default": false,
+            "kind": "boolean",
+            "name": "refresh",
+            "valueHint": null
+          },
+          {
+            "command": "init",
+            "kind": "string",
+            "name": "blueprints",
+            "valueHint": "<none|id1,pack:id2,...>"
+          },
+          {
+            "choices": [
+              "analysis.light",
+              "content.light",
+              "docs.change",
+              "code.direct",
+              "code.branch_pr",
+              "performance.benchmark",
+              "quality.regression",
+              "context.assimilation",
+              "context.maximum_assimilation",
+              "post_run.improvement_review",
+              "release.strict",
+              "ops.approval"
+            ],
+            "command": "task begin",
+            "kind": "string",
+            "name": "blueprint-request",
+            "valueHint": "<id>"
+          },
+          {
+            "choices": [
+              "analysis.light",
+              "content.light",
+              "docs.change",
+              "code.direct",
+              "code.branch_pr",
+              "performance.benchmark",
+              "quality.regression",
+              "context.assimilation",
+              "context.maximum_assimilation",
+              "post_run.improvement_review",
+              "release.strict",
+              "ops.approval"
+            ],
+            "command": "task new",
+            "kind": "string",
+            "name": "blueprint-request",
+            "valueHint": "<id>"
+          },
+          {
+            "command": "task new",
+            "default": false,
+            "kind": "boolean",
+            "name": "show-blueprint",
+            "valueHint": null
+          }
+        ]
       },
       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
       "section": "cli_topology",
@@ -2705,25 +3116,26 @@
         "202608301851-5W3XW6",
         "202609030849-925NNG",
         "202609060720-NZXQ0E",
-        "202609130858-RMHWQ5"
+        "202609130858-RMHWQ5",
+        "202609162254-YE48GC"
       ],
-      "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, safe local evidence statistics, compaction, garbage collection, and a state-bound USER-approved blocked-task scope extension; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; canonicalizes setup and execution profile selection to standard while retaining legacy init aliases; and makes auto the task route default while retiring repository as a user-facing route. Adds exact-intent operator reconciliation for interrupted integration workflow effects. Adds an explicit USER-authorized supervisor token budget epoch for telemetry-only stops.",
-      "to_sha256": "d4eb172b2293e15dfc6d0f5fd44aeff11f989fae084dd1f51e388b4d454ed856"
+      "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, safe local evidence statistics, compaction, garbage collection, and a state-bound USER-approved blocked-task scope extension; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; canonicalizes setup and execution profile selection to standard while retaining legacy init aliases; and makes auto the task route default while retiring repository as a user-facing route. Adds exact-intent operator reconciliation for interrupted integration workflow effects. Adds an explicit USER-authorized supervisor token budget epoch for telemetry-only stops. Retires the active Blueprint command surface after Task Kernel replacement proof while preserving cold compatibility readers.",
+      "to_sha256": "6ecce3aae9ae72125bac331d030a1a308b8fef8d02a2b89391c9f65d54a80088"
     },
     {
-      "classification": "additive",
+      "classification": "intentional_breaking_retirement",
       "evidence": {
         "changed_contracts": [
           {
             "after": {
-              "normalized_bytes": 6538,
-              "normalized_sha256": "e93f1584cd5af62de6ca9a5ff0971d62a871475c9fbae216df9be3e39ae7875c"
+              "normalized_bytes": 5574,
+              "normalized_sha256": "b8560ef31029531a559a986af7778353a72f8104b70cc7c36aadec01e21eb757"
             },
             "before": {
               "normalized_bytes": 6471,
               "normalized_sha256": "e1b431c57a6e0a5db860b9f04d9a5cdc6f56be97deeea78c438d8017d03c1261"
             },
-            "change": "adds evaluator human_review escalation and the deterministic_evidence_gap recovery classification",
+            "change": "adds evaluator human_review and deterministic_evidence_gap recovery while retiring Blueprint route-decision contracts",
             "path": "packages/agentplane/src/runtime/sgr/contract-types.ts"
           },
           {
@@ -2773,10 +3185,11 @@
         "202607221849-8YYZ9X",
         "202607291449-FTHNAR",
         "202607221852-YP9QCH",
-        "202608212244-6XZAYD"
+        "202608212244-6XZAYD",
+        "202609162254-YE48GC"
       ],
-      "summary": "Adds a CLI-owned immutable task-creation receipt, typed EVALUATOR human-review escalation, bounded deterministic-evidence recovery classification, and source-driven canonical reconciliation candidates.",
-      "to_sha256": "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b"
+      "summary": "Adds a CLI-owned immutable task-creation receipt, typed EVALUATOR human-review escalation, bounded deterministic-evidence recovery classification, and source-driven canonical reconciliation candidates; retires Blueprint route-decision contracts after Task Kernel replacement proof.",
+      "to_sha256": "7710a5217ea614a3da8b4e99fe61e16fb738179797eba64c75c9537bc33f7785"
     },
     {
       "classification": "backward_compatible",
@@ -2916,9 +3329,9 @@
     "from_version": "0.6.24",
     "section": "package_manifests",
     "source_task": "202608082119-P6SHBN",
-    "surface_sha256": "261137c901c9455447d9d43aa011c698cd12dd83af5e5965e678849aef32c8ee",
-    "to_sha256": "27fbc96e53af8c5f49247c38a2bb3f0b8391008d4fbdaaee0df5f8ec80f29db4",
-    "to_version": "0.7.10-beta.1"
+    "surface_sha256": "55d147ad265189a077ad88f6002456a00be427ab88e359ada206f02b5b59650d",
+    "to_sha256": "ba1dcbafef11ab50d5a8143545c7fc719c22b3c6b76cb06a919892d81b5d8d92",
+    "to_version": "0.7.10"
   },
   "review": {
     "conditions": [
@@ -2978,6 +3391,7 @@
     "202609030849-925NNG",
     "202609060720-NZXQ0E",
     "202609071501-VN1FN4",
-    "202609130858-RMHWQ5"
+    "202609130858-RMHWQ5",
+    "202609162254-YE48GC"
   ]
 }

@@ -356,6 +356,7 @@ function validateReviewedCandidate({
     "202609030849-925NNG",
     "202609060720-NZXQ0E",
     "202609130858-RMHWQ5",
+    "202609162254-YE48GC",
   ];
   const expectedSourceTasks = [
     "202607221846-4VB97J",
@@ -405,6 +406,7 @@ function validateReviewedCandidate({
     "202609060720-NZXQ0E",
     "202609071501-VN1FN4",
     "202609130858-RMHWQ5",
+    "202609162254-YE48GC",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -752,7 +754,7 @@ function validateReviewedCandidate({
     "AgentWorkOrder contract artifact comparison drift",
   );
   assert(
-    agentWorkOrderArtifact.source_task === "202609071501-VN1FN4",
+    agentWorkOrderArtifact.source_task === "202609162254-YE48GC",
     "AgentWorkOrder contract artifact source task drift",
   );
   const agentWorkOrderSchema = JSON.parse(
@@ -878,6 +880,7 @@ function validateReviewedCandidate({
       "202607291449-FTHNAR",
       "202607221852-YP9QCH",
       "202608212244-6XZAYD",
+      "202609162254-YE48GC",
     ],
     cli_topology: cliSourceTasks,
     machine_output_contract: ["202607221848-ABG7SD", "202608212244-6XZAYD"],
@@ -991,7 +994,7 @@ function validateReviewedCandidate({
           normalized_sha256: afterEvaluatorContract.normalized_sha256,
         },
         change:
-          "adds evaluator human_review escalation and the deterministic_evidence_gap recovery classification",
+          "adds evaluator human_review and deterministic_evidence_gap recovery while retiring Blueprint route-decision contracts",
       },
       {
         path: afterContextSource.path,
@@ -1030,8 +1033,8 @@ function validateReviewedCandidate({
     },
   };
   assert(
-    contextDelta.classification === "additive",
-    "task-creation receipt candidate classification drift",
+    contextDelta.classification === "intentional_breaking_retirement",
+    "agent-facing context retirement classification drift",
   );
   assert(
     hashJson(contextDelta.evidence) === hashJson(expectedContextReceiptEvidence),
@@ -3038,9 +3041,25 @@ function validateReviewedCandidate({
       ],
     },
   };
+  const activeExpectedAdditionSources = expectedAdditionSources.filter(
+    (source) =>
+      !(
+        source.kind === "option" &&
+        ((source.command === "task create" && source.name === "blueprint-request") ||
+          (source.command === "task new" && source.name === "canonical"))
+      ),
+  );
+  const activeExpectedAddedCommandDescriptors = expectedAddedCommandDescriptors.map((command) =>
+    command.id.join(" ") === "task create"
+      ? {
+          ...command,
+          options: command.options.filter((option) => option.name !== "blueprint-request"),
+        }
+      : command,
+  );
   assert(
-    cliDelta?.classification === "compatible_with_visibility_and_profile_simplification",
-    "CLI candidate delta must preserve compatibility while simplifying visibility and profiles",
+    cliDelta?.classification === "intentional_breaking_retirement",
+    "CLI candidate delta must record the reviewed Blueprint command retirement",
   );
   assert(
     hashJson(cliDelta.evidence) ===
@@ -3065,7 +3084,7 @@ function validateReviewedCandidate({
         added_options: cliTopologyDelta.added_options,
         removed_options: cliTopologyDelta.removed_options,
         mutated_options: cliTopologyDelta.mutated_options,
-        addition_sources: expectedAdditionSources,
+        addition_sources: activeExpectedAdditionSources,
       }),
     "CLI candidate evidence drift",
   );
@@ -3101,28 +3120,92 @@ function validateReviewedCandidate({
   );
   assert(
     hashJson(cliTopologyDelta.added_command_descriptors) ===
-      hashJson(expectedAddedCommandDescriptors),
+      hashJson(activeExpectedAddedCommandDescriptors),
     "new CLI command descriptor is not in the approved delta",
   );
+  const activeExpectedAddedOptions = expectedAddedOptions.filter(
+    (option) =>
+      !(option.command === "task create" && option.name === "blueprint-request") &&
+      !(option.command === "task new" && option.name === "canonical"),
+  );
   assert(
-    hashJson(cliTopologyDelta.added_options) === hashJson(expectedAddedOptions),
+    hashJson(cliTopologyDelta.added_options) === hashJson(activeExpectedAddedOptions),
     "CLI option addition is not in the approved delta",
   );
   assert(
-    hashJson(cliDelta.evidence.addition_sources) === hashJson(expectedAdditionSources),
+    hashJson(cliDelta.evidence.addition_sources) === hashJson(activeExpectedAdditionSources),
     "CLI addition source-task provenance drift",
   );
-  assert(removedCommands.length === 0, "candidate removes an existing CLI command");
+  const expectedRetiredCommands = [
+    "blueprint",
+    "blueprint drift",
+    "blueprint examples",
+    "blueprint explain",
+    "blueprint list",
+    "blueprint report",
+    "blueprint scaffold",
+    "blueprint snapshot",
+    "blueprint validate",
+    "blueprints",
+    "blueprints catalog",
+    "blueprints catalog info",
+    "blueprints catalog list",
+    "blueprints catalog refresh",
+    "blueprints install",
+  ];
   assert(
-    cliTopologyDelta.removed_command_descriptors.length === 0,
-    "candidate removes an existing CLI command descriptor",
+    hashJson(removedCommands) === hashJson(expectedRetiredCommands),
+    "candidate command removal is not the reviewed Blueprint retirement",
   );
   assert(
     hashJson(cliTopologyDelta.mutated_command_shells) ===
       hashJson([canonicalProfileCommandMutation, ...expectedVisibilityMutations]),
     "candidate command-shell mutation is not an approved simplification",
   );
-  assert(cliTopologyDelta.removed_options.length === 0, "candidate removes an existing CLI option");
+  const expectedRetiredOptions = [
+    "blueprint drift:json",
+    "blueprint examples:json",
+    "blueprint explain:blueprint",
+    "blueprint explain:description",
+    "blueprint explain:json",
+    "blueprint explain:kind",
+    "blueprint explain:mutation",
+    "blueprint explain:risk",
+    "blueprint explain:tag",
+    "blueprint explain:title",
+    "blueprint explain:workflow-mode",
+    "blueprint list:json",
+    "blueprint list:project",
+    "blueprint list:trusted",
+    "blueprint report:json",
+    "blueprint scaffold:force",
+    "blueprint scaffold:from",
+    "blueprint scaffold:json",
+    "blueprint scaffold:out",
+    "blueprint snapshot:json",
+    "blueprint validate:json",
+    "blueprint validate:project",
+    "blueprints catalog info:json",
+    "blueprints catalog info:kind",
+    "blueprints catalog list:json",
+    "blueprints catalog refresh:index",
+    "blueprints catalog refresh:json",
+    "blueprints install:activate",
+    "blueprints install:index",
+    "blueprints install:json",
+    "blueprints install:kind",
+    "blueprints install:refresh",
+    "init:blueprints",
+    "task begin:blueprint-request",
+    "task new:blueprint-request",
+    "task new:show-blueprint",
+  ];
+  assert(
+    hashJson(
+      cliTopologyDelta.removed_options.map((option) => `${option.command}:${option.name}`),
+    ) === hashJson(expectedRetiredOptions),
+    "candidate option removal is not the reviewed Blueprint retirement",
+  );
   const supersededQueueReleaseStatusMutation = {
     identity: "integrate queue release --status",
     before: {
