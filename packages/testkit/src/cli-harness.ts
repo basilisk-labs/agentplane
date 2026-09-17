@@ -42,13 +42,16 @@ async function ensureEvaluatorPolicyFixture(root: string): Promise<string[]> {
   const createdPaths = await Promise.all(
     EVALUATOR_FIXTURE_POLICY_PATHS.map(async (relativePath) => {
       const filePath = path.join(root, relativePath);
+      await mkdir(path.dirname(filePath), { recursive: true });
       try {
-        await access(filePath);
-        return null;
-      } catch {
-        await mkdir(path.dirname(filePath), { recursive: true });
-        await writeFile(filePath, `# Test evaluator policy fixture: ${relativePath}\n`, "utf8");
+        await writeFile(filePath, `# Test evaluator policy fixture: ${relativePath}\n`, {
+          encoding: "utf8",
+          flag: "wx",
+        });
         return filePath;
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === "EEXIST") return null;
+        throw error;
       }
     }),
   );

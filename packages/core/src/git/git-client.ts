@@ -2,7 +2,7 @@ import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
-import { execFileAsync } from "../process/run-process.js";
+import { execFileAsync, runProcess } from "../process/run-process.js";
 
 // Avoid leaking worktree/index overrides into nested git subprocesses.
 export function gitEnv(): NodeJS.ProcessEnv {
@@ -430,14 +430,17 @@ export class GitContext {
     timeoutMs?: number;
     skipHooks?: boolean;
   }): Promise<void> {
-    const args = ["commit", "-m", opts.message];
+    const args = ["commit", "--file=-"];
     if (opts.skipHooks) args.push("--no-verify");
-    if (opts.body) args.push("-m", opts.body);
-    await execFileAsync("git", args, {
+    const message = opts.body ? `${opts.message}\n\n${opts.body}` : opts.message;
+    await runProcess({
+      command: "git",
+      args,
       cwd: this.gitRoot,
       env: opts.env ?? gitEnv(),
+      input: message,
       maxBuffer: 50 * 1024 * 1024,
-      ...(opts.timeoutMs === undefined ? {} : { timeout: opts.timeoutMs }),
+      ...(opts.timeoutMs === undefined ? {} : { timeoutMs: opts.timeoutMs }),
     });
     this.memo.status = undefined;
     this.memo.headCommit = undefined;

@@ -15,8 +15,8 @@ Implement the approved 0.7.10 scope from BP-01 through BP-31 except external pub
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -184,11 +184,13 @@ Implement the approved 0.7.10 scope from BP-01 through BP-31 except external pub
  .../commands/shared/side-effect-authority.test.ts  |    6 +-
  .../src/commands/shared/side-effect-authority.ts   |    9 +-
  .../src/commands/shared/source-confidence.ts       |    3 +-
+ .../shared/task-backend-branch-snapshot.ts         |    6 +-
  .../agentplane/src/commands/shared/task-backend.ts |    1 -
+ .../task-verification-evidence-filesystem.ts       |   76 +
  .../shared/task-verification-input-digests.ts      |  193 +++
  .../shared/task-verification-input-types.ts        |   70 +-
  .../shared/task-verification-input.test.ts         |   96 ++
- .../src/commands/shared/task-verification-input.ts |  203 +--
+ .../src/commands/shared/task-verification-input.ts |  259 ++--
  .../shared/task-verification-record-parser.ts      |  182 ++-
  .../commands/shared/task-verification-records.ts   |   53 +-
  .../task-worktree-foreign-artifact-repair.test.ts  |  140 +-
@@ -357,6 +359,8 @@ Implement the approved 0.7.10 scope from BP-01 through BP-31 except external pub
  .../schemas/task-readme-frontmatter.schema.json    |   22 +-
  packages/core/schemas/tasks-export.schema.json     |   22 +-
  packages/core/src/commit/commit-policy.ts          |   14 -
+ packages/core/src/git/git-client.test.ts           |   16 +
+ packages/core/src/git/git-client.ts                |   13 +-
  .../core/src/runner/agent-semantic-result.test.ts  |    2 -
  packages/core/src/runner/agent-semantic-result.ts  |   16 -
  .../core/src/runner/agent-work-order-fixtures.ts   |    7 +-
@@ -383,7 +387,7 @@ Implement the approved 0.7.10 scope from BP-01 through BP-31 except external pub
  packages/spec/schemas/tasks-export.schema.json     |   22 +-
  packages/testkit/package.json                      |    2 +-
  packages/testkit/src/agentplane-internal.ts        |    1 +
- packages/testkit/src/cli-harness.ts                |   30 +-
+ packages/testkit/src/cli-harness.ts                |   43 +-
  .../testkit/src/cli-harness/recipe-archives.ts     |    6 -
  packages/testkit/src/runner.ts                     |   13 -
  schemas/agent-semantic-result.schema.json          |   51 -
@@ -412,7 +416,7 @@ Implement the approved 0.7.10 scope from BP-01 through BP-31 except external pub
  .../static/img/social/docs/releases/v0.7.10.png    |  Bin 0 -> 52774 bytes
  website/static/img/social/manifest.json            |   12 +-
  website/static/llms-full.txt                       |   79 +-
- 385 files changed, 8310 insertions(+), 19389 deletions(-)
+ 389 files changed, 8428 insertions(+), 19451 deletions(-)
 ```
 
 </details>
