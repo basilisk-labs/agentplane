@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 56
+revision: 57
 origin:
   system: "manual"
 depends_on: []
@@ -40,31 +40,30 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-17T16:04:29.413Z"
+  updated_at: "2026-09-17T16:38:54.750Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 3 typed finding(s)."
-  evaluated_sha: "d949071048f769e0728af190eafa7b74ddfbe9fa"
-  review_identity_digest: "sha256:0a5eceb935a6e44b4a67e46dfd59b91a7e418cf9477911043566e0e8f7ba738e"
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  evaluated_sha: "85cf3c1622d8ab0615f81f5445a6f11f76c077d9"
+  review_identity_digest: "sha256:c3e72e3e0cbf6d0626d1172f9bd3182f58457456db89dbc1bc3ab291c46b94bc"
   evidence_refs:
-    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-160139137-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-160139137-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/bcd0ba941f41efbe4b45978c49234c4de8de8c3b4529e1f1694381745e824720.md"
-    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-160139137-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-160139137-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-160139137-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-163732844-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-163732844-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/f2260a018aa712e18fb8de7ed0b661caa53986fbabf2d19e0e37f6b564200c39.md"
+    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-163732844-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-163732844-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-163732844-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609162254-YE48GC/README.md"
-    - ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/6df9e23889b1ab1d2a39d33ce1add5309cc66f905bdecd0d58260036e097149b.patch"
-    - ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/3012431090acbbeb9b810ced22e70732d073bf9f036918a4ce6644cacb01225d.json"
-    - ".agentplane/tasks/202609162254-YE48GC/verification/20260917160129546-384ce20acdde5e5e.json"
-    - ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/be4ea03df5fba9891979ac9c62cc0e2ef40a06bdcf2ff5218bab0a9a3849f33a.json"
+    - ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/049852f17dbb8438ba108555df9726fa514d8e550af58af79ac50e429b3116a0.patch"
+    - ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/15cd390c6a406f771df0c007fe71d0ad2a0eef99592ac52165078b60c3c511b5.json"
+    - ".agentplane/tasks/202609162254-YE48GC/verification/20260917163502518-f127408289049351.json"
+    - ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/79ffd27d43118a5259b45ae17712c2378d1db0a447ab161ba25271ef1d0d98ed.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "No material semantic divergence found: active Blueprint routing and mutation are removed; native plan, capability, policy, checks, and task obligations replace active ownership; ambiguous legacy work fails closed; historical decoding remains non-executable; and stable-channel promotion is SemVer-gated."
-    - "Residual risk: Hosted CI and exact-head integration are intentionally pending supervisor/provider lifecycle steps and must pass before merge or publication."
-    - "Residual risk: M02 remains NOT ESTABLISHED because no matched quality-equivalent paid-provider 0.7.9/0.7.10 evidence pair exists."
+    - "The reviewed delta binds the current AgentWorkOrder schema and task provenance, records the exact retired Blueprint command and option identities, filters only stale provenance for additions that no longer exist, and keeps the immutable compatibility baseline unchanged."
+    - "Residual risk: The PR head must be published and all required hosted checks must pass on the exact new head before integration."
 token_usage:
   agent_runs: 23
   input_tokens: null
@@ -1622,7 +1621,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-17T16:35:07.455Z"
+doc_updated_at: "2026-09-17T16:38:54.804Z"
 doc_updated_by: "CODER"
 description: "Implement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task."
 sections:
@@ -3103,7 +3102,7 @@ extensions:
       revision: 8
       schema_version: 1
       task_id: "202609162254-YE48GC"
-    event_cursor: 45
+    event_cursor: 46
     final_validation:
       evidence:
         -
@@ -9072,9 +9071,9 @@ extensions:
         revision: 7
         schema_version: 1
         task_id: "202609162254-YE48GC"
-    revision: 56
+    revision: 57
     schema_version: 1
-    updated_at: "2026-09-17T16:35:07.444Z"
+    updated_at: "2026-09-17T16:35:07.455Z"
     work_items:
       channel-and-owner-map:
         attempt: 1
@@ -10635,6 +10634,30 @@ extensions:
         mutation_id: "compatibility:sha256:98e87bf31af29efefe5582198ffcd03238c4b7e3f289805b2bb49d2f2deed261"
         next_revision: 32
         previous_revision: 31
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+      compatibility:sha256:9be1a77595f8dd9bdc988575588f843834dadab90c789828c27a4ff809b9f781:
+        aggregate_digest: "sha256:28a6a4f889c11f0cb55f4a52583a18f39f18e1ab973e22c2b8a2c5f06908d9bd"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T16:35:07.455Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_bb2a31fed1ac0a158a39c012"
+          mutation_id: "compatibility:sha256:9be1a77595f8dd9bdc988575588f843834dadab90c789828c27a4ff809b9f781"
+          plan_digest: "sha256:e17ec6eda7c7926e5e1379d0e7caaea02c6311d301fca98a8969264e33af9949"
+          plan_revision: 8
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 56
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:9be1a77595f8dd9bdc988575588f843834dadab90c789828c27a4ff809b9f781"
+        next_revision: 57
+        previous_revision: 56
         schema_version: 1
         task_id: "202609162254-YE48GC"
       compatibility:sha256:9dddc223495f8ae57bc8facbeced997dad8ae4fce9898c1f740d4eadc4d59b33:
