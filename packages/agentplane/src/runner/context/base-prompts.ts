@@ -76,6 +76,8 @@ export async function collectRunnerBasePrompts(opts: {
     ...(await collectRecipePromptBlocks({
       git_root: opts.git_root,
       recipe: opts.recipe ?? { recipe_id: "", scenario_id: "" },
+      task: opts.task,
+      command: opts.command,
     })),
   ];
 
