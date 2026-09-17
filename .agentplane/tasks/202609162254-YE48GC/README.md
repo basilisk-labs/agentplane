@@ -4,7 +4,7 @@ title: "Implement and qualify AgentPlane 0.7.10 Blueprint retirement"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -119,9 +119,31 @@ execution_contract:
     authority_violations: []
     changed_components:
       - ".github"
+      - "packages/agentplane"
       - "scripts"
     changed_paths:
       - ".github/workflows/publish.yml"
+      - "packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts"
+      - "packages/agentplane/src/commands/release/publish-workflow-contract.test.ts"
+      - "packages/agentplane/src/commands/task/run-execution-preview.ts"
+      - "packages/agentplane/src/runner/context/semantic-prompt-projection.ts"
+      - "packages/agentplane/src/runner/types/context.ts"
+      - "packages/agentplane/src/runner/usecases/agent-work-order-build.ts"
+      - "packages/agentplane/src/runner/usecases/agent-work-order.ts"
+      - "packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts"
+      - "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
+      - "packages/agentplane/src/runner/usecases/task-run-obligations.ts"
+      - "packages/agentplane/src/runner/usecases/task-run.ts"
+      - "packages/agentplane/src/runtime/execution-profile/model.ts"
+      - "packages/agentplane/src/runtime/execution-profile/resolve.test.ts"
+      - "packages/agentplane/src/runtime/execution-profile/resolve.ts"
+      - "packages/agentplane/src/runtime/prompt-modules/registry.test.ts"
+      - "packages/agentplane/src/runtime/prompt-modules/registry.ts"
+      - "packages/agentplane/src/runtime/task-obligations/catalog.ts"
+      - "packages/agentplane/src/runtime/task-obligations/index.ts"
+      - "packages/agentplane/src/runtime/task-obligations/model.ts"
+      - "packages/agentplane/src/runtime/task-obligations/resolve.test.ts"
+      - "packages/agentplane/src/runtime/task-obligations/resolve.ts"
       - "scripts/checks/blueprint-retirement-map.json"
       - "scripts/checks/blueprint-retirement-map.test.mjs"
       - "scripts/generate/render-ghcr-image-metadata.mjs"
@@ -194,7 +216,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:848bcb387b2a48f9a8cda2521f8bacbf2e74747156079a5f5c8b8513e7480a43"
+      digest: "sha256:07a85cbbfacad07accdf1ee824d6cb512484c163fd4106fb163adfd1e4019bb6"
       escalation_reasons:
         - "central_component:.github/workflows"
         - "central_component:bun.lock"
@@ -221,9 +243,31 @@ execution_contract:
       observed:
         changed_components:
           - ".github"
+          - "packages/agentplane"
           - "scripts"
         changed_files:
           - ".github/workflows/publish.yml"
+          - "packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts"
+          - "packages/agentplane/src/commands/release/publish-workflow-contract.test.ts"
+          - "packages/agentplane/src/commands/task/run-execution-preview.ts"
+          - "packages/agentplane/src/runner/context/semantic-prompt-projection.ts"
+          - "packages/agentplane/src/runner/types/context.ts"
+          - "packages/agentplane/src/runner/usecases/agent-work-order-build.ts"
+          - "packages/agentplane/src/runner/usecases/agent-work-order.ts"
+          - "packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts"
+          - "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
+          - "packages/agentplane/src/runner/usecases/task-run-obligations.ts"
+          - "packages/agentplane/src/runner/usecases/task-run.ts"
+          - "packages/agentplane/src/runtime/execution-profile/model.ts"
+          - "packages/agentplane/src/runtime/execution-profile/resolve.test.ts"
+          - "packages/agentplane/src/runtime/execution-profile/resolve.ts"
+          - "packages/agentplane/src/runtime/prompt-modules/registry.test.ts"
+          - "packages/agentplane/src/runtime/prompt-modules/registry.ts"
+          - "packages/agentplane/src/runtime/task-obligations/catalog.ts"
+          - "packages/agentplane/src/runtime/task-obligations/index.ts"
+          - "packages/agentplane/src/runtime/task-obligations/model.ts"
+          - "packages/agentplane/src/runtime/task-obligations/resolve.test.ts"
+          - "packages/agentplane/src/runtime/task-obligations/resolve.ts"
           - "scripts/checks/blueprint-retirement-map.json"
           - "scripts/checks/blueprint-retirement-map.test.mjs"
           - "scripts/generate/render-ghcr-image-metadata.mjs"
@@ -276,7 +320,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "a79b2b9abcaffc74b12cffe485d160a68190e1f3"
+  message: "🚧 YE48GC task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -284,6 +330,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 8456ad88c80d. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: a79b2b9abcaf. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -300,8 +349,16 @@ events:
     to: "DOING"
     note: "Implementation committed: 8456ad88c80d. CLI accepted one state-bound external-agent semantic result."
     commit: "8456ad88c80d3d66b797e20bb256d72b385b02e2"
+  -
+    type: "status"
+    at: "2026-09-17T00:14:09.587Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: a79b2b9abcaf. CLI accepted one state-bound external-agent semantic result."
+    commit: "a79b2b9abcaffc74b12cffe485d160a68190e1f3"
 doc_version: 3
-doc_updated_at: "2026-09-16T23:15:37.571Z"
+doc_updated_at: "2026-09-17T00:14:09.587Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task."
 sections:
@@ -1161,7 +1218,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609162254-YE48GC"
-    event_cursor: 5
+    event_cursor: 7
     final_validation: null
     id: "202609162254-YE48GC"
     intent:
@@ -1216,9 +1273,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 10
     schema_version: 1
-    updated_at: "2026-09-16T23:15:40.039Z"
+    updated_at: "2026-09-17T00:14:09.587Z"
     work_items:
       channel-and-owner-map:
         attempt: 1
@@ -1399,6 +1456,30 @@ extensions:
         previous_revision: 2
         schema_version: 1
         task_id: "202609162254-YE48GC"
+      compatibility:sha256:2aa1b102ce794c2384ff8259bcc973f6fa304a50845c0f20d48089b36c5f78db:
+        aggregate_digest: "sha256:2394f061b59dbade72ef6f3e15fbb8c1acd6b16fb70b6898d8a1a3498a64063a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T00:14:09.587Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_c868af99efd8f4fc1e28bc5f"
+          mutation_id: "compatibility:sha256:2aa1b102ce794c2384ff8259bcc973f6fa304a50845c0f20d48089b36c5f78db"
+          plan_digest: "sha256:d9b152a969152dd6cfaecb84aa966a466f3bb52795de73c2e49684358bdd2cfd"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 8
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:2aa1b102ce794c2384ff8259bcc973f6fa304a50845c0f20d48089b36c5f78db"
+        next_revision: 9
+        previous_revision: 8
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
       compatibility:sha256:413450ce2745d1d5cf77c898303ff5777b75a51f5db675c1e34d55e570726bd9:
         aggregate_digest: "sha256:ae8c555aa47f48c57b8a831af834bc49ccfc1fbcbd1cfffb9b7832d90a7f7f17"
         event:
@@ -1445,6 +1526,30 @@ extensions:
         mutation_id: "compatibility:sha256:49c492d58bbe73926763535cb02683c733c0c88ef13a8c63b8a8ae6a84b938f4"
         next_revision: 4
         previous_revision: 3
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+      compatibility:sha256:94d87f3fee100fdb4dbe537a557768df4d481122822fac60cb8f06761fa45fe3:
+        aggregate_digest: "sha256:008ae0b54905d21281959036d4829b805fccde1c4cc8ce799697be191e0031e5"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T00:14:09.587Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_1888d3b835862f4281069d20"
+          mutation_id: "compatibility:sha256:94d87f3fee100fdb4dbe537a557768df4d481122822fac60cb8f06761fa45fe3"
+          plan_digest: "sha256:d9b152a969152dd6cfaecb84aa966a466f3bb52795de73c2e49684358bdd2cfd"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 9
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:94d87f3fee100fdb4dbe537a557768df4d481122822fac60cb8f06761fa45fe3"
+        next_revision: 10
+        previous_revision: 9
         schema_version: 1
         task_id: "202609162254-YE48GC"
       compatibility:sha256:c46ff176c8880d44cff5bcd36f48699931fc4d0a1b8f09f1e98fb5fdd94711a5:
@@ -1523,7 +1628,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "8456ad88c80d3d66b797e20bb256d72b385b02e2"
+    hash: "a79b2b9abcaffc74b12cffe485d160a68190e1f3"
   task_execution_context:
     base_ref: "main"
     base_sha: "19ff39fd292c30f0958131c35200a6268b7a285d"
