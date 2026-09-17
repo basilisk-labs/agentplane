@@ -4,7 +4,7 @@ title: "Implement and qualify AgentPlane 0.7.10 Blueprint retirement"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -320,9 +320,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "a79b2b9abcaffc74b12cffe485d160a68190e1f3"
-  message: "🚧 YE48GC task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -1273,9 +1271,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 10
+    revision: 11
     schema_version: 1
-    updated_at: "2026-09-17T00:14:09.587Z"
+    updated_at: "2026-09-17T00:28:31.900Z"
     work_items:
       channel-and-owner-map:
         attempt: 1
@@ -1366,14 +1364,74 @@ extensions:
         state: "PLANNED"
         validation_result: null
       native-obligations:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "native-obligations"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:a0056d4217a49a5eadf35b1b84a6d4cfec062764399dd21111eb37fe1899ac2f"
+            id: "Blueprint-free route and authority decisions"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609162254-YE48GC"
+              work_item_id: "native-obligations"
+            provenance:
+              - "sha256:e2d3ae87724baf05d501f74abf381ae3c0cb17c2321c45d338304d837d007da8"
+              - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:260f022416960102cb570e2405e1a05f72808a77e75d00ac736961d135cc5326"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:f88a5640803caa96d1516aef3621397813c05f9a7d9ac0f35ea031717900d60f"
+            id: "Native lifecycle obligation enforcement"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609162254-YE48GC"
+              work_item_id: "native-obligations"
+            provenance:
+              - "sha256:e2d3ae87724baf05d501f74abf381ae3c0cb17c2321c45d338304d837d007da8"
+              - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:260f022416960102cb570e2405e1a05f72808a77e75d00ac736961d135cc5326"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:ace8fc02b59e4512744a5c4c9f565a851676833abc88eca4097d61946dbde265"
+            id: "Parity tests for forbidden traces"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609162254-YE48GC"
+              work_item_id: "native-obligations"
+            provenance:
+              - "sha256:e2d3ae87724baf05d501f74abf381ae3c0cb17c2321c45d338304d837d007da8"
+              - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:260f022416960102cb570e2405e1a05f72808a77e75d00ac736961d135cc5326"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+              check_id: "native-obligation-tests"
+              command_identity: "bun run test:project agentplane --maxWorkers=1"
+              detail: "Observed by bun run test:project agentplane --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-17T00:28:31.886Z"
+              repository_snapshot_digest: "sha256:260f022416960102cb570e2405e1a05f72808a77e75d00ac736961d135cc5326"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       qualification-and-release-readiness:
         attempt: 0
         claim_id: null
@@ -1430,6 +1488,23 @@ extensions:
         task_id: "202609162254-YE48GC"
         task_revision: 7
         work_item_id: "channel-and-owner-map"
+      -
+        at: "2026-09-17T00:28:31.900Z"
+        from: "PLANNED"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:ed46ef308a6ea39792ae4a44858614afe065d03e06bc1d9fdd85877c072e8f67"
+        entity: "work_item"
+        id: "event_c7e2149eaf19bf8d623007f7"
+        mutation_id: "external-result:work-order-202609162254-YE48GC-executor-e6a0a0fcab02ca3cc55e660a"
+        plan_digest: "sha256:d9b152a969152dd6cfaecb84aa966a466f3bb52795de73c2e49684358bdd2cfd"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+        task_revision: 10
+        work_item_id: "native-obligations"
     leases: []
     mutation_receipts:
       compatibility:sha256:03ad382df371fb10a3fda0b3d74c85baaa1cbfcc47fa5298b2773c99d5104eda:
@@ -1622,6 +1697,30 @@ extensions:
         mutation_id: "external-result:work-order-202609162254-YE48GC-executor-5bdef45ba2f2464245fcfd4d"
         next_revision: 8
         previous_revision: 7
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+      external-result:work-order-202609162254-YE48GC-executor-e6a0a0fcab02ca3cc55e660a:
+        aggregate_digest: "sha256:9900da98a278ef10a0cc6b7e69adc4a1ad518b97b3ae73414afa777a85e1f499"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T00:28:31.900Z"
+          cause_refs:
+            - "semantic-result:sha256:ed46ef308a6ea39792ae4a44858614afe065d03e06bc1d9fdd85877c072e8f67"
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_c7e2149eaf19bf8d623007f7"
+          mutation_id: "external-result:work-order-202609162254-YE48GC-executor-e6a0a0fcab02ca3cc55e660a"
+          plan_digest: "sha256:d9b152a969152dd6cfaecb84aa966a466f3bb52795de73c2e49684358bdd2cfd"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 10
+          to: "COMPLETED"
+          work_item_id: "native-obligations"
+        mutation_id: "external-result:work-order-202609162254-YE48GC-executor-e6a0a0fcab02ca3cc55e660a"
+        next_revision: 11
+        previous_revision: 10
         schema_version: 1
         task_id: "202609162254-YE48GC"
     pending_effects: []
