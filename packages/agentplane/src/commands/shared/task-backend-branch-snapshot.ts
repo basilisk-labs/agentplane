@@ -287,8 +287,10 @@ export async function loadTaskFromBranchSnapshot(opts: {
 
   const relReadmePath = toGitPath(path.relative(opts.ctx.resolvedProject.gitRoot, opts.readmePath));
 
-  const refsToTry = [branch, branch.startsWith("origin/") ? null : `origin/${branch}`].filter(
-    (ref): ref is string => Boolean(ref && ref.trim().length > 0),
+  const expectedBranch = normalizeBranch(branch);
+  const branchInventory = await loadTaskBranchInventory(opts.ctx);
+  const refsToTry = [...branchInventory.localBranches, ...branchInventory.remoteBranches].filter(
+    (ref, index, refs) => normalizeBranch(ref) === expectedBranch && refs.indexOf(ref) === index,
   );
 
   for (const ref of refsToTry) {

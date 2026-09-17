@@ -1,4 +1,3 @@
-import { lstat, readFile, readdir, readlink, realpath } from "node:fs/promises";
 import path from "node:path";
 
 import { gitEnv, gitRevParse, gitShowFile, resolveBaseBranch } from "@agentplaneorg/core/git";
@@ -27,6 +26,10 @@ import {
   verificationInputSha256 as sha256,
   verificationInputV5Digest,
 } from "./task-verification-input-digests.js";
+import {
+  hashVerificationEvidenceFilesystemEntry,
+  isPathWithinRoot,
+} from "./task-verification-evidence-filesystem.js";
 export {
   verificationInputDigest,
   verificationInputInvalidationReason,
@@ -153,53 +156,6 @@ function verificationEvidencePaths(details: string): {
   );
 }
 
-function isWithinRoot(root: string, candidate: string): boolean {
-  const relative = path.relative(path.resolve(root), path.resolve(candidate));
-  return relative === "" || (!relative.startsWith("..") && !path.isAbsolute(relative));
-}
-
-async function hashFilesystemEntry(opts: {
-  gitRoot: string;
-  absolutePath: string;
-  ancestors?: ReadonlySet<string>;
-}): Promise<`sha256:${string}` | null> {
-  const entryKey = path.resolve(opts.absolutePath);
-  if (opts.ancestors?.has(entryKey)) return sha256(`cycle\0${entryKey}`);
-  const ancestors = new Set(opts.ancestors);
-  ancestors.add(entryKey);
-  const stat = await lstat(opts.absolutePath).catch(() => null);
-  if (!stat) return null;
-  if (stat.isSymbolicLink()) {
-    const [link, resolved] = await Promise.all([
-      readlink(opts.absolutePath),
-      realpath(opts.absolutePath).catch(() => null),
-    ]);
-    if (!resolved || !isWithinRoot(opts.gitRoot, resolved)) return null;
-    const targetDigest = await hashFilesystemEntry({
-      gitRoot: opts.gitRoot,
-      absolutePath: resolved,
-      ancestors,
-    });
-    return targetDigest ? sha256(`symlink\0${link}\0${targetDigest}`) : null;
-  }
-  if (stat.isFile()) return sha256(await readFile(opts.absolutePath));
-  if (!stat.isDirectory()) return sha256(`unsupported\0${String(stat.mode)}`);
-  const entries = await readdir(opts.absolutePath, { withFileTypes: true });
-  const identities = await Promise.all(
-    entries
-      .toSorted((left, right) => left.name.localeCompare(right.name))
-      .map(async (entry) => ({
-        name: entry.name,
-        digest: await hashFilesystemEntry({
-          gitRoot: opts.gitRoot,
-          absolutePath: path.join(opts.absolutePath, entry.name),
-          ancestors,
-        }),
-      })),
-  );
-  return sha256(JSON.stringify(canonicalizeJson(identities)));
-}
-
 async function verificationEvidence(opts: {
   gitRoot: string;
   targetSha: string;
@@ -211,10 +167,10 @@ async function verificationEvidence(opts: {
     verificationEvidencePaths(details).map(
       async (reference): Promise<VerificationEvidenceReference> => {
         const absolutePath = path.resolve(opts.gitRoot, reference.path);
-        if (!isWithinRoot(opts.gitRoot, absolutePath)) {
+        if (!isPathWithinRoot(opts.gitRoot, absolutePath)) {
           return { ...reference, source: "unsafe", digest: sha256("unsafe") };
         }
-        const filesystemDigest = await hashFilesystemEntry({
+        const filesystemDigest = await hashVerificationEvidenceFilesystemEntry({
           gitRoot: opts.gitRoot,
           absolutePath,
         });
