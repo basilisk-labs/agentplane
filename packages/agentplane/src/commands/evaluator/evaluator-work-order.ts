@@ -12,7 +12,7 @@ export const EVALUATOR_ALLOWED_TOOL_CLASSES = [
   "report_result",
 ] as const;
 
-export const EVALUATOR_WORK_ORDER_V1_SCHEMA = z
+const EVALUATOR_WORK_ORDER_V1_SCHEMA = z
   .object({
     schema_version: z.literal(1),
     kind: z.literal("evaluator_work_order"),
@@ -96,7 +96,7 @@ const NATIVE_REVIEW_IDENTITY_SCHEMA = z
   })
   .strict();
 
-export const EVALUATOR_WORK_ORDER_V2_SCHEMA = EVALUATOR_WORK_ORDER_V1_SCHEMA.omit({
+const EVALUATOR_WORK_ORDER_V2_SCHEMA = EVALUATOR_WORK_ORDER_V1_SCHEMA.omit({
   schema_version: true,
   blueprint_digest: true,
   evidence: true,

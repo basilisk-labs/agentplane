@@ -181,7 +181,7 @@ function checkoutPath(checkout: WorkflowCheckout, paths: WorkflowFingerprintPath
  * A side-effect approval persists a record in the task worktree, but must bind
  * that record to the checkout where the approved operation will actually run.
  */
-export function workflowStepFingerprintCheckout(step: WorkflowStep): WorkflowCheckout {
+function workflowStepFingerprintCheckout(step: WorkflowStep): WorkflowCheckout {
   if (step.kind === "approval" && step.request.type === "side_effect") {
     return WORKFLOW_OPERATION_REGISTRY[step.request.operationId].checkout;
   }
