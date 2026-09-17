@@ -1,10 +1,10 @@
 ---
 id: "202609162254-YE48GC"
 title: "Implement and qualify AgentPlane 0.7.10 Blueprint retirement"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 43
+revision: 45
 origin:
   system: "manual"
 depends_on: []
@@ -968,6 +968,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 5755d5a4decd. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. Qualification found stale pre-retirement tests and stable-version metadata targets outside the current WorkOrder writable roots. Recommended action: Extend the approved scope to the observed test/harness and canonical stable-version targets, then issue a replacement qualification episode. Requested scope: roots=.agentplane/WORKFLOW.md,.agentplane/config.json,packages/agentplane/src,packages/core/package.json,packages/recipes/package.json,packages/recipes/src/index.ts,packages/spec/examples/acr.json,packages/testkit/package.json,packages/testkit/src; repository effects=release_metadata,repository_write,source_code,tests; request digest=sha256:0442f8b2c9d298c15aa150f1b041f870ed8ea4599c766a14709e0b6b1bb193a4. Agentplane receipt: external-agent-blocker/tr_1c8ea24d4abbb753acca37f0a209d59e/sha256:56ae5e76da94aa1a24a8eee69a31394f565bbf3088bb1e79281b2cfc615a183e/sha256:0442f8b2c9d298c15aa150f1b041f870ed8ea4599c766a14709e0b6b1bb193a4."
 events:
   -
     type: "status"
@@ -1082,8 +1085,15 @@ events:
     to: "DOING"
     note: "Implementation committed: 5755d5a4decd. CLI accepted one state-bound external-agent semantic result."
     commit: "5755d5a4decd210f5620a6483f9e1355ba490f82"
+  -
+    type: "status"
+    at: "2026-09-17T12:20:20.157Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. Qualification found stale pre-retirement tests and stable-version metadata targets outside the current WorkOrder writable roots. Recommended action: Extend the approved scope to the observed test/harness and canonical stable-version targets, then issue a replacement qualification episode. Requested scope: roots=.agentplane/WORKFLOW.md,.agentplane/config.json,packages/agentplane/src,packages/core/package.json,packages/recipes/package.json,packages/recipes/src/index.ts,packages/spec/examples/acr.json,packages/testkit/package.json,packages/testkit/src; repository effects=release_metadata,repository_write,source_code,tests; request digest=sha256:0442f8b2c9d298c15aa150f1b041f870ed8ea4599c766a14709e0b6b1bb193a4. Agentplane receipt: external-agent-blocker/tr_1c8ea24d4abbb753acca37f0a209d59e/sha256:56ae5e76da94aa1a24a8eee69a31394f565bbf3088bb1e79281b2cfc615a183e/sha256:0442f8b2c9d298c15aa150f1b041f870ed8ea4599c766a14709e0b6b1bb193a4."
 doc_version: 3
-doc_updated_at: "2026-09-17T12:13:19.236Z"
+doc_updated_at: "2026-09-17T12:20:20.157Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task."
 sections:
@@ -1138,23 +1148,31 @@ extensions:
     status: "active"
     task_id: "202609162254-YE48GC"
   agentplane.scope_extension_request:
-    applied_at: "2026-09-17T12:09:17.430Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:9b1e9ce0e614ec912e7d598f79fe985918222a87a3b4a9f9689f666736dd398b"
+    blocker_state_fingerprint: "sha256:56ae5e76da94aa1a24a8eee69a31394f565bbf3088bb1e79281b2cfc615a183e"
     kind: "task_scope_extension_request"
     request:
-      rationale: "The declared agents:check gate requires deterministic synchronization of the Blueprint-free canonical INTAKE and PLANNER templates into the repository-local generated agent mirrors."
+      rationale: "Full regression is a required acceptance criterion, and the canonical 0.7.10 version-bump dry run proves these additional repository paths are necessary for release-ready metadata."
       repository_effects:
-        - "documentation"
+        - "release_metadata"
         - "repository_write"
+        - "source_code"
+        - "tests"
       schema_version: 1
       scope_roots:
-        - ".agentplane/agents"
-    request_digest: "sha256:d3fe2ad34b19e50bec50b54f6b880975a92e5617d3f8762ac4d7179ea5d953bf"
+        - ".agentplane/WORKFLOW.md"
+        - ".agentplane/config.json"
+        - "packages/agentplane/src"
+        - "packages/core/package.json"
+        - "packages/recipes/package.json"
+        - "packages/recipes/src/index.ts"
+        - "packages/spec/examples/acr.json"
+        - "packages/testkit/package.json"
+        - "packages/testkit/src"
+    request_digest: "sha256:0442f8b2c9d298c15aa150f1b041f870ed8ea4599c766a14709e0b6b1bb193a4"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_44299c3041efe49a49afdb5027e61b07"
-    work_item_id: "remove-active-blueprint"
+    status: "pending"
+    transition_id: "tr_1c8ea24d4abbb753acca37f0a209d59e"
+    work_item_id: "qualification-and-release-readiness"
   agentplane.task_centric:
     current_plan:
       approval:
@@ -1991,7 +2009,7 @@ extensions:
       revision: 6
       schema_version: 1
       task_id: "202609162254-YE48GC"
-    event_cursor: 34
+    event_cursor: 36
     final_validation: null
     id: "202609162254-YE48GC"
     intent:
@@ -2043,7 +2061,7 @@ extensions:
 
         Implement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task.
       task_id: "202609162254-YE48GC"
-    lifecycle: "ACTIVE"
+    lifecycle: "BLOCKED"
     plan_amendments: []
     plan_history:
       -
@@ -6141,9 +6159,9 @@ extensions:
         revision: 5
         schema_version: 1
         task_id: "202609162254-YE48GC"
-    revision: 43
+    revision: 45
     schema_version: 1
-    updated_at: "2026-09-17T12:13:22.653Z"
+    updated_at: "2026-09-17T12:20:20.157Z"
     work_items:
       channel-and-owner-map:
         attempt: 1
@@ -7280,6 +7298,30 @@ extensions:
         previous_revision: 29
         schema_version: 1
         task_id: "202609162254-YE48GC"
+      compatibility:sha256:83d26471327e1a8f161a8d036ffce91a98ea361df039f79380ba6c5128aa2d84:
+        aggregate_digest: "sha256:2fcd04e9317d761e8eb95691a17291216fd512fb18eb83afa1afc2287e525d74"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T12:20:20.157Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_f6f37a22fee41af986dba6cd"
+          mutation_id: "compatibility:sha256:83d26471327e1a8f161a8d036ffce91a98ea361df039f79380ba6c5128aa2d84"
+          plan_digest: "sha256:584ea017bc7993c4fb68a16500cc489bd951a4116d6ba436a7ff0e047158403d"
+          plan_revision: 6
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 44
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:83d26471327e1a8f161a8d036ffce91a98ea361df039f79380ba6c5128aa2d84"
+        next_revision: 45
+        previous_revision: 44
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
       compatibility:sha256:897732e7461a8bdca3d82b5ce2e875cfb8a257ba2c4348f573f3840db4407135:
         aggregate_digest: "sha256:73eada8eda3f5b0d6a191877964f88eb6cd23ac684e8be09b10dcd026febce02"
         event:
@@ -7398,6 +7440,30 @@ extensions:
         mutation_id: "compatibility:sha256:a1d46146a1ccdf6d6a6c4944d31abd0beaae279a944dce238dd5aa85f4ccf2d3"
         next_revision: 21
         previous_revision: 20
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+      compatibility:sha256:a9d1f9ca36d1651f1e6a9a1d421fdff6fdc81e3dfca184dd5d7f2f5640720fd9:
+        aggregate_digest: "sha256:6557b7ccf38653c979862591ad93a3c71854129ca0fba10ba26937d219fdd9ca"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T12:20:20.157Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_6015b9367d7958ace511f644"
+          mutation_id: "compatibility:sha256:a9d1f9ca36d1651f1e6a9a1d421fdff6fdc81e3dfca184dd5d7f2f5640720fd9"
+          plan_digest: "sha256:584ea017bc7993c4fb68a16500cc489bd951a4116d6ba436a7ff0e047158403d"
+          plan_revision: 6
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 43
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:a9d1f9ca36d1651f1e6a9a1d421fdff6fdc81e3dfca184dd5d7f2f5640720fd9"
+        next_revision: 44
+        previous_revision: 43
         schema_version: 1
         task_id: "202609162254-YE48GC"
       compatibility:sha256:b1eb690f5711a307cd89aa941be160771e9019a2a956c7799d4e83e0628e0374:
