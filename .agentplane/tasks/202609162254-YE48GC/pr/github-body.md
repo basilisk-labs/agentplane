@@ -15,8 +15,8 @@ Implement the approved 0.7.10 scope from BP-01 through BP-31 except external pub
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
