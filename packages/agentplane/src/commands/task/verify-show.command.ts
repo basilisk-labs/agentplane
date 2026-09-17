@@ -1,13 +1,6 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
-import {
-  explainResolvedBlueprint,
-  formatBlueprintExplain,
-  resolveBlueprint,
-} from "../../blueprints/index.js";
 import { backendNotSupportedMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
-import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
-import { blueprintResolveInputFromTask } from "../blueprint/task-input.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import { resolveNativeTaskIdentity } from "../shared/native-task-identity.js";
 
@@ -85,37 +78,21 @@ export function makeRunTaskVerifyShowHandler(getCtx: (cmd: string) => Promise<Co
       quiet: p.quiet,
     });
     const nativeIdentity = resolveNativeTaskIdentity(task);
-    if (nativeIdentity) {
-      process.stdout.write("\nNative verification identity\n");
-      process.stdout.write(`plan_revision: ${nativeIdentity.plan.revision}\n`);
-      process.stdout.write(`plan_digest: ${nativeIdentity.plan.digest}\n`);
-      process.stdout.write(`policy_digest: ${nativeIdentity.policy.digest}\n`);
-      process.stdout.write(`capability_digest: ${nativeIdentity.capability.digest}\n`);
-      process.stdout.write(`checks_digest: ${nativeIdentity.checks.digest}\n`);
-      process.stdout.write(
-        `required_checks: ${nativeIdentity.checks.required_check_ids.join(", ") || "none"}\n`,
-      );
-      return exitCode;
+    if (!nativeIdentity) {
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: `Task ${task.id} has no canonical Task Kernel identity. Run: agentplane task kernel-migrate ${task.id}`,
+      });
     }
-    const input = blueprintResolveInputFromTask({ task, config: commandCtx.config });
-    const resolved = resolveBlueprint({ input });
-    const output = explainResolvedBlueprint({ resolved, workflowMode: input.workflowMode });
-    process.stdout.write(`\nBlueprint expected evidence\n${formatBlueprintExplain(output)}`);
-    const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx: commandCtx, task });
-    process.stdout.write("Blueprint snapshot evidence\n");
-    process.stdout.write(`snapshot_state: ${snapshot.state}\n`);
-    process.stdout.write(`snapshot_path: ${snapshot.path}\n`);
-    process.stdout.write(`snapshot_digest: ${snapshot.previous.digest ?? "none"}\n`);
-    process.stdout.write(`snapshot_current_digest: ${snapshot.current.digest}\n`);
+    process.stdout.write("\nNative verification identity\n");
+    process.stdout.write(`plan_revision: ${nativeIdentity.plan.revision}\n`);
+    process.stdout.write(`plan_digest: ${nativeIdentity.plan.digest}\n`);
+    process.stdout.write(`policy_digest: ${nativeIdentity.policy.digest}\n`);
+    process.stdout.write(`capability_digest: ${nativeIdentity.capability.digest}\n`);
+    process.stdout.write(`checks_digest: ${nativeIdentity.checks.digest}\n`);
     process.stdout.write(
-      `snapshot_route_changed: ${
-        snapshot.routeChanged === null ? "unknown" : snapshot.routeChanged ? "yes" : "no"
-      }\n`,
+      `required_checks: ${nativeIdentity.checks.required_check_ids.join(", ") || "none"}\n`,
     );
-    process.stdout.write(
-      `snapshot_required_evidence: ${output.requiredEvidence.map((item) => item.id).join(", ") || "none"}\n`,
-    );
-    process.stdout.write(`snapshot_safe_command: ${snapshot.safeCommand}\n`);
     return exitCode;
   };
 }

@@ -1,11 +1,37 @@
-import type { BlueprintNodeKind, EvidenceKind, WorkflowMode } from "../blueprints/model.js";
+import type { WorkflowMode } from "@agentplaneorg/core/config";
+
+type LifecycleStageKind =
+  | "intake"
+  | "scope"
+  | "approval_gate"
+  | "context_resolve"
+  | "worktree_start"
+  | "work_unit"
+  | "deterministic_check"
+  | "fast_local_checks"
+  | "pr_artifact"
+  | "verify_record"
+  | "quality_gate"
+  | "hosted_checks"
+  | "publish_or_integrate"
+  | "finish";
+type EvidenceKind =
+  | "approval"
+  | "artifact"
+  | "assumptions"
+  | "changed_paths"
+  | "check_result"
+  | "commit"
+  | "context_manifest"
+  | "external_link"
+  | "quality_report";
 
 type LifecycleRole = "ORCHESTRATOR" | "PLANNER" | "CODER" | "EVALUATOR" | "INTEGRATOR";
 type LifecycleCwd = "base_checkout" | "task_worktree" | "current_checkout";
 type LifecycleSideEffect = "none" | "task_state" | "git_local" | "git_remote";
 
-export type LifecycleBlueprintNodeSpec = {
-  kind: BlueprintNodeKind;
+export type LifecycleStageSpec = {
+  kind: LifecycleStageKind;
   evidence?: readonly EvidenceKind[];
   protected?: boolean;
   allowedCommands?: readonly string[];
@@ -22,8 +48,7 @@ type LifecycleCommandStep = {
 
 export type WorkflowLifecycleContract = {
   mode: WorkflowMode;
-  blueprintId: "code.direct" | "code.branch_pr";
-  blueprintNodes: readonly LifecycleBlueprintNodeSpec[];
+  stages: readonly LifecycleStageSpec[];
   commandSteps: readonly LifecycleCommandStep[];
   gatewayCommandOrder: readonly string[];
   docsCommandOrder: readonly string[];
@@ -39,8 +64,7 @@ const codePolicyModules = [
 export const CODE_WORKFLOW_LIFECYCLE_CONTRACTS = {
   direct: {
     mode: "direct",
-    blueprintId: "code.direct",
-    blueprintNodes: [
+    stages: [
       { kind: "intake" },
       { kind: "scope", evidence: ["assumptions"] },
       { kind: "approval_gate", evidence: ["approval"], protected: true },
@@ -130,8 +154,7 @@ export const CODE_WORKFLOW_LIFECYCLE_CONTRACTS = {
   },
   branch_pr: {
     mode: "branch_pr",
-    blueprintId: "code.branch_pr",
-    blueprintNodes: [
+    stages: [
       { kind: "intake" },
       { kind: "scope", evidence: ["assumptions"] },
       { kind: "approval_gate", evidence: ["approval"], protected: true },
@@ -262,6 +285,6 @@ export const CODE_WORKFLOW_LIFECYCLE_CONTRACTS = {
   },
 } as const satisfies Record<WorkflowMode, WorkflowLifecycleContract>;
 
-export function lifecycleBlueprintNodeKinds(mode: WorkflowMode): readonly BlueprintNodeKind[] {
-  return CODE_WORKFLOW_LIFECYCLE_CONTRACTS[mode].blueprintNodes.map((node) => node.kind);
+export function lifecycleStageKinds(mode: WorkflowMode): readonly LifecycleStageKind[] {
+  return CODE_WORKFLOW_LIFECYCLE_CONTRACTS[mode].stages.map((stage) => stage.kind);
 }

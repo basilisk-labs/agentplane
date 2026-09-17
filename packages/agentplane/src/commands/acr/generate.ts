@@ -17,7 +17,6 @@ import { readTaskEvidenceBundleTrustExtension } from "../evidence/evidence.comma
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import { readDiffSummary } from "./diff.js";
 import {
-  buildAcrBlueprintExtension,
   buildAcrContextExtension,
   buildAcrNativeIdentityExtension,
   buildResidualRisks,
@@ -120,9 +119,9 @@ export async function generateAcr(opts: {
       ]
     : [];
   const nativeIdentity = buildAcrNativeIdentityExtension(task, workCommit);
-  const blueprint = nativeIdentity
-    ? null
-    : await buildAcrBlueprintExtension({ task, ctx: opts.ctx });
+  if (!nativeIdentity) {
+    throw new Error(`Task ${task.id} has no canonical execution identity; migrate it before ACR generation.`);
+  }
   const trust = await readTaskEvidenceBundleTrustExtension({
     ctx: opts.ctx,
     taskId: task.id,
@@ -135,17 +134,6 @@ export async function generateAcr(opts: {
             type: "other" as const,
             path: path.relative(gitRoot, observationsPath),
             sha256: observationsHash,
-          },
-        ]
-      : []),
-    ...(blueprint?.snapshot?.state === "current" &&
-    blueprint.snapshot.path &&
-    blueprint.snapshot.artifact_sha256
-      ? [
-          {
-            type: "other" as const,
-            path: blueprint.snapshot.path,
-            sha256: blueprint.snapshot.artifact_sha256,
           },
         ]
       : []),
@@ -165,9 +153,7 @@ export async function generateAcr(opts: {
   });
   const mergeReady = residualRisks.length === 0;
   const extensions = {
-    ...(nativeIdentity
-      ? { "agentplane.native_identity": nativeIdentity }
-      : { "agentplane.blueprint": blueprint }),
+    "agentplane.native_identity": nativeIdentity,
     ...(task.token_usage ? { "agentplane.token-usage": task.token_usage } : {}),
     ...buildAcrContextExtension(task),
   };

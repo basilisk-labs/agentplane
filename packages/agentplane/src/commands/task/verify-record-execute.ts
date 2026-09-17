@@ -15,7 +15,6 @@ import {
   renderIncidentCollectionPlanOutcome,
 } from "../incidents/shared.js";
 import { ensurePrArtifactsSynced } from "../pr/internal/sync.js";
-import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
 import { buildVerifiedPrMeta, parsePrMeta } from "../shared/pr-meta.js";
 import { resolvePrPaths } from "../pr/internal/pr-paths.js";
 import { normalizeBranchPrBatchTaskIds } from "../pr/internal/sync-batch-ownership.js";
@@ -67,7 +66,7 @@ import type {
   VerifyStructuredFindingInput,
 } from "./verify-record.types.js";
 import {
-  appendBlueprintSnapshotReference,
+  appendNativeTaskIdentityReference,
   appendDecisionContextReference,
 } from "./verify-record-references.js";
 
@@ -372,7 +371,7 @@ async function recordVerificationResult(opts: {
           note: opts.note,
           state: opts.state,
           details: await appendDecisionContextReference(
-            await appendBlueprintSnapshotReference(opts.details, { ctx, task: current }),
+            appendNativeTaskIdentityReference(opts.details, { task: current }),
             {
               ctx,
               cwd: opts.cwd,
@@ -441,18 +440,19 @@ async function recordVerificationResult(opts: {
             ...current,
             execution_contract: reconciledContract,
           });
-          const snapshot = nativeIdentity
-            ? null
-            : await checkTaskBlueprintSnapshotDrift({ ctx, task: current }).catch(() => null);
-          const reviewIdentity = nativeIdentity
-            ? buildNativeQualityReviewIdentity({
-                task: { ...current, execution_contract: reconciledContract },
-                native_identity: nativeIdentity,
-                verification_input_digest: verificationInput?.digest ?? null,
-                acceptance_criteria: evaluatorAcceptanceCriteria(current),
-                implementation_sha: evaluatedSha,
-              })
-            : null;
+          if (!nativeIdentity) {
+            throw new CliError({
+              code: "E_VALIDATION",
+              message: `EVALUATOR verification requires a canonical Task Kernel identity for task ${current.id}.`,
+            });
+          }
+          const reviewIdentity = buildNativeQualityReviewIdentity({
+            task: { ...current, execution_contract: reconciledContract },
+            native_identity: nativeIdentity,
+            verification_input_digest: verificationInput?.digest ?? null,
+            acceptance_criteria: evaluatorAcceptanceCriteria(current),
+            implementation_sha: evaluatedSha,
+          });
           const readmePath = path.join(
             resolved.gitRoot,
             config.paths.workflow_dir,
@@ -469,11 +469,8 @@ async function recordVerificationResult(opts: {
                 updated_by: opts.by,
                 note: opts.note,
                 evaluated_sha: evaluatedSha,
-                blueprint_digest: reviewIdentity?.digest ?? snapshot?.current.digest ?? null,
-                evidence_refs: [
-                  path.relative(resolved.gitRoot, readmePath),
-                  ...(snapshot?.path ? [snapshot.path] : []),
-                ],
+                review_identity_digest: reviewIdentity?.digest ?? null,
+                evidence_refs: [path.relative(resolved.gitRoot, readmePath)],
                 findings: opts.details ? [opts.details] : [],
               },
             }),

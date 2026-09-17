@@ -19,21 +19,6 @@ export const PROFILE_REQUIRED_PROMPT_BLOCKS = {
   ops: 12,
 } as const satisfies Record<NativeTaskProfile, number>;
 
-export const COMPATIBILITY_PROFILE = {
-  "analysis.light": "analysis",
-  "content.light": "content",
-  "docs.change": "docs",
-  "code.direct": "code",
-  "code.branch_pr": "code",
-  "performance.benchmark": "benchmark",
-  "quality.regression": "regression",
-  "context.assimilation": "context",
-  "context.maximum_assimilation": "context_maximum",
-  "post_run.improvement_review": "post_run_review",
-  "release.strict": "release",
-  "ops.approval": "ops",
-} as const satisfies Record<string, NativeTaskProfile>;
-
 export const PROFILE_TASK_KINDS: Record<NativeTaskProfile, readonly string[]> = {
   analysis: ["analysis"],
   content: ["content"],

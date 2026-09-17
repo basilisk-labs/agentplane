@@ -54,7 +54,7 @@ export type QualityReviewResult = {
   updated_by: string | null;
   note: string | null;
   evaluated_sha: string | null;
-  blueprint_digest: string | null;
+  review_identity_digest: string | null;
   evidence_refs: string[];
   findings: string[];
   recovery_reason?: QualityReviewRecoveryReason;

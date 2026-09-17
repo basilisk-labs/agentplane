@@ -1,7 +1,6 @@
 import type { AgentWorkOrderV2, StateFingerprint } from "@agentplaneorg/core/schemas";
 
 import type { TaskRouteDecision } from "../../commands/shared/route-decision-types.js";
-import type { TaskBlueprintLifecycleSummary } from "../../commands/task/blueprint-summary.js";
 import type { TaskKnowledgeRetrievalReceipt } from "./task-knowledge-retrieval.js";
 
 type AgentWorkOrderRemotePolicy = {
@@ -64,11 +63,6 @@ export type AgentWorkOrderSourceManifest = {
     source: string | null;
     content_digest: string;
   }[];
-  blueprint_context: {
-    id: string;
-    kind: string;
-    source: string | null;
-  }[];
   verification_context: {
     task_verify: string[];
     verify_steps: string[];
@@ -85,22 +79,6 @@ export type AgentWorkOrderPreparationView = {
   source_manifest: AgentWorkOrderSourceManifest;
   knowledge_retrieval: TaskKnowledgeRetrievalReceipt;
   verification_intent: AgentWorkOrderV2["verification_intent"];
-};
-
-/**
- * V1-only fields rendered by `task brief` are captured here with the work
- * order so the renderer cannot issue a second mutable blueprint/snapshot read.
- */
-export type AgentWorkOrderLegacyBriefProjection = {
-  blueprint: TaskBlueprintLifecycleSummary;
-  snapshot: {
-    state: "current" | "missing" | "invalid" | "stale";
-    path: string;
-    digest: string | null;
-    current_digest: string;
-    route_changed: boolean | null;
-    safe_command: string;
-  };
 };
 
 function remoteObserved(decision: TaskRouteDecision): boolean {

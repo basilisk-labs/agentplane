@@ -15,9 +15,9 @@ import {
   type TaskListFilters,
 } from "./shared.js";
 import {
-  createTaskBlueprintLifecycleResolver,
-  formatTaskBlueprintListExtra,
-} from "./blueprint-summary.js";
+  createTaskExecutionLifecycleResolver,
+  formatTaskExecutionListExtra,
+} from "./execution-summary.js";
 import { annotateBranchPrTaskListState, taskListStatusKey } from "./shared/branch-pr-list-state.js";
 
 const DEFAULT_ACTIVE_TASK_LIST_STATUSES = [
@@ -107,14 +107,11 @@ export async function cmdTaskListWithFilters(opts: {
       filters: opts.filters,
       defaultStatuses: opts.filters.all ? undefined : [...DEFAULT_ACTIVE_TASK_LIST_STATUSES],
     });
-    const resolveBlueprint = await createTaskBlueprintLifecycleResolver({
-      config: ctx.config,
-      projectRoot: ctx.resolvedProject.gitRoot,
-    });
+    const resolveExecution = createTaskExecutionLifecycleResolver();
     for (const task of items) {
-      const blueprint = resolveBlueprint(task);
+      const execution = resolveExecution(task);
       process.stdout.write(
-        `${formatTaskLine(task, depState.get(task.id), [formatTaskBlueprintListExtra(blueprint)])}\n`,
+        `${formatTaskLine(task, depState.get(task.id), [formatTaskExecutionListExtra(execution)])}\n`,
       );
     }
     if (!opts.filters.quiet) {

@@ -17,7 +17,6 @@ const VERIFICATION_RESULTS_END = "<!-- END VERIFICATION RESULTS -->";
 const MANAGED_TASK_ARTIFACT_DIRECTORIES = [
   "quality/",
   "pr/",
-  "blueprint/",
   "verification/",
   "evidence/",
   "supervision/",

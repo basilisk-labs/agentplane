@@ -115,7 +115,6 @@ async function materializeTaskArtifacts(opts: {
   for (const relativePath of [
     path.join(agentplaneRoot, "WORKFLOW.md"),
     path.join(agentplaneRoot, "policy"),
-    path.join(agentplaneRoot, "blueprints"),
     path.join(agentplaneRoot, "recipes"),
     path.join(agentplaneRoot, "context"),
     path.join(agentplaneRoot, "cache.sqlite"),

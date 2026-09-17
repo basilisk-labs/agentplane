@@ -74,7 +74,7 @@ export async function renderActualDiff(
   if (!evaluatedSha) return "No committed task work unit is available for semantic evaluation.\n";
   try {
     const artifactRoot = taskArtifactRoot?.trim().replaceAll("\\", "/").replaceAll(/\/+$/gu, "");
-    // The task document, blueprint, checks, and policy are frozen as separate evidence. Exclude
+    // The task document, native identity, checks, and policy are frozen as separate evidence. Exclude
     // only this task's generated subtree so it cannot recursively inflate the implementation diff.
     const taskArtifactExclude = artifactRoot
       ? ["--", ".", `:(exclude,glob)${artifactRoot}/**`]

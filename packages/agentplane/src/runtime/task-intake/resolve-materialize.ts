@@ -75,9 +75,6 @@ function buildMaterializedTask(opts: {
     ...(opts.draftTask.risk_flags && opts.draftTask.risk_flags.length > 0
       ? { risk_flags: [...opts.draftTask.risk_flags] }
       : {}),
-    ...(opts.draftTask.blueprint_request
-      ? { blueprint_request: opts.draftTask.blueprint_request }
-      : {}),
     ...(opts.draftTask.execution_route
       ? { execution_route: structuredClone(opts.draftTask.execution_route) }
       : {}),

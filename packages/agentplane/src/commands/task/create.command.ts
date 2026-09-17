@@ -31,7 +31,6 @@ export type TaskCreateParsed = {
   taskKind?: TaskNewParsed["taskKind"];
   mutationScope?: TaskNewParsed["mutationScope"];
   riskFlags: NonNullable<TaskNewParsed["riskFlags"]>;
-  blueprintRequest?: TaskNewParsed["blueprintRequest"];
   verify: string[];
   base?: string;
   allowDuplicate: boolean;
@@ -40,7 +39,7 @@ export type TaskCreateParsed = {
 
 export type UserTaskIntent = Pick<
   TaskNewParsed,
-  "taskKind" | "mutationScope" | "blueprintRequest" | "tags"
+  "taskKind" | "mutationScope" | "tags"
 > & {
   riskFlags: NonNullable<TaskNewParsed["riskFlags"]>;
   source: "explicit" | "pending_planner";
@@ -53,14 +52,12 @@ export function resolveUserTaskIntent(parsed: TaskCreateParsed): UserTaskIntent 
     parsed.taskKind !== undefined ||
     parsed.mutationScope !== undefined ||
     parsed.riskFlags.length > 0 ||
-    parsed.blueprintRequest !== undefined ||
     parsed.tags.length > 0;
   if (hasStructuredIntent) {
     return {
       taskKind: parsed.taskKind,
       mutationScope: parsed.mutationScope,
       riskFlags: parsed.riskFlags,
-      blueprintRequest: parsed.blueprintRequest,
       tags: parsed.tags.length > 0 ? parsed.tags : ["intake"],
       source: "explicit",
       code: "explicit_structured_intent",
@@ -146,26 +143,6 @@ export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
     },
     {
       kind: "string",
-      name: "blueprint-request",
-      valueHint: "<id>",
-      choices: [
-        "analysis.light",
-        "content.light",
-        "docs.change",
-        "code.direct",
-        "code.branch_pr",
-        "performance.benchmark",
-        "quality.regression",
-        "context.assimilation",
-        "context.maximum_assimilation",
-        "post_run.improvement_review",
-        "release.strict",
-        "ops.approval",
-      ],
-      description: "Explicit blueprint request supplied by the semantic caller.",
-    },
-    {
-      kind: "string",
       name: "tag",
       valueHint: "<tag>",
       repeatable: true,
@@ -195,7 +172,7 @@ export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
   ],
   examples: [
     {
-      cmd: 'agentplane task create "Fix the parser edge case" --task-kind code --mutation-scope code --blueprint-request code.direct --tag code',
+      cmd: 'agentplane task create "Fix the parser edge case" --task-kind code --mutation-scope code --tag code',
       why: "Create a task with explicit structured semantic intent.",
     },
     {
@@ -219,7 +196,6 @@ export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
       raw.opts["task-kind"],
       raw.opts["mutation-scope"],
       raw.opts.risk,
-      raw.opts["blueprint-request"],
       raw.opts.tag,
     ].some((value) => value !== undefined && (!Array.isArray(value) || value.length > 0));
     if (
@@ -252,10 +228,6 @@ export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
     riskFlags: Array.isArray(raw.opts.risk)
       ? (raw.opts.risk as NonNullable<TaskNewParsed["riskFlags"]>)
       : [],
-    blueprintRequest:
-      typeof raw.opts["blueprint-request"] === "string"
-        ? (raw.opts["blueprint-request"] as TaskNewParsed["blueprintRequest"])
-        : undefined,
     verify: Array.isArray(raw.opts.verify) ? (raw.opts.verify as string[]) : [],
     base: typeof raw.opts.base === "string" ? raw.opts.base.trim() : undefined,
     allowDuplicate: raw.opts["allow-duplicate"] === true,
@@ -290,7 +262,6 @@ export function makeRunTaskCreateHandler(
         task_kind: intent.taskKind,
         mutation_scope: intent.mutationScope,
         risk_flags: intent.riskFlags,
-        blueprint_request: intent.blueprintRequest,
       },
     });
     const executionContract = resolveTaskExecutionContract({
@@ -300,7 +271,6 @@ export function makeRunTaskCreateHandler(
         task_kind: intent.taskKind,
         mutation_scope: intent.mutationScope,
         risk_flags: intent.riskFlags,
-        blueprint_request: intent.blueprintRequest,
       },
     });
     const explicitBaseRef = parsed.base?.trim();
@@ -332,7 +302,6 @@ export function makeRunTaskCreateHandler(
         taskKind: intent.taskKind,
         mutationScope: intent.mutationScope,
         riskFlags: intent.riskFlags,
-        blueprintRequest: intent.blueprintRequest,
         route: parsed.route,
         ...(explicitBase
           ? {
@@ -343,7 +312,6 @@ export function makeRunTaskCreateHandler(
           : {}),
         dependsOn: [],
         verify: parsed.verify,
-        showBlueprint: false,
         allowDuplicate: parsed.allowDuplicate,
       },
     });
@@ -354,7 +322,6 @@ export function makeRunTaskCreateHandler(
       task_kind: intent.taskKind ?? null,
       mutation_scope: intent.mutationScope,
       risk_flags: intent.riskFlags,
-      blueprint_request: intent.blueprintRequest ?? null,
       tags: intent.tags,
       confirmation_required: intent.confirmation_required,
     };

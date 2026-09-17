@@ -307,6 +307,11 @@ async function executeFreshReplay(opts: {
     ctx,
   });
 
+  // Source-run reconciliation may have advanced the task projection. A replay
+  // must prepare both its TaskEpisodeView and v2 state fingerprint from the
+  // same revision instead of reusing a memoized pre-reconciliation read.
+  ctx.memo = {};
+
   const executed = await executeTaskRunnerExecution({
     ctx,
     cwd: opts.cwd,

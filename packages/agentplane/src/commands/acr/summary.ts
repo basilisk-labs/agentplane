@@ -1,9 +1,6 @@
 import type { AgentChangeRecord } from "@agentplaneorg/core/schemas";
 
 export function summarizeAcr(record: AgentChangeRecord) {
-  const blueprint = record.extensions?.["agentplane.blueprint"] as
-    | { blueprint_id?: unknown; route?: unknown }
-    | undefined;
   const nativeIdentity = record.extensions?.["agentplane.native_identity"] as
     | {
         identity?: { plan?: { revision?: unknown; digest?: unknown }; digest?: unknown };
@@ -25,15 +22,6 @@ export function summarizeAcr(record: AgentChangeRecord) {
     },
     verification: record.verification.status,
     merge_ready: record.result.merge_ready,
-    blueprint:
-      typeof blueprint?.blueprint_id === "string"
-        ? {
-            id: blueprint.blueprint_id,
-            route: Array.isArray(blueprint.route)
-              ? blueprint.route.filter((item): item is string => typeof item === "string")
-              : [],
-          }
-        : null,
     native_identity:
       typeof nativeIdentity?.identity?.digest === "string"
         ? {
@@ -67,12 +55,6 @@ export function renderAcrSummary(summary: ReturnType<typeof summarizeAcr>): stri
     `Policy: ${summary.policy.pass} pass, ${summary.policy.fail} fail, ${summary.policy.warning} warning, ${summary.policy.manual_override} manual override`,
     `Verification: ${summary.verification}`,
     `Merge ready: ${summary.merge_ready ? "yes" : "no"}`,
-    ...(summary.blueprint
-      ? [
-          `Blueprint: ${summary.blueprint.id}`,
-          `Blueprint route: ${summary.blueprint.route.join(" -> ")}`,
-        ]
-      : []),
     ...(summary.native_identity
       ? [
           `Native identity: ${summary.native_identity.digest}`,

@@ -131,10 +131,14 @@ export const EVALUATOR_WORK_ORDER_SCHEMA = z.discriminatedUnion("schema_version"
 
 export type EvaluatorWorkOrder = z.infer<typeof EVALUATOR_WORK_ORDER_SCHEMA>;
 
-export function evaluatorWorkOrderReviewDigest(workOrder: EvaluatorWorkOrder): string | null {
-  return workOrder.schema_version === 2
-    ? workOrder.review_identity.digest
-    : workOrder.blueprint_digest;
+export function evaluatorWorkOrderReviewDigest(workOrder: EvaluatorWorkOrder): string {
+  if (workOrder.schema_version !== 2) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "Evaluator execution requires a canonical v2 work order.",
+    });
+  }
+  return workOrder.review_identity.digest;
 }
 
 function sha256(value: string | Buffer): `sha256:${string}` {

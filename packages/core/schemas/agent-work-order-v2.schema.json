@@ -115,7 +115,7 @@
       "properties": {
         "schema_version": {
           "type": "number",
-          "const": 1
+          "const": 2
         },
         "kind": {
           "type": "string",
@@ -306,6 +306,55 @@
                 }
               ]
             },
+            "plan": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "state": {
+                      "type": "string",
+                      "const": "present"
+                    },
+                    "source": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "digest": {
+                      "type": "string",
+                      "pattern": "^sha256:[0-9a-f]{64}$"
+                    },
+                    "reason_code": {
+                      "type": "null"
+                    }
+                  },
+                  "required": ["state", "source", "digest", "reason_code"],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "state": {
+                      "type": "string",
+                      "enum": ["missing", "unavailable"]
+                    },
+                    "source": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "digest": {
+                      "type": "string",
+                      "pattern": "^sha256:[0-9a-f]{64}$"
+                    },
+                    "reason_code": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": ["state", "source", "digest", "reason_code"],
+                  "additionalProperties": false
+                }
+              ]
+            },
             "policy": {
               "anyOf": [
                 {
@@ -355,7 +404,7 @@
                 }
               ]
             },
-            "blueprint": {
+            "capability": {
               "anyOf": [
                 {
                   "type": "object",
@@ -556,8 +605,9 @@
             "task",
             "git",
             "backend_projection",
+            "plan",
             "policy",
-            "blueprint",
+            "capability",
             "knowledge",
             "provider",
             "authority"
@@ -585,6 +635,10 @@
     "state_fingerprint_policy": {
       "type": "object",
       "properties": {
+        "fingerprint_schema_version": {
+          "type": "number",
+          "const": 2
+        },
         "required_components": {
           "readOnly": true,
           "type": "array",
@@ -594,8 +648,9 @@
               "task",
               "git",
               "backend_projection",
+              "plan",
               "policy",
-              "blueprint",
+              "capability",
               "knowledge",
               "provider",
               "authority"
@@ -625,7 +680,7 @@
           "additionalProperties": false
         }
       },
-      "required": ["required_components", "provider"],
+      "required": ["fingerprint_schema_version", "required_components", "provider"],
       "additionalProperties": false
     },
     "authority": {

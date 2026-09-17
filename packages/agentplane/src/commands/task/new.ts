@@ -26,10 +26,9 @@ import {
   resolvePrimaryCheckoutCommandContext,
   type CommandContext,
 } from "../shared/task-backend.js";
-import { writeTaskMutation, type TaskMutationResult } from "../shared/task-mutation.js";
+import type { TaskMutationResult } from "../shared/task-mutation.js";
 import type { TaskData } from "../../backends/task-backend/shared/types.js";
 import {
-  BLUEPRINT_REQUEST_VALUES,
   MUTATION_SCOPE_VALUES,
   RISK_FLAG_VALUES,
   TASK_KIND_VALUES,
@@ -49,18 +48,12 @@ import {
 } from "./doc-template.js";
 import { formatDuplicateTaskMessage, listOpenTaskDuplicates } from "./new-duplicates.js";
 import {
-  formatTaskBlueprintCreationPreview,
-  resolveTaskBlueprintLifecycleSummary,
-} from "./blueprint-summary.js";
-import {
   resolveTaskExecutionContract,
   resolveTaskExecutionRoute,
 } from "../../runtime/task-routing/index.js";
 import { assertSupportedDeclaredTaskChecks } from "../shared/declared-check.js";
-import { kernelCutoverActivated } from "./kernel-cutover.js";
 
 export type TaskNewParsed = {
-  canonical?: boolean;
   title: string;
   description: string;
   owner: string;
@@ -69,13 +62,11 @@ export type TaskNewParsed = {
   taskKind?: TaskData["task_kind"];
   mutationScope?: TaskData["mutation_scope"];
   riskFlags?: NonNullable<TaskData["risk_flags"]>;
-  blueprintRequest?: TaskData["blueprint_request"];
   route?: TaskExecutionRouteRequest;
   extensions?: TaskData["extensions"];
   dependsOn: string[];
   verify: string[];
   taskDocSections?: Partial<Record<"Plan" | "Verify Steps" | "Rollback Plan" | "Findings", string>>;
-  showBlueprint: boolean;
   allowDuplicate: boolean;
 };
 
@@ -161,11 +152,6 @@ function sanitizeTaskNewParsed(p: TaskNewParsed): TaskNewParsed {
     MUTATION_SCOPE_VALUES,
   );
   const riskFlags = validateEnumArray("risk", p.riskFlags ?? [], RISK_FLAG_VALUES);
-  const blueprintRequest = validateOptionalEnum(
-    "blueprint-request",
-    p.blueprintRequest,
-    BLUEPRINT_REQUEST_VALUES,
-  );
   const route = p.route ?? "auto";
 
   return {
@@ -177,7 +163,6 @@ function sanitizeTaskNewParsed(p: TaskNewParsed): TaskNewParsed {
     taskKind,
     mutationScope,
     riskFlags,
-    blueprintRequest,
     route,
     ...(p.extensions ? { extensions: structuredClone(p.extensions) } : {}),
     ...(p.taskDocSections ? { taskDocSections: structuredClone(p.taskDocSections) } : {}),
@@ -335,7 +320,6 @@ export async function runTaskNewParsed(opts: {
         task_kind: p.taskKind,
         mutation_scope: p.mutationScope,
         risk_flags: p.riskFlags,
-        blueprint_request: p.blueprintRequest,
       };
       const executionContract = resolveTaskExecutionContract({
         config: ctx.config,
@@ -358,7 +342,6 @@ export async function runTaskNewParsed(opts: {
             ...(p.taskKind ? { task_kind: p.taskKind } : {}),
             ...(p.mutationScope ? { mutation_scope: p.mutationScope } : {}),
             ...(p.riskFlags && p.riskFlags.length > 0 ? { risk_flags: p.riskFlags } : {}),
-            ...(p.blueprintRequest ? { blueprint_request: p.blueprintRequest } : {}),
             execution_route: resolveTaskExecutionRoute({
               config: ctx.config,
               requestedMode: p.route,
@@ -390,19 +373,8 @@ export async function runTaskNewParsed(opts: {
         });
       }
 
-      const created =
-        p.canonical || kernelCutoverActivated(existingTasks)
-          ? await createCanonicalTask(ctx, task)
-          : await writeTaskMutation({ ctx, task, writeOptions: { expectedRevision: 0 } });
+      const created = await createCanonicalTask(ctx, task);
       if (opts.printTaskId !== false) process.stdout.write(`${created.task_id}\n`);
-      if (p.showBlueprint) {
-        const summary = await resolveTaskBlueprintLifecycleSummary({
-          task: created.task,
-          config: ctx.config,
-          projectRoot: ctx.resolvedProject.gitRoot,
-        });
-        process.stderr.write(formatTaskBlueprintCreationPreview(summary));
-      }
       return {
         task_id: created.task_id,
         revision: created.revision,

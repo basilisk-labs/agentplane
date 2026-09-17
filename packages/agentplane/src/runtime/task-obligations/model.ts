@@ -96,7 +96,6 @@ export type NativeTaskObligationInput = {
   task_kind?: string | null;
   mutation_scope?: string | null;
   risk_flags?: readonly string[] | null;
-  compatibility_preference?: string | null;
   execution_contract?: TaskExecutionContract;
   selected_mode: TaskExecutionRouteMode;
   route_reason_codes?: readonly string[];

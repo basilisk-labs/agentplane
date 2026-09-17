@@ -10,7 +10,6 @@ import type {
   NativeTaskProfile,
 } from "./model.js";
 import {
-  COMPATIBILITY_PROFILE,
   CORE_STOP_RULES,
   evidenceRequirements,
   PROFILE_REQUIRED_PROMPT_BLOCKS,
@@ -50,10 +49,6 @@ function baseProfile(taskKind: string): NativeTaskProfile {
 }
 
 function resolveProfile(input: NativeTaskObligationInput, taskKind: string): NativeTaskProfile {
-  const preference = input.compatibility_preference?.trim();
-  if (preference && Object.hasOwn(COMPATIBILITY_PROFILE, preference)) {
-    return COMPATIBILITY_PROFILE[preference as keyof typeof COMPATIBILITY_PROFILE];
-  }
   const risks = new Set(input.risk_flags);
   if (
     risks.has("credentials") ||
@@ -132,26 +127,11 @@ function stopRules(opts: {
   taskKind: string;
 }): NativeStopRule[] {
   const rules = [...CORE_STOP_RULES, ...(PROFILE_STOP_RULES[opts.profile] ?? [])];
-  const preference = opts.input.compatibility_preference?.trim();
-  if (preference && !Object.hasOwn(COMPATIBILITY_PROFILE, preference)) {
-    rules.push({
-      id: "unsupported_execution_preference",
-      severity: "approval_required",
-      reason: `Execution preference ${preference} requires explicit Recipe or manual migration.`,
-    });
-  }
   if (!PROFILE_TASK_KINDS[opts.profile].includes(opts.taskKind)) {
     rules.push({
       id: "task_kind_incompatible",
       severity: "approval_required",
       reason: `Execution profile ${opts.profile} is incompatible with task kind ${opts.taskKind}.`,
-    });
-  }
-  if (preference === "code.direct" && opts.input.selected_mode === "branch_pr") {
-    rules.push({
-      id: "workflow_mode_incompatible",
-      severity: "stop",
-      reason: "The branch_pr repository floor overrides the direct compatibility preference.",
     });
   }
   for (const risk of opts.input.risk_flags ?? []) {

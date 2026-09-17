@@ -5,7 +5,6 @@ import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 
 import {
-  BLUEPRINT_REQUEST_VALUES,
   MUTATION_SCOPE_VALUES,
   TASK_KIND_VALUES,
 } from "../../backends/task-backend/shared/domain-values.js";
@@ -90,10 +89,9 @@ export async function readTaskIntent(opts: {
   const intent: CommitTaskIntent = {
     taskKind: stringValue(fm.task_kind, TASK_KIND_VALUES),
     mutationScope: stringValue(fm.mutation_scope, MUTATION_SCOPE_VALUES),
-    blueprintRequest: stringValue(fm.blueprint_request, BLUEPRINT_REQUEST_VALUES),
     tags: Array.isArray(fm.tags) ? fm.tags.filter((tag) => typeof tag === "string") : undefined,
   };
-  return intent.taskKind || intent.mutationScope || intent.blueprintRequest || intent.tags?.length
+  return intent.taskKind || intent.mutationScope || intent.tags?.length
     ? intent
     : undefined;
 }

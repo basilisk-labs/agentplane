@@ -1,9 +1,9 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
-import { resolveBlueprint } from "../../blueprints/index.js";
 import type { TaskData } from "../../backends/task-backend.js";
-import { blueprintResolveInputFromTask } from "../blueprint/task-input.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
+import { resolveNativeTaskIdentity } from "../shared/native-task-identity.js";
+import { requiredVerificationContractChecks } from "../shared/task-verification-records.js";
 import { hasAcceptedQualityReviewProvenance } from "./quality-review-gate.js";
 
 type EvidenceState = "present" | "missing" | "unknown";
@@ -37,7 +37,7 @@ export type TaskEvidenceCheckParsed = {
 export const taskEvidenceCheckSpec: CommandSpec<TaskEvidenceCheckParsed> = {
   id: ["task", "evidence", "check"],
   group: "Task",
-  summary: "Compare blueprint required evidence with task artifacts and report missing evidence.",
+  summary: "Compare native verification obligations with task evidence and report gaps.",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   options: [
     {
@@ -51,7 +51,7 @@ export const taskEvidenceCheckSpec: CommandSpec<TaskEvidenceCheckParsed> = {
   examples: [
     {
       cmd: "agentplane task evidence check 202602030608-F1Q8AB --strict",
-      why: "Fail before finish/integrate when blueprint evidence is incomplete.",
+      why: "Fail before finish/integrate when native verification evidence is incomplete.",
     },
   ],
   parse: (raw) => ({
@@ -138,23 +138,45 @@ export function makeRunTaskEvidenceCheckHandler(getCtx: (cmd: string) => Promise
   return async (ctx: CommandCtx, parsed: TaskEvidenceCheckParsed): Promise<number> => {
     const commandCtx = await getCtx("task evidence check");
     const task = await loadTaskFromContext({ ctx: commandCtx, taskId: parsed.taskId });
-    const input = blueprintResolveInputFromTask({ task, config: commandCtx.config });
-    const resolved = resolveBlueprint({ input });
-    const rows: EvidenceCheckRow[] = resolved.requiredEvidence.map((evidence) => {
-      const state = evidenceState(task, evidence.kind);
+    const identity = resolveNativeTaskIdentity(task);
+    const requiredChecks = [
+      ...new Set([
+        ...(identity?.checks.required_check_ids ?? []),
+        ...requiredVerificationContractChecks(task),
+      ]),
+    ].toSorted();
+    const rows: EvidenceCheckRow[] = requiredChecks.map((checkId) => {
+      const state = evidenceState(task, "check_result");
       return {
-        id: evidence.id,
-        kind: evidence.kind,
-        producedBy: evidence.producedBy,
+        id: checkId,
+        kind: "check_result",
+        producedBy: "task_kernel",
         state: state.state,
         reason: state.reason,
       };
     });
+    const quality = qualityReportEvidenceState(task.quality_review);
+    rows.push({
+      id: "semantic_quality_review",
+      kind: "quality_report",
+      producedBy: "evaluator",
+      state: quality.state,
+      reason: quality.reason,
+    });
+    if (!identity) {
+      rows.unshift({
+        id: "native_task_identity",
+        kind: "task_identity",
+        producedBy: "task_kernel",
+        state: "missing",
+        reason: `run agentplane task kernel-migrate ${task.id}`,
+      });
+    }
     const summary = summarizeEvidenceRows(rows);
     const output = createCliEmitter();
     const payload = {
       task_id: task.id,
-      blueprint_id: resolved.blueprint.id,
+      identity_kind: identity ? "native" : "legacy_unmigrated",
       ok: summary.ok,
       missing_count: summary.missing_count,
       unknown_count: summary.unknown_count,
@@ -166,7 +188,7 @@ export function makeRunTaskEvidenceCheckHandler(getCtx: (cmd: string) => Promise
       output.report(
         [
           { label: "task", value: task.id },
-          { label: "blueprint", value: resolved.blueprint.id },
+          { label: "identity", value: payload.identity_kind },
           { label: "ok", value: payload.ok },
           ...rows.map((row) => ({
             label: row.state === "present" ? "evidence" : row.state,

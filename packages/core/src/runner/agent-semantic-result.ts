@@ -180,22 +180,6 @@ const AGENT_SEMANTIC_RESULT_TASK_INTENT_ZOD_SCHEMA = z
       ]),
     ),
     tags: z.array(NON_EMPTY_STRING).min(1),
-    blueprint_request: z
-      .enum([
-        "analysis.light",
-        "content.light",
-        "docs.change",
-        "code.direct",
-        "code.branch_pr",
-        "performance.benchmark",
-        "quality.regression",
-        "context.assimilation",
-        "context.maximum_assimilation",
-        "post_run.improvement_review",
-        "release.strict",
-        "ops.approval",
-      ])
-      .optional(),
     execution: AGENT_SEMANTIC_RESULT_EXECUTION_DECLARATION_ZOD_SCHEMA.optional(),
   })
   .strict();

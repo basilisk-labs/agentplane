@@ -1,10 +1,8 @@
 export {
   CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION,
   SGR_CONTRACT_SCHEMA_VERSION,
-  validateBlueprintRouteDecisionSgrResult,
   validateContextExtractionSgrResult,
   validateEvaluatorSgrResult,
-  type BlueprintRouteDecisionSgrResult,
   type ContextExtractionItem,
   type ContextExtractionSgrResult,
   type SgrSourceRef,

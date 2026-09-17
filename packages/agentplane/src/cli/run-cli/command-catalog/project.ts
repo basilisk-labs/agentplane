@@ -18,25 +18,6 @@ import {
   evidenceStatsSpec,
 } from "../../../commands/evidence/evidence-maintenance.command.js";
 import {
-  blueprintDriftSpec,
-  blueprintExamplesSpec,
-  blueprintExplainSpec,
-  blueprintListSpec,
-  blueprintReportSpec,
-  blueprintSnapshotSpec,
-  blueprintScaffoldSpec,
-  blueprintSpec,
-  blueprintValidateSpec,
-} from "../../../commands/blueprint/blueprint.command.js";
-import {
-  blueprintsCatalogInfoSpec,
-  blueprintsCatalogListSpec,
-  blueprintsCatalogRefreshSpec,
-  blueprintsCatalogSpec,
-  blueprintsInstallSpec,
-  blueprintsSpec,
-} from "../../../commands/blueprints/blueprints.command.js";
-import {
   backendInspectSpec,
   backendConnectSpec,
   backendMigrateCanonicalStateSpec,
@@ -152,16 +133,6 @@ import {
   loadAcrValidateSpec,
   loadAcrCheckSpec,
   loadAcrExplainSpec,
-  loadBlueprintSpec,
-  loadBlueprintListSpec,
-  loadBlueprintExamplesSpec,
-  loadBlueprintDriftSpec,
-  loadBlueprintExplainSpec,
-  loadBlueprintSnapshotSpec,
-  loadBlueprintReportSpec,
-  loadBlueprintValidateSpec,
-  loadBlueprintScaffoldSpec,
-  fromCommandsBlueprintsCommand,
 } from "../command-loaders/project.js";
 import {
   fromCommandsEvidenceCommand,
@@ -221,61 +192,7 @@ export const PROJECT_COMMANDS = [
     requirements: LOCAL_OPS_WRITE_REQUIREMENTS,
   }),
   ...HERMES_COMMANDS,
-  declareCommand(blueprintSpec, {
-    load: loadBlueprintSpec,
-    requirements: NO_CONTEXT_REQUIREMENTS,
-  }),
-  declareCommand(blueprintListSpec, {
-    load: loadBlueprintListSpec,
-    requirements: NO_CONTEXT_REQUIREMENTS,
-  }),
-  declareCommand(blueprintExamplesSpec, {
-    load: loadBlueprintExamplesSpec,
-    requirements: NO_CONTEXT_REQUIREMENTS,
-  }),
-  declareCommand(blueprintExplainSpec, {
-    load: loadBlueprintExplainSpec,
-    requirements: TASK_ROUTE_LOCAL_REQUIREMENTS,
-  }),
-  declareCommand(blueprintSnapshotSpec, {
-    load: loadBlueprintSnapshotSpec,
-    requirements: TASK_LIFECYCLE_REQUIREMENTS,
-  }),
-  declareCommand(blueprintDriftSpec, {
-    load: loadBlueprintDriftSpec,
-    requirements: TASK_ROUTE_LOCAL_REQUIREMENTS,
-  }),
-  declareCommand(blueprintReportSpec, {
-    load: loadBlueprintReportSpec,
-    requirements: NO_CONTEXT_REQUIREMENTS,
-  }),
-  declareCommand(blueprintScaffoldSpec, {
-    load: loadBlueprintScaffoldSpec,
-    requirements: NO_CONTEXT_REQUIREMENTS,
-  }),
-  declareCommand(blueprintValidateSpec, {
-    load: loadBlueprintValidateSpec,
-    requirements: NO_CONTEXT_REQUIREMENTS,
-  }),
   ...EVALUATOR_COMMANDS,
-  fromCommandsBlueprintsCommand(blueprintsSpec, "runBlueprints", {
-    requirements: NO_CONTEXT_REQUIREMENTS,
-  }),
-  fromCommandsBlueprintsCommand(blueprintsCatalogSpec, "runBlueprintsCatalog", {
-    requirements: NO_CONTEXT_REQUIREMENTS,
-  }),
-  fromCommandsBlueprintsCommand(blueprintsCatalogRefreshSpec, "runBlueprintsCatalogRefresh", {
-    requirements: NO_CONTEXT_REQUIREMENTS,
-  }),
-  fromCommandsBlueprintsCommand(blueprintsCatalogListSpec, "runBlueprintsCatalogList", {
-    requirements: NO_CONTEXT_REQUIREMENTS,
-  }),
-  fromCommandsBlueprintsCommand(blueprintsCatalogInfoSpec, "runBlueprintsCatalogInfo", {
-    requirements: NO_CONTEXT_REQUIREMENTS,
-  }),
-  fromCommandsBlueprintsCommand(blueprintsInstallSpec, "runBlueprintsInstall", {
-    requirements: PROJECT_REQUIREMENTS,
-  }),
   declareSessionCommand(workStartSpec, {
     load: loadWorkStartSpec,
     requirements: LOCAL_OPS_WRITE_REQUIREMENTS,

@@ -288,7 +288,7 @@ export async function assertEvaluatorPacketCurrent(opts: {
       });
     }
   }
-  if (!names.has("evaluator-blueprint") && !names.has("evaluator-native-identity")) {
+  if (!names.has("evaluator-native-identity")) {
     throw new CliError({
       code: "E_VALIDATION",
       message: "Evaluator packet is missing required identity artifact.",

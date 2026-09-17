@@ -318,18 +318,23 @@ export async function executeStateBoundRunnerInvocation(opts: {
         expected.components.backend_projection,
         advanced.components.backend_projection,
       );
-      const expectedComponents = backendChanged ? ["task", "backend_projection"] : ["task"];
+      const changedComponents = error.diagnostic.changed_components.map(
+        (entry) => entry.component,
+      );
+      const allowedReplayComponents = new Set([
+        "task",
+        ...(backendChanged ? (["backend_projection"] as const) : []),
+      ]);
+      const revisionChange = error.diagnostic.identity_changes[0];
       if (
         error.diagnostic.reason_code === "state_fingerprint_stale" &&
-        error.diagnostic.changed_components
-          .map((entry) => entry.component)
-          .every((component, index) => component === expectedComponents[index]) &&
-        error.diagnostic.changed_components.length === expectedComponents.length &&
+        changedComponents.includes("task") &&
+        changedComponents.every((component) => allowedReplayComponents.has(component)) &&
+        changedComponents.includes("backend_projection") === backendChanged &&
         error.diagnostic.identity_changes.length === 1 &&
-        error.diagnostic.identity_changes[0]?.field === "task_revision" &&
-        typeof error.diagnostic.identity_changes[0].expected === "number" &&
-        error.diagnostic.identity_changes[0].current ===
-          error.diagnostic.identity_changes[0].expected + 1
+        revisionChange?.field === "task_revision" &&
+        typeof revisionChange.expected === "number" &&
+        revisionChange.current === revisionChange.expected + 1
       ) {
         if (!attestationMatchesAdvance(expected, advanced, attestation)) {
           assertPrecondition(expected, advanced);

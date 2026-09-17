@@ -215,7 +215,7 @@ function renderValueLines(key: string, value: unknown, indent: string): string[]
                   "updated_by",
                   "note",
                   "evaluated_sha",
-                  "blueprint_digest",
+                  "review_identity_digest",
                   "evidence_refs",
                   "findings",
                 ] as const)
@@ -277,7 +277,6 @@ export function renderTaskFrontmatter(frontmatter: Record<string, unknown>): str
     "task_kind",
     "mutation_scope",
     "risk_flags",
-    "blueprint_request",
     "verify",
     "plan_approval",
     "verification",

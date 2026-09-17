@@ -40,11 +40,26 @@
           "properties": {
             "task_kind": {
               "type": "string",
-              "enum": ["analysis", "content", "docs", "code", "release", "ops", "context"]
+              "enum": [
+                "analysis",
+                "content",
+                "docs",
+                "code",
+                "release",
+                "ops",
+                "context"
+              ]
             },
             "mutation_scope": {
               "type": "string",
-              "enum": ["none", "docs", "code", "release", "ops", "context"]
+              "enum": [
+                "none",
+                "docs",
+                "code",
+                "release",
+                "ops",
+                "context"
+              ]
             },
             "risk_flags": {
               "type": "array",
@@ -69,23 +84,6 @@
                 "minLength": 1
               }
             },
-            "blueprint_request": {
-              "type": "string",
-              "enum": [
-                "analysis.light",
-                "content.light",
-                "docs.change",
-                "code.direct",
-                "code.branch_pr",
-                "performance.benchmark",
-                "quality.regression",
-                "context.assimilation",
-                "context.maximum_assimilation",
-                "post_run.improvement_review",
-                "release.strict",
-                "ops.approval"
-              ]
-            },
             "execution": {
               "anyOf": [
                 {
@@ -97,7 +95,10 @@
                     },
                     "preferred_mode": {
                       "type": "string",
-                      "enum": ["direct", "branch_pr"]
+                      "enum": [
+                        "direct",
+                        "branch_pr"
+                      ]
                     },
                     "scope_roots": {
                       "type": "array",
@@ -140,7 +141,11 @@
                     },
                     "reversibility": {
                       "type": "string",
-                      "enum": ["reversible", "recovery_required", "irreversible"]
+                      "enum": [
+                        "reversible",
+                        "recovery_required",
+                        "irreversible"
+                      ]
                     },
                     "rationale": {
                       "minItems": 1,
@@ -152,11 +157,17 @@
                     },
                     "requirements_uncertainty": {
                       "type": "string",
-                      "enum": ["bounded", "material"]
+                      "enum": [
+                        "bounded",
+                        "material"
+                      ]
                     },
                     "implementation_uncertainty": {
                       "type": "string",
-                      "enum": ["bounded", "material"]
+                      "enum": [
+                        "bounded",
+                        "material"
+                      ]
                     }
                   },
                   "required": [
@@ -181,7 +192,10 @@
                     },
                     "preferred_mode": {
                       "type": "string",
-                      "enum": ["direct", "branch_pr"]
+                      "enum": [
+                        "direct",
+                        "branch_pr"
+                      ]
                     },
                     "scope_roots": {
                       "type": "array",
@@ -224,7 +238,11 @@
                     },
                     "reversibility": {
                       "type": "string",
-                      "enum": ["reversible", "recovery_required", "irreversible"]
+                      "enum": [
+                        "reversible",
+                        "recovery_required",
+                        "irreversible"
+                      ]
                     },
                     "rationale": {
                       "minItems": 1,
@@ -236,7 +254,10 @@
                     },
                     "uncertainty": {
                       "type": "string",
-                      "enum": ["bounded", "material"]
+                      "enum": [
+                        "bounded",
+                        "material"
+                      ]
                     }
                   },
                   "required": [
@@ -254,7 +275,12 @@
               ]
             }
           },
-          "required": ["task_kind", "mutation_scope", "risk_flags", "tags"],
+          "required": [
+            "task_kind",
+            "mutation_scope",
+            "risk_flags",
+            "tags"
+          ],
           "additionalProperties": false
         },
         "task_plan_proposal": {
@@ -300,7 +326,11 @@
                           ]
                         }
                       },
-                      "required": ["kind", "sha", "ref"],
+                      "required": [
+                        "kind",
+                        "sha",
+                        "ref"
+                      ],
                       "additionalProperties": false
                     },
                     {
@@ -321,7 +351,10 @@
                           ]
                         }
                       },
-                      "required": ["kind", "ref"],
+                      "required": [
+                        "kind",
+                        "ref"
+                      ],
                       "additionalProperties": false
                     },
                     {
@@ -339,7 +372,10 @@
                           "type": "string"
                         }
                       },
-                      "required": ["kind", "reason_code"],
+                      "required": [
+                        "kind",
+                        "reason_code"
+                      ],
                       "additionalProperties": false
                     }
                   ]
@@ -477,7 +513,12 @@
                               }
                             }
                           },
-                          "required": ["id", "description", "required", "check_ids"],
+                          "required": [
+                            "id",
+                            "description",
+                            "required",
+                            "check_ids"
+                          ],
                           "additionalProperties": false
                         }
                       },
@@ -512,7 +553,12 @@
                                   }
                                 }
                               },
-                              "required": ["id", "description", "required", "check_ids"],
+                              "required": [
+                                "id",
+                                "description",
+                                "required",
+                                "check_ids"
+                              ],
                               "additionalProperties": false
                             }
                           },
@@ -527,7 +573,12 @@
                                 },
                                 "kind": {
                                   "type": "string",
-                                  "enum": ["structural", "deterministic", "semantic", "provider"]
+                                  "enum": [
+                                    "structural",
+                                    "deterministic",
+                                    "semantic",
+                                    "provider"
+                                  ]
                                 },
                                 "required": {
                                   "type": "boolean"
@@ -546,7 +597,12 @@
                                   "maximum": 9007199254740991
                                 }
                               },
-                              "required": ["id", "kind", "required", "capability"],
+                              "required": [
+                                "id",
+                                "kind",
+                                "required",
+                                "capability"
+                              ],
                               "additionalProperties": false
                             }
                           },
@@ -600,7 +656,11 @@
                       },
                       "risk": {
                         "type": "string",
-                        "enum": ["low", "medium", "high"]
+                        "enum": [
+                          "low",
+                          "medium",
+                          "high"
+                        ]
                       },
                       "capabilities": {
                         "type": "array",
@@ -616,7 +676,12 @@
                           "properties": {
                             "kind": {
                               "type": "string",
-                              "enum": ["path", "workspace", "provider_queue", "exclusive"]
+                              "enum": [
+                                "path",
+                                "workspace",
+                                "provider_queue",
+                                "exclusive"
+                              ]
                             },
                             "resource": {
                               "type": "string",
@@ -624,10 +689,18 @@
                             },
                             "mode": {
                               "type": "string",
-                              "enum": ["read", "write", "exclusive"]
+                              "enum": [
+                                "read",
+                                "write",
+                                "exclusive"
+                              ]
                             }
                           },
-                          "required": ["kind", "resource", "mode"],
+                          "required": [
+                            "kind",
+                            "resource",
+                            "mode"
+                          ],
                           "additionalProperties": false
                         }
                       },
@@ -660,7 +733,10 @@
                   }
                 }
               },
-              "required": ["schema_version", "work_items"],
+              "required": [
+                "schema_version",
+                "work_items"
+              ],
               "additionalProperties": false
             },
             "assumptions": {
@@ -706,7 +782,12 @@
                         }
                       }
                     },
-                    "required": ["id", "description", "required", "check_ids"],
+                    "required": [
+                      "id",
+                      "description",
+                      "required",
+                      "check_ids"
+                    ],
                     "additionalProperties": false
                   }
                 },
@@ -721,7 +802,12 @@
                       },
                       "kind": {
                         "type": "string",
-                        "enum": ["structural", "deterministic", "semantic", "provider"]
+                        "enum": [
+                          "structural",
+                          "deterministic",
+                          "semantic",
+                          "provider"
+                        ]
                       },
                       "required": {
                         "type": "boolean"
@@ -740,13 +826,23 @@
                         "maximum": 9007199254740991
                       }
                     },
-                    "required": ["id", "kind", "required", "capability"],
+                    "required": [
+                      "id",
+                      "kind",
+                      "required",
+                      "capability"
+                    ],
                     "additionalProperties": false
                   }
                 },
                 "evidence_fingerprint": {}
               },
-              "required": ["schema_version", "criteria", "checks", "evidence_fingerprint"],
+              "required": [
+                "schema_version",
+                "criteria",
+                "checks",
+                "evidence_fingerprint"
+              ],
               "additionalProperties": false
             }
           },
@@ -1049,7 +1145,11 @@
                       },
                       "role": {
                         "type": "string",
-                        "enum": ["PLANNER", "EXECUTOR", "EVALUATOR"]
+                        "enum": [
+                          "PLANNER",
+                          "EXECUTOR",
+                          "EVALUATOR"
+                        ]
                       }
                     },
                     "required": [
@@ -1074,7 +1174,9 @@
               }
             }
           },
-          "required": ["work_items"],
+          "required": [
+            "work_items"
+          ],
           "additionalProperties": false
         },
         "canonical_outputs": {
@@ -1095,7 +1197,11 @@
                 "pattern": "^sha256:[a-f0-9]{64}$"
               }
             },
-            "required": ["id", "kind", "digest"],
+            "required": [
+              "id",
+              "kind",
+              "digest"
+            ],
             "additionalProperties": false
           }
         },
@@ -1143,7 +1249,12 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "enum": ["split", "reorder", "add_test", "clarify"]
+                "enum": [
+                  "split",
+                  "reorder",
+                  "add_test",
+                  "clarify"
+                ]
               }
             }
           },
@@ -1171,14 +1282,21 @@
               },
               "claimed_status": {
                 "type": "string",
-                "enum": ["passed", "failed", "not_run"]
+                "enum": [
+                  "passed",
+                  "failed",
+                  "not_run"
+                ]
               },
               "details": {
                 "type": "string",
                 "minLength": 1
               }
             },
-            "required": ["check", "claimed_status"],
+            "required": [
+              "check",
+              "claimed_status"
+            ],
             "additionalProperties": false
           }
         },
@@ -1187,7 +1305,12 @@
           "properties": {
             "verdict": {
               "type": "string",
-              "enum": ["pass", "rework", "blocked", "human_review"]
+              "enum": [
+                "pass",
+                "rework",
+                "blocked",
+                "human_review"
+              ]
             },
             "missing_tests": {
               "type": "array",
@@ -1212,7 +1335,12 @@
               "minLength": 1
             }
           },
-          "required": ["verdict", "missing_tests", "hidden_assumptions", "residual_risks"],
+          "required": [
+            "verdict",
+            "missing_tests",
+            "hidden_assumptions",
+            "residual_risks"
+          ],
           "additionalProperties": false
         },
         "status": {
@@ -1270,7 +1398,12 @@
                       }
                     }
                   },
-                  "required": ["schema_version", "rationale", "scope_roots", "repository_effects"],
+                  "required": [
+                    "schema_version",
+                    "rationale",
+                    "scope_roots",
+                    "repository_effects"
+                  ],
                   "additionalProperties": false
                 },
                 {
@@ -1311,13 +1444,20 @@
                       }
                     }
                   },
-                  "required": ["schema_version", "rationale", "scope_roots", "repository_effects"],
+                  "required": [
+                    "schema_version",
+                    "rationale",
+                    "scope_roots",
+                    "repository_effects"
+                  ],
                   "additionalProperties": false
                 }
               ]
             }
           },
-          "required": ["summary"],
+          "required": [
+            "summary"
+          ],
           "additionalProperties": false
         },
         "knowledge_request": {
@@ -1341,11 +1481,20 @@
             },
             "desired_kind": {
               "type": "string",
-              "enum": ["any", "wiki", "source", "fact", "entity", "edge"]
+              "enum": [
+                "any",
+                "wiki",
+                "source",
+                "fact",
+                "entity",
+                "edge"
+              ]
             },
             "scope": {
               "type": "string",
-              "enum": ["task_context"]
+              "enum": [
+                "task_context"
+              ]
             },
             "blocking": {
               "type": "boolean"
@@ -1411,11 +1560,26 @@
           "properties": {
             "task_kind": {
               "type": "string",
-              "enum": ["analysis", "content", "docs", "code", "release", "ops", "context"]
+              "enum": [
+                "analysis",
+                "content",
+                "docs",
+                "code",
+                "release",
+                "ops",
+                "context"
+              ]
             },
             "mutation_scope": {
               "type": "string",
-              "enum": ["none", "docs", "code", "release", "ops", "context"]
+              "enum": [
+                "none",
+                "docs",
+                "code",
+                "release",
+                "ops",
+                "context"
+              ]
             },
             "risk_flags": {
               "type": "array",
@@ -1440,23 +1604,6 @@
                 "minLength": 1
               }
             },
-            "blueprint_request": {
-              "type": "string",
-              "enum": [
-                "analysis.light",
-                "content.light",
-                "docs.change",
-                "code.direct",
-                "code.branch_pr",
-                "performance.benchmark",
-                "quality.regression",
-                "context.assimilation",
-                "context.maximum_assimilation",
-                "post_run.improvement_review",
-                "release.strict",
-                "ops.approval"
-              ]
-            },
             "execution": {
               "anyOf": [
                 {
@@ -1468,7 +1615,10 @@
                     },
                     "preferred_mode": {
                       "type": "string",
-                      "enum": ["direct", "branch_pr"]
+                      "enum": [
+                        "direct",
+                        "branch_pr"
+                      ]
                     },
                     "scope_roots": {
                       "type": "array",
@@ -1511,7 +1661,11 @@
                     },
                     "reversibility": {
                       "type": "string",
-                      "enum": ["reversible", "recovery_required", "irreversible"]
+                      "enum": [
+                        "reversible",
+                        "recovery_required",
+                        "irreversible"
+                      ]
                     },
                     "rationale": {
                       "minItems": 1,
@@ -1523,11 +1677,17 @@
                     },
                     "requirements_uncertainty": {
                       "type": "string",
-                      "enum": ["bounded", "material"]
+                      "enum": [
+                        "bounded",
+                        "material"
+                      ]
                     },
                     "implementation_uncertainty": {
                       "type": "string",
-                      "enum": ["bounded", "material"]
+                      "enum": [
+                        "bounded",
+                        "material"
+                      ]
                     }
                   },
                   "required": [
@@ -1552,7 +1712,10 @@
                     },
                     "preferred_mode": {
                       "type": "string",
-                      "enum": ["direct", "branch_pr"]
+                      "enum": [
+                        "direct",
+                        "branch_pr"
+                      ]
                     },
                     "scope_roots": {
                       "type": "array",
@@ -1595,7 +1758,11 @@
                     },
                     "reversibility": {
                       "type": "string",
-                      "enum": ["reversible", "recovery_required", "irreversible"]
+                      "enum": [
+                        "reversible",
+                        "recovery_required",
+                        "irreversible"
+                      ]
                     },
                     "rationale": {
                       "minItems": 1,
@@ -1607,7 +1774,10 @@
                     },
                     "uncertainty": {
                       "type": "string",
-                      "enum": ["bounded", "material"]
+                      "enum": [
+                        "bounded",
+                        "material"
+                      ]
                     }
                   },
                   "required": [
@@ -1625,7 +1795,12 @@
               ]
             }
           },
-          "required": ["task_kind", "mutation_scope", "risk_flags", "tags"],
+          "required": [
+            "task_kind",
+            "mutation_scope",
+            "risk_flags",
+            "tags"
+          ],
           "additionalProperties": false
         },
         "task_plan_proposal": {
@@ -1671,7 +1846,11 @@
                           ]
                         }
                       },
-                      "required": ["kind", "sha", "ref"],
+                      "required": [
+                        "kind",
+                        "sha",
+                        "ref"
+                      ],
                       "additionalProperties": false
                     },
                     {
@@ -1692,7 +1871,10 @@
                           ]
                         }
                       },
-                      "required": ["kind", "ref"],
+                      "required": [
+                        "kind",
+                        "ref"
+                      ],
                       "additionalProperties": false
                     },
                     {
@@ -1710,7 +1892,10 @@
                           "type": "string"
                         }
                       },
-                      "required": ["kind", "reason_code"],
+                      "required": [
+                        "kind",
+                        "reason_code"
+                      ],
                       "additionalProperties": false
                     }
                   ]
@@ -1848,7 +2033,12 @@
                               }
                             }
                           },
-                          "required": ["id", "description", "required", "check_ids"],
+                          "required": [
+                            "id",
+                            "description",
+                            "required",
+                            "check_ids"
+                          ],
                           "additionalProperties": false
                         }
                       },
@@ -1883,7 +2073,12 @@
                                   }
                                 }
                               },
-                              "required": ["id", "description", "required", "check_ids"],
+                              "required": [
+                                "id",
+                                "description",
+                                "required",
+                                "check_ids"
+                              ],
                               "additionalProperties": false
                             }
                           },
@@ -1898,7 +2093,12 @@
                                 },
                                 "kind": {
                                   "type": "string",
-                                  "enum": ["structural", "deterministic", "semantic", "provider"]
+                                  "enum": [
+                                    "structural",
+                                    "deterministic",
+                                    "semantic",
+                                    "provider"
+                                  ]
                                 },
                                 "required": {
                                   "type": "boolean"
@@ -1917,7 +2117,12 @@
                                   "maximum": 9007199254740991
                                 }
                               },
-                              "required": ["id", "kind", "required", "capability"],
+                              "required": [
+                                "id",
+                                "kind",
+                                "required",
+                                "capability"
+                              ],
                               "additionalProperties": false
                             }
                           },
@@ -1971,7 +2176,11 @@
                       },
                       "risk": {
                         "type": "string",
-                        "enum": ["low", "medium", "high"]
+                        "enum": [
+                          "low",
+                          "medium",
+                          "high"
+                        ]
                       },
                       "capabilities": {
                         "type": "array",
@@ -1987,7 +2196,12 @@
                           "properties": {
                             "kind": {
                               "type": "string",
-                              "enum": ["path", "workspace", "provider_queue", "exclusive"]
+                              "enum": [
+                                "path",
+                                "workspace",
+                                "provider_queue",
+                                "exclusive"
+                              ]
                             },
                             "resource": {
                               "type": "string",
@@ -1995,10 +2209,18 @@
                             },
                             "mode": {
                               "type": "string",
-                              "enum": ["read", "write", "exclusive"]
+                              "enum": [
+                                "read",
+                                "write",
+                                "exclusive"
+                              ]
                             }
                           },
-                          "required": ["kind", "resource", "mode"],
+                          "required": [
+                            "kind",
+                            "resource",
+                            "mode"
+                          ],
                           "additionalProperties": false
                         }
                       },
@@ -2031,7 +2253,10 @@
                   }
                 }
               },
-              "required": ["schema_version", "work_items"],
+              "required": [
+                "schema_version",
+                "work_items"
+              ],
               "additionalProperties": false
             },
             "assumptions": {
@@ -2077,7 +2302,12 @@
                         }
                       }
                     },
-                    "required": ["id", "description", "required", "check_ids"],
+                    "required": [
+                      "id",
+                      "description",
+                      "required",
+                      "check_ids"
+                    ],
                     "additionalProperties": false
                   }
                 },
@@ -2092,7 +2322,12 @@
                       },
                       "kind": {
                         "type": "string",
-                        "enum": ["structural", "deterministic", "semantic", "provider"]
+                        "enum": [
+                          "structural",
+                          "deterministic",
+                          "semantic",
+                          "provider"
+                        ]
                       },
                       "required": {
                         "type": "boolean"
@@ -2111,13 +2346,23 @@
                         "maximum": 9007199254740991
                       }
                     },
-                    "required": ["id", "kind", "required", "capability"],
+                    "required": [
+                      "id",
+                      "kind",
+                      "required",
+                      "capability"
+                    ],
                     "additionalProperties": false
                   }
                 },
                 "evidence_fingerprint": {}
               },
-              "required": ["schema_version", "criteria", "checks", "evidence_fingerprint"],
+              "required": [
+                "schema_version",
+                "criteria",
+                "checks",
+                "evidence_fingerprint"
+              ],
               "additionalProperties": false
             }
           },
@@ -2420,7 +2665,11 @@
                       },
                       "role": {
                         "type": "string",
-                        "enum": ["PLANNER", "EXECUTOR", "EVALUATOR"]
+                        "enum": [
+                          "PLANNER",
+                          "EXECUTOR",
+                          "EVALUATOR"
+                        ]
                       }
                     },
                     "required": [
@@ -2445,7 +2694,9 @@
               }
             }
           },
-          "required": ["work_items"],
+          "required": [
+            "work_items"
+          ],
           "additionalProperties": false
         },
         "canonical_outputs": {
@@ -2466,7 +2717,11 @@
                 "pattern": "^sha256:[a-f0-9]{64}$"
               }
             },
-            "required": ["id", "kind", "digest"],
+            "required": [
+              "id",
+              "kind",
+              "digest"
+            ],
             "additionalProperties": false
           }
         },
@@ -2514,7 +2769,12 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "enum": ["split", "reorder", "add_test", "clarify"]
+                "enum": [
+                  "split",
+                  "reorder",
+                  "add_test",
+                  "clarify"
+                ]
               }
             }
           },
@@ -2542,14 +2802,21 @@
               },
               "claimed_status": {
                 "type": "string",
-                "enum": ["passed", "failed", "not_run"]
+                "enum": [
+                  "passed",
+                  "failed",
+                  "not_run"
+                ]
               },
               "details": {
                 "type": "string",
                 "minLength": 1
               }
             },
-            "required": ["check", "claimed_status"],
+            "required": [
+              "check",
+              "claimed_status"
+            ],
             "additionalProperties": false
           }
         },
@@ -2558,7 +2825,12 @@
           "properties": {
             "verdict": {
               "type": "string",
-              "enum": ["pass", "rework", "blocked", "human_review"]
+              "enum": [
+                "pass",
+                "rework",
+                "blocked",
+                "human_review"
+              ]
             },
             "missing_tests": {
               "type": "array",
@@ -2583,7 +2855,12 @@
               "minLength": 1
             }
           },
-          "required": ["verdict", "missing_tests", "hidden_assumptions", "residual_risks"],
+          "required": [
+            "verdict",
+            "missing_tests",
+            "hidden_assumptions",
+            "residual_risks"
+          ],
           "additionalProperties": false
         },
         "status": {
@@ -2641,7 +2918,12 @@
                       }
                     }
                   },
-                  "required": ["schema_version", "rationale", "scope_roots", "repository_effects"],
+                  "required": [
+                    "schema_version",
+                    "rationale",
+                    "scope_roots",
+                    "repository_effects"
+                  ],
                   "additionalProperties": false
                 },
                 {
@@ -2682,13 +2964,20 @@
                       }
                     }
                   },
-                  "required": ["schema_version", "rationale", "scope_roots", "repository_effects"],
+                  "required": [
+                    "schema_version",
+                    "rationale",
+                    "scope_roots",
+                    "repository_effects"
+                  ],
                   "additionalProperties": false
                 }
               ]
             }
           },
-          "required": ["summary"],
+          "required": [
+            "summary"
+          ],
           "additionalProperties": false
         },
         "knowledge_request": {
@@ -2712,11 +3001,20 @@
             },
             "desired_kind": {
               "type": "string",
-              "enum": ["any", "wiki", "source", "fact", "entity", "edge"]
+              "enum": [
+                "any",
+                "wiki",
+                "source",
+                "fact",
+                "entity",
+                "edge"
+              ]
             },
             "scope": {
               "type": "string",
-              "enum": ["task_context"]
+              "enum": [
+                "task_context"
+              ]
             },
             "blocking": {
               "type": "boolean"
@@ -2782,11 +3080,26 @@
           "properties": {
             "task_kind": {
               "type": "string",
-              "enum": ["analysis", "content", "docs", "code", "release", "ops", "context"]
+              "enum": [
+                "analysis",
+                "content",
+                "docs",
+                "code",
+                "release",
+                "ops",
+                "context"
+              ]
             },
             "mutation_scope": {
               "type": "string",
-              "enum": ["none", "docs", "code", "release", "ops", "context"]
+              "enum": [
+                "none",
+                "docs",
+                "code",
+                "release",
+                "ops",
+                "context"
+              ]
             },
             "risk_flags": {
               "type": "array",
@@ -2811,23 +3124,6 @@
                 "minLength": 1
               }
             },
-            "blueprint_request": {
-              "type": "string",
-              "enum": [
-                "analysis.light",
-                "content.light",
-                "docs.change",
-                "code.direct",
-                "code.branch_pr",
-                "performance.benchmark",
-                "quality.regression",
-                "context.assimilation",
-                "context.maximum_assimilation",
-                "post_run.improvement_review",
-                "release.strict",
-                "ops.approval"
-              ]
-            },
             "execution": {
               "anyOf": [
                 {
@@ -2839,7 +3135,10 @@
                     },
                     "preferred_mode": {
                       "type": "string",
-                      "enum": ["direct", "branch_pr"]
+                      "enum": [
+                        "direct",
+                        "branch_pr"
+                      ]
                     },
                     "scope_roots": {
                       "type": "array",
@@ -2882,7 +3181,11 @@
                     },
                     "reversibility": {
                       "type": "string",
-                      "enum": ["reversible", "recovery_required", "irreversible"]
+                      "enum": [
+                        "reversible",
+                        "recovery_required",
+                        "irreversible"
+                      ]
                     },
                     "rationale": {
                       "minItems": 1,
@@ -2894,11 +3197,17 @@
                     },
                     "requirements_uncertainty": {
                       "type": "string",
-                      "enum": ["bounded", "material"]
+                      "enum": [
+                        "bounded",
+                        "material"
+                      ]
                     },
                     "implementation_uncertainty": {
                       "type": "string",
-                      "enum": ["bounded", "material"]
+                      "enum": [
+                        "bounded",
+                        "material"
+                      ]
                     }
                   },
                   "required": [
@@ -2923,7 +3232,10 @@
                     },
                     "preferred_mode": {
                       "type": "string",
-                      "enum": ["direct", "branch_pr"]
+                      "enum": [
+                        "direct",
+                        "branch_pr"
+                      ]
                     },
                     "scope_roots": {
                       "type": "array",
@@ -2966,7 +3278,11 @@
                     },
                     "reversibility": {
                       "type": "string",
-                      "enum": ["reversible", "recovery_required", "irreversible"]
+                      "enum": [
+                        "reversible",
+                        "recovery_required",
+                        "irreversible"
+                      ]
                     },
                     "rationale": {
                       "minItems": 1,
@@ -2978,7 +3294,10 @@
                     },
                     "uncertainty": {
                       "type": "string",
-                      "enum": ["bounded", "material"]
+                      "enum": [
+                        "bounded",
+                        "material"
+                      ]
                     }
                   },
                   "required": [
@@ -2996,7 +3315,12 @@
               ]
             }
           },
-          "required": ["task_kind", "mutation_scope", "risk_flags", "tags"],
+          "required": [
+            "task_kind",
+            "mutation_scope",
+            "risk_flags",
+            "tags"
+          ],
           "additionalProperties": false
         },
         "task_plan_proposal": {
@@ -3042,7 +3366,11 @@
                           ]
                         }
                       },
-                      "required": ["kind", "sha", "ref"],
+                      "required": [
+                        "kind",
+                        "sha",
+                        "ref"
+                      ],
                       "additionalProperties": false
                     },
                     {
@@ -3063,7 +3391,10 @@
                           ]
                         }
                       },
-                      "required": ["kind", "ref"],
+                      "required": [
+                        "kind",
+                        "ref"
+                      ],
                       "additionalProperties": false
                     },
                     {
@@ -3081,7 +3412,10 @@
                           "type": "string"
                         }
                       },
-                      "required": ["kind", "reason_code"],
+                      "required": [
+                        "kind",
+                        "reason_code"
+                      ],
                       "additionalProperties": false
                     }
                   ]
@@ -3219,7 +3553,12 @@
                               }
                             }
                           },
-                          "required": ["id", "description", "required", "check_ids"],
+                          "required": [
+                            "id",
+                            "description",
+                            "required",
+                            "check_ids"
+                          ],
                           "additionalProperties": false
                         }
                       },
@@ -3254,7 +3593,12 @@
                                   }
                                 }
                               },
-                              "required": ["id", "description", "required", "check_ids"],
+                              "required": [
+                                "id",
+                                "description",
+                                "required",
+                                "check_ids"
+                              ],
                               "additionalProperties": false
                             }
                           },
@@ -3269,7 +3613,12 @@
                                 },
                                 "kind": {
                                   "type": "string",
-                                  "enum": ["structural", "deterministic", "semantic", "provider"]
+                                  "enum": [
+                                    "structural",
+                                    "deterministic",
+                                    "semantic",
+                                    "provider"
+                                  ]
                                 },
                                 "required": {
                                   "type": "boolean"
@@ -3288,7 +3637,12 @@
                                   "maximum": 9007199254740991
                                 }
                               },
-                              "required": ["id", "kind", "required", "capability"],
+                              "required": [
+                                "id",
+                                "kind",
+                                "required",
+                                "capability"
+                              ],
                               "additionalProperties": false
                             }
                           },
@@ -3342,7 +3696,11 @@
                       },
                       "risk": {
                         "type": "string",
-                        "enum": ["low", "medium", "high"]
+                        "enum": [
+                          "low",
+                          "medium",
+                          "high"
+                        ]
                       },
                       "capabilities": {
                         "type": "array",
@@ -3358,7 +3716,12 @@
                           "properties": {
                             "kind": {
                               "type": "string",
-                              "enum": ["path", "workspace", "provider_queue", "exclusive"]
+                              "enum": [
+                                "path",
+                                "workspace",
+                                "provider_queue",
+                                "exclusive"
+                              ]
                             },
                             "resource": {
                               "type": "string",
@@ -3366,10 +3729,18 @@
                             },
                             "mode": {
                               "type": "string",
-                              "enum": ["read", "write", "exclusive"]
+                              "enum": [
+                                "read",
+                                "write",
+                                "exclusive"
+                              ]
                             }
                           },
-                          "required": ["kind", "resource", "mode"],
+                          "required": [
+                            "kind",
+                            "resource",
+                            "mode"
+                          ],
                           "additionalProperties": false
                         }
                       },
@@ -3402,7 +3773,10 @@
                   }
                 }
               },
-              "required": ["schema_version", "work_items"],
+              "required": [
+                "schema_version",
+                "work_items"
+              ],
               "additionalProperties": false
             },
             "assumptions": {
@@ -3448,7 +3822,12 @@
                         }
                       }
                     },
-                    "required": ["id", "description", "required", "check_ids"],
+                    "required": [
+                      "id",
+                      "description",
+                      "required",
+                      "check_ids"
+                    ],
                     "additionalProperties": false
                   }
                 },
@@ -3463,7 +3842,12 @@
                       },
                       "kind": {
                         "type": "string",
-                        "enum": ["structural", "deterministic", "semantic", "provider"]
+                        "enum": [
+                          "structural",
+                          "deterministic",
+                          "semantic",
+                          "provider"
+                        ]
                       },
                       "required": {
                         "type": "boolean"
@@ -3482,13 +3866,23 @@
                         "maximum": 9007199254740991
                       }
                     },
-                    "required": ["id", "kind", "required", "capability"],
+                    "required": [
+                      "id",
+                      "kind",
+                      "required",
+                      "capability"
+                    ],
                     "additionalProperties": false
                   }
                 },
                 "evidence_fingerprint": {}
               },
-              "required": ["schema_version", "criteria", "checks", "evidence_fingerprint"],
+              "required": [
+                "schema_version",
+                "criteria",
+                "checks",
+                "evidence_fingerprint"
+              ],
               "additionalProperties": false
             }
           },
@@ -3791,7 +4185,11 @@
                       },
                       "role": {
                         "type": "string",
-                        "enum": ["PLANNER", "EXECUTOR", "EVALUATOR"]
+                        "enum": [
+                          "PLANNER",
+                          "EXECUTOR",
+                          "EVALUATOR"
+                        ]
                       }
                     },
                     "required": [
@@ -3816,7 +4214,9 @@
               }
             }
           },
-          "required": ["work_items"],
+          "required": [
+            "work_items"
+          ],
           "additionalProperties": false
         },
         "canonical_outputs": {
@@ -3837,7 +4237,11 @@
                 "pattern": "^sha256:[a-f0-9]{64}$"
               }
             },
-            "required": ["id", "kind", "digest"],
+            "required": [
+              "id",
+              "kind",
+              "digest"
+            ],
             "additionalProperties": false
           }
         },
@@ -3885,7 +4289,12 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "enum": ["split", "reorder", "add_test", "clarify"]
+                "enum": [
+                  "split",
+                  "reorder",
+                  "add_test",
+                  "clarify"
+                ]
               }
             }
           },
@@ -3913,14 +4322,21 @@
               },
               "claimed_status": {
                 "type": "string",
-                "enum": ["passed", "failed", "not_run"]
+                "enum": [
+                  "passed",
+                  "failed",
+                  "not_run"
+                ]
               },
               "details": {
                 "type": "string",
                 "minLength": 1
               }
             },
-            "required": ["check", "claimed_status"],
+            "required": [
+              "check",
+              "claimed_status"
+            ],
             "additionalProperties": false
           }
         },
@@ -3929,7 +4345,12 @@
           "properties": {
             "verdict": {
               "type": "string",
-              "enum": ["pass", "rework", "blocked", "human_review"]
+              "enum": [
+                "pass",
+                "rework",
+                "blocked",
+                "human_review"
+              ]
             },
             "missing_tests": {
               "type": "array",
@@ -3954,12 +4375,20 @@
               "minLength": 1
             }
           },
-          "required": ["verdict", "missing_tests", "hidden_assumptions", "residual_risks"],
+          "required": [
+            "verdict",
+            "missing_tests",
+            "hidden_assumptions",
+            "residual_risks"
+          ],
           "additionalProperties": false
         },
         "status": {
           "type": "string",
-          "enum": ["completed", "failed"]
+          "enum": [
+            "completed",
+            "failed"
+          ]
         },
         "blocker": {
           "type": "object",
@@ -4012,7 +4441,12 @@
                       }
                     }
                   },
-                  "required": ["schema_version", "rationale", "scope_roots", "repository_effects"],
+                  "required": [
+                    "schema_version",
+                    "rationale",
+                    "scope_roots",
+                    "repository_effects"
+                  ],
                   "additionalProperties": false
                 },
                 {
@@ -4053,13 +4487,20 @@
                       }
                     }
                   },
-                  "required": ["schema_version", "rationale", "scope_roots", "repository_effects"],
+                  "required": [
+                    "schema_version",
+                    "rationale",
+                    "scope_roots",
+                    "repository_effects"
+                  ],
                   "additionalProperties": false
                 }
               ]
             }
           },
-          "required": ["summary"],
+          "required": [
+            "summary"
+          ],
           "additionalProperties": false
         },
         "knowledge_request": {
@@ -4083,11 +4524,20 @@
             },
             "desired_kind": {
               "type": "string",
-              "enum": ["any", "wiki", "source", "fact", "entity", "edge"]
+              "enum": [
+                "any",
+                "wiki",
+                "source",
+                "fact",
+                "entity",
+                "edge"
+              ]
             },
             "scope": {
               "type": "string",
-              "enum": ["task_context"]
+              "enum": [
+                "task_context"
+              ]
             },
             "blocking": {
               "type": "boolean"

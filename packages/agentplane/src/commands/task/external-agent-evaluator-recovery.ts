@@ -128,24 +128,16 @@ export async function isRecoverableAppliedEvaluatorResult(opts: {
   if (!(await isExternalEvaluatorResultApplied(opts))) return false;
   if (!exchange.baseline.head || !exchange.evaluator_work_order_ref) return false;
   const current = opts.decision.workflowStep.preconditionFingerprint;
-  if (current.schema_version !== order.state_fingerprint.schema_version) return false;
+  if (current.schema_version !== 2 || order.state_fingerprint.schema_version !== 2) return false;
   // The next operation changes route authority. The exact plan and grant stay in the task comparison.
   for (const key of ["policy", "knowledge", "provider"] as const) {
     if (current.components[key].digest !== order.state_fingerprint.components[key].digest)
       return false;
   }
-  if (current.schema_version === 2 && order.state_fingerprint.schema_version === 2) {
-    for (const key of ["plan", "capability"] as const) {
-      if (current.components[key].digest !== order.state_fingerprint.components[key].digest)
-        return false;
-    }
+  for (const key of ["plan", "capability"] as const) {
+    if (current.components[key].digest !== order.state_fingerprint.components[key].digest)
+      return false;
   }
-  if (
-    current.schema_version === 1 &&
-    order.state_fingerprint.schema_version === 1 &&
-    current.components.blueprint.digest !== order.state_fingerprint.components.blueprint.digest
-  )
-    return false;
   const frozenRef = order.required_inputs.find((input) => input.id === "evaluator-work-order");
   const frozenBytes = await readFile(exchange.evaluator_work_order_ref);
   if (digest(frozenBytes) !== frozenRef?.digest) return false;

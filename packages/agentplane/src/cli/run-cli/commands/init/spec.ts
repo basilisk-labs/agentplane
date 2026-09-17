@@ -3,7 +3,6 @@ import { usageError } from "../../../spec/errors.js";
 
 import { normalizeExecutionProfile, normalizeSetupProfile } from "./presets.js";
 import {
-  parseBlueprintsSelectionForInit,
   parseBooleanValueForInit,
   parseDirectCloseDirtyPolicyForInit,
   parseRecipesSelectionForInit,
@@ -187,13 +186,6 @@ export const initSpec: CommandSpec<InitParsed> = {
       description: "Optional cached recipes to vendor during init (comma-separated), or 'none'.",
     },
     {
-      kind: "string",
-      name: "blueprints",
-      valueHint: "<none|id1,pack:id2,...>",
-      description:
-        "Optional cached blueprint catalog entries to install and activate during init (comma-separated), or 'none'. Prefix with blueprint: or pack: to disambiguate.",
-    },
-    {
       kind: "boolean",
       name: "force",
       default: false,
@@ -297,7 +289,6 @@ export const initSpec: CommandSpec<InitParsed> = {
     const feedbackGithubIssuesRaw = raw.opts["feedback-github-issues"] as string | undefined;
     const feedbackAnonymousCloudRaw = raw.opts["feedback-anonymous-cloud"] as string | undefined;
     const recipesRaw = raw.opts.recipes as string | undefined;
-    const blueprintsRaw = raw.opts.blueprints as string | undefined;
 
     const initModeFlag =
       raw.opts.quick === true
@@ -364,8 +355,6 @@ export const initSpec: CommandSpec<InitParsed> = {
             ),
       compatibilityWarnings: profileCompatibilityWarnings(raw.opts),
       recipes: recipesRaw === undefined ? undefined : parseRecipesSelectionForInit(recipesRaw),
-      blueprints:
-        blueprintsRaw === undefined ? undefined : parseBlueprintsSelectionForInit(blueprintsRaw),
       force: raw.opts.force === true,
       backup: raw.opts.backup === true,
       yes:

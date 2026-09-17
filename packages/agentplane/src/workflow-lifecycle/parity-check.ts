@@ -1,13 +1,8 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-import { requireBlueprint } from "../blueprints/registry.js";
 import { renderQuickstart } from "../cli/command-guide.js";
-import {
-  CODE_WORKFLOW_LIFECYCLE_CONTRACTS,
-  lifecycleBlueprintNodeKinds,
-  type WorkflowLifecycleContract,
-} from "./contract.js";
+import { CODE_WORKFLOW_LIFECYCLE_CONTRACTS } from "./contract.js";
 
 type LifecycleParityFinding = {
   code: string;
@@ -100,22 +95,6 @@ function hasOrderedSurface(text: string, order: readonly string[]): boolean {
   );
 }
 
-function checkBlueprintRoute(contract: WorkflowLifecycleContract): LifecycleParityFinding[] {
-  const blueprint = requireBlueprint(contract.blueprintId);
-  const actual = blueprint.nodes.map((node) => node.kind);
-  const expected = lifecycleBlueprintNodeKinds(contract.mode);
-  if (actual.join(" -> ") === expected.join(" -> ")) return [];
-
-  return [
-    {
-      code: "blueprint_lifecycle_order_drift",
-      message: `${contract.blueprintId} route drifted from lifecycle contract: expected ${expected.join(
-        " -> ",
-      )}; actual ${actual.join(" -> ")}`,
-    },
-  ];
-}
-
 async function checkTextSurface(
   root: string,
   check: SurfaceCheck,
@@ -176,11 +155,7 @@ async function checkForbiddenBranchPrDocs(root: string): Promise<LifecycleParity
 export async function collectLifecycleParityFindings(
   root = process.cwd(),
 ): Promise<LifecycleParityFinding[]> {
-  const findings: LifecycleParityFinding[] = [
-    ...checkBlueprintRoute(CODE_WORKFLOW_LIFECYCLE_CONTRACTS.direct),
-    ...checkBlueprintRoute(CODE_WORKFLOW_LIFECYCLE_CONTRACTS.branch_pr),
-    ...checkQuickstart(),
-  ];
+  const findings: LifecycleParityFinding[] = [...checkQuickstart()];
 
   for (const surface of [...DIRECT_SURFACES, ...BRANCH_PR_SURFACES]) {
     findings.push(...(await checkTextSurface(root, surface)));
@@ -194,7 +169,7 @@ export function formatLifecycleParityFindings(findings: readonly LifecycleParity
   if (findings.length === 0) return "workflow lifecycle parity OK";
 
   const lines = [
-    "Workflow lifecycle parity violation: lifecycle contract, blueprints, quickstart, or docs drifted.",
+    "Workflow lifecycle parity violation: lifecycle contract, quickstart, or docs drifted.",
     "",
   ];
   for (const finding of findings) {

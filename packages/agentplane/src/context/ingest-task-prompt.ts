@@ -30,7 +30,7 @@ export function buildContextAssimilationPromptModule(
     content: [
       "# Context Assimilation",
       "",
-      "Goal: execute the `context.maximum_assimilation` blueprint by preserving reusable source meaning in a linked human/agent wiki plus typed claims, ontology, graph, provenance, and coverage artifacts. Raw sources remain source-of-truth and must not be edited.",
+      "Goal: execute maximum context assimilation by preserving reusable source meaning in a linked human/agent wiki plus typed claims, ontology, graph, provenance, and coverage artifacts. Raw sources remain source-of-truth and must not be edited.",
       ...(deprecatedModeAlias ? ["", deprecatedModeAlias] : []),
       "",
       "## Task-bound inputs",

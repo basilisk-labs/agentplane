@@ -16,8 +16,8 @@ import {
   PREPARED_KNOWLEDGE_EXCERPT_ZOD_SCHEMA,
 } from "./knowledge-ref.js";
 import {
-  STATE_FINGERPRINT_POLICY_ZOD_SCHEMA,
-  STATE_FINGERPRINT_ZOD_SCHEMA,
+  STATE_FINGERPRINT_V2_POLICY_ZOD_SCHEMA,
+  STATE_FINGERPRINT_V2_ZOD_SCHEMA,
   evaluateStateFingerprintPrecondition,
   validateStateFingerprint,
   type StateFingerprint,
@@ -224,8 +224,8 @@ export const AGENT_WORK_ORDER_V2_ZOD_SCHEMA = z
     work_order_id: IDENTIFIER_SCHEMA,
     role: z.enum(AGENT_WORK_ORDER_ROLE_VALUES),
     task: AGENT_WORK_ORDER_TASK_ZOD_SCHEMA,
-    state_fingerprint: STATE_FINGERPRINT_ZOD_SCHEMA,
-    state_fingerprint_policy: STATE_FINGERPRINT_POLICY_ZOD_SCHEMA,
+    state_fingerprint: STATE_FINGERPRINT_V2_ZOD_SCHEMA,
+    state_fingerprint_policy: STATE_FINGERPRINT_V2_POLICY_ZOD_SCHEMA,
     authority: AGENT_WORK_ORDER_AUTHORITY_ZOD_SCHEMA,
     context_intent: AGENT_WORK_ORDER_CONTEXT_INTENT_ZOD_SCHEMA,
     planning_context: AGENT_WORK_ORDER_PLANNING_CONTEXT_ZOD_SCHEMA.optional(),

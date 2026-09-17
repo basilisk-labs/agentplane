@@ -42,7 +42,7 @@ export async function tracePolicyAuthorityDecision<
       "task_backend_read",
       "git_snapshot",
       ...(opts.remoteEnabled ? ["remote_provider_state"] : []),
-      "blueprint_resolution",
+      "native_task_obligations",
       "knowledge_retrieval",
       "policy_evaluation",
     ],

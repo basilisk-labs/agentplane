@@ -163,37 +163,6 @@ export const loadHermesDoctorSpec = (session: ProjectConfigSession) =>
     }),
   );
 
-export const loadBlueprintSpec = (_session: NoContextSession) =>
-  import("../../../commands/blueprint/blueprint.command.js").then((m) =>
-    m.makeRunBlueprintHandler(),
-  );
-export const loadBlueprintListSpec = (_session: NoContextSession) =>
-  import("../../../commands/blueprint/blueprint.command.js").then((m) => m.runBlueprintList);
-export const loadBlueprintExamplesSpec = (_session: NoContextSession) =>
-  import("../../../commands/blueprint/blueprint.command.js").then((m) => m.runBlueprintExamples);
-export const loadBlueprintExplainSpec = (session: TaskRouteLocalSession) =>
-  import("../../../commands/blueprint/blueprint.command.js").then((m) =>
-    m.makeRunBlueprintExplainHandler(getTaskRouteLocalContext(session)),
-  );
-export const loadBlueprintSnapshotSpec = (session: TaskLifecycleSession) =>
-  import("../../../commands/blueprint/blueprint.command.js").then((m) =>
-    m.makeRunBlueprintSnapshotHandler(getTaskLifecycleContext(session)),
-  );
-export const loadBlueprintDriftSpec = (session: TaskRouteLocalSession) =>
-  import("../../../commands/blueprint/blueprint.command.js").then((m) =>
-    m.makeRunBlueprintDriftHandler(getTaskRouteLocalContext(session)),
-  );
-export const loadBlueprintReportSpec = (_session: NoContextSession) =>
-  import("../../../commands/blueprint/blueprint.command.js").then((m) => m.runBlueprintReport);
-export const loadBlueprintValidateSpec = (_session: NoContextSession) =>
-  import("../../../commands/blueprint/blueprint.command.js").then((m) => m.runBlueprintValidate);
-export const loadBlueprintScaffoldSpec = (_session: NoContextSession) =>
-  import("../../../commands/blueprint/blueprint.command.js").then((m) => m.runBlueprintScaffold);
-
-export const fromCommandsBlueprintsCommand = commandModule(
-  () => import("../../../commands/blueprints/blueprints.command.js"),
-);
-
 export const fromCommandsRecipesRecipesCommand = commandModule(
   () => import("../../../commands/recipes/recipes.command.js"),
 );

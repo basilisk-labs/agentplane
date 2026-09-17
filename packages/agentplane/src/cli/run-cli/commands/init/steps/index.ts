@@ -1,7 +1,6 @@
 export { promptAdvancedSettingsStep } from "./advanced-settings.js";
 export { applyInitWithProgress } from "./apply.js";
 export { promptBackendStep } from "./backend.js";
-export { promptBlueprintSelectionStep } from "./blueprint-selection.js";
 export { promptConflictResolverStep } from "./conflict-resolver.js";
 export { promptIdeStep } from "./ide.js";
 export { promptInitModeStep } from "./init-mode.js";

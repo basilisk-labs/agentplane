@@ -9,7 +9,6 @@ export type EvaluatorEvidenceKind =
   | "actual_diff"
   | "observed_checks"
   | "verification_log"
-  | "blueprint"
   | "plan"
   | "policy_module"
   | "knowledge_ref"

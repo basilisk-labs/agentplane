@@ -28,13 +28,11 @@ export async function createRecipeArchive(opts?: {
   description?: string;
   tags?: string[];
   scenarioTags?: string[];
-  blueprintExtensions?: Record<string, unknown>[];
   format?: "tar" | "zip";
   wrapDir?: boolean;
 }): Promise<{ archivePath: string; manifest: Record<string, unknown> }> {
   const normalizedTags = opts?.tags ? [...opts.tags].toSorted() : undefined;
   const normalizedScenarioTags = opts?.scenarioTags ? [...opts.scenarioTags].toSorted() : undefined;
-  const blueprintExtensions = opts?.blueprintExtensions ? [...opts.blueprintExtensions] : undefined;
   const cacheKey = JSON.stringify({
     id: opts?.id ?? "viewer",
     version: opts?.version ?? "1.2.3",
@@ -43,7 +41,6 @@ export async function createRecipeArchive(opts?: {
     description: opts?.description ?? "Provides a local viewer for task artifacts.",
     tags: normalizedTags,
     scenarioTags: normalizedScenarioTags,
-    blueprintExtensions,
     format: opts?.format ?? "tar",
     wrapDir: opts?.wrapDir ?? false,
   });
@@ -113,9 +110,6 @@ export async function createRecipeArchive(opts?: {
   };
   if (normalizedTags) {
     manifest.tags = normalizedTags;
-  }
-  if (blueprintExtensions) {
-    manifest.blueprint_extensions = blueprintExtensions;
   }
   await writeFile(path.join(recipeDir, "manifest.json"), JSON.stringify(manifest, null, 2), "utf8");
   const agentsDir = path.join(recipeDir, "agents");

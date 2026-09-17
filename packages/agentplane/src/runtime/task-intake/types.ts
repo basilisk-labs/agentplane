@@ -108,7 +108,6 @@ export type TaskGraphDraftTask = {
   task_kind?: TaskData["task_kind"];
   mutation_scope?: TaskData["mutation_scope"];
   risk_flags?: TaskData["risk_flags"];
-  blueprint_request?: TaskData["blueprint_request"];
   execution_route?: TaskExecutionRoute;
   execution_contract?: TaskExecutionContract;
   extensions?: TaskData["extensions"];
