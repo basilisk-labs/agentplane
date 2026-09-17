@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:1b10a1c370bf7a524e771f042ef357cc5ad8da3f4d46b9499b5004c551393125",
   "pr_number": 5965,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5965",
+  "pre_merge_closure": {
+    "basis_commit": "b0a49076b0b1c6893683f84efc43862f1bda415d",
+    "branch": "task/202609162254-YE48GC/implement-and-qualify-agentplane-0-7-10-blueprin",
+    "pr_number": 5965,
+    "recorded_at": "2026-09-17T16:04:35.304Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
