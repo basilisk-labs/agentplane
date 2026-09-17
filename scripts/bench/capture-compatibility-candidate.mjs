@@ -114,6 +114,10 @@ function buildCandidate({ baseline, candidate, packageSourceTask }) {
   const removedCommands = cliTopologyDelta.removed_command_descriptors.map((command) =>
     command.id.join(" "),
   );
+  const addedCommandSet = new Set(addedCommands);
+  const addedOptionSet = new Set(
+    cliTopologyDelta.added_options.map((option) => `${option.command}\0${option.name}`),
+  );
 
   return canonicalizeJson({
     ...candidate,
@@ -165,7 +169,11 @@ function buildCandidate({ baseline, candidate, packageSourceTask }) {
               added_options: cliTopologyDelta.added_options,
               removed_options: cliTopologyDelta.removed_options,
               mutated_options: cliTopologyDelta.mutated_options,
-              addition_sources: delta.evidence.addition_sources,
+              addition_sources: delta.evidence.addition_sources.filter((source) =>
+                source.kind === "command"
+                  ? addedCommandSet.has(source.command)
+                  : addedOptionSet.has(`${source.command}\0${source.name}`),
+              ),
             },
           }
         : {}),
