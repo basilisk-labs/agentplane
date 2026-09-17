@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 57
+revision: 58
 origin:
   system: "manual"
 depends_on: []
@@ -65,9 +65,11 @@ quality_review:
     - "The reviewed delta binds the current AgentWorkOrder schema and task provenance, records the exact retired Blueprint command and option identities, filters only stale provenance for additions that no longer exist, and keeps the immutable compatibility baseline unchanged."
     - "Residual risk: The PR head must be published and all required hosted checks must pass on the exact new head before integration."
 token_usage:
-  agent_runs: 23
+  agent_runs: 24
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:8ef460edaa3574e2c2f45055f9053f90e896591b797f6c8669063a3acc2d7231"
+  journal_digest: "sha256:737933f1bcd3664f00330a3c82ed3c292473bdb3a359732f49cb88874d117805"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -77,7 +79,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "external_host_turn_unallocatable"
-  updated_at: "2026-09-17T16:04:35.191Z"
+  updated_at: "2026-09-17T16:39:16.584Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -1383,7 +1385,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "b0a49076b0b1c6893683f84efc43862f1bda415d"
+  hash: "e286e35e30828a3a578bc5a90b7c21fb8973a3ef"
   message: "🚧 YE48GC task: record external evaluator result"
 comments:
   -
@@ -1464,6 +1466,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -1620,8 +1625,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-17T16:39:16.584Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "e286e35e30828a3a578bc5a90b7c21fb8973a3ef"
 doc_version: 3
-doc_updated_at: "2026-09-17T16:38:54.804Z"
+doc_updated_at: "2026-09-17T16:39:16.600Z"
 doc_updated_by: "CODER"
 description: "Implement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task."
 sections:
@@ -3102,7 +3115,7 @@ extensions:
       revision: 8
       schema_version: 1
       task_id: "202609162254-YE48GC"
-    event_cursor: 46
+    event_cursor: 47
     final_validation:
       evidence:
         -
@@ -9071,9 +9084,9 @@ extensions:
         revision: 7
         schema_version: 1
         task_id: "202609162254-YE48GC"
-    revision: 57
+    revision: 58
     schema_version: 1
-    updated_at: "2026-09-17T16:35:07.455Z"
+    updated_at: "2026-09-17T16:39:16.584Z"
     work_items:
       channel-and-owner-map:
         attempt: 1
@@ -10300,6 +10313,30 @@ extensions:
         previous_revision: 3
         schema_version: 1
         task_id: "202609162254-YE48GC"
+      compatibility:sha256:5097e5f785f57713ced5129c8abe11da7ee2dd279623cb0a61653e17a58fd95b:
+        aggregate_digest: "sha256:0bf723bd197e87c9e9d809faa72d55770ac8d79623116099eff0cce220d50885"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T16:39:16.584Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_0c913be914be539e5183dfb1"
+          mutation_id: "compatibility:sha256:5097e5f785f57713ced5129c8abe11da7ee2dd279623cb0a61653e17a58fd95b"
+          plan_digest: "sha256:e17ec6eda7c7926e5e1379d0e7caaea02c6311d301fca98a8969264e33af9949"
+          plan_revision: 8
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 57
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:5097e5f785f57713ced5129c8abe11da7ee2dd279623cb0a61653e17a58fd95b"
+        next_revision: 58
+        previous_revision: 57
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
       compatibility:sha256:5213c6d96820a332137269ad0d2e890e007aea93c5fdeefcb26126ed576b4014:
         aggregate_digest: "sha256:1b4fa25e550bd3cd9da0f3b249846ff15e43e106ad53d8865f212e3556ebed52"
         event:
@@ -11169,8 +11206,8 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "d949071048f769e0728af190eafa7b74ddfbe9fa"
-    message: "🚧 YE48GC task: apply external agent result"
+    hash: "85cf3c1622d8ab0615f81f5445a6f11f76c077d9"
+    message: "🐛 YE48GC fix: record Blueprint compatibility retirement"
   task_execution_context:
     base_ref: "main"
     base_sha: "19ff39fd292c30f0958131c35200a6268b7a285d"
@@ -11715,12 +11752,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/23` agent runs
+- Completeness: `0/24` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:8ef460edaa3574e2c2f45055f9053f90e896591b797f6c8669063a3acc2d7231`
+- Journal digest: `sha256:737933f1bcd3664f00330a3c82ed3c292473bdb3a359732f49cb88874d117805`
 - Unavailable reason: `external_host_turn_unallocatable`
-- Updated at: `2026-09-17T16:04:35.191Z`
+- Updated at: `2026-09-17T16:39:16.584Z`
