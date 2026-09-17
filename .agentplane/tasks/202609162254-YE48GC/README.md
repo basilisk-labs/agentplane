@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 60
+revision: 61
 origin:
   system: "manual"
 depends_on: []
@@ -33,7 +33,7 @@ plan_approval:
   note: "host_user_decision=sha256:d45ce5060f5fae001ac6bfd1c0d38ba3980252524ae842840b74c01db55a53d8"
 verification:
   state: "ok"
-  updated_at: "2026-09-17T16:35:02.518Z"
+  updated_at: "2026-09-17T17:03:58.738Z"
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
@@ -534,6 +534,7 @@ execution_contract:
       - "packages/agentplane/src/runtime/task-routing/resolve.ts"
       - "packages/agentplane/src/runtime/workspace-allocation/allocate.ts"
       - "packages/agentplane/src/shared/git-index-lock-guard.test.ts"
+      - "packages/agentplane/src/shared/preparation-trace.ts"
       - "packages/agentplane/src/workflow-lifecycle/contract.test.ts"
       - "packages/agentplane/src/workflow-lifecycle/contract.ts"
       - "packages/agentplane/src/workflow-lifecycle/parity-check.ts"
@@ -797,7 +798,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:24fe660f08749558f7d23cdb0f79e8a6944c8ac53989fea7056d01c1d2d8960a"
+      digest: "sha256:403ab3ccb9b9b992fee8baeebb16ac273dadc3ccf883aec522f4f8b22eed7bf0"
       escalation_reasons:
         - "central_component:.github/workflows"
         - "central_component:bun.lock"
@@ -1267,6 +1268,7 @@ execution_contract:
           - "packages/agentplane/src/runtime/task-routing/resolve.ts"
           - "packages/agentplane/src/runtime/workspace-allocation/allocate.ts"
           - "packages/agentplane/src/shared/git-index-lock-guard.test.ts"
+          - "packages/agentplane/src/shared/preparation-trace.ts"
           - "packages/agentplane/src/workflow-lifecycle/contract.test.ts"
           - "packages/agentplane/src/workflow-lifecycle/contract.ts"
           - "packages/agentplane/src/workflow-lifecycle/parity-check.ts"
@@ -1647,8 +1649,14 @@ events:
     at: "2026-09-17T16:53:34.519Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The seven dirty source changes are intended hosted-static rework and are ready for the operator-directed commit and fresh verification."
+  -
+    type: "verify"
+    at: "2026-09-17T17:03:58.738Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-17T16:53:34.572Z"
+doc_updated_at: "2026-09-17T17:04:03.254Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task."
 sections:
@@ -2151,6 +2159,251 @@ sections:
     - capability_digest: sha256:095839e7c8ad04c8ede890b2cb808422cf26a9901830fd92d9830b51b15207d6
     - checks_digest: sha256:193169d9d4b9f3db52098cdb742dccb36984dd584c4d84e1a8ab428de9fe2155
     - identity_digest: sha256:096e65eb3b5d9fc3f869cc5b51a549bdfa79057782686442e1eeb1fdbf123763
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-17T17:03:58.738Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:cc72c348b69b7f4f164b49eefc1fee7ddc0523fd952874c015a968e75bfaed5e, input_digest=sha256:56f6b9998d5b307c588c37085a1064020fef00ea6962c8f6d253115a6c3af459
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check affected_unit_integration (1/7)
+
+    Check: affected_unit_integration
+    Command: bun run package:install-smoke
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check affected_unit_integration (2/7)
+
+    Check: affected_unit_integration
+    Command: bun run test:release:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check affected_unit_integration (3/7)
+
+    Check: affected_unit_integration
+    Command: bun run arch:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check affected_unit_integration (4/7)
+
+    Check: affected_unit_integration
+    Command: bun run docs:bootstrap:check && bun run docs:onboarding:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check affected_unit_integration (5/7)
+
+    Check: affected_unit_integration
+    Command: bun run bench:agent-efficiency:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check affected_unit_integration (6/7)
+
+    Check: affected_unit_integration
+    Command: bun run bench:agent-efficiency:replay:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check affected_unit_integration (7/7)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check critical_paths (1/7)
+
+    Check: critical_paths
+    Command: bun run package:install-smoke
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check critical_paths (2/7)
+
+    Check: critical_paths
+    Command: bun run test:release:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check critical_paths (3/7)
+
+    Check: critical_paths
+    Command: bun run arch:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check critical_paths (4/7)
+
+    Check: critical_paths
+    Command: bun run docs:bootstrap:check && bun run docs:onboarding:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check critical_paths (5/7)
+
+    Check: critical_paths
+    Command: bun run bench:agent-efficiency:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check critical_paths (6/7)
+
+    Check: critical_paths
+    Command: bun run bench:agent-efficiency:replay:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check critical_paths (7/7)
+
+    Check: docs_contract
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check docs_contract (1/7)
+
+    Check: docs_contract
+    Command: bun run package:install-smoke
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check docs_contract (2/7)
+
+    Check: docs_contract
+    Command: bun run test:release:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check docs_contract (3/7)
+
+    Check: docs_contract
+    Command: bun run arch:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check docs_contract (4/7)
+
+    Check: docs_contract
+    Command: bun run docs:bootstrap:check && bun run docs:onboarding:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check docs_contract (5/7)
+
+    Check: docs_contract
+    Command: bun run bench:agent-efficiency:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check docs_contract (6/7)
+
+    Check: docs_contract
+    Command: bun run bench:agent-efficiency:replay:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check docs_contract (7/7)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check real_e2e (1/7)
+
+    Check: real_e2e
+    Command: bun run package:install-smoke
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check real_e2e (2/7)
+
+    Check: real_e2e
+    Command: bun run test:release:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check real_e2e (3/7)
+
+    Check: real_e2e
+    Command: bun run arch:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check real_e2e (4/7)
+
+    Check: real_e2e
+    Command: bun run docs:bootstrap:check && bun run docs:onboarding:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check real_e2e (5/7)
+
+    Check: real_e2e
+    Command: bun run bench:agent-efficiency:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check real_e2e (6/7)
+
+    Check: real_e2e
+    Command: bun run bench:agent-efficiency:replay:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check real_e2e (7/7)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check task_outcome (1/7)
+
+    Check: task_outcome
+    Command: bun run package:install-smoke
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check task_outcome (2/7)
+
+    Check: task_outcome
+    Command: bun run test:release:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check task_outcome (3/7)
+
+    Check: task_outcome
+    Command: bun run arch:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check task_outcome (4/7)
+
+    Check: task_outcome
+    Command: bun run docs:bootstrap:check && bun run docs:onboarding:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check task_outcome (5/7)
+
+    Check: task_outcome
+    Command: bun run bench:agent-efficiency:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check task_outcome (6/7)
+
+    Check: task_outcome
+    Command: bun run bench:agent-efficiency:replay:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609162254-YE48GC Verification Contract check task_outcome (7/7)
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:e17ec6eda7c7926e5e1379d0e7caaea02c6311d301fca98a8969264e33af9949
+    - policy_digest: sha256:3190c8fe14390b259766cff27cbd886e2e4656b8a439a8bf997a4aed099ffed6
+    - capability_digest: sha256:095839e7c8ad04c8ede890b2cb808422cf26a9901830fd92d9830b51b15207d6
+    - checks_digest: sha256:55ce99bec28fa158c935d13b53af663c5f8f0763c0bfdee421bb4c324a2ba794
+    - identity_digest: sha256:f321108fb40857194f524118d1879ccfae8c80ea18c6f6a180d1010bc73c3f7f
 
     DecisionContextRef:
     - operator_action: stop
@@ -3129,7 +3382,7 @@ extensions:
       revision: 8
       schema_version: 1
       task_id: "202609162254-YE48GC"
-    event_cursor: 49
+    event_cursor: 50
     final_validation:
       evidence:
         -
@@ -9098,9 +9351,9 @@ extensions:
         revision: 7
         schema_version: 1
         task_id: "202609162254-YE48GC"
-    revision: 60
+    revision: 61
     schema_version: 1
-    updated_at: "2026-09-17T16:53:34.519Z"
+    updated_at: "2026-09-17T17:04:03.244Z"
     work_items:
       channel-and-owner-map:
         attempt: 1
@@ -10229,6 +10482,30 @@ extensions:
         mutation_id: "compatibility:sha256:3aa3f945f528b89806ffe8ff90ebcb056a423b6d7cd99aaa4bbedb8270eb18e2"
         next_revision: 41
         previous_revision: 40
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+      compatibility:sha256:3e92df386848159e5ce71df4ea86593633b00b150d4367500580e1ff4d33896a:
+        aggregate_digest: "sha256:634e851e18269db2eba3b69ded1989cdf9444d97d4ea3bf48452ec2247b2b4fc"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T17:04:03.244Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_d88b590cd197ee5bde26247c"
+          mutation_id: "compatibility:sha256:3e92df386848159e5ce71df4ea86593633b00b150d4367500580e1ff4d33896a"
+          plan_digest: "sha256:e17ec6eda7c7926e5e1379d0e7caaea02c6311d301fca98a8969264e33af9949"
+          plan_revision: 8
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 60
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:3e92df386848159e5ce71df4ea86593633b00b150d4367500580e1ff4d33896a"
+        next_revision: 61
+        previous_revision: 60
         schema_version: 1
         task_id: "202609162254-YE48GC"
       compatibility:sha256:413450ce2745d1d5cf77c898303ff5777b75a51f5db675c1e34d55e570726bd9:
@@ -11790,6 +12067,251 @@ NativeTaskIdentityRef:
 - capability_digest: sha256:095839e7c8ad04c8ede890b2cb808422cf26a9901830fd92d9830b51b15207d6
 - checks_digest: sha256:193169d9d4b9f3db52098cdb742dccb36984dd584c4d84e1a8ab428de9fe2155
 - identity_digest: sha256:096e65eb3b5d9fc3f869cc5b51a549bdfa79057782686442e1eeb1fdbf123763
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-17T17:03:58.738Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:cc72c348b69b7f4f164b49eefc1fee7ddc0523fd952874c015a968e75bfaed5e, input_digest=sha256:56f6b9998d5b307c588c37085a1064020fef00ea6962c8f6d253115a6c3af459
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check affected_unit_integration (1/7)
+
+Check: affected_unit_integration
+Command: bun run package:install-smoke
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check affected_unit_integration (2/7)
+
+Check: affected_unit_integration
+Command: bun run test:release:critical
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check affected_unit_integration (3/7)
+
+Check: affected_unit_integration
+Command: bun run arch:check
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check affected_unit_integration (4/7)
+
+Check: affected_unit_integration
+Command: bun run docs:bootstrap:check && bun run docs:onboarding:check
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check affected_unit_integration (5/7)
+
+Check: affected_unit_integration
+Command: bun run bench:agent-efficiency:check
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check affected_unit_integration (6/7)
+
+Check: affected_unit_integration
+Command: bun run bench:agent-efficiency:replay:check
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check affected_unit_integration (7/7)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check critical_paths (1/7)
+
+Check: critical_paths
+Command: bun run package:install-smoke
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check critical_paths (2/7)
+
+Check: critical_paths
+Command: bun run test:release:critical
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check critical_paths (3/7)
+
+Check: critical_paths
+Command: bun run arch:check
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check critical_paths (4/7)
+
+Check: critical_paths
+Command: bun run docs:bootstrap:check && bun run docs:onboarding:check
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check critical_paths (5/7)
+
+Check: critical_paths
+Command: bun run bench:agent-efficiency:check
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check critical_paths (6/7)
+
+Check: critical_paths
+Command: bun run bench:agent-efficiency:replay:check
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check critical_paths (7/7)
+
+Check: docs_contract
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check docs_contract (1/7)
+
+Check: docs_contract
+Command: bun run package:install-smoke
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check docs_contract (2/7)
+
+Check: docs_contract
+Command: bun run test:release:critical
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check docs_contract (3/7)
+
+Check: docs_contract
+Command: bun run arch:check
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check docs_contract (4/7)
+
+Check: docs_contract
+Command: bun run docs:bootstrap:check && bun run docs:onboarding:check
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check docs_contract (5/7)
+
+Check: docs_contract
+Command: bun run bench:agent-efficiency:check
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check docs_contract (6/7)
+
+Check: docs_contract
+Command: bun run bench:agent-efficiency:replay:check
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check docs_contract (7/7)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check full_regression
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check real_e2e (1/7)
+
+Check: real_e2e
+Command: bun run package:install-smoke
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check real_e2e (2/7)
+
+Check: real_e2e
+Command: bun run test:release:critical
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check real_e2e (3/7)
+
+Check: real_e2e
+Command: bun run arch:check
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check real_e2e (4/7)
+
+Check: real_e2e
+Command: bun run docs:bootstrap:check && bun run docs:onboarding:check
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check real_e2e (5/7)
+
+Check: real_e2e
+Command: bun run bench:agent-efficiency:check
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check real_e2e (6/7)
+
+Check: real_e2e
+Command: bun run bench:agent-efficiency:replay:check
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check real_e2e (7/7)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check task_outcome (1/7)
+
+Check: task_outcome
+Command: bun run package:install-smoke
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check task_outcome (2/7)
+
+Check: task_outcome
+Command: bun run test:release:critical
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check task_outcome (3/7)
+
+Check: task_outcome
+Command: bun run arch:check
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check task_outcome (4/7)
+
+Check: task_outcome
+Command: bun run docs:bootstrap:check && bun run docs:onboarding:check
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check task_outcome (5/7)
+
+Check: task_outcome
+Command: bun run bench:agent-efficiency:check
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check task_outcome (6/7)
+
+Check: task_outcome
+Command: bun run bench:agent-efficiency:replay:check
+Result: pass
+Evidence: .agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609162254-YE48GC Verification Contract check task_outcome (7/7)
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:e17ec6eda7c7926e5e1379d0e7caaea02c6311d301fca98a8969264e33af9949
+- policy_digest: sha256:3190c8fe14390b259766cff27cbd886e2e4656b8a439a8bf997a4aed099ffed6
+- capability_digest: sha256:095839e7c8ad04c8ede890b2cb808422cf26a9901830fd92d9830b51b15207d6
+- checks_digest: sha256:55ce99bec28fa158c935d13b53af663c5f8f0763c0bfdee421bb4c324a2ba794
+- identity_digest: sha256:f321108fb40857194f524118d1879ccfae8c80ea18c6f6a180d1010bc73c3f7f
 
 DecisionContextRef:
 - operator_action: stop
