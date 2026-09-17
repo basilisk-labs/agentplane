@@ -4,7 +4,7 @@ title: "Implement and qualify AgentPlane 0.7.10 Blueprint retirement"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 51
+revision: 52
 origin:
   system: "manual"
 depends_on: []
@@ -8293,9 +8293,9 @@ extensions:
         revision: 7
         schema_version: 1
         task_id: "202609162254-YE48GC"
-    revision: 51
+    revision: 52
     schema_version: 1
-    updated_at: "2026-09-17T15:42:58.324Z"
+    updated_at: "2026-09-17T15:51:59.790Z"
     work_items:
       channel-and-owner-map:
         attempt: 1
@@ -8530,14 +8530,159 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       qualification-and-release-readiness:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "qualification-and-release-readiness"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:db38b996c99fa4c9fda0b7d7b330397a589ce35a39c677c5f5ab3d581209aa01"
+            id: "Installed-package and release-critical evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 8
+              task_id: "202609162254-YE48GC"
+              work_item_id: "qualification-and-release-readiness"
+            provenance:
+              - "sha256:191ab9e8ac4c6987ec7f25641a4394134fea9eeacb4013c3bccb0d30f7c4ee59"
+              - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:50f41c218a030a2cafea0243c992772d7a26ad54d8da521105c2dfb648b11be8"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:58cf71bd0c292f805f355943b3702688267d951e79f04bfbdb070ab85078636d"
+            id: "Full local regression evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 8
+              task_id: "202609162254-YE48GC"
+              work_item_id: "qualification-and-release-readiness"
+            provenance:
+              - "sha256:191ab9e8ac4c6987ec7f25641a4394134fea9eeacb4013c3bccb0d30f7c4ee59"
+              - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:50f41c218a030a2cafea0243c992772d7a26ad54d8da521105c2dfb648b11be8"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:851057aed6ccadd5f580cf256820097162b629147e6e557b83557ee3665d74a5"
+            id: "M02 ESTABLISHED result or explicit NOT ESTABLISHED disposition"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 8
+              task_id: "202609162254-YE48GC"
+              work_item_id: "qualification-and-release-readiness"
+            provenance:
+              - "sha256:191ab9e8ac4c6987ec7f25641a4394134fea9eeacb4013c3bccb0d30f7c4ee59"
+              - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:50f41c218a030a2cafea0243c992772d7a26ad54d8da521105c2dfb648b11be8"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:5e74e7158341bb7dd0149ed7736ef7794840552945e19849b42e14da6d8d5be8"
+            id: "0.7.10 compatibility docs and release-ready metadata"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 8
+              task_id: "202609162254-YE48GC"
+              work_item_id: "qualification-and-release-readiness"
+            provenance:
+              - "sha256:191ab9e8ac4c6987ec7f25641a4394134fea9eeacb4013c3bccb0d30f7c4ee59"
+              - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:50f41c218a030a2cafea0243c992772d7a26ad54d8da521105c2dfb648b11be8"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+              check_id: "install-smoke"
+              command_identity: "bun run package:install-smoke"
+              detail: "Observed by bun run package:install-smoke."
+              exit_code: 0
+              observed_at: "2026-09-17T15:51:59.724Z"
+              repository_snapshot_digest: "sha256:50f41c218a030a2cafea0243c992772d7a26ad54d8da521105c2dfb648b11be8"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+              check_id: "release-critical"
+              command_identity: "bun run test:release:critical"
+              detail: "Observed by bun run test:release:critical."
+              exit_code: 0
+              observed_at: "2026-09-17T15:51:59.724Z"
+              repository_snapshot_digest: "sha256:50f41c218a030a2cafea0243c992772d7a26ad54d8da521105c2dfb648b11be8"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+              check_id: "arch-check"
+              command_identity: "bun run arch:check"
+              detail: "Observed by bun run arch:check."
+              exit_code: 0
+              observed_at: "2026-09-17T15:51:59.724Z"
+              repository_snapshot_digest: "sha256:50f41c218a030a2cafea0243c992772d7a26ad54d8da521105c2dfb648b11be8"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+              check_id: "ci-full"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-09-17T15:51:59.724Z"
+              repository_snapshot_digest: "sha256:50f41c218a030a2cafea0243c992772d7a26ad54d8da521105c2dfb648b11be8"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+              check_id: "docs-check"
+              command_identity: "bun run docs:bootstrap:check && bun run docs:onboarding:check"
+              detail: "Observed by bun run docs:bootstrap:check && bun run docs:onboarding:check."
+              exit_code: 0
+              observed_at: "2026-09-17T15:51:59.724Z"
+              repository_snapshot_digest: "sha256:50f41c218a030a2cafea0243c992772d7a26ad54d8da521105c2dfb648b11be8"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+              check_id: "bench-check"
+              command_identity: "bun run bench:agent-efficiency:check"
+              detail: "Observed by bun run bench:agent-efficiency:check."
+              exit_code: 0
+              observed_at: "2026-09-17T15:51:59.724Z"
+              repository_snapshot_digest: "sha256:50f41c218a030a2cafea0243c992772d7a26ad54d8da521105c2dfb648b11be8"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+              check_id: "bench-replay"
+              command_identity: "bun run bench:agent-efficiency:replay:check"
+              detail: "Observed by bun run bench:agent-efficiency:replay:check."
+              exit_code: 0
+              observed_at: "2026-09-17T15:51:59.724Z"
+              repository_snapshot_digest: "sha256:50f41c218a030a2cafea0243c992772d7a26ad54d8da521105c2dfb648b11be8"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+              check_id: "semantic-review"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-09-17T15:51:59.724Z"
+              repository_snapshot_digest: "sha256:50f41c218a030a2cafea0243c992772d7a26ad54d8da521105c2dfb648b11be8"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       recipe-v1-conversion:
         attempt: 1
         claim_id: null
@@ -8902,6 +9047,23 @@ extensions:
         task_id: "202609162254-YE48GC"
         task_revision: 42
         work_item_id: "remove-active-blueprint"
+      -
+        at: "2026-09-17T15:51:59.790Z"
+        from: "PLANNED"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:9a325fca28b0ba5f43c6d93c5bbc1372671486c4b8f899b6a837df3fc8679cb9"
+        entity: "work_item"
+        id: "event_900cc217ebb8f8789211e16d"
+        mutation_id: "external-result:work-order-202609162254-YE48GC-executor-f732af2d5b6f829c3ad47cdc"
+        plan_digest: "sha256:e17ec6eda7c7926e5e1379d0e7caaea02c6311d301fca98a8969264e33af9949"
+        plan_revision: 8
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+        task_revision: 51
+        work_item_id: "qualification-and-release-readiness"
     leases: []
     mutation_receipts:
       compatibility:sha256:03077cf645f3db9b14d4d0869c8a3d63cb12a4ef6a092f7a692bf20e178fca06:
@@ -10078,6 +10240,30 @@ extensions:
         mutation_id: "external-result:work-order-202609162254-YE48GC-executor-e6a0a0fcab02ca3cc55e660a"
         next_revision: 11
         previous_revision: 10
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+      external-result:work-order-202609162254-YE48GC-executor-f732af2d5b6f829c3ad47cdc:
+        aggregate_digest: "sha256:1827843729899b6f66a8274e5cce916d70f5bc3fd78814cf9701fa44424d7b43"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T15:51:59.790Z"
+          cause_refs:
+            - "semantic-result:sha256:9a325fca28b0ba5f43c6d93c5bbc1372671486c4b8f899b6a837df3fc8679cb9"
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_900cc217ebb8f8789211e16d"
+          mutation_id: "external-result:work-order-202609162254-YE48GC-executor-f732af2d5b6f829c3ad47cdc"
+          plan_digest: "sha256:e17ec6eda7c7926e5e1379d0e7caaea02c6311d301fca98a8969264e33af9949"
+          plan_revision: 8
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 51
+          to: "COMPLETED"
+          work_item_id: "qualification-and-release-readiness"
+        mutation_id: "external-result:work-order-202609162254-YE48GC-executor-f732af2d5b6f829c3ad47cdc"
+        next_revision: 52
+        previous_revision: 51
         schema_version: 1
         task_id: "202609162254-YE48GC"
     pending_effects: []
