@@ -69,10 +69,18 @@ function matchesPreparedOrReplayAdvance(
   ) {
     return false;
   }
+  if (prepared.schema_version !== effective.schema_version) return false;
+  const identityMatches =
+    prepared.schema_version === 2 && effective.schema_version === 2
+      ? isDeepStrictEqual(effective.components.plan, prepared.components.plan) &&
+        isDeepStrictEqual(effective.components.capability, prepared.components.capability)
+      : prepared.schema_version === 1 && effective.schema_version === 1
+        ? isDeepStrictEqual(effective.components.blueprint, prepared.components.blueprint)
+        : false;
   return (
+    identityMatches &&
     isDeepStrictEqual(effective.components.git, prepared.components.git) &&
     isDeepStrictEqual(effective.components.policy, prepared.components.policy) &&
-    isDeepStrictEqual(effective.components.blueprint, prepared.components.blueprint) &&
     isDeepStrictEqual(effective.components.knowledge, prepared.components.knowledge) &&
     isDeepStrictEqual(effective.components.provider, prepared.components.provider) &&
     isDeepStrictEqual(effective.components.authority, prepared.components.authority)

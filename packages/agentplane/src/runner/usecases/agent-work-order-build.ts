@@ -56,6 +56,23 @@ const AGENT_WORK_ORDER_STATE_FINGERPRINT_POLICY = {
   },
 } as const satisfies StateFingerprintPolicy;
 
+const AGENT_WORK_ORDER_STATE_FINGERPRINT_V2_POLICY = {
+  fingerprint_schema_version: 2,
+  required_components: [
+    "task",
+    "git",
+    "backend_projection",
+    "plan",
+    "policy",
+    "capability",
+    "authority",
+  ],
+  provider: {
+    required: false,
+    unavailable: "allow_if_unchanged",
+  },
+} as const satisfies StateFingerprintPolicy;
+
 function sha256(value: string): string {
   return `sha256:${createHash("sha256").update(value, "utf8").digest("hex")}`;
 }
@@ -556,7 +573,10 @@ export function buildCanonicalAgentWorkOrder(opts: {
       work_item_id: selectedWorkItem?.id ?? null,
     },
     state_fingerprint: stateFingerprint,
-    state_fingerprint_policy: AGENT_WORK_ORDER_STATE_FINGERPRINT_POLICY,
+    state_fingerprint_policy:
+      stateFingerprint.schema_version === 2
+        ? AGENT_WORK_ORDER_STATE_FINGERPRINT_V2_POLICY
+        : AGENT_WORK_ORDER_STATE_FINGERPRINT_POLICY,
     authority: {
       mutation_scope: task.metadata.mutation_scope ?? "unknown",
       writable_roots: declaredWritableRoots,

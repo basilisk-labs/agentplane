@@ -4,6 +4,12 @@ export function summarizeAcr(record: AgentChangeRecord) {
   const blueprint = record.extensions?.["agentplane.blueprint"] as
     | { blueprint_id?: unknown; route?: unknown }
     | undefined;
+  const nativeIdentity = record.extensions?.["agentplane.native_identity"] as
+    | {
+        identity?: { plan?: { revision?: unknown; digest?: unknown }; digest?: unknown };
+        review_identity?: { digest?: unknown } | null;
+      }
+    | undefined;
   return {
     task_id: record.task.task_id,
     title: record.task.title,
@@ -28,6 +34,24 @@ export function summarizeAcr(record: AgentChangeRecord) {
               : [],
           }
         : null,
+    native_identity:
+      typeof nativeIdentity?.identity?.digest === "string"
+        ? {
+            digest: nativeIdentity.identity.digest,
+            plan_revision:
+              typeof nativeIdentity.identity.plan?.revision === "number"
+                ? nativeIdentity.identity.plan.revision
+                : null,
+            plan_digest:
+              typeof nativeIdentity.identity.plan?.digest === "string"
+                ? nativeIdentity.identity.plan.digest
+                : null,
+            review_digest:
+              typeof nativeIdentity.review_identity?.digest === "string"
+                ? nativeIdentity.review_identity.digest
+                : null,
+          }
+        : null,
     record_digest: record.integrity.record_digest,
   };
 }
@@ -47,6 +71,13 @@ export function renderAcrSummary(summary: ReturnType<typeof summarizeAcr>): stri
       ? [
           `Blueprint: ${summary.blueprint.id}`,
           `Blueprint route: ${summary.blueprint.route.join(" -> ")}`,
+        ]
+      : []),
+    ...(summary.native_identity
+      ? [
+          `Native identity: ${summary.native_identity.digest}`,
+          `Plan: revision ${summary.native_identity.plan_revision ?? "unknown"}, ${summary.native_identity.plan_digest ?? "missing"}`,
+          `Review identity: ${summary.native_identity.review_digest ?? "missing"}`,
         ]
       : []),
     `Digest: ${summary.record_digest}`,

@@ -9,15 +9,25 @@ import { canonicalizeJson } from "@agentplaneorg/core/tasks";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import { parseVerificationCheckDetails } from "./verification-details.js";
 import type {
+  HistoricalVerificationInputIdentity,
+  VerificationCommandIdentity,
+  VerificationContextIdentity,
+  VerificationEnvironmentIdentity,
+  VerificationEnvironment,
+  VerificationEvidenceIdentity,
+  VerificationEvidenceReference,
+  VerificationExecutionIdentity,
+  VerificationImplementationIdentity,
+  VerificationInputIdentity,
+  VerificationInputIdentityV5,
+} from "./task-verification-input-types.js";
+import type { NativeTaskIdentity } from "./native-task-identity.js";
+export type {
   VerificationEnvironment,
   VerificationEvidenceReference,
   VerificationExecutionIdentity,
   VerificationInputIdentity,
-} from "./task-verification-input-types.js";
-export type {
-  VerificationEnvironment,
-  VerificationEvidenceReference,
-  VerificationInputIdentity,
+  VerificationInputIdentityV5,
 } from "./task-verification-input-types.js";
 
 const VERIFICATION_CONTEXT_BASENAMES = new Set([
@@ -189,7 +199,7 @@ async function verificationEvidence(opts: {
   targetSha: string;
   evidenceRef?: string | null;
   details?: string | null;
-}): Promise<VerificationInputIdentity["evidence"]> {
+}): Promise<VerificationEvidenceIdentity> {
   const details = opts.details?.trim() ?? "";
   const references = await Promise.all(
     verificationEvidencePaths(details).map(
@@ -274,7 +284,7 @@ function isWorkflowArtifact(opts: { path: string; workflowDir: string }): boolea
 async function verificationContext(opts: {
   gitRoot: string;
   targetSha: string;
-}): Promise<VerificationInputIdentity["context"]> {
+}): Promise<VerificationContextIdentity> {
   const treeEntries = await trackedTreeEntries(opts);
   const entries = treeEntries.filter((entry) => contextPath(entry.path));
   return {
@@ -291,7 +301,7 @@ async function implementationIdentity(opts: {
   workflowMode: "direct" | "branch_pr";
   baseRef?: string | null;
   baseSha?: string | null;
-}): Promise<VerificationInputIdentity["implementation"]> {
+}): Promise<VerificationImplementationIdentity> {
   if (opts.workflowMode === "branch_pr") {
     const base =
       opts.baseRef ??
@@ -401,6 +411,36 @@ export function verificationInputDigest(opts: {
   );
 }
 
+export function verificationInputV5Digest(opts: {
+  concurrencyDigest: string;
+  checkedInputDigest: string;
+  obligationsDigest: string;
+}): `sha256:${string}` {
+  return sha256(
+    JSON.stringify(
+      canonicalizeJson({
+        concurrency_digest: opts.concurrencyDigest,
+        checked_input_digest: opts.checkedInputDigest,
+        obligations_digest: opts.obligationsDigest,
+      }),
+    ),
+  );
+}
+
+function verificationCommandIdentity(details: string | null | undefined): {
+  digest: `sha256:${string}`;
+  entries: VerificationCommandIdentity[];
+} {
+  const entries = (parseVerificationCheckDetails(details) ?? [])
+    .map((check) => ({ check_id: check.checkId, command: check.command }))
+    .toSorted((left, right) =>
+      `${left.check_id ?? ""}\0${left.command}`.localeCompare(
+        `${right.check_id ?? ""}\0${right.command}`,
+      ),
+    );
+  return { digest: sha256(JSON.stringify(canonicalizeJson(entries))), entries };
+}
+
 function verificationExecutionIdentity(
   execution: TaskExecutionContext,
 ): VerificationExecutionIdentity {
@@ -435,6 +475,8 @@ type VerificationInputIdentityBaseOptions = {
   environment?: VerificationEnvironment;
   verificationDetails?: string | null;
   evidenceRef?: string | null;
+  nativeIdentity?: NativeTaskIdentity | null;
+  requiredCheckIds?: readonly string[];
 };
 
 async function resolveVerificationInputIdentityInternal(
@@ -471,12 +513,86 @@ async function resolveVerificationInputIdentityInternal(
     }),
   ]);
   const runtime = opts.environment ?? currentVerificationEnvironment();
-  const environment = {
+  const environment: VerificationEnvironmentIdentity = {
     digest: sha256(JSON.stringify(canonicalizeJson(runtime))),
     runtime,
   };
   const verifyStepsDigest = sha256(opts.verifySteps.trim());
   const verificationContractDigest = opts.verificationContractDigest?.trim() ?? null;
+  if (
+    execution &&
+    opts.nativeIdentity &&
+    verificationContractDigest &&
+    /^sha256:[a-f0-9]{64}$/u.test(verificationContractDigest)
+  ) {
+    if (opts.nativeIdentity.task_id !== execution.primary_task_id) {
+      throw new Error("Native verification identity task must match execution.primary_task_id.");
+    }
+    const commands = verificationCommandIdentity(opts.verificationDetails);
+    const concurrencyIdentity = {
+      execution,
+      task: opts.nativeIdentity,
+    };
+    const concurrency = {
+      digest: sha256(
+        JSON.stringify(
+          canonicalizeJson({
+            execution_digest: execution.digest,
+            task_digest: opts.nativeIdentity.digest,
+          }),
+        ),
+      ),
+      ...concurrencyIdentity,
+    };
+    const checkedInputIdentity = {
+      implementation,
+      commands,
+      context,
+      environment,
+      evidence,
+    };
+    const checked_input = {
+      digest: sha256(
+        JSON.stringify(
+          canonicalizeJson({
+            implementation_digest: implementation.digest,
+            commands_digest: commands.digest,
+            context_digest: context.digest,
+            environment_digest: environment.digest,
+            evidence_digest: evidence.digest,
+          }),
+        ),
+      ),
+      ...checkedInputIdentity,
+    };
+    const requiredCheckIds = [
+      ...new Set(opts.requiredCheckIds ?? opts.nativeIdentity.checks.required_check_ids),
+    ].toSorted();
+    const obligationIdentity = {
+      verify_steps_digest: verifyStepsDigest,
+      verification_contract_digest: verificationContractDigest as `sha256:${string}`,
+      required_check_ids: requiredCheckIds,
+    };
+    const obligations = {
+      digest: sha256(JSON.stringify(canonicalizeJson(obligationIdentity))),
+      ...obligationIdentity,
+    };
+    const current: Omit<VerificationInputIdentityV5, "digest"> = {
+      schema_version: 5,
+      kind: "task_verification_input",
+      concurrency,
+      checked_input,
+      obligations,
+    };
+    return {
+      ...current,
+      digest: verificationInputV5Digest({
+        concurrencyDigest: concurrency.digest,
+        checkedInputDigest: checked_input.digest,
+        obligationsDigest: obligations.digest,
+      }),
+    };
+  }
   const digest = verificationInputDigest({
     executionDigest: execution?.digest,
     implementationDigest: implementation.digest,
@@ -486,7 +602,7 @@ async function resolveVerificationInputIdentityInternal(
     environmentDigest: environment.digest,
     evidenceDigest: evidence.digest,
   });
-  return {
+  const historical: HistoricalVerificationInputIdentity = {
     schema_version: execution ? 4 : verificationContractDigest ? 3 : 2,
     kind: "task_verification_input",
     ...(execution ? { execution } : {}),
@@ -500,6 +616,7 @@ async function resolveVerificationInputIdentityInternal(
     evidence,
     digest,
   };
+  return historical;
 }
 
 export function resolveVerificationInputIdentity(
@@ -511,14 +628,27 @@ export function resolveVerificationInputIdentity(
   });
 }
 
+/** Read-only compatibility for recomputing a historical v4 input under v4 semantics. */
+export function resolveHistoricalVerificationInputV4Identity(
+  opts: VerificationInputIdentityBaseOptions & { execution: TaskExecutionContext },
+): Promise<HistoricalVerificationInputIdentity | null> {
+  return resolveVerificationInputIdentityInternal({
+    ...opts,
+    nativeIdentity: null,
+    workflowMode: opts.execution.selected_mode,
+  }) as Promise<HistoricalVerificationInputIdentity | null>;
+}
+
 /** Read-only compatibility for auditing pre-v4 records. New lifecycle code must use execution. */
 export function resolveLegacyVerificationInputIdentity(
   opts: VerificationInputIdentityBaseOptions & {
     workflowMode: "direct" | "branch_pr";
     baseRef?: string | null;
   },
-): Promise<VerificationInputIdentity | null> {
-  return resolveVerificationInputIdentityInternal(opts);
+): Promise<HistoricalVerificationInputIdentity | null> {
+  return resolveVerificationInputIdentityInternal(
+    opts,
+  ) as Promise<HistoricalVerificationInputIdentity | null>;
 }
 
 export function verificationInputInvalidationReason(opts: {
@@ -527,14 +657,87 @@ export function verificationInputInvalidationReason(opts: {
 }):
   | "verification_current"
   | "verification_route_context_changed"
+  | "verification_plan_changed"
+  | "verification_policy_changed"
+  | "verification_capability_changed"
   | "verification_implementation_changed"
+  | "verification_commands_changed"
   | "verification_steps_changed"
   | "verification_contract_changed"
+  | "verification_obligation_coverage_changed"
   | "verification_context_changed"
   | "verification_environment_changed"
   | "verification_evidence_changed"
   | "verification_input_changed" {
   if (opts.recorded.digest === opts.current.digest) return "verification_current";
+  if (opts.recorded.schema_version !== opts.current.schema_version) {
+    return "verification_input_changed";
+  }
+  if (opts.recorded.schema_version === 5 && opts.current.schema_version === 5) {
+    if (
+      opts.recorded.concurrency.execution.digest !== opts.current.concurrency.execution.digest ||
+      opts.recorded.concurrency.task.task_id !== opts.current.concurrency.task.task_id
+    ) {
+      return "verification_route_context_changed";
+    }
+    if (opts.recorded.concurrency.task.plan.digest !== opts.current.concurrency.task.plan.digest) {
+      return "verification_plan_changed";
+    }
+    if (
+      opts.recorded.concurrency.task.policy.digest !== opts.current.concurrency.task.policy.digest
+    ) {
+      return "verification_policy_changed";
+    }
+    if (
+      opts.recorded.concurrency.task.capability.digest !==
+      opts.current.concurrency.task.capability.digest
+    ) {
+      return "verification_capability_changed";
+    }
+    if (
+      opts.recorded.checked_input.implementation.digest !==
+      opts.current.checked_input.implementation.digest
+    ) {
+      return "verification_implementation_changed";
+    }
+    if (
+      opts.recorded.checked_input.commands.digest !== opts.current.checked_input.commands.digest
+    ) {
+      return "verification_commands_changed";
+    }
+    if (
+      opts.recorded.obligations.verify_steps_digest !== opts.current.obligations.verify_steps_digest
+    ) {
+      return "verification_steps_changed";
+    }
+    if (
+      opts.recorded.obligations.verification_contract_digest !==
+      opts.current.obligations.verification_contract_digest
+    ) {
+      return "verification_contract_changed";
+    }
+    if (opts.recorded.obligations.digest !== opts.current.obligations.digest) {
+      return "verification_obligation_coverage_changed";
+    }
+    if (opts.recorded.checked_input.context.digest !== opts.current.checked_input.context.digest) {
+      return "verification_context_changed";
+    }
+    if (
+      opts.recorded.checked_input.environment.digest !==
+      opts.current.checked_input.environment.digest
+    ) {
+      return "verification_environment_changed";
+    }
+    if (
+      opts.recorded.checked_input.evidence.digest !== opts.current.checked_input.evidence.digest
+    ) {
+      return "verification_evidence_changed";
+    }
+    return "verification_input_changed";
+  }
+  if (opts.recorded.schema_version === 5 || opts.current.schema_version === 5) {
+    return "verification_input_changed";
+  }
   if (opts.recorded.execution?.digest !== opts.current.execution?.digest) {
     return "verification_route_context_changed";
   }

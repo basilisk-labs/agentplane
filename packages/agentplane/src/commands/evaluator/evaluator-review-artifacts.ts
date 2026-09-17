@@ -10,6 +10,7 @@ export type EvaluatorEvidenceKind =
   | "observed_checks"
   | "verification_log"
   | "blueprint"
+  | "plan"
   | "policy_module"
   | "knowledge_ref"
   | "runtime_evidence"

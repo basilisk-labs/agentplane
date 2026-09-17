@@ -9,9 +9,11 @@ import type { TaskExecutionContext } from "../../runtime/task-execution-context/
 import { resolveQualityReviewTargetSha } from "./quality-review-target.js";
 import {
   resolveVerificationInputIdentity,
+  resolveHistoricalVerificationInputV4Identity,
   resolveLegacyVerificationInputIdentity,
   verificationInputInvalidationReason,
 } from "./task-verification-input.js";
+import { resolveNativeTaskIdentity } from "./native-task-identity.js";
 import { parseVerificationCheckDetails } from "./verification-details.js";
 import { hasValidRecordDigest, parseVerificationInput } from "./task-verification-record-parser.js";
 
@@ -34,8 +36,13 @@ type VerificationRecordAssessmentReason =
   | "verification_details_missing"
   | "verification_contract_evidence_missing"
   | "verification_implementation_changed"
+  | "verification_plan_changed"
+  | "verification_policy_changed"
+  | "verification_capability_changed"
+  | "verification_commands_changed"
   | "verification_steps_changed"
   | "verification_contract_changed"
+  | "verification_obligation_coverage_changed"
   | "verification_context_changed"
   | "verification_environment_changed"
   | "verification_evidence_changed"
@@ -59,6 +66,17 @@ function verificationRecoveryHint(reason: VerificationRecordAssessmentReason): s
     }
     case "verification_implementation_changed": {
       return "Run the required checks against the current implementation and record fresh verification.";
+    }
+    case "verification_plan_changed": {
+      return "Reapprove the current Plan, rerun its required checks, and record fresh verification.";
+    }
+    case "verification_policy_changed":
+    case "verification_capability_changed": {
+      return "Recompute native policy and capability admission, then record fresh verification.";
+    }
+    case "verification_commands_changed":
+    case "verification_obligation_coverage_changed": {
+      return "Run every command required by the current verification obligations and record fresh verification.";
     }
     case "verification_steps_changed": {
       return "Run the current Verify Steps and record their results.";
@@ -86,7 +104,7 @@ function verificationRecoveryHint(reason: VerificationRecordAssessmentReason): s
       return null;
     }
     default: {
-      return "Inspect the verification record diagnostics and record fresh v4 verification.";
+      return "Inspect the verification record diagnostics and record fresh current-format verification.";
     }
   }
 }
@@ -218,7 +236,11 @@ async function assessCurrentVerification(
     if (!recordedInput || !targetContext || !evaluatedSha) {
       return rejectedAssessment("verification_invalid_record");
     }
-    if (targetContext.execution && recordedInput.schema_version !== 4) {
+    if (
+      targetContext.execution &&
+      recordedInput.schema_version !== 4 &&
+      recordedInput.schema_version !== 5
+    ) {
       return rejectedAssessment("verification_route_context_changed", {
         recordedInputDigest: recordedInput.digest,
       });
@@ -230,16 +252,26 @@ async function assessCurrentVerification(
       targetSha: evaluatedSha,
       verifySteps: task.sections?.["Verify Steps"] ?? "",
       verificationContractDigest: task.execution_contract?.verification.contract?.digest ?? null,
-      environment: recordedInput.environment.runtime,
+      environment:
+        recordedInput.schema_version === 5
+          ? recordedInput.checked_input.environment.runtime
+          : recordedInput.environment.runtime,
       verificationDetails: typeof record.details === "string" ? record.details : null,
       evidenceRef: targetContext.evidenceRef,
     };
     const currentInput = await (
       targetContext.execution
-        ? resolveVerificationInputIdentity({
-            ...identityOptions,
-            execution: targetContext.execution,
-          })
+        ? recordedInput.schema_version === 5
+          ? resolveVerificationInputIdentity({
+              ...identityOptions,
+              nativeIdentity: resolveNativeTaskIdentity(task),
+              requiredCheckIds: requiredVerificationContractChecks(task),
+              execution: targetContext.execution,
+            })
+          : resolveHistoricalVerificationInputV4Identity({
+              ...identityOptions,
+              execution: targetContext.execution,
+            })
         : resolveLegacyVerificationInputIdentity({
             ...identityOptions,
             workflowMode: targetContext.workflowMode ?? "direct",
@@ -255,7 +287,12 @@ async function assessCurrentVerification(
       return {
         accepted: true,
         reason:
-          recordedInput.implementation.target_sha === currentInput.implementation.target_sha
+          (recordedInput.schema_version === 5
+            ? recordedInput.checked_input.implementation.target_sha
+            : recordedInput.implementation.target_sha) ===
+          (currentInput.schema_version === 5
+            ? currentInput.checked_input.implementation.target_sha
+            : currentInput.implementation.target_sha)
             ? "verification_current"
             : "verification_reused_equivalent_input",
         recoveryHint: null,

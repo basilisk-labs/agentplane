@@ -16,10 +16,13 @@ import {
 } from "../../runner/observation/git-snapshot.js";
 import { observeBackendProjection } from "../../runner/state-fingerprint-backend-projection.js";
 import { observeKnowledgeProjection } from "../../runner/state-fingerprint-knowledge.js";
+import { resolveExecutionProfileRuntime } from "../../runtime/execution-profile/index.js";
+import { resolveNativeTaskObligations } from "../../runtime/task-obligations/index.js";
 import { readContainedStableTextNoFollow } from "../../shared/contained-stable-file.js";
 import { measurePreparationNode } from "../../shared/preparation-trace.js";
 import type { CommandContext } from "./task-backend.js";
 import { SIDE_EFFECT_AUTHORITY_EXTENSION_KEY } from "./side-effect-authority.js";
+import { resolveNativeTaskIdentity } from "./native-task-identity.js";
 import { observeWorkflowBlueprint } from "./workflow-step-fingerprint-blueprint.js";
 import { workflowFingerprintPolicyPaths } from "./workflow-step-fingerprint-policy-paths.js";
 import { traceWorkflowFingerprintComponents } from "./workflow-step-fingerprint-trace.js";
@@ -43,6 +46,24 @@ export const WORKFLOW_STATE_FINGERPRINT_POLICY = {
     "backend_projection",
     "policy",
     "blueprint",
+    "knowledge",
+    "authority",
+  ],
+  provider: {
+    required: false,
+    unavailable: "allow_if_unchanged",
+  },
+} as const satisfies StateFingerprintPolicy;
+
+export const WORKFLOW_STATE_FINGERPRINT_V2_POLICY = {
+  fingerprint_schema_version: 2,
+  required_components: [
+    "task",
+    "git",
+    "backend_projection",
+    "plan",
+    "policy",
+    "capability",
     "knowledge",
     "authority",
   ],
@@ -372,6 +393,31 @@ function workflowAuthority(step: WorkflowStep): Record<string, unknown> {
 function bootstrapFingerprint(state: WorkflowRouteStateInput): StateFingerprint {
   const projection = routeProjection(state);
   const worktree = state.resume.workspace_root.trim() || "workflow-route:bootstrap";
+  const nativeIdentity = resolveNativeTaskIdentity(state.task);
+  if (nativeIdentity) {
+    return buildStateFingerprint({
+      task_id: state.task.id,
+      task_revision:
+        typeof state.task.revision === "number" && state.task.revision > 0
+          ? state.task.revision
+          : null,
+      git_head: state.resume.head_sha,
+      worktree,
+      components: {
+        task: workflowTaskFingerprintComponent(state.task),
+        git: presentComponent("workflow_route_bootstrap", projection.workspace),
+        backend_projection: presentComponent("workflow_route_bootstrap", {
+          sync: state.task.sync ?? null,
+        }),
+        plan: presentComponent("native_plan", nativeIdentity.plan),
+        policy: presentComponent("native_policy", nativeIdentity.policy),
+        capability: presentComponent("native_capability", nativeIdentity.capability),
+        knowledge: presentComponent("workflow_route_bootstrap", { state: "not_observed" }),
+        provider: providerComponent(state),
+        authority: presentComponent("workflow_route_bootstrap", projection),
+      },
+    });
+  }
   return buildStateFingerprint({
     task_id: state.task.id,
     task_revision:
@@ -421,6 +467,22 @@ export async function captureWorkflowStepFingerprint(opts: {
     : null;
   const fallbackWorktree = `unavailable:${fingerprintCheckout}`;
   const repositoryRoot = authoritativePath;
+  const nativeIdentity = resolveNativeTaskIdentity(opts.state.task);
+  const nativeObligations = nativeIdentity
+    ? resolveNativeTaskObligations({
+        task_kind: opts.state.task.task_kind,
+        mutation_scope: opts.state.task.mutation_scope,
+        risk_flags: opts.state.task.risk_flags,
+        compatibility_preference: opts.state.task.blueprint_request,
+        execution_contract: opts.state.task.execution_contract,
+        selected_mode:
+          opts.state.task.execution_contract?.selected_mode ?? opts.ctx.config.workflow_mode,
+        route_reason_codes:
+          opts.state.task.execution_contract?.reason_codes ??
+          opts.state.task.execution_route?.reason_codes,
+        execution_profile: resolveExecutionProfileRuntime(opts.ctx.config),
+      })
+    : null;
   const blueprintPath = path.join(
     opts.ctx.config.paths.workflow_dir,
     opts.state.task.id,
@@ -428,39 +490,44 @@ export async function captureWorkflowStepFingerprint(opts: {
     "resolved-snapshot.json",
   );
   const traceScope = `task:${opts.state.task.id}:route_fingerprint`;
-  const blueprintObservation = repositoryRoot
-    ? await measurePreparationNode({
-        recorder: opts.ctx.preparationTrace,
-        node: "blueprint_resolution",
-        scope: traceScope,
-        dependencies: ["task_backend_read"],
-        cacheability: "exact",
-        cachePolicyReason:
-          "Blueprint source, task state, workflow mode, and resolved projection are fingerprinted.",
-        operation: async () =>
-          await observeWorkflowBlueprint({
-            ctx: opts.ctx,
-            repositoryRoot,
-            task: opts.state.task,
-            step: opts.step,
-            workflowMode: opts.state.workflowMode,
-            relativePath: blueprintPath,
+  const blueprintObservation = nativeIdentity
+    ? {
+        component: presentComponent("native_plan", nativeIdentity.plan),
+        policyModules: nativeObligations?.policy_modules ?? [],
+      }
+    : repositoryRoot
+      ? await measurePreparationNode({
+          recorder: opts.ctx.preparationTrace,
+          node: "blueprint_resolution",
+          scope: traceScope,
+          dependencies: ["task_backend_read"],
+          cacheability: "exact",
+          cachePolicyReason:
+            "Blueprint source, task state, workflow mode, and resolved projection are fingerprinted.",
+          operation: async () =>
+            await observeWorkflowBlueprint({
+              ctx: opts.ctx,
+              repositoryRoot,
+              task: opts.state.task,
+              step: opts.step,
+              workflowMode: opts.state.workflowMode,
+              relativePath: blueprintPath,
+            }),
+          fingerprintInputs: (observation) => ({
+            task: workflowTaskFingerprintComponent(opts.state.task),
+            workflow_mode: opts.state.workflowMode,
+            step: workflowAuthority(opts.step),
+            blueprint_observation: observation,
           }),
-        fingerprintInputs: (observation) => ({
-          task: workflowTaskFingerprintComponent(opts.state.task),
-          workflow_mode: opts.state.workflowMode,
-          step: workflowAuthority(opts.step),
-          blueprint_observation: observation,
-        }),
-        output: (observation) => observation,
-      })
-    : {
-        component: unavailableComponent(
-          "workflow_route_blueprint",
-          "authoritative_checkout_unavailable",
-        ),
-        policyModules: [],
-      };
+          output: (observation) => observation,
+        })
+      : {
+          component: unavailableComponent(
+            "workflow_route_blueprint",
+            "authoritative_checkout_unavailable",
+          ),
+          policyModules: [],
+        };
   const rawGit = repositoryRoot
     ? await measurePreparationNode({
         recorder: opts.ctx.preparationTrace,
@@ -570,7 +637,23 @@ export async function captureWorkflowStepFingerprint(opts: {
           path: authoritativePath,
           errors: git?.errors ?? [],
         });
-  return buildStateFingerprint({
+  const common = {
+    task: workflowTaskFingerprintComponent(opts.state.task),
+    git: gitComponent,
+    backend_projection: backendProjection,
+    policy,
+    knowledge,
+    provider: providerComponent(opts.state),
+    authority: presentComponent("workflow_route_authority", {
+      planApproval: opts.state.task.plan_approval ?? null,
+      owner: opts.state.task.owner,
+      blockers: opts.state.blockers,
+      batch: opts.state.batchOwnership,
+      workflowMode: opts.state.workflowMode,
+      step: workflowAuthority(opts.step),
+    }),
+  };
+  const base = {
     task_id: opts.state.task.id,
     task_revision:
       typeof opts.state.task.revision === "number" && opts.state.task.revision > 0
@@ -578,22 +661,21 @@ export async function captureWorkflowStepFingerprint(opts: {
         : null,
     git_head: git?.head_commit ?? null,
     worktree: authoritativePath ?? fallbackWorktree,
-    components: {
-      task: workflowTaskFingerprintComponent(opts.state.task),
-      git: gitComponent,
-      backend_projection: backendProjection,
-      policy,
-      blueprint: blueprintObservation.component,
-      knowledge,
-      provider: providerComponent(opts.state),
-      authority: presentComponent("workflow_route_authority", {
-        planApproval: opts.state.task.plan_approval ?? null,
-        owner: opts.state.task.owner,
-        blockers: opts.state.blockers,
-        batch: opts.state.batchOwnership,
-        workflowMode: opts.state.workflowMode,
-        step: workflowAuthority(opts.step),
-      }),
-    },
-  });
+  };
+  return nativeIdentity
+    ? buildStateFingerprint({
+        ...base,
+        components: {
+          ...common,
+          plan: blueprintObservation.component,
+          capability: presentComponent("native_capability", {
+            identity: nativeIdentity.capability,
+            obligations: nativeObligations,
+          }),
+        },
+      })
+    : buildStateFingerprint({
+        ...base,
+        components: { ...common, blueprint: blueprintObservation.component },
+      });
 }

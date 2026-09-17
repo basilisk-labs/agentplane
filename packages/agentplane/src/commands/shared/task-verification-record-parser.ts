@@ -2,8 +2,11 @@ import { createHash } from "node:crypto";
 import { canonicalizeJson } from "@agentplaneorg/core/tasks";
 import {
   verificationInputDigest,
+  verificationInputV5Digest,
   type VerificationEvidenceReference,
+  type VerificationExecutionIdentity,
   type VerificationInputIdentity,
+  type VerificationInputIdentityV5,
 } from "./task-verification-input.js";
 
 function sha256(value: string): `sha256:${string}` {
@@ -39,7 +42,7 @@ function parseEvidenceReferences(value: unknown): VerificationEvidenceReference[
   return references.length === value.length ? references : null;
 }
 
-function parseVerificationExecution(value: unknown): VerificationInputIdentity["execution"] | null {
+function parseVerificationExecution(value: unknown): VerificationExecutionIdentity | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const execution = value as Record<string, unknown>;
   const taskIds = execution.task_ids;
@@ -76,12 +79,187 @@ function parseVerificationExecution(value: unknown): VerificationInputIdentity["
   }
   const { digest, authoritative_task_source: _source, ...identityPayload } = execution;
   if (digest !== sha256(JSON.stringify(canonicalizeJson(identityPayload)))) return null;
-  return execution as unknown as NonNullable<VerificationInputIdentity["execution"]>;
+  return execution as unknown as VerificationExecutionIdentity;
+}
+
+function validDigestObject(value: Record<string, unknown>): boolean {
+  const { digest, ...identity } = value;
+  return isSha256(digest) && digest === sha256(JSON.stringify(canonicalizeJson(identity)));
+}
+
+function parseVerificationInputV5(
+  input: Record<string, unknown>,
+): VerificationInputIdentityV5 | null {
+  const concurrency = input.concurrency;
+  const checked = input.checked_input;
+  const obligations = input.obligations;
+  if (
+    input.kind !== "task_verification_input" ||
+    !concurrency ||
+    typeof concurrency !== "object" ||
+    Array.isArray(concurrency) ||
+    !checked ||
+    typeof checked !== "object" ||
+    Array.isArray(checked) ||
+    !obligations ||
+    typeof obligations !== "object" ||
+    Array.isArray(obligations) ||
+    !isSha256(input.digest)
+  ) {
+    return null;
+  }
+  const concurrencyRecord = concurrency as Record<string, unknown>;
+  const checkedRecord = checked as Record<string, unknown>;
+  const obligationsRecord = obligations as Record<string, unknown>;
+  const execution = parseVerificationExecution(concurrencyRecord.execution);
+  const task = concurrencyRecord.task;
+  const implementation = checkedRecord.implementation;
+  const commands = checkedRecord.commands;
+  const context = checkedRecord.context;
+  const environment = checkedRecord.environment;
+  const evidence = checkedRecord.evidence;
+  if (
+    !execution ||
+    !task ||
+    typeof task !== "object" ||
+    Array.isArray(task) ||
+    !implementation ||
+    typeof implementation !== "object" ||
+    Array.isArray(implementation) ||
+    !commands ||
+    typeof commands !== "object" ||
+    Array.isArray(commands) ||
+    !context ||
+    typeof context !== "object" ||
+    Array.isArray(context) ||
+    !environment ||
+    typeof environment !== "object" ||
+    Array.isArray(environment) ||
+    !evidence ||
+    typeof evidence !== "object" ||
+    Array.isArray(evidence)
+  ) {
+    return null;
+  }
+  const taskRecord = task as Record<string, unknown>;
+  const implementationRecord = implementation as Record<string, unknown>;
+  const commandsRecord = commands as Record<string, unknown>;
+  const contextRecord = context as Record<string, unknown>;
+  const environmentRecord = environment as Record<string, unknown>;
+  const evidenceRecord = evidence as Record<string, unknown>;
+  const references = parseEvidenceReferences(evidenceRecord.references);
+  const entries = commandsRecord.entries;
+  const runtime = environmentRecord.runtime;
+  const requiredCheckIds = obligationsRecord.required_check_ids;
+  if (
+    taskRecord.schema_version !== 1 ||
+    taskRecord.kind !== "agentplane.native_task_identity" ||
+    taskRecord.task_id !== execution.primary_task_id ||
+    !validDigestObject(taskRecord) ||
+    !isSha256((taskRecord.plan as Record<string, unknown> | undefined)?.digest) ||
+    !isSha256((taskRecord.policy as Record<string, unknown> | undefined)?.digest) ||
+    !isSha256((taskRecord.capability as Record<string, unknown> | undefined)?.digest) ||
+    !isSha256((taskRecord.checks as Record<string, unknown> | undefined)?.digest) ||
+    (implementationRecord.strategy !== "branch_diff" && implementationRecord.strategy !== "tree") ||
+    !isSha256(implementationRecord.digest) ||
+    typeof implementationRecord.target_sha !== "string" ||
+    !/^[0-9a-f]{40,64}$/u.test(implementationRecord.target_sha) ||
+    (implementationRecord.base_sha !== null &&
+      (typeof implementationRecord.base_sha !== "string" ||
+        !/^[0-9a-f]{40,64}$/u.test(implementationRecord.base_sha))) ||
+    !Array.isArray(entries) ||
+    !entries.every(
+      (entry) =>
+        entry &&
+        typeof entry === "object" &&
+        !Array.isArray(entry) &&
+        ((entry as Record<string, unknown>).check_id === null ||
+          typeof (entry as Record<string, unknown>).check_id === "string") &&
+        typeof (entry as Record<string, unknown>).command === "string",
+    ) ||
+    !isSha256(commandsRecord.digest) ||
+    commandsRecord.digest !== sha256(JSON.stringify(canonicalizeJson(entries))) ||
+    !isSha256(contextRecord.digest) ||
+    !Array.isArray(contextRecord.paths) ||
+    !contextRecord.paths.every((item) => typeof item === "string") ||
+    !isSha256(environmentRecord.digest) ||
+    !runtime ||
+    typeof runtime !== "object" ||
+    Array.isArray(runtime) ||
+    !isSha256(evidenceRecord.digest) ||
+    !isSha256(evidenceRecord.details_digest) ||
+    !references ||
+    !isSha256(obligationsRecord.verify_steps_digest) ||
+    !isSha256(obligationsRecord.verification_contract_digest) ||
+    !Array.isArray(requiredCheckIds) ||
+    !requiredCheckIds.every((item) => typeof item === "string" && item.trim())
+  ) {
+    return null;
+  }
+  const runtimeRecord = runtime as Record<string, unknown>;
+  if (
+    typeof runtimeRecord.platform !== "string" ||
+    typeof runtimeRecord.architecture !== "string" ||
+    typeof runtimeRecord.node_major !== "string" ||
+    (runtimeRecord.bun_major !== null && typeof runtimeRecord.bun_major !== "string")
+  ) {
+    return null;
+  }
+  const expectedEvidenceDigest = sha256(
+    JSON.stringify(
+      canonicalizeJson({
+        details_digest: evidenceRecord.details_digest,
+        references: references.map(({ reference, path: evidencePath, fragment, digest }) => ({
+          reference,
+          path: evidencePath,
+          fragment,
+          digest,
+        })),
+      }),
+    ),
+  );
+  const expectedConcurrencyDigest = sha256(
+    JSON.stringify(
+      canonicalizeJson({
+        execution_digest: execution.digest,
+        task_digest: taskRecord.digest,
+      }),
+    ),
+  );
+  const expectedCheckedDigest = sha256(
+    JSON.stringify(
+      canonicalizeJson({
+        implementation_digest: implementationRecord.digest,
+        commands_digest: commandsRecord.digest,
+        context_digest: contextRecord.digest,
+        environment_digest: environmentRecord.digest,
+        evidence_digest: evidenceRecord.digest,
+      }),
+    ),
+  );
+  const { digest: _obligationsDigest, ...obligationIdentity } = obligationsRecord;
+  const expectedObligationsDigest = sha256(JSON.stringify(canonicalizeJson(obligationIdentity)));
+  if (
+    evidenceRecord.digest !== expectedEvidenceDigest ||
+    concurrencyRecord.digest !== expectedConcurrencyDigest ||
+    checkedRecord.digest !== expectedCheckedDigest ||
+    obligationsRecord.digest !== expectedObligationsDigest ||
+    input.digest !==
+      verificationInputV5Digest({
+        concurrencyDigest: expectedConcurrencyDigest,
+        checkedInputDigest: expectedCheckedDigest,
+        obligationsDigest: expectedObligationsDigest,
+      })
+  ) {
+    return null;
+  }
+  return input as unknown as VerificationInputIdentityV5;
 }
 
 export function parseVerificationInput(value: unknown): VerificationInputIdentity | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const input = value as Record<string, unknown>;
+  if (input.schema_version === 5) return parseVerificationInputV5(input);
   const implementation = input.implementation;
   const context = input.context;
   const environment = input.environment;

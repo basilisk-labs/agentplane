@@ -9,6 +9,12 @@ import { isRecord } from "../../shared/guards.js";
 import { blueprintResolveInputFromTask } from "../blueprint/task-input.js";
 import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
 import type { CommandContext, loadTaskFromContext } from "../shared/task-backend.js";
+import {
+  buildNativeQualityReviewIdentity,
+  latestVerificationInputDigest,
+  resolveNativeTaskIdentity,
+} from "../shared/native-task-identity.js";
+import { evaluatorAcceptanceCriteria } from "../evaluator/evaluator-review-shared.js";
 
 type AcrTask = Awaited<ReturnType<typeof loadTaskFromContext>>;
 
@@ -26,6 +32,24 @@ export function buildAcrContextExtension(task: AcrTask): Record<string, unknown>
       mutation_scope: task.mutation_scope ?? null,
       blueprint_request: task.blueprint_request ?? null,
     },
+  };
+}
+
+export function buildAcrNativeIdentityExtension(task: AcrTask, implementationSha: string | null) {
+  const identity = resolveNativeTaskIdentity(task);
+  if (!identity) return null;
+  const review = buildNativeQualityReviewIdentity({
+    task,
+    native_identity: identity,
+    verification_input_digest: latestVerificationInputDigest(task),
+    acceptance_criteria: evaluatorAcceptanceCriteria(task),
+    implementation_sha: implementationSha,
+  });
+  return {
+    schema_version: 1,
+    task_id: task.id,
+    identity,
+    review_identity: review,
   };
 }
 

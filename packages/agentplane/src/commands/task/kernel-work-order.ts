@@ -26,6 +26,7 @@ export function buildKernelStateFingerprint(opts: {
     source: "canonical_episode",
     reason_code: "not_required_for_semantic_episode",
   };
+  const plan = opts.record.aggregate.current_plan;
   return buildStateFingerprint({
     task_id: opts.record.aggregate.id,
     task_revision: opts.record.aggregate.revision,
@@ -35,12 +36,24 @@ export function buildKernelStateFingerprint(opts: {
       task: present("canonical_task", opts.record.digest),
       git: present("native_repository_content", opts.context.repository_fingerprint),
       backend_projection: present("canonical_backend", opts.command.backendId),
+      plan: plan
+        ? present("canonical_plan", {
+            revision: plan.revision,
+            digest: plan.digest,
+            state: plan.state,
+          })
+        : absent,
       policy: present("native_policy", opts.context.ceiling.policy_digests),
+      capability: present("canonical_capability", {
+        authority_digest: opts.authority_digest,
+        capabilities: opts.context.ceiling.capabilities,
+        repository_effects: opts.context.ceiling.repository_effects,
+        external_effects: opts.context.ceiling.external_effects,
+      }),
       authority: present("canonical_authority", {
         issued: opts.authority_digest,
         lineage: opts.record.aggregate.authority_lineage?.at(-1)?.authority.digest ?? null,
       }),
-      blueprint: absent,
       knowledge: absent,
       provider: absent,
     },
@@ -75,7 +88,16 @@ export function buildKernelAgentWorkOrder(opts: {
       };
   const authority = implementation?.authority;
   const policy = {
-    required_components: ["task", "git", "backend_projection", "policy", "authority"] as const,
+    fingerprint_schema_version: 2 as const,
+    required_components: [
+      "task",
+      "git",
+      "backend_projection",
+      ...(implementation ? (["plan"] as const) : []),
+      "policy",
+      "capability",
+      "authority",
+    ] as const,
     provider: { required: false, unavailable: "allow_if_unchanged" as const },
   };
   const fingerprint = buildKernelStateFingerprint({

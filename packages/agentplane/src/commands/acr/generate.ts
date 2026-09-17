@@ -19,6 +19,7 @@ import { readDiffSummary } from "./diff.js";
 import {
   buildAcrBlueprintExtension,
   buildAcrContextExtension,
+  buildAcrNativeIdentityExtension,
   buildResidualRisks,
   hashFile,
   inferCheckType,
@@ -118,10 +119,10 @@ export async function generateAcr(opts: {
           : []),
       ]
     : [];
-  const blueprint = await buildAcrBlueprintExtension({
-    task,
-    ctx: opts.ctx,
-  });
+  const nativeIdentity = buildAcrNativeIdentityExtension(task, workCommit);
+  const blueprint = nativeIdentity
+    ? null
+    : await buildAcrBlueprintExtension({ task, ctx: opts.ctx });
   const trust = await readTaskEvidenceBundleTrustExtension({
     ctx: opts.ctx,
     taskId: task.id,
@@ -137,7 +138,7 @@ export async function generateAcr(opts: {
           },
         ]
       : []),
-    ...(blueprint.snapshot?.state === "current" &&
+    ...(blueprint?.snapshot?.state === "current" &&
     blueprint.snapshot.path &&
     blueprint.snapshot.artifact_sha256
       ? [
@@ -164,7 +165,9 @@ export async function generateAcr(opts: {
   });
   const mergeReady = residualRisks.length === 0;
   const extensions = {
-    "agentplane.blueprint": blueprint,
+    ...(nativeIdentity
+      ? { "agentplane.native_identity": nativeIdentity }
+      : { "agentplane.blueprint": blueprint }),
     ...(task.token_usage ? { "agentplane.token-usage": task.token_usage } : {}),
     ...buildAcrContextExtension(task),
   };

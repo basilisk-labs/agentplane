@@ -22,6 +22,12 @@ import {
   type ResolvedCommitInfo,
 } from "./finish-shared.js";
 import { assertEvaluatorQualityReviewPassed } from "./quality-review-gate.js";
+import {
+  buildNativeQualityReviewIdentity,
+  latestVerificationInputDigest,
+  resolveNativeTaskIdentity,
+} from "../shared/native-task-identity.js";
+import { evaluatorAcceptanceCriteria } from "../evaluator/evaluator-review-shared.js";
 
 const BLUEPRINT_SNAPSHOT_REF_MARKER = "BlueprintSnapshotRef:";
 
@@ -30,6 +36,7 @@ export async function assertBlueprintEvidenceBeforeFinish(opts: {
   loadedTasks: readonly LoadedFinishTask[];
 }): Promise<void> {
   for (const loaded of opts.loadedTasks) {
+    if (resolveNativeTaskIdentity(loaded.task)) continue;
     const doc = typeof loaded.task.doc === "string" ? loaded.task.doc : "";
     const hasSnapshotRef = doc.includes(BLUEPRINT_SNAPSHOT_REF_MARKER);
     const snapshot = await checkTaskBlueprintSnapshotDrift({
@@ -84,10 +91,10 @@ export async function assertQualityReviewBeforeFinish(opts: {
   const workflowMode = opts.workflowMode ?? opts.ctx.config.workflow_mode;
   const taskIds = opts.loadedTasks.map(({ taskId }) => taskId);
   for (const loaded of opts.loadedTasks) {
-    const snapshot = await checkTaskBlueprintSnapshotDrift({
-      ctx: opts.ctx,
-      task: loaded.task,
-    });
+    const nativeIdentity = resolveNativeTaskIdentity(loaded.task);
+    const snapshot = nativeIdentity
+      ? null
+      : await checkTaskBlueprintSnapshotDrift({ ctx: opts.ctx, task: loaded.task });
     const expectedSha = await resolveExpectedQualitySha({
       ctx: opts.ctx,
       loaded,
@@ -133,7 +140,18 @@ export async function assertQualityReviewBeforeFinish(opts: {
     assertEvaluatorQualityReviewPassed({
       task: loaded.task,
       expectedSha,
-      expectedBlueprintDigest: snapshot.previous.digest ? snapshot.current.digest : null,
+      expectedBlueprintDigest: nativeIdentity
+        ? (buildNativeQualityReviewIdentity({
+            task: loaded.task,
+            native_identity: nativeIdentity,
+            verification_input_digest: latestVerificationInputDigest(loaded.task),
+            acceptance_criteria: evaluatorAcceptanceCriteria(loaded.task),
+            implementation_sha: expectedSha,
+          })?.digest ?? null)
+        : snapshot?.previous.digest
+          ? snapshot.current.digest
+          : null,
+      identityLabel: nativeIdentity ? "native review identity" : "blueprint snapshot",
       command: "finish",
     });
   }

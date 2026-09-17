@@ -12,7 +12,7 @@ export const EVALUATOR_ALLOWED_TOOL_CLASSES = [
   "report_result",
 ] as const;
 
-export const EVALUATOR_WORK_ORDER_SCHEMA = z
+export const EVALUATOR_WORK_ORDER_V1_SCHEMA = z
   .object({
     schema_version: z.literal(1),
     kind: z.literal("evaluator_work_order"),
@@ -80,7 +80,62 @@ export const EVALUATOR_WORK_ORDER_SCHEMA = z
   })
   .strict();
 
+const NATIVE_REVIEW_IDENTITY_SCHEMA = z
+  .object({
+    schema_version: z.literal(1),
+    kind: z.literal("agentplane.native_quality_review_identity"),
+    task_id: z.string().trim().min(1),
+    plan_digest: z.string().regex(/^sha256:[a-f0-9]{64}$/u),
+    policy_digest: z.string().regex(/^sha256:[a-f0-9]{64}$/u),
+    capability_digest: z.string().regex(/^sha256:[a-f0-9]{64}$/u),
+    checks_digest: z.string().regex(/^sha256:[a-f0-9]{64}$/u),
+    verification_input_digest: z.string().regex(/^sha256:[a-f0-9]{64}$/u),
+    acceptance_digest: z.string().regex(/^sha256:[a-f0-9]{64}$/u),
+    implementation_sha: z.string().trim().min(1).nullable(),
+    digest: z.string().regex(/^sha256:[a-f0-9]{64}$/u),
+  })
+  .strict();
+
+export const EVALUATOR_WORK_ORDER_V2_SCHEMA = EVALUATOR_WORK_ORDER_V1_SCHEMA.omit({
+  schema_version: true,
+  blueprint_digest: true,
+  evidence: true,
+})
+  .extend({
+    schema_version: z.literal(2),
+    review_identity: NATIVE_REVIEW_IDENTITY_SCHEMA,
+    evidence: z
+      .array(
+        EVALUATOR_WORK_ORDER_V1_SCHEMA.shape.evidence.element.extend({
+          kind: z.enum([
+            "task_document",
+            "actual_diff",
+            "observed_checks",
+            "verification_log",
+            "plan",
+            "policy_module",
+            "knowledge_ref",
+            "runtime_evidence",
+            "qualification_packet",
+          ]),
+        }),
+      )
+      .min(3),
+  })
+  .strict();
+
+export const EVALUATOR_WORK_ORDER_SCHEMA = z.discriminatedUnion("schema_version", [
+  EVALUATOR_WORK_ORDER_V1_SCHEMA,
+  EVALUATOR_WORK_ORDER_V2_SCHEMA,
+]);
+
 export type EvaluatorWorkOrder = z.infer<typeof EVALUATOR_WORK_ORDER_SCHEMA>;
+
+export function evaluatorWorkOrderReviewDigest(workOrder: EvaluatorWorkOrder): string | null {
+  return workOrder.schema_version === 2
+    ? workOrder.review_identity.digest
+    : workOrder.blueprint_digest;
+}
 
 function sha256(value: string | Buffer): `sha256:${string}` {
   return `sha256:${createHash("sha256").update(value).digest("hex")}`;
@@ -91,7 +146,7 @@ export function evaluatorWorkOrderId(opts: {
   revision: number | null;
   evaluatedSha: string | null;
   diffBaseSha: string | null;
-  evidence: EvaluatorWorkOrder["evidence"];
+  evidence: readonly { id: string; sha256: string }[];
 }): string {
   const digest = sha256(
     JSON.stringify({
