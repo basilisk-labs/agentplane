@@ -37,6 +37,7 @@ import {
   branchTaskSupervisionDisposition,
   directTaskSupervisionDisposition,
 } from "./supervision-outcome-disposition.js";
+import { requireKernelIssuanceEligibility } from "./kernel-cutover.js";
 
 export {
   makeRunTaskRunResolveEffectHandler,
@@ -119,6 +120,7 @@ export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
         );
         return 0;
       }
+      if (canonicalSource) requireKernelIssuanceEligibility(canonicalSource);
       const taskCommand = await loadTaskCommandContext({
         ctx: initialCommandCtx,
         taskIds: [parsed.taskId],
@@ -171,6 +173,7 @@ export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
       );
       return 0;
     }
+    if (canonicalSource) requireKernelIssuanceEligibility(canonicalSource);
     const taskCommand = await loadTaskCommandContext({
       ctx: initialCommandCtx,
       taskIds: [parsed.taskId],

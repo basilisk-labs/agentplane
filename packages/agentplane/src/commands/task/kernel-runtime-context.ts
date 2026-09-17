@@ -63,7 +63,11 @@ export async function createKernelRuntime(opts: {
     observeKernelRepository({
       repository_root: ctx.resolvedProject.gitRoot,
       repository_identity: identity,
-      operational_paths: [ctx.config.paths.workflow_dir, ctx.config.paths.tasks_path],
+      operational_paths: [
+        ctx.config.paths.workflow_dir,
+        ctx.config.paths.tasks_path,
+        ctx.config.paths.worktrees_dir,
+      ],
     });
   async function checkpoint(observation: KernelRepositoryObservation) {
     await writeKernelArtifact(

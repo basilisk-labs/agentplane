@@ -13,7 +13,8 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
     {
       kind: "boolean",
       name: "canonical",
-      description: "Create an atomic canonical Task during staged controller cutover.",
+      description:
+        "Create a Blueprint-free atomic canonical Task and activate canonical issuance for later tasks.",
     },
     {
       kind: "string",
@@ -131,7 +132,7 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
       name: "show-blueprint",
       default: false,
       description:
-        "Print a resolved blueprint route preview to stderr after creation without changing stdout.",
+        "Print an explicit legacy Blueprint route preview without changing canonical task issuance.",
     },
     {
       kind: "boolean",
@@ -154,7 +155,8 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
   notes: [
     "Task creation defaults to doc_version=3 and seeds the README v3 section contract automatically.",
     "For verify-required primary tags, this command seeds a default ## Verify Steps acceptance contract in README.",
-    "`--show-blueprint` writes route preview details to stderr; stdout remains only the generated task id.",
+    "`--canonical` activates Blueprint-free Task Kernel issuance for later tasks in this repository; legacy-only repositories continue to drain until migrated.",
+    "`--show-blueprint` is an explicit legacy diagnostic; stdout remains only the generated task id.",
   ],
   parse: (raw) => ({
     title: raw.opts.title as string,
