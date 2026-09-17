@@ -18,6 +18,10 @@ describe("runtime/execution-profile", () => {
         implementation: { limit: 10, used: 0, remaining: 10, exhausted: false },
         verification: { limit: 6, used: 0, remaining: 6, exhausted: false },
       },
+      context_budget: {
+        max_policy_modules: 6,
+        max_prompt_blocks: 18,
+      },
       approvals: {
         require_plan: true,
         require_network: true,

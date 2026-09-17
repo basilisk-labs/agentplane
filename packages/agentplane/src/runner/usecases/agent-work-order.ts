@@ -12,6 +12,12 @@ import { buildTaskRouteDecision } from "../../commands/shared/route-decision.js"
 import type { TaskRouteDecision } from "../../commands/shared/route-decision-types.js";
 import type { CommandContext } from "../../commands/shared/task-backend.js";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
+import { resolveEffectiveTaskWorkflowMode } from "../../runtime/task-routing/index.js";
+import {
+  nativeTaskContextBudgetProblems,
+  resolveNativeTaskObligations,
+  type NativeTaskObligations,
+} from "../../runtime/task-obligations/index.js";
 import {
   makeReadOnlyExecutionContext,
   type ReadOnlyExecutionContext,
@@ -70,6 +76,7 @@ export type PreparedAgentWorkOrder = {
   brief_projection: AgentWorkOrderLegacyBriefProjection;
   execution_context: ReadOnlyExecutionContext;
   execution_profile: ResolvedExecutionProfileRuntime;
+  task_obligations: NativeTaskObligations;
   route_inputs: {
     include_remote: boolean;
     include_runner_state?: boolean;
@@ -205,6 +212,21 @@ export async function prepareAgentWorkOrder(opts: {
       }),
       output: (prompts) => prompts,
     });
+    const taskObligations = resolveNativeTaskObligations({
+      task_kind: taskEnvelope.source_task.task_kind,
+      mutation_scope: taskEnvelope.source_task.mutation_scope,
+      risk_flags: taskEnvelope.source_task.risk_flags,
+      compatibility_preference: taskEnvelope.source_task.blueprint_request,
+      execution_contract: taskEnvelope.source_task.execution_contract,
+      selected_mode:
+        opts.task_execution?.selected_mode ??
+        resolveEffectiveTaskWorkflowMode(taskEnvelope.source_task, executionContext.config),
+      route_reason_codes:
+        opts.task_execution?.reason_codes ??
+        taskEnvelope.source_task.execution_contract?.reason_codes ??
+        taskEnvelope.source_task.execution_route?.reason_codes,
+      execution_profile: executionProfile,
+    });
     const blueprint = await measurePreparationNode({
       recorder: executionContext.command.preparationTrace,
       node: "blueprint_resolution",
@@ -243,6 +265,7 @@ export async function prepareAgentWorkOrder(opts: {
         task_envelope: taskEnvelope,
         base_prompts: basePrompts,
         blueprint,
+        task_obligations: taskObligations,
         execution_context: executionContext,
       },
     });
@@ -317,6 +340,7 @@ export async function prepareAgentWorkOrder(opts: {
         route_decision: routeDecision,
         ...(opts.semantic_role ? { semantic_role: opts.semantic_role } : {}),
         ...(opts.task_execution ? { task_execution: opts.task_execution } : {}),
+        task_obligations: taskObligations,
       },
       source_manifest: sourceManifest,
       knowledge_retrieval: knowledgeRetrieval,
@@ -328,9 +352,27 @@ export async function prepareAgentWorkOrder(opts: {
       }),
       ...(await collectSemanticPolicyModulePrompts({
         git_root: executionContext.repo.git_root,
-        policy_modules: blueprint.policyModules,
+        policy_modules: taskObligations.policy_modules,
       })),
     ].toSorted((left, right) => left.priority - right.priority || left.id.localeCompare(right.id));
+    const nativeBudgetProblems = nativeTaskContextBudgetProblems(
+      taskObligations,
+      semanticBasePrompts.length,
+    );
+    if (nativeBudgetProblems.length > 0) {
+      return {
+        status: "rejected",
+        rejection: {
+          code: "work_order_invalid",
+          message: [
+            "AgentWorkOrder native semantic context budget exceeded.",
+            `profile=${taskObligations.profile}`,
+            ...nativeBudgetProblems,
+            "Fix: reduce optional context or use an execution profile that preserves every required policy module.",
+          ].join("\n"),
+        },
+      };
+    }
     const preparation: AgentWorkOrderPreparationView = {
       schema_version: 2,
       kind: "agent_work_order_preparation",
@@ -358,6 +400,7 @@ export async function prepareAgentWorkOrder(opts: {
         brief_projection: briefProjection,
         execution_context: executionContext,
         execution_profile: executionProfile,
+        task_obligations: taskObligations,
         route_inputs: {
           include_remote: remotePreparation.include_remote,
           include_runner_state: includeRunnerState,

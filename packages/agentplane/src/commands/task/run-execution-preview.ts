@@ -61,7 +61,10 @@ export function buildTaskRunExecutionPreview(bundle: RunnerContextBundle): TaskR
       task_context_bytes: bundle.task?.compaction.serialized.emitted_bytes ?? 0,
       duplicate_bytes_removed: bundle.task?.compaction.serialized.duplicate_bytes_removed ?? 0,
       prompt_blocks: bundle.base_prompts.length,
-      policy_modules: bundle.blueprint?.policyModules.length ?? 0,
+      policy_modules:
+        bundle.task_obligations?.policy_modules.length ??
+        bundle.blueprint?.policyModules.length ??
+        0,
       knowledge_refs: bundle.knowledge_refs?.length ?? 0,
     },
     approvals: {
@@ -76,12 +79,17 @@ export function buildTaskRunExecutionPreview(bundle: RunnerContextBundle): TaskR
         state: "unavailable",
         reason: "provider token budget is assigned by the semantic supervisor at execution time",
       },
-      context: bundle.blueprint
+      context: bundle.task_obligations
         ? {
-            max_policy_modules: bundle.blueprint.contextBudget.maxPolicyModules,
-            max_prompt_blocks: bundle.blueprint.contextBudget.maxPromptBlocks ?? null,
+            max_policy_modules: bundle.task_obligations.context_budget.max_policy_modules,
+            max_prompt_blocks: bundle.task_obligations.context_budget.max_prompt_blocks,
           }
-        : null,
+        : bundle.blueprint
+          ? {
+              max_policy_modules: bundle.blueprint.contextBudget.maxPolicyModules,
+              max_prompt_blocks: bundle.blueprint.contextBudget.maxPromptBlocks ?? null,
+            }
+          : null,
       tools: toolBudget,
     },
   };

@@ -1,9 +1,16 @@
 import { describe, expect, it } from "vitest";
 
 import { makeRunnerContextBundle } from "@agentplane/testkit/runner";
+import { defaultConfig } from "@agentplaneorg/core/config";
 
+import { resolveExecutionProfileRuntime } from "../../runtime/execution-profile/index.js";
+import { resolveNativeTaskObligations } from "../../runtime/task-obligations/index.js";
 import { buildRunnerExecutionPlaybookContract } from "../playbooks.js";
-import { assertRunnerBlueprintPolicyModuleBudget, renderTaskRunnerBootstrap } from "./task-run.js";
+import {
+  assertRunnerBlueprintPolicyModuleBudget,
+  assertRunnerNativeContextBudget,
+  renderTaskRunnerBootstrap,
+} from "./task-run.js";
 
 describe("runner blueprint guards", () => {
   it("starts codex task bootstraps with the /goal slash command", () => {
@@ -174,6 +181,41 @@ describe("runner blueprint guards", () => {
     expect(() => assertRunnerBlueprintPolicyModuleBudget(bundle)).toThrow(
       "Runner blueprint policy module budget exceeded.",
     );
+  });
+
+  it("rejects native context overflow without consulting the compatibility blueprint", () => {
+    const bundle = makeRunnerContextBundle();
+    const profile = resolveExecutionProfileRuntime(defaultConfig());
+    profile.context_budget.max_prompt_blocks = 1;
+    bundle.task_obligations = resolveNativeTaskObligations({
+      task_kind: "code",
+      mutation_scope: "code",
+      selected_mode: "branch_pr",
+      execution_profile: profile,
+    });
+    bundle.blueprint = undefined;
+
+    expect(() => assertRunnerNativeContextBudget(bundle)).toThrow(
+      "Runner native semantic context budget exceeded.",
+    );
+  });
+
+  it("renders native stop rules without Blueprint command traces", () => {
+    const bundle = makeRunnerContextBundle();
+    bundle.task_obligations = resolveNativeTaskObligations({
+      task_kind: "code",
+      mutation_scope: "code",
+      selected_mode: "branch_pr",
+      execution_profile: resolveExecutionProfileRuntime(defaultConfig()),
+    });
+    bundle.blueprint = undefined;
+
+    const bootstrap = renderTaskRunnerBootstrap(bundle);
+
+    expect(bootstrap).toContain("Native stop rules:");
+    expect(bootstrap).toContain("protected_lifecycle_override");
+    expect(bootstrap).not.toContain("Blueprint stop rules:");
+    expect(bootstrap).not.toMatch(/agentplane (?:integrate|finish|verify|work|pr)|git commit/u);
   });
 
   it("renders blueprint stop rules into the runner bootstrap", () => {

@@ -18,6 +18,10 @@ export type ResolvedExecutionProfileRuntime = {
   reasoning_effort: AgentplaneConfig["execution"]["reasoning_effort"];
   text_verbosity: AgentplaneConfig["execution"]["text_verbosity"];
   budget: Record<ExecutionBudgetPhase, ExecutionBudgetCounter>;
+  context_budget: {
+    max_policy_modules: number;
+    max_prompt_blocks: number;
+  };
   stop_conditions: string[];
   handoff_conditions: string[];
   unsafe_actions_requiring_explicit_user_ok: string[];

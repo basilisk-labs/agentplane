@@ -263,7 +263,7 @@ export async function collectSemanticPolicyModulePrompts(opts: {
         [
           "# Semantic security constraints",
           "",
-          "These constraints are selected by the resolved blueprint and apply to this episode.",
+          "These constraints are required by the native execution obligations for this episode.",
           constraints,
         ].join("\n"),
       ),
@@ -341,6 +341,7 @@ function projectExecutionProfileBlock(block: RunnerPromptBlock): RunnerPromptBlo
       reasoning_effort: parsed.reasoning_effort,
       text_verbosity: parsed.text_verbosity,
       budget: parsed.budget,
+      context_budget: parsed.context_budget,
       unsafe_actions_requiring_explicit_user_ok: parsed.unsafe_actions_requiring_explicit_user_ok,
     };
   } catch {

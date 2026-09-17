@@ -44,10 +44,9 @@ import {
 } from "./task-run-active-claim-runtime.js";
 export { renderTaskRunnerBootstrap } from "./task-run-bootstrap.js";
 export { assertRunnerBlueprintPolicyModuleBudget } from "./task-run-blueprint-plan.js";
-import {
-  assertRunnerBlueprintPolicyModuleBudget,
-  writeTaskBlueprintSnapshot,
-} from "./task-run-blueprint-plan.js";
+import { writeTaskBlueprintSnapshot } from "./task-run-blueprint-plan.js";
+export { assertRunnerNativeContextBudget } from "./task-run-obligations.js";
+import { assertRunnerNativeContextBudget } from "./task-run-obligations.js";
 import { prepareTaskRunnerAgentWorkOrder } from "./task-run-work-order.js";
 import { renderSemanticBootstrap, semanticRole } from "./task-run-semantic-prompt.js";
 import { RunnerPreparationCliError, writeRunnerRefusalArtifacts } from "./task-run-refusal.js";
@@ -132,6 +131,7 @@ export async function prepareTaskRunnerExecution(
   const taskEnvelope = preparedWorkOrder.task_envelope;
   const base_prompts = preparedWorkOrder.provider_prompts;
   const blueprint = preparedWorkOrder.blueprint;
+  const task_obligations = preparedWorkOrder.task_obligations;
   const route_decision = preparedWorkOrder.route_decision;
   if (opts.task_execution) {
     assertTaskRunnerPreExecutionCapabilities({
@@ -183,6 +183,7 @@ export async function prepareTaskRunnerExecution(
     task: taskEnvelope.task,
     recipe,
     blueprint,
+    task_obligations,
     work_order: preparedWorkOrder.work_order,
     route_decision,
     execution: {
@@ -221,7 +222,7 @@ export async function prepareTaskRunnerExecution(
     capabilities: bundle.execution.adapter_capabilities,
     requested: bundle.execution.policy_decision.requested,
   });
-  assertRunnerBlueprintPolicyModuleBudget(bundle);
+  assertRunnerNativeContextBudget(bundle);
   assertRunnerTaskExecutable(bundle);
   await assertRunnerCheckoutAuthority({
     bundle,

@@ -18,6 +18,7 @@ import type { BlueprintPlanArtifact } from "../../blueprints/index.js";
 import type { TaskRouteDecision } from "../../commands/shared/route-decision-types.js";
 import type { AgentplaneCapabilityRegistry } from "../../runtime/capabilities/index.js";
 import type { ResolvedExecutionProfileRuntime } from "../../runtime/execution-profile/index.js";
+import type { NativeTaskObligations } from "../../runtime/task-obligations/index.js";
 import type { FrameworkExplainPayload } from "../../runtime/explain/index.js";
 import type { FrameworkProtocolSurface } from "../../runtime/protocol/index.js";
 import type { AgentWorkOrderPreparationView } from "../usecases/agent-work-order.js";
@@ -201,6 +202,8 @@ export type RunnerContextBundle = {
   task?: RunnerTaskContext;
   recipe?: RunnerRecipeContext;
   blueprint?: BlueprintPlanArtifact;
+  /** Native policy, lifecycle, evidence, and stop floors for current execution. */
+  task_obligations?: NativeTaskObligations;
   playbook?: RunnerExecutionPlaybookContract;
   /** Canonical V2 work order for the semantic episode; optional for v1 bundles. */
   work_order?: AgentWorkOrderV2;
