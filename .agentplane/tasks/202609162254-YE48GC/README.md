@@ -4,7 +4,7 @@ title: "Implement and qualify AgentPlane 0.7.10 Blueprint retirement"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 40
+revision: 42
 origin:
   system: "manual"
 depends_on: []
@@ -134,6 +134,7 @@ execution_contract:
   observed:
     authority_violations: []
     changed_components:
+      - ".agentplane"
       - ".github"
       - "packages/agentplane"
       - "packages/core"
@@ -143,6 +144,8 @@ execution_contract:
       - "schemas"
       - "scripts"
     changed_paths:
+      - ".agentplane/agents/INTAKE.json"
+      - ".agentplane/agents/PLANNER.json"
       - ".github/workflows/publish.yml"
       - "packages/agentplane/assets/agents/INTAKE.json"
       - "packages/agentplane/assets/agents/PLANNER.json"
@@ -481,7 +484,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:6312e9f70eef870ea56eea6c6039748e2e4909b8f573ab35fbf72cbef2d0ba6a"
+      digest: "sha256:226437b90f94280badf66542dd23152f6fcae7cd71ca4100d360d8e3251121ea"
       escalation_reasons:
         - "central_component:.github/workflows"
         - "central_component:bun.lock"
@@ -567,6 +570,8 @@ execution_contract:
         - "effect_schema"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
+        - "unknown_path:.agentplane/agents/INTAKE.json"
+        - "unknown_path:.agentplane/agents/PLANNER.json"
         - "unknown_path:packages/agentplane/assets/agents/INTAKE.json"
         - "unknown_path:packages/agentplane/assets/agents/PLANNER.json"
         - "unknown_path:scripts/checks/blueprint-retirement-map.json"
@@ -577,6 +582,7 @@ execution_contract:
         - "cli"
       observed:
         changed_components:
+          - ".agentplane"
           - ".github"
           - "packages/agentplane"
           - "packages/core"
@@ -586,6 +592,8 @@ execution_contract:
           - "schemas"
           - "scripts"
         changed_files:
+          - ".agentplane/agents/INTAKE.json"
+          - ".agentplane/agents/PLANNER.json"
           - ".github/workflows/publish.yml"
           - "packages/agentplane/assets/agents/INTAKE.json"
           - "packages/agentplane/assets/agents/PLANNER.json"
@@ -898,7 +906,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "5755d5a4decd210f5620a6483f9e1355ba490f82"
+  message: "🚧 YE48GC task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -957,6 +967,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: .agentplane/agents; repository effects: documentation, repository_write."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 5755d5a4decd. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -1063,8 +1076,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The canonical Blueprint-free agent templates are implemented, but the repository-local generated agent mirrors are outside the current writable roots and remain stale. Recommended action: Extend the approved scope to .agentplane/agents, run bun run agents:sync, and re-run the declared checks. Requested scope: roots=.agentplane/agents; repository effects=documentation,repository_write; request digest=sha256:d3fe2ad34b19e50bec50b54f6b880975a92e5617d3f8762ac4d7179ea5d953bf. Agentplane receipt: external-agent-blocker/tr_44299c3041efe49a49afdb5027e61b07/sha256:9b1e9ce0e614ec912e7d598f79fe985918222a87a3b4a9f9689f666736dd398b/sha256:d3fe2ad34b19e50bec50b54f6b880975a92e5617d3f8762ac4d7179ea5d953bf."
+  -
+    type: "status"
+    at: "2026-09-17T12:13:19.236Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 5755d5a4decd. CLI accepted one state-bound external-agent semantic result."
+    commit: "5755d5a4decd210f5620a6483f9e1355ba490f82"
 doc_version: 3
-doc_updated_at: "2026-09-17T12:09:12.544Z"
+doc_updated_at: "2026-09-17T12:13:19.236Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task."
 sections:
@@ -1972,7 +1993,7 @@ extensions:
       revision: 6
       schema_version: 1
       task_id: "202609162254-YE48GC"
-    event_cursor: 32
+    event_cursor: 34
     final_validation: null
     id: "202609162254-YE48GC"
     intent:
@@ -6122,9 +6143,9 @@ extensions:
         revision: 5
         schema_version: 1
         task_id: "202609162254-YE48GC"
-    revision: 40
+    revision: 42
     schema_version: 1
-    updated_at: "2026-09-17T12:09:12.544Z"
+    updated_at: "2026-09-17T12:13:19.236Z"
     work_items:
       channel-and-owner-map:
         attempt: 1
@@ -6941,6 +6962,30 @@ extensions:
         previous_revision: 18
         schema_version: 1
         task_id: "202609162254-YE48GC"
+      compatibility:sha256:3aa3f945f528b89806ffe8ff90ebcb056a423b6d7cd99aaa4bbedb8270eb18e2:
+        aggregate_digest: "sha256:c176f357ebb50c93efbc602a6b78dc066d8e5efdaa1cd22e2ac15f5c0e1212ac"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T12:13:19.236Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_0d3e5d5805eab23169a14a24"
+          mutation_id: "compatibility:sha256:3aa3f945f528b89806ffe8ff90ebcb056a423b6d7cd99aaa4bbedb8270eb18e2"
+          plan_digest: "sha256:584ea017bc7993c4fb68a16500cc489bd951a4116d6ba436a7ff0e047158403d"
+          plan_revision: 6
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 40
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:3aa3f945f528b89806ffe8ff90ebcb056a423b6d7cd99aaa4bbedb8270eb18e2"
+        next_revision: 41
+        previous_revision: 40
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
       compatibility:sha256:413450ce2745d1d5cf77c898303ff5777b75a51f5db675c1e34d55e570726bd9:
         aggregate_digest: "sha256:ae8c555aa47f48c57b8a831af834bc49ccfc1fbcbd1cfffb9b7832d90a7f7f17"
         event:
@@ -7445,6 +7490,30 @@ extensions:
         previous_revision: 12
         schema_version: 1
         task_id: "202609162254-YE48GC"
+      compatibility:sha256:d04c09f0fef9b1965d14e8e625964c1d90cd19e208313a4433c366c426e08522:
+        aggregate_digest: "sha256:218b6d8a6a362a70d7a4ac064cfe7cf2b0eb5b36c114934f9e1d44800cf7bacd"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T12:13:19.236Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_6d308cabf76632f1d3a60bd3"
+          mutation_id: "compatibility:sha256:d04c09f0fef9b1965d14e8e625964c1d90cd19e208313a4433c366c426e08522"
+          plan_digest: "sha256:584ea017bc7993c4fb68a16500cc489bd951a4116d6ba436a7ff0e047158403d"
+          plan_revision: 6
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 41
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:d04c09f0fef9b1965d14e8e625964c1d90cd19e208313a4433c366c426e08522"
+        next_revision: 42
+        previous_revision: 41
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
       compatibility:sha256:d3ff1dafbbcca96a6276392a5e33105686e5d258a0f59787d1b8d56d62ac29e0:
         aggregate_digest: "sha256:51c406324ad6077b01b6a1e0e2dbc91922b8744a801c2f92c559af9a54495566"
         event:
@@ -7641,7 +7710,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "b24594ce6deb6708a22186d05bc77fc721440206"
+    hash: "5755d5a4decd210f5620a6483f9e1355ba490f82"
   task_execution_context:
     base_ref: "main"
     base_sha: "19ff39fd292c30f0958131c35200a6268b7a285d"

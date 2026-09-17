@@ -29,6 +29,8 @@ Created: 2026-09-16T23:02:04.476Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .agentplane/agents/INTAKE.json                     |  10 +-
+ .agentplane/agents/PLANNER.json                    |   2 +-
  .github/workflows/publish.yml                      |  81 ++-
  packages/agentplane/assets/agents/INTAKE.json      |  10 +-
  packages/agentplane/assets/agents/PLANNER.json     |   2 +-
@@ -290,7 +292,7 @@ Created: 2026-09-16T23:02:04.476Z
  scripts/release/manifest.mjs                       |  30 +
  scripts/release/stable-channel-policy.mjs          | 127 ++++
  scripts/release/stable-channel-policy.test.mjs     |  77 ++
- 261 files changed, 7369 insertions(+), 12082 deletions(-)
+ 263 files changed, 7375 insertions(+), 12088 deletions(-)
 ```
 
 </details>
