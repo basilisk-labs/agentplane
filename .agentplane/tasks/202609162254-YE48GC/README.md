@@ -4,7 +4,7 @@ title: "Implement and qualify AgentPlane 0.7.10 Blueprint retirement"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -32,9 +32,9 @@ plan_approval:
   note: "host_user_decision=sha256:d45ce5060f5fae001ac6bfd1c0d38ba3980252524ae842840b74c01db55a53d8"
 verification:
   state: "pending"
-  updated_at: "2026-09-17T07:45:50.069Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
+  updated_at: null
+  updated_by: null
+  note: null
   attempts: 0
 execution_route:
   frozen: true
@@ -408,9 +408,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "32bd131a28f46452bc8cf6e399ca61a228b0459a"
-  message: "🚧 YE48GC task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -2224,9 +2222,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609162254-YE48GC"
-    revision: 19
+    revision: 20
     schema_version: 1
-    updated_at: "2026-09-17T09:07:57.265Z"
+    updated_at: "2026-09-17T09:22:14.120Z"
     work_items:
       channel-and-owner-map:
         attempt: 1
@@ -2473,14 +2471,74 @@ extensions:
         state: "PLANNED"
         validation_result: null
       verification-identity:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "verification-identity"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:8e65e0e31e76f8a3d404e415cabf827c5ecadbe7f43dccb3addb09253b7038e9"
+            id: "Versioned verification-input v5"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609162254-YE48GC"
+              work_item_id: "verification-identity"
+            provenance:
+              - "sha256:20b07c2c324773b0de65e2dbf7baf3f76517154eb296f847d9847cc0b557ccec"
+              - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:62fc9926e1a9d526f9c96954b8b24301bc1b5e4d245a94a42c2bd65da99791b5"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:5f3b04d33e6105e4e057684157aadbdd8a46bc68eeba33a4a00e3c647fbf7994"
+            id: "Blueprint-free current state fingerprints and WorkOrders"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609162254-YE48GC"
+              work_item_id: "verification-identity"
+            provenance:
+              - "sha256:20b07c2c324773b0de65e2dbf7baf3f76517154eb296f847d9847cc0b557ccec"
+              - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:62fc9926e1a9d526f9c96954b8b24301bc1b5e4d245a94a42c2bd65da99791b5"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:da0091522a5c0698d0cb1289c0f9ef7d7ee9b59c49c60398f7d524ce23bd224b"
+            id: "Migrated current consumers with old-format cold readers"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609162254-YE48GC"
+              work_item_id: "verification-identity"
+            provenance:
+              - "sha256:20b07c2c324773b0de65e2dbf7baf3f76517154eb296f847d9847cc0b557ccec"
+              - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:62fc9926e1a9d526f9c96954b8b24301bc1b5e4d245a94a42c2bd65da99791b5"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+              check_id: "identity-tests"
+              command_identity: "bun run test:project agentplane --maxWorkers=1"
+              detail: "Observed by bun run test:project agentplane --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-17T09:22:14.087Z"
+              repository_snapshot_digest: "sha256:62fc9926e1a9d526f9c96954b8b24301bc1b5e4d245a94a42c2bd65da99791b5"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -2535,6 +2593,23 @@ extensions:
         task_id: "202609162254-YE48GC"
         task_revision: 13
         work_item_id: "recipe-v1-conversion"
+      -
+        at: "2026-09-17T09:22:14.120Z"
+        from: "PLANNED"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:44c9fac33c76d2fda6dab01908558c235c4c89e93f0dff5327197484d4ea0e4c"
+        entity: "work_item"
+        id: "event_33b812e3f95b9fd172bda3d3"
+        mutation_id: "external-result:work-order-202609162254-YE48GC-executor-941a121693a828bac7a9896e"
+        plan_digest: "sha256:9b89e63d8759e276dd34c14c12173e3cbe67bf44df885de03762eb29e868052b"
+        plan_revision: 2
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+        task_revision: 19
+        work_item_id: "verification-identity"
     leases: []
     mutation_receipts:
       compatibility:sha256:03ad382df371fb10a3fda0b3d74c85baaa1cbfcc47fa5298b2773c99d5104eda:
@@ -2895,6 +2970,30 @@ extensions:
         mutation_id: "external-result:work-order-202609162254-YE48GC-executor-5bdef45ba2f2464245fcfd4d"
         next_revision: 8
         previous_revision: 7
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+      external-result:work-order-202609162254-YE48GC-executor-941a121693a828bac7a9896e:
+        aggregate_digest: "sha256:9335ebe6fd50915663adf085cb378b1bdc33f2dd9d626a3ceaefbd31816b7765"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T09:22:14.120Z"
+          cause_refs:
+            - "semantic-result:sha256:44c9fac33c76d2fda6dab01908558c235c4c89e93f0dff5327197484d4ea0e4c"
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_33b812e3f95b9fd172bda3d3"
+          mutation_id: "external-result:work-order-202609162254-YE48GC-executor-941a121693a828bac7a9896e"
+          plan_digest: "sha256:9b89e63d8759e276dd34c14c12173e3cbe67bf44df885de03762eb29e868052b"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 19
+          to: "COMPLETED"
+          work_item_id: "verification-identity"
+        mutation_id: "external-result:work-order-202609162254-YE48GC-executor-941a121693a828bac7a9896e"
+        next_revision: 20
+        previous_revision: 19
         schema_version: 1
         task_id: "202609162254-YE48GC"
       external-result:work-order-202609162254-YE48GC-executor-b5679f4de4f3b712e1ab2ae8:
