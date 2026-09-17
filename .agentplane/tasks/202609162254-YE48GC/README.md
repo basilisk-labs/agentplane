@@ -4,7 +4,7 @@ title: "Implement and qualify AgentPlane 0.7.10 Blueprint retirement"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -131,6 +131,8 @@ execution_contract:
       - "packages/agentplane/src/commands/acr/generate-extensions.ts"
       - "packages/agentplane/src/commands/acr/generate.ts"
       - "packages/agentplane/src/commands/acr/summary.ts"
+      - "packages/agentplane/src/commands/blueprint/historical-audit.test.ts"
+      - "packages/agentplane/src/commands/blueprint/historical-audit.ts"
       - "packages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts"
       - "packages/agentplane/src/commands/evaluator/evaluator-quality-artifacts.ts"
       - "packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts"
@@ -147,13 +149,24 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/task-verification-record-parser.ts"
       - "packages/agentplane/src/commands/shared/task-verification-records.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+      - "packages/agentplane/src/commands/task/advance.command.ts"
       - "packages/agentplane/src/commands/task/blueprint-summary.ts"
       - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts"
       - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts"
       - "packages/agentplane/src/commands/task/finish-blueprint-evidence.ts"
+      - "packages/agentplane/src/commands/task/kernel-cutover.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-cutover.ts"
+      - "packages/agentplane/src/commands/task/kernel-migrate.command.ts"
+      - "packages/agentplane/src/commands/task/kernel-migration-admission.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-migration-admission.ts"
+      - "packages/agentplane/src/commands/task/kernel-runtime-context.ts"
       - "packages/agentplane/src/commands/task/kernel-work-order.ts"
+      - "packages/agentplane/src/commands/task/new.primary-checkout.test.ts"
+      - "packages/agentplane/src/commands/task/new.spec.ts"
+      - "packages/agentplane/src/commands/task/new.ts"
       - "packages/agentplane/src/commands/task/quality-review-gate.ts"
       - "packages/agentplane/src/commands/task/run-execution-preview.ts"
+      - "packages/agentplane/src/commands/task/run.command.ts"
       - "packages/agentplane/src/commands/task/verify-record-execute.ts"
       - "packages/agentplane/src/commands/task/verify-record-references.ts"
       - "packages/agentplane/src/commands/task/verify-show.command.ts"
@@ -257,7 +270,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:80c30165869b7490ccfae335831eb41fa83af43a8713b3064530b7d60a322ccf"
+      digest: "sha256:f946d4b2250a08e003467c8fc295b627acd77d010d5effe0b2872b6b49997876"
       escalation_reasons:
         - "central_component:.github/workflows"
         - "central_component:bun.lock"
@@ -303,6 +316,8 @@ execution_contract:
           - "packages/agentplane/src/commands/acr/generate-extensions.ts"
           - "packages/agentplane/src/commands/acr/generate.ts"
           - "packages/agentplane/src/commands/acr/summary.ts"
+          - "packages/agentplane/src/commands/blueprint/historical-audit.test.ts"
+          - "packages/agentplane/src/commands/blueprint/historical-audit.ts"
           - "packages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts"
           - "packages/agentplane/src/commands/evaluator/evaluator-quality-artifacts.ts"
           - "packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts"
@@ -319,13 +334,24 @@ execution_contract:
           - "packages/agentplane/src/commands/shared/task-verification-record-parser.ts"
           - "packages/agentplane/src/commands/shared/task-verification-records.ts"
           - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+          - "packages/agentplane/src/commands/task/advance.command.ts"
           - "packages/agentplane/src/commands/task/blueprint-summary.ts"
           - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts"
           - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts"
           - "packages/agentplane/src/commands/task/finish-blueprint-evidence.ts"
+          - "packages/agentplane/src/commands/task/kernel-cutover.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-cutover.ts"
+          - "packages/agentplane/src/commands/task/kernel-migrate.command.ts"
+          - "packages/agentplane/src/commands/task/kernel-migration-admission.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-migration-admission.ts"
+          - "packages/agentplane/src/commands/task/kernel-runtime-context.ts"
           - "packages/agentplane/src/commands/task/kernel-work-order.ts"
+          - "packages/agentplane/src/commands/task/new.primary-checkout.test.ts"
+          - "packages/agentplane/src/commands/task/new.spec.ts"
+          - "packages/agentplane/src/commands/task/new.ts"
           - "packages/agentplane/src/commands/task/quality-review-gate.ts"
           - "packages/agentplane/src/commands/task/run-execution-preview.ts"
+          - "packages/agentplane/src/commands/task/run.command.ts"
           - "packages/agentplane/src/commands/task/verify-record-execute.ts"
           - "packages/agentplane/src/commands/task/verify-record-references.ts"
           - "packages/agentplane/src/commands/task/verify-show.command.ts"
@@ -408,7 +434,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "bae683e0858e7580bf32f9fa12b27f8f0bfeffc6"
+  message: "🚧 YE48GC task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -431,6 +459,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 32bd131a28f4. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: bae683e0858e. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -478,8 +509,16 @@ events:
     to: "DOING"
     note: "Implementation committed: 32bd131a28f4. CLI accepted one state-bound external-agent semantic result."
     commit: "32bd131a28f46452bc8cf6e399ca61a228b0459a"
+  -
+    type: "status"
+    at: "2026-09-17T10:26:38.290Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: bae683e0858e. CLI accepted one state-bound external-agent semantic result."
+    commit: "bae683e0858e7580bf32f9fa12b27f8f0bfeffc6"
 doc_version: 3
-doc_updated_at: "2026-09-17T09:07:57.265Z"
+doc_updated_at: "2026-09-17T10:26:38.290Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task."
 sections:
@@ -1362,7 +1401,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609162254-YE48GC"
-    event_cursor: 14
+    event_cursor: 16
     final_validation: null
     id: "202609162254-YE48GC"
     intent:
@@ -2222,9 +2261,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609162254-YE48GC"
-    revision: 20
+    revision: 22
     schema_version: 1
-    updated_at: "2026-09-17T09:22:14.120Z"
+    updated_at: "2026-09-17T10:26:38.290Z"
     work_items:
       channel-and-owner-map:
         attempt: 1
@@ -2780,6 +2819,30 @@ extensions:
         previous_revision: 3
         schema_version: 1
         task_id: "202609162254-YE48GC"
+      compatibility:sha256:5bb96a0c6b3341aa2815aaf98b4f369783a10d234bfbdebfef713db1bedddfb1:
+        aggregate_digest: "sha256:287dd3c2c84af86f2ce33752053a8c562da35bb04fdab677becb8fc35d0b22c6"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T10:26:38.290Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_f5a5b6295e51f2f8cc4361b1"
+          mutation_id: "compatibility:sha256:5bb96a0c6b3341aa2815aaf98b4f369783a10d234bfbdebfef713db1bedddfb1"
+          plan_digest: "sha256:9b89e63d8759e276dd34c14c12173e3cbe67bf44df885de03762eb29e868052b"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 21
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:5bb96a0c6b3341aa2815aaf98b4f369783a10d234bfbdebfef713db1bedddfb1"
+        next_revision: 22
+        previous_revision: 21
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
       compatibility:sha256:610f7b694f1c375242d25d6bd6194cae260a1ba6737c36f396bf93684e5c9dcf:
         aggregate_digest: "sha256:9ce2d412efc5d2107062835d3a1705f5c14bb39256d20585de65b10077332b67"
         event:
@@ -2874,6 +2937,30 @@ extensions:
         mutation_id: "compatibility:sha256:9dddc223495f8ae57bc8facbeced997dad8ae4fce9898c1f740d4eadc4d59b33"
         next_revision: 18
         previous_revision: 17
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+      compatibility:sha256:a1d46146a1ccdf6d6a6c4944d31abd0beaae279a944dce238dd5aa85f4ccf2d3:
+        aggregate_digest: "sha256:a65d33f8cdfec68d35721d4cbaec7dae084959dbdb632b6d4147b4dd1165d6df"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T10:26:38.290Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_3bc7d4f9569c4a7e2bbaf57f"
+          mutation_id: "compatibility:sha256:a1d46146a1ccdf6d6a6c4944d31abd0beaae279a944dce238dd5aa85f4ccf2d3"
+          plan_digest: "sha256:9b89e63d8759e276dd34c14c12173e3cbe67bf44df885de03762eb29e868052b"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 20
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:a1d46146a1ccdf6d6a6c4944d31abd0beaae279a944dce238dd5aa85f4ccf2d3"
+        next_revision: 21
+        previous_revision: 20
         schema_version: 1
         task_id: "202609162254-YE48GC"
       compatibility:sha256:c46ff176c8880d44cff5bcd36f48699931fc4d0a1b8f09f1e98fb5fdd94711a5:
@@ -3048,7 +3135,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "32bd131a28f46452bc8cf6e399ca61a228b0459a"
+    hash: "bae683e0858e7580bf32f9fa12b27f8f0bfeffc6"
   task_execution_context:
     base_ref: "main"
     base_sha: "19ff39fd292c30f0958131c35200a6268b7a285d"
