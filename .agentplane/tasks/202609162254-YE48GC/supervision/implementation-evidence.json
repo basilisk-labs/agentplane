@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 8d24a09f64f043cdd5f047c2fab07bb5d844155d..a79b2b9abcaffc74b12cffe485d160a68190e1f3",
+      "command": "git diff --check ee168217bb01bcdafd388d8daff297c400ebd9ee..2afa52039e6c50ead89776da98e817a243e7e4da",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 8d24a09f64f043cdd5f047c2fab07bb5d844155d..a79b2b9abcaffc74b12cffe485d160a68190e1f3",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB ee168217bb01bcdafd388d8daff297c400ebd9ee..2afa52039e6c50ead89776da98e817a243e7e4da",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,27 +21,11 @@
         "M\t.agentplane/tasks/202609162254-YE48GC/pr/github-body.md",
         "M\t.agentplane/tasks/202609162254-YE48GC/pr/meta.json",
         "M\t.agentplane/tasks/202609162254-YE48GC/pr/review.md",
-        "M\tpackages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts",
-        "M\tpackages/agentplane/src/commands/release/publish-workflow-contract.test.ts",
-        "M\tpackages/agentplane/src/commands/task/run-execution-preview.ts",
-        "M\tpackages/agentplane/src/runner/context/semantic-prompt-projection.ts",
-        "M\tpackages/agentplane/src/runner/types/context.ts",
-        "M\tpackages/agentplane/src/runner/usecases/agent-work-order-build.ts",
-        "M\tpackages/agentplane/src/runner/usecases/agent-work-order.ts",
-        "M\tpackages/agentplane/src/runner/usecases/task-run-blueprint.test.ts",
-        "M\tpackages/agentplane/src/runner/usecases/task-run-bootstrap.ts",
-        "A\tpackages/agentplane/src/runner/usecases/task-run-obligations.ts",
-        "M\tpackages/agentplane/src/runner/usecases/task-run.ts",
-        "M\tpackages/agentplane/src/runtime/execution-profile/model.ts",
-        "M\tpackages/agentplane/src/runtime/execution-profile/resolve.test.ts",
-        "M\tpackages/agentplane/src/runtime/execution-profile/resolve.ts",
-        "M\tpackages/agentplane/src/runtime/prompt-modules/registry.test.ts",
-        "M\tpackages/agentplane/src/runtime/prompt-modules/registry.ts",
-        "A\tpackages/agentplane/src/runtime/task-obligations/catalog.ts",
-        "A\tpackages/agentplane/src/runtime/task-obligations/index.ts",
-        "A\tpackages/agentplane/src/runtime/task-obligations/model.ts",
-        "A\tpackages/agentplane/src/runtime/task-obligations/resolve.test.ts",
-        "A\tpackages/agentplane/src/runtime/task-obligations/resolve.ts"
+        "M\tpackages/agentplane/src/runner/context/base-prompts.ts",
+        "A\tpackages/agentplane/src/runner/context/recipe-prompt-blocks.test.ts",
+        "M\tpackages/agentplane/src/runner/context/recipe-prompt-blocks.ts",
+        "M\tpackages/recipes/src/blueprint-extensions.test.ts",
+        "M\tpackages/recipes/src/blueprint-extensions.ts"
       ]
     },
     {
@@ -51,8 +35,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "8d24a09f64f043cdd5f047c2fab07bb5d844155d",
-  "implementation_commit": "a79b2b9abcaffc74b12cffe485d160a68190e1f3",
+  "execution_base_commit": "ee168217bb01bcdafd388d8daff297c400ebd9ee",
+  "implementation_commit": "2afa52039e6c50ead89776da98e817a243e7e4da",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
