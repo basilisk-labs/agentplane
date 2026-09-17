@@ -28,6 +28,10 @@ import type { CommandContext } from "../../commands/shared/task-backend.js";
 import type { TaskBlueprintLifecycleSummary } from "../../commands/task/blueprint-summary.js";
 import type { ReadOnlyExecutionContext } from "../../runtime/execution-context.js";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
+import {
+  resolveNativeSemanticToolClasses,
+  type NativeTaskObligations,
+} from "../../runtime/task-obligations/index.js";
 import type { RunnerPromptBlock } from "../types.js";
 import type { RunnerTaskContextEnvelope } from "../context/task-context.js";
 
@@ -164,6 +168,7 @@ export function buildAgentWorkOrderSourceManifest(opts: {
     task_envelope: RunnerTaskContextEnvelope;
     base_prompts: RunnerPromptBlock[];
     blueprint: BlueprintPlanArtifact;
+    task_obligations: NativeTaskObligations;
     execution_context: ReadOnlyExecutionContext;
   };
 }): AgentWorkOrderSourceManifest {
@@ -171,6 +176,7 @@ export function buildAgentWorkOrderSourceManifest(opts: {
     task_envelope: taskEnvelope,
     base_prompts: basePrompts,
     blueprint,
+    task_obligations: taskObligations,
     execution_context,
   } = opts.prepared;
   const promptModules = basePrompts
@@ -197,11 +203,13 @@ export function buildAgentWorkOrderSourceManifest(opts: {
     schema_version: 1,
     source_paths: uniqueSorted([
       taskReadme ?? "",
-      ...blueprint.policyModules,
+      ...taskObligations.policy_modules,
       ...promptModules.flatMap((prompt) => (prompt.source ? [prompt.source] : [])),
-      ...blueprintContext.flatMap((entry) => (entry.source ? [entry.source] : [])),
+      ...blueprintContext.flatMap((entry) =>
+        entry.kind !== "policy_module" && entry.source ? [entry.source] : [],
+      ),
     ]),
-    policy_modules: uniqueSorted(blueprint.policyModules),
+    policy_modules: uniqueSorted(taskObligations.policy_modules),
     prompt_modules: promptModules,
     blueprint_context: blueprintContext,
     verification_context: {
@@ -242,6 +250,7 @@ function acceptanceCriteria(opts: {
 function verificationIntent(opts: {
   source_manifest: AgentWorkOrderSourceManifest;
   execution_contract?: RunnerTaskContextEnvelope["task"]["metadata"]["execution_contract"];
+  task_obligations: NativeTaskObligations;
   work_item?: WorkItem | null;
 }): AgentWorkOrderV2["verification_intent"] {
   if (opts.work_item) {
@@ -260,6 +269,28 @@ function verificationIntent(opts: {
     ...opts.source_manifest.verification_context.verify_steps,
     ...(opts.execution_contract?.verification.required_evidence ?? []),
   ]);
+  const nativeRequirements = opts.task_obligations.evidence_requirements.map((requirement) => ({
+    id: requirement.id,
+    description: compactText(requirement.description, requirement.id),
+    required: requirement.required,
+    observed_by: "agentplane" as const,
+  }));
+  if (nativeRequirements.length > 0) {
+    return {
+      requirements: [
+        ...nativeRequirements,
+        ...candidates
+          .filter((candidate) => !nativeRequirements.some((item) => item.id === candidate))
+          .map((description, index) => ({
+            id: `verification-${index + 1}`,
+            description: compactText(description, "Record verification evidence."),
+            required: true,
+            observed_by: "agentplane" as const,
+          })),
+      ].slice(0, 64),
+      require_execution_receipt: true,
+    };
+  }
   const descriptions =
     candidates.length > 0
       ? candidates
@@ -325,7 +356,7 @@ function requiredInputs(opts: {
     inputs.push({
       id: `policy-module-${index + 1}`,
       kind: "policy_module",
-      description: "Policy module selected by the resolved blueprint context.",
+      description: "Policy module required by the native task execution obligations.",
       path: modulePath,
       required: true,
     });
@@ -360,6 +391,7 @@ export function buildCanonicalAgentWorkOrder(opts: {
     route_decision: TaskRouteDecision;
     semantic_role?: AgentWorkOrderRole;
     task_execution?: TaskExecutionContext;
+    task_obligations: NativeTaskObligations;
   };
   source_manifest: AgentWorkOrderSourceManifest;
   knowledge_retrieval: TaskKnowledgeRetrieval;
@@ -467,33 +499,26 @@ export function buildCanonicalAgentWorkOrder(opts: {
       return resolved;
     });
   })();
-  const allowedToolClasses: AgentWorkOrderV2["authority"]["allowed_tool_classes"] = canMutate
-    ? [
-        "repository_read",
-        "git_read",
-        "run_checks",
-        "report_result",
-        "report_blocker",
-        "workspace_write",
-      ]
-    : ["repository_read", "git_read", "run_checks", "report_result", "report_blocker"];
-  if (opts.knowledge_retrieval.knowledge_refs.length > 0) {
-    allowedToolClasses.push("knowledge_read");
-  }
-  if (role === "EXECUTOR" || role === "EVALUATOR") {
-    allowedToolClasses.push("knowledge_request");
-  }
+  const allowedToolClasses = resolveNativeSemanticToolClasses({
+    can_mutate: canMutate,
+    role,
+    has_knowledge: opts.knowledge_retrieval.knowledge_refs.length > 0,
+  });
   const summary =
     episodeSectionText({ task_envelope: taskEnvelope, section: "Summary" }) ||
     task.narrative.description;
   const verification = verificationIntent({
     source_manifest: opts.source_manifest,
     execution_contract: task.metadata.execution_contract,
+    task_obligations: opts.prepared.task_obligations,
     work_item: selectedWorkItem,
   });
   const stopRules = uniqueSorted([
     ...decision.executionPacket.mustNot,
     decision.executionPacket.returnControlWhen,
+    ...opts.prepared.task_obligations.stop_rules.map(
+      (rule) => `${rule.severity}: ${rule.reason} (${rule.id})`,
+    ),
     "Stop and return a blocked semantic result when the prepared state is stale or required context is missing.",
   ]);
   const allowedExternalEffects = executionContract?.authority.allowed_external_effects ?? [];

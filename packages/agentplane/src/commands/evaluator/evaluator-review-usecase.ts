@@ -5,6 +5,8 @@ import {
   resolveTaskExecutionContext,
   type TaskExecutionContext,
 } from "../../runtime/task-execution-context/index.js";
+import { resolveExecutionProfileRuntime } from "../../runtime/execution-profile/index.js";
+import { resolveNativeTaskObligations } from "../../runtime/task-obligations/index.js";
 import { CliError } from "../../shared/errors.js";
 import {
   checkTaskBlueprintSnapshotDrift,
@@ -205,6 +207,16 @@ async function prepareEvaluatorReviewLocked(
     ctx: opts.ctx,
     task: opts.task,
   });
+  const taskObligations = resolveNativeTaskObligations({
+    task_kind: opts.task.task_kind,
+    mutation_scope: opts.task.mutation_scope,
+    risk_flags: opts.task.risk_flags,
+    compatibility_preference: opts.task.blueprint_request,
+    execution_contract: opts.task.execution_contract,
+    selected_mode: opts.execution.selected_mode,
+    route_reason_codes: opts.execution.reason_codes,
+    execution_profile: resolveExecutionProfileRuntime(opts.ctx.config),
+  });
   const verificationTargetSha =
     qualificationPacket?.packet.implementation_sha ??
     evaluatedSha ??
@@ -377,7 +389,7 @@ async function prepareEvaluatorReviewLocked(
       required: true,
     }),
   ];
-  for (const [index, policyModule] of blueprint.policyModules.entries()) {
+  for (const [index, policyModule] of taskObligations.policy_modules.entries()) {
     const policyPath = path.join(gitRoot, policyModule);
     try {
       evidence.push(

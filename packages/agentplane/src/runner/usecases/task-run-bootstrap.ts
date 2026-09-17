@@ -279,7 +279,8 @@ export function renderTaskRunnerBootstrap(
       ? `task ${bundle.target.task_id}`
       : `recipe scenario ${bundle.target.recipe_id}:${bundle.target.scenario_id}`;
   const codexGoalLine = renderCodexGoalLine(bundle, targetLabel);
-  const stopRules = bundle.blueprint?.stopReasons ?? [];
+  const stopRules = bundle.task_obligations?.stop_rules ?? bundle.blueprint?.stopReasons ?? [];
+  const stopRuleHeading = bundle.task_obligations ? "Native stop rules:" : "Blueprint stop rules:";
   const verifierChecks = bundle.playbook?.final_verifier.checks ?? [];
   const evaluatorSkepticismLevel =
     bundle.execution.evaluator_skepticism_level ?? ("standard" satisfies EvaluatorSkepticismLevel);
@@ -328,7 +329,7 @@ export function renderTaskRunnerBootstrap(
     ...(stopRules.length > 0
       ? [
           "",
-          "Blueprint stop rules:",
+          stopRuleHeading,
           ...stopRules.map((rule) => `- ${rule.severity}: ${rule.reason} (${rule.id})`),
         ]
       : []),

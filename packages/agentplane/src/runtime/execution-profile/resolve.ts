@@ -46,6 +46,10 @@ export function resolveExecutionProfileRuntime(
       implementation: toBudgetCounter(execution.tool_budget.implementation),
       verification: toBudgetCounter(execution.tool_budget.verification),
     },
+    context_budget: {
+      max_policy_modules: 6,
+      max_prompt_blocks: 18,
+    },
     stop_conditions: [...execution.stop_conditions],
     handoff_conditions: [...execution.handoff_conditions],
     unsafe_actions_requiring_explicit_user_ok: [
