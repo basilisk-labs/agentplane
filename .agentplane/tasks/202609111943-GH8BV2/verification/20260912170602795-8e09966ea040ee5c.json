@@ -1,0 +1,158 @@
+{
+  "details": "Command: bunx --no-install vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts --maxWorkers=1\nResult: pass\nEvidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609111943-GH8BV2 declared verification\n\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609111943-GH8BV2 declared verification\n\nCommand: bun run ci:local:full\nResult: fail\nEvidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609111943-GH8BV2 declared verification",
+  "digest": "sha256:8e09966ea040ee5c7c132a60f0498ec19133230fb8c6cebde3118ac59d5af7cf",
+  "implementation_sha": "08dec7de94535e6058b3f7360dfd3d5e1c906eca",
+  "input": {
+    "context": {
+      "digest": "sha256:20dddbaf4e87fde843f53aec54dc59500d42d14038f2306350a4a19fabf2a0aa",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:f08476fa118fd21cbb1f516bd4269534c788d55dca1ee8c5ae4a8e08b6eb4b0c",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:7dc9b25e345fa5ca2f80c0e00eea9b91c53d33d859c613f0ada5fd7fc647006a",
+      "digest": "sha256:22fa8a58c98be79cd393e96bc53c3bbab34768e9c6fb9ee5cce6cf6c6bd23581",
+      "references": [
+        {
+          "digest": "sha256:307719dd99568ef192c28e3198a196be86027122de4f33841a101dfe2fdc0c44",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:307719dd99568ef192c28e3198a196be86027122de4f33841a101dfe2fdc0c44",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:307719dd99568ef192c28e3198a196be86027122de4f33841a101dfe2fdc0c44",
+          "fragment": "check-3",
+          "path": ".agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-3",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "50b1810dda648be0c0762b47e885c6ad0b2d42af",
+      "digest": "sha256:69fdd4fb026d11e06d598aa73d592a328390a51a90cf32e22e88f99635424a7d",
+      "primary_task_id": "202609111943-GH8BV2",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_ci",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/README.md",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/blueprint/resolved-snapshot.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/pr/diffstat.txt",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/pr/github-body.md",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/pr/github-title.txt",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/pr/meta.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/pr/review.md",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/quality/20260912-152622860-recovery-context/evaluator-evidence-manifest.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/quality/20260912-152622860-recovery-context/evaluator-opinion.md",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/quality/20260912-152622860-recovery-context/evaluator-result.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/quality/20260912-152622860-recovery-context/evaluator-work-order.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/quality/20260912-152622860-recovery-context/quality-report.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/quality/20260912-155844516-recovery-context/evaluator-evidence-manifest.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/quality/20260912-155844516-recovery-context/evaluator-opinion.md",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/quality/20260912-155844516-recovery-context/evaluator-result.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/quality/20260912-155844516-recovery-context/evaluator-work-order.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/quality/20260912-155844516-recovery-context/quality-report.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/quality/objects/sha256/037b114aa4abe7b0e0119db64d095a2c89e6a96524302cf3178d8565e6ec2c14.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/quality/objects/sha256/2b8007144a78a8e253c587d0acee638badd0cff246abb3d432cb9f9e4e6d3dde.patch",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/quality/objects/sha256/4e4663b88bad490900a4220b00dc7fee5760937ec992760e9a207c7eb9e3627f.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/quality/objects/sha256/4fb577afddfa23e48934d3fd97b5d4eed6a268c09f2a99b2757a787f772524c9.patch",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/quality/objects/sha256/d6efce4af0f91d20f162315595337bcf5488e18e238e375b7bc71599448acb7f.md",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/quality/objects/sha256/dcfc1025a9aed4f7c2754776832609f6fba2792fc2af68691d51c13e7ca6453e.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/quality/objects/sha256/e39b3fde6118f533167fe493d76e6fca5a2bdae1ea315100549c2debaa6b7eb5.md",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/supervision/declared-checks.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/supervision/implementation-evidence.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/verification/20260912150145007-94ad8b0b5d6e7a5f.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/verification/20260912151433121-0625d9b1032c22f6.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/verification/20260912152612320-266028623a750e67.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609121443-YAQJB7/verification/20260912155829304-40fd8186769b7cb3.json",
+        "observed_path_outside_scope:packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts",
+        "observed_path_outside_scope:packages/agentplane/src/commands/shared/task-scope-extension-request.ts",
+        "observed_path_outside_scope:packages/agentplane/src/commands/task/external-agent-blocked-result.ts",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609111943-GH8BV2"
+      ]
+    },
+    "implementation": {
+      "base_sha": "50b1810dda648be0c0762b47e885c6ad0b2d42af",
+      "digest": "sha256:2b224836fc3c0ce8383eb0c2d438dc104a5c73dc1b13275e9d137910f8c7665a",
+      "strategy": "branch_diff",
+      "target_sha": "08dec7de94535e6058b3f7360dfd3d5e1c906eca"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:caf7496dd36501a2d14795a93c8cb649deef241d374dc8be2170beebdd6cf4de",
+    "verify_steps_digest": "sha256:f9e51c699616750c23550f0514ef0d2e4ecfaa496d4651c06be6534ea1148dc7"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check failed: bun run ci:local:full",
+  "recorded_at": "2026-09-12T17:06:02.795Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "1. Run `bunx --no-install vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts --maxWorkers=1`. Expected: all focused legacy scope-extension and explicit-declaration regressions pass.\n2. Run `bun run typecheck`. Expected: TypeScript build check passes.\n3. Run `git diff --check`. Expected: no whitespace errors.",
+  "scope_digest": "sha256:f9e51c699616750c23550f0514ef0d2e4ecfaa496d4651c06be6534ea1148dc7",
+  "task_id": "202609111943-GH8BV2",
+  "verification_command": "agentplane verify 202609111943-GH8BV2 --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

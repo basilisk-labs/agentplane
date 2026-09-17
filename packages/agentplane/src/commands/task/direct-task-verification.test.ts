@@ -879,13 +879,16 @@ describe("direct task verification", () => {
     expect(mocks.runProcess).toHaveBeenCalledOnce();
   });
 
-  it("gives the canonical provider qualification its bounded release window", async () => {
+  it.each([
+    { script: "ci:local:full", timeoutMs: 60 * 60_000 },
+    { script: "e2e:v0.7.1:gate", timeoutMs: 150 * 60_000 },
+  ])("gives $script its bounded verification window", async ({ script, timeoutMs }) => {
     const cwd = await root();
-    mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "provider gate ok", stderr: "" });
+    mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "gate ok", stderr: "" });
 
     const result = await runDirectTaskVerification({
       command: command(cwd),
-      task: { verify: ["bun run e2e:v0.7.1:gate"] },
+      task: { verify: [`bun run ${script}`] },
       task_id: TASK_ID,
       cwd,
       run_process: mocks.runProcess,
@@ -895,8 +898,8 @@ describe("direct task verification", () => {
     expect(mocks.runProcess).toHaveBeenCalledWith(
       expect.objectContaining({
         command: "bun",
-        args: ["run", "e2e:v0.7.1:gate"],
-        timeoutMs: 150 * 60_000,
+        args: ["run", script],
+        timeoutMs,
       }),
     );
   });
