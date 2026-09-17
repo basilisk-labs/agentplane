@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 73
+revision: 74
 origin:
   system: "manual"
 depends_on: []
@@ -38,35 +38,36 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-17T18:51:24.536Z"
+  updated_at: "2026-09-17T19:15:22.561Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 4 typed finding(s)."
-  evaluated_sha: "6718b5111fb5e8a4f19f0d02f3bdbb834d069c08"
-  review_identity_digest: "sha256:b4e800cac1538c7ccf33b03f8dedb8519d8b50961390a845370db92f68bace61"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "a2d2413bfa0455d3d67518f200e8293ae6b8cd10"
+  review_identity_digest: "sha256:5b3220da9738b692d48875a7c4d465c9b15c989b4be169e3a4ec3294205c713e"
   evidence_refs:
-    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-184850449-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-184850449-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/a99a9cfe4afff694139c6b8ff0a473edef5a2440c2eff63e09d3ec80f9774dae.md"
-    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-184850449-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-184850449-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-184850449-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-184850449-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-191426165-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-191426165-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/3696b5b272e8652d1a9f5eee2ffcc2e9646092f9c7dc69d54f1870c749f95575.md"
+    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-191426165-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-191426165-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-191426165-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609162254-YE48GC/README.md"
-    - ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/0ca5fcc5e27ccd0781dbdbb847a842f5ac686d24a683bec3a24c6114066791ef.patch"
-    - ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/ea79c2c41500224d992544f7c113b01cce0933901ea51a86ee2f9acda675a8a8.json"
-    - ".agentplane/tasks/202609162254-YE48GC/verification/20260917184833742-9e26d358d1380b59.json"
-    - ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/04172f44ead1e1eabbf5ed1749a916d79e2c9f84ad0c90542b3af1d21cb08804.json"
+    - ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/932dc9ee2d58a55236f1d20d32ca2ae797c5414aa735ee809c735691b1a5ba11.patch"
+    - ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/bdf6cadde6714d5756e1d0a369acf0a72441448b6a4afdcab45c2b22dba3b659.json"
+    - ".agentplane/tasks/202609162254-YE48GC/verification/20260917191410079-ef5dfdd733a7fcf2.json"
+    - ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/58bb3ce28fa5045c0e3e8e9378bb4dd6647c3ff1bea424fa4efc004d9b719311.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "High: hashVerificationEvidenceFilesystemEntry applies O_NOFOLLOW only to the final path component. A path such as <gitRoot>/evidence-link/file, where evidence-link points outside gitRoot, passes the lexical root check, readlink on the final regular file returns null, and open follows the intermediate symlink. Canonical containment must be checked for the opened entry before any bytes are read, with a regression test for an intermediate symlink to an external directory."
-    - "The evaluator policy fixture now uses exclusive wx creation, task branch refs come from the observed ref inventory, and GitContext.commit keeps message data out of command arguments; these changes preserve their existing behavior."
+    - "The evaluated implementation is bound to a2d2413bfa0455d3d67518f200e8293ae6b8cd10 and the frozen native review identity matches that implementation SHA."
+    - "Verification evidence paths are canonicalized inside the canonical Git root, then bound by device and inode to the opened descriptor before any file bytes are read; post-read stability checks fail closed on concurrent mutation."
+    - "The intermediate-directory symlink regression proves an external target is reported as missing rather than read, closing the prior evaluator finding."
+    - "The other three CodeQL remediations remain narrow: exclusive fixture creation, inventory-derived Git refs, and stdin-delivered commit messages with literal metacharacter coverage."
     - "Supervisor verification passed the full declared local contract, including full CI and packed-install smoke."
-    - "Residual risk: Hosted CodeQL must confirm that all four alerts close on the final head."
+    - "Residual risk: Hosted CodeQL has not yet analyzed the final implementation head."
 token_usage:
   agent_runs: 29
   input_tokens: null
@@ -1752,7 +1753,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-17T19:14:12.014Z"
+doc_updated_at: "2026-09-17T19:15:22.623Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task."
 sections:
@@ -3941,7 +3942,7 @@ extensions:
       revision: 8
       schema_version: 1
       task_id: "202609162254-YE48GC"
-    event_cursor: 62
+    event_cursor: 63
     final_validation: null
     id: "202609162254-YE48GC"
     intent:
@@ -9806,9 +9807,9 @@ extensions:
         revision: 7
         schema_version: 1
         task_id: "202609162254-YE48GC"
-    revision: 73
+    revision: 74
     schema_version: 1
-    updated_at: "2026-09-17T19:14:12.002Z"
+    updated_at: "2026-09-17T19:14:12.014Z"
     work_items:
       channel-and-owner-map:
         attempt: 1
@@ -12041,6 +12042,30 @@ extensions:
         mutation_id: "compatibility:sha256:e6303d2575af546fa0b42be87c9e0ea191aad35eb37b523a9df249743b6845b2"
         next_revision: 73
         previous_revision: 72
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+      compatibility:sha256:ed729da7001366378449672893bc972cda859cfe91ae4d491f0229fd83a2ac03:
+        aggregate_digest: "sha256:a4ba07f418e5462e2fc23ca24ff82a4e8015224e6318a8522d9b00bcf2b5bcce"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T19:14:12.014Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_014d4531f86588ac2c819c43"
+          mutation_id: "compatibility:sha256:ed729da7001366378449672893bc972cda859cfe91ae4d491f0229fd83a2ac03"
+          plan_digest: "sha256:e17ec6eda7c7926e5e1379d0e7caaea02c6311d301fca98a8969264e33af9949"
+          plan_revision: 8
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 73
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:ed729da7001366378449672893bc972cda859cfe91ae4d491f0229fd83a2ac03"
+        next_revision: 74
+        previous_revision: 73
         schema_version: 1
         task_id: "202609162254-YE48GC"
       compatibility:sha256:f6d75a5cbe41ce127c00effc55957f0b5b19b261f57da0fed563e99cb8eecd76:
