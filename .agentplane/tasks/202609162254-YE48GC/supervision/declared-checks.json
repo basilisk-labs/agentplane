@@ -2,46 +2,82 @@
   "checks": [
     {
       "check_ids": [
-        "no-engine"
+        "install-smoke"
       ],
-      "command": "node --test scripts/checks/no-blueprint-engine.test.mjs",
-      "duration_ms": 492,
+      "command": "bun run package:install-smoke",
+      "duration_ms": 42977,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
-        "executable_digest": "sha256:ee6fb0e015284d83a91e8ec5213f43a157f8a392b58555301682892ba928c04a",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
         "kind": "local_runtime_resolution",
         "status": "resolved",
         "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
       },
-      "script": null,
-      "stderr_tail": "",
-      "stdout_tail": "✔ active Blueprint engine and mutation surfaces are absent (216.421375ms)\n✔ remaining production Blueprint mentions are explicit cold-reader exceptions (32.827041ms)\n✔ generated live schemas expose no Blueprint inputs (6.071917ms)\nℹ tests 3\nℹ suites 0\nℹ pass 3\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 287.09975\n"
+      "script": "package:install-smoke",
+      "stderr_tail": "$ node scripts/release/check-local-tarball-install-smoke.mjs\n",
+      "stdout_tail": "installed migration matrix OK (scenarios=8)\nlocal tarball install smoke OK (202609170001-TRB1)\n"
     },
     {
       "check_ids": [
-        "no-cursor"
+        "release-critical"
       ],
-      "command": "node --test scripts/checks/no-blueprint-cursor.test.mjs",
-      "duration_ms": 286,
+      "command": "bun run test:release:critical",
+      "duration_ms": 13504,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
-        "executable_digest": "sha256:ee6fb0e015284d83a91e8ec5213f43a157f8a392b58555301682892ba928c04a",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
         "kind": "local_runtime_resolution",
         "status": "resolved",
         "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
       },
-      "script": null,
-      "stderr_tail": "",
-      "stdout_tail": "✔ production code has no active Blueprint cursor, plan, snapshot, or state (48.104417ms)\n✔ runner artifact contract has no retired Blueprint paths (0.147167ms)\nℹ tests 2\nℹ suites 0\nℹ pass 2\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 82.037542\n"
+      "script": "test:release:critical",
+      "stderr_tail": "$ node scripts/checks/run-vitest-suite.mjs release-critical\n",
+      "stdout_tail": "\n RUN  v4.1.9 /private/tmp/agentplane-0710.uesz3I/repo/.agentplane/worktrees/202609162254-YE48GC-implement-and-qualify-agentplane-0-7-10-blueprin\n\n\n Test Files  3 passed (3)\n      Tests  15 passed (15)\n   Start at  18:43:43\n   Duration  13.01s (transform 6.11s, setup 0ms, import 4.47s, tests 17.76s, environment 0ms)\n\n"
     },
     {
       "check_ids": [
-        "schema-assets"
+        "arch-check"
       ],
-      "command": "bun run schemas:check && bun run agents:check && bun run docs:bootstrap:check",
-      "duration_ms": 694,
+      "command": "bun run arch:check",
+      "duration_ms": 51511,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "arch:check",
+      "stderr_tail": "$ bun run arch:baseline && bun run arch:deps\n$ node scripts/checks/check-depcruise-known-violations.mjs\n$ node scripts/checks/run-depcruise-arch.mjs depcruise.config.cjs\n",
+      "stdout_tail": "encies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/acr\n\n✔ no dependency violations found (87 modules, 197 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/backend\n\n✔ no dependency violations found (98 modules, 210 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/blueprint\n\n✔ no dependency violations found (4 modules, 3 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/blueprints\n\n✔ no dependency violations found (0 modules, 0 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/branch\n\n✔ no dependency violations found (473 modules, 1231 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/cleanup\n\n✔ no dependency violations found (269 modules, 747 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/codex\n\n✔ no dependency violations found (8 modules, 8 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/context\n\n✔ no dependency violations found (710 modules, 2070 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/docs\n\n✔ no dependency violations found (11 modules, 14 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/doctor\n\n✔ no dependency violations found (257 modules, 591 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/evaluator\n\n✔ no dependency violations found (548 modules, 1637 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/evidence\n\n✔ no dependency violations found (80 modules, 178 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/flow\n\n✔ no dependency violations found (391 modules, 986 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/guard\n\n✔ no dependency violations found (199 modules, 518 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/hermes\n\n✔ no dependency violations found (576 modules, 1548 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/hooks\n\n✔ no dependency violations found (287 modules, 794 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/incidents\n\n✔ no dependency violations found (172 modules, 426 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/insights\n\n✔ no dependency violations found (84 modules, 184 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/intake\n\n✔ no dependency violations found (67 modules, 154 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/pr\n\n✔ no dependency violations found (451 modules, 1198 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/recipes\n\n✔ no dependency violations found (167 modules, 401 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/release\n\n✔ no dependency violations found (255 modules, 548 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/scenario\n\n✔ no dependency violations found (80 modules, 175 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/shared\n\n✔ no dependency violations found (1069 modules, 3538 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/task\n\n✔ no dependency violations found (955 modules, 3132 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/upgrade\n\n✔ no dependency violations found (29 modules, 44 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/*.ts\n\n✔ no dependency violations found (701 modules, 2063 dependencies cruised)\n\ndependency-cruiser: packages/core/src\n\n✔ no dependency violations found (126 modules, 265 dependencies cruised)\n\ndependency-cruiser: packages/recipes/src\n\n✔ no dependency violations found (17 modules, 17 dependencies cruised)\n\ndependency-cruiser: packages/testkit/src\n\n✔ no dependency violations found (630 modules, 1717 dependencies cruised)\n\n"
+    },
+    {
+      "check_ids": [
+        "ci-full"
+      ],
+      "command": "bun run ci:local:full",
+      "duration_ms": 430225,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "ci:local:full",
+      "stderr_tail": "failed: Too small: expected string to have >=1 characters at \"commit.message\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"description\"\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=full-doc-updated section=Summary\n{\"ts\":\"2026-09-17T15:50:32.687Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-2L8d8P/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-2L8d8P/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-17T15:50:32.706Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-OAT5yB/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-OAT5yB/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-17T15:50:32.711Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-OAT5yB/.agentplane/WORKFLOW.md\",\"from\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-OAT5yB/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-17T15:50:32.716Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-mbGIsc/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-mbGIsc/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-17T15:50:32.720Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_failed\",\"code\":\"WF_UNSUPPORTED_VERSION\",\"details\":{\"reason\":\"Unsupported WORKFLOW version 3; supported versions: 1, 2.\"}}\n{\"ts\":\"2026-09-17T15:50:36.461Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-17T15:50:36.477Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":1}}\n{\"ts\":\"2026-09-17T15:50:36.478Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-17T15:50:36.480Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":2}}\n{\"ts\":\"2026-09-17T15:50:36.480Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-17T15:50:36.482Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic --timeout-ms 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n$ bun run docs:ia:check && bun run docs:site:generate:check && bun run docs:site:typecheck && bun run docs:site:build:check && bun run docs:site:check:design\n$ node scripts/checks/check-docs-ia.mjs\n$ node scripts/generate/generate-website-docs.mjs --check && node scripts/generate/generate-llms-full.mjs --check\n$ bun run --cwd website typecheck\n$ node ../scripts/checks/run-typescript-build.mjs -p tsconfig.json --noEmit\n$ bun run --cwd website build:check\n$ bun run check-content && bun run check-social-images && docusaurus build\n$ node scripts/check-site-content.mjs\n$ node scripts/generate-social-images.mjs --check\n$ node scripts/checks/check-design-language.mjs\n$ node scripts/workflow/run-workflows-lint.mjs && node scripts/checks/check-workflow-command-contract.mjs && bun scripts/checks/check-lifecycle-parity.ts && node scripts/checks/check-critical-test-route.mjs\n$ node scripts/checks/run-vitest-suite.mjs platform-critical\n$ node scripts/checks/check-significant-coverage.mjs\n",
+      "stdout_tail": ", packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts\nVitest suite critical-cli: chunk 3/5 passed in 3243ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  3.07s (transform 2.21s, setup 0ms, import 2.87s, tests 2.64s, environment 0ms))\nVitest suite critical-cli: chunk 4/5 (2 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts, packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 4/5 passed in 11931ms (Test Files  2 passed (2); Tests  6 passed (6); Duration  11.75s (transform 3.26s, setup 0ms, import 2.73s, tests 10.57s, environment 0ms))\nVitest suite critical-cli: chunk 5/5 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 5/5 passed in 4899ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  4.73s (transform 1.11s, setup 0ms, import 1.33s, tests 3.34s, environment 0ms))\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":true,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":24117},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":16596},{\"id\":\"core\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":315240},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":32173}]}\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":392457,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":1,\"build_invocations\":1,\"ok\":true}\n\n== Docs site pipeline (generate + typecheck + build + design) ==\nok: docs IA, sidebar coverage, and current path references are aligned\nok: docs/reference/generated-reference.mdx is fresh\nok: website/static/llms-full.txt is fresh\n[site-content] ok\nchecked 237 docs social images\n\n ------------------------------------------------------------------------------                                                                                                         Update available 3.10.1 → 3.10.2                                                                                                                To upgrade Docusaurus packages with the latest version, run the                                       following command:                                           `npm i @docusaurus/core@latest @docusaurus/faster@latest                    @docusaurus/preset-classic@latest @docusaurus/theme-common@latest            @docusaurus/theme-mermaid@latest @docusaurus/module-type-aliases@latest                  @docusaurus/tsconfig@latest @docusaurus/types@latest`                                                                                               ------------------------------------------------------------------------------ \n\n[INFO] [en] Creating an optimized production build...\n[navigation-check] ok: checked 6 docs targets from website/build\n[SUCCESS] Generated static files in \"build\".\n[INFO] Use `npm run serve` command to test your build locally.\nDESIGN.md compliance check passed\n\n== Workflows lint (actionlint) ==\nworkflow and command guidance contract OK\nworkflow lifecycle parity OK\ncritical Vitest route OK\n\n== Windows platform-critical tests ==\n\n RUN  v4.1.9 /private/tmp/agentplane-0710.uesz3I/repo/.agentplane/worktrees/202609162254-YE48GC-implement-and-qualify-agentplane-0-7-10-blueprin\n\n\n Test Files  7 passed (7)\n      Tests  98 passed (98)\n   Start at  18:51:28\n   Duration  25.81s (transform 9.98s, setup 0ms, import 8.48s, tests 77.18s, environment 0ms)\n\n\n== Significant file coverage (guard) ==\n\n RUN  v4.1.9 /private/tmp/agentplane-0710.uesz3I/repo/.agentplane/worktrees/202609162254-YE48GC-implement-and-qualify-agentplane-0-7-10-blueprin\n      Coverage enabled with v8\n\n\n Test Files  8 passed (8)\n      Tests  101 passed (101)\n   Start at  18:51:54\n   Duration  3.10s (transform 3.82s, setup 0ms, import 4.29s, tests 2.98s, environment 0ms)\n\n\n== Coverage threshold (significant) ==\nSignificant suite contract OK (17 source targets).\n"
+    },
+    {
+      "check_ids": [
+        "docs-check"
+      ],
+      "command": "bun run docs:bootstrap:check && bun run docs:onboarding:check",
+      "duration_ms": 505,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
@@ -51,8 +87,44 @@
         "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
       },
       "script": null,
-      "stderr_tail": "$ bun scripts/generate/sync-schemas.mjs check\n\n$ node scripts/generate/sync-agent-templates.mjs check\n\n$ node scripts/checks/check-agent-bootstrap-fresh.mjs\n",
-      "stdout_tail": "schemas OK\n\nagents templates OK\n\n../../../../../../../var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-bootstrap-doc-eCbEdy/agent-bootstrap.generated.mdx 22ms\nok: bootstrap doc, startup command blocks, quickstart/roles, runtime docs, troubleshooting, and release recovery docs are aligned\n"
+      "stderr_tail": "$ node scripts/checks/check-agent-bootstrap-fresh.mjs\n\n$ node scripts/checks/check-agent-onboarding-scenario.mjs\n",
+      "stdout_tail": "../../../../../../../var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-bootstrap-doc-Q1UBfx/agent-bootstrap.generated.mdx 22ms\nok: bootstrap doc, startup command blocks, quickstart/roles, runtime docs, troubleshooting, and release recovery docs are aligned\n\nok: agent onboarding scenario surfaces are aligned\n"
+    },
+    {
+      "check_ids": [
+        "bench-check"
+      ],
+      "command": "bun run bench:agent-efficiency:check",
+      "duration_ms": 240,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "bench:agent-efficiency:check",
+      "stderr_tail": "$ node scripts/checks/check-agent-efficiency-baseline.mjs\n",
+      "stdout_tail": "Agent-efficiency baseline OK (10 RF-04 scenarios; 10 measured cost metrics; structural_sha256=sha256:a9b855c5887f697c21690d7386c627c555f8d46d7b083cab8c54636411e47351; timing_compared=false; summaries=0)\n"
+    },
+    {
+      "check_ids": [
+        "bench-replay"
+      ],
+      "command": "bun run bench:agent-efficiency:replay:check",
+      "duration_ms": 256,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "bench:agent-efficiency:replay:check",
+      "stderr_tail": "$ node scripts/checks/check-agent-efficiency-replay.mjs\n",
+      "stdout_tail": "RF-04 replay baseline OK (50 runs; 70/70 outcomes; 27/27 provider token cells; 170/170 scalar cells; structural_sha256=sha256:006ddc6d2b8e8c350a879edeb7140d36dbbd31c0c745b96f57792871b9099ee4; diagnostics_sha256=sha256:01c7b81828826b44d18d0b6a26288ac62b031cf4e30242a421f77ec37b2ca44e)\n"
     }
   ],
   "kind": "direct_task_declared_checks",
