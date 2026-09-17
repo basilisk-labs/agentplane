@@ -1,10 +1,10 @@
 ---
 id: "202609162254-YE48GC"
 title: "Implement and qualify AgentPlane 0.7.10 Blueprint retirement"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 34
+revision: 36
 origin:
   system: "manual"
 depends_on: []
@@ -32,9 +32,9 @@ plan_approval:
   note: "host_user_decision=sha256:d45ce5060f5fae001ac6bfd1c0d38ba3980252524ae842840b74c01db55a53d8"
 verification:
   state: "pending"
-  updated_at: "2026-09-17T12:01:36.780Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
+  updated_at: null
+  updated_by: null
+  note: null
   attempts: 0
 execution_route:
   frozen: true
@@ -894,9 +894,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "b24594ce6deb6708a22186d05bc77fc721440206"
-  message: "🚧 YE48GC task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -943,6 +941,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: b24594ce6deb. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The approved implementation is already present in commit b24594ce6, so this replacement episode has no new workspace mutation for the supervisor to observe. Recommended action: Adopt and evaluate the existing implementation commit b24594ce6, or issue a current-runtime recovery route that can advance an already-committed WorkItem without fabricating a source change. Agentplane receipt: external-agent-blocker/tr_01fd66fca5f93437b59fed9a5288a2ea/sha256:1932520997f3546404ede4a0411129188c8cdb5a3c9f677aa55a6901c4fe612e."
 events:
   -
     type: "status"
@@ -1027,8 +1028,15 @@ events:
     to: "DOING"
     note: "Implementation committed: b24594ce6deb. CLI accepted one state-bound external-agent semantic result."
     commit: "b24594ce6deb6708a22186d05bc77fc721440206"
+  -
+    type: "status"
+    at: "2026-09-17T12:07:35.801Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The approved implementation is already present in commit b24594ce6, so this replacement episode has no new workspace mutation for the supervisor to observe. Recommended action: Adopt and evaluate the existing implementation commit b24594ce6, or issue a current-runtime recovery route that can advance an already-committed WorkItem without fabricating a source change. Agentplane receipt: external-agent-blocker/tr_01fd66fca5f93437b59fed9a5288a2ea/sha256:1932520997f3546404ede4a0411129188c8cdb5a3c9f677aa55a6901c4fe612e."
 doc_version: 3
-doc_updated_at: "2026-09-17T12:03:10.887Z"
+doc_updated_at: "2026-09-17T12:07:35.801Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task."
 sections:
@@ -1932,7 +1940,7 @@ extensions:
       revision: 5
       schema_version: 1
       task_id: "202609162254-YE48GC"
-    event_cursor: 27
+    event_cursor: 28
     final_validation: null
     id: "202609162254-YE48GC"
     intent:
@@ -1984,7 +1992,7 @@ extensions:
 
         Implement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task.
       task_id: "202609162254-YE48GC"
-    lifecycle: "ACTIVE"
+    lifecycle: "BLOCKED"
     plan_amendments: []
     plan_history:
       -
@@ -5252,9 +5260,9 @@ extensions:
         revision: 4
         schema_version: 1
         task_id: "202609162254-YE48GC"
-    revision: 34
+    revision: 36
     schema_version: 1
-    updated_at: "2026-09-17T12:03:10.887Z"
+    updated_at: "2026-09-17T12:07:35.801Z"
     work_items:
       channel-and-owner-map:
         attempt: 1
@@ -5567,14 +5575,118 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       remove-active-blueprint:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "remove-active-blueprint"
-        last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        last_failure:
+          cause_refs:
+            - "zero-active-engine"
+            - "cold-only"
+          code: "validation_failed"
+          kind: "validation"
+          message: "Resolved the scoped workspace conflict. The complete uncommitted diff is the intended remove-active-blueprint implementation, including the now-authorized generated schema mirrors and the narrow idempotent recovery for repeated exact scope-extension requests."
+          retryable: true
+        output_manifests:
+          -
+            digest: "sha256:c19bfa334ea709dcdb36d45f2f341c6e57a48dcf32c707858bbed2e5dee924b2"
+            id: "Zero active Blueprint artifacts and prompt inputs"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 5
+              task_id: "202609162254-YE48GC"
+              work_item_id: "remove-active-blueprint"
+            provenance:
+              - "sha256:798a025336046e9e20568032b3870404ccfec14a8eb21b2355ffa295d2b05771"
+              - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:8dbe712c7135a5a62e802e4ffb6f67a02e1c85fd8729ddc728700ad4a8816f08"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:9f13090f96ae9ca10d7e44b4dacb48353ce28069981cf3710e8ab2dc2ab0c7e1"
+            id: "No Blueprint mutation CLI or generated live schema"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 5
+              task_id: "202609162254-YE48GC"
+              work_item_id: "remove-active-blueprint"
+            provenance:
+              - "sha256:798a025336046e9e20568032b3870404ccfec14a8eb21b2355ffa295d2b05771"
+              - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:8dbe712c7135a5a62e802e4ffb6f67a02e1c85fd8729ddc728700ad4a8816f08"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:2c3c83cee950bd46070ed7afb16eb29d23c689e64e472c95e80df0f9918edf02"
+            id: "No active engine/cursor imports"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 5
+              task_id: "202609162254-YE48GC"
+              work_item_id: "remove-active-blueprint"
+            provenance:
+              - "sha256:798a025336046e9e20568032b3870404ccfec14a8eb21b2355ffa295d2b05771"
+              - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:8dbe712c7135a5a62e802e4ffb6f67a02e1c85fd8729ddc728700ad4a8816f08"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:9419b9db42f94c9c2f2324f6d43b3ddf2711cd0ffcf10f8a4c9e862a0f3b5f67"
+            id: "Explicit cold-reader allowlist"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 5
+              task_id: "202609162254-YE48GC"
+              work_item_id: "remove-active-blueprint"
+            provenance:
+              - "sha256:798a025336046e9e20568032b3870404ccfec14a8eb21b2355ffa295d2b05771"
+              - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:8dbe712c7135a5a62e802e4ffb6f67a02e1c85fd8729ddc728700ad4a8816f08"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "REWORK_READY"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+              check_id: "no-engine"
+              command_identity: "node --test scripts/checks/no-blueprint-engine.test.mjs"
+              detail: "Declared check failed: bun run schemas:check && bun run agents:check && bun run docs:bootstrap:check"
+              exit_code: 0
+              observed_at: "2026-09-17T12:03:13.704Z"
+              repository_snapshot_digest: "sha256:8dbe712c7135a5a62e802e4ffb6f67a02e1c85fd8729ddc728700ad4a8816f08"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+              check_id: "no-cursor"
+              command_identity: "node --test scripts/checks/no-blueprint-cursor.test.mjs"
+              detail: "Declared check failed: bun run schemas:check && bun run agents:check && bun run docs:bootstrap:check"
+              exit_code: 0
+              observed_at: "2026-09-17T12:03:13.704Z"
+              repository_snapshot_digest: "sha256:8dbe712c7135a5a62e802e4ffb6f67a02e1c85fd8729ddc728700ad4a8816f08"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+              check_id: "schema-assets"
+              command_identity: "bun run schemas:check && bun run agents:check && bun run docs:bootstrap:check"
+              detail: "Declared check failed: bun run schemas:check && bun run agents:check && bun run docs:bootstrap:check"
+              exit_code: 1
+              observed_at: "2026-09-17T12:03:13.704Z"
+              repository_snapshot_digest: "sha256:8dbe712c7135a5a62e802e4ffb6f67a02e1c85fd8729ddc728700ad4a8816f08"
+              status: "failed"
+          schema_version: 1
+          stale_evidence: []
+          status: "failed"
+          unsatisfied_criteria:
+            - "zero-active-engine"
+            - "cold-only"
       verification-identity:
         attempt: 1
         claim_id: null
@@ -5732,6 +5844,23 @@ extensions:
         task_id: "202609162254-YE48GC"
         task_revision: 22
         work_item_id: "migration-and-cutover"
+      -
+        at: "2026-09-17T12:03:13.735Z"
+        from: "PLANNED"
+        to: "REWORK_READY"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:a549ce19c9478a9ea3f983d57170ee506dfe97bb700cb40094e37d1eeb8cd552"
+        entity: "work_item"
+        id: "event_cc2e5881c217506fce8653b2"
+        mutation_id: "external-result:work-order-202609162254-YE48GC-executor-adac9e7d294efaff738a3084"
+        plan_digest: "sha256:d6340b2317a46dd7a62a380bc20011a0deeeadab26df50699553b3bca1b92efb"
+        plan_revision: 5
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+        task_revision: 34
+        work_item_id: "remove-active-blueprint"
     leases: []
     mutation_receipts:
       compatibility:sha256:03ad382df371fb10a3fda0b3d74c85baaa1cbfcc47fa5298b2773c99d5104eda:
@@ -5996,6 +6125,30 @@ extensions:
         mutation_id: "compatibility:sha256:49c492d58bbe73926763535cb02683c733c0c88ef13a8c63b8a8ae6a84b938f4"
         next_revision: 4
         previous_revision: 3
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+      compatibility:sha256:5213c6d96820a332137269ad0d2e890e007aea93c5fdeefcb26126ed576b4014:
+        aggregate_digest: "sha256:1b4fa25e550bd3cd9da0f3b249846ff15e43e106ad53d8865f212e3556ebed52"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T12:07:35.801Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_163451632b0a085f5581e367"
+          mutation_id: "compatibility:sha256:5213c6d96820a332137269ad0d2e890e007aea93c5fdeefcb26126ed576b4014"
+          plan_digest: "sha256:d6340b2317a46dd7a62a380bc20011a0deeeadab26df50699553b3bca1b92efb"
+          plan_revision: 5
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 35
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:5213c6d96820a332137269ad0d2e890e007aea93c5fdeefcb26126ed576b4014"
+        next_revision: 36
+        previous_revision: 35
         schema_version: 1
         task_id: "202609162254-YE48GC"
       compatibility:sha256:5bb96a0c6b3341aa2815aaf98b4f369783a10d234bfbdebfef713db1bedddfb1:
@@ -6452,6 +6605,30 @@ extensions:
         mutation_id: "external-result:work-order-202609162254-YE48GC-executor-941a121693a828bac7a9896e"
         next_revision: 20
         previous_revision: 19
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+      external-result:work-order-202609162254-YE48GC-executor-adac9e7d294efaff738a3084:
+        aggregate_digest: "sha256:228a18f9bee84d7348c4b8fb5e3947feeb98a9829cdcf20b53733bdbef5cc607"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T12:03:13.735Z"
+          cause_refs:
+            - "semantic-result:sha256:a549ce19c9478a9ea3f983d57170ee506dfe97bb700cb40094e37d1eeb8cd552"
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_cc2e5881c217506fce8653b2"
+          mutation_id: "external-result:work-order-202609162254-YE48GC-executor-adac9e7d294efaff738a3084"
+          plan_digest: "sha256:d6340b2317a46dd7a62a380bc20011a0deeeadab26df50699553b3bca1b92efb"
+          plan_revision: 5
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 34
+          to: "REWORK_READY"
+          work_item_id: "remove-active-blueprint"
+        mutation_id: "external-result:work-order-202609162254-YE48GC-executor-adac9e7d294efaff738a3084"
+        next_revision: 35
+        previous_revision: 34
         schema_version: 1
         task_id: "202609162254-YE48GC"
       external-result:work-order-202609162254-YE48GC-executor-b5679f4de4f3b712e1ab2ae8:
