@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check eb2f52c80932bfa2e13b89c2ce34d55b37728b3d..5755d5a4decd210f5620a6483f9e1355ba490f82",
+      "command": "git diff --check e685e6efced5b9584ddde09cfc02e727809d3d3e..d949071048f769e0728af190eafa7b74ddfbe9fa",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,62 +13,1190 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB eb2f52c80932bfa2e13b89c2ce34d55b37728b3d..5755d5a4decd210f5620a6483f9e1355ba490f82",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB e685e6efced5b9584ddde09cfc02e727809d3d3e..d949071048f769e0728af190eafa7b74ddfbe9fa",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "M\t.agentplane/agents/INTAKE.json",
-        "M\t.agentplane/agents/PLANNER.json"
+        "M\t.agentplane/WORKFLOW.md",
+        "M\t.agentplane/tasks/202609162254-YE48GC/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609162254-YE48GC/pr/github-body.md",
+        "M\t.agentplane/tasks/202609162254-YE48GC/pr/meta.json",
+        "M\t.agentplane/tasks/202609162254-YE48GC/pr/review.md",
+        "M\tdocs/developer/blueprints.mdx",
+        "M\tdocs/developer/harness-dev.mdx",
+        "M\tdocs/internal/v0.7-agent-efficiency-baseline.md",
+        "M\tdocs/reference/generated-reference.mdx",
+        "A\tdocs/releases/v0.7.10.md",
+        "M\tdocs/user/cli-reference.generated.mdx",
+        "M\tdocs/user/commands.mdx",
+        "M\tdocs/user/workflow.mdx",
+        "M\tpackages/agentplane/package.json",
+        "M\tpackages/agentplane/src/backends/task-backend.test.ts",
+        "M\tpackages/agentplane/src/backends/task-backend/local-task-byte-store.ts",
+        "M\tpackages/agentplane/src/backends/task-backend/shared/record.ts",
+        "M\tpackages/agentplane/src/cli/cli-smoke.test.ts",
+        "M\tpackages/agentplane/src/cli/local-ci-selection.test.ts",
+        "D\tpackages/agentplane/src/cli/release-critical-lifecycle.test.ts",
+        "M\tpackages/agentplane/src/cli/route-decision.testkit.ts",
+        "D\tpackages/agentplane/src/cli/run-cli.core.blueprint.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts",
+        "D\tpackages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts",
+        "D\tpackages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.critical.task-centric.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli/command-catalog/project.ts",
+        "M\tpackages/agentplane/src/cli/run-cli/command-loaders/project.ts",
+        "M\tpackages/agentplane/src/cli/run-cli/commands/core/preflight-report-drift.ts",
+        "M\tpackages/agentplane/src/cli/run-cli/commands/init/steps/apply.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli/commands/init/steps/prompt-steps.test.ts",
+        "M\tpackages/agentplane/src/cli/task-continuity.testkit.ts",
+        "M\tpackages/agentplane/src/commands/acr/acr.command.test.ts",
+        "M\tpackages/agentplane/src/commands/acr/generate-extensions.ts",
+        "M\tpackages/agentplane/src/commands/acr/generate.ts",
+        "M\tpackages/agentplane/src/commands/blueprint/historical-audit.test.ts",
+        "M\tpackages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts",
+        "M\tpackages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts",
+        "M\tpackages/agentplane/src/commands/context/harvest-tasks.test.ts",
+        "M\tpackages/agentplane/src/commands/context/release-readiness.test.ts",
+        "M\tpackages/agentplane/src/commands/doctor.fast.test.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-test-helpers.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-verification-contract.test.ts",
+        "A\tpackages/agentplane/src/commands/evaluator/evaluator-work-order-current.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts",
+        "M\tpackages/agentplane/src/commands/evidence/evidence.command.test.ts",
+        "M\tpackages/agentplane/src/commands/guard/impl/allow.test.ts",
+        "M\tpackages/agentplane/src/commands/hermes/hermes.command.test.ts",
+        "M\tpackages/agentplane/src/commands/hooks/task-context.ts",
+        "M\tpackages/agentplane/src/commands/release/apply.apply-flow.test.ts",
+        "M\tpackages/agentplane/src/commands/release/release-check-script.test.ts",
+        "A\tpackages/agentplane/src/commands/shared/native-task-identity-fixture.ts",
+        "M\tpackages/agentplane/src/commands/shared/route-decision-next-action.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/side-effect-authority-store.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/side-effect-authority.test.ts",
+        "A\tpackages/agentplane/src/commands/shared/task-verification-input-digests.ts",
+        "M\tpackages/agentplane/src/commands/shared/task-verification-input.ts",
+        "M\tpackages/agentplane/src/commands/shared/task-worktree-foreign-artifact-repair.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts",
+        "D\tpackages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step-fingerprint.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step-hosted-close.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step-integration-projections.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step-projections.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step.testkit.ts",
+        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor.autonomy.test.ts",
+        "M\tpackages/agentplane/src/commands/task/configured-authority.test.ts",
+        "M\tpackages/agentplane/src/commands/task/create.command.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-report-result.test.ts",
+        "M\tpackages/agentplane/src/commands/task/finish-execute.ts",
+        "M\tpackages/agentplane/src/commands/task/finish-quality-evidence.ts",
+        "M\tpackages/agentplane/src/commands/task/finish.close-tail.unit.test.ts",
+        "M\tpackages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts",
+        "M\tpackages/agentplane/src/commands/task/finish.state.unit.test.ts",
+        "M\tpackages/agentplane/src/commands/task/finish.validation.unit.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-inspection.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-migrate.command.ts",
+        "M\tpackages/agentplane/src/commands/task/mutation-parity.unit.test.ts",
+        "M\tpackages/agentplane/src/commands/task/quality-review-gate.unit.test.ts",
+        "A\tpackages/agentplane/src/commands/task/scope-extend.boundary.test.ts",
+        "M\tpackages/agentplane/src/commands/task/scope-extend.test.ts",
+        "A\tpackages/agentplane/src/commands/task/scope-extend.testkit.ts",
+        "M\tpackages/agentplane/src/commands/task/start.unit.test.ts",
+        "M\tpackages/agentplane/src/commands/task/verify-record-execute.ts",
+        "A\tpackages/agentplane/src/commands/task/verify-record-pr-artifacts.ts",
+        "M\tpackages/agentplane/src/commands/task/verify-record.durability.unit.test.ts",
+        "M\tpackages/agentplane/src/commands/task/verify-record.testkit.ts",
+        "M\tpackages/agentplane/src/commands/task/verify-record.unit.test.ts",
+        "M\tpackages/agentplane/src/commands/workflow.test.ts",
+        "M\tpackages/agentplane/src/commands/workflow.verify-hooks.test.ts",
+        "M\tpackages/agentplane/src/context/ingest-task.test.ts",
+        "M\tpackages/agentplane/src/context/ingest-task.ts",
+        "M\tpackages/agentplane/src/context/verify-task-artifacts.ts",
+        "M\tpackages/agentplane/src/policy/evaluate.test.ts",
+        "M\tpackages/agentplane/src/policy/rules/protected-paths.ts",
+        "M\tpackages/agentplane/src/policy/rules/task-bound-mutation.ts",
+        "M\tpackages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts",
+        "D\tpackages/agentplane/src/runner/context/recipe-prompt-blocks.test.ts",
+        "M\tpackages/agentplane/src/runner/context/recipe-prompt-blocks.ts",
+        "M\tpackages/agentplane/src/runner/playbooks.test.ts",
+        "M\tpackages/agentplane/src/runner/run-repository-contract.test.ts",
+        "M\tpackages/agentplane/src/runner/state-fingerprint-authority.test.ts",
+        "M\tpackages/agentplane/src/runner/state-fingerprint-projections.test.ts",
+        "M\tpackages/agentplane/src/runner/state-fingerprint.test.ts",
+        "M\tpackages/agentplane/src/runner/state-fingerprint.testkit.ts",
+        "M\tpackages/agentplane/src/runner/state-fingerprint.ts",
+        "M\tpackages/agentplane/src/runner/task-run-paths.test.ts",
+        "M\tpackages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts",
+        "M\tpackages/agentplane/src/runner/usecases/agent-work-order.ts",
+        "M\tpackages/agentplane/src/runner/usecases/scenario-materialize-task.test.ts",
+        "M\tpackages/agentplane/src/runner/usecases/task-run-blueprint.test.ts",
+        "M\tpackages/agentplane/src/runner/usecases/task-run-context.integration.test.ts",
+        "M\tpackages/agentplane/src/runner/usecases/task-run-lifecycle-replay-provenance.test.ts",
+        "M\tpackages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts",
+        "M\tpackages/agentplane/src/runner/usecases/task-run-lifecycle-replay.ts",
+        "M\tpackages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts",
+        "M\tpackages/agentplane/src/runner/usecases/task-run-lifecycle.testkit.ts",
+        "M\tpackages/agentplane/src/runner/usecases/task-run-recipe-write-scope.integration.test.ts",
+        "M\tpackages/agentplane/src/runner/usecases/task-run-state-fingerprint-post-state.integration.test.ts",
+        "M\tpackages/agentplane/src/runner/usecases/task-run-state-fingerprint-runner-config.integration.test.ts",
+        "M\tpackages/agentplane/src/runner/usecases/task-run-state-fingerprint.ts",
+        "M\tpackages/agentplane/src/runner/usecases/task-run.ts",
+        "M\tpackages/agentplane/src/runtime/sgr/contracts.test.ts",
+        "M\tpackages/agentplane/src/runtime/task-intake/resolve.test.ts",
+        "M\tpackages/agentplane/src/runtime/task-obligations/resolve.test.ts",
+        "M\tpackages/agentplane/src/shared/git-index-lock-guard.test.ts",
+        "M\tpackages/agentplane/src/workflow-lifecycle/contract.test.ts",
+        "M\tpackages/core/package.json",
+        "M\tpackages/core/schemas/task-observation.schema.json",
+        "M\tpackages/core/schemas/task-readme-frontmatter.schema.json",
+        "M\tpackages/core/schemas/tasks-export.schema.json",
+        "M\tpackages/recipes/package.json",
+        "M\tpackages/recipes/src/index.test.ts",
+        "M\tpackages/recipes/src/index.ts",
+        "M\tpackages/spec/examples/acr.json",
+        "M\tpackages/spec/schemas/task-observation.schema.json",
+        "M\tpackages/spec/schemas/task-readme-frontmatter.schema.json",
+        "M\tpackages/spec/schemas/tasks-export.schema.json",
+        "M\tpackages/testkit/package.json",
+        "M\tpackages/testkit/src/agentplane-internal.ts",
+        "M\tpackages/testkit/src/cli-harness.ts",
+        "M\tschemas/agent-semantic-result.schema.json",
+        "M\tschemas/task-observation.schema.json",
+        "M\tschemas/task-readme-frontmatter.schema.json",
+        "M\tschemas/tasks-export.schema.json",
+        "A\tscripts/checks/blueprint-retirement-map.json",
+        "A\tscripts/checks/blueprint-retirement-map.test.mjs",
+        "M\tscripts/checks/no-blueprint-cursor.test.mjs",
+        "M\tscripts/checks/no-blueprint-engine.test.mjs",
+        "M\tscripts/lib/installed-migration-matrix.mjs",
+        "M\tscripts/lib/test-route-registry.mjs",
+        "M\tscripts/release/check-local-tarball-install-smoke.mjs",
+        "M\twebsite/static/img/social/docs/developer/blueprints.png",
+        "A\twebsite/static/img/social/docs/releases/v0.7.10.png",
+        "M\twebsite/static/img/social/manifest.json",
+        "M\twebsite/static/llms-full.txt"
       ]
     },
     {
       "command": "git status --short --untracked-files=all",
       "id": "final-repository-status",
       "result": "pass",
-      "stdout": [
-        "M  .agentplane/tasks/202609162254-YE48GC/pr/diffstat.txt",
-        "M  .agentplane/tasks/202609162254-YE48GC/pr/github-body.md",
-        "M  .agentplane/tasks/202609162254-YE48GC/pr/meta.json",
-        "M  .agentplane/tasks/202609162254-YE48GC/pr/review.md"
-      ]
+      "stdout": []
     }
   ],
-  "execution_base_commit": "eb2f52c80932bfa2e13b89c2ce34d55b37728b3d",
-  "implementation_commit": "5755d5a4decd210f5620a6483f9e1355ba490f82",
+  "execution_base_commit": "e685e6efced5b9584ddde09cfc02e727809d3d3e",
+  "implementation_commit": "d949071048f769e0728af190eafa7b74ddfbe9fa",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [],
+    "baseline": [
+      " M .agentplane/WORKFLOW.md",
+      " M docs/developer/blueprints.mdx",
+      " M docs/developer/harness-dev.mdx",
+      " M docs/internal/v0.7-agent-efficiency-baseline.md",
+      " M docs/reference/generated-reference.mdx",
+      " M docs/user/cli-reference.generated.mdx",
+      " M docs/user/commands.mdx",
+      " M docs/user/workflow.mdx",
+      " M packages/agentplane/package.json",
+      " M packages/agentplane/src/backends/task-backend.test.ts",
+      " M packages/agentplane/src/backends/task-backend/local-task-byte-store.ts",
+      " M packages/agentplane/src/backends/task-backend/shared/record.ts",
+      " M packages/agentplane/src/cli/cli-smoke.test.ts",
+      " M packages/agentplane/src/cli/local-ci-selection.test.ts",
+      " D packages/agentplane/src/cli/release-critical-lifecycle.test.ts",
+      " M packages/agentplane/src/cli/route-decision.testkit.ts",
+      " D packages/agentplane/src/cli/run-cli.core.blueprint.test.ts",
+      " M packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts",
+      " M packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts",
+      " M packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts",
+      " D packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts",
+      " D packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts",
+      " M packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts",
+      " M packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts",
+      " M packages/agentplane/src/cli/run-cli/command-catalog/project.ts",
+      " M packages/agentplane/src/cli/run-cli/command-loaders/project.ts",
+      " M packages/agentplane/src/cli/run-cli/commands/core/preflight-report-drift.ts",
+      " M packages/agentplane/src/cli/run-cli/commands/init/steps/apply.test.ts",
+      " M packages/agentplane/src/cli/run-cli/commands/init/steps/prompt-steps.test.ts",
+      " M packages/agentplane/src/cli/task-continuity.testkit.ts",
+      " M packages/agentplane/src/commands/acr/acr.command.test.ts",
+      " M packages/agentplane/src/commands/acr/generate-extensions.ts",
+      " M packages/agentplane/src/commands/acr/generate.ts",
+      " M packages/agentplane/src/commands/blueprint/historical-audit.test.ts",
+      " M packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts",
+      " M packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts",
+      " M packages/agentplane/src/commands/context/harvest-tasks.test.ts",
+      " M packages/agentplane/src/commands/context/release-readiness.test.ts",
+      " M packages/agentplane/src/commands/doctor.fast.test.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-test-helpers.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-verification-contract.test.ts",
+      " M packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts",
+      " M packages/agentplane/src/commands/evidence/evidence.command.test.ts",
+      " M packages/agentplane/src/commands/guard/impl/allow.test.ts",
+      " M packages/agentplane/src/commands/hermes/hermes.command.test.ts",
+      " M packages/agentplane/src/commands/hooks/task-context.ts",
+      " M packages/agentplane/src/commands/release/apply.apply-flow.test.ts",
+      " M packages/agentplane/src/commands/release/release-check-script.test.ts",
+      " M packages/agentplane/src/commands/shared/route-decision-next-action.test.ts",
+      " M packages/agentplane/src/commands/shared/side-effect-authority-store.test.ts",
+      " M packages/agentplane/src/commands/shared/side-effect-authority.test.ts",
+      " M packages/agentplane/src/commands/shared/task-verification-input.ts",
+      " M packages/agentplane/src/commands/shared/task-worktree-foreign-artifact-repair.test.ts",
+      " M packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts",
+      " D packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts",
+      " M packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts",
+      " M packages/agentplane/src/commands/shared/workflow-step-hosted-close.test.ts",
+      " M packages/agentplane/src/commands/shared/workflow-step-integration-projections.test.ts",
+      " M packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts",
+      " M packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts",
+      " M packages/agentplane/src/commands/shared/workflow-step-projections.test.ts",
+      " M packages/agentplane/src/commands/shared/workflow-step.test.ts",
+      " M packages/agentplane/src/commands/shared/workflow-step.testkit.ts",
+      " M packages/agentplane/src/commands/task/branch-task-supervisor.autonomy.test.ts",
+      " M packages/agentplane/src/commands/task/configured-authority.test.ts",
+      " M packages/agentplane/src/commands/task/create.command.ts",
+      " M packages/agentplane/src/commands/task/external-agent-report-result.test.ts",
+      " M packages/agentplane/src/commands/task/finish-execute.ts",
+      " M packages/agentplane/src/commands/task/finish-quality-evidence.ts",
+      " M packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts",
+      " M packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts",
+      " M packages/agentplane/src/commands/task/finish.state.unit.test.ts",
+      " M packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-inspection.ts",
+      " M packages/agentplane/src/commands/task/kernel-migrate.command.ts",
+      " M packages/agentplane/src/commands/task/mutation-parity.unit.test.ts",
+      " M packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts",
+      " M packages/agentplane/src/commands/task/scope-extend.test.ts",
+      " M packages/agentplane/src/commands/task/start.unit.test.ts",
+      " M packages/agentplane/src/commands/task/verify-record-execute.ts",
+      " M packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts",
+      " M packages/agentplane/src/commands/task/verify-record.testkit.ts",
+      " M packages/agentplane/src/commands/task/verify-record.unit.test.ts",
+      " M packages/agentplane/src/commands/workflow.test.ts",
+      " M packages/agentplane/src/commands/workflow.verify-hooks.test.ts",
+      " M packages/agentplane/src/context/ingest-task.test.ts",
+      " M packages/agentplane/src/context/ingest-task.ts",
+      " M packages/agentplane/src/context/verify-task-artifacts.ts",
+      " M packages/agentplane/src/policy/evaluate.test.ts",
+      " M packages/agentplane/src/policy/rules/protected-paths.ts",
+      " M packages/agentplane/src/policy/rules/task-bound-mutation.ts",
+      " M packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts",
+      " D packages/agentplane/src/runner/context/recipe-prompt-blocks.test.ts",
+      " M packages/agentplane/src/runner/context/recipe-prompt-blocks.ts",
+      " M packages/agentplane/src/runner/playbooks.test.ts",
+      " M packages/agentplane/src/runner/run-repository-contract.test.ts",
+      " M packages/agentplane/src/runner/state-fingerprint-authority.test.ts",
+      " M packages/agentplane/src/runner/state-fingerprint-projections.test.ts",
+      " M packages/agentplane/src/runner/state-fingerprint.test.ts",
+      " M packages/agentplane/src/runner/state-fingerprint.testkit.ts",
+      " M packages/agentplane/src/runner/state-fingerprint.ts",
+      " M packages/agentplane/src/runner/task-run-paths.test.ts",
+      " M packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts",
+      " M packages/agentplane/src/runner/usecases/agent-work-order.ts",
+      " M packages/agentplane/src/runner/usecases/scenario-materialize-task.test.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-provenance.test.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-lifecycle-replay.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-lifecycle.testkit.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-recipe-write-scope.integration.test.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-state-fingerprint-post-state.integration.test.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-state-fingerprint-runner-config.integration.test.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-state-fingerprint.ts",
+      " M packages/agentplane/src/runner/usecases/task-run.ts",
+      " M packages/agentplane/src/runtime/sgr/contracts.test.ts",
+      " M packages/agentplane/src/runtime/task-intake/resolve.test.ts",
+      " M packages/agentplane/src/runtime/task-obligations/resolve.test.ts",
+      " M packages/agentplane/src/shared/git-index-lock-guard.test.ts",
+      " M packages/agentplane/src/workflow-lifecycle/contract.test.ts",
+      " M packages/core/package.json",
+      " M packages/core/schemas/task-observation.schema.json",
+      " M packages/core/schemas/task-readme-frontmatter.schema.json",
+      " M packages/core/schemas/tasks-export.schema.json",
+      " M packages/recipes/package.json",
+      " M packages/recipes/src/index.test.ts",
+      " M packages/recipes/src/index.ts",
+      " M packages/spec/examples/acr.json",
+      " M packages/spec/schemas/task-observation.schema.json",
+      " M packages/spec/schemas/task-readme-frontmatter.schema.json",
+      " M packages/spec/schemas/tasks-export.schema.json",
+      " M packages/testkit/package.json",
+      " M packages/testkit/src/agentplane-internal.ts",
+      " M packages/testkit/src/cli-harness.ts",
+      " M schemas/agent-semantic-result.schema.json",
+      " M schemas/task-observation.schema.json",
+      " M schemas/task-readme-frontmatter.schema.json",
+      " M schemas/tasks-export.schema.json",
+      " M scripts/checks/no-blueprint-cursor.test.mjs",
+      " M scripts/checks/no-blueprint-engine.test.mjs",
+      " M scripts/lib/installed-migration-matrix.mjs",
+      " M scripts/lib/test-route-registry.mjs",
+      " M scripts/release/check-local-tarball-install-smoke.mjs",
+      " M website/static/img/social/docs/developer/blueprints.png",
+      " M website/static/img/social/manifest.json",
+      " M website/static/llms-full.txt",
+      "?? docs/releases/v0.7.10.md",
+      "?? packages/agentplane/src/commands/evaluator/evaluator-work-order-current.ts",
+      "?? packages/agentplane/src/commands/shared/native-task-identity-fixture.ts",
+      "?? packages/agentplane/src/commands/shared/task-verification-input-digests.ts",
+      "?? packages/agentplane/src/commands/task/scope-extend.boundary.test.ts",
+      "?? packages/agentplane/src/commands/task/scope-extend.testkit.ts",
+      "?? packages/agentplane/src/commands/task/verify-record-pr-artifacts.ts",
+      "?? scripts/checks/blueprint-retirement-map.json",
+      "?? scripts/checks/blueprint-retirement-map.test.mjs",
+      "?? website/static/img/social/docs/releases/v0.7.10.png"
+    ],
     "classification": [
       {
-        "classification": "introduced_during_execution",
-        "line": "M  .agentplane/tasks/202609162254-YE48GC/pr/diffstat.txt"
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/WORKFLOW.md"
       },
       {
-        "classification": "introduced_during_execution",
-        "line": "M  .agentplane/tasks/202609162254-YE48GC/pr/github-body.md"
+        "classification": "removed_during_execution",
+        "line": " M docs/developer/blueprints.mdx"
       },
       {
-        "classification": "introduced_during_execution",
-        "line": "M  .agentplane/tasks/202609162254-YE48GC/pr/meta.json"
+        "classification": "removed_during_execution",
+        "line": " M docs/developer/harness-dev.mdx"
       },
       {
-        "classification": "introduced_during_execution",
-        "line": "M  .agentplane/tasks/202609162254-YE48GC/pr/review.md"
+        "classification": "removed_during_execution",
+        "line": " M docs/internal/v0.7-agent-efficiency-baseline.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M docs/reference/generated-reference.mdx"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M docs/user/cli-reference.generated.mdx"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M docs/user/commands.mdx"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M docs/user/workflow.mdx"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/package.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/backends/task-backend.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/backends/task-backend/local-task-byte-store.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/backends/task-backend/shared/record.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/cli-smoke.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/local-ci-selection.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " D packages/agentplane/src/cli/release-critical-lifecycle.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/route-decision.testkit.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " D packages/agentplane/src/cli/run-cli.core.blueprint.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " D packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " D packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/run-cli/command-catalog/project.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/run-cli/command-loaders/project.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/run-cli/commands/core/preflight-report-drift.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/run-cli/commands/init/steps/apply.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/run-cli/commands/init/steps/prompt-steps.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/task-continuity.testkit.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/acr/acr.command.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/acr/generate-extensions.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/acr/generate.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/blueprint/historical-audit.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/context/harvest-tasks.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/context/release-readiness.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/doctor.fast.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/evaluator/evaluator-test-helpers.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/evaluator/evaluator-verification-contract.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/evidence/evidence.command.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/guard/impl/allow.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/hermes/hermes.command.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/hooks/task-context.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/release/apply.apply-flow.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/release/release-check-script.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/route-decision-next-action.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/side-effect-authority-store.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/side-effect-authority.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/task-verification-input.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/task-worktree-foreign-artifact-repair.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " D packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/workflow-step-hosted-close.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/workflow-step-integration-projections.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/workflow-step-projections.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/workflow-step.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/workflow-step.testkit.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/branch-task-supervisor.autonomy.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/configured-authority.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/create.command.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/external-agent-report-result.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/finish-execute.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/finish-quality-evidence.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/finish.state.unit.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/finish.validation.unit.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-inspection.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-migrate.command.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/mutation-parity.unit.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/scope-extend.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/start.unit.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/verify-record-execute.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/verify-record.testkit.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/verify-record.unit.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/workflow.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/context/ingest-task.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/context/ingest-task.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/context/verify-task-artifacts.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/policy/evaluate.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/policy/rules/protected-paths.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/policy/rules/task-bound-mutation.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " D packages/agentplane/src/runner/context/recipe-prompt-blocks.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/context/recipe-prompt-blocks.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/playbooks.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/run-repository-contract.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/state-fingerprint-authority.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/state-fingerprint-projections.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/state-fingerprint.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/state-fingerprint.testkit.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/state-fingerprint.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/task-run-paths.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/usecases/agent-work-order.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/usecases/scenario-materialize-task.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-provenance.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/usecases/task-run-lifecycle-replay.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/usecases/task-run-lifecycle.testkit.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/usecases/task-run-recipe-write-scope.integration.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/usecases/task-run-state-fingerprint-post-state.integration.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/usecases/task-run-state-fingerprint-runner-config.integration.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/usecases/task-run-state-fingerprint.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/usecases/task-run.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runtime/sgr/contracts.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runtime/task-intake/resolve.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runtime/task-obligations/resolve.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/shared/git-index-lock-guard.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/workflow-lifecycle/contract.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/package.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/schemas/task-observation.schema.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/schemas/task-readme-frontmatter.schema.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/schemas/tasks-export.schema.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/recipes/package.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/recipes/src/index.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/recipes/src/index.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/spec/examples/acr.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/spec/schemas/task-observation.schema.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/spec/schemas/task-readme-frontmatter.schema.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/spec/schemas/tasks-export.schema.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/testkit/package.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/testkit/src/agentplane-internal.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/testkit/src/cli-harness.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M schemas/agent-semantic-result.schema.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M schemas/task-observation.schema.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M schemas/task-readme-frontmatter.schema.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M schemas/tasks-export.schema.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M scripts/checks/no-blueprint-cursor.test.mjs"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M scripts/checks/no-blueprint-engine.test.mjs"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M scripts/lib/installed-migration-matrix.mjs"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M scripts/lib/test-route-registry.mjs"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M scripts/release/check-local-tarball-install-smoke.mjs"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M website/static/img/social/docs/developer/blueprints.png"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M website/static/img/social/manifest.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M website/static/llms-full.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? docs/releases/v0.7.10.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/evaluator/evaluator-work-order-current.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/shared/native-task-identity-fixture.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/shared/task-verification-input-digests.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/scope-extend.boundary.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/scope-extend.testkit.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/verify-record-pr-artifacts.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? scripts/checks/blueprint-retirement-map.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? scripts/checks/blueprint-retirement-map.test.mjs"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? website/static/img/social/docs/releases/v0.7.10.png"
       }
     ],
-    "final": [
-      "M  .agentplane/tasks/202609162254-YE48GC/pr/diffstat.txt",
-      "M  .agentplane/tasks/202609162254-YE48GC/pr/github-body.md",
-      "M  .agentplane/tasks/202609162254-YE48GC/pr/meta.json",
-      "M  .agentplane/tasks/202609162254-YE48GC/pr/review.md"
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M .agentplane/WORKFLOW.md",
+      " M docs/developer/blueprints.mdx",
+      " M docs/developer/harness-dev.mdx",
+      " M docs/internal/v0.7-agent-efficiency-baseline.md",
+      " M docs/reference/generated-reference.mdx",
+      " M docs/user/cli-reference.generated.mdx",
+      " M docs/user/commands.mdx",
+      " M docs/user/workflow.mdx",
+      " M packages/agentplane/package.json",
+      " M packages/agentplane/src/backends/task-backend.test.ts",
+      " M packages/agentplane/src/backends/task-backend/local-task-byte-store.ts",
+      " M packages/agentplane/src/backends/task-backend/shared/record.ts",
+      " M packages/agentplane/src/cli/cli-smoke.test.ts",
+      " M packages/agentplane/src/cli/local-ci-selection.test.ts",
+      " D packages/agentplane/src/cli/release-critical-lifecycle.test.ts",
+      " M packages/agentplane/src/cli/route-decision.testkit.ts",
+      " D packages/agentplane/src/cli/run-cli.core.blueprint.test.ts",
+      " M packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts",
+      " M packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts",
+      " M packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts",
+      " D packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts",
+      " D packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts",
+      " M packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts",
+      " M packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts",
+      " M packages/agentplane/src/cli/run-cli/command-catalog/project.ts",
+      " M packages/agentplane/src/cli/run-cli/command-loaders/project.ts",
+      " M packages/agentplane/src/cli/run-cli/commands/core/preflight-report-drift.ts",
+      " M packages/agentplane/src/cli/run-cli/commands/init/steps/apply.test.ts",
+      " M packages/agentplane/src/cli/run-cli/commands/init/steps/prompt-steps.test.ts",
+      " M packages/agentplane/src/cli/task-continuity.testkit.ts",
+      " M packages/agentplane/src/commands/acr/acr.command.test.ts",
+      " M packages/agentplane/src/commands/acr/generate-extensions.ts",
+      " M packages/agentplane/src/commands/acr/generate.ts",
+      " M packages/agentplane/src/commands/blueprint/historical-audit.test.ts",
+      " M packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts",
+      " M packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts",
+      " M packages/agentplane/src/commands/context/harvest-tasks.test.ts",
+      " M packages/agentplane/src/commands/context/release-readiness.test.ts",
+      " M packages/agentplane/src/commands/doctor.fast.test.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-test-helpers.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-verification-contract.test.ts",
+      " M packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts",
+      " M packages/agentplane/src/commands/evidence/evidence.command.test.ts",
+      " M packages/agentplane/src/commands/guard/impl/allow.test.ts",
+      " M packages/agentplane/src/commands/hermes/hermes.command.test.ts",
+      " M packages/agentplane/src/commands/hooks/task-context.ts",
+      " M packages/agentplane/src/commands/release/apply.apply-flow.test.ts",
+      " M packages/agentplane/src/commands/release/release-check-script.test.ts",
+      " M packages/agentplane/src/commands/shared/route-decision-next-action.test.ts",
+      " M packages/agentplane/src/commands/shared/side-effect-authority-store.test.ts",
+      " M packages/agentplane/src/commands/shared/side-effect-authority.test.ts",
+      " M packages/agentplane/src/commands/shared/task-verification-input.ts",
+      " M packages/agentplane/src/commands/shared/task-worktree-foreign-artifact-repair.test.ts",
+      " M packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts",
+      " D packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts",
+      " M packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts",
+      " M packages/agentplane/src/commands/shared/workflow-step-hosted-close.test.ts",
+      " M packages/agentplane/src/commands/shared/workflow-step-integration-projections.test.ts",
+      " M packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts",
+      " M packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts",
+      " M packages/agentplane/src/commands/shared/workflow-step-projections.test.ts",
+      " M packages/agentplane/src/commands/shared/workflow-step.test.ts",
+      " M packages/agentplane/src/commands/shared/workflow-step.testkit.ts",
+      " M packages/agentplane/src/commands/task/branch-task-supervisor.autonomy.test.ts",
+      " M packages/agentplane/src/commands/task/configured-authority.test.ts",
+      " M packages/agentplane/src/commands/task/create.command.ts",
+      " M packages/agentplane/src/commands/task/external-agent-report-result.test.ts",
+      " M packages/agentplane/src/commands/task/finish-execute.ts",
+      " M packages/agentplane/src/commands/task/finish-quality-evidence.ts",
+      " M packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts",
+      " M packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts",
+      " M packages/agentplane/src/commands/task/finish.state.unit.test.ts",
+      " M packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-inspection.ts",
+      " M packages/agentplane/src/commands/task/kernel-migrate.command.ts",
+      " M packages/agentplane/src/commands/task/mutation-parity.unit.test.ts",
+      " M packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts",
+      " M packages/agentplane/src/commands/task/scope-extend.test.ts",
+      " M packages/agentplane/src/commands/task/start.unit.test.ts",
+      " M packages/agentplane/src/commands/task/verify-record-execute.ts",
+      " M packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts",
+      " M packages/agentplane/src/commands/task/verify-record.testkit.ts",
+      " M packages/agentplane/src/commands/task/verify-record.unit.test.ts",
+      " M packages/agentplane/src/commands/workflow.test.ts",
+      " M packages/agentplane/src/commands/workflow.verify-hooks.test.ts",
+      " M packages/agentplane/src/context/ingest-task.test.ts",
+      " M packages/agentplane/src/context/ingest-task.ts",
+      " M packages/agentplane/src/context/verify-task-artifacts.ts",
+      " M packages/agentplane/src/policy/evaluate.test.ts",
+      " M packages/agentplane/src/policy/rules/protected-paths.ts",
+      " M packages/agentplane/src/policy/rules/task-bound-mutation.ts",
+      " M packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts",
+      " D packages/agentplane/src/runner/context/recipe-prompt-blocks.test.ts",
+      " M packages/agentplane/src/runner/context/recipe-prompt-blocks.ts",
+      " M packages/agentplane/src/runner/playbooks.test.ts",
+      " M packages/agentplane/src/runner/run-repository-contract.test.ts",
+      " M packages/agentplane/src/runner/state-fingerprint-authority.test.ts",
+      " M packages/agentplane/src/runner/state-fingerprint-projections.test.ts",
+      " M packages/agentplane/src/runner/state-fingerprint.test.ts",
+      " M packages/agentplane/src/runner/state-fingerprint.testkit.ts",
+      " M packages/agentplane/src/runner/state-fingerprint.ts",
+      " M packages/agentplane/src/runner/task-run-paths.test.ts",
+      " M packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts",
+      " M packages/agentplane/src/runner/usecases/agent-work-order.ts",
+      " M packages/agentplane/src/runner/usecases/scenario-materialize-task.test.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-provenance.test.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-lifecycle-replay.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-lifecycle.testkit.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-recipe-write-scope.integration.test.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-state-fingerprint-post-state.integration.test.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-state-fingerprint-runner-config.integration.test.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-state-fingerprint.ts",
+      " M packages/agentplane/src/runner/usecases/task-run.ts",
+      " M packages/agentplane/src/runtime/sgr/contracts.test.ts",
+      " M packages/agentplane/src/runtime/task-intake/resolve.test.ts",
+      " M packages/agentplane/src/runtime/task-obligations/resolve.test.ts",
+      " M packages/agentplane/src/shared/git-index-lock-guard.test.ts",
+      " M packages/agentplane/src/workflow-lifecycle/contract.test.ts",
+      " M packages/core/package.json",
+      " M packages/core/schemas/task-observation.schema.json",
+      " M packages/core/schemas/task-readme-frontmatter.schema.json",
+      " M packages/core/schemas/tasks-export.schema.json",
+      " M packages/recipes/package.json",
+      " M packages/recipes/src/index.test.ts",
+      " M packages/recipes/src/index.ts",
+      " M packages/spec/examples/acr.json",
+      " M packages/spec/schemas/task-observation.schema.json",
+      " M packages/spec/schemas/task-readme-frontmatter.schema.json",
+      " M packages/spec/schemas/tasks-export.schema.json",
+      " M packages/testkit/package.json",
+      " M packages/testkit/src/agentplane-internal.ts",
+      " M packages/testkit/src/cli-harness.ts",
+      " M schemas/agent-semantic-result.schema.json",
+      " M schemas/task-observation.schema.json",
+      " M schemas/task-readme-frontmatter.schema.json",
+      " M schemas/tasks-export.schema.json",
+      " M scripts/checks/no-blueprint-cursor.test.mjs",
+      " M scripts/checks/no-blueprint-engine.test.mjs",
+      " M scripts/lib/installed-migration-matrix.mjs",
+      " M scripts/lib/test-route-registry.mjs",
+      " M scripts/release/check-local-tarball-install-smoke.mjs",
+      " M website/static/img/social/docs/developer/blueprints.png",
+      " M website/static/img/social/manifest.json",
+      " M website/static/llms-full.txt",
+      "?? docs/releases/v0.7.10.md",
+      "?? packages/agentplane/src/commands/evaluator/evaluator-work-order-current.ts",
+      "?? packages/agentplane/src/commands/shared/native-task-identity-fixture.ts",
+      "?? packages/agentplane/src/commands/shared/task-verification-input-digests.ts",
+      "?? packages/agentplane/src/commands/task/scope-extend.boundary.test.ts",
+      "?? packages/agentplane/src/commands/task/scope-extend.testkit.ts",
+      "?? packages/agentplane/src/commands/task/verify-record-pr-artifacts.ts",
+      "?? scripts/checks/blueprint-retirement-map.json",
+      "?? scripts/checks/blueprint-retirement-map.test.mjs",
+      "?? website/static/img/social/docs/releases/v0.7.10.png"
     ],
-    "introduced_after_execution_baseline": [
-      "M  .agentplane/tasks/202609162254-YE48GC/pr/diffstat.txt",
-      "M  .agentplane/tasks/202609162254-YE48GC/pr/github-body.md",
-      "M  .agentplane/tasks/202609162254-YE48GC/pr/meta.json",
-      "M  .agentplane/tasks/202609162254-YE48GC/pr/review.md"
-    ],
-    "removed_after_execution_baseline": [],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
