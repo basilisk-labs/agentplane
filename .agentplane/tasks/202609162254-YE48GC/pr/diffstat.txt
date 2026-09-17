@@ -168,7 +168,7 @@
  .../workflow-step-fingerprint-policy-paths.ts      |    4 +-
  .../shared/workflow-step-fingerprint-trace.ts      |    2 +-
  .../shared/workflow-step-fingerprint.test.ts       |  857 -----------
- .../commands/shared/workflow-step-fingerprint.ts   |  170 ++-
+ .../commands/shared/workflow-step-fingerprint.ts   |  172 ++-
  .../shared/workflow-step-hosted-close.test.ts      |   42 +-
  .../workflow-step-integration-projections.test.ts  |   40 +-
  .../workflow-step-projections-routing.test.ts      |    5 +-
@@ -311,13 +311,14 @@
  .../src/runtime/task-intake/resolve.test.ts        |    2 -
  .../agentplane/src/runtime/task-intake/types.ts    |    1 -
  .../src/runtime/task-obligations/catalog.ts        |  366 +++++
- .../src/runtime/task-obligations/index.ts          |   18 +
+ .../src/runtime/task-obligations/index.ts          |    6 +
  .../src/runtime/task-obligations/model.ts          |  111 ++
  .../src/runtime/task-obligations/resolve.test.ts   |  150 ++
  .../src/runtime/task-obligations/resolve.ts        |  285 ++++
  .../agentplane/src/runtime/task-routing/resolve.ts |   11 +-
  .../src/runtime/workspace-allocation/allocate.ts   |    1 -
  .../src/shared/git-index-lock-guard.test.ts        |    6 +-
+ .../agentplane/src/shared/preparation-trace.ts     |    5 -
  .../src/workflow-lifecycle/contract.test.ts        |    9 +-
  .../agentplane/src/workflow-lifecycle/contract.ts  |   45 +-
  .../src/workflow-lifecycle/parity-check.ts         |   31 +-
@@ -382,4 +383,4 @@
  .../static/img/social/docs/releases/v0.7.10.png    |  Bin 0 -> 52774 bytes
  website/static/img/social/manifest.json            |   12 +-
  website/static/llms-full.txt                       |   79 +-
- 384 files changed, 8321 insertions(+), 19383 deletions(-)
+ 385 files changed, 8310 insertions(+), 19389 deletions(-)
