@@ -4,7 +4,7 @@ title: "Implement and qualify AgentPlane 0.7.10 Blueprint retirement"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -123,17 +123,46 @@ execution_contract:
     changed_components:
       - ".github"
       - "packages/agentplane"
+      - "packages/core"
       - "packages/recipes"
       - "scripts"
     changed_paths:
       - ".github/workflows/publish.yml"
+      - "packages/agentplane/src/commands/acr/generate-extensions.ts"
+      - "packages/agentplane/src/commands/acr/generate.ts"
+      - "packages/agentplane/src/commands/acr/summary.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-quality-artifacts.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-review-artifacts.ts"
       - "packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-work-order.test.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-work-order.ts"
       - "packages/agentplane/src/commands/release/publish-workflow-contract.test.ts"
+      - "packages/agentplane/src/commands/shared/native-task-identity.ts"
+      - "packages/agentplane/src/commands/shared/side-effect-authority.ts"
+      - "packages/agentplane/src/commands/shared/task-verification-input-types.ts"
+      - "packages/agentplane/src/commands/shared/task-verification-input.test.ts"
+      - "packages/agentplane/src/commands/shared/task-verification-input.ts"
+      - "packages/agentplane/src/commands/shared/task-verification-record-parser.ts"
+      - "packages/agentplane/src/commands/shared/task-verification-records.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+      - "packages/agentplane/src/commands/task/blueprint-summary.ts"
+      - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts"
+      - "packages/agentplane/src/commands/task/finish-blueprint-evidence.ts"
+      - "packages/agentplane/src/commands/task/kernel-work-order.ts"
+      - "packages/agentplane/src/commands/task/quality-review-gate.ts"
       - "packages/agentplane/src/commands/task/run-execution-preview.ts"
+      - "packages/agentplane/src/commands/task/verify-record-execute.ts"
+      - "packages/agentplane/src/commands/task/verify-record-references.ts"
+      - "packages/agentplane/src/commands/task/verify-show.command.ts"
       - "packages/agentplane/src/runner/context/base-prompts.ts"
       - "packages/agentplane/src/runner/context/recipe-prompt-blocks.test.ts"
       - "packages/agentplane/src/runner/context/recipe-prompt-blocks.ts"
       - "packages/agentplane/src/runner/context/semantic-prompt-projection.ts"
+      - "packages/agentplane/src/runner/run-repository-contract.ts"
+      - "packages/agentplane/src/runner/state-fingerprint.ts"
       - "packages/agentplane/src/runner/types/context.ts"
       - "packages/agentplane/src/runner/usecases/agent-work-order-build.ts"
       - "packages/agentplane/src/runner/usecases/agent-work-order.ts"
@@ -151,6 +180,8 @@ execution_contract:
       - "packages/agentplane/src/runtime/task-obligations/model.ts"
       - "packages/agentplane/src/runtime/task-obligations/resolve.test.ts"
       - "packages/agentplane/src/runtime/task-obligations/resolve.ts"
+      - "packages/core/src/runner/state-fingerprint.test.ts"
+      - "packages/core/src/runner/state-fingerprint.ts"
       - "packages/recipes/src/blueprint-extensions.test.ts"
       - "packages/recipes/src/blueprint-extensions.ts"
       - "scripts/checks/blueprint-retirement-map.json"
@@ -226,12 +257,22 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:8b240ce8dd1411105d619a2f75d3107072fd63367c9eefb4e37313fe2f3d7dfa"
+      digest: "sha256:80c30165869b7490ccfae335831eb41fa83af43a8713b3064530b7d60a322ccf"
       escalation_reasons:
         - "central_component:.github/workflows"
         - "central_component:bun.lock"
         - "central_component:package.json"
         - "central_path:.github/workflows/publish.yml"
+        - "central_path:packages/agentplane/src/commands/shared/native-task-identity.ts"
+        - "central_path:packages/agentplane/src/commands/shared/side-effect-authority.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-verification-input-types.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-verification-input.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-verification-input.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-verification-record-parser.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-verification-records.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+        - "central_path:packages/core/src/runner/state-fingerprint.test.ts"
+        - "central_path:packages/core/src/runner/state-fingerprint.ts"
         - "central_path:scripts/checks/blueprint-retirement-map.json"
         - "central_path:scripts/checks/blueprint-retirement-map.test.mjs"
         - "central_path:scripts/release/manifest.mjs"
@@ -254,17 +295,46 @@ execution_contract:
         changed_components:
           - ".github"
           - "packages/agentplane"
+          - "packages/core"
           - "packages/recipes"
           - "scripts"
         changed_files:
           - ".github/workflows/publish.yml"
+          - "packages/agentplane/src/commands/acr/generate-extensions.ts"
+          - "packages/agentplane/src/commands/acr/generate.ts"
+          - "packages/agentplane/src/commands/acr/summary.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-quality-artifacts.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-review-artifacts.ts"
           - "packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-work-order.test.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-work-order.ts"
           - "packages/agentplane/src/commands/release/publish-workflow-contract.test.ts"
+          - "packages/agentplane/src/commands/shared/native-task-identity.ts"
+          - "packages/agentplane/src/commands/shared/side-effect-authority.ts"
+          - "packages/agentplane/src/commands/shared/task-verification-input-types.ts"
+          - "packages/agentplane/src/commands/shared/task-verification-input.test.ts"
+          - "packages/agentplane/src/commands/shared/task-verification-input.ts"
+          - "packages/agentplane/src/commands/shared/task-verification-record-parser.ts"
+          - "packages/agentplane/src/commands/shared/task-verification-records.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+          - "packages/agentplane/src/commands/task/blueprint-summary.ts"
+          - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts"
+          - "packages/agentplane/src/commands/task/finish-blueprint-evidence.ts"
+          - "packages/agentplane/src/commands/task/kernel-work-order.ts"
+          - "packages/agentplane/src/commands/task/quality-review-gate.ts"
           - "packages/agentplane/src/commands/task/run-execution-preview.ts"
+          - "packages/agentplane/src/commands/task/verify-record-execute.ts"
+          - "packages/agentplane/src/commands/task/verify-record-references.ts"
+          - "packages/agentplane/src/commands/task/verify-show.command.ts"
           - "packages/agentplane/src/runner/context/base-prompts.ts"
           - "packages/agentplane/src/runner/context/recipe-prompt-blocks.test.ts"
           - "packages/agentplane/src/runner/context/recipe-prompt-blocks.ts"
           - "packages/agentplane/src/runner/context/semantic-prompt-projection.ts"
+          - "packages/agentplane/src/runner/run-repository-contract.ts"
+          - "packages/agentplane/src/runner/state-fingerprint.ts"
           - "packages/agentplane/src/runner/types/context.ts"
           - "packages/agentplane/src/runner/usecases/agent-work-order-build.ts"
           - "packages/agentplane/src/runner/usecases/agent-work-order.ts"
@@ -282,6 +352,8 @@ execution_contract:
           - "packages/agentplane/src/runtime/task-obligations/model.ts"
           - "packages/agentplane/src/runtime/task-obligations/resolve.test.ts"
           - "packages/agentplane/src/runtime/task-obligations/resolve.ts"
+          - "packages/core/src/runner/state-fingerprint.test.ts"
+          - "packages/core/src/runner/state-fingerprint.ts"
           - "packages/recipes/src/blueprint-extensions.test.ts"
           - "packages/recipes/src/blueprint-extensions.ts"
           - "scripts/checks/blueprint-retirement-map.json"
@@ -336,7 +408,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "32bd131a28f46452bc8cf6e399ca61a228b0459a"
+  message: "🚧 YE48GC task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -356,6 +430,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/acr; repository effects: source_code, tests."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 32bd131a28f4. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -395,8 +472,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The approved verification-identity WorkItem requires current ACR consumers to move from Blueprint identity, but the issued writable roots omit the active ACR generator and renderer. No repository files were changed. Recommended action: Add packages/agentplane/src/commands/acr to this WorkItem writable roots and reissue the EXECUTOR packet. Requested scope: roots=packages/agentplane/src/commands/acr; repository effects=source_code,tests; request digest=sha256:08cf3a2c20c4337b82fcf6eb7ccd65f2dbba5550eee2b86a74514603b4c95d10. Agentplane receipt: external-agent-blocker/tr_235b6b2ddaa9d173e94c2854d5ad3269/sha256:35a7ab7a68c7d531d38ee1c79f2d168451c15c0b055e30a5be204446e594b9b2/sha256:08cf3a2c20c4337b82fcf6eb7ccd65f2dbba5550eee2b86a74514603b4c95d10."
+  -
+    type: "status"
+    at: "2026-09-17T09:07:57.265Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 32bd131a28f4. CLI accepted one state-bound external-agent semantic result."
+    commit: "32bd131a28f46452bc8cf6e399ca61a228b0459a"
 doc_version: 3
-doc_updated_at: "2026-09-17T07:45:45.689Z"
+doc_updated_at: "2026-09-17T09:07:57.265Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task."
 sections:
@@ -1279,7 +1364,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609162254-YE48GC"
-    event_cursor: 12
+    event_cursor: 14
     final_validation: null
     id: "202609162254-YE48GC"
     intent:
@@ -2139,9 +2224,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609162254-YE48GC"
-    revision: 17
+    revision: 19
     schema_version: 1
-    updated_at: "2026-09-17T07:45:45.689Z"
+    updated_at: "2026-09-17T09:07:57.265Z"
     work_items:
       channel-and-owner-map:
         attempt: 1
@@ -2548,6 +2633,30 @@ extensions:
         previous_revision: 8
         schema_version: 1
         task_id: "202609162254-YE48GC"
+      compatibility:sha256:35c1fb7a1810daf01827b3da94310f76192b7c5554911823500251c52bed9c32:
+        aggregate_digest: "sha256:c5a62b6a0ec8b5b4f4dea29ca25564b898862ab3c751d721bbb1b89ba7a53de0"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T09:07:57.265Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_e0a1d0ac9dfc62f40c9f8f0f"
+          mutation_id: "compatibility:sha256:35c1fb7a1810daf01827b3da94310f76192b7c5554911823500251c52bed9c32"
+          plan_digest: "sha256:9b89e63d8759e276dd34c14c12173e3cbe67bf44df885de03762eb29e868052b"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 18
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:35c1fb7a1810daf01827b3da94310f76192b7c5554911823500251c52bed9c32"
+        next_revision: 19
+        previous_revision: 18
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
       compatibility:sha256:413450ce2745d1d5cf77c898303ff5777b75a51f5db675c1e34d55e570726bd9:
         aggregate_digest: "sha256:ae8c555aa47f48c57b8a831af834bc49ccfc1fbcbd1cfffb9b7832d90a7f7f17"
         event:
@@ -2666,6 +2775,30 @@ extensions:
         mutation_id: "compatibility:sha256:94d87f3fee100fdb4dbe537a557768df4d481122822fac60cb8f06761fa45fe3"
         next_revision: 10
         previous_revision: 9
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+      compatibility:sha256:9dddc223495f8ae57bc8facbeced997dad8ae4fce9898c1f740d4eadc4d59b33:
+        aggregate_digest: "sha256:6895e5083d5af084c8e224d9078e66fe3826928ddaa6bc2261c7b7a904d6f435"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T09:07:57.265Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_28615d849cbc3a09ff71991e"
+          mutation_id: "compatibility:sha256:9dddc223495f8ae57bc8facbeced997dad8ae4fce9898c1f740d4eadc4d59b33"
+          plan_digest: "sha256:9b89e63d8759e276dd34c14c12173e3cbe67bf44df885de03762eb29e868052b"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 17
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:9dddc223495f8ae57bc8facbeced997dad8ae4fce9898c1f740d4eadc4d59b33"
+        next_revision: 18
+        previous_revision: 17
         schema_version: 1
         task_id: "202609162254-YE48GC"
       compatibility:sha256:c46ff176c8880d44cff5bcd36f48699931fc4d0a1b8f09f1e98fb5fdd94711a5:
@@ -2816,7 +2949,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "2afa52039e6c50ead89776da98e817a243e7e4da"
+    hash: "32bd131a28f46452bc8cf6e399ca61a228b0459a"
   task_execution_context:
     base_ref: "main"
     base_sha: "19ff39fd292c30f0958131c35200a6268b7a285d"

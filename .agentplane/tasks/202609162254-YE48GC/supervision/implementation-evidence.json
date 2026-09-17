@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check ee168217bb01bcdafd388d8daff297c400ebd9ee..2afa52039e6c50ead89776da98e817a243e7e4da",
+      "command": "git diff --check f8c32b410e6a4a7593cbc279ce53eb12eb54f5ba..32bd131a28f46452bc8cf6e399ca61a228b0459a",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB ee168217bb01bcdafd388d8daff297c400ebd9ee..2afa52039e6c50ead89776da98e817a243e7e4da",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB f8c32b410e6a4a7593cbc279ce53eb12eb54f5ba..32bd131a28f46452bc8cf6e399ca61a228b0459a",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,11 +21,39 @@
         "M\t.agentplane/tasks/202609162254-YE48GC/pr/github-body.md",
         "M\t.agentplane/tasks/202609162254-YE48GC/pr/meta.json",
         "M\t.agentplane/tasks/202609162254-YE48GC/pr/review.md",
-        "M\tpackages/agentplane/src/runner/context/base-prompts.ts",
-        "A\tpackages/agentplane/src/runner/context/recipe-prompt-blocks.test.ts",
-        "M\tpackages/agentplane/src/runner/context/recipe-prompt-blocks.ts",
-        "M\tpackages/recipes/src/blueprint-extensions.test.ts",
-        "M\tpackages/recipes/src/blueprint-extensions.ts"
+        "M\tpackages/agentplane/src/commands/acr/generate-extensions.ts",
+        "M\tpackages/agentplane/src/commands/acr/generate.ts",
+        "M\tpackages/agentplane/src/commands/acr/summary.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-quality-artifacts.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-review-apply.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-review-artifacts.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts",
+        "A\tpackages/agentplane/src/commands/evaluator/evaluator-work-order.test.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-work-order.ts",
+        "A\tpackages/agentplane/src/commands/shared/native-task-identity.ts",
+        "M\tpackages/agentplane/src/commands/shared/side-effect-authority.ts",
+        "M\tpackages/agentplane/src/commands/shared/task-verification-input-types.ts",
+        "M\tpackages/agentplane/src/commands/shared/task-verification-input.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/task-verification-input.ts",
+        "M\tpackages/agentplane/src/commands/shared/task-verification-record-parser.ts",
+        "M\tpackages/agentplane/src/commands/shared/task-verification-records.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step-fingerprint.ts",
+        "M\tpackages/agentplane/src/commands/task/blueprint-summary.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts",
+        "M\tpackages/agentplane/src/commands/task/finish-blueprint-evidence.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-work-order.ts",
+        "M\tpackages/agentplane/src/commands/task/quality-review-gate.ts",
+        "M\tpackages/agentplane/src/commands/task/verify-record-execute.ts",
+        "M\tpackages/agentplane/src/commands/task/verify-record-references.ts",
+        "M\tpackages/agentplane/src/commands/task/verify-show.command.ts",
+        "M\tpackages/agentplane/src/runner/run-repository-contract.ts",
+        "M\tpackages/agentplane/src/runner/state-fingerprint.ts",
+        "M\tpackages/agentplane/src/runner/usecases/agent-work-order-build.ts",
+        "M\tpackages/agentplane/src/runner/usecases/task-run.ts",
+        "M\tpackages/core/src/runner/state-fingerprint.test.ts",
+        "M\tpackages/core/src/runner/state-fingerprint.ts"
       ]
     },
     {
@@ -35,15 +63,216 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "ee168217bb01bcdafd388d8daff297c400ebd9ee",
-  "implementation_commit": "2afa52039e6c50ead89776da98e817a243e7e4da",
+  "execution_base_commit": "f8c32b410e6a4a7593cbc279ce53eb12eb54f5ba",
+  "implementation_commit": "32bd131a28f46452bc8cf6e399ca61a228b0459a",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [],
-    "classification": [],
+    "baseline": [
+      " M packages/agentplane/src/commands/acr/generate-extensions.ts",
+      " M packages/agentplane/src/commands/acr/generate.ts",
+      " M packages/agentplane/src/commands/acr/summary.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-quality-artifacts.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-review-artifacts.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-work-order.ts",
+      " M packages/agentplane/src/commands/shared/side-effect-authority.ts",
+      " M packages/agentplane/src/commands/shared/task-verification-input-types.ts",
+      " M packages/agentplane/src/commands/shared/task-verification-input.test.ts",
+      " M packages/agentplane/src/commands/shared/task-verification-input.ts",
+      " M packages/agentplane/src/commands/shared/task-verification-record-parser.ts",
+      " M packages/agentplane/src/commands/shared/task-verification-records.ts",
+      " M packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts",
+      " M packages/agentplane/src/commands/task/blueprint-summary.ts",
+      " M packages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts",
+      " M packages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts",
+      " M packages/agentplane/src/commands/task/finish-blueprint-evidence.ts",
+      " M packages/agentplane/src/commands/task/kernel-work-order.ts",
+      " M packages/agentplane/src/commands/task/quality-review-gate.ts",
+      " M packages/agentplane/src/commands/task/verify-record-execute.ts",
+      " M packages/agentplane/src/commands/task/verify-record-references.ts",
+      " M packages/agentplane/src/commands/task/verify-show.command.ts",
+      " M packages/agentplane/src/runner/run-repository-contract.ts",
+      " M packages/agentplane/src/runner/state-fingerprint.ts",
+      " M packages/agentplane/src/runner/usecases/agent-work-order-build.ts",
+      " M packages/agentplane/src/runner/usecases/task-run.ts",
+      " M packages/core/src/runner/state-fingerprint.test.ts",
+      " M packages/core/src/runner/state-fingerprint.ts",
+      "?? packages/agentplane/src/commands/evaluator/evaluator-work-order.test.ts",
+      "?? packages/agentplane/src/commands/shared/native-task-identity.ts"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/acr/generate-extensions.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/acr/generate.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/acr/summary.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/evaluator/evaluator-quality-artifacts.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/evaluator/evaluator-review-artifacts.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/evaluator/evaluator-work-order.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/side-effect-authority.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/task-verification-input-types.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/task-verification-input.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/task-verification-input.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/task-verification-record-parser.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/task-verification-records.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/blueprint-summary.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/finish-blueprint-evidence.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-work-order.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/quality-review-gate.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/verify-record-execute.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/verify-record-references.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/verify-show.command.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/run-repository-contract.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/state-fingerprint.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/usecases/agent-work-order-build.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/usecases/task-run.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/src/runner/state-fingerprint.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/src/runner/state-fingerprint.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/evaluator/evaluator-work-order.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/shared/native-task-identity.ts"
+      }
+    ],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M packages/agentplane/src/commands/acr/generate-extensions.ts",
+      " M packages/agentplane/src/commands/acr/generate.ts",
+      " M packages/agentplane/src/commands/acr/summary.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-quality-artifacts.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-review-artifacts.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-work-order.ts",
+      " M packages/agentplane/src/commands/shared/side-effect-authority.ts",
+      " M packages/agentplane/src/commands/shared/task-verification-input-types.ts",
+      " M packages/agentplane/src/commands/shared/task-verification-input.test.ts",
+      " M packages/agentplane/src/commands/shared/task-verification-input.ts",
+      " M packages/agentplane/src/commands/shared/task-verification-record-parser.ts",
+      " M packages/agentplane/src/commands/shared/task-verification-records.ts",
+      " M packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts",
+      " M packages/agentplane/src/commands/task/blueprint-summary.ts",
+      " M packages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts",
+      " M packages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts",
+      " M packages/agentplane/src/commands/task/finish-blueprint-evidence.ts",
+      " M packages/agentplane/src/commands/task/kernel-work-order.ts",
+      " M packages/agentplane/src/commands/task/quality-review-gate.ts",
+      " M packages/agentplane/src/commands/task/verify-record-execute.ts",
+      " M packages/agentplane/src/commands/task/verify-record-references.ts",
+      " M packages/agentplane/src/commands/task/verify-show.command.ts",
+      " M packages/agentplane/src/runner/run-repository-contract.ts",
+      " M packages/agentplane/src/runner/state-fingerprint.ts",
+      " M packages/agentplane/src/runner/usecases/agent-work-order-build.ts",
+      " M packages/agentplane/src/runner/usecases/task-run.ts",
+      " M packages/core/src/runner/state-fingerprint.test.ts",
+      " M packages/core/src/runner/state-fingerprint.ts",
+      "?? packages/agentplane/src/commands/evaluator/evaluator-work-order.test.ts",
+      "?? packages/agentplane/src/commands/shared/native-task-identity.ts"
+    ],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
