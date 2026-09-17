@@ -1,5 +1,6 @@
 import { execFile } from "node:child_process";
-import { mkdir, unlink, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, symlink, unlink, writeFile } from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 
@@ -405,6 +406,32 @@ describe("task verification input identity", () => {
     expect(verificationInputInvalidationReason({ recorded: before, current: after })).toBe(
       "verification_evidence_changed",
     );
+  });
+
+  it("does not read evidence through an intermediate symlink outside the repository", async () => {
+    const { root, implementationSha } = await makeTaskBranch();
+    const outsideRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-evidence-outside-"));
+    try {
+      await writeFile(path.join(outsideRoot, "runtime.json"), '{"secret":"outside"}\n', "utf8");
+      const linkPath = path.join(root, ".agentplane", "cache", "external");
+      await mkdir(path.dirname(linkPath), { recursive: true });
+      await symlink(outsideRoot, linkPath, process.platform === "win32" ? "junction" : "dir");
+      const evidencePath = ".agentplane/cache/external/runtime.json";
+      const details = [
+        "Command: bun test",
+        "Result: pass",
+        `Evidence: ${evidencePath}#summary`,
+        "Scope: verification input identity",
+      ].join("\n");
+
+      const value = await identity(root, implementationSha, "Run tests.", details);
+
+      expect(value.evidence.references).toEqual([
+        expect.objectContaining({ path: evidencePath, fragment: "summary", source: "missing" }),
+      ]);
+    } finally {
+      await rm(outsideRoot, { recursive: true, force: true });
+    }
   });
 
   it("preserves evidence identity when the same committed artifact is read from Git", async () => {
