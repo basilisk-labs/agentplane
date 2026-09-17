@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 58
+revision: 59
 origin:
   system: "manual"
 depends_on: []
@@ -66,8 +66,6 @@ quality_review:
     - "Residual risk: The PR head must be published and all required hosted checks must pass on the exact new head before integration."
 token_usage:
   agent_runs: 24
-  cached_input_observed_agent_runs: 0
-  cached_input_tokens: null
   input_tokens: null
   journal_digest: "sha256:737933f1bcd3664f00330a3c82ed3c292473bdb3a359732f49cb88874d117805"
   observed_agent_runs: 0
@@ -1469,6 +1467,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The seven uncommitted AgentPlane source changes are intentional scoped rework for the hosted Knip failure and should be retained for supervisor commit and fresh verification."
 events:
   -
     type: "status"
@@ -1633,9 +1634,14 @@ events:
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "e286e35e30828a3a578bc5a90b7c21fb8973a3ef"
+  -
+    type: "comment"
+    at: "2026-09-17T16:52:16.775Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The seven uncommitted AgentPlane source changes are intentional scoped rework for the hosted Knip failure and should be retained for supervisor commit and fresh verification."
 doc_version: 3
-doc_updated_at: "2026-09-17T16:39:16.600Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-17T16:52:16.830Z"
+doc_updated_by: "SUPERVISOR"
 description: "Implement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task."
 sections:
   Summary: |-
@@ -3115,7 +3121,7 @@ extensions:
       revision: 8
       schema_version: 1
       task_id: "202609162254-YE48GC"
-    event_cursor: 47
+    event_cursor: 48
     final_validation:
       evidence:
         -
@@ -9084,9 +9090,9 @@ extensions:
         revision: 7
         schema_version: 1
         task_id: "202609162254-YE48GC"
-    revision: 58
+    revision: 59
     schema_version: 1
-    updated_at: "2026-09-17T16:39:16.584Z"
+    updated_at: "2026-09-17T16:52:16.775Z"
     work_items:
       channel-and-owner-map:
         attempt: 1
@@ -10863,6 +10869,30 @@ extensions:
         mutation_id: "compatibility:sha256:cbae6a5248b6e4bf2eb5febb6a8fa6170f826f759aa9e273b6469e5745b2f5fb"
         next_revision: 47
         previous_revision: 46
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+      compatibility:sha256:cbcbae1e2fe0a96ead6f007845135954784a3f41c323fd101803f91d329fdc01:
+        aggregate_digest: "sha256:4a9c427a98cc00eb12c7639277295cc018d05d9f7a46e215fff97b3b32882a26"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T16:52:16.775Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_ab540f85067d66f2203ac5fd"
+          mutation_id: "compatibility:sha256:cbcbae1e2fe0a96ead6f007845135954784a3f41c323fd101803f91d329fdc01"
+          plan_digest: "sha256:e17ec6eda7c7926e5e1379d0e7caaea02c6311d301fca98a8969264e33af9949"
+          plan_revision: 8
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 58
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:cbcbae1e2fe0a96ead6f007845135954784a3f41c323fd101803f91d329fdc01"
+        next_revision: 59
+        previous_revision: 58
         schema_version: 1
         task_id: "202609162254-YE48GC"
       compatibility:sha256:cf928ddf02e3e5d6413d5b5aa5a9fc2e07ef2ca858cfae93f78fd77ad7df6a8a:
