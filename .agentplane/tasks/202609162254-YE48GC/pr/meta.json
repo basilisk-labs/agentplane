@@ -8,10 +8,10 @@
   "pr_number": 5965,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5965",
   "pre_merge_closure": {
-    "basis_commit": "1fcd5d6acf1e3a19c450a3b6f45477a86c6103ac",
+    "basis_commit": "8d2143ca73dbe9fdb6a8de1b18fa8da6aae20142",
     "branch": "task/202609162254-YE48GC/implement-and-qualify-agentplane-0-7-10-blueprin",
     "pr_number": 5965,
-    "recorded_at": "2026-09-17T17:05:39.210Z",
+    "recorded_at": "2026-09-17T19:16:02.842Z",
     "state": "closed_before_merge"
   },
   "provider": {
