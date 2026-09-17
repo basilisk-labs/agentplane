@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 59
+revision: 60
 origin:
   system: "manual"
 depends_on: []
@@ -1470,6 +1470,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The seven uncommitted AgentPlane source changes are intentional scoped rework for the hosted Knip failure and should be retained for supervisor commit and fresh verification."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The seven dirty source changes are intended hosted-static rework and are ready for the operator-directed commit and fresh verification."
 events:
   -
     type: "status"
@@ -1639,8 +1642,13 @@ events:
     at: "2026-09-17T16:52:16.775Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The seven uncommitted AgentPlane source changes are intentional scoped rework for the hosted Knip failure and should be retained for supervisor commit and fresh verification."
+  -
+    type: "comment"
+    at: "2026-09-17T16:53:34.519Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The seven dirty source changes are intended hosted-static rework and are ready for the operator-directed commit and fresh verification."
 doc_version: 3
-doc_updated_at: "2026-09-17T16:52:16.830Z"
+doc_updated_at: "2026-09-17T16:53:34.572Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task."
 sections:
@@ -3121,7 +3129,7 @@ extensions:
       revision: 8
       schema_version: 1
       task_id: "202609162254-YE48GC"
-    event_cursor: 48
+    event_cursor: 49
     final_validation:
       evidence:
         -
@@ -9090,9 +9098,9 @@ extensions:
         revision: 7
         schema_version: 1
         task_id: "202609162254-YE48GC"
-    revision: 59
+    revision: 60
     schema_version: 1
-    updated_at: "2026-09-17T16:52:16.775Z"
+    updated_at: "2026-09-17T16:53:34.519Z"
     work_items:
       channel-and-owner-map:
         attempt: 1
@@ -9933,6 +9941,30 @@ extensions:
         mutation_id: "compatibility:sha256:03fda2198e7889451c3d4d6185f63f3329c49fc9d38ddca97795642c2155e2d8"
         next_revision: 56
         previous_revision: 55
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+      compatibility:sha256:0cbae5bf2138457e4ac9a59326c92b73e779219456a579ee1779546db22c8d0c:
+        aggregate_digest: "sha256:dca920da0a54f87162509ba16e8c09de00ce19b9dd1a94534b6bf713304d2c38"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T16:53:34.519Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_f35cf7c2280151d7d0a8ded0"
+          mutation_id: "compatibility:sha256:0cbae5bf2138457e4ac9a59326c92b73e779219456a579ee1779546db22c8d0c"
+          plan_digest: "sha256:e17ec6eda7c7926e5e1379d0e7caaea02c6311d301fca98a8969264e33af9949"
+          plan_revision: 8
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 59
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:0cbae5bf2138457e4ac9a59326c92b73e779219456a579ee1779546db22c8d0c"
+        next_revision: 60
+        previous_revision: 59
         schema_version: 1
         task_id: "202609162254-YE48GC"
       compatibility:sha256:1120f2f95ac361b5eb7424965608b1b9088e2a4747b2cd77582fabd2c5d63cac:
