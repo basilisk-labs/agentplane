@@ -392,9 +392,12 @@ Implement the approved 0.7.10 scope from BP-01 through BP-31 except external pub
  schemas/task-observation.schema.json               |    4 +-
  schemas/task-readme-frontmatter.schema.json        |   22 +-
  schemas/tasks-export.schema.json                   |   22 +-
+ .../baselines/v0.7-compatibility-candidate.json    |  570 +++++++-
+ scripts/bench/capture-compatibility-candidate.mjs  |   10 +-
  scripts/checks/blueprint-retirement-map.json       |  796 +++++++++++
  scripts/checks/blueprint-retirement-map.test.mjs   |  203 +++
  scripts/checks/check-blueprint-release-gate.mjs    |   57 +-
+ .../check-compatibility-contract-baseline.mjs      |  111 +-
  scripts/checks/no-blueprint-cursor.test.mjs        |   49 +
  scripts/checks/no-blueprint-engine.test.mjs        |  120 ++
  scripts/generate/render-ghcr-image-metadata.mjs    |   19 +-
@@ -408,7 +411,7 @@ Implement the approved 0.7.10 scope from BP-01 through BP-31 except external pub
  .../static/img/social/docs/releases/v0.7.10.png    |  Bin 0 -> 52774 bytes
  website/static/img/social/manifest.json            |   12 +-
  website/static/llms-full.txt                       |   79 +-
- 381 files changed, 7723 insertions(+), 19290 deletions(-)
+ 384 files changed, 8321 insertions(+), 19383 deletions(-)
 ```
 
 </details>
