@@ -4,7 +4,7 @@ title: "Implement and qualify AgentPlane 0.7.10 Blueprint retirement"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -332,9 +332,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "2afa52039e6c50ead89776da98e817a243e7e4da"
-  message: "🚧 YE48GC task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -1296,9 +1294,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 13
+    revision: 14
     schema_version: 1
-    updated_at: "2026-09-17T07:26:28.608Z"
+    updated_at: "2026-09-17T07:40:34.408Z"
     work_items:
       channel-and-owner-map:
         attempt: 1
@@ -1467,14 +1465,74 @@ extensions:
         state: "PLANNED"
         validation_result: null
       recipe-v1-conversion:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "recipe-v1-conversion"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:eb54bdc27a8f8cd30201324bd45551f8e9f2d6951ccf5e53019ef4069977fd00"
+            id: "Recipe V1 conversion rules"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609162254-YE48GC"
+              work_item_id: "recipe-v1-conversion"
+            provenance:
+              - "sha256:2d2e1e7a259d3bcc981de45ab2f50d2f6aef9048829ea12f6f8ade3dce3ff225"
+              - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:93b590185fd53cb6235a3d0a7d031deda20eb6701506d1c5072e78cdca984bdc"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:9733087ebbcdaec6b1e7670bd252d496828c75d086b0bd2282a882f164b984f1"
+            id: "Manual-conversion diagnostics"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609162254-YE48GC"
+              work_item_id: "recipe-v1-conversion"
+            provenance:
+              - "sha256:2d2e1e7a259d3bcc981de45ab2f50d2f6aef9048829ea12f6f8ade3dce3ff225"
+              - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:93b590185fd53cb6235a3d0a7d031deda20eb6701506d1c5072e78cdca984bdc"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:4295f3ee70ce2828abc4a2b365be4674bf09f9d5d0525b4ad0b096a0caf8fbfb"
+            id: "Recipe parity and policy-floor tests"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609162254-YE48GC"
+              work_item_id: "recipe-v1-conversion"
+            provenance:
+              - "sha256:2d2e1e7a259d3bcc981de45ab2f50d2f6aef9048829ea12f6f8ade3dce3ff225"
+              - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:93b590185fd53cb6235a3d0a7d031deda20eb6701506d1c5072e78cdca984bdc"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+              check_id: "recipe-tests"
+              command_identity: "bun run test:project recipes --maxWorkers=1 && bun run test:project agentplane --maxWorkers=1"
+              detail: "Observed by bun run test:project recipes --maxWorkers=1 && bun run test:project agentplane --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-17T07:40:34.394Z"
+              repository_snapshot_digest: "sha256:93b590185fd53cb6235a3d0a7d031deda20eb6701506d1c5072e78cdca984bdc"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       remove-active-blueprint:
         attempt: 0
         claim_id: null
@@ -1530,6 +1588,23 @@ extensions:
         task_id: "202609162254-YE48GC"
         task_revision: 10
         work_item_id: "native-obligations"
+      -
+        at: "2026-09-17T07:40:34.408Z"
+        from: "PLANNED"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:73977094b03a319f9b6a7f1d7f47d6e2754f6ad38c7edecb60d8fc2a90e06e25"
+        entity: "work_item"
+        id: "event_77b766510965a60c0f524650"
+        mutation_id: "external-result:work-order-202609162254-YE48GC-executor-b5679f4de4f3b712e1ab2ae8"
+        plan_digest: "sha256:d9b152a969152dd6cfaecb84aa966a466f3bb52795de73c2e49684358bdd2cfd"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+        task_revision: 13
+        work_item_id: "recipe-v1-conversion"
     leases: []
     mutation_receipts:
       compatibility:sha256:03ad382df371fb10a3fda0b3d74c85baaa1cbfcc47fa5298b2773c99d5104eda:
@@ -1770,6 +1845,30 @@ extensions:
         mutation_id: "external-result:work-order-202609162254-YE48GC-executor-5bdef45ba2f2464245fcfd4d"
         next_revision: 8
         previous_revision: 7
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+      external-result:work-order-202609162254-YE48GC-executor-b5679f4de4f3b712e1ab2ae8:
+        aggregate_digest: "sha256:24a62e8a968d64ec059981cfd724ac7551b0521533b31f64247badc95f08ae30"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T07:40:34.408Z"
+          cause_refs:
+            - "semantic-result:sha256:73977094b03a319f9b6a7f1d7f47d6e2754f6ad38c7edecb60d8fc2a90e06e25"
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_77b766510965a60c0f524650"
+          mutation_id: "external-result:work-order-202609162254-YE48GC-executor-b5679f4de4f3b712e1ab2ae8"
+          plan_digest: "sha256:d9b152a969152dd6cfaecb84aa966a466f3bb52795de73c2e49684358bdd2cfd"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 13
+          to: "COMPLETED"
+          work_item_id: "recipe-v1-conversion"
+        mutation_id: "external-result:work-order-202609162254-YE48GC-executor-b5679f4de4f3b712e1ab2ae8"
+        next_revision: 14
+        previous_revision: 13
         schema_version: 1
         task_id: "202609162254-YE48GC"
       external-result:work-order-202609162254-YE48GC-executor-e6a0a0fcab02ca3cc55e660a:
