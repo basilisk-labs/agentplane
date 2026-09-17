@@ -30,7 +30,7 @@ type LifecycleRole = "ORCHESTRATOR" | "PLANNER" | "CODER" | "EVALUATOR" | "INTEG
 type LifecycleCwd = "base_checkout" | "task_worktree" | "current_checkout";
 type LifecycleSideEffect = "none" | "task_state" | "git_local" | "git_remote";
 
-export type LifecycleStageSpec = {
+type LifecycleStageSpec = {
   kind: LifecycleStageKind;
   evidence?: readonly EvidenceKind[];
   protected?: boolean;

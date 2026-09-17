@@ -31,7 +31,7 @@ import {
 } from "./state-fingerprint-observation.js";
 import type { RunnerContextBundle, RunnerPromptBlock } from "./types.js";
 
-export const RUNNER_STATE_FINGERPRINT_V2_POLICY = {
+const RUNNER_STATE_FINGERPRINT_V2_POLICY = {
   fingerprint_schema_version: 2,
   required_components: [
     "task",

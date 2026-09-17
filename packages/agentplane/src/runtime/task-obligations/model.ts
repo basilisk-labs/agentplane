@@ -39,7 +39,7 @@ export type NativeEvidenceRequirement = {
   description: string;
 };
 
-export type NativeStopSeverity = "stop" | "approval_required" | "warn";
+type NativeStopSeverity = "stop" | "approval_required" | "warn";
 
 export type NativeStopRule = {
   id: string;
