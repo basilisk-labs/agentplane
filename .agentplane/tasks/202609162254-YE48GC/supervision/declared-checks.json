@@ -5,7 +5,7 @@
         "no-engine"
       ],
       "command": "node --test scripts/checks/no-blueprint-engine.test.mjs",
-      "duration_ms": 306,
+      "duration_ms": 492,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
@@ -16,14 +16,14 @@
       },
       "script": null,
       "stderr_tail": "",
-      "stdout_tail": "✔ active Blueprint engine and mutation surfaces are absent (54.817167ms)\n✔ remaining production Blueprint mentions are explicit cold-reader exceptions (32.901458ms)\n✔ generated live schemas expose no Blueprint inputs (2.97025ms)\nℹ tests 3\nℹ suites 0\nℹ pass 3\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 123.252125\n"
+      "stdout_tail": "✔ active Blueprint engine and mutation surfaces are absent (216.421375ms)\n✔ remaining production Blueprint mentions are explicit cold-reader exceptions (32.827041ms)\n✔ generated live schemas expose no Blueprint inputs (6.071917ms)\nℹ tests 3\nℹ suites 0\nℹ pass 3\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 287.09975\n"
     },
     {
       "check_ids": [
         "no-cursor"
       ],
       "command": "node --test scripts/checks/no-blueprint-cursor.test.mjs",
-      "duration_ms": 250,
+      "duration_ms": 286,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
@@ -34,15 +34,15 @@
       },
       "script": null,
       "stderr_tail": "",
-      "stdout_tail": "✔ production code has no active Blueprint cursor, plan, snapshot, or state (46.529792ms)\n✔ runner artifact contract has no retired Blueprint paths (0.139ms)\nℹ tests 2\nℹ suites 0\nℹ pass 2\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 79.127958\n"
+      "stdout_tail": "✔ production code has no active Blueprint cursor, plan, snapshot, or state (48.104417ms)\n✔ runner artifact contract has no retired Blueprint paths (0.147167ms)\nℹ tests 2\nℹ suites 0\nℹ pass 2\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 82.037542\n"
     },
     {
       "check_ids": [
         "schema-assets"
       ],
       "command": "bun run schemas:check && bun run agents:check && bun run docs:bootstrap:check",
-      "duration_ms": 428,
-      "exit_code": 1,
+      "duration_ms": 694,
+      "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
         "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
@@ -51,13 +51,13 @@
         "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
       },
       "script": null,
-      "stderr_tail": "$ bun scripts/generate/sync-schemas.mjs check\n\n$ node scripts/generate/sync-agent-templates.mjs check\nerror: agent templates are out of sync.\nCanonical agents: packages/agentplane/assets/agents\nTarget agents:    .agentplane/agents\nCanonical policy: packages/agentplane/assets/policy\nTarget policy:    .agentplane/policy\nAgents changed: INTAKE.json, PLANNER.json\nRun: bun run agents:sync\nerror: script \"agents:check\" exited with code 1\n",
-      "stdout_tail": "schemas OK\n"
+      "stderr_tail": "$ bun scripts/generate/sync-schemas.mjs check\n\n$ node scripts/generate/sync-agent-templates.mjs check\n\n$ node scripts/checks/check-agent-bootstrap-fresh.mjs\n",
+      "stdout_tail": "schemas OK\n\nagents templates OK\n\n../../../../../../../var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-bootstrap-doc-eCbEdy/agent-bootstrap.generated.mdx 22ms\nok: bootstrap doc, startup command blocks, quickstart/roles, runtime docs, troubleshooting, and release recovery docs are aligned\n"
     }
   ],
   "kind": "direct_task_declared_checks",
-  "reason": "Declared check failed: bun run schemas:check && bun run agents:check && bun run docs:bootstrap:check",
+  "reason": null,
   "schema_version": 1,
-  "status": "failed",
+  "status": "passed",
   "task_id": "202609162254-YE48GC"
 }
