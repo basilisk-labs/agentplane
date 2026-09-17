@@ -4,7 +4,7 @@ title: "Implement and qualify AgentPlane 0.7.10 Blueprint retirement"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -434,9 +434,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "bae683e0858e7580bf32f9fa12b27f8f0bfeffc6"
-  message: "🚧 YE48GC task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -2261,9 +2259,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609162254-YE48GC"
-    revision: 22
+    revision: 23
     schema_version: 1
-    updated_at: "2026-09-17T10:26:38.290Z"
+    updated_at: "2026-09-17T10:40:47.503Z"
     work_items:
       channel-and-owner-map:
         attempt: 1
@@ -2345,14 +2343,89 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       migration-and-cutover:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "migration-and-cutover"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:9c47e30f6f8ee4fa1431df5b30d489deb10688546d9514f385b6617369cc39e1"
+            id: "Read-only migration preview"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609162254-YE48GC"
+              work_item_id: "migration-and-cutover"
+            provenance:
+              - "sha256:6c1a3755acc326d66c4d63346ca38c9bd1ca94883684b1f730495baf8b5fbb95"
+              - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:0310bf7224ad1a6f7b736968da030dd7e9eb7db9fd59981dd4ae6a0a666cd527"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:18ec9db4651c78ea37fd55ae9b8df73e2acf46457ac2670d97c82a45dfb7ce08"
+            id: "Atomic fenced migration with old/new receipt"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609162254-YE48GC"
+              work_item_id: "migration-and-cutover"
+            provenance:
+              - "sha256:6c1a3755acc326d66c4d63346ca38c9bd1ca94883684b1f730495baf8b5fbb95"
+              - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:0310bf7224ad1a6f7b736968da030dd7e9eb7db9fd59981dd4ae6a0a666cd527"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:b263e03a1a5b31473b508bb1a6eaab68d1f4a5c6bc0349500036b8ed101fa337"
+            id: "Offline historical audit decoder"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609162254-YE48GC"
+              work_item_id: "migration-and-cutover"
+            provenance:
+              - "sha256:6c1a3755acc326d66c4d63346ca38c9bd1ca94883684b1f730495baf8b5fbb95"
+              - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:0310bf7224ad1a6f7b736968da030dd7e9eb7db9fd59981dd4ae6a0a666cd527"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:62dde40d187c92df90afcaaf9e412b210e5a265548a1aa62dc22bd88374f475a"
+            id: "Blueprint-free new-task issuance and explicit drain/migrate/quarantine stops"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609162254-YE48GC"
+              work_item_id: "migration-and-cutover"
+            provenance:
+              - "sha256:6c1a3755acc326d66c4d63346ca38c9bd1ca94883684b1f730495baf8b5fbb95"
+              - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:0310bf7224ad1a6f7b736968da030dd7e9eb7db9fd59981dd4ae6a0a666cd527"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609162254-YE48GC/supervision/declared-checks.json"
+              check_id: "migration-tests"
+              command_identity: "bun run test:project agentplane --maxWorkers=1"
+              detail: "Observed by bun run test:project agentplane --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-17T10:40:47.466Z"
+              repository_snapshot_digest: "sha256:0310bf7224ad1a6f7b736968da030dd7e9eb7db9fd59981dd4ae6a0a666cd527"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       native-obligations:
         attempt: 1
         claim_id: null
@@ -2649,6 +2722,23 @@ extensions:
         task_id: "202609162254-YE48GC"
         task_revision: 19
         work_item_id: "verification-identity"
+      -
+        at: "2026-09-17T10:40:47.503Z"
+        from: "PLANNED"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:74d6e13a5fe7dd91172523cac7ef9d8488e759967cfcc17f5db42657dfecfb07"
+        entity: "work_item"
+        id: "event_85f0b721f3a1b7c92d6749cf"
+        mutation_id: "external-result:work-order-202609162254-YE48GC-executor-912a3cca93308f90df3d16a4"
+        plan_digest: "sha256:9b89e63d8759e276dd34c14c12173e3cbe67bf44df885de03762eb29e868052b"
+        plan_revision: 2
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+        task_revision: 22
+        work_item_id: "migration-and-cutover"
     leases: []
     mutation_receipts:
       compatibility:sha256:03ad382df371fb10a3fda0b3d74c85baaa1cbfcc47fa5298b2773c99d5104eda:
@@ -3057,6 +3147,30 @@ extensions:
         mutation_id: "external-result:work-order-202609162254-YE48GC-executor-5bdef45ba2f2464245fcfd4d"
         next_revision: 8
         previous_revision: 7
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+      external-result:work-order-202609162254-YE48GC-executor-912a3cca93308f90df3d16a4:
+        aggregate_digest: "sha256:c61dac060628ac00c887cdfc9989c7bc518ab054c44c4e25d9a6da54d2fe6169"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T10:40:47.503Z"
+          cause_refs:
+            - "semantic-result:sha256:74d6e13a5fe7dd91172523cac7ef9d8488e759967cfcc17f5db42657dfecfb07"
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_85f0b721f3a1b7c92d6749cf"
+          mutation_id: "external-result:work-order-202609162254-YE48GC-executor-912a3cca93308f90df3d16a4"
+          plan_digest: "sha256:9b89e63d8759e276dd34c14c12173e3cbe67bf44df885de03762eb29e868052b"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 22
+          to: "COMPLETED"
+          work_item_id: "migration-and-cutover"
+        mutation_id: "external-result:work-order-202609162254-YE48GC-executor-912a3cca93308f90df3d16a4"
+        next_revision: 23
+        previous_revision: 22
         schema_version: 1
         task_id: "202609162254-YE48GC"
       external-result:work-order-202609162254-YE48GC-executor-941a121693a828bac7a9896e:
