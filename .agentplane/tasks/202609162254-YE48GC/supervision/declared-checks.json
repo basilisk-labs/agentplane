@@ -2,11 +2,47 @@
   "checks": [
     {
       "check_ids": [
-        "migration-tests"
+        "no-engine"
       ],
-      "command": "bun run test:project agentplane --maxWorkers=1",
-      "duration_ms": 847155,
+      "command": "node --test scripts/checks/no-blueprint-engine.test.mjs",
+      "duration_ms": 306,
       "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
+        "executable_digest": "sha256:ee6fb0e015284d83a91e8ec5213f43a157f8a392b58555301682892ba928c04a",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "✔ active Blueprint engine and mutation surfaces are absent (54.817167ms)\n✔ remaining production Blueprint mentions are explicit cold-reader exceptions (32.901458ms)\n✔ generated live schemas expose no Blueprint inputs (2.97025ms)\nℹ tests 3\nℹ suites 0\nℹ pass 3\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 123.252125\n"
+    },
+    {
+      "check_ids": [
+        "no-cursor"
+      ],
+      "command": "node --test scripts/checks/no-blueprint-cursor.test.mjs",
+      "duration_ms": 250,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
+        "executable_digest": "sha256:ee6fb0e015284d83a91e8ec5213f43a157f8a392b58555301682892ba928c04a",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "✔ production code has no active Blueprint cursor, plan, snapshot, or state (46.529792ms)\n✔ runner artifact contract has no retired Blueprint paths (0.139ms)\nℹ tests 2\nℹ suites 0\nℹ pass 2\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 79.127958\n"
+    },
+    {
+      "check_ids": [
+        "schema-assets"
+      ],
+      "command": "bun run schemas:check && bun run agents:check && bun run docs:bootstrap:check",
+      "duration_ms": 428,
+      "exit_code": 1,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
         "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
@@ -14,14 +50,14 @@
         "status": "resolved",
         "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
       },
-      "script": "test:project",
-      "stderr_tail": "sk README files and commit them before continuing)\nDetails: Affected DONE tasks: 1\n  - Examples: 202602111800-ABC123\n- [INFO] State: local plan approval requires a host-originated user decision\nLikely cause: no trusted signed-receipt issuer is configured\nNext action: ap task advance <task-id> --agent-json (present the emitted host_user_decision request in Codex; use task plan approve --by USER only as explicit manual compatibility)\nDetails: Reason code: host_user_decision_required\n  - AgentPlane will not emit an unavailable signed_user_receipt transport.\n  - A managed runner cannot synthesize the user decision and stops at the plan boundary.\n- [INFO] Project blueprint compatibility: compatible; trusted=0\n- [WARN] DONE task is missing implementation commit hash: 202602111800-ABC123 (finish with --commit <hash>).\n{\"ts\":\"2026-09-17T10:39:27.540Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-17T10:39:27.551Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n{\"ts\":\"2026-09-17T10:39:27.555Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-cli-test-uStg2J/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-cli-test-uStg2J/.agentplane/workflows/last-known-good.md\"}}\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=full-doc-updated section=Summary\n{\"ts\":\"2026-09-17T10:39:53.167Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-uimj77/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-uimj77/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-17T10:39:53.174Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-NYxFmA/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-NYxFmA/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-17T10:39:53.178Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-NYxFmA/.agentplane/WORKFLOW.md\",\"from\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-NYxFmA/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-17T10:39:53.182Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-P8r3kK/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-P8r3kK/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-17T10:39:53.183Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_failed\",\"code\":\"WF_UNSUPPORTED_VERSION\",\"details\":{\"reason\":\"Unsupported WORKFLOW version 3; supported versions: 1, 2.\"}}\n{\"ts\":\"2026-09-17T10:40:04.908Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-17T10:40:04.921Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":1}}\n{\"ts\":\"2026-09-17T10:40:04.921Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-17T10:40:04.923Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":2}}\n{\"ts\":\"2026-09-17T10:40:04.923Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-17T10:40:04.925Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n",
-      "stdout_tail": "text_bytes=1699 elapsed_ms=2\nUpgrade source: explicit upgrade bundle\nUpgrade version: v0.7.10-beta.1\nUpgrade mode: plan\nUpgrade plan written: .agentplane/.upgrade/agent/2026-09-17T10-39-44-347Z\nUpgrade source: explicit upgrade bundle\nUpgrade version: v0.7.10-beta.1\nUpgrade mode: plan\nUpgrade plan: no managed changes detected\ncontext wiki lint: ok (5 page(s))\n✅ commented T-1\n/repo/.agentplane/tasks/T-1/README.md\n/repo/.agentplane/tasks/T-1/README.md\n/repo/.agentplane/tasks/T-1/README.md\n/repo/.agentplane/tasks/T-1/README.md\n✅ blocked T-1 (commit=new-hash)\n/repo/.agentplane/tasks/T-1/README.md\n✅ status T-1 (next=DOING)\n✅ status T-1 (next=DOING)\n✅ updated T-1\n✅ updated T-1\nevidence bundle: .agentplane/tasks/202605031625-886KZ6/evidence/manifest.json\nmanifest_digest: sha256:e13fedbe008fcaceedcf10de375842b76003faf83db607159984f3bcfb6957bf\nfiles: 3\nevidence verify .agentplane/tasks/202605031625-886KZ6/evidence/manifest.json: ok (3 files)\nevidence bundle: .agentplane/tasks/202605031625-886KZ6/evidence/manifest.json\nmanifest_digest: sha256:e13fedbe008fcaceedcf10de375842b76003faf83db607159984f3bcfb6957bf\nfiles: 3\nevidence bundle: .custom-agentplane/tasks/202605031625-886KZ6/evidence/manifest.json\nmanifest_digest: sha256:b7ad4142848cf6fe66f936134462bbf441494be76c1d850ed0f8d5abbad558c1\nfiles: 1\nevidence verify .custom-agentplane/tasks/202605031625-886KZ6/evidence/manifest.json: ok (1 files)\ncontext wiki new: context/wiki/modules/meridian-relay.md\ncontext wiki new: context/wiki/decisions/meridian-relay-pull-sync.md\ncontext wiki new: context/wiki/modules/meridian-relay.md\ncontext wiki index: updated 1 index page(s)\n- context/wiki/modules/index.md\ncontext wiki lint: ok (2 page(s))\ncontext wiki new: context/wiki/modules/meridian-relay.md\ncontext wiki index: updated 2 index page(s)\n- context/wiki/index.md\n- context/wiki/modules/index.md\ncontext wiki lint: ok (3 page(s))\ncontext wiki index: updated 0 index page(s)\nℹ️ reindex prepared at /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-context-raw-deletion-gceLkT/.agentplane/cache.sqlite\nℹ️ reindex_receipt strategy=full-rebuild reason=reset-requested added=3 changed=0 removed=0 unchanged=0\nℹ️ rows=5 files=3\nℹ️ projection_metrics source_bytes=227 search_text_bytes=307 preview_text_bytes=307 elapsed_ms=1\nℹ️ reindex prepared at /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-context-raw-deletion-gceLkT/.agentplane/cache.sqlite\nℹ️ reindex_receipt strategy=full-rebuild reason=reset-requested added=2 changed=0 removed=0 unchanged=0\nℹ️ rows=3 files=2\nℹ️ projection_metrics source_bytes=204 search_text_bytes=261 preview_text_bytes=261 elapsed_ms=0\nℹ️ reindex prepared at /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-context-fts5-ucykVw/.agentplane/cache.sqlite\nℹ️ reindex_receipt strategy=full-rebuild reason=missing-index added=3 changed=0 removed=0 unchanged=0\nℹ️ rows=6 files=3\nℹ️ projection_metrics source_bytes=54 search_text_bytes=108 preview_text_bytes=108 elapsed_ms=1\ncontext verify-task 202605191451-CTXGLO: ok (CURATOR / DOING)\ncontext wiki new: context/wiki/decisions/context-claims.md\ncontext wiki new: context/wiki/modules/payment-api.md\ncontext wiki new: context/wiki/workflows/context-writer.md\ncontext wiki lint: ok (1 page(s))\n{\n  \"summary\": {\n    \"tasks\": 1,\n    \"observations\": 0,\n    \"open\": 0,\n    \"invalid\": 1,\n    \"blocking\": 0,\n    \"byAction\": {}\n  },\n  \"tasks\": [\n    {\n      \"task_id\": \"202605191736-EQBZ4M\",\n      \"title\": \"Observation task\",\n      \"path\": \".agentplane/tasks/202605191736-EQBZ4M/observations.jsonl\",\n      \"observations\": [],\n      \"errors\": [\n        {\n          \"line\": 1,\n          \"message\": \"Expected property name or '}' in JSON at position 1 (line 1 column 2)\",\n          \"raw\": \"{not-json}\"\n        }\n      ],\n      \"blocking\": []\n    }\n  ]\n}\n\n Test Files  609 passed (609)\n      Tests  5216 passed | 1 skipped (5217)\n   Start at  13:26:39\n   Duration  846.66s (transform 5.52s, setup 0ms, import 77.72s, tests 733.87s, environment 22ms)\n\n"
+      "script": null,
+      "stderr_tail": "$ bun scripts/generate/sync-schemas.mjs check\n\n$ node scripts/generate/sync-agent-templates.mjs check\nerror: agent templates are out of sync.\nCanonical agents: packages/agentplane/assets/agents\nTarget agents:    .agentplane/agents\nCanonical policy: packages/agentplane/assets/policy\nTarget policy:    .agentplane/policy\nAgents changed: INTAKE.json, PLANNER.json\nRun: bun run agents:sync\nerror: script \"agents:check\" exited with code 1\n",
+      "stdout_tail": "schemas OK\n"
     }
   ],
   "kind": "direct_task_declared_checks",
-  "reason": null,
+  "reason": "Declared check failed: bun run schemas:check && bun run agents:check && bun run docs:bootstrap:check",
   "schema_version": 1,
-  "status": "passed",
+  "status": "failed",
   "task_id": "202609162254-YE48GC"
 }
