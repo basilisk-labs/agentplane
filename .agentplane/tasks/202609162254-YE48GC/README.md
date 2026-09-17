@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 70
+revision: 72
 origin:
   system: "manual"
 depends_on: []
@@ -1423,7 +1423,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "6718b5111fb5e8a4f19f0d02f3bdbb834d069c08"
+  hash: "a2d2413bfa0455d3d67518f200e8293ae6b8cd10"
   message: "🚧 YE48GC task: apply external agent result"
 comments:
   -
@@ -1525,6 +1525,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 6718b5111fb5. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: a2d2413bfa04. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -1734,8 +1737,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-17T19:05:03.526Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: a2d2413bfa04. CLI accepted one state-bound external-agent semantic result."
+    commit: "a2d2413bfa0455d3d67518f200e8293ae6b8cd10"
 doc_version: 3
-doc_updated_at: "2026-09-17T18:51:24.597Z"
+doc_updated_at: "2026-09-17T19:05:03.753Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task."
 sections:
@@ -3679,7 +3690,7 @@ extensions:
       revision: 8
       schema_version: 1
       task_id: "202609162254-YE48GC"
-    event_cursor: 59
+    event_cursor: 61
     final_validation: null
     id: "202609162254-YE48GC"
     intent:
@@ -9544,9 +9555,9 @@ extensions:
         revision: 7
         schema_version: 1
         task_id: "202609162254-YE48GC"
-    revision: 70
+    revision: 72
     schema_version: 1
-    updated_at: "2026-09-17T18:48:35.376Z"
+    updated_at: "2026-09-17T19:05:03.596Z"
     work_items:
       channel-and-owner-map:
         attempt: 1
@@ -11061,6 +11072,30 @@ extensions:
         previous_revision: 11
         schema_version: 1
         task_id: "202609162254-YE48GC"
+      compatibility:sha256:7b94d5b36c9983c56fc82b3036b15449fd8f3081d7dd02aba26f57b20cdd4e48:
+        aggregate_digest: "sha256:39b8fbab758cdecce2fe99635f3ce58e017e19192d4d3004c13bf8b1362fb501"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T19:05:03.526Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_3b05a0f5dc760839a9a72b9c"
+          mutation_id: "compatibility:sha256:7b94d5b36c9983c56fc82b3036b15449fd8f3081d7dd02aba26f57b20cdd4e48"
+          plan_digest: "sha256:e17ec6eda7c7926e5e1379d0e7caaea02c6311d301fca98a8969264e33af9949"
+          plan_revision: 8
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 70
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:7b94d5b36c9983c56fc82b3036b15449fd8f3081d7dd02aba26f57b20cdd4e48"
+        next_revision: 71
+        previous_revision: 70
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
       compatibility:sha256:7ec59c1c92661603aa94cdf77790d18b37310c9b6901416dcfb54688765ec801:
         aggregate_digest: "sha256:186e47eb9666c1354f8e03a916270710983b8918ef3b5cc4eddfa1cab88e1cf6"
         event:
@@ -11227,6 +11262,30 @@ extensions:
         mutation_id: "compatibility:sha256:951e16eed6faf4398a65f2fbb816b3b38b1d60aa65dfa0fbdf94b8b6a897c08b"
         next_revision: 49
         previous_revision: 48
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+      compatibility:sha256:96e0863ca394dde43bc4a6c8a4d0242f87e14010c5dbe022e7ebca392d91c1c4:
+        aggregate_digest: "sha256:a31ffc7bed3d03fa7988386e561b5e3696061ffa3cc99528094e4e669642f6fc"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T19:05:03.596Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_e17ef793c60121ea6543daa5"
+          mutation_id: "compatibility:sha256:96e0863ca394dde43bc4a6c8a4d0242f87e14010c5dbe022e7ebca392d91c1c4"
+          plan_digest: "sha256:e17ec6eda7c7926e5e1379d0e7caaea02c6311d301fca98a8969264e33af9949"
+          plan_revision: 8
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 71
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:96e0863ca394dde43bc4a6c8a4d0242f87e14010c5dbe022e7ebca392d91c1c4"
+        next_revision: 72
+        previous_revision: 71
         schema_version: 1
         task_id: "202609162254-YE48GC"
       compatibility:sha256:98e87bf31af29efefe5582198ffcd03238c4b7e3f289805b2bb49d2f2deed261:
@@ -11954,7 +12013,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "6718b5111fb5e8a4f19f0d02f3bdbb834d069c08"
+    hash: "a2d2413bfa0455d3d67518f200e8293ae6b8cd10"
   task_execution_context:
     base_ref: "main"
     base_sha: "19ff39fd292c30f0958131c35200a6268b7a285d"
