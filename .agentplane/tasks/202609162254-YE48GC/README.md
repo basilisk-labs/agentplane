@@ -1,10 +1,10 @@
 ---
 id: "202609162254-YE48GC"
 title: "Implement and qualify AgentPlane 0.7.10 Blueprint retirement"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on: []
@@ -32,7 +32,7 @@ plan_approval:
   note: "host_user_decision=sha256:d45ce5060f5fae001ac6bfd1c0d38ba3980252524ae842840b74c01db55a53d8"
 verification:
   state: "pending"
-  updated_at: "2026-09-17T11:34:42.422Z"
+  updated_at: "2026-09-17T11:55:31.908Z"
   updated_by: "USER"
   note: "Invalidated by USER-approved execution scope extension."
   attempts: 0
@@ -81,8 +81,10 @@ execution_contract:
       - "packages/agentplane"
       - "packages/agentplane/src/commands/acr"
       - "packages/core"
+      - "packages/core/schemas"
       - "packages/core/src"
       - "packages/recipes"
+      - "packages/spec/schemas"
       - "packages/testkit/src"
       - "schemas"
       - "scripts"
@@ -96,6 +98,7 @@ execution_contract:
       - "Publication remains outside this implementation task and will require its own release authority and exact-SHA evidence."
       - "The change removes a public execution subsystem and changes current wire identity, migration, CLI, generated assets, documentation, and release metadata."
       - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/commands/acr; repository_effects=source_code,tests"
+      - "USER-approved blocked-result scope extension: roots=packages/core/schemas,packages/spec/schemas; repository_effects=schema,tests"
       - "USER-approved blocked-result scope extension: roots=packages/core/src,packages/testkit/src; repository_effects=schema,source_code,tests"
     repository_effects:
       - "ci"
@@ -118,8 +121,10 @@ execution_contract:
       - "packages/agentplane"
       - "packages/agentplane/src/commands/acr"
       - "packages/core"
+      - "packages/core/schemas"
       - "packages/core/src"
       - "packages/recipes"
+      - "packages/spec/schemas"
       - "packages/testkit/src"
       - "schemas"
       - "scripts"
@@ -243,8 +248,10 @@ execution_contract:
           - "packages/agentplane"
           - "packages/agentplane/src/commands/acr"
           - "packages/core"
+          - "packages/core/schemas"
           - "packages/core/src"
           - "packages/recipes"
+          - "packages/spec/schemas"
           - "packages/testkit/src"
           - "schemas"
           - "scripts"
@@ -277,11 +284,12 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:77a44540968a565ad34cfe44595c9ae4da37b363e285a71bd65fdaaa0ec84d6d"
+      digest: "sha256:60d5f8c00f67930edb4636b5fa356cd7777483107a52a3bf0b62cdd292ec06cb"
       escalation_reasons:
         - "central_component:.github/workflows"
         - "central_component:bun.lock"
         - "central_component:package.json"
+        - "central_component:packages/core/schemas"
         - "central_component:packages/core/src"
         - "central_path:.github/workflows/publish.yml"
         - "central_path:packages/agentplane/src/commands/shared/native-task-identity.ts"
@@ -477,6 +485,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The workspace conflict is an authority mismatch, not an ambiguous user change: schema synchronization generated required Blueprint-free distribution mirrors in two directories outside the issued writable roots. The changes must be retained and the scope extended before this WorkItem can complete. Recommended action: Add packages/core/schemas and packages/spec/schemas to this WorkItem writable roots, preserve the current generated changes, and reissue the EXECUTOR packet. Requested scope: roots=packages/core/schemas,packages/spec/schemas; repository effects=schema,tests; request digest=sha256:2a40b6d10b1a3f60582f25f70b19c3a557d6154cdf7a1b3d3d40b150fa054b45. Agentplane receipt: external-agent-blocker/tr_cd8db4c3dec00a25f62778a0b336afbb/sha256:be459c42496a0bae4741fcddef0256d2289b9d1f40a7e71d45ce86def18e5900/sha256:2a40b6d10b1a3f60582f25f70b19c3a557d6154cdf7a1b3d3d40b150fa054b45."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: packages/core/schemas, packages/spec/schemas; repository effects: schema, tests."
 events:
   -
     type: "status"
@@ -602,6 +613,8 @@ extensions:
     status: "active"
     task_id: "202609162254-YE48GC"
   agentplane.scope_extension_request:
+    applied_at: "2026-09-17T11:55:31.908Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:be459c42496a0bae4741fcddef0256d2289b9d1f40a7e71d45ce86def18e5900"
     kind: "task_scope_extension_request"
     request:
@@ -615,20 +628,20 @@ extensions:
         - "packages/spec/schemas"
     request_digest: "sha256:2a40b6d10b1a3f60582f25f70b19c3a557d6154cdf7a1b3d3d40b150fa054b45"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_cd8db4c3dec00a25f62778a0b336afbb"
     work_item_id: "remove-active-blueprint"
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-17T11:34:42.422Z"
+        approved_at: "2026-09-17T11:55:31.908Z"
         approved_by: "USER"
-        approved_digest: "sha256:7bca7888a0204117a2799fbdc622e9f3a0f56e7819f7b5a6b814ba5cfdbfec22"
+        approved_digest: "sha256:4ec56c073b35030c3840014371f40207d7e07df4d9022dd4cbf552625de6c57a"
         policy_facts:
-          - "state_bound_scope_extension:sha256:7f402dbd397e13ced113379d94e1ab5cf28e303e5f183692e80beb45968d3004"
+          - "state_bound_scope_extension:sha256:2a40b6d10b1a3f60582f25f70b19c3a557d6154cdf7a1b3d3d40b150fa054b45"
         state: "approved"
-      created_at: "2026-09-17T11:34:42.422Z"
-      digest: "sha256:7bca7888a0204117a2799fbdc622e9f3a0f56e7819f7b5a6b814ba5cfdbfec22"
+      created_at: "2026-09-17T11:55:31.908Z"
+      digest: "sha256:4ec56c073b35030c3840014371f40207d7e07df4d9022dd4cbf552625de6c57a"
       proposal:
         assumptions:
           - "Current main at 19ff39fd292c30f0958131c35200a6268b7a285d is the accepted planning baseline."
@@ -1216,13 +1229,23 @@ extensions:
                   kind: "path"
                   mode: "write"
                   resource: "packages/testkit/src"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/core/schemas"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/spec/schemas"
               risk: "high"
               scope_roots:
                 - "docs"
                 - "packages/agentplane/assets"
                 - "packages/agentplane/src"
+                - "packages/core/schemas"
                 - "packages/core/src"
                 - "packages/recipes/src"
+                - "packages/spec/schemas"
                 - "packages/testkit/src"
                 - "schemas"
                 - "scripts/checks"
@@ -1436,10 +1459,10 @@ extensions:
                     required: true
                 evidence_fingerprint: "sha256:3b31cf8635263bdcba661a030258d6f4564d24bb94213b9a4a3b227c83f5939b"
                 schema_version: 1
-      revision: 3
+      revision: 4
       schema_version: 1
       task_id: "202609162254-YE48GC"
-    event_cursor: 21
+    event_cursor: 22
     final_validation: null
     id: "202609162254-YE48GC"
     intent:
@@ -1491,7 +1514,7 @@ extensions:
 
         Implement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task.
       task_id: "202609162254-YE48GC"
-    lifecycle: "BLOCKED"
+    lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history:
       -
@@ -3109,7 +3132,827 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609162254-YE48GC"
-    revision: 28
+      -
+        approval:
+          approved_at: "2026-09-17T11:34:42.422Z"
+          approved_by: "USER"
+          approved_digest: "sha256:7bca7888a0204117a2799fbdc622e9f3a0f56e7819f7b5a6b814ba5cfdbfec22"
+          policy_facts:
+            - "state_bound_scope_extension:sha256:7f402dbd397e13ced113379d94e1ab5cf28e303e5f183692e80beb45968d3004"
+          state: "approved"
+        created_at: "2026-09-17T11:34:42.422Z"
+        digest: "sha256:7bca7888a0204117a2799fbdc622e9f3a0f56e7819f7b5a6b814ba5cfdbfec22"
+        proposal:
+          assumptions:
+            - "Current main at 19ff39fd292c30f0958131c35200a6268b7a285d is the accepted planning baseline."
+            - "The existing Plan, native policy, capability, task-routing, verification, journal, Recipe V1, and task-state owners are retained; no replacement workflow engine is introduced."
+            - "PLANNER and EVALUATOR remain mandatory wherever current policy requires them; Scenario V2 and lifecycle-owner convergence remain outside 0.7.10."
+            - "Publication is performed only after this implementation task is merged and independently qualified under a separate release task and publish authority."
+          planning_baseline:
+            captured_at: "2026-09-16T22:55:54.740Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:518dc1dcc46175c0c4b1160f3cc6f80d277a47f1bfc09656aa14e9d4303b44e6"
+            dirty_paths:
+              - ".agentplane/tasks/202609162254-YE48GC/README.md"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "19ff39fd292c30f0958131c35200a6268b7a285d"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:1"
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bun run ci:local:full"
+                id: "ci-full"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1800000
+              -
+                capability: "task.verify"
+                command: "bun run package:install-smoke"
+                id: "install-smoke"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                command: "bun run test:release:critical"
+                id: "release-critical"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                command: "bun run arch:check"
+                id: "arch-check"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 600000
+              -
+                capability: "task.verify"
+                command: "bun run docs:bootstrap:check && bun run docs:onboarding:check"
+                id: "docs-check"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 600000
+              -
+                capability: "task.verify"
+                command: "bun run bench:agent-efficiency:check"
+                id: "bench-check"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 600000
+              -
+                capability: "task.verify"
+                command: "bun run bench:agent-efficiency:replay:check"
+                id: "bench-replay"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 600000
+              -
+                capability: "task.verify"
+                id: "semantic-review"
+                kind: "semantic"
+                required: true
+              -
+                capability: "task.verify"
+                id: "hosted-ci"
+                kind: "provider"
+                required: true
+            criteria:
+              -
+                check_ids:
+                  - "ci-full"
+                  - "install-smoke"
+                  - "release-critical"
+                  - "arch-check"
+                  - "semantic-review"
+                description: "Blueprint is absent from active execution and model-visible context while current lifecycle, authority, verification, Recipe V1, recovery, and historical audit obligations remain enforced."
+                id: "task-outcome"
+                required: true
+              -
+                check_ids:
+                  - "install-smoke"
+                  - "release-critical"
+                  - "docs-check"
+                  - "bench-check"
+                  - "bench-replay"
+                description: "The exact 0.7.10 artifact is locally qualified and release metadata is ready; publication remains a separate gated action."
+                id: "release-readiness"
+                required: true
+              -
+                check_ids:
+                  - "hosted-ci"
+                description: "Required hosted CI and integration evidence must pass before merge."
+                id: "hosted-integration"
+                required: true
+            evidence_fingerprint: "sha256:2d920f6ffc657ee4c5369ef0a5540a2ccf5917cff43eaec3b3211337d9049fd6"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "channel-tests"
+                    description: "Stable aliases cannot move from a higher published SemVer line to a lower maintenance release."
+                    id: "channel-order"
+                    required: true
+                  -
+                    check_ids:
+                      - "retirement-map"
+                    description: "Every active Blueprint field, writer, and consumer has a native owner, explicit cold-reader exception, or manual-conversion classification."
+                    id: "owner-map"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 300000
+                  optional_sources:
+                    - "packages/agentplane/src/runtime"
+                    - "packages/agentplane/src/commands"
+                  required_sources:
+                    - "scripts/release"
+                    - ".github/workflows"
+                    - "packages/agentplane/src/blueprints"
+                    - "packages/recipes/src/manifest-contracts.ts"
+                  symbol_hints:
+                    - "Blueprint"
+                    - "stable"
+                    - "dist-tag"
+                    - "minor tag"
+                depends_on: []
+                expected_outputs:
+                  - "SemVer-aware release channel policy"
+                  - "Executable Blueprint retirement inventory guard"
+                  - "Native owner and compatibility map"
+                id: "channel-and-owner-map"
+                objective: "Implement SemVer-aware stable-channel promotion and freeze a field-by-field Blueprint retirement owner map covering active consumers, writers, obligations, and exact/manual Recipe mappings."
+                optional: false
+                priority: 100
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "write"
+                    resource: "repository"
+                risk: "high"
+                scope_roots:
+                  - "scripts"
+                  - ".github/workflows"
+                  - "packages/agentplane/src/blueprints"
+                  - "packages/recipes/src"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "node --test scripts/release/*.test.mjs"
+                      id: "channel-tests"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 120000
+                    -
+                      capability: "task.verify"
+                      command: "node --test scripts/checks/blueprint-retirement-map.test.mjs"
+                      id: "retirement-map"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 120000
+                  criteria:
+                    -
+                      check_ids:
+                        - "channel-tests"
+                      description: "SemVer channel decisions are monotonic across release lines."
+                      id: "channel-order"
+                      required: true
+                    -
+                      check_ids:
+                        - "retirement-map"
+                      description: "The Blueprint retirement map is complete and machine-checked."
+                      id: "owner-map"
+                      required: true
+                  evidence_fingerprint: "sha256:811cfd69b61a0c97a874d9dd7d710fa94ec45f605ad42f33d3cb07fb304586b1"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "native-obligation-tests"
+                    description: "Direct/branch, security, approval, review, stop, rollback, and evidence floors remain equal or stronger without Blueprint selection."
+                    id: "native-parity"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 700000
+                  optional_sources:
+                    - "packages/agentplane/src/blueprints"
+                  required_sources:
+                    - "packages/agentplane/src/commands/shared"
+                    - "packages/agentplane/src/commands/task"
+                    - "packages/agentplane/src/runtime"
+                    - "packages/agentplane/src/runner"
+                    - "packages/core/src/tasks/task-centric"
+                  symbol_hints:
+                    - "route decision"
+                    - "policy modules"
+                    - "capability"
+                    - "quality review"
+                    - "verification evidence"
+                depends_on:
+                  - "channel-and-owner-map"
+                expected_outputs:
+                  - "Blueprint-free route and authority decisions"
+                  - "Native lifecycle obligation enforcement"
+                  - "Parity tests for forbidden traces"
+                id: "native-obligations"
+                objective: "Move route floors, policy modules, capability admission, context budgets, protected approval/review, stop/rollback, and evidence minimums to their existing native owners without weakening mandatory stages."
+                optional: false
+                priority: 90
+                required_inputs:
+                  - "Native owner and compatibility map"
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "write"
+                    resource: "repository"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/commands"
+                  - "packages/agentplane/src/runtime"
+                  - "packages/agentplane/src/runner"
+                  - "packages/core/src"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:project agentplane --maxWorkers=1"
+                      id: "native-obligation-tests"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                  criteria:
+                    -
+                      check_ids:
+                        - "native-obligation-tests"
+                      description: "Native obligation parity and negative cases pass."
+                      id: "native-parity"
+                      required: true
+                  evidence_fingerprint: "sha256:81aaf3fc7b555152b32d9ab8063535a8ad83d3a62dbb5025c77af593ab3d5f0c"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "recipe-tests"
+                    description: "Supported V1 recipes produce equivalent guidance, required evidence, assets, and route preferences without granting authority."
+                    id: "recipe-parity"
+                    required: true
+                  -
+                    check_ids:
+                      - "recipe-tests"
+                    description: "Unknown custom nodes or constraints stop with exportable manual-conversion evidence."
+                    id: "lossless-only"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 500000
+                  optional_sources:
+                    - "packages/agentplane/src/commands/blueprint"
+                  required_sources:
+                    - "packages/recipes/src"
+                    - "packages/agentplane/src/commands/recipes"
+                    - "packages/agentplane/src/runner/context"
+                  symbol_hints:
+                    - "preferred_blueprint"
+                    - "context_hint"
+                    - "output_schema"
+                    - "artifact_template"
+                    - "evidence_requirement"
+                    - "check_suggestion"
+                    - "risk_hint"
+                depends_on:
+                  - "native-obligations"
+                expected_outputs:
+                  - "Recipe V1 conversion rules"
+                  - "Manual-conversion diagnostics"
+                  - "Recipe parity and policy-floor tests"
+                id: "recipe-v1-conversion"
+                objective: "Convert supported Recipe V1 context, output, artifact, evidence, check, risk, and preferred Blueprint hints into exact existing Recipe/native surfaces; refuse lossy custom graph conversion."
+                optional: false
+                priority: 80
+                required_inputs:
+                  - "Native owner and compatibility map"
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "write"
+                    resource: "repository"
+                risk: "high"
+                scope_roots:
+                  - "packages/recipes/src"
+                  - "packages/agentplane/src/commands/recipes"
+                  - "packages/agentplane/src/runner/context"
+                  - "packages/agentplane/src/commands/blueprint"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:project recipes --maxWorkers=1 && bun run test:project agentplane --maxWorkers=1"
+                      id: "recipe-tests"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                  criteria:
+                    -
+                      check_ids:
+                        - "recipe-tests"
+                      description: "Exact Recipe V1 mappings retain requiredness and trust."
+                      id: "recipe-parity"
+                      required: true
+                    -
+                      check_ids:
+                        - "recipe-tests"
+                      description: "Lossy conversions are rejected."
+                      id: "lossless-only"
+                      required: true
+                  evidence_fingerprint: "sha256:e7cf3ee20ca293f6b0a45cb11d6ee4068987afd4838f6af8fb5ae5c1f1eeb6d2"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "identity-tests"
+                    description: "Current verification and review evidence is bound to exact task, Plan, policy, implementation, and observed input identity without BlueprintSnapshotRef."
+                    id: "identity-binding"
+                    required: true
+                  -
+                    check_ids:
+                      - "identity-tests"
+                    description: "Older v2-v4 inputs remain readable only under their original semantics."
+                    id: "historical-read"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 800000
+                  optional_sources:
+                    - "packages/agentplane/src/runner"
+                  required_sources:
+                    - "packages/core/src/runner"
+                    - "packages/agentplane/src/commands/shared/task-verification-input-types.ts"
+                    - "packages/agentplane/src/commands/shared/task-verification-record-parser.ts"
+                    - "packages/agentplane/src/commands/task"
+                    - "packages/agentplane/src/commands/evaluator"
+                  symbol_hints:
+                    - "verification input"
+                    - "state fingerprint"
+                    - "BlueprintSnapshotRef"
+                    - "quality identity"
+                    - "ACR"
+                depends_on:
+                  - "native-obligations"
+                expected_outputs:
+                  - "Versioned verification-input v5"
+                  - "Blueprint-free current state fingerprints and WorkOrders"
+                  - "Migrated current consumers with old-format cold readers"
+                id: "verification-identity"
+                objective: "Introduce Blueprint-free verification-input v5 and state/WorkOrder identity, dual-read during cutover, then move freshness, finish, evaluator, quality, status, and ACR consumers to native Plan/policy/capability/check identities."
+                optional: false
+                priority: 80
+                required_inputs:
+                  - "Native lifecycle obligation enforcement"
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "write"
+                    resource: "repository"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/acr"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/commands/acr"
+                  - "packages/agentplane/src/commands/evaluator"
+                  - "packages/agentplane/src/commands/shared"
+                  - "packages/agentplane/src/commands/task"
+                  - "packages/agentplane/src/runner"
+                  - "packages/core/src/runner"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:project agentplane --maxWorkers=1"
+                      id: "identity-tests"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                  criteria:
+                    -
+                      check_ids:
+                        - "identity-tests"
+                      description: "Current identity and freshness consumers reject stale or cross-task evidence."
+                      id: "identity-binding"
+                      required: true
+                    -
+                      check_ids:
+                        - "identity-tests"
+                      description: "Historical versions are decoded without reinterpretation."
+                      id: "historical-read"
+                      required: true
+                  evidence_fingerprint: "sha256:27206832a90725350c687e11e8650f7280aab2b6ca4e4cd4c0c054868e8b875d"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "migration-tests"
+                    description: "Migration holds the common effect/result admission fence, rechecks quiescence, applies atomically, and preserves old bytes plus mapping receipt."
+                    id: "fenced-migration"
+                    required: true
+                  -
+                    check_ids:
+                      - "migration-tests"
+                    description: "Historical evidence can be audited offline while missing bytes are reported and never regenerated."
+                    id: "cold-audit"
+                    required: true
+                  -
+                    check_ids:
+                      - "migration-tests"
+                    description: "New tasks issue Blueprint-free bindings and unknown or unmigrated active records stop explicitly."
+                    id: "explicit-cutover"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 800000
+                  optional_sources:
+                    - "packages/core/src"
+                  required_sources:
+                    - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+                    - "packages/agentplane/src/commands/shared/supervisor-execution-lease.ts"
+                    - "packages/agentplane/src/commands/task"
+                    - "packages/agentplane/src/commands/blueprint"
+                  symbol_hints:
+                    - "migration preview"
+                    - "migration apply"
+                    - "admission fence"
+                    - "historical audit"
+                    - "cutover"
+                depends_on:
+                  - "recipe-v1-conversion"
+                  - "verification-identity"
+                expected_outputs:
+                  - "Read-only migration preview"
+                  - "Atomic fenced migration with old/new receipt"
+                  - "Offline historical audit decoder"
+                  - "Blueprint-free new-task issuance and explicit drain/migrate/quarantine stops"
+                id: "migration-and-cutover"
+                objective: "Add preview/apply retirement migration under the common admission fence, preserve original bytes and receipts, isolate the minimal historical decoder, and activate Blueprint-free issuance with typed old-record stops."
+                optional: false
+                priority: 70
+                required_inputs:
+                  - "Recipe V1 conversion rules"
+                  - "Versioned verification-input v5"
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "exclusive"
+                    resource: "repository"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/commands/shared"
+                  - "packages/agentplane/src/commands/task"
+                  - "packages/agentplane/src/commands/blueprint"
+                  - "packages/agentplane/src/runner"
+                  - "packages/core/src"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:project agentplane --maxWorkers=1"
+                      id: "migration-tests"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                  criteria:
+                    -
+                      check_ids:
+                        - "migration-tests"
+                      description: "Concurrent effect/result admission cannot cross migration."
+                      id: "fenced-migration"
+                      required: true
+                    -
+                      check_ids:
+                        - "migration-tests"
+                      description: "Historical audit remains byte-faithful and offline."
+                      id: "cold-audit"
+                      required: true
+                    -
+                      check_ids:
+                        - "migration-tests"
+                      description: "Cutover is fail-closed for unsupported records."
+                      id: "explicit-cutover"
+                      required: true
+                  evidence_fingerprint: "sha256:9b86e176aee3435327477c087b6455d3f05b6d08e9909e8aea9bcfa352a4c0b5"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "no-engine"
+                      - "no-cursor"
+                      - "schema-assets"
+                    description: "Ordinary, branch, Recipe V1, recovery, and evaluator paths import or write no active Blueprint engine, cursor, snapshot, plan, state, or prompt projection."
+                    id: "zero-active-engine"
+                    required: true
+                  -
+                    check_ids:
+                      - "no-engine"
+                      - "schema-assets"
+                    description: "Remaining Blueprint references are version-labelled documentation or explicit cold-reader exceptions and cannot execute workflows."
+                    id: "cold-only"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 1200000
+                  optional_sources:
+                    - "packages/agentplane/assets"
+                    - "docs"
+                  required_sources:
+                    - "packages/agentplane/src"
+                    - "packages/recipes/src"
+                    - "scripts/generate"
+                    - "scripts/checks"
+                    - "schemas"
+                  symbol_hints:
+                    - "Blueprint"
+                    - "blueprint"
+                    - "snapshot"
+                    - "cursor"
+                    - "resolved graph"
+                depends_on:
+                  - "migration-and-cutover"
+                expected_outputs:
+                  - "Zero active Blueprint artifacts and prompt inputs"
+                  - "No Blueprint mutation CLI or generated live schema"
+                  - "No active engine/cursor imports"
+                  - "Explicit cold-reader allowlist"
+                id: "remove-active-blueprint"
+                objective: "Remove Blueprint from model-visible context, stop current writers, retire mutation CLI and generated live assets, and delete the active registry, extension, graph-plan, and execution-state engine while retaining only the isolated cold decoder."
+                optional: false
+                priority: 60
+                required_inputs:
+                  - "Blueprint-free new-task issuance and explicit drain/migrate/quarantine stops"
+                  - "Offline historical audit decoder"
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "exclusive"
+                    resource: "repository"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/testkit/src"
+                risk: "high"
+                scope_roots:
+                  - "docs"
+                  - "packages/agentplane/assets"
+                  - "packages/agentplane/src"
+                  - "packages/core/src"
+                  - "packages/recipes/src"
+                  - "packages/testkit/src"
+                  - "schemas"
+                  - "scripts/checks"
+                  - "scripts/generate"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "node --test scripts/checks/no-blueprint-engine.test.mjs"
+                      id: "no-engine"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 120000
+                    -
+                      capability: "task.verify"
+                      command: "node --test scripts/checks/no-blueprint-cursor.test.mjs"
+                      id: "no-cursor"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 120000
+                    -
+                      capability: "task.verify"
+                      command: "bun run schemas:check && bun run agents:check && bun run docs:bootstrap:check"
+                      id: "schema-assets"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                  criteria:
+                    -
+                      check_ids:
+                        - "no-engine"
+                        - "no-cursor"
+                        - "schema-assets"
+                      description: "Active engine, cursor, writer, CLI, and prompt surfaces are absent."
+                      id: "zero-active-engine"
+                      required: true
+                    -
+                      check_ids:
+                        - "no-engine"
+                        - "schema-assets"
+                      description: "Only bounded historical decode remains."
+                      id: "cold-only"
+                      required: true
+                  evidence_fingerprint: "sha256:e1f5302117ad8c111f695d47289e1eff96382643614b5b1c8b34307570cdc679"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "install-smoke"
+                      - "release-critical"
+                      - "arch-check"
+                    description: "Packed installed artifact passes direct, branch, context, recovery, Recipe V1, migration, historical audit, release-critical, and architecture checks."
+                    id: "installed-qualification"
+                    required: true
+                  -
+                    check_ids:
+                      - "ci-full"
+                      - "docs-check"
+                    description: "The repository full local CI and documentation checks pass with no unintended tracked or untracked artifacts."
+                    id: "full-regression"
+                    required: true
+                  -
+                    check_ids:
+                      - "bench-check"
+                      - "bench-replay"
+                    description: "Benchmark harness checks and replay pass; the result is ESTABLISHED only with matched paid .9/.10 evidence, otherwise explicitly NOT ESTABLISHED."
+                    id: "m02-honesty"
+                    required: true
+                  -
+                    check_ids:
+                      - "docs-check"
+                      - "semantic-review"
+                    description: "Version and docs describe the exact compatibility, migration, retired-command, cold-reader, lifecycle, and efficiency boundaries for 0.7.10."
+                    id: "release-ready"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 700000
+                  optional_sources:
+                    - "bun.lock"
+                  required_sources:
+                    - "scripts/release"
+                    - "scripts/checks"
+                    - "scripts/bench"
+                    - "docs"
+                    - "package.json"
+                    - "packages/agentplane/package.json"
+                    - ".github/workflows"
+                  symbol_hints:
+                    - "0.7.10"
+                    - "install smoke"
+                    - "release critical"
+                    - "M02"
+                    - "compatibility"
+                depends_on:
+                  - "remove-active-blueprint"
+                expected_outputs:
+                  - "Installed-package and release-critical evidence"
+                  - "Full local regression evidence"
+                  - "M02 ESTABLISHED result or explicit NOT ESTABLISHED disposition"
+                  - "0.7.10 compatibility docs and release-ready metadata"
+                id: "qualification-and-release-readiness"
+                objective: "Qualify direct, branch, context, recovery, Recipe V1, migration, historical audit, and stable-channel behavior through the packed install; record honest M02 status; update compatibility documentation and 0.7.10 release metadata without publishing."
+                optional: false
+                priority: 50
+                required_inputs:
+                  - "Zero active Blueprint artifacts and prompt inputs"
+                  - "No active engine/cursor imports"
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "exclusive"
+                    resource: "repository"
+                risk: "high"
+                scope_roots:
+                  - "scripts/release"
+                  - "scripts/checks"
+                  - "scripts/bench"
+                  - "docs"
+                  - "package.json"
+                  - "packages/agentplane/package.json"
+                  - "bun.lock"
+                  - ".github/workflows"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run package:install-smoke"
+                      id: "install-smoke"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:release:critical"
+                      id: "release-critical"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                    -
+                      capability: "task.verify"
+                      command: "bun run arch:check"
+                      id: "arch-check"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "ci-full"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1800000
+                    -
+                      capability: "task.verify"
+                      command: "bun run docs:bootstrap:check && bun run docs:onboarding:check"
+                      id: "docs-check"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                    -
+                      capability: "task.verify"
+                      command: "bun run bench:agent-efficiency:check"
+                      id: "bench-check"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                    -
+                      capability: "task.verify"
+                      command: "bun run bench:agent-efficiency:replay:check"
+                      id: "bench-replay"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                    -
+                      capability: "task.verify"
+                      id: "semantic-review"
+                      kind: "semantic"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "install-smoke"
+                        - "release-critical"
+                        - "arch-check"
+                      description: "The distributed artifact and critical paths pass."
+                      id: "installed-qualification"
+                      required: true
+                    -
+                      check_ids:
+                        - "ci-full"
+                        - "docs-check"
+                      description: "Full local CI and docs pass."
+                      id: "full-regression"
+                      required: true
+                    -
+                      check_ids:
+                        - "bench-check"
+                        - "bench-replay"
+                      description: "Benchmark support is valid and the verdict matches available evidence."
+                      id: "m02-honesty"
+                      required: true
+                    -
+                      check_ids:
+                        - "docs-check"
+                        - "semantic-review"
+                      description: "0.7.10 metadata and documentation match implemented behavior."
+                      id: "release-ready"
+                      required: true
+                  evidence_fingerprint: "sha256:3b31cf8635263bdcba661a030258d6f4564d24bb94213b9a4a3b227c83f5939b"
+                  schema_version: 1
+        revision: 3
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+    revision: 29
     schema_version: 1
     updated_at: "2026-09-17T11:55:26.413Z"
     work_items:
@@ -3661,6 +4504,30 @@ extensions:
         mutation_id: "compatibility:sha256:12c998af7431cebbd68d03daead6233ee29131e42e24f9d9fe9444aaae19051c"
         next_revision: 15
         previous_revision: 14
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+      compatibility:sha256:164b489b12c63192e2ea75358781e8261fe2a4c62e0685e6241b9bdda8624e35:
+        aggregate_digest: "sha256:8c42bb249f8ccff598bd741a0762aebb574dd48715f8b5e8f74343c1b1cbba8c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T11:55:26.413Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_ca8ccf0c1f334c31590be532"
+          mutation_id: "compatibility:sha256:164b489b12c63192e2ea75358781e8261fe2a4c62e0685e6241b9bdda8624e35"
+          plan_digest: "sha256:7bca7888a0204117a2799fbdc622e9f3a0f56e7819f7b5a6b814ba5cfdbfec22"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 28
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:164b489b12c63192e2ea75358781e8261fe2a4c62e0685e6241b9bdda8624e35"
+        next_revision: 29
+        previous_revision: 28
         schema_version: 1
         task_id: "202609162254-YE48GC"
       compatibility:sha256:2aa1b102ce794c2384ff8259bcc973f6fa304a50845c0f20d48089b36c5f78db:
