@@ -25,6 +25,7 @@ import {
   writeNewStableRegularFileNoFollow,
 } from "../../shared/stable-file.js";
 import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-backend.js";
+import { captureKernelRepositoryBaseline } from "./kernel-repository-coordinator.js";
 
 /** Immutable native exchange artifacts are evidence, not a second Task aggregate. */
 export async function kernelExchangeDirectory(
@@ -234,6 +235,13 @@ export async function issueKernelExchange(
     });
   }
   await writeKernelArtifact(directory, "work-order.json", order);
+  if (order.canonical_binding?.phase === "implementation") {
+    await writeKernelArtifact(
+      directory,
+      "repository-baseline.json",
+      await captureKernelRepositoryBaseline(ctx, order),
+    );
+  }
   const qualityRoot = path.join(
     ctx.resolvedProject.gitRoot,
     ctx.config.paths.workflow_dir,

@@ -185,7 +185,7 @@ async function executeKernelPacket(
   const capture = async () => {
     const current = await runtime.adapter.read(taskId);
     if (current.kind !== "canonical") throw new Error("Canonical run state unavailable");
-    return buildKernelStateFingerprint({
+    return await buildKernelStateFingerprint({
       command,
       record: current.record,
       context: await runtime.native.readContext(taskId),

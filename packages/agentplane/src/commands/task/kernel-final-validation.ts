@@ -7,6 +7,8 @@ import { runDirectTaskVerification } from "./direct-task-verification.js";
 import { kernelExchangeDirectory, writeKernelArtifact } from "./kernel-exchange.js";
 import type { createKernelRuntime } from "./kernel-runtime-context.js";
 import { requireKernelCommit } from "./kernel-runtime-context.js";
+import { readDirectTaskHead } from "./direct-task-finalization.js";
+import { listKernelRepositoryEvidence } from "./kernel-repository-coordinator.js";
 
 type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
 
@@ -39,6 +41,14 @@ export async function runKernelFinalValidation(
         }),
     ),
   ];
+  const repositoryEvidence = await listKernelRepositoryEvidence(command, record);
+  const evaluatorTarget = repositoryEvidence.at(-1)?.implementation_commit ?? null;
+  if (
+    evaluatorTarget &&
+    (await readDirectTaskHead(command.resolvedProject.gitRoot)) !== evaluatorTarget
+  ) {
+    throw new Error("Canonical final validation commit identity changed");
+  }
   // Retain only a digest of the check environment, never its values. No check cache spans invocations.
   const environmentDigest = k.kernelDigest(verificationChildEnv());
   const binding = {
@@ -48,6 +58,8 @@ export async function runKernelFinalValidation(
     authority_digest: authority.digest,
     commands,
     environment_digest: environmentDigest,
+    repository_evidence: repositoryEvidence,
+    evaluator_target: evaluatorTarget,
     work_items: Object.fromEntries(
       Object.entries(record.aggregate.work_items).map(([id, item]) => [
         id,
@@ -76,6 +88,8 @@ export async function runKernelFinalValidation(
     current.kind !== "canonical" ||
     current.record.digest !== record.digest ||
     observed.fingerprint !== binding.repository_fingerprint ||
+    (evaluatorTarget !== null &&
+      (await readDirectTaskHead(command.resolvedProject.gitRoot)) !== evaluatorTarget) ||
     k.kernelDigest(verificationChildEnv()) !== environmentDigest
   )
     throw new Error("Canonical final validation inputs changed during checks");

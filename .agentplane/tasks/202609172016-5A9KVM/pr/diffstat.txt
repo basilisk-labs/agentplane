@@ -1,0 +1,12 @@
+ .../src/commands/task/kernel-advance.test.ts       | 245 ++++++++++++
+ .../agentplane/src/commands/task/kernel-advance.ts |  82 +++-
+ .../src/commands/task/kernel-effect-coordinator.ts | 193 ++++++++++
+ .../src/commands/task/kernel-exchange.ts           |   8 +
+ .../src/commands/task/kernel-final-validation.ts   |  14 +
+ .../src/commands/task/kernel-inspection.ts         |  83 +++-
+ .../task/kernel-repository-coordinator.test.ts     | 251 ++++++++++++
+ .../commands/task/kernel-repository-coordinator.ts | 425 +++++++++++++++++++++
+ .../src/commands/task/kernel-run.test.ts           | 140 +++++++
+ .../agentplane/src/commands/task/kernel-run.ts     |   2 +-
+ .../src/commands/task/kernel-work-order.ts         |  50 ++-
+ 11 files changed, 1472 insertions(+), 21 deletions(-)

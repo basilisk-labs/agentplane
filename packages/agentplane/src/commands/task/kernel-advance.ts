@@ -17,13 +17,20 @@ import type { KernelWorkBinding } from "../../runner/usecases/kernel-task-lifecy
 import { kernelApprovalReference } from "../../runner/usecases/kernel-authority.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { createKernelRuntime, requireKernelCommit } from "./kernel-runtime-context.js";
-import { buildKernelAgentWorkOrder } from "./kernel-work-order.js";
+import { buildKernelAgentWorkOrder, resumeKernelWorkOrder } from "./kernel-work-order.js";
 import {
   issueKernelExchange,
   readKernelOrderResult,
   writeKernelArtifact,
 } from "./kernel-exchange.js";
 import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
+import {
+  coordinateKernelEffect,
+  emptyKernelEffectPortResolver,
+  type KernelEffectPortResolver,
+} from "./kernel-effect-coordinator.js";
+import { commitCanonicalImplementation } from "./kernel-repository-coordinator.js";
+import { readDirectTaskHead } from "./direct-task-finalization.js";
 
 type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
 
@@ -84,9 +91,17 @@ async function acceptKernelSemanticResult(
       reason: `semantic_${semantic.status}`,
       summary: semantic.summary,
     };
+  if (
+    workOrder.canonical_binding?.phase !== "implementation" &&
+    workOrder.state_fingerprint.git_head !== null &&
+    (await readDirectTaskHead(command.resolvedProject.gitRoot)) !==
+      workOrder.state_fingerprint.git_head
+  ) {
+    throw new Error("Canonical semantic result changed Git history");
+  }
   const binding = workOrder.canonical_binding!;
   if (binding.phase === "inspection")
-    return (await acceptKernelInspection(command, runtime, directory, semantic)) ?? null;
+    return (await acceptKernelInspection(command, runtime, directory, semantic, workOrder)) ?? null;
   const mutationId = `result:${workOrder.work_order_id}`;
   if (saved) await writeKernelArtifact(directory, "received-result.json", semantic);
   if (binding.phase === "planning") {
@@ -116,6 +131,8 @@ async function acceptKernelSemanticResult(
     if (semantic.canonical_plan) throw new Error("Implementation cannot replace the approved plan");
     if (!semantic.canonical_outputs) throw new Error("Canonical outputs are required");
     if (!saved) {
+      let changedPaths: string[] = [];
+      let continueAuthority = false;
       const read = await runtime.adapter.read(taskId);
       if (read.kind !== "canonical") throw new Error("Canonical Task unavailable");
       const aggregate = read.record.aggregate;
@@ -158,10 +175,21 @@ async function acceptKernelSemanticResult(
           )
         )
           throw new Error("Canonical implementation changed paths outside its WorkItem scope");
+        changedPaths = [...continuation.changed_paths];
         await writeKernelArtifact(directory, "received-result.json", semantic);
-        requireKernelCommit(await runtime.authority.continue(taskId));
+        continueAuthority = true;
       }
       await writeKernelArtifact(directory, "received-result.json", semantic);
+      const evidence = await commitCanonicalImplementation({
+        command,
+        directory,
+        work_order: workOrder,
+        changed_paths: changedPaths,
+      });
+      if (evidence) {
+        await writeKernelArtifact(directory, "repository-evidence.json", evidence);
+      }
+      if (continueAuthority) requireKernelCommit(await runtime.authority.continue(taskId));
     }
     const context = await runtime.native.readContext(taskId);
     const input =
@@ -208,6 +236,7 @@ export async function advanceCanonicalTask(opts: {
   task_id: string;
   result_path?: string;
   transport: "host" | "managed";
+  effect_port_resolver?: KernelEffectPortResolver;
 }) {
   const runtime = await createKernelRuntime({
     command: opts.command,
@@ -239,8 +268,29 @@ export async function advanceCanonicalTask(opts: {
     const { record } = current.read;
     const plan = record.aggregate.current_plan;
     const route = current.next_action;
+    if (
+      route.reason_code === "kernel_effect_dispatch_required" ||
+      route.reason_code === "kernel_effect_observation_required" ||
+      route.reason_code === "kernel_effect_reconciliation_required"
+    ) {
+      const coordinated = await coordinateKernelEffect({
+        runtime,
+        record,
+        route,
+        resolve_port: opts.effect_port_resolver ?? emptyKernelEffectPortResolver,
+      });
+      if (coordinated.kind === "stop") {
+        return {
+          schema_version: 1,
+          task_id: opts.task_id,
+          action: coordinated.action,
+          canonical_revision: record.aggregate.revision,
+        };
+      }
+      continue;
+    }
     if (route.reason_code === "kernel_plan_required") {
-      const order = buildKernelAgentWorkOrder({ command: opts.command, record, context });
+      const order = await buildKernelAgentWorkOrder({ command: opts.command, record, context });
       return issueKernelExchange(opts.command, order, opts.transport);
     }
     if (route.reason_code === "kernel_plan_approval_required" && plan) {
@@ -408,13 +458,35 @@ export async function advanceCanonicalTask(opts: {
           task_id: opts.task_id,
           action: { kind: "human_required", reason: "canonical_begin_dispatch_uncertain" },
         };
-      const order = buildKernelAgentWorkOrder({
+      const order = await buildKernelAgentWorkOrder({
         command: opts.command,
         record: result.record,
         context,
         implementation: begun.work_order,
       });
       return issueKernelExchange(opts.command, order, opts.transport, result.record);
+    }
+    if (route.reason_code === "kernel_work_item_result_required" && route.work_item_id) {
+      const resolved = await runtime.authority.resolve(opts.task_id, route.work_item_id);
+      const resumed = resumeKernelWorkOrder({
+        record,
+        work_item_id: route.work_item_id,
+        authority: resolved.authority,
+        repository_fingerprint: resolved.context.repository_fingerprint,
+      });
+      if (!resumed)
+        return {
+          schema_version: 1,
+          task_id: opts.task_id,
+          action: { kind: "human_required", reason: "canonical_result_dispatch_unavailable" },
+        };
+      const order = await buildKernelAgentWorkOrder({
+        command: opts.command,
+        record,
+        context: resolved.context,
+        implementation: resumed,
+      });
+      return issueKernelExchange(opts.command, order, opts.transport, record);
     }
     return {
       schema_version: 1,
