@@ -2,10 +2,10 @@
 id: "202609162254-YE48GC"
 title: "Implement and qualify AgentPlane 0.7.10 Blueprint retirement"
 result_summary: "pre-merge closure"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 65
+revision: 66
 origin:
   system: "manual"
 depends_on: []
@@ -32,10 +32,10 @@ plan_approval:
   updated_by: "HOST:codex:USER"
   note: "host_user_decision=sha256:d45ce5060f5fae001ac6bfd1c0d38ba3980252524ae842840b74c01db55a53d8"
 verification:
-  state: "ok"
-  updated_at: "2026-09-17T17:03:58.738Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  state: "pending"
+  updated_at: "2026-09-17T18:17:54.438Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 0
 quality_review:
   state: "pass"
@@ -92,6 +92,7 @@ execution_route:
     - "effect_public_api"
     - "effect_release_metadata"
     - "effect_schema"
+    - "effect_security_boundary"
     - "repository_branch_pr_floor"
     - "reversibility_recovery_required"
   repository_mode: "branch_pr"
@@ -110,6 +111,7 @@ execution_contract:
       - "release_metadata"
       - "repository_write"
       - "schema"
+      - "security_boundary"
       - "source_code"
       - "tests"
     forbidden_external_effects:
@@ -118,8 +120,7 @@ execution_contract:
       - "publish"
       - "deploy"
       - "destructive_git"
-    forbidden_repository_effects:
-      - "security_boundary"
+    forbidden_repository_effects: []
     writable_roots:
       - ".agentplane/WORKFLOW.md"
       - ".agentplane/agents"
@@ -131,10 +132,13 @@ execution_contract:
       - "packages/agentplane"
       - "packages/agentplane/src"
       - "packages/agentplane/src/commands/acr"
+      - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
+      - "packages/agentplane/src/commands/shared/task-verification-input.ts"
       - "packages/core"
       - "packages/core/package.json"
       - "packages/core/schemas"
       - "packages/core/src"
+      - "packages/core/src/commit/commit-policy.ts"
       - "packages/recipes"
       - "packages/recipes/package.json"
       - "packages/recipes/src/index.test.ts"
@@ -143,6 +147,7 @@ execution_contract:
       - "packages/spec/schemas"
       - "packages/testkit/package.json"
       - "packages/testkit/src"
+      - "packages/testkit/src/cli-harness.ts"
       - "schemas"
       - "scripts"
       - "scripts/lib"
@@ -159,6 +164,7 @@ execution_contract:
       - "USER-approved blocked-result scope extension: roots=.agentplane/WORKFLOW.md,.agentplane/config.json,packages/agentplane/src,packages/core/package.json,packages/recipes/package.json,packages/recipes/src/index.ts,packages/spec/examples/acr.json,packages/testkit/package.json,packages/testkit/src; repository_effects=release_metadata,repository_write,source_code,tests"
       - "USER-approved blocked-result scope extension: roots=.agentplane/agents; repository_effects=documentation,repository_write"
       - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/commands/acr; repository_effects=source_code,tests"
+      - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts,packages/agentplane/src/commands/shared/task-verification-input.ts,packages/core/src/commit/commit-policy.ts,packages/testkit/src/cli-harness.ts; repository_effects=security_boundary,source_code,tests"
       - "USER-approved blocked-result scope extension: roots=packages/core/schemas,packages/recipes/src/index.test.ts,packages/spec/schemas,schemas,scripts/lib,website; repository_effects=ci,documentation,release_metadata,schema,tests"
       - "USER-approved blocked-result scope extension: roots=packages/core/schemas,packages/spec/schemas; repository_effects=schema,tests"
       - "USER-approved blocked-result scope extension: roots=packages/core/src,packages/testkit/src; repository_effects=schema,source_code,tests"
@@ -170,6 +176,7 @@ execution_contract:
       - "release_metadata"
       - "repository_write"
       - "schema"
+      - "security_boundary"
       - "source_code"
       - "tests"
     requirements_uncertainty: "bounded"
@@ -186,10 +193,13 @@ execution_contract:
       - "packages/agentplane"
       - "packages/agentplane/src"
       - "packages/agentplane/src/commands/acr"
+      - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
+      - "packages/agentplane/src/commands/shared/task-verification-input.ts"
       - "packages/core"
       - "packages/core/package.json"
       - "packages/core/schemas"
       - "packages/core/src"
+      - "packages/core/src/commit/commit-policy.ts"
       - "packages/recipes"
       - "packages/recipes/package.json"
       - "packages/recipes/src/index.test.ts"
@@ -198,6 +208,7 @@ execution_contract:
       - "packages/spec/schemas"
       - "packages/testkit/package.json"
       - "packages/testkit/src"
+      - "packages/testkit/src/cli-harness.ts"
       - "schemas"
       - "scripts"
       - "scripts/lib"
@@ -615,118 +626,7 @@ execution_contract:
       - "schema"
       - "source_code"
       - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-10"
-        result: "pass"
-      -
-        id: "recorded-check-11"
-        result: "pass"
-      -
-        id: "recorded-check-12"
-        result: "pass"
-      -
-        id: "recorded-check-13"
-        result: "pass"
-      -
-        id: "recorded-check-14"
-        result: "pass"
-      -
-        id: "recorded-check-15"
-        result: "pass"
-      -
-        id: "recorded-check-16"
-        result: "pass"
-      -
-        id: "recorded-check-17"
-        result: "pass"
-      -
-        id: "recorded-check-18"
-        result: "pass"
-      -
-        id: "recorded-check-19"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-20"
-        result: "pass"
-      -
-        id: "recorded-check-21"
-        result: "pass"
-      -
-        id: "recorded-check-22"
-        result: "pass"
-      -
-        id: "recorded-check-23"
-        result: "pass"
-      -
-        id: "recorded-check-24"
-        result: "pass"
-      -
-        id: "recorded-check-25"
-        result: "pass"
-      -
-        id: "recorded-check-26"
-        result: "pass"
-      -
-        id: "recorded-check-27"
-        result: "pass"
-      -
-        id: "recorded-check-28"
-        result: "pass"
-      -
-        id: "recorded-check-29"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-30"
-        result: "pass"
-      -
-        id: "recorded-check-31"
-        result: "pass"
-      -
-        id: "recorded-check-32"
-        result: "pass"
-      -
-        id: "recorded-check-33"
-        result: "pass"
-      -
-        id: "recorded-check-34"
-        result: "pass"
-      -
-        id: "recorded-check-35"
-        result: "pass"
-      -
-        id: "recorded-check-36"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
-      -
-        id: "recorded-check-7"
-        result: "pass"
-      -
-        id: "recorded-check-8"
-        result: "pass"
-      -
-        id: "recorded-check-9"
-        result: "pass"
-      -
-        id: "verification-record"
-        result: "pass"
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_ci"
@@ -734,6 +634,7 @@ execution_contract:
     - "effect_public_api"
     - "effect_release_metadata"
     - "effect_schema"
+    - "effect_security_boundary"
     - "repository_branch_pr_floor"
     - "reversibility_recovery_required"
   repository_mode: "branch_pr"
@@ -758,10 +659,13 @@ execution_contract:
           - "packages/agentplane"
           - "packages/agentplane/src"
           - "packages/agentplane/src/commands/acr"
+          - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
+          - "packages/agentplane/src/commands/shared/task-verification-input.ts"
           - "packages/core"
           - "packages/core/package.json"
           - "packages/core/schemas"
           - "packages/core/src"
+          - "packages/core/src/commit/commit-policy.ts"
           - "packages/recipes"
           - "packages/recipes/package.json"
           - "packages/recipes/src/index.test.ts"
@@ -770,6 +674,7 @@ execution_contract:
           - "packages/spec/schemas"
           - "packages/testkit/package.json"
           - "packages/testkit/src"
+          - "packages/testkit/src/cli-harness.ts"
           - "schemas"
           - "scripts"
           - "scripts/lib"
@@ -784,6 +689,7 @@ execution_contract:
           - "repository_effect:release_metadata"
           - "repository_effect:repository_write"
           - "repository_effect:schema"
+          - "repository_effect:security_boundary"
           - "repository_effect:source_code"
           - "repository_effect:tests"
           - "task_outcome"
@@ -797,20 +703,24 @@ execution_contract:
           - "release_metadata"
           - "repository_write"
           - "schema"
+          - "security_boundary"
           - "source_code"
           - "tests"
         risk:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:403ab3ccb9b9b992fee8baeebb16ac273dadc3ccf883aec522f4f8b22eed7bf0"
+      digest: "sha256:61b326e4297afe6e42b6fb79a75c958747acaaf5e2f6405973f8c36e788c7b69"
       escalation_reasons:
         - "central_component:.github/workflows"
         - "central_component:bun.lock"
         - "central_component:package.json"
+        - "central_component:packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
+        - "central_component:packages/agentplane/src/commands/shared/task-verification-input.ts"
         - "central_component:packages/core/package.json"
         - "central_component:packages/core/schemas"
         - "central_component:packages/core/src"
+        - "central_component:packages/core/src/commit/commit-policy.ts"
         - "central_path:.github/workflows/publish.yml"
         - "central_path:packages/agentplane/src/cli/cli-smoke.test.ts"
         - "central_path:packages/agentplane/src/cli/command-guide.ts"
@@ -923,6 +833,7 @@ execution_contract:
         - "effect_public_api"
         - "effect_release_metadata"
         - "effect_schema"
+        - "effect_security_boundary"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
         - "unknown_path:.agentplane/agents/INTAKE.json"
@@ -1386,12 +1297,11 @@ execution_contract:
       - "repository_effect:release_metadata"
       - "repository_effect:repository_write"
       - "repository_effect:schema"
+      - "repository_effect:security_boundary"
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "1fcd5d6acf1e3a19c450a3b6f45477a86c6103ac"
-  message: "🚧 YE48GC task: record external evaluator result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -1486,6 +1396,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The user explicitly approved remediation of all four CodeQL findings, but the current task contract still forbids repository_effect:security_boundary. Recommended action: Record the user's explicit approval for repository_effect:security_boundary on the four listed source files and reissue the EXECUTOR packet. Requested scope: roots=packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts,packages/agentplane/src/commands/shared/task-verification-input.ts,packages/core/src/commit/commit-policy.ts,packages/testkit/src/cli-harness.ts; repository effects=security_boundary,source_code,tests; request digest=sha256:a34373549ce9c0ed78e32ec17c513a9dce030b53a08e06c28b8434fcda650494. Agentplane receipt: external-agent-blocker/tr_08875a6b395c3b53ea21cfa972842c9b/sha256:6af2bce9f736320106e73a5ec66b242557a242cc9046529c71e7f48ed8d161c1/sha256:a34373549ce9c0ed78e32ec17c513a9dce030b53a08e06c28b8434fcda650494."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts, packages/agentplane/src/commands/shared/task-verification-input.ts, packages/core/src/commit/commit-policy.ts, packages/testkit/src/cli-harness.ts; repository effects: security_boundary, source_code, tests."
 events:
   -
     type: "status"
@@ -2448,30 +2361,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
-  agentplane.execution_grant:
-    actor: "HOST:codex:USER"
-    approval_evidence_digest: "sha256:d45ce5060f5fae001ac6bfd1c0d38ba3980252524ae842840b74c01db55a53d8"
-    approval_kind: "host_user_decision"
-    capabilities:
-      - "provider.merge"
-      - "provider.pr"
-      - "repository.integrate"
-      - "repository.write"
-      - "task.lifecycle"
-      - "task.scope.extend"
-    completion_contract_digest: "sha256:1194c357e1223bcc626371316240fb89b0fa6a76e482616f1910d83848d12e77"
-    digest: "sha256:29abdd4753e2154e1efbc2f4cc8f2e515e60f50e00c1d6772058e72cd5bfad33"
-    grant_id: "1811105c-2a17-498b-b034-fc4e341ab4b6"
-    issued_at: "2026-09-16T23:01:48.151Z"
-    kind: "agentplane.execution_grant"
-    plan_digest: "sha256:7f4fb33aba75e4d1ae9d9026209bd92576bc392301080f274798ae5150be2892"
-    plan_revision: 3
-    repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
-    schema_version: 1
-    scope_digest: "sha256:89e7ed6347b514ef4b051098ca7321060665f69b599bf137e0e291eca66d420f"
-    status: "active"
-    task_id: "202609162254-YE48GC"
   agentplane.scope_extension_request:
+    applied_at: "2026-09-17T18:17:54.438Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:6af2bce9f736320106e73a5ec66b242557a242cc9046529c71e7f48ed8d161c1"
     kind: "task_scope_extension_request"
     request:
@@ -2488,7 +2380,7 @@ extensions:
         - "packages/testkit/src/cli-harness.ts"
     request_digest: "sha256:a34373549ce9c0ed78e32ec17c513a9dce030b53a08e06c28b8434fcda650494"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_08875a6b395c3b53ea21cfa972842c9b"
     work_item_id: null
   agentplane.task_centric:
@@ -3402,7 +3294,7 @@ extensions:
       revision: 8
       schema_version: 1
       task_id: "202609162254-YE48GC"
-    event_cursor: 54
+    event_cursor: 55
     final_validation: null
     id: "202609162254-YE48GC"
     intent:
@@ -3454,7 +3346,7 @@ extensions:
 
         Implement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task.
       task_id: "202609162254-YE48GC"
-    lifecycle: "BLOCKED"
+    lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history:
       -
@@ -9267,7 +9159,7 @@ extensions:
         revision: 7
         schema_version: 1
         task_id: "202609162254-YE48GC"
-    revision: 65
+    revision: 66
     schema_version: 1
     updated_at: "2026-09-17T18:17:01.595Z"
     work_items:
@@ -11142,6 +11034,30 @@ extensions:
         mutation_id: "compatibility:sha256:c791be58e2a18c31f57996b31ab06130dacf2503f9a54572526374de8c100f3d"
         next_revision: 62
         previous_revision: 61
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+      compatibility:sha256:cad834215340cc4aac0d14ec5c173bd684e8f1b0cca29ca9b88484908245ddb1:
+        aggregate_digest: "sha256:0bd12e99d5d001b8c42a58bd96151704e0512618e7600d6a241f115e85c067e3"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T18:17:01.595Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_3d28ae879c7e40d2e663f421"
+          mutation_id: "compatibility:sha256:cad834215340cc4aac0d14ec5c173bd684e8f1b0cca29ca9b88484908245ddb1"
+          plan_digest: "sha256:e17ec6eda7c7926e5e1379d0e7caaea02c6311d301fca98a8969264e33af9949"
+          plan_revision: 8
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 65
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:cad834215340cc4aac0d14ec5c173bd684e8f1b0cca29ca9b88484908245ddb1"
+        next_revision: 66
+        previous_revision: 65
         schema_version: 1
         task_id: "202609162254-YE48GC"
       compatibility:sha256:cbae6a5248b6e4bf2eb5febb6a8fa6170f826f759aa9e273b6469e5745b2f5fb:
