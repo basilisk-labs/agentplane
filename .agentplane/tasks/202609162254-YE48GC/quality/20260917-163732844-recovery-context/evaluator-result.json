@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The reviewed delta binds the current AgentWorkOrder schema and task provenance, records the exact retired Blueprint command and option identities, filters only stale provenance for additions that no longer exist, and keeps the immutable compatibility baseline unchanged.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/049852f17dbb8438ba108555df9726fa514d8e550af58af79ac50e429b3116a0.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Residual risk: The PR head must be published and all required hosted checks must pass on the exact new head before integration.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/049852f17dbb8438ba108555df9726fa514d8e550af58af79ac50e429b3116a0.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
