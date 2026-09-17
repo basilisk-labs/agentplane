@@ -2,10 +2,10 @@
 id: "202609162254-YE48GC"
 title: "Implement and qualify AgentPlane 0.7.10 Blueprint retirement"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 63
+revision: 65
 origin:
   system: "manual"
 depends_on: []
@@ -71,8 +71,6 @@ quality_review:
     - "Residual risk: The required CodeQL check remains blocked by four existing alerts and must not be bypassed without explicit security authority."
 token_usage:
   agent_runs: 29
-  cached_input_observed_agent_runs: 0
-  cached_input_tokens: null
   input_tokens: null
   journal_digest: "sha256:0476f3db7d2406dcc1f6d3cc6059c324571460a75b759e7a687008551c8f077a"
   observed_agent_runs: 0
@@ -1485,6 +1483,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The user explicitly approved remediation of all four CodeQL findings, but the current task contract still forbids repository_effect:security_boundary. Recommended action: Record the user's explicit approval for repository_effect:security_boundary on the four listed source files and reissue the EXECUTOR packet. Requested scope: roots=packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts,packages/agentplane/src/commands/shared/task-verification-input.ts,packages/core/src/commit/commit-policy.ts,packages/testkit/src/cli-harness.ts; repository effects=security_boundary,source_code,tests; request digest=sha256:a34373549ce9c0ed78e32ec17c513a9dce030b53a08e06c28b8434fcda650494. Agentplane receipt: external-agent-blocker/tr_08875a6b395c3b53ea21cfa972842c9b/sha256:6af2bce9f736320106e73a5ec66b242557a242cc9046529c71e7f48ed8d161c1/sha256:a34373549ce9c0ed78e32ec17c513a9dce030b53a08e06c28b8434fcda650494."
 events:
   -
     type: "status"
@@ -1673,9 +1674,16 @@ events:
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "1fcd5d6acf1e3a19c450a3b6f45477a86c6103ac"
+  -
+    type: "status"
+    at: "2026-09-17T18:17:01.538Z"
+    author: "SUPERVISOR"
+    from: "DONE"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The user explicitly approved remediation of all four CodeQL findings, but the current task contract still forbids repository_effect:security_boundary. Recommended action: Record the user's explicit approval for repository_effect:security_boundary on the four listed source files and reissue the EXECUTOR packet. Requested scope: roots=packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts,packages/agentplane/src/commands/shared/task-verification-input.ts,packages/core/src/commit/commit-policy.ts,packages/testkit/src/cli-harness.ts; repository effects=security_boundary,source_code,tests; request digest=sha256:a34373549ce9c0ed78e32ec17c513a9dce030b53a08e06c28b8434fcda650494. Agentplane receipt: external-agent-blocker/tr_08875a6b395c3b53ea21cfa972842c9b/sha256:6af2bce9f736320106e73a5ec66b242557a242cc9046529c71e7f48ed8d161c1/sha256:a34373549ce9c0ed78e32ec17c513a9dce030b53a08e06c28b8434fcda650494."
 doc_version: 3
-doc_updated_at: "2026-09-17T17:05:39.107Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-17T18:17:01.595Z"
+doc_updated_by: "SUPERVISOR"
 description: "Implement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task."
 sections:
   Summary: |-
@@ -2464,31 +2472,25 @@ extensions:
     status: "active"
     task_id: "202609162254-YE48GC"
   agentplane.scope_extension_request:
-    applied_at: "2026-09-17T15:42:13.410Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:8ccab0b7d90e28c99707d103ce476f3fcd29857068e652b420adbb99314d4037"
+    blocker_state_fingerprint: "sha256:6af2bce9f736320106e73a5ec66b242557a242cc9046529c71e7f48ed8d161c1"
     kind: "task_scope_extension_request"
     request:
-      rationale: "The approved 0.7.10 qualification requires synchronized schema mirrors, installed-migration and test-routing checks, the Recipe regression test, and generated docs-site outputs. The supervisor correctly rejected these paths because the current packet omitted them."
+      rationale: "The required CodeQL gate blocks integration on two filesystem-race findings and two unsafe-shell dataflow findings. The user explicitly approved fixing all four findings."
       repository_effects:
-        - "ci"
-        - "documentation"
-        - "release_metadata"
-        - "schema"
+        - "security_boundary"
+        - "source_code"
         - "tests"
       schema_version: 1
       scope_roots:
-        - "packages/core/schemas"
-        - "packages/recipes/src/index.test.ts"
-        - "packages/spec/schemas"
-        - "schemas"
-        - "scripts/lib"
-        - "website"
-    request_digest: "sha256:7c06b43bef49a7d635d546b94dad655d93c3a826db0da7b4ba6e77637bedf6d7"
+        - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
+        - "packages/agentplane/src/commands/shared/task-verification-input.ts"
+        - "packages/core/src/commit/commit-policy.ts"
+        - "packages/testkit/src/cli-harness.ts"
+    request_digest: "sha256:a34373549ce9c0ed78e32ec17c513a9dce030b53a08e06c28b8434fcda650494"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_050a62b4809c70b7f3447666d27284b7"
-    work_item_id: "qualification-and-release-readiness"
+    status: "pending"
+    transition_id: "tr_08875a6b395c3b53ea21cfa972842c9b"
+    work_item_id: null
   agentplane.task_centric:
     current_plan:
       approval:
@@ -3400,112 +3402,8 @@ extensions:
       revision: 8
       schema_version: 1
       task_id: "202609162254-YE48GC"
-    event_cursor: 52
-    final_validation:
-      evidence:
-        -
-          artifact_refs:
-            - "task-verification:202609162254-YE48GC"
-            - "git:d949071048f769e0728af190eafa7b74ddfbe9fa"
-          check_id: "ci-full"
-          command_identity: "bun run ci:local:full"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-17T16:01:29.546Z"
-          repository_snapshot_digest: "sha256:b7c2ee9532a5eb7e258abd4a283f15e57dded0de8834b43e2eb348485463e8b6"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609162254-YE48GC"
-            - "git:d949071048f769e0728af190eafa7b74ddfbe9fa"
-          check_id: "install-smoke"
-          command_identity: "bun run package:install-smoke"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-17T16:01:29.546Z"
-          repository_snapshot_digest: "sha256:b7c2ee9532a5eb7e258abd4a283f15e57dded0de8834b43e2eb348485463e8b6"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609162254-YE48GC"
-            - "git:d949071048f769e0728af190eafa7b74ddfbe9fa"
-          check_id: "release-critical"
-          command_identity: "bun run test:release:critical"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-17T16:01:29.546Z"
-          repository_snapshot_digest: "sha256:b7c2ee9532a5eb7e258abd4a283f15e57dded0de8834b43e2eb348485463e8b6"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609162254-YE48GC"
-            - "git:d949071048f769e0728af190eafa7b74ddfbe9fa"
-          check_id: "arch-check"
-          command_identity: "bun run arch:check"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-17T16:01:29.546Z"
-          repository_snapshot_digest: "sha256:b7c2ee9532a5eb7e258abd4a283f15e57dded0de8834b43e2eb348485463e8b6"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609162254-YE48GC"
-            - "git:d949071048f769e0728af190eafa7b74ddfbe9fa"
-          check_id: "docs-check"
-          command_identity: "bun run docs:bootstrap:check && bun run docs:onboarding:check"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-17T16:01:29.546Z"
-          repository_snapshot_digest: "sha256:b7c2ee9532a5eb7e258abd4a283f15e57dded0de8834b43e2eb348485463e8b6"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609162254-YE48GC"
-            - "git:d949071048f769e0728af190eafa7b74ddfbe9fa"
-          check_id: "bench-check"
-          command_identity: "bun run bench:agent-efficiency:check"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-17T16:01:29.546Z"
-          repository_snapshot_digest: "sha256:b7c2ee9532a5eb7e258abd4a283f15e57dded0de8834b43e2eb348485463e8b6"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609162254-YE48GC"
-            - "git:d949071048f769e0728af190eafa7b74ddfbe9fa"
-          check_id: "bench-replay"
-          command_identity: "bun run bench:agent-efficiency:replay:check"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-17T16:01:29.546Z"
-          repository_snapshot_digest: "sha256:b7c2ee9532a5eb7e258abd4a283f15e57dded0de8834b43e2eb348485463e8b6"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609162254-YE48GC"
-            - "git:d949071048f769e0728af190eafa7b74ddfbe9fa"
-          check_id: "semantic-review"
-          command_identity: "task.verify"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-17T16:01:29.546Z"
-          repository_snapshot_digest: "sha256:b7c2ee9532a5eb7e258abd4a283f15e57dded0de8834b43e2eb348485463e8b6"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609162254-YE48GC"
-            - "git:d949071048f769e0728af190eafa7b74ddfbe9fa"
-          check_id: "hosted-ci"
-          command_identity: "task.verify"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-17T16:01:29.546Z"
-          repository_snapshot_digest: "sha256:b7c2ee9532a5eb7e258abd4a283f15e57dded0de8834b43e2eb348485463e8b6"
-          status: "passed"
-      schema_version: 1
-      stale_evidence: []
-      status: "passed"
-      unsatisfied_criteria: []
+    event_cursor: 54
+    final_validation: null
     id: "202609162254-YE48GC"
     intent:
       acceptance_criteria:
@@ -3556,7 +3454,7 @@ extensions:
 
         Implement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task.
       task_id: "202609162254-YE48GC"
-    lifecycle: "COMPLETED"
+    lifecycle: "BLOCKED"
     plan_amendments: []
     plan_history:
       -
@@ -9369,9 +9267,9 @@ extensions:
         revision: 7
         schema_version: 1
         task_id: "202609162254-YE48GC"
-    revision: 63
+    revision: 65
     schema_version: 1
-    updated_at: "2026-09-17T17:05:39.090Z"
+    updated_at: "2026-09-17T18:17:01.595Z"
     work_items:
       channel-and-owner-map:
         attempt: 1
@@ -11150,6 +11048,30 @@ extensions:
         previous_revision: 24
         schema_version: 1
         task_id: "202609162254-YE48GC"
+      compatibility:sha256:c0ae06a790bd1afee6a6878eb086b92eb80d6fa31baa04452221fa1715c72948:
+        aggregate_digest: "sha256:82cc4ed4a22b06cb8a454213dd0271efc1d583ed95379f050b545d6ea9297901"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T18:17:01.538Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_52f282313fe7465aa21f076f"
+          mutation_id: "compatibility:sha256:c0ae06a790bd1afee6a6878eb086b92eb80d6fa31baa04452221fa1715c72948"
+          plan_digest: "sha256:e17ec6eda7c7926e5e1379d0e7caaea02c6311d301fca98a8969264e33af9949"
+          plan_revision: 8
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 63
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:c0ae06a790bd1afee6a6878eb086b92eb80d6fa31baa04452221fa1715c72948"
+        next_revision: 64
+        previous_revision: 63
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
       compatibility:sha256:c46ff176c8880d44cff5bcd36f48699931fc4d0a1b8f09f1e98fb5fdd94711a5:
         aggregate_digest: "sha256:bc2474c1f98a4d9a2a6ef2862983186dfd4fe7965ce5539aa09eb418545ec49f"
         event:
@@ -11172,6 +11094,30 @@ extensions:
         mutation_id: "compatibility:sha256:c46ff176c8880d44cff5bcd36f48699931fc4d0a1b8f09f1e98fb5fdd94711a5"
         next_revision: 7
         previous_revision: 6
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+      compatibility:sha256:c52b0a8fb4a1413c2df6fc5b609d212963ba6853e40eda85fb4677ce275bb7d6:
+        aggregate_digest: "sha256:d16dffe18bba736228bb3331252aea6796dfa1e96c80933ec75ea13939a4a82b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T18:17:01.595Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_8b1d9167877cea29564d2391"
+          mutation_id: "compatibility:sha256:c52b0a8fb4a1413c2df6fc5b609d212963ba6853e40eda85fb4677ce275bb7d6"
+          plan_digest: "sha256:e17ec6eda7c7926e5e1379d0e7caaea02c6311d301fca98a8969264e33af9949"
+          plan_revision: 8
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 64
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:c52b0a8fb4a1413c2df6fc5b609d212963ba6853e40eda85fb4677ce275bb7d6"
+        next_revision: 65
+        previous_revision: 64
         schema_version: 1
         task_id: "202609162254-YE48GC"
       compatibility:sha256:c791be58e2a18c31f57996b31ab06130dacf2503f9a54572526374de8c100f3d:
