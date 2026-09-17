@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 66
+revision: 68
 origin:
   system: "manual"
 depends_on: []
@@ -385,7 +385,9 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/side-effect-authority.test.ts"
       - "packages/agentplane/src/commands/shared/side-effect-authority.ts"
       - "packages/agentplane/src/commands/shared/source-confidence.ts"
+      - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
       - "packages/agentplane/src/commands/shared/task-backend.ts"
+      - "packages/agentplane/src/commands/shared/task-verification-evidence-filesystem.ts"
       - "packages/agentplane/src/commands/shared/task-verification-input-digests.ts"
       - "packages/agentplane/src/commands/shared/task-verification-input-types.ts"
       - "packages/agentplane/src/commands/shared/task-verification-input.test.ts"
@@ -560,6 +562,8 @@ execution_contract:
       - "packages/core/schemas/task-readme-frontmatter.schema.json"
       - "packages/core/schemas/tasks-export.schema.json"
       - "packages/core/src/commit/commit-policy.ts"
+      - "packages/core/src/git/git-client.test.ts"
+      - "packages/core/src/git/git-client.ts"
       - "packages/core/src/runner/agent-semantic-result.test.ts"
       - "packages/core/src/runner/agent-semantic-result.ts"
       - "packages/core/src/runner/agent-work-order-fixtures.ts"
@@ -710,7 +714,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:61b326e4297afe6e42b6fb79a75c958747acaaf5e2f6405973f8c36e788c7b69"
+      digest: "sha256:ed00e747b21203020001beba8496e74e4282bf7505759f3da9dba947e8911a08"
       escalation_reasons:
         - "central_component:.github/workflows"
         - "central_component:bun.lock"
@@ -768,7 +772,9 @@ execution_contract:
         - "central_path:packages/agentplane/src/commands/shared/side-effect-authority.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/side-effect-authority.ts"
         - "central_path:packages/agentplane/src/commands/shared/source-confidence.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
         - "central_path:packages/agentplane/src/commands/shared/task-backend.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-verification-evidence-filesystem.ts"
         - "central_path:packages/agentplane/src/commands/shared/task-verification-input-digests.ts"
         - "central_path:packages/agentplane/src/commands/shared/task-verification-input-types.ts"
         - "central_path:packages/agentplane/src/commands/shared/task-verification-input.test.ts"
@@ -797,6 +803,8 @@ execution_contract:
         - "central_path:packages/core/schemas/task-readme-frontmatter.schema.json"
         - "central_path:packages/core/schemas/tasks-export.schema.json"
         - "central_path:packages/core/src/commit/commit-policy.ts"
+        - "central_path:packages/core/src/git/git-client.test.ts"
+        - "central_path:packages/core/src/git/git-client.ts"
         - "central_path:packages/core/src/runner/agent-semantic-result.test.ts"
         - "central_path:packages/core/src/runner/agent-semantic-result.ts"
         - "central_path:packages/core/src/runner/agent-work-order-fixtures.ts"
@@ -1019,7 +1027,9 @@ execution_contract:
           - "packages/agentplane/src/commands/shared/side-effect-authority.test.ts"
           - "packages/agentplane/src/commands/shared/side-effect-authority.ts"
           - "packages/agentplane/src/commands/shared/source-confidence.ts"
+          - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
           - "packages/agentplane/src/commands/shared/task-backend.ts"
+          - "packages/agentplane/src/commands/shared/task-verification-evidence-filesystem.ts"
           - "packages/agentplane/src/commands/shared/task-verification-input-digests.ts"
           - "packages/agentplane/src/commands/shared/task-verification-input-types.ts"
           - "packages/agentplane/src/commands/shared/task-verification-input.test.ts"
@@ -1194,6 +1204,8 @@ execution_contract:
           - "packages/core/schemas/task-readme-frontmatter.schema.json"
           - "packages/core/schemas/tasks-export.schema.json"
           - "packages/core/src/commit/commit-policy.ts"
+          - "packages/core/src/git/git-client.test.ts"
+          - "packages/core/src/git/git-client.ts"
           - "packages/core/src/runner/agent-semantic-result.test.ts"
           - "packages/core/src/runner/agent-semantic-result.ts"
           - "packages/core/src/runner/agent-work-order-fixtures.ts"
@@ -1301,7 +1313,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "6718b5111fb5e8a4f19f0d02f3bdbb834d069c08"
+  message: "🚧 YE48GC task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -1399,6 +1413,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts, packages/agentplane/src/commands/shared/task-verification-input.ts, packages/core/src/commit/commit-policy.ts, packages/testkit/src/cli-harness.ts; repository effects: security_boundary, source_code, tests."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 6718b5111fb5. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -1594,8 +1611,16 @@ events:
     from: "DONE"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The user explicitly approved remediation of all four CodeQL findings, but the current task contract still forbids repository_effect:security_boundary. Recommended action: Record the user's explicit approval for repository_effect:security_boundary on the four listed source files and reissue the EXECUTOR packet. Requested scope: roots=packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts,packages/agentplane/src/commands/shared/task-verification-input.ts,packages/core/src/commit/commit-policy.ts,packages/testkit/src/cli-harness.ts; repository effects=security_boundary,source_code,tests; request digest=sha256:a34373549ce9c0ed78e32ec17c513a9dce030b53a08e06c28b8434fcda650494. Agentplane receipt: external-agent-blocker/tr_08875a6b395c3b53ea21cfa972842c9b/sha256:6af2bce9f736320106e73a5ec66b242557a242cc9046529c71e7f48ed8d161c1/sha256:a34373549ce9c0ed78e32ec17c513a9dce030b53a08e06c28b8434fcda650494."
+  -
+    type: "status"
+    at: "2026-09-17T18:39:24.097Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 6718b5111fb5. CLI accepted one state-bound external-agent semantic result."
+    commit: "6718b5111fb5e8a4f19f0d02f3bdbb834d069c08"
 doc_version: 3
-doc_updated_at: "2026-09-17T18:17:01.595Z"
+doc_updated_at: "2026-09-17T18:39:24.317Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task."
 sections:
@@ -3294,7 +3319,7 @@ extensions:
       revision: 8
       schema_version: 1
       task_id: "202609162254-YE48GC"
-    event_cursor: 55
+    event_cursor: 57
     final_validation: null
     id: "202609162254-YE48GC"
     intent:
@@ -9159,9 +9184,9 @@ extensions:
         revision: 7
         schema_version: 1
         task_id: "202609162254-YE48GC"
-    revision: 66
+    revision: 68
     schema_version: 1
-    updated_at: "2026-09-17T18:17:01.595Z"
+    updated_at: "2026-09-17T18:39:24.165Z"
     work_items:
       channel-and-owner-map:
         attempt: 1
@@ -10484,6 +10509,30 @@ extensions:
         previous_revision: 35
         schema_version: 1
         task_id: "202609162254-YE48GC"
+      compatibility:sha256:5877b8a344f4274d534df5aba5aa0a5550f55fe6f3f2a70475d7766cd0070edd:
+        aggregate_digest: "sha256:bc84ce9077e0a70ef79911f26b3531a1a1983985a993424893929ce7a224b75b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T18:39:24.097Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_e251d5a11828471521c3c252"
+          mutation_id: "compatibility:sha256:5877b8a344f4274d534df5aba5aa0a5550f55fe6f3f2a70475d7766cd0070edd"
+          plan_digest: "sha256:e17ec6eda7c7926e5e1379d0e7caaea02c6311d301fca98a8969264e33af9949"
+          plan_revision: 8
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 66
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:5877b8a344f4274d534df5aba5aa0a5550f55fe6f3f2a70475d7766cd0070edd"
+        next_revision: 67
+        previous_revision: 66
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
       compatibility:sha256:5bb96a0c6b3341aa2815aaf98b4f369783a10d234bfbdebfef713db1bedddfb1:
         aggregate_digest: "sha256:287dd3c2c84af86f2ce33752053a8c562da35bb04fdab677becb8fc35d0b22c6"
         event:
@@ -11228,6 +11277,30 @@ extensions:
         previous_revision: 5
         schema_version: 1
         task_id: "202609162254-YE48GC"
+      compatibility:sha256:e458c40aed6c1e74b78c3f788c9a63490ba55e0f5333d715971b407e4b3b5b60:
+        aggregate_digest: "sha256:cf528b1a025435b33fbfcfaeb2c18a33e44236d60a5731f773c18f407dddc0c4"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T18:39:24.165Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_638682775655bc00473e93ca"
+          mutation_id: "compatibility:sha256:e458c40aed6c1e74b78c3f788c9a63490ba55e0f5333d715971b407e4b3b5b60"
+          plan_digest: "sha256:e17ec6eda7c7926e5e1379d0e7caaea02c6311d301fca98a8969264e33af9949"
+          plan_revision: 8
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 67
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:e458c40aed6c1e74b78c3f788c9a63490ba55e0f5333d715971b407e4b3b5b60"
+        next_revision: 68
+        previous_revision: 67
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
       compatibility:sha256:f6d75a5cbe41ce127c00effc55957f0b5b19b261f57da0fed563e99cb8eecd76:
         aggregate_digest: "sha256:3589d06478f34beb935e198eea5b013d6d134f259a9e282a233f8ca72b1b8a04"
         event:
@@ -11473,8 +11546,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "ee9149f08c25eb38aa8f9189b7f5d078c0fcea07"
-    message: "🐛 YE48GC fix: remove stale CLI exports"
+    hash: "6718b5111fb5e8a4f19f0d02f3bdbb834d069c08"
   task_execution_context:
     base_ref: "main"
     base_sha: "19ff39fd292c30f0958131c35200a6268b7a285d"
