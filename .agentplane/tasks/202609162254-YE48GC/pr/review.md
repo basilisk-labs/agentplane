@@ -13,7 +13,7 @@ Created: 2026-09-16T23:02:04.476Z
 ## Verification
 
 - State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -33,6 +33,8 @@ Created: 2026-09-16T23:02:04.476Z
  .../src/commands/acr/generate-extensions.ts        |  24 +
  packages/agentplane/src/commands/acr/generate.ts   |  15 +-
  packages/agentplane/src/commands/acr/summary.ts    |  31 +
+ .../commands/blueprint/historical-audit.test.ts    | 104 +++
+ .../src/commands/blueprint/historical-audit.ts     | 158 ++++
  .../commands/evaluator/evaluator-evidence-store.ts |  16 +-
  .../evaluator/evaluator-quality-artifacts.ts       |   2 +-
  .../commands/evaluator/evaluator-review-apply.ts   |   5 +-
@@ -49,13 +51,24 @@ Created: 2026-09-16T23:02:04.476Z
  .../shared/task-verification-record-parser.ts      | 182 ++++-
  .../commands/shared/task-verification-records.ts   |  53 +-
  .../commands/shared/workflow-step-fingerprint.ts   | 184 +++--
+ .../src/commands/task/advance.command.ts           |   2 +
  .../src/commands/task/blueprint-summary.ts         |  65 +-
  .../task/external-agent-evaluator-recovery.test.ts |   4 +-
  .../task/external-agent-evaluator-recovery.ts      |  19 +-
  .../src/commands/task/finish-blueprint-evidence.ts |  28 +-
+ .../src/commands/task/kernel-cutover.test.ts       |  73 ++
+ .../agentplane/src/commands/task/kernel-cutover.ts |  54 ++
+ .../src/commands/task/kernel-migrate.command.ts    |  67 +-
+ .../task/kernel-migration-admission.test.ts        |  72 ++
+ .../commands/task/kernel-migration-admission.ts    |  38 +
+ .../src/commands/task/kernel-runtime-context.ts    |   6 +-
  .../src/commands/task/kernel-work-order.ts         |  26 +-
+ .../src/commands/task/new.primary-checkout.test.ts |  39 +
+ packages/agentplane/src/commands/task/new.spec.ts  |   8 +-
+ packages/agentplane/src/commands/task/new.ts       |  11 +-
  .../src/commands/task/quality-review-gate.ts       |   6 +-
  .../src/commands/task/run-execution-preview.ts     |  18 +-
+ .../agentplane/src/commands/task/run.command.ts    |   3 +
  .../src/commands/task/verify-record-execute.ts     |  28 +-
  .../src/commands/task/verify-record-references.ts  |  12 +
  .../src/commands/task/verify-show.command.ts       |  14 +
@@ -92,7 +105,7 @@ Created: 2026-09-16T23:02:04.476Z
  scripts/release/manifest.mjs                       |  30 +
  scripts/release/stable-channel-policy.mjs          | 127 ++++
  scripts/release/stable-channel-policy.test.mjs     |  77 ++
- 63 files changed, 4934 insertions(+), 262 deletions(-)
+ 76 files changed, 5556 insertions(+), 275 deletions(-)
 ```
 
 </details>

@@ -10,8 +10,18 @@ import {
 import { readContainedStableTextNoFollow } from "../../shared/contained-stable-file.js";
 import { CliError } from "../../shared/errors.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
+import {
+  createSupervisorEpisodeStore,
+  resolveSupervisorExecutionEpisodePath,
+  tryAcquireSupervisorExecutionLease,
+} from "../shared/supervisor-execution-episode.js";
 import type { CommandContext } from "../shared/task-backend.js";
+import {
+  auditHistoricalBlueprintSnapshot,
+  projectHistoricalBlueprintAudit,
+} from "../blueprint/historical-audit.js";
 import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
+import { inspectKernelMigrationAdmission } from "./kernel-migration-admission.js";
 
 type Parsed = {
   taskId: string;
@@ -89,6 +99,16 @@ export async function runKernelMigration(ctx: CommandContext, opts: Parsed): Pro
     task: {},
   })) as taskKernel.Sha256Digest;
   const migration = new KernelMigration(new LocalTaskByteStore(ctx.taskBackend), identity);
+  const withHistoricalBlueprint = async <T extends object>(result: T) => {
+    const audit = projectHistoricalBlueprintAudit(
+      await auditHistoricalBlueprintSnapshot({
+        repository_root: root,
+        workflow_dir: ctx.config.paths.workflow_dir,
+        task_id: opts.taskId,
+      }),
+    );
+    return audit.kind === "missing" ? result : { ...result, historical_blueprint: audit };
+  };
   if (opts.apply || opts.rollback)
     await ensureActionApproved({
       action: "force_action",
@@ -96,6 +116,41 @@ export async function runKernelMigration(ctx: CommandContext, opts: Parsed): Pro
       yes: opts.yes,
       reason: "explicit canonical Task migration",
     });
+  const mutateUnderAdmissionFence = async <T>(operation: () => Promise<T>): Promise<T> => {
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: opts.taskId,
+    }).catch(async () =>
+      resolveSupervisorExecutionEpisodePath({
+        git_root: root,
+        common_git_dir: path.join(root, ".git"),
+        task_id: opts.taskId,
+      }),
+    );
+    const lease = await tryAcquireSupervisorExecutionLease({ journal_path: journalPath });
+    if (!lease) {
+      throw new CliError({
+        code: "E_PHASE_POLICY",
+        message: "Kernel migration is blocked by an active supervisor execution lease.",
+        context: { reason_code: "supervisor_execution_active", task_id: opts.taskId },
+      });
+    }
+    try {
+      const admission = inspectKernelMigrationAdmission(
+        await createSupervisorEpisodeStore(journalPath).read(),
+      );
+      if (!admission.admitted) {
+        throw new CliError({
+          code: "E_PHASE_POLICY",
+          message: `Kernel migration is blocked: ${admission.detail}`,
+          context: { reason_code: admission.reason, task_id: opts.taskId },
+        });
+      }
+      return await operation();
+    } finally {
+      await lease.release();
+    }
+  };
   if (opts.rollback) {
     const raw: unknown = JSON.parse(
       await readContainedStableTextNoFollow({
@@ -114,17 +169,19 @@ export async function runKernelMigration(ctx: CommandContext, opts: Parsed): Pro
         code: "E_VALIDATION",
         message: "Rollback proof belongs to a different Task.",
       });
-    const result = await migration.rollback(proof);
-    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+    const result = await mutateUnderAdmissionFence(async () => migration.rollback(proof));
+    process.stdout.write(`${JSON.stringify(await withHistoricalBlueprint(result), null, 2)}\n`);
     return result.kind === "refused" ? 1 : 0;
   }
   if (opts.apply) {
-    const result = await migration.apply(opts.taskId, opts.sourceDigest as taskKernel.Sha256Digest);
-    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+    const result = await mutateUnderAdmissionFence(async () =>
+      migration.apply(opts.taskId, opts.sourceDigest as taskKernel.Sha256Digest),
+    );
+    process.stdout.write(`${JSON.stringify(await withHistoricalBlueprint(result), null, 2)}\n`);
     return result.kind === "refused" ? 1 : 0;
   }
   const report = await migration.dryRun(opts.taskId);
-  process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
+  process.stdout.write(`${JSON.stringify(await withHistoricalBlueprint(report), null, 2)}\n`);
   return ["quarantined", "missing"].includes(report.classification) ? 1 : 0;
 }
 

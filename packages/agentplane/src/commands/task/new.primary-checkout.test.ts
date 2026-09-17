@@ -14,6 +14,8 @@ import {
   writeConfig,
 } from "@agentplane/testkit";
 import { runTaskNewParsed } from "./new.js";
+import { loadCommandContext } from "../shared/task-backend.js";
+import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
 
 installRunCliIntegrationHarness();
 
@@ -62,5 +64,42 @@ describe("task new primary-checkout routing", { timeout: 180_000 }, () => {
         path.join(taskWorktree, ".agentplane", "tasks", created.task_id, "README.md"),
       ),
     ).toBe(false);
+  });
+
+  it("keeps later task issuance canonical after the repository enters cutover", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    await writeConfig(root, config);
+    await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
+    await commitAll(root, "seed canonical cutover");
+    const parsed = {
+      title: "Canonical cutover task",
+      description: "Create a canonical task after repository cutover.",
+      owner: "CODER",
+      priority: "med" as const,
+      tags: ["workflow"],
+      dependsOn: [],
+      verify: [],
+      showBlueprint: false,
+      allowDuplicate: true,
+    };
+
+    await runTaskNewParsed({
+      cwd: root,
+      rootOverride: root,
+      parsed: { ...parsed, title: "Activate canonical cutover", canonical: true },
+      printTaskId: false,
+    });
+    const second = await runTaskNewParsed({
+      cwd: root,
+      rootOverride: root,
+      parsed,
+      printTaskId: false,
+    });
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const stored = await ctx.taskBackend.getTask(second.task_id);
+
+    expect(stored?.extensions).toHaveProperty(TASK_KERNEL_EXTENSION);
   });
 });

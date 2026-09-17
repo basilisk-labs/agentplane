@@ -57,6 +57,7 @@ import {
   resolveTaskExecutionRoute,
 } from "../../runtime/task-routing/index.js";
 import { assertSupportedDeclaredTaskChecks } from "../shared/declared-check.js";
+import { kernelCutoverActivated } from "./kernel-cutover.js";
 
 export type TaskNewParsed = {
   canonical?: boolean;
@@ -233,7 +234,8 @@ export async function runTaskNewParsed(opts: {
               }),
             }
           : p.extensions;
-      const duplicateTasks = listOpenTaskDuplicates(await ctx.taskBackend.listTasks(), p.title);
+      const existingTasks = await ctx.taskBackend.listTasks();
+      const duplicateTasks = listOpenTaskDuplicates(existingTasks, p.title);
       const exactDuplicateTasks = duplicateTasks.filter((match) => match.severity === "exact");
       if (exactDuplicateTasks.length > 0 && !p.allowDuplicate) {
         throw new CliError({
@@ -388,9 +390,10 @@ export async function runTaskNewParsed(opts: {
         });
       }
 
-      const created = p.canonical
-        ? await createCanonicalTask(ctx, task)
-        : await writeTaskMutation({ ctx, task, writeOptions: { expectedRevision: 0 } });
+      const created =
+        p.canonical || kernelCutoverActivated(existingTasks)
+          ? await createCanonicalTask(ctx, task)
+          : await writeTaskMutation({ ctx, task, writeOptions: { expectedRevision: 0 } });
       if (opts.printTaskId !== false) process.stdout.write(`${created.task_id}\n`);
       if (p.showBlueprint) {
         const summary = await resolveTaskBlueprintLifecycleSummary({

@@ -38,6 +38,7 @@ import { recoverPendingExternalAgentResult } from "./external-agent-supervisor-r
 import { executeExternalAgentVerification } from "./external-agent-verification.js";
 import { activeExecutionGrantForTask, resolveConfiguredAuthority } from "./configured-authority.js";
 import type { TaskAdvanceParsed } from "./advance.spec.js";
+import { requireKernelIssuanceEligibility } from "./kernel-cutover.js";
 
 export function makeRunTaskAdvanceHandler(deps: {
   getContext: (command: string, options: { includeRemote: boolean }) => Promise<CommandContext>;
@@ -86,6 +87,7 @@ export function makeRunTaskAdvanceHandler(deps: {
       createCliEmitter().json(packet);
       return 0;
     }
+    if (source) requireKernelIssuanceEligibility(source);
     const decide = async (freshHead = false): Promise<TaskRouteDecision> => {
       const routeCommand = freshHead
         ? await loadCommandContext({
