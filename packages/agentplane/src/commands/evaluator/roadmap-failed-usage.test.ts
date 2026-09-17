@@ -17,6 +17,7 @@ import {
   executePreparedEvaluatorEpisode,
 } from "./evaluator-episode.js";
 import { prepareEvaluatorReview } from "./evaluator-review-usecase.js";
+import { materializeLegacyDrainIdentityFixture } from "../shared/native-task-identity-fixture.js";
 import { recoverPersistedEvaluatorFailureEpisode } from "./evaluator-execute-supervisor.js";
 
 const PROVIDER_OBSERVATION_TIMEOUT_MS = 2000;
@@ -43,6 +44,7 @@ async function prepare(root: string, taskId: string) {
   await execFileAsync("git", ["commit", "-m", "feat: evaluator failure fixture"], {
     cwd: root,
   });
+  await materializeLegacyDrainIdentityFixture({ root, task_id: taskId });
   const command = await loadCommandContext({ cwd: root, rootOverride: root });
   const task = await loadTaskFromContext({ ctx: command, taskId });
   const evaluatorCatalog = await loadEvaluatorCatalog({ projectRoot: root, includeBuiltin: true });

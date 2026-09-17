@@ -42,10 +42,7 @@ function isTaskArtifactPath(ctx: PolicyContext, filePath: string): boolean {
 
 function isDocsOrContentIntent(intent?: CommitTaskIntent): boolean {
   if (!intent) return false;
-  return (
-    intent.mutationScope === "docs" ||
-    intent.taskKind === "content"
-  );
+  return intent.mutationScope === "docs" || intent.taskKind === "content";
 }
 
 function isNonMutatingIntent(intent?: CommitTaskIntent): boolean {

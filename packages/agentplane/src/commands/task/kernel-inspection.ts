@@ -105,7 +105,16 @@ export async function issueKernelInspection(
       authority_digest: authority.digest,
     }),
     state_fingerprint_policy: {
-      required_components: ["task", "git", "backend_projection", "policy", "authority"],
+      fingerprint_schema_version: 2,
+      required_components: [
+        "task",
+        "git",
+        "backend_projection",
+        "plan",
+        "policy",
+        "capability",
+        "authority",
+      ],
       provider: { required: false, unavailable: "allow_if_unchanged" },
     },
     authority: {

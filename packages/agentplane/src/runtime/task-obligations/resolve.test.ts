@@ -71,36 +71,6 @@ describe("native task obligations", () => {
     );
   });
 
-  it("maps every built-in compatibility preference without invoking Blueprint selection", () => {
-    const cases = [
-      ["analysis.light", "analysis", "analysis"],
-      ["content.light", "content", "content"],
-      ["docs.change", "docs", "docs"],
-      ["code.direct", "code", "code"],
-      ["code.branch_pr", "code", "code"],
-      ["performance.benchmark", "code", "benchmark"],
-      ["quality.regression", "code", "regression"],
-      ["context.assimilation", "context", "context"],
-      ["context.maximum_assimilation", "context", "context_maximum"],
-      ["post_run.improvement_review", "analysis", "post_run_review"],
-      ["release.strict", "release", "release"],
-      ["ops.approval", "ops", "ops"],
-    ] as const;
-
-    expect(
-      cases.map(
-        ([compatibilityPreference, taskKind]) =>
-          resolveNativeTaskObligations(
-            input({
-              compatibility_preference: compatibilityPreference,
-              task_kind: taskKind,
-              mutation_scope: taskKind,
-            }),
-          ).profile,
-      ),
-    ).toEqual(cases.map((entry) => entry[2]));
-  });
-
   it("keeps required policy visible and stops when the execution profile budget is too small", () => {
     const executionProfile = resolveExecutionProfileRuntime(defaultConfig());
     executionProfile.context_budget = {

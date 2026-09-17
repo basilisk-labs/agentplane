@@ -5,6 +5,7 @@ import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import type { GitContext } from "@agentplaneorg/core/git";
 import type { TaskStorePatch } from "../shared/task-store.js";
+import { withLegacyDrainIdentityFixture } from "../shared/native-task-identity-fixture.js";
 import { applyStorePatch, createMutableTaskStore } from "./finish-task-store.testkit.js";
 const mocks = vi.hoisted(() => ({
   commitFromComment: vi.fn(),
@@ -93,7 +94,7 @@ vi.mock("./shared.js", async (importOriginal) => {
 
 function mkTask(overrides: Partial<TaskData>): TaskData {
   const qualityReviewSha = overrides.commit?.hash ?? "hc";
-  return {
+  const task: TaskData = {
     id: "T-1",
     title: "Title",
     description: "Desc",
@@ -116,6 +117,11 @@ function mkTask(overrides: Partial<TaskData>): TaskData {
     doc: "## Summary\nTask summary\n\n## Scope\nIn-scope files\n\n## Plan\n1. Implement\n\n## Risks\nLow\n\n## Verification\n\n## Rollback Plan\nRevert commit",
     ...overrides,
   };
+  return withLegacyDrainIdentityFixture({
+    task,
+    config: defaultConfig(),
+    work_items_completed: true,
+  });
 }
 
 function mkCtx(overrides?: Partial<CommandContext>): CommandContext {

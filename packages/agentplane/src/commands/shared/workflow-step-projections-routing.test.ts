@@ -12,8 +12,9 @@ import {
   withBootstrapWorkflowFingerprint,
   type WorkflowRouteStateInput,
 } from "./workflow-step-fingerprint.js";
+import { withNativeIdentity } from "./workflow-step.testkit.js";
 
-const task = {
+const task = withNativeIdentity({
   id: "202607250200-PROJ1",
   title: "Workflow step projection routing fixture",
   description: "Exercise routing execution packet projections.",
@@ -30,7 +31,7 @@ const task = {
     approved_at: "2026-07-25T00:00:00.000Z",
   },
   verification: { state: "pending" },
-} satisfies TaskData;
+} satisfies TaskData);
 
 const taskWorktreePath = `/repo/.agentplane/worktrees/${task.id}`;
 const taskBranch = `task/${task.id}/workflow-step-projection-fixture`;

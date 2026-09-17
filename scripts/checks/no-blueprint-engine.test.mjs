@@ -71,7 +71,11 @@ function isProductionFile(file) {
 
 test("active Blueprint engine and mutation surfaces are absent", () => {
   for (const retiredPath of RETIRED_PATHS) {
-    assert.equal(existsSync(path.join(ROOT, retiredPath)), false, `retired path exists: ${retiredPath}`);
+    assert.equal(
+      existsSync(path.join(ROOT, retiredPath)),
+      false,
+      `retired path exists: ${retiredPath}`,
+    );
   }
 
   const forbiddenImport =
@@ -79,7 +83,9 @@ test("active Blueprint engine and mutation surfaces are absent", () => {
   const forbiddenRuntimeSymbol =
     /\b(?:resolveBlueprint|BlueprintRegistry|BlueprintExecutionPlan|BlueprintExecutionState)\b/u;
   const violations = [];
-  for (const file of PRODUCTION_ROOTS.flatMap(walk).filter(isProductionFile)) {
+  for (const file of PRODUCTION_ROOTS.flatMap((root) => walk(root)).filter((file) =>
+    isProductionFile(file),
+  )) {
     const text = readFileSync(path.join(ROOT, file), "utf8");
     if (forbiddenImport.test(text) || forbiddenRuntimeSymbol.test(text)) violations.push(file);
   }
@@ -87,8 +93,8 @@ test("active Blueprint engine and mutation surfaces are absent", () => {
 });
 
 test("remaining production Blueprint mentions are explicit cold-reader exceptions", () => {
-  const mentions = PRODUCTION_ROOTS.flatMap(walk)
-    .filter(isProductionFile)
+  const mentions = PRODUCTION_ROOTS.flatMap((root) => walk(root))
+    .filter((file) => isProductionFile(file))
     .filter((file) => /blueprint/iu.test(readFileSync(path.join(ROOT, file), "utf8")))
     .toSorted();
   assert.deepEqual(
@@ -106,5 +112,9 @@ test("generated live schemas expose no Blueprint inputs", () => {
     .filter((file) => file.endsWith(".json"))
     .filter((file) => /blueprint/iu.test(readFileSync(path.join(ROOT, file), "utf8")))
     .toSorted();
-  assert.deepEqual(violations, [], `generated Blueprint schema surfaces:\n${violations.join("\n")}`);
+  assert.deepEqual(
+    violations,
+    [],
+    `generated Blueprint schema surfaces:\n${violations.join("\n")}`,
+  );
 });

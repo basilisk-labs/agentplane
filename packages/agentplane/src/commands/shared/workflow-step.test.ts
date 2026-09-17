@@ -16,7 +16,7 @@ import {
   projectWorkflowStepOracle,
 } from "./workflow-step-projections.js";
 import { reduceRouteState } from "./workflow-step-reducer.js";
-import { WORKFLOW_STATE_FINGERPRINT_POLICY } from "./workflow-step-fingerprint.js";
+import { WORKFLOW_STATE_FINGERPRINT_V2_POLICY } from "./workflow-step-fingerprint.js";
 import {
   prFlow,
   resume,
@@ -38,9 +38,9 @@ describe("typed WorkflowStep reducer", () => {
       updated_at: "2026-09-04T00:00:00.000Z",
     });
     const canonicalTask = { ...task, extensions: withTaskCentricAggregate({}, aggregate) };
-    const state = routeState({ workflowMode: "direct", task: canonicalTask });
+    const state = { ...routeState({ workflowMode: "direct" }), task: canonicalTask };
     expect(directStep(state)).toMatchObject({ id: "task.start", kind: "cli_operation" });
-    expect(reduceRouteState(routeState({ task: canonicalTask }))).toMatchObject({
+    expect(reduceRouteState({ ...routeState(), task: canonicalTask })).toMatchObject({
       id: "task.branch.start",
       kind: "cli_operation",
     });
@@ -181,7 +181,7 @@ describe("typed WorkflowStep reducer", () => {
       evaluateStateFingerprintPrecondition({
         expected: step.preconditionFingerprint,
         current: step.preconditionFingerprint,
-        policy: WORKFLOW_STATE_FINGERPRINT_POLICY,
+        policy: WORKFLOW_STATE_FINGERPRINT_V2_POLICY,
       }),
     ).toMatchObject({
       status: "fresh_with_bounded_uncertainty",
@@ -306,6 +306,7 @@ describe("typed WorkflowStep reducer", () => {
         task: {
           ...task,
           extensions: {
+            ...task.extensions,
             "agentplane.human_input": {
               openQuestion: {
                 id: "question-1",
@@ -375,6 +376,7 @@ describe("typed WorkflowStep reducer", () => {
         task: {
           ...task,
           extensions: {
+            ...task.extensions,
             "agentplane.human_input": {
               openQuestion: {
                 id: "question-mismatch",
@@ -639,7 +641,7 @@ describe("typed WorkflowStep reducer", () => {
         task: {
           ...task,
           verification: { state: "ok" },
-          extensions: { branch_pr_batch: { role: "included" } },
+          extensions: { ...task.extensions, branch_pr_batch: { role: "included" } },
         },
         prFlow: null,
         blockers: [
@@ -970,6 +972,7 @@ describe("typed WorkflowStep reducer", () => {
           task: {
             ...pendingTask,
             extensions: {
+              ...pendingTask.extensions,
               "agentplane.task_centric_replan_required": {
                 schema_version: 1,
                 reason_code: "execution_contract_changed",

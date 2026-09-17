@@ -20,31 +20,6 @@ export async function approveRouteTaskPlan(
   objective: string,
 ): Promise<void> {
   await prepareContinuityPlan(root, taskId, objective, false);
-  const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
-  const task = await loadTaskFromContext({ ctx, taskId });
-  const commands = task.verify ?? [];
-  const verifySteps =
-    commands.length > 0
-      ? commands
-          .map((command, index) => `${index + 1}. Run \`${command}\`. Expected: ${objective}`)
-          .join("\n")
-      : `1. Review the route result. Expected: ${objective}`;
-  expect(
-    await runCliSilent([
-      "task",
-      "doc",
-      "set",
-      taskId,
-      "--section",
-      "Verify Steps",
-      "--text",
-      verifySteps,
-      "--updated-by",
-      "PLANNER",
-      "--root",
-      root,
-    ]),
-  ).toBe(0);
   expect(
     await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]),
   ).toBe(0);

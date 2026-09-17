@@ -1,16 +1,32 @@
 import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { blueprintSnapshotDigest } from "../../blueprints/snapshot.js";
 import {
   auditHistoricalBlueprintSnapshot,
   projectHistoricalBlueprintAudit,
 } from "./historical-audit.js";
 
 const TASK_ID = "202609170000-AUDIT1";
+
+function historicalDigest(payload: unknown): string {
+  const sort = (value: unknown): unknown =>
+    Array.isArray(value)
+      ? value.map((entry) => sort(entry))
+      : value && typeof value === "object"
+        ? Object.fromEntries(
+            Object.entries(value)
+              .toSorted(([left], [right]) => left.localeCompare(right))
+              .map(([key, nested]) => [key, sort(nested)]),
+          )
+        : value;
+  return createHash("sha256")
+    .update(JSON.stringify(sort(payload)))
+    .digest("hex");
+}
 
 async function fixtureRoot(): Promise<{ root: string; snapshotPath: string }> {
   const root = await mkdtemp(path.join(tmpdir(), "agentplane-historical-blueprint-"));
@@ -32,7 +48,7 @@ describe("historical Blueprint audit", () => {
       artifactKind: "agentplane.blueprint.resolved_snapshot",
       selectedBlueprint: { id: "code.branch_pr", version: 1 },
     };
-    const storedDigest = blueprintSnapshotDigest(payload).value;
+    const storedDigest = historicalDigest(payload);
     const source = `${JSON.stringify({ ...payload, digest: { algorithm: "sha256", value: storedDigest } }, null, 2)}\n`;
     await writeFile(snapshotPath, source, "utf8");
 

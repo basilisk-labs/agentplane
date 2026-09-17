@@ -7,6 +7,7 @@ import { resolveLocalRecordedCloseFlow } from "./route-decision.js";
 import { deriveNextAction } from "./route-decision-next-action.js";
 import type { RouteCleanupProbe } from "./route-decision-types.js";
 import type { CommandContext } from "./task-backend.js";
+import { withNativeIdentity } from "./workflow-step.testkit.js";
 
 const localCloseMocks = vi.hoisted(() => ({
   readTaskPrMetaArtifact: vi.fn(),
@@ -23,17 +24,20 @@ vi.mock("../task/close-tail-state.js", async (importOriginal) => ({
   taskCloseAlreadyRecordedOnBase: localCloseMocks.taskCloseAlreadyRecordedOnBase,
 }));
 
-const task = {
-  id: "T-1",
-  title: "Task",
-  description: "Task",
-  status: "DONE",
-  priority: "med",
-  owner: "CODER",
-  depends_on: [],
-  tags: [],
-  verify: [],
-} as TaskData;
+const task = withNativeIdentity(
+  {
+    id: "T-1",
+    title: "Task",
+    description: "Task",
+    status: "DONE",
+    priority: "med",
+    owner: "CODER",
+    depends_on: [],
+    tags: [],
+    verify: [],
+  } as TaskData,
+  "COMPLETED",
+);
 
 const resume = {
   task_id: "T-1",

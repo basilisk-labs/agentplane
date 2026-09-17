@@ -30,14 +30,15 @@ should describe day-to-day repository operation and link to generated user comma
 - [Release and publishing](./release-and-publishing)
 - [Contributing](./contributing)
 
-## Staged canonical Task adapter
+## Canonical Task adapter
 
-`KernelBackendAdapter` is the M2 boundary for the isolated `taskKernel`. The backend stores one
+`KernelBackendAdapter` is the active boundary for the isolated `taskKernel`. The backend stores one
 `task_kernel` extension containing the aggregate, ordered events, mutation receipts and record
 digest in its existing atomic Task record. It does not introduce a second independently mutable
 Task store. A backend must declare whole-record atomicity and revision-guarded writes. Cached
 remote reads cannot qualify as canonical readback. The local implementation reuses the Task README
-transaction. Cloud behavior is qualified against a CAS fake before any production cutover.
+transaction. Cloud behavior is qualified against a CAS fake before it can claim canonical mutation
+support.
 
 Reads distinguish missing, canonical, archived, legacy-unmigrated and malformed records. Creation
 calls the kernel with explicit intent and authority. Mutation never converts legacy status into a
@@ -52,7 +53,8 @@ mutation authority.
 
 `task show` renders canonical records through `projectKernelTask`. Archived records remain read
 only. The old Task-centric adapter refuses records bearing the new extension, including malformed
-ones. Legacy records continue on their existing path until the M2 replay gate and M3 cutover.
+ones. New tasks are canonical in 0.7.10. Legacy records require explicit migration and do not enter
+the active route without a valid native identity.
 
 Validation, evaluator and provider observation parsers bind evidence to the exact Task, plan,
 WorkItem, implementation, check, environment or effect request. They return observations, not
@@ -61,8 +63,8 @@ must submit an authorized command to the kernel before persisting a transition.
 
 The adapter tests cover real local atomic writes, cloud-fake CAS equivalence, concurrent creation,
 response loss, missing readback, idempotency conflicts, malformed state and projection isolation.
-Migration backups, rollback receipts, the full replay corpus and production cutover have separate
-milestone gates; these adapter tests do not prove those gates.
+Migration backups, rollback receipts, the full replay corpus, and the 0.7.10 cutover have separate
+qualification gates; these adapter tests do not prove those gates by themselves.
 
 On macOS, the Bun compilation smoke ad-hoc signs only its generated temporary executable before
 launch so an invalid linker signature cannot mask lifecycle startup failures.

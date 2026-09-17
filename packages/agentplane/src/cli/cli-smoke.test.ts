@@ -7,7 +7,8 @@ import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
 import { runCli } from "./run-cli.js";
-import { createRecipeArchive, setTaskVerifySteps } from "@agentplane/testkit";
+import { materializeLegacyDrainIdentityFixture } from "../commands/shared/native-task-identity-fixture.js";
+import { createRecipeArchive, recordVerificationOk, setTaskVerifySteps } from "@agentplane/testkit";
 
 const execFileAsync = promisify(execFile);
 
@@ -87,11 +88,14 @@ describe("agentplane CLI smoke", () => {
 
       const taskNew = await runCliWithOutput(root, [
         "task",
-        "new",
+        "add",
+        "202609170003-SMK1",
         "--title",
         "Smoke task",
         "--description",
         "Smoke test task",
+        "--priority",
+        "med",
         "--owner",
         "ORCHESTRATOR",
         "--tag",
@@ -143,16 +147,7 @@ describe("agentplane CLI smoke", () => {
         cwd: root,
       });
 
-      const verify = await runCliWithOutput(root, [
-        "verify",
-        taskId,
-        "--ok",
-        "--by",
-        "CODER",
-        "--note",
-        "Smoke verification: local checks only; core lifecycle commands succeeded.",
-      ]);
-      expect(verify.code, `${verify.stdout}\n${verify.stderr}`).toBe(0);
+      await recordVerificationOk(root, taskId);
 
       const evaluator = await runCliWithOutput(root, [
         "evaluator",
@@ -173,6 +168,15 @@ describe("agentplane CLI smoke", () => {
 
       await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "test: record smoke verification"], {
+        cwd: root,
+      });
+      await materializeLegacyDrainIdentityFixture({
+        root,
+        task_id: taskId,
+        work_items_completed: true,
+      });
+      await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "test: complete smoke work item"], {
         cwd: root,
       });
 

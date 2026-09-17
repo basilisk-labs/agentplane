@@ -36,6 +36,7 @@ import { runTaskNewParsed } from "./task/new.js";
 import { loadCommandContext } from "./shared/task-backend.js";
 import { cmdVerifyParsed } from "./task/verify-record.js";
 import { runEvaluatorRun } from "./evaluator/evaluator.command.js";
+import { materializeLegacyDrainIdentityFixture } from "./shared/native-task-identity-fixture.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -885,6 +886,11 @@ describe("commands/workflow", () => {
 
     await addTask(root, "202602050900-Z9Y8");
     await gitCommitFile(root, "done.txt", "chore: done");
+    await materializeLegacyDrainIdentityFixture({
+      root,
+      task_id: taskId,
+      work_items_completed: true,
+    });
     const verifyCtx = await loadCommandContext({ cwd: root, rootOverride: null });
     await cmdVerifyParsed({
       ctx: verifyCtx,

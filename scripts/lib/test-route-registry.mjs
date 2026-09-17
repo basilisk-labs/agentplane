@@ -298,7 +298,6 @@ const BACKEND_CRITICAL_FILES = [
 ];
 
 const RELEASE_CRITICAL_FILES = [
-  "packages/agentplane/src/cli/release-critical-lifecycle.test.ts",
   "packages/agentplane/src/cli/release-recovery-script.test.ts",
   "packages/agentplane/src/cli/release-smoke.test.ts",
   "packages/agentplane/src/cli/cli-smoke.test.ts",
@@ -381,7 +380,6 @@ const V07_LIFECYCLE_FILES = [
   "packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts",
   "packages/agentplane/src/cli/run-cli.core.lifecycle.block-finish.test.ts",
   "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts",
 ];
 
 const V07_CONTEXT_FILES = [
@@ -408,7 +406,6 @@ const V07_SUPERVISOR_FILES = [
   "packages/agentplane/src/commands/shared/workflow-supervisor.test.ts",
   "packages/agentplane/src/commands/shared/workflow-step.test.ts",
   "packages/agentplane/src/commands/shared/workflow-step-projections.test.ts",
-  "packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts",
   "packages/agentplane/src/commands/task/direct-task-supervisor.test.ts",
   "packages/agentplane/src/commands/task/branch-task-supervisor.test.ts",
   "packages/agentplane/src/commands/task/agent-action-packet.test.ts",
@@ -695,7 +692,6 @@ const CONTEXT_TEST_FILES = [
   "packages/agentplane/src/commands/context/release-readiness.test.ts",
   "packages/agentplane/src/commands/context/sqlite.unit.test.ts",
   "packages/agentplane/src/commands/context/harvest-tasks.test.ts",
-  "packages/agentplane/src/blueprints/validate.test.ts",
 ];
 
 const RUNNER_TEST_FILES = [
@@ -707,7 +703,6 @@ const RUNNER_TEST_FILES = [
 ];
 
 const ROUTE_ORACLE_TEST_FILES = [
-  "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts",
   "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts",
   "packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts",
   "packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts",

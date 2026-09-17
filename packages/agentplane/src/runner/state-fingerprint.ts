@@ -52,10 +52,7 @@ export const RUNNER_STATE_FINGERPRINT_V2_POLICY = {
 
 export const RUNNER_STATE_FINGERPRINT_POLICY = RUNNER_STATE_FINGERPRINT_V2_POLICY;
 
-export function resolveRunnerStateFingerprintPolicy(
-  ctx: CommandContext,
-  fingerprint?: StateFingerprint,
-): StateFingerprintPolicy {
+export function resolveRunnerStateFingerprintPolicy(ctx: CommandContext): StateFingerprintPolicy {
   const base = RUNNER_STATE_FINGERPRINT_V2_POLICY;
   return {
     ...base,

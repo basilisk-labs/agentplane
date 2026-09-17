@@ -1,4 +1,8 @@
-import { StateFingerprintPreconditionError } from "@agentplaneorg/core/schemas";
+import {
+  buildStateFingerprint,
+  StateFingerprintPreconditionError,
+  type AgentWorkOrderV2,
+} from "@agentplaneorg/core/schemas";
 import { makeTaskBackendDouble, makeTaskCommandContext } from "@agentplane/testkit/task";
 
 import type { TaskData } from "../backends/task-backend.js";
@@ -34,6 +38,10 @@ function emptyTaskEpisodeCompaction(): RunnerTaskContextCompaction {
   };
 }
 
+function present(source: string, value: unknown) {
+  return { state: "present" as const, source, value };
+}
+
 export function task(overrides: Partial<TaskData> = {}): TaskData {
   return {
     id: "T-1",
@@ -66,6 +74,84 @@ export function gitSnapshot(overrides: Partial<GitSnapshot> = {}): GitSnapshot {
     path_fingerprints: [],
     errors: [],
     ...overrides,
+  };
+}
+
+function workOrder(taskData: TaskData): AgentWorkOrderV2 {
+  const stateFingerprint = buildStateFingerprint({
+    task_id: taskData.id,
+    task_revision: taskData.revision ?? null,
+    git_head: "a".repeat(40),
+    worktree: "/repo",
+    components: {
+      task: present("task_fixture", { id: taskData.id, revision: taskData.revision ?? null }),
+      git: present("git_fixture", { head: "a".repeat(40) }),
+      backend_projection: present("backend_fixture", { backend_id: "local" }),
+      plan: present("native_plan", { revision: 1, digest: `sha256:${"3".repeat(64)}` }),
+      policy: present("policy_fixture", { modules: [".agentplane/policy/dod.code.md"] }),
+      capability: present("native_capability", { role: "EXECUTOR", mutation_scope: "code" }),
+      knowledge: present("knowledge_fixture", { initialized: false }),
+      provider: { state: "unavailable", source: "provider_fixture", reason_code: "not_required" },
+      authority: present("authority_fixture", { writable_roots: ["/repo"] }),
+    },
+  });
+  return {
+    schema_version: 2,
+    kind: "agent_work_order",
+    work_order_id: `work-order-${taskData.id}`,
+    role: "EXECUTOR",
+    task: {
+      id: taskData.id,
+      revision: taskData.revision ?? 0,
+      objective: taskData.description,
+      acceptance_criteria: [
+        { id: "fixture", description: "Exercise the fixture.", required: true },
+      ],
+      unresolved_questions: [],
+    },
+    state_fingerprint: stateFingerprint,
+    state_fingerprint_policy: {
+      fingerprint_schema_version: 2,
+      required_components: [
+        "task",
+        "git",
+        "backend_projection",
+        "plan",
+        "policy",
+        "capability",
+        "authority",
+      ],
+      provider: { required: false, unavailable: "allow_if_unchanged" },
+    },
+    authority: {
+      mutation_scope: "code",
+      writable_roots: ["/repo"],
+      protected_paths: [],
+      allowed_tool_classes: ["repository_read", "git_read", "workspace_write", "run_checks"],
+      network: "deny",
+      external_side_effects: [],
+      sandbox: "workspace-write",
+      expires_at: null,
+    },
+    context_intent: {
+      purpose: "Exercise runner state fingerprint fixtures.",
+      required_knowledge_ref_digests: [],
+      require_prepared_evidence: false,
+    },
+    knowledge_refs: [],
+    prepared_evidence: [],
+    required_inputs: [],
+    required_outputs: [
+      {
+        id: "semantic-result",
+        kind: "semantic_result",
+        description: "Return the typed fixture result.",
+        required: true,
+      },
+    ],
+    verification_intent: { requirements: [], require_execution_receipt: true },
+    semantic_result_schema: "agentplane.agent_semantic_result.v2",
+    stop_rules: [],
   };
 }
 
@@ -123,7 +209,6 @@ export function bundle(taskData = task()): RunnerContextBundle {
         tags: [...(taskData.tags ?? [])],
         task_kind: taskData.task_kind ?? null,
         mutation_scope: taskData.mutation_scope ?? null,
-        blueprint_request: taskData.blueprint_request ?? null,
       },
       narrative: {
         title: taskData.title,
@@ -135,23 +220,25 @@ export function bundle(taskData = task()): RunnerContextBundle {
       history: { comments: [], events: [] },
       compaction: emptyTaskEpisodeCompaction(),
     },
-    blueprint: {
-      schemaVersion: 1,
-      blueprintId: "code.branch_pr",
-      blueprintVersion: 1,
-      title: "Branch PR code change",
-      taskIntent: {},
-      whySelected: [],
-      states: [],
-      requiredEvidence: [],
-      policyModules: [".agentplane/policy/dod.code.md"],
-      allowedCommands: [],
-      contextBudget: { maxPolicyModules: 4, rationale: "test" },
-      contextManifest: [],
-      acceptedRecipeExtensions: [],
-      rejectedRecipeExtensions: [],
-      stopReasons: [],
+    task_obligations: {
+      schema_version: 1,
+      kind: "agentplane.native_task_obligations",
+      source: "task_execution_contract",
+      profile: "code",
+      task_kind: "code",
+      route: { selected_mode: "direct", reason_codes: ["test_fixture"] },
+      policy_modules: [],
+      context_budget: {
+        max_policy_modules: 4,
+        max_prompt_blocks: 16,
+        profile: "standard",
+        rationale: "Test fixture.",
+      },
+      mandatory_stages: [],
+      evidence_requirements: [],
+      stop_rules: [],
     },
+    work_order: workOrder(taskData),
     route_decision: {},
     execution: {
       adapter_id: "codex",
@@ -160,9 +247,6 @@ export function bundle(taskData = task()): RunnerContextBundle {
       artifact_paths: {
         run_dir: "/run",
         bundle_path: "/run/bundle.json",
-        blueprint_plan_path: "/run/blueprint.json",
-        blueprint_execution_plan_path: "/run/blueprint-execution.json",
-        blueprint_execution_state_path: "/run/blueprint-state.json",
         context_manifest_path: "/run/context.json",
         bootstrap_path: "/run/bootstrap.md",
         state_path: "/run/state.json",
@@ -213,11 +297,7 @@ export function probes(opts: {
   components?: Partial<
     Pick<
       RunnerStateFingerprintProbes,
-      | "observe_backend_projection"
-      | "observe_policy"
-      | "observe_blueprint"
-      | "observe_knowledge"
-      | "observe_authority"
+      "observe_backend_projection" | "observe_policy" | "observe_knowledge" | "observe_authority"
     >
   >;
 }): RunnerStateFingerprintProbes {
@@ -246,12 +326,6 @@ export function probes(opts: {
           prompts: opts.bundle.base_prompts,
           policy_modules: [],
         },
-      }),
-    observe_blueprint: () =>
-      Promise.resolve({
-        state: "present",
-        source: "blueprint_resolver",
-        value: opts.bundle.blueprint,
       }),
     observe_knowledge: () =>
       Promise.resolve({

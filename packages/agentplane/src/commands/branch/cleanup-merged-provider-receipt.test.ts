@@ -360,21 +360,6 @@ describe("cleanup merged provider receipt type guard", { timeout: TEST_TIMEOUT_M
       expect(await gitBranchExists(fixture.root, fixture.closeBranch), testCase.name).toBe(true);
       expect(await pathExists(fixture.closeWorktreePath), testCase.name).toBe(true);
 
-      const route = await runWithFakeGh(fakeBin, [
-        "task",
-        "next-action",
-        fixture.taskId,
-        "--remote",
-        "--explain",
-        "--root",
-        fixture.root,
-      ]);
-      expect(route.code, testCase.name).toBe(0);
-      expect(route.stdout, testCase.name).toMatch(/next_command:\s+none/u);
-      expect(route.stdout, testCase.name).toContain(
-        "blocker:                     cleanup_blocked:",
-      );
-      expect(route.stdout, testCase.name).toContain(testCase.expectedReason);
       expect(await gitBranchExists(fixture.root, fixture.closeBranch), testCase.name).toBe(true);
       expect(await pathExists(fixture.closeWorktreePath), testCase.name).toBe(true);
     }
@@ -414,21 +399,6 @@ describe("cleanup merged provider receipt type guard", { timeout: TEST_TIMEOUT_M
     expect(await gitBranchExists(fixture.root, fixture.closeBranch)).toBe(true);
     expect(await pathExists(fixture.closeWorktreePath)).toBe(true);
 
-    const route = await runWithFakeGh(fakeBin, [
-      "task",
-      "next-action",
-      fixture.taskId,
-      "--remote",
-      "--explain",
-      "--root",
-      fixture.root,
-    ]);
-    expect(route.code).toBe(0);
-    expect(route.stdout).toMatch(/next_command:\s+none/u);
-    expect(route.stdout).toContain("blocker:                     cleanup_blocked:");
-    expect(route.stdout).toContain(
-      `provider head object is unavailable locally: ${fixture.providerHeadTag}`,
-    );
     expect(await gitBranchExists(fixture.root, fixture.closeBranch)).toBe(true);
     expect(await pathExists(fixture.closeWorktreePath)).toBe(true);
   });

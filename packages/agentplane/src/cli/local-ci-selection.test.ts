@@ -407,7 +407,9 @@ describe("local CI fast selection", () => {
     expect(plan.testFiles).toContain(
       "packages/agentplane/src/commands/context/release-readiness.test.ts",
     );
-    expect(plan.testFiles).toContain("packages/agentplane/src/blueprints/validate.test.ts");
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/commands/context/harvest-tasks.test.ts",
+    );
   });
 
   it("routes isolated hook and CI routing paths to the hooks bucket", () => {

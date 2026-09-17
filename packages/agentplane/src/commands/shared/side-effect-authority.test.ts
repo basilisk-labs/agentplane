@@ -41,7 +41,8 @@ function fingerprint(gitHead = "a".repeat(40), trackedContent = gitHead): StateF
       },
       backend_projection: { state: "present", source: "fixture", value: { backend: "local" } },
       policy: { state: "present", source: "fixture", value: { rule: "workflow" } },
-      blueprint: { state: "present", source: "fixture", value: { digest: "blueprint" } },
+      plan: { state: "present", source: "fixture", value: { digest: "plan" } },
+      capability: { state: "present", source: "fixture", value: { role: "EXECUTOR" } },
       knowledge: { state: "present", source: "fixture", value: { digest: "knowledge" } },
       provider: { state: "present", source: "fixture", value: { pr: "not_found" } },
       authority: { state: "present", source: "fixture", value: { route: "pr.open" } },
@@ -68,7 +69,8 @@ function workflowProviderFingerprint(opts: {
       },
       backend_projection: { state: "present", source: "fixture", value: { backend: "local" } },
       policy: { state: "present", source: "fixture", value: { rule: "workflow" } },
-      blueprint: { state: "present", source: "fixture", value: { digest: "blueprint" } },
+      plan: { state: "present", source: "fixture", value: { digest: "plan" } },
+      capability: { state: "present", source: "fixture", value: { role: "EXECUTOR" } },
       knowledge: { state: "present", source: "fixture", value: { digest: "knowledge" } },
       provider:
         opts.providerObserved === false

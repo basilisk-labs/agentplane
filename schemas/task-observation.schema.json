@@ -28,14 +28,7 @@
     },
     "phase": {
       "type": "string",
-      "enum": [
-        "planning",
-        "implementation",
-        "verification",
-        "integration",
-        "finish",
-        "post_run"
-      ]
+      "enum": ["planning", "implementation", "verification", "integration", "finish", "post_run"]
     },
     "kind": {
       "type": "string",
@@ -56,12 +49,7 @@
     },
     "severity": {
       "type": "string",
-      "enum": [
-        "low",
-        "medium",
-        "high",
-        "critical"
-      ]
+      "enum": ["low", "medium", "high", "critical"]
     },
     "summary": {
       "type": "string",
@@ -129,20 +117,12 @@
           "minLength": 1
         }
       },
-      "required": [
-        "type"
-      ],
+      "required": ["type"],
       "additionalProperties": false
     },
     "status": {
       "type": "string",
-      "enum": [
-        "open",
-        "accepted",
-        "promoted",
-        "dismissed",
-        "superseded"
-      ]
+      "enum": ["open", "accepted", "promoted", "dismissed", "superseded"]
     },
     "tags": {
       "type": "array",

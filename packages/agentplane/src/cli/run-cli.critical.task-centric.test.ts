@@ -3,13 +3,7 @@ import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
-import {
-  parseTaskReadme,
-  taskCentricDigest,
-  type RepositorySnapshot,
-  type TaskAggregate,
-  type TaskPlanProposal,
-} from "@agentplaneorg/core/tasks";
+import { parseTaskReadme, taskKernel as k, type TaskAggregate } from "@agentplaneorg/core/tasks";
 import { installRunCliIntegrationHarness, mkTempDir, captureStdIO } from "@agentplane/testkit";
 import { describe, expect, it } from "vitest";
 
@@ -43,7 +37,7 @@ type WorkOrder = {
   role: string;
   task: { id: string; work_item_id?: string };
   state_fingerprint: { worktree: string };
-  planning_context?: { repository_snapshot: RepositorySnapshot };
+  canonical_binding: Record<string, unknown>;
 };
 
 async function runJson(root: string, argv: readonly string[]): Promise<Record<string, unknown>> {
@@ -77,8 +71,8 @@ async function writeResult(
   packet: Packet,
   opts: {
     summary: string;
-    proposal?: TaskPlanProposal;
-    include_intent?: boolean;
+    canonical_plan?: ReturnType<typeof canonicalPlan>;
+    outputs?: string[];
     review?: {
       verdict: "pass" | "rework" | "blocked" | "human_review";
       missing_tests: string[];
@@ -89,74 +83,31 @@ async function writeResult(
 ): Promise<void> {
   if (!packet.exchange) throw new Error("Expected an external-agent exchange.");
   const workOrder = await readWorkOrder(packet);
-  const exchangePath = path.join(packet.exchange.directory, "exchange.json");
-  const exchange = JSON.parse(await readFile(exchangePath, "utf8")) as Record<string, unknown>;
-  exchange.host_usage = {
-    schema_version: 1,
-    observed_by: "host_transport",
-    state: "observed",
-    reason: null,
-    provider_usage: {
-      provider: "critical-test",
-      run_id: `run:${workOrder.work_order_id}`,
-      work_order_id: workOrder.work_order_id,
-      thread_id: `thread:${workOrder.work_order_id}`,
-      turn_id: `turn:${workOrder.work_order_id}`,
-    },
-    usage: {
-      input_tokens: 1,
-      output_tokens: 1,
-      total_tokens: 2,
-      visible_output_tokens: 1,
-      reasoning_tokens: 0,
-      cached_input_tokens: 0,
-    },
-  };
-  await writeFile(exchangePath, `${JSON.stringify(exchange, null, 2)}\n`, "utf8");
   await writeFile(
     packet.exchange.result_path,
     `${JSON.stringify(
       {
-        schema_version: 1,
-        kind: "agent_action_result",
-        task_id: packet.task_id,
-        transition_id: packet.transition_id,
-        state_fingerprint: packet.state_fingerprint,
-        role: workOrder.role,
-        result: {
-          schema_version: 2,
-          kind: "agent_semantic_result",
-          work_order_id: workOrder.work_order_id,
-          status: "completed",
-          summary: opts.summary,
-          findings: opts.review
-            ? ["The approved WorkItem outputs and root verification evidence are complete."]
-            : [],
-          uncertainty: [],
-          ...(opts.proposal ? { task_plan_proposal: opts.proposal } : {}),
-          ...(opts.review ? { review: opts.review } : {}),
-          ...(opts.include_intent
-            ? {
-                task_intent: {
-                  task_kind: "code",
-                  mutation_scope: "code",
-                  risk_flags: [],
-                  tags: ["task-centric"],
-                  execution: {
-                    schema_version: 2,
-                    preferred_mode: "direct",
-                    scope_roots: ["src"],
-                    repository_effects: ["repository_write", "source_code", "tests"],
-                    external_effects: [],
-                    requirements_uncertainty: "bounded",
-                    implementation_uncertainty: "bounded",
-                    reversibility: "reversible",
-                    rationale: ["fresh repository task-centric release gate"],
-                  },
-                },
-              }
-            : {}),
-        },
+        schema_version: 2,
+        kind: "agent_semantic_result",
+        work_order_id: workOrder.work_order_id,
+        status: "completed",
+        summary: opts.summary,
+        findings: opts.review
+          ? ["The approved WorkItem outputs and root verification evidence are complete."]
+          : [],
+        uncertainty: [],
+        canonical_binding: workOrder.canonical_binding,
+        ...(opts.canonical_plan ? { canonical_plan: opts.canonical_plan } : {}),
+        ...(opts.outputs
+          ? {
+              canonical_outputs: opts.outputs.map((id) => ({
+                id,
+                kind: "source",
+                digest: k.kernelDigest({ id, summary: opts.summary }),
+              })),
+            }
+          : {}),
+        ...(opts.review ? { review: opts.review } : {}),
       },
       null,
       2,
@@ -165,87 +116,50 @@ async function writeResult(
   );
 }
 
-function validation(id: string, criterion: string) {
+function canonicalPlan() {
   return {
-    schema_version: 1 as const,
-    criteria: [
+    work_items: [
       {
-        id: `criterion-${id}`,
-        description: criterion,
-        required: true,
-        check_ids: [`check-${id}`],
-      },
-    ],
-    checks: [
-      {
-        id: `check-${id}`,
-        kind: "deterministic" as const,
-        required: true,
-        capability: "task.verify",
-        command: DETERMINISTIC_CHECK,
-      },
-    ],
-    evidence_fingerprint: taskCentricDigest({ id, criterion }),
-  };
-}
-
-function proposal(taskId: string, baseline: RepositorySnapshot): TaskPlanProposal {
-  const firstValidation = validation("first", "The first implementation file is valid.");
-  const secondValidation = validation("second", "The dependent implementation file is valid.");
-  return {
-    schema_version: 1,
-    task_id: taskId,
-    planning_baseline: baseline,
-    work_items: {
-      schema_version: 1,
-      work_items: [
-        {
-          id: "first",
-          objective: "Create the first implementation artifact.",
-          depends_on: [],
-          required_inputs: [],
-          expected_outputs: ["output-first"],
+        id: "first",
+        depends_on: [],
+        required_inputs: [],
+        expected_outputs: ["output-first"],
+        optional: false,
+        execution_requirements: {
           scope_roots: ["src/first.ts"],
-          acceptance_criteria: firstValidation.criteria,
-          validation: firstValidation,
-          context: {
-            required_sources: ["repository"],
-            optional_sources: [],
-            symbol_hints: [],
-            max_bytes: 16_384,
-          },
-          risk: "low",
-          capabilities: ["task.verify"],
-          resource_claims: [{ kind: "path", resource: "src/first.ts", mode: "write" }],
-          optional: false,
-          priority: 2,
+          repository_effects: ["source_code"],
+          external_effects: [],
+          capabilities: ["repository_write", "task.verify"],
+          resources: [],
         },
-        {
-          id: "second",
-          objective: "Create the dependent implementation artifact.",
-          depends_on: ["first"],
-          required_inputs: ["output-first"],
-          expected_outputs: ["output-second"],
+        contract: {
+          role: "EXECUTOR" as const,
+          objective: "Create the first implementation artifact.",
+          acceptance_criteria: ["The first implementation file is valid."],
+          verification_commands: [DETERMINISTIC_CHECK],
+        },
+      },
+      {
+        id: "second",
+        depends_on: ["first"],
+        required_inputs: ["output-first"],
+        expected_outputs: ["output-second"],
+        optional: false,
+        execution_requirements: {
           scope_roots: ["src/second.ts", "src/second.ok"],
-          acceptance_criteria: secondValidation.criteria,
-          validation: secondValidation,
-          context: {
-            required_sources: ["repository", "output-first"],
-            optional_sources: [],
-            symbol_hints: [],
-            max_bytes: 16_384,
-          },
-          risk: "low",
-          capabilities: ["task.verify"],
-          resource_claims: [{ kind: "path", resource: "src", mode: "write" }],
-          optional: false,
-          priority: 1,
+          repository_effects: ["source_code"],
+          external_effects: [],
+          capabilities: ["repository_write", "task.verify"],
+          resources: [],
         },
-      ],
-    },
-    assumptions: [],
-    unresolved_questions: [],
-    top_level_validation: validation("root", "The complete Task passes its declared verification."),
+        contract: {
+          role: "EXECUTOR" as const,
+          objective: "Create the dependent implementation artifact.",
+          acceptance_criteria: ["The dependent implementation file is valid."],
+          verification_commands: [DETERMINISTIC_CHECK],
+        },
+      },
+    ],
   };
 }
 
@@ -314,29 +228,12 @@ describe("task-centric fresh repository release gate", { timeout: 180_000 }, () 
     const planning = (await runJson(root, ["task", "advance", taskId, "--agent-json"])) as Packet;
     expect(planning.action.kind).toBe("agent_episode");
     expect(planning.authority?.role).toBe("PLANNER");
-    const planningWorkOrder = await readWorkOrder(planning);
-    const baseline = planningWorkOrder.planning_context?.repository_snapshot;
-    if (!baseline) throw new Error("Planning work order omitted the repository snapshot.");
-    const structuredPlan = proposal(taskId, baseline);
     await writeResult(planning, {
       summary: "Create the first file, then the dependent second file, and verify the root result.",
-      proposal: structuredPlan,
-      include_intent: true,
+      canonical_plan: canonicalPlan(),
     });
     const approval = await resume(root, planning);
     expect(approval.action.kind).toBe("approval_required");
-    await runCommand(root, [
-      "task",
-      "doc",
-      "set",
-      taskId,
-      "--section",
-      "Verify Steps",
-      "--text",
-      `1. Run \`${DETERMINISTIC_CHECK}\`. Expected: both dependent WorkItems pass.`,
-      "--updated-by",
-      "PLANNER",
-    ]);
     const freshApproval = (await runJson(root, [
       "task",
       "advance",
@@ -344,52 +241,37 @@ describe("task-centric fresh repository release gate", { timeout: 180_000 }, () 
       "--agent-json",
     ])) as Packet;
     expect(freshApproval.action.kind).toBe("approval_required");
-    const approvalRequest = freshApproval.operator_action?.host_user_decision?.request;
-    if (!approvalRequest) throw new Error("Expected exact host user decision request.");
-    expect(approvalRequest.plan_digest).toMatch(/^sha256:[0-9a-f]{64}$/u);
-    const hostDecision = Buffer.from(
-      JSON.stringify({
-        schema_version: 1,
-        ...approvalRequest,
-        host_id: "critical-test",
-        conversation_id: "task-centric-fresh-repo",
-        message_id: "approval-1",
-        decided_at: "2026-08-22T00:00:00.000Z",
-      }),
-      "utf8",
-    ).toString("base64url");
-    await runCommand(root, [
-      "task",
-      "plan",
-      "approve",
-      taskId,
-      "--host-user-decision",
-      hostDecision,
-    ]);
-    await runCommand(root, ["blueprint", "snapshot", taskId]);
+    await runCommand(root, ["task", "plan", "approve", taskId, "--by", "USER"]);
     await execFileAsync("git", ["add", "-A"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "test: approve task-centric plan"], {
       cwd: root,
     });
 
-    let first = await requestSemanticPacket(root, taskId);
-    if (first.exchange) {
-      const state = JSON.parse(
-        await readFile(path.join(first.exchange.directory, "exchange.json"), "utf8"),
-      ) as { purpose: string };
-      if (state.purpose === "task_worktree_resolution") {
-        await writeResult(first, { summary: "The task worktree is ready." });
-        first = await resume(root, first);
-      }
-    }
+    const first = await requestSemanticPacket(root, taskId);
     const firstWorkOrder = await readWorkOrder(first);
     expect(firstWorkOrder.task.work_item_id).toBe("first");
     expect(first.authority?.role).toBe("EXECUTOR");
     const checkout = firstWorkOrder.state_fingerprint.worktree;
     await mkdir(path.join(checkout, "src"), { recursive: true });
     await writeFile(path.join(checkout, "src", "first.ts"), "export const first = 1;\n", "utf8");
-    await writeResult(first, { summary: "Created the first WorkItem output." });
-    const second = await resume(checkout, first);
+    await writeResult(first, {
+      summary: "Created the first WorkItem output.",
+      outputs: ["output-first"],
+    });
+    const firstInspection = await resume(checkout, first);
+    const firstInspectionWorkOrder = await readWorkOrder(firstInspection);
+    expect(firstInspectionWorkOrder.task.work_item_id).toBe("first");
+    expect(firstInspection.authority?.role).toBe("EVALUATOR");
+    await writeResult(firstInspection, {
+      summary: "The first WorkItem satisfies its approved contract.",
+      review: {
+        verdict: "pass",
+        missing_tests: [],
+        hidden_assumptions: [],
+        residual_risks: [],
+      },
+    });
+    const second = await resume(checkout, firstInspection);
     const secondWorkOrder = await readWorkOrder(second);
     expect(secondWorkOrder.task.work_item_id).toBe("second");
     expect(second.authority?.role).toBe("EXECUTOR");
@@ -397,13 +279,30 @@ describe("task-centric fresh repository release gate", { timeout: 180_000 }, () 
     await writeFile(path.join(checkout, "src", "second.ts"), "export const second = 2;\n", "utf8");
     await writeResult(second, {
       summary: "Created the dependent output with a deterministic defect.",
+      outputs: ["output-second"],
     });
-    const repair = await resume(checkout, second);
+    const secondInspection = await resume(checkout, second);
+    const secondInspectionWorkOrder = await readWorkOrder(secondInspection);
+    expect(secondInspectionWorkOrder.task.work_item_id).toBe("second");
+    expect(secondInspection.authority?.role).toBe("EVALUATOR");
+    await writeResult(secondInspection, {
+      summary: "The dependent WorkItem needs its deterministic validation marker.",
+      review: {
+        verdict: "rework",
+        missing_tests: [DETERMINISTIC_CHECK],
+        hidden_assumptions: [],
+        residual_risks: [],
+      },
+    });
+    const repair = await resume(checkout, secondInspection);
     const repairWorkOrder = await readWorkOrder(repair);
     expect(repairWorkOrder.task.work_item_id).toBe("second");
     expect(repair.authority?.role).toBe("EXECUTOR");
     await writeFile(path.join(checkout, "src", "second.ok"), "validated\n", "utf8");
-    await writeResult(repair, { summary: "Repaired the deterministic validation failure." });
+    await writeResult(repair, {
+      summary: "Repaired the deterministic validation failure.",
+      outputs: ["output-second"],
+    });
     const evaluator = await resume(checkout, repair);
     expect(evaluator.authority?.role).toBe("EVALUATOR");
     await writeResult(evaluator, {
@@ -420,14 +319,15 @@ describe("task-centric fresh repository release gate", { timeout: 180_000 }, () 
 
     const taskReadme = path.join(checkout, ".agentplane", "tasks", taskId, "README.md");
     const frontmatter = parseTaskReadme(await readFile(taskReadme, "utf8")).frontmatter;
-    const aggregate = (frontmatter.extensions as Record<string, unknown>)[
-      "agentplane.task_centric"
-    ] as TaskAggregate;
+    const kernelRecord = (frontmatter.extensions as Record<string, unknown>).task_kernel as {
+      aggregate: TaskAggregate;
+    };
+    const aggregate = kernelRecord.aggregate;
     expect(frontmatter.status).toBe("DONE");
     expect(aggregate).toMatchObject({
-      lifecycle: "COMPLETED",
-      current_plan: { approval: { state: "approved" } },
-      final_validation: { status: "passed", stale_evidence: [] },
+      state: "COMPLETED",
+      current_plan: { state: "APPROVED" },
+      final_validation: { status: "PASSED" },
       work_items: {
         first: { state: "COMPLETED" },
         second: { state: "COMPLETED", attempt: 2 },

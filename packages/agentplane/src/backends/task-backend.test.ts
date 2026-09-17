@@ -308,25 +308,6 @@ describe("task-backend helpers", () => {
     expect(data.runner?.history?.[0]?.execution_receipt).toEqual(historyReceipt);
   });
 
-  it("taskRecordToData preserves specialized blueprint requests", () => {
-    const record = {
-      id: "202601300000-BENCH",
-      frontmatter: {
-        id: "202601300000-BENCH",
-        title: "Task",
-        description: "Desc",
-        status: "TODO",
-        priority: "med",
-        owner: "tester",
-        blueprint_request: "performance.benchmark",
-      },
-      body: "",
-    } as unknown as TaskRecord;
-
-    const data = taskRecordToData(record);
-    expect(data.blueprint_request).toBe("performance.benchmark");
-  });
-
   it("buildTasksExportSnapshotFromTasks normalizes task fields", () => {
     const snapshot = buildTasksExportSnapshotFromTasks([
       {

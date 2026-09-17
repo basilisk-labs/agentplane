@@ -28,10 +28,10 @@ import {
 } from "../shared/native-task-identity.js";
 import { evaluatorAcceptanceCriteria } from "../evaluator/evaluator-review-shared.js";
 
-export async function assertNativeTaskIdentityBeforeFinish(opts: {
+export function assertNativeTaskIdentityBeforeFinish(opts: {
   ctx: CommandContext;
   loadedTasks: readonly LoadedFinishTask[];
-}): Promise<void> {
+}): void {
   for (const loaded of opts.loadedTasks) {
     if (resolveNativeTaskIdentity(loaded.task)) continue;
     throw new CliError({

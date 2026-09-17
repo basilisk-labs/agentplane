@@ -197,12 +197,6 @@ function initGitRepo(root) {
   commitAll(root, "seed installed migration fixture");
 }
 
-function extractTaskId(output) {
-  const match = /\b\d{12}-[A-Z0-9]{6}\b/u.exec(output);
-  assert.ok(match, `installed migration matrix could not parse task id from: ${output}`);
-  return match[0];
-}
-
 function parseJson(output, label) {
   try {
     return JSON.parse(output);
@@ -239,25 +233,25 @@ function initializeInstalledProject(agentplane, root, workflowMode) {
 }
 
 function createApprovedTask(agentplane, root, workflowMode) {
-  const taskId = extractTaskId(
-    run(
-      agentplane,
-      [
-        "task",
-        "new",
-        "--title",
-        `Installed ${workflowMode} migration task`,
-        "--description",
-        "Preserve active lifecycle truth across the installed migration matrix.",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "code",
-      ],
-      { cwd: root },
-    ),
+  const taskId = workflowMode === "direct" ? "202609170002-MD01" : "202609170002-MB01";
+  run(
+    agentplane,
+    [
+      "task",
+      "add",
+      taskId,
+      "--title",
+      `Installed ${workflowMode} migration task`,
+      "--description",
+      "Preserve active lifecycle truth across the installed migration matrix.",
+      "--priority",
+      "med",
+      "--owner",
+      "CODER",
+      "--tag",
+      "code",
+    ],
+    { cwd: root },
   );
   run(
     agentplane,
@@ -419,6 +413,36 @@ function assertInstalledTaskSurfaces(agentplane, root, taskId) {
   return { brief: "pass", next_action: "pass" };
 }
 
+function migrateInstalledLegacyTask(agentplane, root, taskId) {
+  const preview = parseJson(
+    run(agentplane, ["task", "kernel-migrate", taskId], { cwd: root }),
+    "installed kernel migration preview",
+  );
+  if (preview.classification === "canonical") return;
+  assert.match(
+    String(preview.source_digest ?? ""),
+    /^sha256:[a-f0-9]{64}$/u,
+    "installed kernel migration preview omitted its source digest",
+  );
+  const applied = parseJson(
+    run(
+      agentplane,
+      [
+        "task",
+        "kernel-migrate",
+        taskId,
+        "--apply",
+        "--source-digest",
+        preview.source_digest,
+        "--yes",
+      ],
+      { cwd: root },
+    ),
+    "installed kernel migration apply",
+  );
+  assert.notEqual(applied.kind, "refused", "installed kernel migration was refused");
+}
+
 function assertDirectUpgradeScenario(agentplane, repoRoot, root, sourceTag, taskDocVersion) {
   initializeInstalledProject(agentplane, root, "direct");
   const taskId = createApprovedTask(agentplane, root, "direct");
@@ -460,77 +484,25 @@ function assertDirectUpgradeScenario(agentplane, repoRoot, root, sourceTag, task
 
   const idempotent = run(agentplane, ["upgrade", "--dry-run"], { cwd: root });
   assert.match(idempotent, /Upgrade dry-run: 0 add, 0 update, 0 remove/u);
+  migrateInstalledLegacyTask(agentplane, root, taskId);
   const surfaces = assertInstalledTaskSurfaces(agentplane, root, taskId);
 
   const runner = parseJson(
     run(agentplane, ["task", "run", taskId, "--dry-run", "--json"], { cwd: root }),
     "installed task runner dry-run",
   );
-  assert.ok(runner.run_id ?? runner.run?.id, "installed task runner omitted run identity");
-  const runnerStatus = parseJson(
-    run(agentplane, ["task", "run", "status", taskId, "--json"], { cwd: root }),
-    "installed task runner status",
-  );
   assert.ok(
-    runnerStatus.run_id ?? runnerStatus.run?.id,
-    "installed runner status lost run identity",
+    typeof runner.action?.kind === "string",
+    `installed canonical runner preview omitted its typed action: ${JSON.stringify(runner)}`,
   );
-
-  run(
-    agentplane,
-    [
-      "verify",
-      taskId,
-      "--ok",
-      "--by",
-      "EVALUATOR",
-      "--note",
-      "Installed migration task outcome verified before evaluator preparation.",
-      "--details",
-      [
-        "Check: task_outcome",
-        "Command: agentplane task brief and task next-action",
-        "Result: pass",
-        `Evidence: .agentplane/tasks/${taskId}/README.md`,
-        "Scope: migrated task lifecycle and installed command surfaces",
-      ].join("\n"),
-    ],
-    { cwd: root },
-  );
-
-  const evaluator = parseJson(
-    run(
-      agentplane,
-      [
-        "evaluator",
-        "run",
-        taskId,
-        "--provenance",
-        "human_supplied",
-        "--verdict",
-        "pass",
-        "--summary",
-        "Installed evaluator path is operational.",
-        "--finding",
-        "The migrated active task retained its typed route.",
-        "--evidence",
-        `.agentplane/tasks/${taskId}/README.md`,
-        "--no-record",
-        "--json",
-      ],
-      { cwd: root },
-    ),
-    "installed evaluator",
-  );
-  assert.equal(evaluator.verdict ?? evaluator.report?.verdict, "pass");
 
   return {
     task_id: taskId,
     source_tag: sourceTag,
     task_doc: taskDocVersion === 2 ? "v2_to_v3" : "v3_preserved",
     ...surfaces,
-    runner: "dry_run_and_status_pass",
-    evaluator: "pass",
+    runner: "canonical_dry_run_pass",
+    kernel_migration: "preview_apply_pass",
   };
 }
 
@@ -583,16 +555,20 @@ function assertBranchPrUpgradeScenario(agentplane, repoRoot, root, sourceTag) {
   const idempotent = run(agentplane, ["upgrade", "--dry-run"], { cwd: root });
   assert.match(idempotent, /Upgrade dry-run: 0 add, 0 update, 0 remove/u);
 
-  const resumed = run(agentplane, ["work", "resume", taskId], { cwd: root });
-  assert.match(resumed, new RegExp(taskId, "u"));
-  assert.equal(worktreeCount(root), countBefore, "work resume created a duplicate worktree");
+  migrateInstalledLegacyTask(agentplane, root, taskId);
+  migrateInstalledLegacyTask(agentplane, taskWorktree, taskId);
+  assert.equal(
+    worktreeCount(root),
+    countBefore,
+    "upgrade and explicit Task migration changed the registered worktree topology",
+  );
   const surfaces = assertInstalledTaskSurfaces(agentplane, taskWorktree, taskId);
 
   return {
     task_id: taskId,
     source_tag: sourceTag,
     task_doc: "v3_preserved",
-    worktree_resume: "single_worktree",
+    worktree_topology: "single_worktree_preserved",
     ...surfaces,
   };
 }

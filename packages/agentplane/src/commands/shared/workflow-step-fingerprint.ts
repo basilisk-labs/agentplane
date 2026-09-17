@@ -433,17 +433,17 @@ export async function captureWorkflowStepFingerprint(opts: {
     );
   }
   const nativeObligations = resolveNativeTaskObligations({
-        task_kind: opts.state.task.task_kind,
-        mutation_scope: opts.state.task.mutation_scope,
-        risk_flags: opts.state.task.risk_flags,
-        execution_contract: opts.state.task.execution_contract,
-        selected_mode:
-          opts.state.task.execution_contract?.selected_mode ?? opts.ctx.config.workflow_mode,
-        route_reason_codes:
-          opts.state.task.execution_contract?.reason_codes ??
-          opts.state.task.execution_route?.reason_codes,
-        execution_profile: resolveExecutionProfileRuntime(opts.ctx.config),
-      });
+    task_kind: opts.state.task.task_kind,
+    mutation_scope: opts.state.task.mutation_scope,
+    risk_flags: opts.state.task.risk_flags,
+    execution_contract: opts.state.task.execution_contract,
+    selected_mode:
+      opts.state.task.execution_contract?.selected_mode ?? opts.ctx.config.workflow_mode,
+    route_reason_codes:
+      opts.state.task.execution_contract?.reason_codes ??
+      opts.state.task.execution_route?.reason_codes,
+    execution_profile: resolveExecutionProfileRuntime(opts.ctx.config),
+  });
   const traceScope = `task:${opts.state.task.id}:route_fingerprint`;
   const planObservation = {
     component: presentComponent("native_plan", nativeIdentity.plan),

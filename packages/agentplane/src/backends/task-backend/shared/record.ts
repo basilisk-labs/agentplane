@@ -22,11 +22,7 @@ import {
 } from "./normalize.js";
 import { toStringArray } from "./strings.js";
 import type { TaskData } from "./types.js";
-import {
-  MUTATION_SCOPE_VALUES,
-  RISK_FLAG_VALUES,
-  TASK_KIND_VALUES,
-} from "./domain-values.js";
+import { MUTATION_SCOPE_VALUES, RISK_FLAG_VALUES, TASK_KIND_VALUES } from "./domain-values.js";
 
 function normalizeRevision(value: unknown): number | undefined {
   return Number.isInteger(value) && Number(value) > 0 ? Number(value) : undefined;

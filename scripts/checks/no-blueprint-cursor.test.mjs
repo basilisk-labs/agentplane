@@ -31,7 +31,7 @@ function walk(relativeRoot) {
 test("production code has no active Blueprint cursor, plan, snapshot, or state", () => {
   const forbidden =
     /(?:blueprint[_-]?(?:cursor|plan|snapshot|state|execution)|(?:cursor|plan|snapshot|state|execution)[_-]?blueprint)/iu;
-  const violations = ROOTS.flatMap(walk)
+  const violations = ROOTS.flatMap((root) => walk(root))
     .filter((file) => file.endsWith(".ts"))
     .filter((file) => !file.endsWith(".test.ts") && !file.endsWith(".testkit.ts"))
     .filter((file) => !HISTORICAL_DECODERS.has(file))

@@ -153,19 +153,6 @@ Field names and casing are exact. Optional fields are omitted when no value is a
   - [recipes list-remote](#recipes-list-remote)
   - [recipes remove](#recipes-remove)
   - [recipes update](#recipes-update)
-- Blueprints
-  - [blueprint drift](#blueprint-drift)
-  - [blueprint examples](#blueprint-examples)
-  - [blueprint explain](#blueprint-explain)
-  - [blueprint list](#blueprint-list)
-  - [blueprint report](#blueprint-report)
-  - [blueprint scaffold](#blueprint-scaffold)
-  - [blueprint snapshot](#blueprint-snapshot)
-  - [blueprint validate](#blueprint-validate)
-  - [blueprints catalog info](#blueprints-catalog-info)
-  - [blueprints catalog list](#blueprints-catalog-list)
-  - [blueprints catalog refresh](#blueprints-catalog-refresh)
-  - [blueprints install](#blueprints-install)
 - ACR
   - [acr check](#acr-check)
   - [acr explain](#acr-explain)
@@ -567,7 +554,7 @@ Examples:
 agentplane task brief 202602030608-F1Q8AB
 ```
 
-- Get local route, Verify Steps, blueprint, blockers, and next command in one view.
+- Get local route, Verify Steps, blockers, and next command in one view.
 
 ```sh
 agentplane task brief 202602030608-F1Q8AB --json
@@ -626,7 +613,6 @@ Options:
 - `--task-kind <analysis|content|docs|code|release|ops|context>`: Structured task kind supplied by the semantic caller. (choices=analysis|content|docs|code|release|ops|context)
 - `--mutation-scope <none|docs|code|release|ops|context|unknown>`: Structured mutation scope supplied by the semantic caller. (choices=none|docs|code|release|ops|context|unknown)
 - `--risk <risk>`: Repeatable structured risk flag supplied by the semantic caller. (repeatable, choices=network|credentials|deploy|publish|merge|security|external_system)
-- `--blueprint-request <id>`: Explicit blueprint request supplied by the semantic caller. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|context.assimilation|context.maximum_assimilation|post_run.improvement_review|release.strict|ops.approval)
 - `--tag <tag>`: Repeatable semantic tag supplied by the caller. (repeatable)
 - `--verify <command>`: Repeatable. Seed an explicit verification command. (repeatable)
 - `--base <branch-or-ref>`: Freeze this task on an explicit development base. Defaults to the current checkout.
@@ -636,7 +622,7 @@ Options:
 Examples:
 
 ```sh
-agentplane task create "Fix the parser edge case" --task-kind code --mutation-scope code --blueprint-request code.direct --tag code
+agentplane task create "Fix the parser edge case" --task-kind code --mutation-scope code --tag code
 ```
 
 - Create a task with explicit structured semantic intent.
@@ -717,7 +703,7 @@ agentplane task doc show 202602030608-F1Q8AB --section Summary
 
 ### task list
 
-List active tasks with compact resolved blueprint route hints.
+List active tasks with compact workflow route hints.
 
 Usage:
 
@@ -917,7 +903,7 @@ agentplane task search 'CLI.*' --regex
 
 ### task show
 
-Print task metadata and resolved blueprint route as JSON.
+Print task metadata and workflow route as JSON.
 
 Usage:
 
@@ -2172,7 +2158,6 @@ Options:
 - `--evaluator-skepticism <standard|strict|paranoid>`: Evaluator audit skepticism level for Codex runner review prompts. (choices=standard|strict|paranoid)
 - `--strict-unsafe-confirm <true|false>`: Deprecated compatibility option. The standard process policy defines fixed unsafe-action boundaries.
 - `--recipes <none|id1,id2,...>`: Optional cached recipes to vendor during init (comma-separated), or 'none'.
-- `--blueprints <none|id1,pack:id2,...>`: Optional cached blueprint catalog entries to install and activate during init (comma-separated), or 'none'. Prefix with blueprint: or pack: to disambiguate.
 - `--force`: Overwrite init conflicts by deleting existing paths. (default=false)
 - `--backup`: Backup init conflicts before overwriting. (default=false)
 - `--yes`: Non-interactive mode (do not prompt; use defaults for missing flags). (default=false)
@@ -2939,296 +2924,6 @@ agentplane recipes update tdd --force
 ```
 
 - Overwrite local vendored edits with the cached source.
-
-## Blueprints
-
-### blueprint drift
-
-Check whether a task resolved blueprint snapshot is current.
-
-Usage:
-
-```text
-agentplane blueprint drift <task-id> [options]
-```
-
-Options:
-
-- `--json`: Emit JSON. (default=false)
-
-Examples:
-
-```sh
-agentplane blueprint drift 202605060915-3NBTGG
-```
-
-- Check a task-local resolved snapshot before runner materialization.
-
-### blueprint examples
-
-Show practical blueprint route inspection examples.
-
-Usage:
-
-```text
-agentplane blueprint examples [options]
-```
-
-Options:
-
-- `--json`: Emit JSON. (default=false)
-
-Examples:
-
-```sh
-agentplane blueprint examples
-```
-
-- Inspect which route different task classes resolve to.
-
-```sh
-agentplane blueprint examples --json
-```
-
-- Emit route examples for agents or documentation tooling.
-
-### blueprint explain
-
-Explain blueprint route selection for a task or synthetic input.
-
-Usage:
-
-```text
-agentplane blueprint explain [<task-id>] [options]
-```
-
-Options:
-
-- `--kind <analysis|content|docs|code|release|ops|context>`: Synthetic task kind hint.
-- `--mutation <none|docs|code|release|ops|unknown>`: Synthetic mutation scope. (choices=none|docs|code|release|ops|unknown, default=unknown)
-- `--workflow-mode <direct|branch_pr>`: Workflow mode override. (choices=direct|branch_pr)
-- `--tag <tag>`: Synthetic tag.
-- `--title <text>`: Synthetic title.
-- `--description <text>`: Synthetic description.
-- `--risk <risk>`: Risk flag; repeatable.
-- `--blueprint <id>`: Explicit blueprint request.
-- `--json`: Emit JSON. (default=false)
-
-Examples:
-
-```sh
-agentplane blueprint explain 202605051957-5WRJZK
-```
-
-- Resolve a task.
-
-```sh
-agentplane blueprint explain --kind analysis --mutation none
-```
-
-- Resolve a synthetic analysis route.
-
-### blueprint list
-
-List built-in and optional project-local blueprint routes.
-
-Usage:
-
-```text
-agentplane blueprint list [options]
-```
-
-Options:
-
-- `--project`: Include validated project-local blueprints from .agentplane/blueprints. (default=false)
-- `--trusted`: Show trust status from .agentplane/blueprints/config.json. (default=false)
-- `--json`: Emit JSON. (default=false)
-
-Examples:
-
-```sh
-agentplane blueprint list --json
-```
-
-- Emit machine-readable built-in routes.
-
-```sh
-agentplane blueprint list --project
-```
-
-- Include project-local blueprint definitions.
-
-### blueprint report
-
-Report project-local blueprint trust compatibility.
-
-Usage:
-
-```text
-agentplane blueprint report [options]
-```
-
-Options:
-
-- `--json`: Emit JSON. (default=false)
-
-Examples:
-
-```sh
-agentplane blueprint report --json
-```
-
-- Inspect project-local blueprint trust compatibility before runner materialization.
-
-### blueprint scaffold
-
-Create a project-local blueprint JSON scaffold without enabling it.
-
-Usage:
-
-```text
-agentplane blueprint scaffold <blueprint-id> [options]
-```
-
-Options:
-
-- `--from <builtin-blueprint-id>`: Built-in blueprint to clone as a starting point.
-- `--out <path>`: Output path; defaults to .agentplane/blueprints/&lt;id&gt;.json.
-- `--force`: Overwrite an existing file. (default=false)
-- `--json`: Emit JSON. (default=false)
-
-Examples:
-
-```sh
-agentplane blueprint scaffold analysis.custom
-```
-
-- Create .agentplane/blueprints/analysis.custom.json from analysis.light.
-
-```sh
-agentplane blueprint scaffold code.custom --from code.branch_pr
-```
-
-- Start from an existing code workflow route.
-
-### blueprint snapshot
-
-Refresh the resolved blueprint snapshot artifact for a task.
-
-Usage:
-
-```text
-agentplane blueprint snapshot <task-id> [options]
-```
-
-Options:
-
-- `--json`: Emit JSON. (default=false)
-
-Examples:
-
-```sh
-agentplane blueprint snapshot 202605060915-3NBTGG
-```
-
-- Refresh the task-local resolved blueprint snapshot artifact.
-
-```sh
-agentplane blueprint snapshot 202605060915-3NBTGG --json
-```
-
-- Emit old/new digest details as JSON.
-
-### blueprint validate
-
-Validate project-local blueprint JSON without registering or executing it.
-
-Usage:
-
-```text
-agentplane blueprint validate [<path>] [options]
-```
-
-Options:
-
-- `--project`: Validate all JSON blueprints in .agentplane/blueprints or the supplied directory. (default=false)
-- `--json`: Emit JSON. (default=false)
-
-Examples:
-
-```sh
-agentplane blueprint validate .agentplane/blueprints/analysis.json
-```
-
-- Validate a local blueprint definition.
-
-```sh
-agentplane blueprint validate --project
-```
-
-- Validate the project-local blueprint registry directory.
-
-### blueprints catalog info
-
-Show cached external blueprint or pack metadata.
-
-Usage:
-
-```text
-agentplane blueprints catalog info <id> [options]
-```
-
-Options:
-
-- `--kind <blueprint|pack>`: Disambiguate catalog id kind. (choices=blueprint|pack)
-- `--json`: Emit JSON. (default=false)
-
-### blueprints catalog list
-
-List cached external blueprint catalog entries.
-
-Usage:
-
-```text
-agentplane blueprints catalog list [options]
-```
-
-Options:
-
-- `--json`: Emit JSON. (default=false)
-
-### blueprints catalog refresh
-
-Refresh the cached external blueprint catalog index.
-
-Usage:
-
-```text
-agentplane blueprints catalog refresh --index <path|url> [options]
-```
-
-Options:
-
-- `--index <path|url>`: Catalog index path or URL. (required)
-- `--json`: Emit JSON. (default=false)
-
-### blueprints install
-
-Install an external blueprint or blueprint pack into the current project.
-
-Usage:
-
-```text
-agentplane blueprints install <blueprint-or-pack-id> [options]
-```
-
-Options:
-
-- `--kind <blueprint|pack>`: Disambiguate catalog id kind. (choices=blueprint|pack)
-- `--index <path|url>`: Refresh from this catalog index before installing.
-- `--refresh`: Refresh the cached catalog before installing. (default=false)
-- `--activate`: Explicitly add installed route blueprint ids to the project trust allowlist. (default=false)
-- `--json`: Emit JSON. (default=false)
 
 ## ACR
 

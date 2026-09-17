@@ -1,6 +1,7 @@
 import type { TaskData, TaskRunnerHistoryEntry } from "../../backends/task-backend.js";
 import type { RunnerEffectResolutionRef } from "@agentplaneorg/core/schemas";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
+import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
 import { CliError } from "../../shared/errors.js";
 import { RunnerRunDirectoryBoundaryError } from "../run-directory-boundary.js";
 import { RunnerRunRepository } from "../run-repository.js";
@@ -311,15 +312,21 @@ async function executeFreshReplay(opts: {
   // must prepare both its TaskEpisodeView and v2 state fingerprint from the
   // same revision instead of reusing a memoized pre-reconciliation read.
   ctx.memo = {};
+  const taskCommand = await loadTaskCommandContext({
+    ctx,
+    taskIds: [opts.task_id],
+  });
+  const command = taskCommand.command;
 
   const executed = await executeTaskRunnerExecution({
-    ctx,
-    cwd: opts.cwd,
-    rootOverride: opts.rootOverride ?? null,
+    ctx: command,
+    cwd: command.resolvedProject.gitRoot,
+    rootOverride: null,
     task_id: opts.task_id,
     run_id: destinationRunId,
     danger_authority: opts.danger_authority,
     include_route_runner_state: false,
+    task_execution: taskCommand.execution,
     sandbox_override: opts.danger_authority ? RUNNER_DANGER_FULL_ACCESS_SANDBOX : undefined,
     replay_provenance: {
       action: opts.action,
@@ -329,7 +336,7 @@ async function executeFreshReplay(opts: {
   });
   return {
     ...executed,
-    ctx,
+    ctx: command,
     source_run_id: source.run_id,
     source_status: source.status,
     source_effect_resolution: sourceEffectResolution,

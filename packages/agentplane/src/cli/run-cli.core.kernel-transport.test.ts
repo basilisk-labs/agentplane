@@ -37,7 +37,6 @@ async function createTask(root: string): Promise<string> {
     const code = await runCli([
       "task",
       "new",
-      "--canonical",
       "--title",
       "Canonical creation",
       "--description",

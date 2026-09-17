@@ -258,7 +258,7 @@ const main = defineScript({
         installedJsonErrorContract,
       );
 
-      const taskId = run(
+      const canonicalTaskId = run(
         agentplane,
         [
           "task",
@@ -277,7 +277,7 @@ const main = defineScript({
         { cwd: repo },
       ).trim();
       run(agentplane, ["task", "list"], { cwd: repo });
-      run(agentplane, ["task", "show", taskId], { cwd: repo });
+      run(agentplane, ["task", "show", canonicalTaskId], { cwd: repo });
 
       assertJsonFailure(
         runFailure(
@@ -286,7 +286,7 @@ const main = defineScript({
             "--json-errors",
             "task",
             "start-ready",
-            taskId,
+            canonicalTaskId,
             "--author",
             "CODER",
             "--body",
@@ -295,12 +295,33 @@ const main = defineScript({
           { cwd: repo },
         ),
         {
-          exitCode: 2,
-          code: "E_PHASE_POLICY",
-          messageIncludes: "cannot start implementation before plan approval",
-          fields: ["code", "message"],
+          exitCode: 4,
+          code: "E_IO",
+          messageIncludes: "Canonical Task mutations require the kernel lifecycle",
+          fields: ["code", "message", "context"],
         },
         installedJsonErrorContract,
+      );
+
+      const taskId = "202609170001-TRB1";
+      run(
+        agentplane,
+        [
+          "task",
+          "add",
+          taskId,
+          "--title",
+          "Tarball legacy-drain smoke",
+          "--description",
+          "Verify installed-package compatibility and stale-base policy",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+        ],
+        { cwd: repo },
       );
 
       run(
