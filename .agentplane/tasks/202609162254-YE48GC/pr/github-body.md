@@ -27,6 +27,8 @@ Implement the approved 0.7.10 scope from BP-01 through BP-31 except external pub
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .agentplane/agents/INTAKE.json                     |  10 +-
+ .agentplane/agents/PLANNER.json                    |   2 +-
  .github/workflows/publish.yml                      |  81 ++-
  packages/agentplane/assets/agents/INTAKE.json      |  10 +-
  packages/agentplane/assets/agents/PLANNER.json     |   2 +-
@@ -288,7 +290,7 @@ Implement the approved 0.7.10 scope from BP-01 through BP-31 except external pub
  scripts/release/manifest.mjs                       |  30 +
  scripts/release/stable-channel-policy.mjs          | 127 ++++
  scripts/release/stable-channel-policy.test.mjs     |  77 ++
- 261 files changed, 7369 insertions(+), 12082 deletions(-)
+ 263 files changed, 7375 insertions(+), 12088 deletions(-)
 ```
 
 </details>
