@@ -1,10 +1,10 @@
 ---
 id: "202609162254-YE48GC"
 title: "Implement and qualify AgentPlane 0.7.10 Blueprint retirement"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -346,6 +346,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 2afa52039e6c. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The approved verification-identity WorkItem requires current ACR consumers to move from Blueprint identity, but the issued writable roots omit the active ACR generator and renderer. No repository files were changed. Recommended action: Add packages/agentplane/src/commands/acr to this WorkItem writable roots and reissue the EXECUTOR packet. Requested scope: roots=packages/agentplane/src/commands/acr; repository effects=source_code,tests; request digest=sha256:08cf3a2c20c4337b82fcf6eb7ccd65f2dbba5550eee2b86a74514603b4c95d10. Agentplane receipt: external-agent-blocker/tr_235b6b2ddaa9d173e94c2854d5ad3269/sha256:35a7ab7a68c7d531d38ee1c79f2d168451c15c0b055e30a5be204446e594b9b2/sha256:08cf3a2c20c4337b82fcf6eb7ccd65f2dbba5550eee2b86a74514603b4c95d10."
 events:
   -
     type: "status"
@@ -378,8 +381,15 @@ events:
     to: "DOING"
     note: "Implementation committed: 2afa52039e6c. CLI accepted one state-bound external-agent semantic result."
     commit: "2afa52039e6c50ead89776da98e817a243e7e4da"
+  -
+    type: "status"
+    at: "2026-09-17T07:45:45.689Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The approved verification-identity WorkItem requires current ACR consumers to move from Blueprint identity, but the issued writable roots omit the active ACR generator and renderer. No repository files were changed. Recommended action: Add packages/agentplane/src/commands/acr to this WorkItem writable roots and reissue the EXECUTOR packet. Requested scope: roots=packages/agentplane/src/commands/acr; repository effects=source_code,tests; request digest=sha256:08cf3a2c20c4337b82fcf6eb7ccd65f2dbba5550eee2b86a74514603b4c95d10. Agentplane receipt: external-agent-blocker/tr_235b6b2ddaa9d173e94c2854d5ad3269/sha256:35a7ab7a68c7d531d38ee1c79f2d168451c15c0b055e30a5be204446e594b9b2/sha256:08cf3a2c20c4337b82fcf6eb7ccd65f2dbba5550eee2b86a74514603b4c95d10."
 doc_version: 3
-doc_updated_at: "2026-09-17T07:26:28.608Z"
+doc_updated_at: "2026-09-17T07:45:45.689Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task."
 sections:
@@ -433,6 +443,22 @@ extensions:
     scope_digest: "sha256:89e7ed6347b514ef4b051098ca7321060665f69b599bf137e0e291eca66d420f"
     status: "active"
     task_id: "202609162254-YE48GC"
+  agentplane.scope_extension_request:
+    blocker_state_fingerprint: "sha256:35a7ab7a68c7d531d38ee1c79f2d168451c15c0b055e30a5be204446e594b9b2"
+    kind: "task_scope_extension_request"
+    request:
+      rationale: "BP-18 and the issued objective require ACR to render native Plan, policy, check, and review identities. The current implementation writes and renders Blueprint data in packages/agentplane/src/commands/acr."
+      repository_effects:
+        - "source_code"
+        - "tests"
+      schema_version: 1
+      scope_roots:
+        - "packages/agentplane/src/commands/acr"
+    request_digest: "sha256:08cf3a2c20c4337b82fcf6eb7ccd65f2dbba5550eee2b86a74514603b4c95d10"
+    schema_version: 1
+    status: "pending"
+    transition_id: "tr_235b6b2ddaa9d173e94c2854d5ad3269"
+    work_item_id: "verification-identity"
   agentplane.task_centric:
     current_plan:
       approval:
@@ -1239,7 +1265,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609162254-YE48GC"
-    event_cursor: 9
+    event_cursor: 11
     final_validation: null
     id: "202609162254-YE48GC"
     intent:
@@ -1291,12 +1317,12 @@ extensions:
 
         Implement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task.
       task_id: "202609162254-YE48GC"
-    lifecycle: "ACTIVE"
+    lifecycle: "BLOCKED"
     plan_amendments: []
     plan_history: []
-    revision: 14
+    revision: 16
     schema_version: 1
-    updated_at: "2026-09-17T07:40:34.408Z"
+    updated_at: "2026-09-17T07:45:45.689Z"
     work_items:
       channel-and-owner-map:
         attempt: 1
@@ -1629,6 +1655,54 @@ extensions:
         mutation_id: "compatibility:sha256:03ad382df371fb10a3fda0b3d74c85baaa1cbfcc47fa5298b2773c99d5104eda"
         next_revision: 3
         previous_revision: 2
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+      compatibility:sha256:1120f2f95ac361b5eb7424965608b1b9088e2a4747b2cd77582fabd2c5d63cac:
+        aggregate_digest: "sha256:a5ba5229570363a19fce24a11f6811d2bfdbd4db1cb7a17a3290fa0b3d0929ed"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T07:45:45.689Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_443bd176d38ae08b46d57984"
+          mutation_id: "compatibility:sha256:1120f2f95ac361b5eb7424965608b1b9088e2a4747b2cd77582fabd2c5d63cac"
+          plan_digest: "sha256:d9b152a969152dd6cfaecb84aa966a466f3bb52795de73c2e49684358bdd2cfd"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 15
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:1120f2f95ac361b5eb7424965608b1b9088e2a4747b2cd77582fabd2c5d63cac"
+        next_revision: 16
+        previous_revision: 15
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+      compatibility:sha256:12c998af7431cebbd68d03daead6233ee29131e42e24f9d9fe9444aaae19051c:
+        aggregate_digest: "sha256:9917d085f765d74616d26c82640eb5cce6f2378e6fb0e5ff2fb74352e2c46864"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T07:45:45.689Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_cbe839967803a8515f9494e4"
+          mutation_id: "compatibility:sha256:12c998af7431cebbd68d03daead6233ee29131e42e24f9d9fe9444aaae19051c"
+          plan_digest: "sha256:d9b152a969152dd6cfaecb84aa966a466f3bb52795de73c2e49684358bdd2cfd"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 14
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:12c998af7431cebbd68d03daead6233ee29131e42e24f9d9fe9444aaae19051c"
+        next_revision: 15
+        previous_revision: 14
         schema_version: 1
         task_id: "202609162254-YE48GC"
       compatibility:sha256:2aa1b102ce794c2384ff8259bcc973f6fa304a50845c0f20d48089b36c5f78db:
