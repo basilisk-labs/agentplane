@@ -2,10 +2,10 @@
 id: "202609162254-YE48GC"
 title: "Implement and qualify AgentPlane 0.7.10 Blueprint retirement"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 74
+revision: 75
 origin:
   system: "manual"
 depends_on: []
@@ -69,9 +69,11 @@ quality_review:
     - "Supervisor verification passed the full declared local contract, including full CI and packed-install smoke."
     - "Residual risk: Hosted CodeQL has not yet analyzed the final implementation head."
 token_usage:
-  agent_runs: 29
+  agent_runs: 34
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:0476f3db7d2406dcc1f6d3cc6059c324571460a75b759e7a687008551c8f077a"
+  journal_digest: "sha256:19a35cc0d78628c2cdb59b285a2f19560cebe0d47b2c70a473fbf2efbeb7cb96"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -81,7 +83,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "external_host_turn_unallocatable"
-  updated_at: "2026-09-17T17:05:39.090Z"
+  updated_at: "2026-09-17T19:16:02.709Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -1424,8 +1426,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "a2d2413bfa0455d3d67518f200e8293ae6b8cd10"
-  message: "🚧 YE48GC task: apply external agent result"
+  hash: "8d2143ca73dbe9fdb6a8de1b18fa8da6aae20142"
+  message: "🚧 YE48GC task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -1529,6 +1531,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: a2d2413bfa04. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -1752,9 +1757,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-17T19:16:02.709Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "8d2143ca73dbe9fdb6a8de1b18fa8da6aae20142"
 doc_version: 3
-doc_updated_at: "2026-09-17T19:15:22.623Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-17T19:16:02.730Z"
+doc_updated_by: "CODER"
 description: "Implement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task."
 sections:
   Summary: |-
@@ -3943,7 +3956,111 @@ extensions:
       schema_version: 1
       task_id: "202609162254-YE48GC"
     event_cursor: 63
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609162254-YE48GC"
+            - "git:a2d2413bfa0455d3d67518f200e8293ae6b8cd10"
+          check_id: "ci-full"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-17T19:14:10.079Z"
+          repository_snapshot_digest: "sha256:1954ec326eddc28b75453feeea1a3f5e02c5ea7405bb7ee2a74e5ab7ac27249f"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609162254-YE48GC"
+            - "git:a2d2413bfa0455d3d67518f200e8293ae6b8cd10"
+          check_id: "install-smoke"
+          command_identity: "bun run package:install-smoke"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-17T19:14:10.079Z"
+          repository_snapshot_digest: "sha256:1954ec326eddc28b75453feeea1a3f5e02c5ea7405bb7ee2a74e5ab7ac27249f"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609162254-YE48GC"
+            - "git:a2d2413bfa0455d3d67518f200e8293ae6b8cd10"
+          check_id: "release-critical"
+          command_identity: "bun run test:release:critical"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-17T19:14:10.079Z"
+          repository_snapshot_digest: "sha256:1954ec326eddc28b75453feeea1a3f5e02c5ea7405bb7ee2a74e5ab7ac27249f"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609162254-YE48GC"
+            - "git:a2d2413bfa0455d3d67518f200e8293ae6b8cd10"
+          check_id: "arch-check"
+          command_identity: "bun run arch:check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-17T19:14:10.079Z"
+          repository_snapshot_digest: "sha256:1954ec326eddc28b75453feeea1a3f5e02c5ea7405bb7ee2a74e5ab7ac27249f"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609162254-YE48GC"
+            - "git:a2d2413bfa0455d3d67518f200e8293ae6b8cd10"
+          check_id: "docs-check"
+          command_identity: "bun run docs:bootstrap:check && bun run docs:onboarding:check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-17T19:14:10.079Z"
+          repository_snapshot_digest: "sha256:1954ec326eddc28b75453feeea1a3f5e02c5ea7405bb7ee2a74e5ab7ac27249f"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609162254-YE48GC"
+            - "git:a2d2413bfa0455d3d67518f200e8293ae6b8cd10"
+          check_id: "bench-check"
+          command_identity: "bun run bench:agent-efficiency:check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-17T19:14:10.079Z"
+          repository_snapshot_digest: "sha256:1954ec326eddc28b75453feeea1a3f5e02c5ea7405bb7ee2a74e5ab7ac27249f"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609162254-YE48GC"
+            - "git:a2d2413bfa0455d3d67518f200e8293ae6b8cd10"
+          check_id: "bench-replay"
+          command_identity: "bun run bench:agent-efficiency:replay:check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-17T19:14:10.079Z"
+          repository_snapshot_digest: "sha256:1954ec326eddc28b75453feeea1a3f5e02c5ea7405bb7ee2a74e5ab7ac27249f"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609162254-YE48GC"
+            - "git:a2d2413bfa0455d3d67518f200e8293ae6b8cd10"
+          check_id: "semantic-review"
+          command_identity: "task.verify"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-17T19:14:10.079Z"
+          repository_snapshot_digest: "sha256:1954ec326eddc28b75453feeea1a3f5e02c5ea7405bb7ee2a74e5ab7ac27249f"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609162254-YE48GC"
+            - "git:a2d2413bfa0455d3d67518f200e8293ae6b8cd10"
+          check_id: "hosted-ci"
+          command_identity: "task.verify"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-17T19:14:10.079Z"
+          repository_snapshot_digest: "sha256:1954ec326eddc28b75453feeea1a3f5e02c5ea7405bb7ee2a74e5ab7ac27249f"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609162254-YE48GC"
     intent:
       acceptance_criteria:
@@ -3994,7 +4111,7 @@ extensions:
 
         Implement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task.
       task_id: "202609162254-YE48GC"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -9807,9 +9924,9 @@ extensions:
         revision: 7
         schema_version: 1
         task_id: "202609162254-YE48GC"
-    revision: 74
+    revision: 75
     schema_version: 1
-    updated_at: "2026-09-17T19:14:12.014Z"
+    updated_at: "2026-09-17T19:16:02.709Z"
     work_items:
       channel-and-owner-map:
         attempt: 1
@@ -12309,11 +12426,37 @@ extensions:
         previous_revision: 54
         schema_version: 1
         task_id: "202609162254-YE48GC"
+      legacy-finish:202609162254-YE48GC:2026-09-17T19:14:10.079Z:a2d2413bfa0455d3d67518f200e8293ae6b8cd10:
+        aggregate_digest: "sha256:5541aebbe61f66fdcc50d182664aa18c2c464b2a09380ce889fa78e012c489f8"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-17T19:16:02.709Z"
+          cause_refs:
+            - "task-verification:202609162254-YE48GC"
+            - "git:a2d2413bfa0455d3d67518f200e8293ae6b8cd10"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_035f92c65700084fd205cf6a"
+          mutation_id: "legacy-finish:202609162254-YE48GC:2026-09-17T19:14:10.079Z:a2d2413bfa0455d3d67518f200e8293ae6b8cd10"
+          plan_digest: "sha256:e17ec6eda7c7926e5e1379d0e7caaea02c6311d301fca98a8969264e33af9949"
+          plan_revision: 8
+          repository_fingerprint: "sha256:1954ec326eddc28b75453feeea1a3f5e02c5ea7405bb7ee2a74e5ab7ac27249f"
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 74
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609162254-YE48GC:2026-09-17T19:14:10.079Z:a2d2413bfa0455d3d67518f200e8293ae6b8cd10"
+        next_revision: 75
+        previous_revision: 74
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "a2d2413bfa0455d3d67518f200e8293ae6b8cd10"
+    message: "🚧 YE48GC task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "19ff39fd292c30f0958131c35200a6268b7a285d"
@@ -13593,12 +13736,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/29` agent runs
+- Completeness: `0/34` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:0476f3db7d2406dcc1f6d3cc6059c324571460a75b759e7a687008551c8f077a`
+- Journal digest: `sha256:19a35cc0d78628c2cdb59b285a2f19560cebe0d47b2c70a473fbf2efbeb7cb96`
 - Unavailable reason: `external_host_turn_unallocatable`
-- Updated at: `2026-09-17T17:05:39.090Z`
+- Updated at: `2026-09-17T19:16:02.709Z`
