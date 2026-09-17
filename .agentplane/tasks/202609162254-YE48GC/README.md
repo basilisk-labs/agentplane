@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 61
+revision: 62
 origin:
   system: "manual"
 depends_on: []
@@ -40,30 +40,35 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-17T16:38:54.750Z"
+  updated_at: "2026-09-17T17:05:17.410Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 2 typed finding(s)."
-  evaluated_sha: "85cf3c1622d8ab0615f81f5445a6f11f76c077d9"
-  review_identity_digest: "sha256:c3e72e3e0cbf6d0626d1172f9bd3182f58457456db89dbc1bc3ab291c46b94bc"
+  note: "EVALUATOR returned pass with 7 typed finding(s)."
+  evaluated_sha: "ee9149f08c25eb38aa8f9189b7f5d078c0fcea07"
+  review_identity_digest: "sha256:0c5c9492995e328bab6b09a0647316318e50d860216a5fd6f30f93f858862904"
   evidence_refs:
-    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-163732844-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-163732844-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/f2260a018aa712e18fb8de7ed0b661caa53986fbabf2d19e0e37f6b564200c39.md"
-    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-163732844-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-163732844-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-163732844-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-170418173-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-170418173-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/05748965137f3b9caa6678815ccb7f6240bc8ddc925465a7f482e1f9804bc2ab.md"
+    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-170418173-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-170418173-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609162254-YE48GC/quality/20260917-170418173-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609162254-YE48GC/README.md"
-    - ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/049852f17dbb8438ba108555df9726fa514d8e550af58af79ac50e429b3116a0.patch"
-    - ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/15cd390c6a406f771df0c007fe71d0ad2a0eef99592ac52165078b60c3c511b5.json"
-    - ".agentplane/tasks/202609162254-YE48GC/verification/20260917163502518-f127408289049351.json"
-    - ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/79ffd27d43118a5259b45ae17712c2378d1db0a447ab161ba25271ef1d0d98ed.json"
+    - ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/c7c95b8f28f829d7c51bd72c9320d961fc0cf4be55ea1a05e1063036d1cf6ec8.patch"
+    - ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/b758a5fcf2f37dc5f0b88da3a9edb42dc7288923f378cf413e2d8676c99995c2.json"
+    - ".agentplane/tasks/202609162254-YE48GC/verification/20260917170358738-186ecc3f56bae61a.json"
+    - ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/9956c72fe9c0692b04896843021293c95c9d3631e49c773583cf584e9c34ac84.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The reviewed delta binds the current AgentWorkOrder schema and task provenance, records the exact retired Blueprint command and option identities, filters only stale provenance for additions that no longer exist, and keeps the immutable compatibility baseline unchanged."
-    - "Residual risk: The PR head must be published and all required hosted checks must pass on the exact new head before integration."
+    - "The evaluated implementation is bound to ee9149f08c25eb38aa8f9189b7f5d078c0fcea07 and the frozen native review identity matches that implementation SHA."
+    - "The seven-file rework deletes one unused preparation trace wrapper and reduces export visibility for helpers, schemas, policies, and types that have no repository consumers; runtime call paths and public package entrypoints are unchanged."
+    - "The task-obligations barrel retains the two types used by current consumers and removes only unused re-exports, so native obligation resolution behavior is preserved."
+    - "Supervisor verification passed the full declared contract, including bun run ci:local:full, packed install smoke, release-critical tests, architecture checks, documentation checks, and efficiency replay."
+    - "The rework resolves the exact hosted Knip failure without widening the reviewed baseline or adding compatibility exceptions."
+    - "Residual risk: Hosted CI has not yet passed on the new implementation head."
+    - "Residual risk: The required CodeQL check remains blocked by four existing alerts and must not be bypassed without explicit security authority."
 token_usage:
   agent_runs: 24
   input_tokens: null
@@ -1656,7 +1661,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-17T17:04:03.254Z"
+doc_updated_at: "2026-09-17T17:05:17.465Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task."
 sections:
@@ -3382,7 +3387,7 @@ extensions:
       revision: 8
       schema_version: 1
       task_id: "202609162254-YE48GC"
-    event_cursor: 50
+    event_cursor: 51
     final_validation:
       evidence:
         -
@@ -9351,9 +9356,9 @@ extensions:
         revision: 7
         schema_version: 1
         task_id: "202609162254-YE48GC"
-    revision: 61
+    revision: 62
     schema_version: 1
-    updated_at: "2026-09-17T17:04:03.244Z"
+    updated_at: "2026-09-17T17:04:03.254Z"
     work_items:
       channel-and-owner-map:
         attempt: 1
@@ -11154,6 +11159,30 @@ extensions:
         mutation_id: "compatibility:sha256:c46ff176c8880d44cff5bcd36f48699931fc4d0a1b8f09f1e98fb5fdd94711a5"
         next_revision: 7
         previous_revision: 6
+        schema_version: 1
+        task_id: "202609162254-YE48GC"
+      compatibility:sha256:c791be58e2a18c31f57996b31ab06130dacf2503f9a54572526374de8c100f3d:
+        aggregate_digest: "sha256:57108bc3a9753ee906d716f5df7cc2f0527d75262465e66ef7afcfe6e633feec"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-17T17:04:03.254Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_9a4633644aecd7f5ec939faa"
+          mutation_id: "compatibility:sha256:c791be58e2a18c31f57996b31ab06130dacf2503f9a54572526374de8c100f3d"
+          plan_digest: "sha256:e17ec6eda7c7926e5e1379d0e7caaea02c6311d301fca98a8969264e33af9949"
+          plan_revision: 8
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609162254-YE48GC"
+          task_revision: 61
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:c791be58e2a18c31f57996b31ab06130dacf2503f9a54572526374de8c100f3d"
+        next_revision: 62
+        previous_revision: 61
         schema_version: 1
         task_id: "202609162254-YE48GC"
       compatibility:sha256:cbae6a5248b6e4bf2eb5febb6a8fa6170f826f759aa9e273b6469e5745b2f5fb:
