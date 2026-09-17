@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check b10d0411a1dcfc2a4d7b75dc22e4b51f10a823a8..6718b5111fb5e8a4f19f0d02f3bdbb834d069c08",
+      "command": "git diff --check 22e3f1498b6dbaeb76d8dc6c76328e9ea52caa5d..a2d2413bfa0455d3d67518f200e8293ae6b8cd10",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,21 +13,16 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB b10d0411a1dcfc2a4d7b75dc22e4b51f10a823a8..6718b5111fb5e8a4f19f0d02f3bdbb834d069c08",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 22e3f1498b6dbaeb76d8dc6c76328e9ea52caa5d..a2d2413bfa0455d3d67518f200e8293ae6b8cd10",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
         "M\t.agentplane/tasks/202609162254-YE48GC/pr/diffstat.txt",
         "M\t.agentplane/tasks/202609162254-YE48GC/pr/github-body.md",
-        "M\t.agentplane/tasks/202609162254-YE48GC/pr/github-title.txt",
         "M\t.agentplane/tasks/202609162254-YE48GC/pr/meta.json",
         "M\t.agentplane/tasks/202609162254-YE48GC/pr/review.md",
-        "M\tpackages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts",
-        "A\tpackages/agentplane/src/commands/shared/task-verification-evidence-filesystem.ts",
-        "M\tpackages/agentplane/src/commands/shared/task-verification-input.ts",
-        "M\tpackages/core/src/git/git-client.test.ts",
-        "M\tpackages/core/src/git/git-client.ts",
-        "M\tpackages/testkit/src/cli-harness.ts"
+        "M\tpackages/agentplane/src/commands/shared/task-verification-evidence-filesystem.ts",
+        "M\tpackages/agentplane/src/commands/shared/task-verification-input.test.ts"
       ]
     },
     {
@@ -37,8 +32,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "b10d0411a1dcfc2a4d7b75dc22e4b51f10a823a8",
-  "implementation_commit": "6718b5111fb5e8a4f19f0d02f3bdbb834d069c08",
+  "execution_base_commit": "22e3f1498b6dbaeb76d8dc6c76328e9ea52caa5d",
+  "implementation_commit": "a2d2413bfa0455d3d67518f200e8293ae6b8cd10",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
