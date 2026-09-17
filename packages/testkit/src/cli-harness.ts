@@ -9,7 +9,7 @@ import { defaultConfig, loadConfig, saveConfig } from "@agentplaneorg/core/confi
 import { resolveBaseBranch } from "@agentplaneorg/core/git";
 import { readTask } from "@agentplaneorg/core/tasks";
 
-import { runCli } from "./agentplane-internal.js";
+import { materializeLegacyDrainIdentityFixture, runCli } from "./agentplane-internal.js";
 import { resetRecipeArchiveCache } from "./cli-harness/recipe-archives.js";
 import { captureStdIO, runCliSilent, silenceStdIO } from "./cli-harness/stdio.js";
 import { removeTempRoot } from "./cli-harness/temp-root-cleanup.js";
@@ -308,8 +308,11 @@ export async function setTaskVerifySteps(root: string, taskId: string): Promise<
 
 export async function recordVerificationOk(root: string, taskId: string): Promise<void> {
   await setTaskVerifySteps(root, taskId);
-  expect(
-    await runCliSilent([
+  await materializeLegacyDrainIdentityFixture({ root, task_id: taskId });
+  const io = captureStdIO();
+  let code: number;
+  try {
+    code = await runCli([
       "verify",
       taskId,
       "--ok",
@@ -327,8 +330,11 @@ export async function recordVerificationOk(root: string, taskId: string): Promis
       "--quiet",
       "--root",
       root,
-    ]),
-  ).toBe(0);
+    ]);
+  } finally {
+    io.restore();
+  }
+  expect(code!, io.stderr).toBe(0);
   await recordQualityReviewPass(root, taskId);
 }
 

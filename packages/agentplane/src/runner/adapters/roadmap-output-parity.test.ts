@@ -165,7 +165,6 @@ const cases = [
         mutation_scope: "code",
         risk_flags: ["security"],
         tags: ["transport"],
-        blueprint_request: "code.direct",
         execution: {
           schema_version: 2,
           preferred_mode: "direct",

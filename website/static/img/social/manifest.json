@@ -289,8 +289,8 @@
       "output": "static/img/social/docs/developer/blueprints.png",
       "section": "Developer",
       "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
-      "title": "Blueprints",
-      "svgSha256": "5c21742e1392b880c7f2a420c090ffa6d6f1fac4e2ffef3cb683bf6817693204"
+      "title": "Blueprint compatibility",
+      "svgSha256": "8cb70a99ff79e8ff1c404c960cfd685d771870dca537a287dea8293476a6ecb0"
     },
     {
       "route": "/docs/developer/cli-contract",
@@ -1563,6 +1563,14 @@
       "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.7.1",
       "svgSha256": "13734c0cbe146035bcea6579f79dea97c05390fc04472a971a327e47997a2a69"
+    },
+    {
+      "route": "/docs/releases/v0.7.10",
+      "output": "static/img/social/docs/releases/v0.7.10.png",
+      "section": "Releases",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
+      "title": "V0.7.10",
+      "svgSha256": "642d0f795aa73074d329c3c1cf687e6fe18af98f862b9539fef674b28af30e90"
     },
     {
       "route": "/docs/releases/v0.7.2",

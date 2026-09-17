@@ -6,11 +6,7 @@ import { defaultConfig } from "@agentplaneorg/core/config";
 import { resolveExecutionProfileRuntime } from "../../runtime/execution-profile/index.js";
 import { resolveNativeTaskObligations } from "../../runtime/task-obligations/index.js";
 import { buildRunnerExecutionPlaybookContract } from "../playbooks.js";
-import {
-  assertRunnerBlueprintPolicyModuleBudget,
-  assertRunnerNativeContextBudget,
-  renderTaskRunnerBootstrap,
-} from "./task-run.js";
+import { assertRunnerNativeContextBudget, renderTaskRunnerBootstrap } from "./task-run.js";
 
 describe("runner blueprint guards", () => {
   it("starts codex task bootstraps with the /goal slash command", () => {
@@ -145,44 +141,6 @@ describe("runner blueprint guards", () => {
     expect(renderTaskRunnerBootstrap(bundle)).not.toContain("Evaluator skepticism contract:");
   });
 
-  it("rejects bundle policy modules that exceed the resolved blueprint budget", () => {
-    const bundle = makeRunnerContextBundle();
-    bundle.blueprint = {
-      schemaVersion: 1,
-      blueprintId: "code.branch_pr",
-      blueprintVersion: 1,
-      title: "Code PR",
-      taskIntent: {},
-      whySelected: [],
-      states: [],
-      requiredEvidence: [],
-      policyModules: [".agentplane/policy/security.must.md", ".agentplane/policy/dod.core.md"],
-      allowedCommands: [],
-      contextBudget: { maxPolicyModules: 1, maxPromptBlocks: 8, rationale: "test budget" },
-      contextManifest: [
-        {
-          id: ".agentplane/policy/security.must.md",
-          kind: "policy_module",
-          reason: "test",
-          source: ".agentplane/policy/security.must.md",
-        },
-        {
-          id: ".agentplane/policy/dod.core.md",
-          kind: "policy_module",
-          reason: "test",
-          source: ".agentplane/policy/dod.core.md",
-        },
-      ],
-      acceptedRecipeExtensions: [],
-      rejectedRecipeExtensions: [],
-      stopReasons: [],
-    };
-
-    expect(() => assertRunnerBlueprintPolicyModuleBudget(bundle)).toThrow(
-      "Runner blueprint policy module budget exceeded.",
-    );
-  });
-
   it("rejects native context overflow without consulting the compatibility blueprint", () => {
     const bundle = makeRunnerContextBundle();
     const profile = resolveExecutionProfileRuntime(defaultConfig());
@@ -216,30 +174,6 @@ describe("runner blueprint guards", () => {
     expect(bootstrap).toContain("protected_lifecycle_override");
     expect(bootstrap).not.toContain("Blueprint stop rules:");
     expect(bootstrap).not.toMatch(/agentplane (?:integrate|finish|verify|work|pr)|git commit/u);
-  });
-
-  it("renders blueprint stop rules into the runner bootstrap", () => {
-    const bundle = makeRunnerContextBundle();
-    bundle.blueprint = {
-      schemaVersion: 1,
-      blueprintId: "analysis.light",
-      blueprintVersion: 1,
-      title: "Analysis",
-      taskIntent: {},
-      whySelected: [],
-      states: [],
-      requiredEvidence: [],
-      policyModules: [],
-      allowedCommands: [],
-      contextBudget: { maxPolicyModules: 0, maxPromptBlocks: 8, rationale: "test budget" },
-      contextManifest: [],
-      acceptedRecipeExtensions: [],
-      rejectedRecipeExtensions: [],
-      stopReasons: [{ id: "scope_drift", severity: "hard", reason: "Task scope changed." }],
-    };
-
-    expect(renderTaskRunnerBootstrap(bundle)).toContain("Blueprint stop rules:");
-    expect(renderTaskRunnerBootstrap(bundle)).toContain("hard: Task scope changed. (scope_drift)");
   });
 
   it("projects playbook checks as semantic completion criteria", () => {

@@ -91,7 +91,5 @@ export async function readTaskIntent(opts: {
     mutationScope: stringValue(fm.mutation_scope, MUTATION_SCOPE_VALUES),
     tags: Array.isArray(fm.tags) ? fm.tags.filter((tag) => typeof tag === "string") : undefined,
   };
-  return intent.taskKind || intent.mutationScope || intent.tags?.length
-    ? intent
-    : undefined;
+  return intent.taskKind || intent.mutationScope || intent.tags?.length ? intent : undefined;
 }

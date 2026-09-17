@@ -37,10 +37,7 @@ export type TaskCreateParsed = {
   json: boolean;
 };
 
-export type UserTaskIntent = Pick<
-  TaskNewParsed,
-  "taskKind" | "mutationScope" | "tags"
-> & {
+export type UserTaskIntent = Pick<TaskNewParsed, "taskKind" | "mutationScope" | "tags"> & {
   riskFlags: NonNullable<TaskNewParsed["riskFlags"]>;
   source: "explicit" | "pending_planner";
   code: "explicit_structured_intent" | "semantic_intake_pending";

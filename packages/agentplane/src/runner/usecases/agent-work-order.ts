@@ -39,7 +39,10 @@ import {
 } from "../context/task-context.js";
 import type { RunnerPromptBlock, RunnerRecipeContext } from "../types.js";
 
-import { buildAgentWorkOrderSourceManifest, buildCanonicalAgentWorkOrder } from "./agent-work-order-build.js";
+import {
+  buildAgentWorkOrderSourceManifest,
+  buildCanonicalAgentWorkOrder,
+} from "./agent-work-order-build.js";
 import {
   buildAgentWorkOrderRemotePolicy,
   projectAgentWorkOrderRoute,

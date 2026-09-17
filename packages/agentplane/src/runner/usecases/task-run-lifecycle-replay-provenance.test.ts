@@ -15,12 +15,14 @@ import { writeRunnerExecutable } from "@agentplane/testkit/runner";
 
 import { runCli } from "../../cli/run-cli.js";
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
+import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
 import { evolveRunnerRunState, readRunnerRunState, writeRunnerRunState } from "../artifacts.js";
 
 import { resumeTaskRunnerExecution, retryTaskRunnerExecution } from "./task-run-lifecycle.js";
 import { prepareTaskRunnerExecution } from "./task-run.js";
 import {
   initializeRunnerPolicyFixture,
+  materializeRunnerTaskWorkItemFixture,
   recordFailedExternalRunnerAnchor,
 } from "./task-run-lifecycle.testkit.js";
 
@@ -85,6 +87,11 @@ async function createDoingRunnerTask(root: string, title: string): Promise<strin
     verify: task?.verify ?? [],
     status: "DOING",
   });
+  await materializeRunnerTaskWorkItemFixture({
+    root,
+    task_id: taskId,
+    objective: `Execute lifecycle test task: ${title}.`,
+  });
   return taskId;
 }
 
@@ -112,13 +119,15 @@ describe("task-run lifecycle replay provenance", () => {
     ]);
     const taskId = await createDoingRunnerTask(root, "Resume run");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const taskCommand = await loadTaskCommandContext({ ctx, taskIds: [taskId] });
     const prepared = await prepareTaskRunnerExecution({
-      ctx,
-      cwd: root,
-      rootOverride: root,
+      ctx: taskCommand.command,
+      cwd: taskCommand.command.resolvedProject.gitRoot,
+      rootOverride: null,
       task_id: taskId,
       mode: "execute",
       run_id: "run-resume-source",
+      task_execution: taskCommand.execution,
     });
     const failedAt = new Date().toISOString();
     await writeRunnerRunState({
@@ -170,7 +179,7 @@ describe("task-run lifecycle replay provenance", () => {
     expect(events).toContain('"source_trust":"external_task_anchor_only"');
     expect(events).toContain('"source_artifacts_reused":false');
     expect(await readFile(prepared.invocation.events_path, "utf8")).toBe(sourceEventsBefore);
-    const task = await ctx.taskBackend.getTask(taskId);
+    const task = await resumed.ctx.taskBackend.getTask(taskId);
     expect(task?.runner).toMatchObject({
       run_id: "run-resume-dest",
       status: "success",
@@ -191,13 +200,15 @@ describe("task-run lifecycle replay provenance", () => {
     ]);
     const taskId = await createDoingRunnerTask(root, "Retry run");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const taskCommand = await loadTaskCommandContext({ ctx, taskIds: [taskId] });
     const prepared = await prepareTaskRunnerExecution({
-      ctx,
-      cwd: root,
-      rootOverride: root,
+      ctx: taskCommand.command,
+      cwd: taskCommand.command.resolvedProject.gitRoot,
+      rootOverride: null,
       task_id: taskId,
       mode: "execute",
       run_id: "run-retry-source",
+      task_execution: taskCommand.execution,
     });
     const failedAt = new Date().toISOString();
     await writeRunnerRunState({
@@ -247,7 +258,7 @@ describe("task-run lifecycle replay provenance", () => {
     expect(retryEvents).toContain("runner_retry_created");
     expect(retryEvents).toContain('"source_trust":"external_task_anchor_only"');
     expect(retryEvents).toContain('"source_artifacts_reused":false');
-    const task = await ctx.taskBackend.getTask(taskId);
+    const task = await retried.ctx.taskBackend.getTask(taskId);
     expect(task?.runner).toMatchObject({
       run_id: "run-retry-dest",
       status: "success",

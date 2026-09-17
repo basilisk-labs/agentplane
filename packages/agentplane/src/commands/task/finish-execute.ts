@@ -55,7 +55,7 @@ export async function executeFinishPlan(opts: {
     const loadedState = await loadFinishTasks({ ctx, options, plan });
     if (!taskStateAlreadyWritten) {
       assertFinishPhasePolicy({ ctx, loadedTasks: loadedState.loadedTasks, plan });
-      await assertNativeTaskIdentityBeforeFinish({ ctx, loadedTasks: loadedState.loadedTasks });
+      assertNativeTaskIdentityBeforeFinish({ ctx, loadedTasks: loadedState.loadedTasks });
     }
     let incidentOutcome = await collectIncidentsForLoadedTasks({
       ctx,

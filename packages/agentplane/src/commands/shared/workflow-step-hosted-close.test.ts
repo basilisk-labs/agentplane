@@ -5,30 +5,34 @@ import type { TaskResumeContext } from "../task/handoff.shared.js";
 import type { RouteCleanupProbe } from "./route-decision-types.js";
 import { withBootstrapWorkflowFingerprint } from "./workflow-step-fingerprint.js";
 import { reduceRouteState } from "./workflow-step-reducer.js";
+import { withNativeIdentity } from "./workflow-step.testkit.js";
 
 const taskId = "202608031426-0BY4B4";
 const branch = `task/${taskId}/hosted-close`;
 const headSha = "2222222222222222222222222222222222222222";
 
-const task = {
-  id: taskId,
-  title: "Converge hosted close",
-  description: "Exercise terminal route convergence.",
-  status: "DONE",
-  priority: "high",
-  owner: "CODER",
-  revision: 1,
-  depends_on: [],
-  tags: ["code"],
-  verify: ["bun test"],
-  plan_approval: {
-    state: "approved",
-    approved_by: "ORCHESTRATOR",
-    approved_at: "2026-08-03T00:00:00.000Z",
-  },
-  verification: { state: "ok" },
-  commit: { hash: headSha, message: "feat: implementation" },
-} satisfies TaskData;
+const task = withNativeIdentity(
+  {
+    id: taskId,
+    title: "Converge hosted close",
+    description: "Exercise terminal route convergence.",
+    status: "DONE",
+    priority: "high",
+    owner: "CODER",
+    revision: 1,
+    depends_on: [],
+    tags: ["code"],
+    verify: ["bun test"],
+    plan_approval: {
+      state: "approved",
+      approved_by: "ORCHESTRATOR",
+      approved_at: "2026-08-03T00:00:00.000Z",
+    },
+    verification: { state: "ok" },
+    commit: { hash: headSha, message: "feat: implementation" },
+  } satisfies TaskData,
+  "COMPLETED",
+);
 
 const resume = {
   task_id: taskId,

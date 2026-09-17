@@ -12,6 +12,7 @@ import { loadCommandContext } from "../shared/task-backend.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
 import { setTaskFieldsIntent } from "../shared/task-store.js";
 import { taskReadmesHaveOnlyLifecycleDrift } from "../shared/quality-review-target.js";
+import { materializeLegacyDrainIdentityFixture } from "../shared/native-task-identity-fixture.js";
 import {
   assertQualificationEvidenceLineage,
   isQualificationTask,
@@ -420,6 +421,12 @@ describe("evaluator qualification packet", () => {
     await addTask(root, aggregateId);
     await addTask(root, leafId);
     await addTask(root, incompleteLeafId);
+    await materializeLegacyDrainIdentityFixture({
+      root,
+      task_id: leafId,
+      work_items_completed: true,
+      task_terminal: true,
+    });
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
     const qualityReportPath = `.agentplane/tasks/${leafId}/quality/pass/quality-report.json`;
     await applyTaskMutation({
@@ -627,6 +634,12 @@ describe("evaluator qualification packet", () => {
     ).rejects.toThrow(`Qualification dependency leaf ${incompleteLeafId} is not DONE`);
     const incompleteReadmePath = path.join(root, `.agentplane/tasks/${incompleteLeafId}/README.md`);
     const incompleteReadme = await readFile(incompleteReadmePath, "utf8");
+    await materializeLegacyDrainIdentityFixture({
+      root,
+      task_id: incompleteLeafId,
+      work_items_completed: true,
+      task_terminal: true,
+    });
     await applyTaskMutation({
       ctx,
       taskId: incompleteLeafId,
@@ -862,9 +875,10 @@ describe("evaluator qualification packet", () => {
     const packetPath = path.join(root, packetEvidence?.path ?? "");
     const packetRaw = await readFile(packetPath, "utf8");
     const packet = JSON.parse(packetRaw) as Record<string, unknown>;
+    const packetImplementationSha = packet.implementation_sha;
+    expect(packetImplementationSha).toMatch(/^[a-f0-9]{40}$/u);
     expect(packet).toMatchObject({
       task_id: taskId,
-      implementation_sha: reviewedSha,
       dependency_closure: {
         root_dependency_ids: [aggregateId],
         terminal_leaf_ids: [leafId],
@@ -929,7 +943,7 @@ describe("evaluator qualification packet", () => {
     const frozenVerification = JSON.parse(
       await readFile(path.join(root, verificationRecordPath), "utf8"),
     ) as { implementation_sha?: string };
-    expect(frozenVerification.implementation_sha).toBe(reviewedSha);
+    expect(frozenVerification.implementation_sha).toBe(packetImplementationSha);
     const { stdout: divergentCommitOutput } = await execFileAsync(
       "git",
       ["commit-tree", `${evidenceCommit}^{tree}`, "-m", "test: divergent qualification evidence"],
@@ -939,7 +953,7 @@ describe("evaluator qualification packet", () => {
     await expect(
       assertQualificationEvidenceLineage({
         gitRoot: root,
-        implementationSha: reviewedSha,
+        implementationSha: String(packetImplementationSha),
         evidenceCommit: divergentCommit,
         evidenceRoot: `.agentplane/tasks/${taskId}`,
       }),

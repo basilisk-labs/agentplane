@@ -318,9 +318,7 @@ export async function executeStateBoundRunnerInvocation(opts: {
         expected.components.backend_projection,
         advanced.components.backend_projection,
       );
-      const changedComponents = error.diagnostic.changed_components.map(
-        (entry) => entry.component,
-      );
+      const changedComponents = error.diagnostic.changed_components.map((entry) => entry.component);
       const allowedReplayComponents = new Set([
         "task",
         ...(backendChanged ? (["backend_projection"] as const) : []),

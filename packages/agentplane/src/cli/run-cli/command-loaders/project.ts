@@ -20,7 +20,6 @@ import type {
   ProjectConfigSession,
 } from "../command-catalog/project-capability-profiles.js";
 import type {
-  TaskLifecycleSession,
   TaskReadSession,
   TaskRouteLocalSession,
   TaskWriteSession,
@@ -76,10 +75,6 @@ function getTaskWriteContext(session: TaskWriteSession) {
 
 function getTaskRouteLocalContext(session: TaskRouteLocalSession) {
   return (command: string) => session.require("route.local", command) as Promise<CommandContext>;
-}
-
-function getTaskLifecycleContext(session: TaskLifecycleSession) {
-  return (command: string) => session.require("git.mutate", command) as Promise<CommandContext>;
 }
 
 export const loadAcrSpec = (_session: NoContextSession) =>

@@ -3,25 +3,19 @@ import path from "node:path";
 
 import { defaultConfig } from "@agentplaneorg/core/config";
 import {
-  captureStdIO,
   installRunCliIntegrationHarness,
   mkGitRepoRootWithCommit,
-  runCliSilent,
   writeConfig,
 } from "@agentplane/testkit";
 import { writeRunnerExecutable } from "@agentplane/testkit/runner";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { runCli } from "../../cli/run-cli.js";
 import { cmdContextVerifyTask } from "../../commands/context/verify-task.js";
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
 import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
 import type { TaskData } from "../../backends/task-backend.js";
 import { attachObservedExecutionReceiptFixture } from "../../context/verify-task.testkit.js";
-import {
-  initializeRunnerPolicyFixture,
-  materializeRunnerTaskWorkItemFixture,
-} from "./task-run-lifecycle.testkit.js";
+import { createDoingRunnerTask } from "./task-run-lifecycle.testkit.js";
 import { executeTaskRunnerExecution, prepareTaskRunnerExecution } from "./task-run.js";
 
 installRunCliIntegrationHarness();
@@ -45,48 +39,15 @@ async function createDoingTask(
     owner: string;
     task_kind: NonNullable<TaskData["task_kind"]>;
     mutation_scope: NonNullable<TaskData["mutation_scope"]>;
-    blueprint_request: NonNullable<TaskData["blueprint_request"]>;
     extensions?: Record<string, unknown>;
     structured_work_item?: boolean;
   },
 ): Promise<string> {
-  await initializeRunnerPolicyFixture(root);
-  const io = captureStdIO();
-  let taskId = "";
-  try {
-    const code = await runCli([
-      "task",
-      "new",
-      "--title",
-      opts.title,
-      "--description",
-      opts.title,
-      "--owner",
-      opts.owner,
-      "--tag",
-      opts.task_kind,
-      "--root",
-      root,
-    ]);
-    expect(code).toBe(0);
-    taskId = io.stdout.trim();
-  } finally {
-    io.restore();
-  }
-
-  await runCliSilent([
-    "task",
-    "plan",
-    "set",
-    taskId,
-    "--text",
-    `Execute integration test task: ${opts.title}.`,
-    "--updated-by",
-    "ORCHESTRATOR",
-    "--root",
+  const taskId = await createDoingRunnerTask({
     root,
-  ]);
-  await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    title: opts.title,
+    plan_text: `Execute integration test task: ${opts.title}.`,
+  });
 
   const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
   const task = await ctx.taskBackend.getTask(taskId);
@@ -104,16 +65,8 @@ async function createDoingTask(
     verify: task?.verify ?? [],
     task_kind: opts.task_kind,
     mutation_scope: opts.mutation_scope,
-    blueprint_request: opts.blueprint_request,
-    ...(opts.extensions ? { extensions: opts.extensions } : {}),
+    ...(opts.extensions ? { extensions: { ...(task?.extensions ?? {}), ...opts.extensions } } : {}),
   });
-  if (opts.structured_work_item !== false) {
-    await materializeRunnerTaskWorkItemFixture({
-      root,
-      task_id: taskId,
-      objective: `Execute integration test task: ${opts.title}.`,
-    });
-  }
   return taskId;
 }
 
@@ -123,7 +76,6 @@ async function createContextTask(root: string, title: string): Promise<string> {
     owner: "CURATOR",
     task_kind: "context",
     mutation_scope: "context",
-    blueprint_request: "context.assimilation",
     extensions: {
       "agentplane.context": {
         task_type: "context_profile_switch",
@@ -214,7 +166,6 @@ describe("context task runner integration", () => {
       owner: "CODER",
       task_kind: "code",
       mutation_scope: "code",
-      blueprint_request: "code.direct",
       structured_work_item: false,
     });
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
@@ -255,7 +206,6 @@ describe("context task runner integration", () => {
         owner: "CODER",
         task_kind: "code",
         mutation_scope: "code",
-        blueprint_request: "code.direct",
         structured_work_item: false,
       });
       const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
@@ -381,21 +331,18 @@ describe("context task runner integration", () => {
       owner: "CODER",
       task_kind: "code",
       mutation_scope: "code",
-      blueprint_request: "code.direct",
     });
     const plannerTaskId = await createDoingTask(root, {
       title: "Planner role-derived sandbox",
       owner: "PLANNER",
       task_kind: "code",
       mutation_scope: "code",
-      blueprint_request: "code.direct",
     });
     const evaluatorTaskId = await createDoingTask(root, {
       title: "Evaluator role-derived sandbox",
       owner: "EVALUATOR",
       task_kind: "code",
       mutation_scope: "code",
-      blueprint_request: "code.direct",
     });
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
     const coderCommand = await loadTaskCommandContext({ ctx, taskIds: [coderTaskId] });
@@ -451,7 +398,7 @@ describe("context task runner integration", () => {
 
     expect(evaluator.bundle.execution.sandbox_policy).toMatchObject({
       requested: "read-only",
-      source: "route_authority",
+      source: "role_default",
       role: "EVALUATOR",
     });
     expect(evaluator.bundle.execution.write_scope?.writable_roots).toEqual([]);

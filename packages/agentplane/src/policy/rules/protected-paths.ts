@@ -58,9 +58,7 @@ function isExplicitlyAllowedSameTaskArtifact(opts: {
   }
   const filePath = normalizeGitPathCandidate(opts.filePath);
   const taskPrefix = `${normalizeGitPathPrefix(opts.workflowDir)}/${opts.taskId}`;
-  if (
-    !["quality"].some((dir) => gitPathIsUnderPrefix(filePath, `${taskPrefix}/${dir}`))
-  ) {
+  if (!["quality"].some((dir) => gitPathIsUnderPrefix(filePath, `${taskPrefix}/${dir}`))) {
     return false;
   }
   return opts.prefixes

@@ -75,7 +75,11 @@ describe("Git index lock ownership guard", () => {
 
     for (const file of await trackedFiles()) {
       const absolutePath = path.join(repoRoot, file);
-      const contents = await readFile(absolutePath, "utf8");
+      const contents = await readFile(absolutePath, "utf8").catch((error: unknown) => {
+        if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
+        throw error;
+      });
+      if (contents === null) continue;
 
       if (!contents.includes("index.lock")) {
         continue;

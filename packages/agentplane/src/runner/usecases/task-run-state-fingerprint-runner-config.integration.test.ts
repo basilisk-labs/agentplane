@@ -154,7 +154,7 @@ describe("runner execution configuration fingerprint", () => {
     });
   });
 
-  it("rejects a same-commit branch switch before any effect", async () => {
+  it("does not treat a same-commit branch name as native execution authority", async () => {
     const root = await mkGitRepoRoot();
     await configureCustomRunner({
       root,
@@ -174,7 +174,7 @@ describe("runner execution configuration fingerprint", () => {
     });
     const executeSpy = vi.spyOn(CustomRunnerAdapter.prototype, "execute");
 
-    const rejection = await captureRejection(
+    await expect(
       executeTaskRunnerExecution({
         ctx,
         cwd: root,
@@ -182,9 +182,8 @@ describe("runner execution configuration fingerprint", () => {
         task_id: taskId,
         run_id: "run-state-fingerprint-stale-route-branch",
       }),
-    );
-
-    expectRefusal(rejection, executeSpy, "authority", false);
+    ).resolves.toBeDefined();
+    expect(executeSpy).toHaveBeenCalledTimes(1);
   });
 
   it("rejects ambient process environment drift before any effect", async () => {

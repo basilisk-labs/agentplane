@@ -1,7 +1,6 @@
 import path from "node:path";
 import type { taskKernel } from "@agentplaneorg/core/tasks";
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
-import { LocalBackend } from "../../backends/task-backend.js";
 import { LocalTaskByteStore } from "../../backends/task-backend/local-task-byte-store.js";
 import {
   KernelMigration,
@@ -15,7 +14,7 @@ import {
   resolveSupervisorExecutionEpisodePath,
   tryAcquireSupervisorExecutionLease,
 } from "../shared/supervisor-execution-episode.js";
-import type { CommandContext } from "../shared/task-backend.js";
+import { backendUsesLocalTaskStore, type CommandContext } from "../shared/task-backend.js";
 import {
   auditHistoricalBlueprintSnapshot,
   projectHistoricalBlueprintAudit,
@@ -80,7 +79,8 @@ export const taskKernelMigrateSpec: CommandSpec<Parsed> = {
 };
 
 export async function runKernelMigration(ctx: CommandContext, opts: Parsed): Promise<number> {
-  if (!(ctx.taskBackend instanceof LocalBackend))
+  const backendRoot = (ctx.taskBackend as { root?: unknown }).root;
+  if (!backendUsesLocalTaskStore(ctx) || typeof backendRoot !== "string")
     throw new CliError({
       code: "E_VALIDATION",
       message:
@@ -98,7 +98,7 @@ export async function runKernelMigration(ctx: CommandContext, opts: Parsed): Pro
     git_root: root,
     task: {},
   })) as taskKernel.Sha256Digest;
-  const migration = new KernelMigration(new LocalTaskByteStore(ctx.taskBackend), identity);
+  const migration = new KernelMigration(new LocalTaskByteStore({ root: backendRoot }), identity);
   const withHistoricalBlueprint = async <T extends object>(result: T) => {
     const audit = projectHistoricalBlueprintAudit(
       await auditHistoricalBlueprintSnapshot({

@@ -2,14 +2,8 @@ import { describe, expect, it, vi } from "vitest";
 
 import { buildStateFingerprint } from "@agentplaneorg/core/schemas";
 import {
-  approveTaskPlan,
-  createLegacyTaskAggregate,
-  createRepositorySnapshot,
-  createTaskPlanRevision,
-  materializeApprovedWorkItems,
-  taskCentricDigest,
+  taskCentricAggregateFromExtensions,
   withTaskCentricAggregate,
-  type ValidationPlan,
 } from "@agentplaneorg/core/tasks";
 
 import { runCli } from "../../cli/run-cli.js";
@@ -18,6 +12,7 @@ import {
   recordCodexProviderUsageForResult,
 } from "../../runner/adapters/codex-result-transport.js";
 import * as taskRunUsecases from "../../runner/usecases/task-run.js";
+import { createDoingRunnerTask } from "../../runner/usecases/task-run-lifecycle.testkit.js";
 import { loadCommandContext } from "../shared/task-backend.js";
 import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
 import {
@@ -34,173 +29,49 @@ import { captureStdIO, mkGitRepoRootWithCommit, runCliSilent } from "@agentplane
 import { chmod, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-async function createTask(root: string): Promise<string> {
-  const io = captureStdIO();
-  try {
-    const code = await runCli([
-      "task",
-      "new",
-      "--title",
-      "Hermes adapter fixture",
-      "--description",
-      "Fixture task for Hermes adapter command coverage.",
-      "--owner",
-      "CODER",
-      "--tag",
-      "docs",
-      "--root",
-      root,
-    ]);
-    expect(code).toBe(0);
-    return io.stdout.trim();
-  } finally {
-    io.restore();
-  }
-}
-
 async function createApprovedTask(root: string): Promise<string> {
   await runCliSilent(["init", "--workflow", "branch_pr", "--yes", "--root", root]);
-  const taskId = await createTask(root);
-  await runCliSilent([
-    "task",
-    "plan",
-    "set",
-    taskId,
-    "--text",
-    "Fixture plan for Hermes adapter tests.",
-    "--updated-by",
-    "CODER",
-    "--root",
+  return await createDoingRunnerTask({
     root,
-  ]);
-  await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
-  return taskId;
+    title: "Hermes adapter fixture",
+    plan_text: "Fixture plan for Hermes adapter tests.",
+    structured_work_item: false,
+  });
 }
 
 async function createRunnableDirectTask(root: string): Promise<string> {
   await runCliSilent(["init", "--workflow", "direct", "--yes", "--root", root]);
-  const taskId = await createTask(root);
-  await runCliSilent([
-    "task",
-    "plan",
-    "set",
-    taskId,
-    "--text",
-    "Fixture plan for Hermes task-run execution coverage.",
-    "--updated-by",
-    "CODER",
-    "--root",
+  const taskId = await createDoingRunnerTask({
     root,
-  ]);
-  await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
-  await runCliSilent([
-    "task",
-    "start-ready",
-    taskId,
-    "--author",
-    "CODER",
-    "--body",
-    "Start: prepare the direct task runner fixture.",
-    "--root",
-    root,
-  ]);
+    title: "Hermes adapter fixture",
+    plan_text: "Fixture plan for Hermes task-run execution coverage.",
+  });
   const command = await loadCommandContext({ cwd: root, rootOverride: root });
-  const taskCommand = await loadTaskCommandContext({ ctx: command, taskIds: [taskId] });
-  const rawTask = await command.taskBackend.getTask(taskId);
-  if (!rawTask) throw new Error(`Task not found: ${taskId}`);
-  const now = "2026-08-22T00:00:00.000Z";
-  const validation: ValidationPlan = {
-    schema_version: 1,
-    criteria: [
-      {
-        id: "runner-fixture-ready",
-        description: "The runner fixture can execute one bounded WorkItem.",
-        required: true,
-        check_ids: ["runner-fixture-check"],
-      },
-    ],
-    checks: [
-      {
-        id: "runner-fixture-check",
-        kind: "structural",
-        required: true,
-        capability: "task.run",
-      },
-    ],
-    evidence_fingerprint: taskCentricDigest("hermes-runner-fixture"),
-  };
-  const baseline = createRepositorySnapshot({
-    git: { kind: "commit", sha: taskCommand.execution.base_sha, ref: "main" },
-    dirty_paths: [],
-    policy_digest: null,
-    config_digest: null,
-    context_digest: null,
-    task_history_cursor: null,
-    captured_at: now,
-  });
-  const proposal = {
-    schema_version: 1 as const,
-    task_id: taskId,
-    planning_baseline: baseline,
-    work_items: {
-      schema_version: 1 as const,
-      work_items: [
-        {
-          id: "runner-fixture",
-          objective: "Exercise the typed runner route.",
-          depends_on: [],
-          required_inputs: [],
-          expected_outputs: ["runner-fixture-output"],
-          scope_roots: ["."],
-          acceptance_criteria: validation.criteria,
-          validation,
-          context: {
-            required_sources: ["repository"],
-            optional_sources: [],
-            symbol_hints: [],
-            max_bytes: 16_384,
-          },
-          risk: "low" as const,
-          capabilities: ["task.run"],
-          resource_claims: [{ kind: "workspace" as const, resource: ".", mode: "write" as const }],
-          optional: false,
-          priority: 1,
-        },
-      ],
-    },
-    assumptions: [],
-    unresolved_questions: [],
-    top_level_validation: validation,
-  };
-  const pendingPlan = createTaskPlanRevision({ proposal, revision: 1, created_at: now });
-  const plan = approveTaskPlan({
-    plan: pendingPlan,
-    expected_digest: pendingPlan.digest,
-    actor: "ORCHESTRATOR",
-    approved_at: now,
-  });
-  const legacy = createLegacyTaskAggregate({
-    id: taskId,
-    revision: rawTask.revision ?? 1,
-    title: rawTask.title,
-    description: rawTask.description,
-    status: "DOING",
-    acceptance_criteria: rawTask.verify ?? [],
-    captured_at: now,
-    updated_at: now,
-  });
-  const aggregate = materializeApprovedWorkItems({
-    task: { ...legacy, current_plan: plan },
-    plan,
-    now,
-  });
+  const task = await command.taskBackend.getTask(taskId);
+  if (!task) throw new Error(`Task not found: ${taskId}`);
+  const aggregate = taskCentricAggregateFromExtensions(task.extensions);
+  if (!aggregate) throw new Error(`Task-centric aggregate not found: ${taskId}`);
   await command.taskBackend.writeTask(
     {
-      ...rawTask,
-      status: "DOING",
-      extensions: withTaskCentricAggregate(rawTask.extensions, aggregate),
+      ...task,
+      extensions: withTaskCentricAggregate(task.extensions, {
+        ...aggregate,
+        revision: (task.revision ?? aggregate.revision) + 1,
+        lifecycle: "ACTIVE",
+        work_items: Object.fromEntries(
+          Object.entries(aggregate.work_items).map(([id, item]) => [
+            id,
+            {
+              ...item,
+              state: "CLAIMED" as const,
+              attempt: Math.max(item.attempt, 1),
+              claim_id: `hermes-fixture:${taskId}`,
+            },
+          ]),
+        ),
+      }),
     },
-    { expectedRevision: rawTask.revision ?? 1 },
+    { expectedRevision: task.revision ?? 1 },
   );
   const refreshed = await loadTaskCommandContext({ ctx: command, taskIds: [taskId] });
   const allocation = await allocateTaskWorkspace({
@@ -378,7 +249,7 @@ describe("hermes adapter commands", () => {
       );
       expect(
         payload.metadata.agentplane.comment_projection.execution_packet.returnControlWhen,
-      ).toContain("request a fresh action packet");
+      ).toContain("recompute task next-action");
       expect(payload.metadata.agentplane.comment_projection.execution_packet.mustNot).toContain(
         "do not reconstruct branch/worktree/PR state from prose",
       );
@@ -398,12 +269,12 @@ describe("hermes adapter commands", () => {
 
   it("supervise returns a route-gated packet without allowing raw route shell execution", async () => {
     const root = await mkGitRepoRootWithCommit();
-    const taskId = await createTask(root);
+    const taskId = await createApprovedTask(root);
 
     const io = captureStdIO();
     try {
       const code = await runCli(["hermes", "supervise", taskId, "--json", "--root", root]);
-      expect(code).toBe(0);
+      expect(code, io.stderr).toBe(0);
       const payload = JSON.parse(io.stdout) as {
         task: { id: string };
         projection_boundary: { agentplane_authority: string; hermes_authority: string };
@@ -436,7 +307,7 @@ describe("hermes adapter commands", () => {
         `agentplane task next-action ${taskId} --explain`,
       );
       expect(payload.hermes_comment_projection.execution_packet.returnControlWhen).toContain(
-        "after PLANNER records a task-specific Plan",
+        "recompute task next-action",
       );
       expect(payload.hermes_comment_projection.evidence_refs).not.toHaveProperty("runner_status");
       expect(payload.terminal.hermes_root_complete_allowed).toBe(false);
@@ -588,7 +459,8 @@ describe("hermes adapter commands", () => {
         git: fingerprintComponent,
         backend_projection: fingerprintComponent,
         policy: fingerprintComponent,
-        blueprint: fingerprintComponent,
+        plan: fingerprintComponent,
+        capability: fingerprintComponent,
         knowledge: fingerprintComponent,
         provider: fingerprintComponent,
         authority: fingerprintComponent,

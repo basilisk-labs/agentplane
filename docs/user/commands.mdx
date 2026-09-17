@@ -486,37 +486,20 @@ use `--no-record` only for artifact-generation smoke checks. Pass reviews must i
 findings and evidence, so `finish` and `integrate` no longer accept a bare
 `ap verify --by EVALUATOR` pass-note as sufficient quality evidence.
 
-## Blueprint catalogs
+## Legacy task migration
+
+AgentPlane 0.7.10 has no active Blueprint catalog, install, activation, or mutation commands. Use
+`task kernel-migrate` only for an existing legacy task:
 
 ```bash
-agentplane blueprints catalog refresh --index <path-or-url>
-agentplane blueprints catalog list
-agentplane blueprints catalog info <id>
-agentplane blueprints install <id>
-agentplane blueprints install pack:<id> --kind pack --activate
+agentplane task kernel-migrate <task-id>
+agentplane task kernel-migrate <task-id> --apply --source-digest <sha256:digest> --yes
 ```
 
-Blueprint catalogs are optional extension catalogs for route blueprints. They are separate from
-recipes: recipes add domain guidance and prompt/runtime assets; blueprints add task-route
-definitions that can become project-local trusted routes.
-
-`blueprints catalog refresh` caches an external catalog index under `~/.agentplane/blueprints`.
-`blueprints install` caches blueprint package contents under `~/.agentplane/blueprint-catalog` and
-materializes the selected definition files into the project-local `.agentplane/blueprints` store.
-Installing a blueprint does not activate it unless `--activate` is passed. Activation updates the
-project-local blueprint trust config with an explicit allowlist.
-
-Blueprint packs are lightweight catalog entries that expand to multiple blueprint installs. A pack
-does not own extra runtime behavior by itself; it only groups blueprint ids that should be installed
-together.
-
-During advanced init, cached catalog entries can be installed in one step:
-
-```bash
-agentplane init --advanced --blueprints pack:team-baseline --yes
-```
-
-Use `blueprint:<id>` or `pack:<id>` when a catalog contains overlapping ids.
+The first command is a read-only preview. The second applies the exact reviewed source digest with
+a byte-preserving backup and guarded rollback proof. Unknown or ambiguous records stop rather than
+being converted heuristically. See [Blueprint compatibility](../developer/blueprints) for the
+retired-command and historical-reader boundary.
 
 ## CLI reference (generated)
 

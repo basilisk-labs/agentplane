@@ -24,15 +24,10 @@ import {
   type ValidationPlan,
   type WorkItem,
 } from "@agentplaneorg/core/tasks";
-import { makeTaskCommandContext, makeTaskFixture } from "@agentplane/testkit/task";
-import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
 import {
   applyApprovedTaskScopeExtension,
-  createTaskScopeExtensionRequestState,
-  normalizeTaskScopeRoot,
   requiresImplementationReworkReopen,
   recoverAppliedTaskScopeExtension,
-  scopeExtensionReceiptForState,
   TASK_SCOPE_EXTENSION_REQUEST_KEY,
 } from "../shared/task-scope-extension-request.js";
 
@@ -42,6 +37,7 @@ import {
 } from "./scope-extend.js";
 import { buildTaskStatusTransition } from "./shared/workflow-transition-service.js";
 import { projectTaskCentricCompatibilityMutation } from "../../adapters/task-backend/task-centric-backend-projection.js";
+import { scopeExtensionFixture as fixture } from "./scope-extend.testkit.js";
 
 const NOW = "2026-08-18T01:00:00.000Z";
 
@@ -137,70 +133,6 @@ function taskCentricAggregate(taskId: string, parallel = false, optionalLater = 
     plan: approved,
     now: NOW,
   });
-}
-
-function fixture(
-  overrides: Partial<TaskData> = {},
-  request?: {
-    scope_roots: string[];
-    repository_effects: ("documentation" | "release_metadata")[];
-  },
-) {
-  const requested = request ?? {
-    scope_roots: ["website"],
-    repository_effects: ["release_metadata" as const],
-  };
-  const command = makeTaskCommandContext({
-    configureConfig: (config) => {
-      config.workflow_mode = "branch_pr";
-    },
-  });
-  const executionContract = resolveTaskExecutionContract({
-    config: command.config,
-    task: { task_kind: "code", mutation_scope: "code", risk_flags: [] },
-    requestedMode: "branch_pr",
-    declaration: {
-      schema_version: 2,
-      preferred_mode: "branch_pr",
-      scope_roots: ["docs/releases"],
-      repository_effects: ["documentation"],
-      external_effects: [],
-      requirements_uncertainty: "bounded",
-      implementation_uncertainty: "bounded",
-      reversibility: "reversible",
-      rationale: ["release documentation"],
-    },
-  });
-  executionContract.observed.changed_paths = ["docs/releases/v0.7.7.md"];
-  const pending = createTaskScopeExtensionRequestState({
-    request: {
-      schema_version: 1,
-      ...requested,
-      rationale: "The required generated asset is outside the current scope.",
-    },
-    transition_id: "tr_11111111111111111111111111111111",
-    state_fingerprint: `sha256:${"a".repeat(64)}`,
-  });
-  const task = makeTaskFixture({
-    id: "202608181404-SCOPE1",
-    status: "BLOCKED",
-    execution_contract: executionContract,
-    execution_route: {
-      requested_mode: "branch_pr",
-      selected_mode: "branch_pr",
-      repository_mode: "branch_pr",
-      reason_codes: [...executionContract.reason_codes],
-    },
-    comments: [
-      {
-        author: "SUPERVISOR",
-        body: scopeExtensionReceiptForState(pending),
-      },
-    ],
-    extensions: { [TASK_SCOPE_EXTENSION_REQUEST_KEY]: pending },
-    ...overrides,
-  });
-  return { command, pending, task };
 }
 
 function taskContractNoOp(workItemId: string | null, activeState = "READY", optionalLater = false) {
@@ -986,47 +918,6 @@ describe("blocked task execution scope extension", () => {
         task: noOp.task,
         scope_roots: noOp.pending.request.scope_roots,
         repository_effects: noOp.pending.request.repository_effects,
-        request_digest: noOp.pending.request_digest,
-        by: "USER",
-      }),
-    ).toThrow(/must add a new scope root or repository effect/u);
-  });
-
-  it("rejects unsafe roots and no-op extensions", () => {
-    const { command, pending, task } = fixture();
-
-    expect(() => normalizeTaskScopeRoot("../outside")).toThrow(/Invalid scope root/u);
-    expect(() =>
-      extendBlockedTaskExecutionContract({
-        command,
-        task,
-        scope_roots: ["website"],
-        repository_effects: ["release_metadata"],
-        request_digest: `sha256:${"f".repeat(64)}`,
-        by: "USER",
-      }),
-    ).toThrow(/request digest does not match/u);
-    expect(() =>
-      extendBlockedTaskExecutionContract({
-        command,
-        task,
-        scope_roots: ["website-other"],
-        repository_effects: ["release_metadata"],
-        request_digest: pending.request_digest,
-        by: "USER",
-      }),
-    ).toThrow(/exactly match/u);
-
-    const noOp = fixture(
-      {},
-      { scope_roots: ["docs/releases"], repository_effects: ["documentation"] },
-    );
-    expect(() =>
-      extendBlockedTaskExecutionContract({
-        command: noOp.command,
-        task: noOp.task,
-        scope_roots: ["docs/releases"],
-        repository_effects: ["documentation"],
         request_digest: noOp.pending.request_digest,
         by: "USER",
       }),

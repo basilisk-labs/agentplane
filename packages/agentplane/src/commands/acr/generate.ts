@@ -120,7 +120,9 @@ export async function generateAcr(opts: {
     : [];
   const nativeIdentity = buildAcrNativeIdentityExtension(task, workCommit);
   if (!nativeIdentity) {
-    throw new Error(`Task ${task.id} has no canonical execution identity; migrate it before ACR generation.`);
+    throw new Error(
+      `Task ${task.id} has no canonical execution identity; migrate it before ACR generation.`,
+    );
   }
   const trust = await readTaskEvidenceBundleTrustExtension({
     ctx: opts.ctx,

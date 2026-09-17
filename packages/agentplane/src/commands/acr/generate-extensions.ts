@@ -1,7 +1,5 @@
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
-import path from "node:path";
-
 import type { AgentChangeRecord } from "@agentplaneorg/core/schemas";
 
 import { isRecord } from "../../shared/guards.js";

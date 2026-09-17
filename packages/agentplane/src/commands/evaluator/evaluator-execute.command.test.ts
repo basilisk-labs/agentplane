@@ -22,6 +22,7 @@ import {
   resolveSupervisorExecutionEpisodePath,
 } from "../shared/supervisor-execution-episode.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
+import { materializeLegacyDrainIdentityFixture } from "../shared/native-task-identity-fixture.js";
 import { cmdTaskAdd } from "../workflow.js";
 import {
   replaceCodexWithFailure,
@@ -46,6 +47,7 @@ async function addTask(root: string, taskId: string): Promise<void> {
     commentAuthor: null,
     commentBody: null,
   });
+  await materializeLegacyDrainIdentityFixture({ root, task_id: taskId });
 }
 
 async function commitTarget(root: string): Promise<void> {
@@ -76,6 +78,7 @@ async function writeVerificationRecord(root: string, taskId: string): Promise<st
       root,
     ]);
     if (code === 0) {
+      await materializeLegacyDrainIdentityFixture({ root, task_id: taskId });
       code = await runCli([
         "verify",
         taskId,

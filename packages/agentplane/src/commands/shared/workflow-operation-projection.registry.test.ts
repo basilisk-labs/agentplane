@@ -23,7 +23,7 @@ const state = {
   preconditionFingerprint: {
     task_id: taskId,
     digest: "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-    schema_version: 1,
+    schema_version: 2,
     kind: "state_fingerprint",
     observed_by: "agentplane",
     task_revision: 1,
@@ -35,7 +35,8 @@ const state = {
         "git",
         "backend_projection",
         "policy",
-        "blueprint",
+        "plan",
+        "capability",
         "knowledge",
         "provider",
         "authority",

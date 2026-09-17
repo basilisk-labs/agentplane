@@ -34,7 +34,7 @@ describe("context ingest task creation", () => {
     const task = createTaskNewParsed(parsed, sourceRows, workspaceMode);
     const context = task.extensions?.["agentplane.context"] as {
       mode?: string;
-      blueprint?: { id?: string; required_gates?: string[] };
+      required_gates?: string[];
       prompt_modules?: { content: string }[];
       allowed_outputs?: string[];
       wiki?: {
@@ -46,10 +46,9 @@ describe("context ingest task creation", () => {
       };
     };
 
-    expect(task.blueprintRequest).toBe("context.maximum_assimilation");
+    expect(task.blueprintRequest).toBeUndefined();
     expect(context.mode).toBe("maximum_assimilation");
-    expect(context.blueprint?.id).toBe("context.maximum_assimilation");
-    expect(context.blueprint?.required_gates).toContain("entity_relation_first_extraction");
+    expect(context.required_gates).toContain("entity_relation_first_extraction");
     expect(context.wiki).toMatchObject({
       maintenance_mode: "maximum_assimilation",
       raw_deletion_resilience_required: true,

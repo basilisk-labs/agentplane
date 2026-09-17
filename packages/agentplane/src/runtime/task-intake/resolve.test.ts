@@ -120,7 +120,6 @@ describe("runtime/task-intake", () => {
           tags: ["framework", "intake"],
           task_kind: "context",
           mutation_scope: "context",
-          blueprint_request: "context.assimilation",
           extensions: {
             "agentplane.context": {
               schema_version: 1,
@@ -183,7 +182,6 @@ describe("runtime/task-intake", () => {
         depends_on: ["EXT-100"],
         task_kind: "context",
         mutation_scope: "context",
-        blueprint_request: "context.assimilation",
         extensions: {
           "agentplane.context": {
             schema_version: 1,

@@ -5,10 +5,7 @@ type TaskArtifactClassification =
   | "active_parallel_task_artifact"
   | "stale_done_handoff"
   | "unknown_task_artifact";
-type TaskArtifactAction =
-  | "ignore_parallel_agent"
-  | "cleanup_candidate"
-  | "inspect";
+type TaskArtifactAction = "ignore_parallel_agent" | "cleanup_candidate" | "inspect";
 type TaskArtifactDriftItem = {
   path: string;
   task_id: string;

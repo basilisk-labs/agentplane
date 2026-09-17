@@ -100,7 +100,7 @@ describe("evaluator evidence object store", () => {
 
     expect(first.path).toBe(second.path);
     expect(await readdir(path.join(qualityRoot, "objects", "sha256"))).toHaveLength(2);
-    const [diff, checks, blueprint] = await Promise.all([
+    const [diff, checks, nativeIdentity] = await Promise.all([
       putEvaluatorEvidenceObject({
         gitRoot: root,
         taskQualityRoot: qualityRoot,
@@ -122,11 +122,11 @@ describe("evaluator evidence object store", () => {
       putEvaluatorEvidenceObject({
         gitRoot: root,
         taskQualityRoot: qualityRoot,
-        logicalName: "evaluator-blueprint",
-        kind: "blueprint",
+        logicalName: "evaluator-native-identity",
+        kind: "plan",
         extension: ".json",
         mediaType: "application/json",
-        contents: '{"blueprint":true}\n',
+        contents: '{"kind":"agentplane.native_task_identity"}\n',
       }),
     ]);
     const manifestPath = path.join(reviewRoot, "evaluator-evidence-manifest.json");
@@ -137,7 +137,7 @@ describe("evaluator evidence object store", () => {
       createdAt: "2026-08-03T00:00:00.000Z",
       taskQualityRoot: qualityRoot,
       manifestPath,
-      artifacts: [first, schema, diff, checks, blueprint],
+      artifacts: [first, schema, diff, checks, nativeIdentity],
     });
 
     const verified = await assertEvaluatorPacketCurrent({

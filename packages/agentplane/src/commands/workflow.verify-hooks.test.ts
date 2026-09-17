@@ -652,11 +652,7 @@ describe("commands/workflow", () => {
     const artifactPath = `.agentplane/tasks/${taskId}/quality/review.json`;
     await mkdir(path.dirname(path.join(root, artifactPath)), { recursive: true });
     await writeFile(path.join(root, artifactPath), '{"verdict":"pass"}\n', "utf8");
-    await execFileAsync(
-      "git",
-      ["add", artifactPath],
-      { cwd: root },
-    );
+    await execFileAsync("git", ["add", artifactPath], { cwd: root });
 
     const prevTaskId = process.env.AGENTPLANE_TASK_ID;
     const prevAllowTasks = process.env.AGENTPLANE_ALLOW_TASKS;

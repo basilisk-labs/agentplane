@@ -1,9 +1,14 @@
 import { createHash } from "node:crypto";
-import { mkdir, readFile, rm } from "node:fs/promises";
+import { mkdir, rm } from "node:fs/promises";
 import path from "node:path";
 import { gitRevParse } from "@agentplaneorg/core/git";
 
-import { canonicalizeJson, taskExecutionBaseFromExtensions } from "@agentplaneorg/core/tasks";
+import {
+  canonicalizeJson,
+  taskCentricAggregateFromExtensions,
+  taskExecutionBaseFromExtensions,
+  withTaskCentricAggregate,
+} from "@agentplaneorg/core/tasks";
 
 import { mapBackendError } from "../../cli/error-map.js";
 import { backendNotSupportedMessage, infoMessage, successMessage } from "../../cli/output.js";
@@ -14,9 +19,6 @@ import {
   inspectTaskIncidents,
   renderIncidentCollectionPlanOutcome,
 } from "../incidents/shared.js";
-import { ensurePrArtifactsSynced } from "../pr/internal/sync.js";
-import { buildVerifiedPrMeta, parsePrMeta } from "../shared/pr-meta.js";
-import { resolvePrPaths } from "../pr/internal/pr-paths.js";
 import { normalizeBranchPrBatchTaskIds } from "../pr/internal/sync-batch-ownership.js";
 import {
   recordedTaskImplementationCommitSha,
@@ -69,6 +71,9 @@ import {
   appendNativeTaskIdentityReference,
   appendDecisionContextReference,
 } from "./verify-record-references.js";
+import { syncRecordedVerificationArtifacts } from "./verify-record-pr-artifacts.js";
+
+export { syncRecordedVerificationArtifacts } from "./verify-record-pr-artifacts.js";
 
 function verificationStateToQualityReviewState(state: string): "pass" | "rework" | "blocked" {
   if (state === "ok") return "pass";
@@ -400,7 +405,7 @@ async function recordVerificationResult(opts: {
           previousExecutionBase.base_ref === verificationExecutionContext.base_ref &&
           previousExecutionBase.base_sha === verificationExecutionContext.base_sha &&
           previousExecutionBase.source !== "legacy";
-        const nextExtensions = {
+        let nextExtensions: Record<string, unknown> = {
           ...current.extensions,
           task_execution_context: {
             schema_version: 1,
@@ -413,6 +418,13 @@ async function recordVerificationResult(opts: {
         };
         if (opts.state !== "ok") {
           Reflect.deleteProperty(nextExtensions, "implementation_commit");
+          const aggregate = taskCentricAggregateFromExtensions(nextExtensions);
+          if (aggregate?.lifecycle === "COMPLETED") {
+            nextExtensions = withTaskCentricAggregate(nextExtensions, {
+              ...aggregate,
+              lifecycle: "ACTIVE",
+            });
+          }
         }
         const reconciledContract = reconcileVerificationExecutionContract({
           contract: {
@@ -540,29 +552,6 @@ async function recordVerificationResult(opts: {
       process.stdout.write(`${infoMessage(incidentSummary)}\n`);
     }
   }
-}
-
-export async function syncRecordedVerificationArtifacts(opts: {
-  ctx: CommandContext;
-  cwd: string;
-  rootOverride?: string;
-  taskId: string;
-  by: string;
-  at: string;
-  state: VerifyState;
-}): Promise<void> {
-  const syncResult = await ensurePrArtifactsSynced({
-    ...opts,
-    author: opts.by,
-    workflowMode: "branch_pr",
-  });
-  if (!syncResult) return;
-  const { metaPath } = await resolvePrPaths(opts);
-  const meta = parsePrMeta(await readFile(metaPath, "utf8"), opts.taskId);
-  await writeJsonStableIfChanged(
-    metaPath,
-    buildVerifiedPrMeta({ meta, at: opts.at, state: opts.state === "ok" ? "pass" : "fail" }),
-  );
 }
 
 export async function executeVerifyRecordCommand(

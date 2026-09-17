@@ -237,10 +237,7 @@ export async function prepareTaskRunnerExecution(
     git: preparationGitSnapshot,
     policy_prompts: preparedWorkOrder.base_prompts,
   });
-  const precondition_policy = resolveRunnerStateFingerprintPolicy(
-    command,
-    precondition_fingerprint,
-  );
+  const precondition_policy = resolveRunnerStateFingerprintPolicy(command);
   bundle.state_fingerprint = precondition_fingerprint;
   bundle.state_fingerprint_policy = precondition_policy;
   const repository = RunnerRunRepository.fromBundle(bundle);

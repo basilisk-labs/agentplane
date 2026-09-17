@@ -10,6 +10,7 @@ export {
   loadCommandContext,
   loadTaskFromContext,
 } from "../../agentplane/src/commands/shared/task-backend.js";
+export { materializeLegacyDrainIdentityFixture } from "../../agentplane/src/commands/shared/native-task-identity-fixture.js";
 export type { CommandContext } from "../../agentplane/src/commands/shared/task-backend.js";
 export {
   evolveRunnerRunState,

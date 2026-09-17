@@ -6,7 +6,6 @@ import { expect, it } from "vitest";
 
 import { stripAnsi } from "../shared/ansi.js";
 import "./run-cli.core.direct-task-supervision.test.js";
-import "./run-cli.core.route-decision.direct-closeout.test.js";
 
 const exec = promisify(execFile);
 

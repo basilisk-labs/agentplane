@@ -81,7 +81,7 @@ describe("evidence bundle manifest", () => {
     expect(manifest.integrity.manifest_digest).toMatch(/^sha256:[0-9a-f]{64}$/);
     expect(manifest.files.map((file) => file.role)).toEqual([
       "acr",
-      "blueprint_snapshot",
+      "task_artifact",
       "task_readme",
     ]);
 

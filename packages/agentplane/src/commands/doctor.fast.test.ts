@@ -258,48 +258,6 @@ describe("doctor.fast", () => {
     expect(rc).toBe(1);
   });
 
-  it("reports invalid project-local blueprints as doctor warnings", async () => {
-    const ws = await mkWorkspace();
-    await mkdir(path.join(ws.root, ".agentplane", "blueprints"), { recursive: true });
-    await writeFile(path.join(ws.root, ".agentplane", "blueprints", "broken.json"), "{", "utf8");
-    const stderr = spyOnStderrWrite();
-    try {
-      const rc = await runDoctor(
-        { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
-        { fix: false, dev: false },
-      );
-      expect(rc).toBe(0);
-      const output = stderr.mock.calls.flat().join("\n");
-      expect(output).toContain("Project blueprint");
-      expect(output).toContain("invalid_json");
-    } finally {
-      stderr.mockRestore();
-    }
-  });
-
-  it("reports invalid project-local blueprint trust config without blueprint files", async () => {
-    const ws = await mkWorkspace();
-    await mkdir(path.join(ws.root, ".agentplane", "blueprints"), { recursive: true });
-    await writeFile(
-      path.join(ws.root, ".agentplane", "blueprints", "config.json"),
-      '{\n  "enabled": true,\n  "allowed_ids": [7],\n  "selection": "explicit_only"\n}\n',
-      "utf8",
-    );
-    const stderr = spyOnStderrWrite();
-    try {
-      const rc = await runDoctor(
-        { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
-        { fix: false, dev: false },
-      );
-      expect(rc).toBe(0);
-      const output = stderr.mock.calls.flat().join("\n");
-      expect(output).toContain("Project blueprint trust config is invalid");
-      expect(output).toContain("allowed_ids[0]");
-    } finally {
-      stderr.mockRestore();
-    }
-  });
-
   it("warns when DONE task misses implementation commit hash", async () => {
     const ws = await mkWorkspace();
     await gitInitWithCommit(ws.root, "feat: initial");

@@ -7,12 +7,13 @@ import * as taskBackend from "../../backends/task-backend.js";
 import { defaultConfig } from "@agentplaneorg/core/config";
 import { cmdTaskAdd, cmdTaskDocSet } from "../workflow.js";
 import { loadCommandContext } from "../shared/task-backend.js";
+import { materializeLegacyDrainIdentityFixture } from "../shared/native-task-identity-fixture.js";
 import * as taskMutation from "../shared/task-mutation.js";
 import {
   resolveTaskExecutionContract,
   reconcileTaskExecutionContract,
 } from "../../runtime/task-routing/index.js";
-import { cmdVerifyParsed } from "./verify-record.js";
+import { cmdVerifyParsed as executeVerify } from "./verify-record.js";
 import {
   resolveObservedVerificationChangedPaths,
   resolveInheritedVerificationPaths,
@@ -69,6 +70,15 @@ async function addTask(root: string, taskId: string): Promise<void> {
     updatedBy: "TEST",
     fullDoc: false,
   });
+  await materializeLegacyDrainIdentityFixture({ root, task_id: taskId });
+}
+
+async function cmdVerifyParsed(opts: Parameters<typeof executeVerify>[0]): Promise<number> {
+  const root = opts.rootOverride ?? opts.cwd;
+  const refreshed = await materializeLegacyDrainIdentityFixture({ root, task_id: opts.taskId });
+  if (!refreshed) return executeVerify(opts);
+  const ctx = await loadCommandContext({ cwd: root, rootOverride: opts.rootOverride ?? null });
+  return executeVerify({ ...opts, ctx });
 }
 
 describe("task verification durability", () => {
@@ -470,6 +480,7 @@ describe("task verification durability", () => {
       const worktreeParent = await mkdtemp(path.join(tmpdir(), "agentplane-verify-worktree-"));
       const taskWorktree = path.join(worktreeParent, "task");
       await execFileAsync("git", ["worktree", "add", taskWorktree, taskBranch], { cwd: root });
+      await materializeLegacyDrainIdentityFixture({ root: taskWorktree, task_id: taskId });
       if (checkout !== "task") {
         await writeFile(path.join(root, "unrelated.ts"), "export const unrelated = true;\n");
         await execFileAsync("git", ["add", "unrelated.ts"], { cwd: root });
@@ -625,7 +636,7 @@ describe("task verification durability", () => {
         );
         expect(record).toMatchObject({
           implementation_sha: implementationSha,
-          input: { verification_contract_digest: contract?.digest },
+          input: { obligations: { verification_contract_digest: contract?.digest } },
         });
       }
       const currentHead = await execFileAsync("git", ["rev-parse", "HEAD"], {

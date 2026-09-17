@@ -14,6 +14,7 @@ import {
   taskCentricDigest,
   withTaskCentricAggregate,
   type ValidationPlan,
+  generateTaskId,
 } from "@agentplaneorg/core/tasks";
 import { expect } from "vitest";
 
@@ -21,11 +22,9 @@ import { loadPolicyTemplates } from "../../agents/agents-template.js";
 import { runCli } from "../../cli/run-cli.js";
 import type { CommandContext } from "../../commands/shared/task-backend.js";
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
-import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
-import {
-  allocateTaskWorkspace,
-  releaseWorkspaceLease,
-} from "../../runtime/workspace-allocation/index.js";
+import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
+import { resolveNativeTaskIdentity } from "../../commands/shared/native-task-identity.js";
+import { materializeLegacyDrainIdentityFixture } from "../../commands/shared/native-task-identity-fixture.js";
 import type { RunnerDangerFullAccessAuthority } from "../types.js";
 
 import { runnerReplayDangerAuthoritySource } from "./task-run-lifecycle-shared.js";
@@ -166,24 +165,28 @@ export async function materializeRunnerTaskWorkItemFixture(opts: {
     plan,
     now,
   });
+  const executionContract = resolveTaskExecutionContract({
+    config: commandCtx.config,
+    task: rawTask,
+    requestedMode: commandCtx.config.workflow_mode,
+  });
   await commandCtx.taskBackend.writeTask(
     {
       ...rawTask,
       status: "DOING",
+      execution_contract: executionContract,
       extensions: withTaskCentricAggregate(rawTask.extensions, aggregate),
     },
     { expectedRevision: rawTask.revision ?? 1 },
   );
-  const taskCommand = await loadTaskCommandContext({
-    ctx: commandCtx,
-    taskIds: [opts.task_id],
-  });
-  if (taskCommand.execution.selected_mode !== "direct") return;
-  const allocation = await allocateTaskWorkspace({
-    ctx: taskCommand.command,
-    execution: taskCommand.execution,
-  });
-  await releaseWorkspaceLease(allocation.lease);
+  const persisted = await commandCtx.taskBackend.getTask(opts.task_id);
+  expect(persisted && resolveNativeTaskIdentity(persisted)).not.toBeNull();
+  await execFileAsync("git", ["add", "-f", "-A"], { cwd: opts.root });
+  await execFileAsync(
+    "git",
+    ["commit", "--allow-empty", "--no-verify", "-m", `test: materialize ${opts.task_id}`],
+    { cwd: opts.root },
+  );
 }
 
 export async function createDoingRunnerTask(opts: {
@@ -193,26 +196,29 @@ export async function createDoingRunnerTask(opts: {
   structured_work_item?: boolean;
 }): Promise<string> {
   await initializeRunnerPolicyFixture(opts.root);
-  let taskId = "";
+  const taskId = await generateTaskId({ length: 6, attempts: 100 });
   {
     const io = captureStdIO();
     try {
       const code = await runCli([
         "task",
-        "new",
+        "add",
+        taskId,
         "--title",
         opts.title,
         "--description",
         opts.title,
         "--owner",
         "CODER",
+        "--priority",
+        "med",
         "--tag",
         "docs",
         "--root",
         opts.root,
       ]);
       expect(code).toBe(0);
-      taskId = io.stdout.trim();
+      expect(io.stdout.trim()).toBe(taskId);
     } finally {
       io.restore();
     }
@@ -257,11 +263,21 @@ export async function createDoingRunnerTask(opts: {
     verify: task?.verify ?? [],
     status: "DOING",
   });
-  await materializeRunnerTaskWorkItemFixture({
-    root: opts.root,
-    task_id: taskId,
-    objective: opts.plan_text,
-  });
+  if (opts.structured_work_item === false) {
+    await materializeLegacyDrainIdentityFixture({ root: opts.root, task_id: taskId });
+    await execFileAsync("git", ["add", "-f", "-A"], { cwd: opts.root });
+    await execFileAsync(
+      "git",
+      ["commit", "--allow-empty", "--no-verify", "-m", `test: materialize ${taskId}`],
+      { cwd: opts.root },
+    );
+  } else {
+    await materializeRunnerTaskWorkItemFixture({
+      root: opts.root,
+      task_id: taskId,
+      objective: opts.plan_text,
+    });
+  }
   return taskId;
 }
 

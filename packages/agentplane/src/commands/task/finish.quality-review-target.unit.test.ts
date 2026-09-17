@@ -4,6 +4,7 @@ import type { TaskData } from "../../backends/task-backend.js";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { taskReadmesHaveOnlyLifecycleDrift } from "../shared/quality-review-target.js";
+import { withLegacyDrainIdentityFixture } from "../shared/native-task-identity-fixture.js";
 import type { LoadedFinishTask, ResolvedCommitInfo } from "./finish-shared.js";
 
 const mocks = vi.hoisted(() => ({
@@ -57,10 +58,17 @@ function mkCtx(): CommandContext {
 }
 
 function mkLoadedTask(reviewedSha = "impl-sha"): LoadedFinishTask {
-  return {
-    taskId: "T-1",
+  const task = withLegacyDrainIdentityFixture({
     task: {
       id: "T-1",
+      title: "Title",
+      description: "Desc",
+      status: "DOING",
+      priority: "normal",
+      owner: "me",
+      depends_on: [],
+      tags: [],
+      verify: [],
       quality_review: {
         state: "pass",
         updated_at: "2026-02-09T00:00:00.000Z",
@@ -71,7 +79,14 @@ function mkLoadedTask(reviewedSha = "impl-sha"): LoadedFinishTask {
         evidence_refs: [".agentplane/tasks/T-1/quality/run/quality-report.json"],
         findings: ["Reviewed implementation evidence."],
       },
-    } as TaskData,
+    },
+    config: defaultConfig(),
+    work_items_completed: true,
+  });
+  if (task.execution_contract) task.execution_contract.source = "agent_declared";
+  return {
+    taskId: "T-1",
+    task,
   };
 }
 
@@ -143,11 +158,8 @@ extensions:
 
   it("blocks finish when the persisted Verification Contract lacks accepted evidence", async () => {
     const loaded = mkLoadedTask();
-    loaded.task.execution_contract = {
-      verification: { contract: { selected_checks: ["task_outcome"] } },
-    } as TaskData["execution_contract"];
     mocks.hasAcceptedVerificationRecord.mockResolvedValue(false);
-    const { assertQualityReviewBeforeFinish } = await import("./finish-blueprint-evidence.js");
+    const { assertQualityReviewBeforeFinish } = await import("./finish-quality-evidence.js");
 
     await expect(
       assertQualityReviewBeforeFinish({
@@ -170,11 +182,8 @@ extensions:
 
   it("accepts an EVALUATOR pass anchored on a task-artifact-only descendant", async () => {
     const loaded = mkLoadedTask("artifact-review-sha");
-    loaded.task.execution_contract = {
-      verification: { contract: { selected_checks: ["task_outcome"] } },
-    } as TaskData["execution_contract"];
     mocks.isTaskLocalOnlyAdvance.mockResolvedValue(true);
-    const { assertQualityReviewBeforeFinish } = await import("./finish-blueprint-evidence.js");
+    const { assertQualityReviewBeforeFinish } = await import("./finish-quality-evidence.js");
 
     await expect(
       assertQualityReviewBeforeFinish({
@@ -202,6 +211,7 @@ extensions:
   it("accepts a reviewed descendant containing linked batch task artifacts", async () => {
     const loaded = mkLoadedTask("batch-artifact-review-sha");
     loaded.task.extensions = {
+      ...loaded.task.extensions,
       branch_pr_batch: {
         role: "primary",
         primary_task_id: "T-1",
@@ -209,7 +219,7 @@ extensions:
       },
     };
     mocks.isTaskSetLocalOnlyAdvance.mockResolvedValue(true);
-    const { assertQualityReviewBeforeFinish } = await import("./finish-blueprint-evidence.js");
+    const { assertQualityReviewBeforeFinish } = await import("./finish-quality-evidence.js");
 
     await expect(
       assertQualityReviewBeforeFinish({
@@ -235,7 +245,7 @@ extensions:
   it("rejects an EVALUATOR pass when the reviewed descendant contains semantic drift", async () => {
     const loaded = mkLoadedTask("semantic-drift-sha");
     mocks.isTaskLocalOnlyAdvance.mockResolvedValue(false);
-    const { assertQualityReviewBeforeFinish } = await import("./finish-blueprint-evidence.js");
+    const { assertQualityReviewBeforeFinish } = await import("./finish-quality-evidence.js");
 
     await expect(
       assertQualityReviewBeforeFinish({
@@ -252,7 +262,7 @@ extensions:
     const loaded = mkLoadedTask("unrelated-review-sha");
     mocks.gitIsAncestor.mockResolvedValue(false);
     mocks.isTaskLocalOnlyAdvance.mockResolvedValue(true);
-    const { assertQualityReviewBeforeFinish } = await import("./finish-blueprint-evidence.js");
+    const { assertQualityReviewBeforeFinish } = await import("./finish-quality-evidence.js");
 
     await expect(
       assertQualityReviewBeforeFinish({

@@ -314,11 +314,9 @@ describe("guard/impl/allow", () => {
     });
 
     expect(staged).toEqual([
-      ".agentplane/tasks/202601010101-ABCDEF/blueprint/resolved-snapshot.json",
       ".agentplane/tasks/202601010101-ABCDEF/quality/20260101-recovery-context/quality-report.json",
     ]);
     expect(ctx.git.stage).toHaveBeenCalledWith([
-      ".agentplane/tasks/202601010101-ABCDEF/blueprint/resolved-snapshot.json",
       ".agentplane/tasks/202601010101-ABCDEF/quality/20260101-recovery-context/quality-report.json",
     ]);
   });

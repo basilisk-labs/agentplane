@@ -950,8 +950,8 @@ describe("task verify record (unit)", () => {
     expect(currentTask.doc).toContain("Note: prior");
     expect(currentTask.doc).toContain("### 2026-02-09T00:00:00.000Z — VERIFY — ok");
     expect(currentTask.doc).toContain("VerifyStepsRef: doc_version=3");
-    expect(currentTask.doc).toContain("BlueprintSnapshotRef:");
-    expect(currentTask.doc).toContain("- safe_command: agentplane blueprint snapshot T-1");
+    expect(currentTask.doc).toContain("NativeTaskIdentityRef:");
+    expect(currentTask.doc).toContain("- safe_command: agentplane task next-action T-1 --explain");
   });
   it("cmdTaskVerifyOk preserves fresher README content when store update sees newer task data", async () => {
     let currentTask = mkTask({

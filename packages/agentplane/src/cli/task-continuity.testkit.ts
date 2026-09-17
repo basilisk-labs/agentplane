@@ -6,6 +6,7 @@ import type { TaskPlanProposal } from "@agentplaneorg/core/tasks";
 import { captureStdIO, runCliSilent } from "@agentplane/testkit";
 import { runCli } from "./run-cli.js";
 import { loadCommandContext, loadTaskFromContext } from "../commands/shared/task-backend.js";
+import { resolveNativeTaskIdentity } from "../commands/shared/native-task-identity.js";
 
 type PlanningPacket = {
   transition_id: string;
@@ -73,6 +74,53 @@ export async function prepareContinuityPlan(
   objective: string,
   approve = true,
 ): Promise<void> {
+  const initialCtx = await loadCommandContext({ cwd: root, rootOverride: root });
+  const initialTask = await loadTaskFromContext({ ctx: initialCtx, taskId });
+  if (!resolveNativeTaskIdentity(initialTask)) {
+    const inspectIo = captureStdIO();
+    let sourceDigest = "";
+    let classification = "";
+    try {
+      expect(
+        await runCli(["task", "kernel-migrate", taskId, "--root", root]),
+        inspectIo.stderr,
+      ).toBe(0);
+      const report = JSON.parse(inspectIo.stdout) as {
+        classification?: unknown;
+        source_digest?: unknown;
+      };
+      classification = typeof report.classification === "string" ? report.classification : "";
+      sourceDigest = typeof report.source_digest === "string" ? report.source_digest : "";
+    } finally {
+      inspectIo.restore();
+    }
+    if (classification === "canonical") {
+      sourceDigest = "";
+    } else {
+      expect(sourceDigest).toMatch(/^sha256:[a-f0-9]{64}$/u);
+    }
+    if (classification !== "canonical") {
+      const applyIo = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "kernel-migrate",
+          taskId,
+          "--apply",
+          "--source-digest",
+          sourceDigest,
+          "--yes",
+          "--root",
+          root,
+        ]);
+        if (code !== 0) {
+          throw new Error(`Kernel migration fixture failed: ${applyIo.stderr || applyIo.stdout}`);
+        }
+      } finally {
+        applyIo.restore();
+      }
+    }
+  }
   let packet: PlanningPacket;
   const io = captureStdIO();
   try {
@@ -88,7 +136,6 @@ export async function prepareContinuityPlan(
   const workOrder = JSON.parse(
     await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
   ) as AgentWorkOrderV2;
-  const baseline = workOrder.planning_context!.repository_snapshot;
   const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
   const task = await loadTaskFromContext({ ctx, taskId });
   const { config } = ctx;
@@ -123,55 +170,95 @@ export async function prepareContinuityPlan(
     schema_version: 1 as const,
     criteria: [criterion],
     checks: taskChecks,
-    evidence_fingerprint: baseline.digest,
+    evidence_fingerprint:
+      workOrder.planning_context?.repository_snapshot.digest ?? workOrder.state_fingerprint.digest,
   };
-  const proposal = createFixtureTaskPlan(workOrder, {
-    id: "exercise-route",
-    objective,
-    expectedOutput: "route-result",
-    validation,
-  });
+  const proposal = workOrder.planning_context
+    ? createFixtureTaskPlan(workOrder, {
+        id: "exercise-route",
+        objective,
+        expectedOutput: "route-result",
+        validation,
+      })
+    : null;
+  if (!proposal && !workOrder.canonical_binding) {
+    throw new Error("Task fixture requires a planning baseline or canonical binding.");
+  }
+  const semanticResult = {
+    schema_version: 2,
+    kind: "agent_semantic_result",
+    work_order_id: workOrder.work_order_id,
+    status: "completed",
+    summary: objective,
+    findings: [],
+    uncertainty: [],
+    ...(workOrder.canonical_binding
+      ? {
+          canonical_binding: workOrder.canonical_binding,
+          canonical_plan: {
+            work_items: [
+              {
+                id: "exercise-route",
+                depends_on: [],
+                required_inputs: [],
+                expected_outputs: ["route-result"],
+                optional: false,
+                execution_requirements: {
+                  scope_roots: ["."],
+                  repository_effects: ["source_code", "tests"],
+                  external_effects: [],
+                  capabilities: ["repository_write", "task.verify"],
+                  resources: [],
+                },
+                contract: {
+                  objective,
+                  acceptance_criteria: [objective],
+                  verification_commands: commands.length > 0 ? commands : ["bun test"],
+                  role: "EXECUTOR",
+                },
+              },
+            ],
+          },
+        }
+      : {
+          task_intent: {
+            task_kind: task.task_kind ?? "code",
+            mutation_scope: task.mutation_scope ?? "code",
+            risk_flags: task.risk_flags ?? [],
+            tags: task.tags,
+            execution: {
+              schema_version: 2,
+              preferred_mode: config.workflow_mode,
+              scope_roots: ["."],
+              repository_effects: task.execution_contract?.declaration.repository_effects ?? [
+                "repository_write",
+                "source_code",
+              ],
+              external_effects: task.execution_contract?.declaration.external_effects ?? [],
+              requirements_uncertainty: "bounded",
+              implementation_uncertainty: "bounded",
+              reversibility: task.execution_contract?.declaration.reversibility ?? "reversible",
+              rationale: ["Exercise the configured route in an isolated local fixture."],
+            },
+          },
+          task_plan_proposal: proposal,
+        }),
+  };
   await writeFile(
     packet.exchange.result_path,
-    JSON.stringify({
-      schema_version: 1,
-      kind: "agent_action_result",
-      task_id: taskId,
-      transition_id: packet.transition_id,
-      state_fingerprint: packet.state_fingerprint,
-      role: "PLANNER",
-      result: {
-        schema_version: 2,
-        kind: "agent_semantic_result",
-        work_order_id: workOrder.work_order_id,
-        status: "completed",
-        summary: objective,
-        findings: [],
-        uncertainty: [],
-        task_intent: {
-          task_kind: task.task_kind ?? "code",
-          mutation_scope: task.mutation_scope ?? "code",
-          risk_flags: task.risk_flags ?? [],
-          tags: task.tags,
-          ...(task.blueprint_request ? { blueprint_request: task.blueprint_request } : {}),
-          execution: {
-            schema_version: 2,
-            preferred_mode: config.workflow_mode,
-            scope_roots: ["."],
-            repository_effects: task.execution_contract?.declaration.repository_effects ?? [
-              "repository_write",
-              "source_code",
-            ],
-            external_effects: task.execution_contract?.declaration.external_effects ?? [],
-            requirements_uncertainty: "bounded",
-            implementation_uncertainty: "bounded",
-            reversibility: task.execution_contract?.declaration.reversibility ?? "reversible",
-            rationale: ["Exercise the configured route in an isolated local fixture."],
+    JSON.stringify(
+      workOrder.canonical_binding
+        ? semanticResult
+        : {
+            schema_version: 1,
+            kind: "agent_action_result",
+            task_id: taskId,
+            transition_id: packet.transition_id,
+            state_fingerprint: packet.state_fingerprint,
+            role: "PLANNER",
+            result: semanticResult,
           },
-        },
-        task_plan_proposal: proposal,
-      },
-    }),
+    ),
   );
   const resumeIo = captureStdIO();
   try {

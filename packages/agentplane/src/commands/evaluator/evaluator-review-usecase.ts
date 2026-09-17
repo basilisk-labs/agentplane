@@ -31,14 +31,12 @@ import {
 import {
   evaluatorQualityDir,
   freezeEvaluatorFile,
-  readEvaluatorFileDigest,
   readDirectSupervisionEvidence,
   readVerifiedSupervisorJournalHistory,
   writeEvaluatorArtifact,
 } from "./evaluator-review-artifacts.js";
 import type { FrozenEvaluatorEvidence } from "./evaluator-review-artifacts.js";
 import {
-  assertEvaluatorPacketCurrent,
   putEvaluatorEvidenceObject,
   writeEvaluatorPacketManifest,
 } from "./evaluator-evidence-store.js";
@@ -55,7 +53,6 @@ import {
 import {
   evaluatorAcceptanceCriteria,
   evaluatorObjective,
-  isWithinRoot,
   relative,
   type PreparedEvaluatorReview,
 } from "./evaluator-review-shared.js";
@@ -71,7 +68,6 @@ import {
   EVALUATOR_ALLOWED_TOOL_CLASSES,
   EVALUATOR_WORK_ORDER_SCHEMA,
   evaluatorWorkOrderId,
-  type EvaluatorWorkOrder,
 } from "./evaluator-work-order.js";
 
 export {
@@ -89,6 +85,10 @@ export {
 export { validateStrictEvaluatorResult } from "./evaluator-result-validation.js";
 export { assertResultEvidenceIsFrozen, readWorkOrder } from "./evaluator-work-order.js";
 export type { EvaluatorWorkOrder } from "./evaluator-work-order.js";
+export {
+  assertFrozenEvaluatorArtifactsCurrent,
+  assertWorkOrderCurrent,
+} from "./evaluator-work-order-current.js";
 
 const EVALUATOR_PACKET_MANIFEST_FILE = "evaluator-evidence-manifest.json";
 
@@ -525,86 +525,4 @@ async function prepareEvaluatorReviewLocked(
     output_schema_path: path.resolve(gitRoot, resultSchemaArtifact.path),
     packet_manifest_path: packetManifestPath,
   };
-}
-
-export async function assertFrozenEvaluatorArtifactsCurrent(opts: {
-  gitRoot: string;
-  workOrder: EvaluatorWorkOrder;
-}): Promise<void> {
-  if (opts.workOrder.packet) {
-    await assertEvaluatorPacketCurrent({
-      gitRoot: opts.gitRoot,
-      taskId: opts.workOrder.task.id,
-      manifestPath: opts.workOrder.packet.manifest_path,
-      manifestSha256: opts.workOrder.packet.manifest_sha256,
-      promptPath: opts.workOrder.packet.prompt_path,
-      resultSchemaPath: opts.workOrder.packet.result_schema_path,
-    });
-  }
-  for (const evidence of opts.workOrder.evidence) {
-    if (opts.workOrder.schema_version === 2 && evidence.kind === "task_document") continue;
-    const evidencePath = path.resolve(opts.gitRoot, evidence.path);
-    if (
-      !isWithinRoot(opts.gitRoot, evidencePath) ||
-      (await readEvaluatorFileDigest(evidencePath)) !== evidence.sha256
-    ) {
-      throw new CliError({
-        code: "E_VALIDATION",
-        message: `Evaluator work order is stale because frozen evidence changed: ${evidence.path}`,
-      });
-    }
-  }
-}
-
-export async function assertWorkOrderCurrent(opts: {
-  ctx: CommandContext;
-  task: TaskData;
-  workOrder: EvaluatorWorkOrder;
-}): Promise<void> {
-  if (
-    opts.workOrder.schema_version === 1 &&
-    (opts.task.revision ?? null) !== opts.workOrder.task.revision
-  ) {
-    throw new CliError({
-      code: "E_VALIDATION",
-      message: "Evaluator work order is stale because the task revision changed after preparation.",
-    });
-  }
-  const gitRoot = opts.ctx.resolvedProject.gitRoot;
-  const execution = await resolveTaskExecutionContext({
-    ctx: opts.ctx,
-    tasks: [opts.task],
-    primaryTaskId: opts.task.id,
-  });
-  const { evaluatedSha: currentSha } = await resolveEvaluatorReviewTarget({
-    ctx: opts.ctx,
-    task: opts.task,
-    reason: "staleness",
-    execution,
-  });
-  if (currentSha !== opts.workOrder.evaluated_sha) {
-    throw new CliError({
-      code: "E_VALIDATION",
-      message: "Evaluator work order is stale because the evaluated SHA changed after preparation.",
-    });
-  }
-  if (opts.workOrder.schema_version !== 2) {
-    throw new CliError({
-      code: "E_VALIDATION",
-      message: "Legacy evaluator work orders cannot execute; prepare a canonical v2 work order.",
-    });
-  }
-  const currentIdentity = buildNativeQualityReviewIdentity({
-    task: opts.task,
-    verification_input_digest: latestVerificationInputDigest(opts.task),
-    acceptance_criteria: evaluatorAcceptanceCriteria(opts.task),
-    implementation_sha: currentSha,
-  });
-  if (currentIdentity?.digest !== opts.workOrder.review_identity.digest) {
-    throw new CliError({
-      code: "E_VALIDATION",
-      message: "Evaluator work order is stale because the native review identity changed.",
-    });
-  }
-  await assertFrozenEvaluatorArtifactsCurrent({ gitRoot, workOrder: opts.workOrder });
 }

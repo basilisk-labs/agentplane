@@ -242,7 +242,6 @@ describe("acr command specs", () => {
       id: "T-CTX",
       task_kind: "context",
       mutation_scope: "context",
-      blueprint_request: "context.maximum_assimilation",
       extensions: {
         "agentplane.context": {
           mode: "maximum_assimilation",
@@ -256,7 +255,6 @@ describe("acr command specs", () => {
       task_id: "T-CTX",
       task_kind: "context",
       mutation_scope: "context",
-      blueprint_request: "context.maximum_assimilation",
       source_set: { files: [{ path: "context/raw/source.md", sha256: "sha256:abc" }] },
     });
   });

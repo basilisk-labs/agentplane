@@ -22,7 +22,7 @@ import {
 import { executeStateBoundRunnerInvocation } from "./usecases/task-run-state-fingerprint.js";
 
 describe("runner state fingerprint", () => {
-  it("captures deterministic task, Git, backend, policy, blueprint, and authority inputs", async () => {
+  it("captures deterministic task, Git, backend, plan, policy, capability, and authority inputs", async () => {
     const taskData = task();
     const ctx = context(taskData);
     const runnerBundle = bundle(taskData);
@@ -45,7 +45,8 @@ describe("runner state fingerprint", () => {
       git: { state: "present", source: "git_snapshot" },
       backend_projection: { state: "present", source: "task_backend_runtime" },
       policy: { state: "present", source: "runner_policy_resolution" },
-      blueprint: { state: "present", source: "blueprint_resolver" },
+      plan: { state: "present", source: "work_order_plan_identity" },
+      capability: { state: "present", source: "work_order_capability_identity" },
       knowledge: {
         state: "present",
         source: "context_manifest_lock",
@@ -331,17 +332,6 @@ describe("runner state fingerprint", () => {
             state: "present" as const,
             source: "runner_policy_resolution",
             value: { prompts: [{ id: "changed-policy" }], policy_modules: [] },
-          }),
-      },
-    },
-    {
-      component: "blueprint" as const,
-      probe: {
-        observe_blueprint: () =>
-          Promise.resolve({
-            state: "present" as const,
-            source: "blueprint_resolver",
-            value: { blueprintId: "changed-blueprint" },
           }),
       },
     },

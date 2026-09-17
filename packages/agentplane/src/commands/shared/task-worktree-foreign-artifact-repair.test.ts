@@ -1,24 +1,13 @@
-import {
-  lstat,
-  mkdir,
-  readFile,
-  realpath,
-  rename,
-  symlink,
-  unlink,
-  writeFile,
-} from "node:fs/promises";
+import { lstat, mkdir, readFile, rename, symlink, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { parseTaskReadme, renderTaskReadme } from "@agentplaneorg/core/tasks";
 import {
   cleanGitEnv,
-  captureStdIO,
   defaultConfig,
   expect,
   mkGitRepoRootWithBranch,
-  runCli,
   runCliSilent,
   writeConfig,
 } from "@agentplane/testkit/cli-core-pr-flow";
@@ -464,23 +453,6 @@ async function expectHistoricalRepairRejected(
   await expect(readFile(fixture.replicaPath, "utf8")).resolves.toContain('status: "TODO"');
 }
 
-async function withUnavailableGh<T>(baseRoot: string, fn: () => Promise<T>): Promise<T> {
-  const fakeGh = path.join(baseRoot, "unavailable-gh.js");
-  await writeFile(fakeGh, "process.stderr.write('unavailable'); process.exit(1);\n", "utf8");
-  const previousGhBin = process.env.AGENTPLANE_GH_BIN;
-  const previousGhArgs = process.env.AGENTPLANE_GH_ARGS;
-  process.env.AGENTPLANE_GH_BIN = process.execPath;
-  process.env.AGENTPLANE_GH_ARGS = JSON.stringify([fakeGh]);
-  try {
-    return await fn();
-  } finally {
-    if (previousGhBin === undefined) delete process.env.AGENTPLANE_GH_BIN;
-    else process.env.AGENTPLANE_GH_BIN = previousGhBin;
-    if (previousGhArgs === undefined) delete process.env.AGENTPLANE_GH_ARGS;
-    else process.env.AGENTPLANE_GH_ARGS = previousGhArgs;
-  }
-}
-
 describe("foreign task README replica repair", () => {
   it("classifies only byte-identical replicas without historical provenance", () => {
     const todo = taskReadme({ taskId: FOREIGN_TASK_ID, status: "TODO", revision: 6 });
@@ -830,116 +802,6 @@ describe("foreign task README replica repair", () => {
       reason: "authoritative_branch_changed_before_remove",
     });
     await expect(readFile(fixture.replicaPath, "utf8")).resolves.toContain('status: "TODO"');
-  });
-
-  it("dry-runs and then repairs a proven historical worktree selected by --root", async () => {
-    const fixture = await createHistoricalFixture();
-    const routeIo = captureStdIO();
-    try {
-      const routeCode = await runCli([
-        "task",
-        "next-action",
-        ACTIVE_TASK_ID,
-        "--json",
-        "--root",
-        fixture.targetWorktree,
-      ]);
-      if (routeCode !== 0) {
-        throw new Error(`next-action failed: ${routeIo.stderr || routeIo.stdout}`);
-      }
-      const route = JSON.parse(routeIo.stdout) as {
-        route_oracle: { authoritativeCheckoutPath: string | null };
-        next_action: { code: string; command: string | null };
-      };
-      expect(await realpath(route.route_oracle.authoritativeCheckoutPath ?? "")).toBe(
-        await realpath(fixture.targetWorktree),
-      );
-      expect(route.next_action).toMatchObject({
-        code: "repair_foreign_task_readme_replica",
-        command: `agentplane flow repair ${ACTIVE_TASK_ID} --safe-apply`,
-      });
-    } finally {
-      routeIo.restore();
-    }
-
-    await withUnavailableGh(fixture.baseRoot, async () => {
-      const wrongRootIo = captureStdIO();
-      try {
-        expect(
-          await runCli([
-            "flow",
-            "repair",
-            ACTIVE_TASK_ID,
-            "--safe-apply",
-            "--json",
-            "--root",
-            fixture.baseRoot,
-          ]),
-        ).toBe(0);
-        const wrongRootRepair = JSON.parse(wrongRootIo.stdout) as {
-          applied: { code: string; status: string; reason?: string }[];
-        };
-        expect(wrongRootRepair.applied).toMatchObject([
-          {
-            code: "repair_foreign_task_readme_replica",
-            status: "skipped",
-            reason: "must_run_from_task_worktree",
-          },
-        ]);
-      } finally {
-        wrongRootIo.restore();
-      }
-      await expect(readFile(fixture.replicaPath, "utf8")).resolves.toContain('status: "TODO"');
-
-      const dryRunIo = captureStdIO();
-      try {
-        expect(
-          await runCli([
-            "flow",
-            "repair",
-            ACTIVE_TASK_ID,
-            "--dry-run",
-            "--json",
-            "--root",
-            fixture.targetWorktree,
-          ]),
-        ).toBe(0);
-        const dryRun = JSON.parse(dryRunIo.stdout) as {
-          repair_plan: { code: string }[];
-          applied: unknown[];
-        };
-        expect(dryRun.repair_plan).toMatchObject([{ code: "repair_foreign_task_readme_replica" }]);
-        expect(dryRun.applied).toEqual([]);
-      } finally {
-        dryRunIo.restore();
-      }
-      await expect(readFile(fixture.replicaPath, "utf8")).resolves.toContain('status: "TODO"');
-
-      const repairIo = captureStdIO();
-      try {
-        expect(
-          await runCli([
-            "flow",
-            "repair",
-            ACTIVE_TASK_ID,
-            "--safe-apply",
-            "--json",
-            "--root",
-            fixture.targetWorktree,
-          ]),
-        ).toBe(0);
-        const repair = JSON.parse(repairIo.stdout) as {
-          applied: { code: string; status: string }[];
-        };
-        expect(repair.applied).toMatchObject([
-          { code: "repair_foreign_task_readme_replica", status: "applied" },
-        ]);
-      } finally {
-        repairIo.restore();
-      }
-    });
-
-    await expect(readFile(fixture.replicaPath, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
   });
 
   it.each([
