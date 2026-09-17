@@ -18,7 +18,14 @@ const OBJECT_EXTENSION_PATTERN = /^\.[a-z0-9][a-z0-9.-]{0,15}$/u;
 const EVALUATOR_PACKET_ARTIFACT_SCHEMA = z
   .object({
     logical_name: z.string().trim().min(1),
-    kind: z.enum(["actual_diff", "observed_checks", "blueprint", "prompt", "result_schema"]),
+    kind: z.enum([
+      "actual_diff",
+      "observed_checks",
+      "blueprint",
+      "plan",
+      "prompt",
+      "result_schema",
+    ]),
     path: z.string().trim().min(1),
     sha256: z.string().regex(SHA256_PATTERN),
     size_bytes: z.number().int().nonnegative(),
@@ -271,7 +278,6 @@ export async function assertEvaluatorPacketCurrent(opts: {
   for (const requiredName of [
     "evaluator-diff",
     "evaluator-observed-checks",
-    "evaluator-blueprint",
     "evaluator-prompt",
     "evaluator-result-schema",
   ]) {
@@ -281,6 +287,12 @@ export async function assertEvaluatorPacketCurrent(opts: {
         message: `Evaluator packet is missing required artifact: ${requiredName}`,
       });
     }
+  }
+  if (!names.has("evaluator-blueprint") && !names.has("evaluator-native-identity")) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "Evaluator packet is missing required identity artifact.",
+    });
   }
   const prompt = manifest.artifacts.find(
     (artifact) => artifact.logical_name === "evaluator-prompt",

@@ -9,6 +9,7 @@ import { CliError } from "../../shared/errors.js";
 import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
 import { blueprintResolveInputFromTask } from "../blueprint/task-input.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
+import { resolveNativeTaskIdentity } from "../shared/native-task-identity.js";
 
 import { cmdTaskDocShow } from "./doc.js";
 import { assertVerifyStepsFilled, extractDocSection, isVerifyStepsFilled } from "./shared.js";
@@ -83,6 +84,19 @@ export function makeRunTaskVerifyShowHandler(getCtx: (cmd: string) => Promise<Co
       section: "Verify Steps",
       quiet: p.quiet,
     });
+    const nativeIdentity = resolveNativeTaskIdentity(task);
+    if (nativeIdentity) {
+      process.stdout.write("\nNative verification identity\n");
+      process.stdout.write(`plan_revision: ${nativeIdentity.plan.revision}\n`);
+      process.stdout.write(`plan_digest: ${nativeIdentity.plan.digest}\n`);
+      process.stdout.write(`policy_digest: ${nativeIdentity.policy.digest}\n`);
+      process.stdout.write(`capability_digest: ${nativeIdentity.capability.digest}\n`);
+      process.stdout.write(`checks_digest: ${nativeIdentity.checks.digest}\n`);
+      process.stdout.write(
+        `required_checks: ${nativeIdentity.checks.required_check_ids.join(", ") || "none"}\n`,
+      );
+      return exitCode;
+    }
     const input = blueprintResolveInputFromTask({ task, config: commandCtx.config });
     const resolved = resolveBlueprint({ input });
     const output = explainResolvedBlueprint({ resolved, workflowMode: input.workflowMode });

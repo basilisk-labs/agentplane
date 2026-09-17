@@ -27,6 +27,7 @@ import {
   type HumanEvaluatorReviewInput,
 } from "./evaluator-review-usecase.js";
 import { reportPaths, resolveEvaluatorPromptPath } from "./evaluator-review-support.js";
+import { evaluatorWorkOrderReviewDigest } from "./evaluator-work-order.js";
 
 async function persistReview(opts: {
   ctx: CommandContext;
@@ -206,7 +207,7 @@ export async function applyEvaluatorSgrReview(opts: {
     verdict: result.verdict,
     summary: `EVALUATOR returned ${result.verdict} with ${result.findings.length} typed finding(s).`,
     evaluated_sha: workOrder.evaluated_sha,
-    blueprint_digest: workOrder.blueprint_digest,
+    blueprint_digest: evaluatorWorkOrderReviewDigest(workOrder),
     findings: result.findings.map((finding) => finding.summary),
     evidence_refs: uniqueStrings(
       result.findings.flatMap((finding) => finding.evidence_refs.map((entry) => entry.path)),
@@ -257,7 +258,7 @@ export async function applyHumanEvaluatorReview(opts: {
     verdict: opts.input.verdict,
     summary: opts.input.summary,
     evaluated_sha: workOrder.evaluated_sha,
-    blueprint_digest: workOrder.blueprint_digest,
+    blueprint_digest: evaluatorWorkOrderReviewDigest(workOrder),
     findings: opts.input.findings,
     evidence_refs: opts.input.evidence_refs,
     missing_tests: opts.input.missing_tests,

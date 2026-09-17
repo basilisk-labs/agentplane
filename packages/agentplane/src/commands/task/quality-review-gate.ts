@@ -13,6 +13,7 @@ export function assertEvaluatorQualityReviewPassed(opts: {
   task: TaskData;
   expectedSha?: string | null;
   expectedBlueprintDigest?: string | null;
+  identityLabel?: "blueprint snapshot" | "native review identity";
   command: "finish" | "integrate";
 }): void {
   const review = opts.task.quality_review;
@@ -65,14 +66,15 @@ export function assertEvaluatorQualityReviewPassed(opts: {
   }
 
   if (opts.expectedBlueprintDigest && review.blueprint_digest !== opts.expectedBlueprintDigest) {
+    const identityLabel = opts.identityLabel ?? "blueprint snapshot";
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
       message: [
-        `${opts.command} requires EVALUATOR quality review against the current blueprint snapshot.`,
+        `${opts.command} requires EVALUATOR quality review against the current ${identityLabel}.`,
         `task=${opts.task.id}`,
         `quality_review.blueprint_digest=${review.blueprint_digest}`,
-        `expected_blueprint_digest=${opts.expectedBlueprintDigest}`,
+        `expected_review_identity_digest=${opts.expectedBlueprintDigest}`,
         `Human record: ${fix}`,
       ].join("\n"),
     });

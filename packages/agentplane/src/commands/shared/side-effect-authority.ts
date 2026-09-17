@@ -377,6 +377,13 @@ export function workflowAuthorityStateScopeDigest(
   operationId?: WorkflowOperationId,
 ): string {
   const includeProvider = operationId !== "task.scope.extend";
+  const identity =
+    fingerprint.schema_version === 2
+      ? {
+          plan: fingerprint.components.plan,
+          capability: fingerprint.components.capability,
+        }
+      : { blueprint: fingerprint.components.blueprint };
   return sha256({
     schemaVersion: fingerprint.schema_version,
     kind: fingerprint.kind,
@@ -388,7 +395,7 @@ export function workflowAuthorityStateScopeDigest(
       git: fingerprint.components.git,
       backendProjection: fingerprint.components.backend_projection,
       policy: fingerprint.components.policy,
-      blueprint: fingerprint.components.blueprint,
+      ...identity,
       knowledge: fingerprint.components.knowledge,
       ...(includeProvider ? { provider: fingerprint.components.provider } : {}),
     },

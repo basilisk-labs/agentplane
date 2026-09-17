@@ -2,11 +2,12 @@ import canonicalize from "canonicalize";
 import { createHash } from "node:crypto";
 import { z } from "zod";
 
-export const STATE_FINGERPRINT_SCHEMA_VERSION = 1 as const;
+export const LEGACY_STATE_FINGERPRINT_SCHEMA_VERSION = 1 as const;
+export const STATE_FINGERPRINT_SCHEMA_VERSION = 2 as const;
 export const STATE_FINGERPRINT_KIND = "state_fingerprint" as const;
 export const STATE_FINGERPRINT_OBSERVER = "agentplane" as const;
 
-export const STATE_FINGERPRINT_COMPONENT_NAMES = [
+export const LEGACY_STATE_FINGERPRINT_COMPONENT_NAMES = [
   "task",
   "git",
   "backend_projection",
@@ -17,7 +18,36 @@ export const STATE_FINGERPRINT_COMPONENT_NAMES = [
   "authority",
 ] as const;
 
+export const STATE_FINGERPRINT_COMPONENT_NAMES = [
+  "task",
+  "git",
+  "backend_projection",
+  "plan",
+  "policy",
+  "capability",
+  "knowledge",
+  "provider",
+  "authority",
+] as const;
+
+export const ALL_STATE_FINGERPRINT_COMPONENT_NAMES = [
+  "task",
+  "git",
+  "backend_projection",
+  "plan",
+  "policy",
+  "capability",
+  "blueprint",
+  "knowledge",
+  "provider",
+  "authority",
+] as const;
+
 export type StateFingerprintComponentName = (typeof STATE_FINGERPRINT_COMPONENT_NAMES)[number];
+export type LegacyStateFingerprintComponentName =
+  (typeof LEGACY_STATE_FINGERPRINT_COMPONENT_NAMES)[number];
+export type AnyStateFingerprintComponentName =
+  (typeof ALL_STATE_FINGERPRINT_COMPONENT_NAMES)[number];
 
 const SHA256_DIGEST_SCHEMA = z.string().regex(/^sha256:[0-9a-f]{64}$/u);
 const NON_EMPTY_STRING = z.string().trim().min(1);
@@ -45,9 +75,9 @@ export const STATE_FINGERPRINT_COMPONENT_ZOD_SCHEMA = z.union([
   ABSENT_COMPONENT_SCHEMA,
 ]);
 
-export const STATE_FINGERPRINT_ZOD_SCHEMA = z
+export const LEGACY_STATE_FINGERPRINT_ZOD_SCHEMA = z
   .object({
-    schema_version: z.literal(STATE_FINGERPRINT_SCHEMA_VERSION),
+    schema_version: z.literal(LEGACY_STATE_FINGERPRINT_SCHEMA_VERSION),
     kind: z.literal(STATE_FINGERPRINT_KIND),
     observed_by: z.literal(STATE_FINGERPRINT_OBSERVER),
     task_id: NON_EMPTY_STRING,
@@ -70,8 +100,50 @@ export const STATE_FINGERPRINT_ZOD_SCHEMA = z
   })
   .strict();
 
+export const STATE_FINGERPRINT_V2_ZOD_SCHEMA = z
+  .object({
+    schema_version: z.literal(STATE_FINGERPRINT_SCHEMA_VERSION),
+    kind: z.literal(STATE_FINGERPRINT_KIND),
+    observed_by: z.literal(STATE_FINGERPRINT_OBSERVER),
+    task_id: NON_EMPTY_STRING,
+    task_revision: z.number().int().positive().nullable(),
+    git_head: NON_EMPTY_STRING.nullable(),
+    worktree: NON_EMPTY_STRING,
+    components: z
+      .object({
+        task: STATE_FINGERPRINT_COMPONENT_ZOD_SCHEMA,
+        git: STATE_FINGERPRINT_COMPONENT_ZOD_SCHEMA,
+        backend_projection: STATE_FINGERPRINT_COMPONENT_ZOD_SCHEMA,
+        plan: STATE_FINGERPRINT_COMPONENT_ZOD_SCHEMA,
+        policy: STATE_FINGERPRINT_COMPONENT_ZOD_SCHEMA,
+        capability: STATE_FINGERPRINT_COMPONENT_ZOD_SCHEMA,
+        knowledge: STATE_FINGERPRINT_COMPONENT_ZOD_SCHEMA,
+        provider: STATE_FINGERPRINT_COMPONENT_ZOD_SCHEMA,
+        authority: STATE_FINGERPRINT_COMPONENT_ZOD_SCHEMA,
+      })
+      .strict(),
+    digest: SHA256_DIGEST_SCHEMA,
+  })
+  .strict();
+
+export const STATE_FINGERPRINT_ZOD_SCHEMA = z.discriminatedUnion("schema_version", [
+  LEGACY_STATE_FINGERPRINT_ZOD_SCHEMA,
+  STATE_FINGERPRINT_V2_ZOD_SCHEMA,
+]);
+
 export type StateFingerprintComponent = z.infer<typeof STATE_FINGERPRINT_COMPONENT_ZOD_SCHEMA>;
-export type StateFingerprint = z.infer<typeof STATE_FINGERPRINT_ZOD_SCHEMA>;
+type LegacyStateFingerprintParsed = z.infer<typeof LEGACY_STATE_FINGERPRINT_ZOD_SCHEMA>;
+type StateFingerprintV2Parsed = z.infer<typeof STATE_FINGERPRINT_V2_ZOD_SCHEMA>;
+export type LegacyStateFingerprint = LegacyStateFingerprintParsed & {
+  components: LegacyStateFingerprintParsed["components"] & {
+    plan?: never;
+    capability?: never;
+  };
+};
+export type StateFingerprintV2 = StateFingerprintV2Parsed & {
+  components: StateFingerprintV2Parsed["components"] & { blueprint?: never };
+};
+export type StateFingerprint = LegacyStateFingerprint | StateFingerprintV2;
 
 export type StateFingerprintComponentInput =
   | {
@@ -86,17 +158,30 @@ export type StateFingerprintComponentInput =
       evidence?: unknown;
     };
 
-export type StateFingerprintInput = {
+type StateFingerprintInputBase = {
   task_id: string;
   task_revision: number | null;
   git_head: string | null;
   worktree: string;
+};
+
+export type StateFingerprintInput = StateFingerprintInputBase & {
   components: Record<StateFingerprintComponentName, StateFingerprintComponentInput>;
+};
+
+export type LegacyStateFingerprintInput = StateFingerprintInputBase & {
+  components: Record<LegacyStateFingerprintComponentName, StateFingerprintComponentInput>;
 };
 
 export const STATE_FINGERPRINT_POLICY_ZOD_SCHEMA = z
   .object({
-    required_components: z.array(z.enum(STATE_FINGERPRINT_COMPONENT_NAMES)).readonly(),
+    fingerprint_schema_version: z
+      .union([
+        z.literal(LEGACY_STATE_FINGERPRINT_SCHEMA_VERSION),
+        z.literal(STATE_FINGERPRINT_SCHEMA_VERSION),
+      ])
+      .optional(),
+    required_components: z.array(z.enum(ALL_STATE_FINGERPRINT_COMPONENT_NAMES)).readonly(),
     provider: z
       .object({
         required: z.boolean(),
@@ -110,7 +195,7 @@ export const STATE_FINGERPRINT_POLICY_ZOD_SCHEMA = z
 export type StateFingerprintPolicy = z.infer<typeof STATE_FINGERPRINT_POLICY_ZOD_SCHEMA>;
 
 export type StateFingerprintChange = {
-  component: StateFingerprintComponentName;
+  component: AnyStateFingerprintComponentName;
   expected_state: StateFingerprintComponent["state"];
   current_state: StateFingerprintComponent["state"];
   expected_digest: string;
@@ -118,7 +203,7 @@ export type StateFingerprintChange = {
 };
 
 export type StateFingerprintIdentityChange = {
-  field: "task_id" | "task_revision" | "git_head" | "worktree";
+  field: "schema_version" | "task_id" | "task_revision" | "git_head" | "worktree";
   expected: string | number | null;
   current: string | number | null;
 };
@@ -135,7 +220,7 @@ export type StateFingerprintPreconditionDiagnostic = {
   current_digest: string;
   changed_components: StateFingerprintChange[];
   identity_changes: StateFingerprintIdentityChange[];
-  unavailable_required_components: StateFingerprintComponentName[];
+  unavailable_required_components: AnyStateFingerprintComponentName[];
   provider_state: StateFingerprintComponent["state"];
 };
 
@@ -187,10 +272,10 @@ function digestCanonical(value: unknown): string {
 }
 
 function normalizeRequiredComponents(
-  components: readonly StateFingerprintComponentName[],
-): StateFingerprintComponentName[] {
+  components: readonly AnyStateFingerprintComponentName[],
+): AnyStateFingerprintComponentName[] {
   const selected = new Set(components);
-  return STATE_FINGERPRINT_COMPONENT_NAMES.filter((name) => selected.has(name));
+  return ALL_STATE_FINGERPRINT_COMPONENT_NAMES.filter((name) => selected.has(name));
 }
 
 function buildComponent(input: StateFingerprintComponentInput): StateFingerprintComponent {
@@ -233,23 +318,35 @@ function buildComponent(input: StateFingerprintComponentInput): StateFingerprint
   };
 }
 
-function fingerprintDigest(
-  fingerprint: Omit<StateFingerprint, "digest">,
-): StateFingerprint["digest"] {
-  return digestCanonical(fingerprint);
+function isLegacyStateFingerprintInput(
+  input: StateFingerprintInput | LegacyStateFingerprintInput,
+): input is LegacyStateFingerprintInput {
+  return Object.hasOwn(input.components, "blueprint");
 }
 
-export function buildStateFingerprint(input: StateFingerprintInput): StateFingerprint {
+const buildStateFingerprintInternal = (
+  input: StateFingerprintInput | LegacyStateFingerprintInput,
+): StateFingerprint => {
   const taskId = input.task_id.trim();
   if (!taskId) throw new Error("State fingerprint task_id must be non-empty.");
   const worktree = input.worktree.trim();
   if (!worktree) throw new Error("State fingerprint worktree must be non-empty.");
   const gitHead = input.git_head?.trim() ?? null;
+  const legacy = isLegacyStateFingerprintInput(input);
+  const componentNames = legacy
+    ? LEGACY_STATE_FINGERPRINT_COMPONENT_NAMES
+    : STATE_FINGERPRINT_COMPONENT_NAMES;
+  const inputComponents = input.components as Record<
+    AnyStateFingerprintComponentName,
+    StateFingerprintComponentInput
+  >;
   const components = Object.fromEntries(
-    STATE_FINGERPRINT_COMPONENT_NAMES.map((name) => [name, buildComponent(input.components[name])]),
-  ) as StateFingerprint["components"];
-  const payload: Omit<StateFingerprint, "digest"> = {
-    schema_version: STATE_FINGERPRINT_SCHEMA_VERSION,
+    componentNames.map((name) => [name, buildComponent(inputComponents[name])]),
+  );
+  const payload = {
+    schema_version: legacy
+      ? LEGACY_STATE_FINGERPRINT_SCHEMA_VERSION
+      : STATE_FINGERPRINT_SCHEMA_VERSION,
     kind: STATE_FINGERPRINT_KIND,
     observed_by: STATE_FINGERPRINT_OBSERVER,
     task_id: taskId,
@@ -260,14 +357,19 @@ export function buildStateFingerprint(input: StateFingerprintInput): StateFinger
   };
   return validateStateFingerprint({
     ...payload,
-    digest: fingerprintDigest(payload),
+    digest: digestCanonical(payload),
   });
-}
+};
+
+export const buildStateFingerprint = buildStateFingerprintInternal as {
+  (input: StateFingerprintInput): StateFingerprintV2;
+  (input: LegacyStateFingerprintInput): LegacyStateFingerprint;
+};
 
 export function validateStateFingerprint(input: unknown): StateFingerprint {
   const parsed = STATE_FINGERPRINT_ZOD_SCHEMA.parse(input);
   const { digest, ...payload } = parsed;
-  const expected = fingerprintDigest(payload);
+  const expected = digestCanonical(payload);
   if (digest !== expected) {
     throw new Error(`State fingerprint digest mismatch: expected ${expected}, observed ${digest}.`);
   }
@@ -286,9 +388,16 @@ export function evaluateStateFingerprintPrecondition(opts: {
   const expected = validateStateFingerprint(opts.expected);
   const current = validateStateFingerprint(opts.current);
   const policy = validateStateFingerprintPolicy(opts.policy);
-  const changed_components = STATE_FINGERPRINT_COMPONENT_NAMES.flatMap((component) => {
-    const expectedComponent = expected.components[component];
-    const currentComponent = current.components[component];
+  const sameDomain = expected.schema_version === current.schema_version;
+  const componentNames = sameDomain
+    ? expected.schema_version === LEGACY_STATE_FINGERPRINT_SCHEMA_VERSION
+      ? LEGACY_STATE_FINGERPRINT_COMPONENT_NAMES
+      : STATE_FINGERPRINT_COMPONENT_NAMES
+    : [];
+  const changed_components: StateFingerprintChange[] = componentNames.flatMap((component) => {
+    const expectedComponent = expected.components[component as keyof typeof expected.components];
+    const currentComponent = current.components[component as keyof typeof current.components];
+    if (!expectedComponent || !currentComponent) return [];
     return expectedComponent.state !== currentComponent.state ||
       expectedComponent.digest !== currentComponent.digest
       ? [
@@ -303,6 +412,15 @@ export function evaluateStateFingerprintPrecondition(opts: {
       : [];
   });
   const identity_changes: StateFingerprintIdentityChange[] = [
+    ...(expected.schema_version === current.schema_version
+      ? []
+      : [
+          {
+            field: "schema_version" as const,
+            expected: expected.schema_version,
+            current: current.schema_version,
+          },
+        ]),
     ...(expected.task_id === current.task_id
       ? []
       : [{ field: "task_id" as const, expected: expected.task_id, current: current.task_id }]),
@@ -324,12 +442,14 @@ export function evaluateStateFingerprintPrecondition(opts: {
   ];
   const recordIdentityOnlyComponent = (component: "task" | "git"): void => {
     if (changed_components.some((entry) => entry.component === component)) return;
+    const expectedComponent = expected.components[component];
+    const currentComponent = current.components[component];
     changed_components.push({
       component,
-      expected_state: expected.components[component].state,
-      current_state: current.components[component].state,
-      expected_digest: expected.components[component].digest,
-      current_digest: current.components[component].digest,
+      expected_state: expectedComponent.state,
+      current_state: currentComponent.state,
+      expected_digest: expectedComponent.digest,
+      current_digest: currentComponent.digest,
     });
   };
   if (changed_components.length === 0) {
@@ -344,9 +464,17 @@ export function evaluateStateFingerprintPrecondition(opts: {
       recordIdentityOnlyComponent("git");
     }
   }
-  const unavailable_required_components = normalizeRequiredComponents(
-    policy.required_components,
-  ).filter((component) => current.components[component].state !== "present");
+  const currentComponentNames = new Set(
+    current.schema_version === LEGACY_STATE_FINGERPRINT_SCHEMA_VERSION
+      ? LEGACY_STATE_FINGERPRINT_COMPONENT_NAMES
+      : STATE_FINGERPRINT_COMPONENT_NAMES,
+  );
+  const unavailable_required_components = normalizeRequiredComponents(policy.required_components)
+    .filter((component) => currentComponentNames.has(component as never))
+    .filter(
+      (component) =>
+        current.components[component as keyof typeof current.components]?.state !== "present",
+    );
   const base = {
     expected_digest: expected.digest,
     current_digest: current.digest,
@@ -360,6 +488,8 @@ export function evaluateStateFingerprintPrecondition(opts: {
     ? new Set(policy.provider.reject_reason_codes)
     : null;
   if (
+    (policy.fingerprint_schema_version !== undefined &&
+      policy.fingerprint_schema_version !== current.schema_version) ||
     changed_components.length > 0 ||
     identity_changes.length > 0 ||
     expected.digest !== current.digest

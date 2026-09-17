@@ -48,11 +48,37 @@ export const RUNNER_STATE_FINGERPRINT_POLICY = {
   },
 } as const satisfies StateFingerprintPolicy;
 
-export function resolveRunnerStateFingerprintPolicy(ctx: CommandContext): StateFingerprintPolicy {
+export const RUNNER_STATE_FINGERPRINT_V2_POLICY = {
+  fingerprint_schema_version: 2,
+  required_components: [
+    "task",
+    "git",
+    "backend_projection",
+    "plan",
+    "policy",
+    "capability",
+    "knowledge",
+    "authority",
+  ],
+  provider: {
+    required: false,
+    unavailable: "allow_if_unchanged",
+    reject_reason_codes: ["provider_projection_stale"],
+  },
+} as const satisfies StateFingerprintPolicy;
+
+export function resolveRunnerStateFingerprintPolicy(
+  ctx: CommandContext,
+  fingerprint?: StateFingerprint,
+): StateFingerprintPolicy {
+  const base =
+    fingerprint?.schema_version === 2
+      ? RUNNER_STATE_FINGERPRINT_V2_POLICY
+      : RUNNER_STATE_FINGERPRINT_POLICY;
   return {
-    ...RUNNER_STATE_FINGERPRINT_POLICY,
+    ...base,
     provider: {
-      ...RUNNER_STATE_FINGERPRINT_POLICY.provider,
+      ...base.provider,
       required: getTaskBackendCapabilities(ctx).canonical_source === "remote",
     },
   };
@@ -75,6 +101,17 @@ function unavailableComponent(source: string, reason_code: string): StateFingerp
     state: "unavailable",
     source,
     reason_code,
+  };
+}
+
+function boundRouteComponent(
+  name: "plan" | "capability",
+  component: StateFingerprint["components"]["task"],
+): StateFingerprintComponentInput {
+  return {
+    state: "present",
+    source: `work_order_${name}_identity`,
+    value: component,
   };
 }
 
@@ -139,22 +176,40 @@ function buildRunnerStateFingerprint(opts: {
   components: RunnerStateFingerprintObservedComponents;
   git: GitSnapshot;
 }): StateFingerprint {
-  const { task_revision: taskRevision, ...components } = opts.components;
+  const { task_revision: taskRevision, blueprint, ...legacyComponents } = opts.components;
   const semanticProjectionPaths = runnerSemanticProjectionPaths({
     ctx: opts.ctx,
     bundle: opts.bundle,
     components: opts.components,
   });
-  return buildStateFingerprint({
+  const nativeFingerprint =
+    opts.bundle.work_order?.state_fingerprint.schema_version === 2
+      ? opts.bundle.work_order.state_fingerprint
+      : null;
+  const base = {
     task_id: runnerTaskId(opts.bundle),
     task_revision: taskRevision,
     git_head: opts.git.head_commit,
     worktree: opts.git.repository_root,
-    components: {
-      ...components,
-      git: gitComponent(opts.git, semanticProjectionPaths),
-    },
-  });
+  };
+  return nativeFingerprint
+    ? buildStateFingerprint({
+        ...base,
+        components: {
+          ...legacyComponents,
+          git: gitComponent(opts.git, semanticProjectionPaths),
+          plan: boundRouteComponent("plan", nativeFingerprint.components.plan),
+          capability: boundRouteComponent("capability", nativeFingerprint.components.capability),
+        },
+      })
+    : buildStateFingerprint({
+        ...base,
+        components: {
+          ...legacyComponents,
+          blueprint,
+          git: gitComponent(opts.git, semanticProjectionPaths),
+        },
+      });
 }
 
 function recordValue(value: unknown): Record<string, unknown> | null {
@@ -282,7 +337,9 @@ function runnerSemanticProjectionPaths(opts: {
     paths,
     repositoryRoot,
     prompts: opts.bundle.base_prompts,
-    modules: opts.bundle.blueprint?.policyModules.map((modulePath) => ({
+    modules: (
+      opts.bundle.task_obligations?.policy_modules ?? opts.bundle.blueprint?.policyModules
+    )?.map((modulePath) => ({
       path: modulePath,
       state: "present",
     })),

@@ -33,6 +33,11 @@ import {
 import { applyTaskMutation } from "../shared/task-mutation.js";
 import { setTaskFieldsIntent } from "../shared/task-store.js";
 import { resolveVerificationInputIdentity } from "../shared/task-verification-input.js";
+import {
+  buildNativeQualityReviewIdentity,
+  resolveNativeTaskIdentity,
+} from "../shared/native-task-identity.js";
+import { evaluatorAcceptanceCriteria } from "../evaluator/evaluator-review-shared.js";
 import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
 import {
   loadTaskCommandContext,
@@ -285,6 +290,8 @@ async function recordVerificationResult(opts: {
           verifySteps: verificationScope,
           verificationContractDigest:
             observedExecutionContract.verification.contract?.digest ?? null,
+          nativeIdentity: resolveNativeTaskIdentity(contractTask),
+          requiredCheckIds: contractCoverage.requiredChecks,
           execution: verificationExecutionContext,
           verificationDetails: opts.details,
         });
@@ -430,9 +437,22 @@ async function recordVerificationResult(opts: {
           }),
         );
         if (opts.by === "EVALUATOR") {
-          const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx, task: current }).catch(
-            () => null,
-          );
+          const nativeIdentity = resolveNativeTaskIdentity({
+            ...current,
+            execution_contract: reconciledContract,
+          });
+          const snapshot = nativeIdentity
+            ? null
+            : await checkTaskBlueprintSnapshotDrift({ ctx, task: current }).catch(() => null);
+          const reviewIdentity = nativeIdentity
+            ? buildNativeQualityReviewIdentity({
+                task: { ...current, execution_contract: reconciledContract },
+                native_identity: nativeIdentity,
+                verification_input_digest: verificationInput?.digest ?? null,
+                acceptance_criteria: evaluatorAcceptanceCriteria(current),
+                implementation_sha: evaluatedSha,
+              })
+            : null;
           const readmePath = path.join(
             resolved.gitRoot,
             config.paths.workflow_dir,
@@ -449,7 +469,7 @@ async function recordVerificationResult(opts: {
                 updated_by: opts.by,
                 note: opts.note,
                 evaluated_sha: evaluatedSha,
-                blueprint_digest: snapshot?.current.digest ?? null,
+                blueprint_digest: reviewIdentity?.digest ?? snapshot?.current.digest ?? null,
                 evidence_refs: [
                   path.relative(resolved.gitRoot, readmePath),
                   ...(snapshot?.path ? [snapshot.path] : []),

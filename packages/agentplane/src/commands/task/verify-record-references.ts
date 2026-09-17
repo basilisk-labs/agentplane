@@ -5,6 +5,7 @@ import {
   routeRunnerContextIsRelevant,
 } from "../shared/route-guidance.js";
 import type { CommandContext } from "../shared/task-backend.js";
+import { resolveNativeTaskIdentity } from "../shared/native-task-identity.js";
 
 function appendDetailsBlock(details: string | null | undefined, lines: readonly string[]): string {
   const existing = (details ?? "").trim();
@@ -18,6 +19,17 @@ export async function appendBlueprintSnapshotReference(
     task: Parameters<typeof checkTaskBlueprintSnapshotDrift>[0]["task"];
   },
 ): Promise<string> {
+  const nativeIdentity = resolveNativeTaskIdentity(opts.task);
+  if (nativeIdentity) {
+    return appendDetailsBlock(details, [
+      "NativeTaskIdentityRef:",
+      `- plan_digest: ${nativeIdentity.plan.digest}`,
+      `- policy_digest: ${nativeIdentity.policy.digest}`,
+      `- capability_digest: ${nativeIdentity.capability.digest}`,
+      `- checks_digest: ${nativeIdentity.checks.digest}`,
+      `- identity_digest: ${nativeIdentity.digest}`,
+    ]);
+  }
   try {
     const snapshot = await checkTaskBlueprintSnapshotDrift(opts);
     return appendDetailsBlock(details, [

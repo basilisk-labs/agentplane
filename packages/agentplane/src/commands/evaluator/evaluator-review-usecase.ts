@@ -20,6 +20,11 @@ import {
   assessLocalVerificationRecords,
   requiredVerificationContractChecks,
 } from "../shared/task-verification-records.js";
+import {
+  buildNativeQualityReviewIdentity,
+  latestVerificationInputDigest,
+  resolveNativeTaskIdentity,
+} from "../shared/native-task-identity.js";
 
 import type { EvaluatorModule } from "../../evaluators/catalog.js";
 import {
@@ -35,6 +40,7 @@ import {
   readVerifiedSupervisorJournalHistory,
   writeEvaluatorArtifact,
 } from "./evaluator-review-artifacts.js";
+import type { FrozenEvaluatorEvidence } from "./evaluator-review-artifacts.js";
 import {
   assertEvaluatorPacketCurrent,
   putEvaluatorEvidenceObject,
@@ -203,10 +209,19 @@ async function prepareEvaluatorReviewLocked(
       },
     });
   }
-  const blueprint = await buildTaskBlueprintResolvedSnapshot({
-    ctx: opts.ctx,
-    task: opts.task,
-  });
+  const nativeIdentity = resolveNativeTaskIdentity(opts.task);
+  const blueprint = nativeIdentity
+    ? null
+    : await buildTaskBlueprintResolvedSnapshot({ ctx: opts.ctx, task: opts.task });
+  const reviewIdentity = nativeIdentity
+    ? buildNativeQualityReviewIdentity({
+        task: opts.task,
+        native_identity: nativeIdentity,
+        verification_input_digest: latestVerificationInputDigest(opts.task),
+        acceptance_criteria: evaluatorAcceptanceCriteria(opts.task),
+        implementation_sha: evaluatedSha,
+      })
+    : null;
   const taskObligations = resolveNativeTaskObligations({
     task_kind: opts.task.task_kind,
     mutation_scope: opts.task.mutation_scope,
@@ -314,7 +329,7 @@ async function prepareEvaluatorReviewLocked(
       : { state: "not_required", reason: "not a milestone qualification task" },
   };
   const taskQualityRoot = path.join(taskRoot, "quality");
-  const [diffArtifact, observedChecksArtifact, blueprintArtifact] = await Promise.all([
+  const [diffArtifact, observedChecksArtifact, identityArtifact] = await Promise.all([
     putEvaluatorEvidenceObject({
       gitRoot,
       taskQualityRoot,
@@ -341,15 +356,21 @@ async function prepareEvaluatorReviewLocked(
     putEvaluatorEvidenceObject({
       gitRoot,
       taskQualityRoot,
-      logicalName: "evaluator-blueprint",
-      kind: "blueprint",
+      logicalName: nativeIdentity ? "evaluator-native-identity" : "evaluator-blueprint",
+      kind: nativeIdentity ? "plan" : "blueprint",
       extension: ".json",
       mediaType: "application/json",
-      contents: `${JSON.stringify(blueprint, null, 2)}\n`,
+      contents: `${JSON.stringify(
+        nativeIdentity
+          ? { native_identity: nativeIdentity, review_identity: reviewIdentity }
+          : blueprint,
+        null,
+        2,
+      )}\n`,
     }),
   ]);
 
-  const evidence: EvaluatorWorkOrder["evidence"] = [
+  const evidence: FrozenEvaluatorEvidence[] = [
     await freezeEvaluatorFile({
       gitRoot,
       id: "task-document",
@@ -383,9 +404,9 @@ async function prepareEvaluatorReviewLocked(
         ]
       : []),
     frozenObjectEvidence({
-      id: "blueprint",
-      kind: "blueprint",
-      artifact: blueprintArtifact,
+      id: nativeIdentity ? "native-identity" : "blueprint",
+      kind: nativeIdentity ? "plan" : "blueprint",
+      artifact: identityArtifact,
       required: true,
     }),
   ];
@@ -458,13 +479,13 @@ async function prepareEvaluatorReviewLocked(
     artifacts: [
       diffArtifact,
       observedChecksArtifact,
-      blueprintArtifact,
+      identityArtifact,
       promptArtifact,
       resultSchemaArtifact,
     ],
   });
   const workOrder = EVALUATOR_WORK_ORDER_SCHEMA.parse({
-    schema_version: 1,
+    schema_version: nativeIdentity ? 2 : 1,
     kind: "evaluator_work_order",
     work_order_id: nextWorkOrderId,
     prepared_at: at,
@@ -476,7 +497,9 @@ async function prepareEvaluatorReviewLocked(
     },
     evaluated_sha: evaluatedSha,
     diff_base_sha: diffBaseSha,
-    blueprint_digest: blueprint.digest.value,
+    ...(nativeIdentity
+      ? { review_identity: reviewIdentity }
+      : { blueprint_digest: blueprint?.digest.value ?? null }),
     evaluator: {
       id: opts.evaluator.id,
       profile: opts.evaluator.profile,
@@ -525,6 +548,7 @@ export async function assertFrozenEvaluatorArtifactsCurrent(opts: {
     });
   }
   for (const evidence of opts.workOrder.evidence) {
+    if (opts.workOrder.schema_version === 2 && evidence.kind === "task_document") continue;
     const evidencePath = path.resolve(opts.gitRoot, evidence.path);
     if (
       !isWithinRoot(opts.gitRoot, evidencePath) ||
@@ -543,7 +567,10 @@ export async function assertWorkOrderCurrent(opts: {
   task: TaskData;
   workOrder: EvaluatorWorkOrder;
 }): Promise<void> {
-  if ((opts.task.revision ?? null) !== opts.workOrder.task.revision) {
+  if (
+    opts.workOrder.schema_version === 1 &&
+    (opts.task.revision ?? null) !== opts.workOrder.task.revision
+  ) {
     throw new CliError({
       code: "E_VALIDATION",
       message: "Evaluator work order is stale because the task revision changed after preparation.",
@@ -567,13 +594,28 @@ export async function assertWorkOrderCurrent(opts: {
       message: "Evaluator work order is stale because the evaluated SHA changed after preparation.",
     });
   }
-  const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx: opts.ctx, task: opts.task });
-  if (snapshot.current.digest !== opts.workOrder.blueprint_digest) {
-    throw new CliError({
-      code: "E_VALIDATION",
-      message:
-        "Evaluator work order is stale because the resolved blueprint changed after preparation.",
+  if (opts.workOrder.schema_version === 2) {
+    const currentIdentity = buildNativeQualityReviewIdentity({
+      task: opts.task,
+      verification_input_digest: latestVerificationInputDigest(opts.task),
+      acceptance_criteria: evaluatorAcceptanceCriteria(opts.task),
+      implementation_sha: currentSha,
     });
+    if (currentIdentity?.digest !== opts.workOrder.review_identity.digest) {
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: "Evaluator work order is stale because the native review identity changed.",
+      });
+    }
+  } else {
+    const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx: opts.ctx, task: opts.task });
+    if (snapshot.current.digest !== opts.workOrder.blueprint_digest) {
+      throw new CliError({
+        code: "E_VALIDATION",
+        message:
+          "Evaluator work order is stale because the resolved blueprint changed after preparation.",
+      });
+    }
   }
   await assertFrozenEvaluatorArtifactsCurrent({ gitRoot, workOrder: opts.workOrder });
 }
