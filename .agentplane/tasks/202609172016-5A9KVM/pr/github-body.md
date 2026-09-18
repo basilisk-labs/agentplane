@@ -34,13 +34,20 @@ Connect the pure Task Kernel to the mature repository and provider effect adapte
  packages/agentplane/src/commands/acr/generate.ts   |   2 +-
  packages/agentplane/src/commands/acr/summary.ts    |   2 +-
  .../src/commands/pr/integrate/internal/finalize.ts |   4 +-
+ .../shared/canonical-pre-merge-evidence.ts         |  38 ++
  .../shared/route-decision-blockers.kernel.test.ts  |  67 +++
- .../src/commands/shared/route-decision-blockers.ts |  41 +-
+ .../src/commands/shared/route-decision-blockers.ts |   9 +-
+ .../shared/side-effect-authority-policy.ts         | 203 +++++++++
  .../commands/shared/side-effect-authority.test.ts  | 110 ++++-
- .../src/commands/shared/side-effect-authority.ts   |  77 ++++
+ .../src/commands/shared/side-effect-authority.ts   | 273 ++++--------
  .../src/commands/task/advance.command.ts           |  22 +-
+ .../commands/task/direct-task-verification.test.ts |  32 +-
+ .../src/commands/task/direct-task-verification.ts  |  12 +-
+ .../external-agent-implementation-finalization.ts  |   7 +-
+ .../src/commands/task/git-status-path.test.ts      |  21 +
+ .../src/commands/task/git-status-path.ts           |  64 +++
  .../src/commands/task/kernel-advance.test.ts       | 334 ++++++++++++++
- .../agentplane/src/commands/task/kernel-advance.ts | 278 +++++++++++-
+ .../agentplane/src/commands/task/kernel-advance.ts | 375 +++++++++-------
  .../task/kernel-controller-handoff.test.ts         | 284 ++++++++++++
  .../src/commands/task/kernel-controller-handoff.ts | 400 +++++++++++++++++
  .../src/commands/task/kernel-effect-coordinator.ts | 193 ++++++++
@@ -57,6 +64,7 @@ Connect the pure Task Kernel to the mature repository and provider effect adapte
  .../commands/task/kernel-repository-coordinator.ts | 475 ++++++++++++++++++++
  .../src/commands/task/kernel-run.test.ts           | 140 ++++++
  .../agentplane/src/commands/task/kernel-run.ts     |  29 +-
+ .../src/commands/task/kernel-semantic-result.ts    | 220 +++++++++
  .../src/commands/task/kernel-work-order.ts         |  50 ++-
  .../src/commands/task/plan-set.command.ts          |  23 +-
  .../agentplane/src/commands/task/run.command.ts    |  26 +-
@@ -70,7 +78,7 @@ Connect the pure Task Kernel to the mature repository and provider effect adapte
  packages/testkit/src/cli-harness.ts                |   6 +-
  .../check-packaged-mixed-scope-lifecycle.mjs       | 119 +++--
  .../qualification/release-qualification.test.mjs   |  27 +-
- 43 files changed, 4857 insertions(+), 135 deletions(-)
+ 51 files changed, 5364 insertions(+), 486 deletions(-)
 ```
 
 </details>

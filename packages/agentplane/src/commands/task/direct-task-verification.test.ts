@@ -804,6 +804,36 @@ describe("direct task verification", () => {
     });
   });
 
+  it("uses the repository test script when no AgentPlane-specific full script exists", async () => {
+    const cwd = await root();
+    await writeFile(
+      path.join(cwd, "package.json"),
+      JSON.stringify({ packageManager: "bun@1.3.6", scripts: { test: "vitest run" } }),
+      "utf8",
+    );
+    mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "42 passed", stderr: "" });
+    const contract = executionContract(["repository_write", "source_code"]);
+    contract.verification.contract = { selected_checks: ["full_regression", "task_outcome"] };
+
+    const result = await runDirectTaskVerification({
+      command: command(cwd),
+      task: { verify: ["git diff --check"], execution_contract: contract },
+      task_id: TASK_ID,
+      cwd,
+      run_process: mocks.runProcess,
+    });
+
+    expect(result.status).toBe("passed");
+    expect(mocks.runProcess).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ command: "bun", args: ["run", "test"] }),
+    );
+    expect(result.checks[1]).toMatchObject({
+      command: "bun run test",
+      check_ids: ["full_regression", "task_outcome"],
+    });
+  });
+
   it("recognizes a repository-wide non-JavaScript test command as full evidence", async () => {
     const cwd = await root();
     mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "42 passed", stderr: "" });
@@ -858,7 +888,7 @@ describe("direct task verification", () => {
     expect(result).toMatchObject({
       status: "unsupported",
       reason:
-        "Verification Contract requires full_regression, but package.json does not define ci:local:full.",
+        "Verification Contract requires full_regression, but package.json defines neither ci:local:full nor test.",
       checks: [
         {
           command: "bun test focused.test.ts",
