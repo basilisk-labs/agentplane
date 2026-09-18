@@ -1,6 +1,7 @@
 import path from "node:path";
 import { readFile } from "node:fs/promises";
 import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
+import { TASK_KERNEL_EXTENSION } from "../../../../adapters/task-backend/kernel-record.js";
 
 import type { TaskData } from "../../../../backends/task-backend.js";
 import { fileExists } from "../../../../cli/fs-utils.js";
@@ -61,6 +62,7 @@ export async function finalizeIntegrate(opts: {
 }): Promise<void> {
   const output = createCliEmitter();
   const taskAlreadyDone = normalizeTaskStatus(opts.task.status) === "DONE";
+  const canonicalTask = Object.hasOwn(opts.task.extensions ?? {}, TASK_KERNEL_EXTENSION);
   if (!(await fileExists(opts.prDir))) {
     throw new CliError({
       exitCode: 3,
@@ -114,7 +116,7 @@ export async function finalizeIntegrate(opts: {
     task: opts.task,
     write: false,
   });
-  if (!taskAlreadyDone) {
+  if (!taskAlreadyDone && !canonicalTask) {
     const taskCommitInfo = await readCommitInfo(opts.gitRoot, opts.mergeHash);
     const loadedTasks = [{ taskId: opts.taskId, task: opts.task }];
     await writeFinishedTasks({

@@ -191,7 +191,7 @@ async function withKernelReworkEvidence(
       if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
     }
   }
-  if (inputs.length === 0)
+  if (inputs.length === 0 && !isKernelScopeExpansionRecovery(order, record))
     throw new Error(
       "Canonical rework requires retained evaluator findings and failed-check evidence",
     );
@@ -199,6 +199,48 @@ async function withKernelReworkEvidence(
     ...order,
     required_inputs: [...order.required_inputs, ...inputs],
   });
+}
+
+/** A USER-approved additive plan amendment starts a fresh definition, not evaluator rework. */
+export function isKernelScopeExpansionRecovery(
+  order: AgentWorkOrderV2,
+  record?: KernelRecord,
+): boolean {
+  const binding = order.canonical_binding;
+  const aggregate = record?.aggregate;
+  if (binding?.phase !== "implementation" || !aggregate) return false;
+  const current = aggregate?.current_plan;
+  if (
+    current?.state !== "APPROVED" ||
+    binding.plan_revision !== current.revision ||
+    binding.plan_digest !== current.digest ||
+    current.approval_actor_id === null ||
+    current.approval_evidence_digest === null
+  )
+    return false;
+  const source = aggregate.plan_history.find((plan) => plan.revision === current.revision - 1);
+  const authority = aggregate.authority_lineage?.at(-1)?.authority;
+  const previous = source?.work_items.find((item) => item.id === binding.work_item_id);
+  const amended = current.work_items.find((item) => item.id === binding.work_item_id);
+  const runtime = aggregate.work_items[binding.work_item_id];
+  if (!source || !authority || !previous || !amended || !runtime) return false;
+  return Boolean(
+    runtime.attempt === binding.attempt &&
+    runtime.result_digest === null &&
+    runtime.validation === null &&
+    k.kernelDigest(runtime.definition) === k.kernelDigest(amended) &&
+    amended.execution_requirements.scope_roots.some(
+      (root) => !previous.execution_requirements.scope_roots.includes(root),
+    ) &&
+    current.approval_evidence_digest ===
+      k.planScopeExpansionApprovalDigest({
+        task_id: aggregate.id,
+        current_plan_digest: source.digest,
+        amended_plan_digest: current.digest,
+        actor_id: current.approval_actor_id,
+      }) &&
+    k.isAdditivePlanScopeExpansion({ current: source, amended: current, authority }),
+  );
 }
 
 export async function issueKernelExchange(
@@ -235,13 +277,6 @@ export async function issueKernelExchange(
     });
   }
   await writeKernelArtifact(directory, "work-order.json", order);
-  if (order.canonical_binding?.phase === "implementation") {
-    await writeKernelArtifact(
-      directory,
-      "repository-baseline.json",
-      await captureKernelRepositoryBaseline(ctx, order),
-    );
-  }
   const qualityRoot = path.join(
     ctx.resolvedProject.gitRoot,
     ctx.config.paths.workflow_dir,
@@ -302,6 +337,13 @@ export async function issueKernelExchange(
   }
   const manifest = buildWorkOrderContextManifest(order, path.join(directory, "work-order.json"));
   await writeKernelArtifact(directory, WORK_ORDER_CONTEXT_FILENAME, manifest);
+  if (order.canonical_binding?.phase === "implementation") {
+    await writeKernelArtifact(
+      directory,
+      "repository-baseline.json",
+      await captureKernelRepositoryBaseline(ctx, order),
+    );
+  }
   return {
     context_manifest: {
       ref: path.join(directory, WORK_ORDER_CONTEXT_FILENAME),

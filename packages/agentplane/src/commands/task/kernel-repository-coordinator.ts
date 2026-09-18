@@ -402,7 +402,7 @@ export async function listKernelRepositoryEvidence(
     record.aggregate.id,
   );
   const evidence: KernelRepositoryEvidence[] = [];
-  for (const mutationId of Object.keys(record.aggregate.mutation_receipts).toSorted()) {
+  for (const mutationId of Object.keys(record.aggregate.mutation_receipts ?? {}).toSorted()) {
     const match = /^result:sha256:([a-f0-9]{64})$/u.exec(mutationId);
     if (!match) continue;
     try {

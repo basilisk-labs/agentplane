@@ -250,10 +250,10 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
         plan_revision: 1,
       });
       const waiting = await runJson(root, ["task", "advance", taskId, "--agent-json"]);
-      expect(waiting.action).toMatchObject({
-        kind: "external_wait",
-        reason: "kernel_work_item_result_required",
-      });
+      expect(waiting.action).toMatchObject({ kind: "agent_episode" });
+      expect((waiting.exchange as { result_path: string }).result_path).toBe(
+        implementationExchange.result_path,
+      );
       await writeFile(path.join(root, "result.txt"), "implementation");
       const result = {
         schema_version: 2,
@@ -483,13 +483,52 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
         root,
       ]);
       expect(await runtime.adapter.read(taskId)).toEqual(amended);
-      refined.work_items[1]!.execution_requirements.scope_roots = ["."];
+      refined.work_items[1]!.execution_requirements.scope_roots = [
+        "more/result.txt",
+        "more/extra.txt",
+      ];
       await refused(
         root,
         ["task", "plan", "set", taskId, "--text", JSON.stringify(refined)],
         "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
       );
-      expect(await runtime.adapter.read(taskId)).toEqual(amended);
+      await runCliSilent([
+        "task",
+        "plan",
+        "set",
+        taskId,
+        "--text",
+        JSON.stringify(refined),
+        "--scope-expansion-approved-by",
+        "USER",
+        "--root",
+        root,
+      ]);
+      const expanded = await runtime.adapter.read(taskId);
+      if (expanded.kind !== "canonical") throw new Error("Approved amendment missing");
+      expect(expanded.record.aggregate.current_plan).toMatchObject({
+        revision: 3,
+        approval_actor_id: "USER",
+      });
+      expect(expanded.record.aggregate.current_plan?.approval_evidence_digest).not.toBe(
+        amended.record.aggregate.current_plan?.approval_evidence_digest,
+      );
+      refined.work_items[1]!.execution_requirements.scope_roots = ["."];
+      await refused(
+        root,
+        [
+          "task",
+          "plan",
+          "set",
+          taskId,
+          "--text",
+          JSON.stringify(refined),
+          "--scope-expansion-approved-by",
+          "USER",
+        ],
+        "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+      );
+      expect(await runtime.adapter.read(taskId)).toEqual(expanded);
     },
   );
   it.each([

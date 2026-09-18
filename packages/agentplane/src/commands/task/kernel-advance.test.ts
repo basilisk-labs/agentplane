@@ -1,11 +1,15 @@
 import { describe, expect, it, vi } from "vitest";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
+import { mkdtemp, readFile } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 
 import {
   coordinateKernelEffect,
   type KernelEffectDispatch,
   type KernelEffectPort,
 } from "./kernel-effect-coordinator.js";
+import { blockKernelSemanticEpisode } from "./kernel-advance.js";
 import { resumeKernelWorkOrder } from "./kernel-work-order.js";
 
 const digest = (value: string) => k.kernelDigest(value);
@@ -177,6 +181,47 @@ describe("canonical effect coordinator", () => {
 });
 
 describe("canonical semantic episode recovery", () => {
+  it("persists a replayable WorkItem block before crossing a semantic stop", async () => {
+    const directory = await mkdtemp(path.join(os.tmpdir(), "agentplane-kernel-stop-"));
+    const input = {
+      command: {
+        kind: "transition_work_item",
+        task_id: "task-1",
+        work_item_id: "build",
+        action: "block",
+        claim_id: "claim-1",
+      },
+    } as never;
+    const apply = vi.fn().mockResolvedValue({
+      kind: "committed",
+      record: {},
+      events: [],
+      receipts: [],
+      replayed: false,
+    });
+    const runtime = {
+      input: vi.fn().mockResolvedValue(input),
+      lifecycle: { apply },
+    } as never;
+
+    const request = {
+      runtime,
+      directory,
+      work_order_id: "sha256:work-order",
+      work_item_id: "build",
+      claim_id: "claim-1",
+    };
+    await blockKernelSemanticEpisode(request);
+    await blockKernelSemanticEpisode(request);
+
+    expect(runtime.input).toHaveBeenCalledTimes(1);
+    expect(apply).toHaveBeenNthCalledWith(1, input);
+    expect(apply).toHaveBeenNthCalledWith(2, input);
+    expect(
+      JSON.parse(await readFile(path.join(directory, "semantic-stop-command.json"), "utf8")),
+    ).toEqual(input);
+  });
+
   it("re-projects one stable WorkOrder for an already executing WorkItem", () => {
     const contractDigest = digest("contract");
     const repositoryFingerprint = digest("repository");

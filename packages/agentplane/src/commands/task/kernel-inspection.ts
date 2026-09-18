@@ -24,6 +24,7 @@ import {
   readKernelRepositoryEvidence,
   type KernelRepositoryEvidence,
 } from "./kernel-repository-coordinator.js";
+import { projectKernelOperationalEvidence } from "./kernel-operational-projection.js";
 
 type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
 export type KernelValidationEvidence = {
@@ -387,6 +388,33 @@ export async function acceptKernelInspection(
       ),
     ),
   );
+  if (validation.status === "PASSED" && repositoryEvidence) {
+    const reportPath = path.join(directory, "quality-report.json");
+    const findings = semantic.findings.length > 0 ? semantic.findings : [semantic.summary];
+    await writeKernelArtifact(directory, "quality-report.json", {
+      schema_version: 1,
+      kind: "canonical_quality_review",
+      task_id: binding.task_id,
+      work_order_id: semantic.work_order_id,
+      verdict: semantic.review.verdict,
+      findings,
+      residual_risks: semantic.review.residual_risks,
+      review_identity_digest: k.kernelDigest(semantic),
+      repository_evidence_digest: repositoryEvidence.digest,
+    });
+    await projectKernelOperationalEvidence({
+      command,
+      task_id: binding.task_id,
+      repository_evidence: repositoryEvidence,
+      verification_evidence_digest: k.kernelDigest(evidence),
+      review_identity_digest: k.kernelDigest(semantic),
+      evidence_refs: [
+        path.relative(command.resolvedProject.gitRoot, reportPath).replaceAll(path.sep, "/"),
+      ],
+      findings,
+      projected_at: validation.observed_at,
+    });
+  }
 }
 
 export async function resumeKernelInspection(

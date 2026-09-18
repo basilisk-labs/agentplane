@@ -1,12 +1,67 @@
-import { compareExecutionAuthority } from "./invariants.js";
+import { compareExecutionAuthority, executionRequirementsAreSubset } from "./invariants.js";
 import { kernelDigest } from "./digest.js";
 import type {
   CanonicalAuthorityRecord,
   ExecutionAuthority,
   KernelInput,
+  PlanRecord,
   Sha256Digest,
   TaskAggregate,
 } from "./model.js";
+
+export function planScopeExpansionApprovalDigest(input: {
+  task_id: string;
+  current_plan_digest: Sha256Digest;
+  amended_plan_digest: Sha256Digest;
+  actor_id: string;
+}): Sha256Digest {
+  return kernelDigest({ kind: "canonical_plan_scope_expansion_approval", ...input });
+}
+
+function sameStringSet(left: readonly string[], right: readonly string[]): boolean {
+  const sortedRight = [...right].toSorted();
+  return (
+    left.length === right.length &&
+    [...left].toSorted().every((value, index) => value === sortedRight[index])
+  );
+}
+
+export function isAdditivePlanScopeExpansion(input: {
+  current: Pick<PlanRecord, "work_items">;
+  amended: Pick<PlanRecord, "work_items">;
+  authority: ExecutionAuthority;
+}): boolean {
+  if (input.current.work_items.length !== input.amended.work_items.length) return false;
+  const originals = new Map(input.current.work_items.map((item) => [item.id, item]));
+  let expanded = false;
+  const valid = input.amended.work_items.every((item) => {
+    const original = originals.get(item.id);
+    if (!original) return false;
+    const { execution_requirements: currentRequirements, ...currentDefinition } = original;
+    const { execution_requirements: amendedRequirements, ...amendedDefinition } = item;
+    if (
+      kernelDigest(currentDefinition) !== kernelDigest(amendedDefinition) ||
+      !currentRequirements ||
+      !amendedRequirements ||
+      !currentRequirements.scope_roots.every((root) =>
+        amendedRequirements.scope_roots.includes(root),
+      ) ||
+      !sameStringSet(
+        currentRequirements.repository_effects,
+        amendedRequirements.repository_effects,
+      ) ||
+      !sameStringSet(currentRequirements.external_effects, amendedRequirements.external_effects) ||
+      !sameStringSet(currentRequirements.capabilities, amendedRequirements.capabilities) ||
+      !sameStringSet(currentRequirements.resources, amendedRequirements.resources) ||
+      !executionRequirementsAreSubset(input.authority, amendedRequirements)
+    )
+      return false;
+    if (amendedRequirements.scope_roots.length > currentRequirements.scope_roots.length)
+      expanded = true;
+    return true;
+  });
+  return valid && expanded;
+}
 
 export function authorityDigest(authority: Omit<ExecutionAuthority, "digest">) {
   const { digest: _digest, ...contents } = authority as ExecutionAuthority;
@@ -135,11 +190,21 @@ export function continuationIssues(
     plan_digest: parent.plan_digest,
     repository_fingerprint: parent.repository_fingerprint,
   };
-  const comparison = compareExecutionAuthority(parent, sameContext);
+  const comparableContext =
+    observation.kind === "plan_amendment"
+      ? {
+          ...sameContext,
+          provenance: {
+            ...sameContext.provenance,
+            evidence_digest: parent.provenance.evidence_digest,
+          },
+        }
+      : sameContext;
+  const comparison = compareExecutionAuthority(parent, comparableContext);
   if (!comparison.ok) return [...comparison.violations];
   // Continuation cannot remove approved obligations, even if a dispatch may narrow capabilities.
   const originalDimensions = {
-    ...sameContext,
+    ...comparableContext,
     digest: parent.digest,
     provenance: parent.provenance,
   };
@@ -205,12 +270,25 @@ export function continuationAdmissionIssues(
     const source = input.aggregate.plan_history.find(
       (entry) => entry.digest === parent.plan_digest,
     );
+    const unchangedApproval =
+      source?.approval_actor_id === plan.approval_actor_id &&
+      source?.approval_evidence_digest === plan.approval_evidence_digest;
+    const approvedScopeExpansion =
+      source !== undefined &&
+      plan.approval_actor_id !== null &&
+      plan.approval_evidence_digest ===
+        planScopeExpansionApprovalDigest({
+          task_id: input.aggregate.id,
+          current_plan_digest: source.digest,
+          amended_plan_digest: plan.digest,
+          actor_id: plan.approval_actor_id,
+        }) &&
+      isAdditivePlanScopeExpansion({ current: source, amended: plan, authority: parent });
     if (
-      source?.approval_actor_id !== plan.approval_actor_id ||
-      source.approval_evidence_digest !== plan.approval_evidence_digest ||
-      source.work_items.length !== plan.work_items.length ||
+      (!unchangedApproval && !approvedScopeExpansion) ||
+      source?.work_items.length !== plan.work_items.length ||
       plan.work_items.some((item) => {
-        const original = source.work_items.find((entry) => entry.id === item.id);
+        const original = source?.work_items.find((entry) => entry.id === item.id);
         return !original || original.contract_digest !== item.contract_digest;
       })
     )

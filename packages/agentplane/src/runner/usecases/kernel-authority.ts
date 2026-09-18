@@ -359,6 +359,10 @@ export class KernelAuthorityResolver {
         ...parent.provenance,
         kind: "SYSTEM" as const,
         actor_id: context.actor.id,
+        evidence_digest:
+          observation.kind === "plan_amendment" && plan.approval_evidence_digest !== null
+            ? plan.approval_evidence_digest
+            : parent.provenance.evidence_digest,
         parent_authority_digest: parent.digest,
       },
     };

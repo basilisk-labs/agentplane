@@ -31,8 +31,43 @@ import {
 } from "./kernel-effect-coordinator.js";
 import { commitCanonicalImplementation } from "./kernel-repository-coordinator.js";
 import { readDirectTaskHead } from "./direct-task-finalization.js";
+import {
+  decideCanonicalWorkflowEffect,
+  prepareCanonicalWorkflowEffect,
+} from "./kernel-provider-effect-coordinator.js";
+import { ensureKernelOperationalProjectionStatus } from "./kernel-operational-projection.js";
+import { transferCanonicalControllerToBase } from "./kernel-controller-handoff.js";
 
 type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
+
+export async function blockKernelSemanticEpisode(opts: {
+  runtime: Runtime;
+  directory: string;
+  work_order_id: string;
+  work_item_id: string;
+  claim_id: string | null;
+}) {
+  const stopInputPath = path.join(opts.directory, "semantic-stop-command.json");
+  let stopInput: KernelCommandInput;
+  try {
+    stopInput = JSON.parse(
+      await readStableRegularTextNoFollow(stopInputPath, "canonical semantic stop command"),
+    ) as KernelCommandInput;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+    stopInput = await opts.runtime.input(
+      {
+        kind: "transition_work_item",
+        action: "block",
+        work_item_id: opts.work_item_id,
+        claim_id: opts.claim_id,
+      },
+      `semantic-stop:${opts.work_order_id}`,
+    );
+    await writeKernelArtifact(opts.directory, "semantic-stop-command.json", stopInput);
+  }
+  requireKernelCommit(await opts.runtime.lifecycle.apply(stopInput));
+}
 
 async function authorityDeltaStop(runtime: Runtime, taskId: string) {
   const prepared = await runtime.authority.prepareDelta(taskId, repositoryEffectsForPath);
@@ -85,12 +120,23 @@ async function acceptKernelSemanticResult(
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
   }
-  if (semantic.status !== "completed")
+  if (semantic.status !== "completed") {
+    const binding = workOrder.canonical_binding;
+    if (binding && binding.phase !== "planning") {
+      await blockKernelSemanticEpisode({
+        runtime,
+        directory,
+        work_order_id: semantic.work_order_id,
+        work_item_id: binding.work_item_id,
+        claim_id: binding.claim_id,
+      });
+    }
     return {
       kind: "human_required",
       reason: `semantic_${semantic.status}`,
       summary: semantic.summary,
     };
+  }
   if (
     workOrder.canonical_binding?.phase !== "implementation" &&
     workOrder.state_fingerprint.git_head !== null &&
@@ -237,6 +283,7 @@ export async function advanceCanonicalTask(opts: {
   result_path?: string;
   transport: "host" | "managed";
   effect_port_resolver?: KernelEffectPortResolver;
+  allow_provider_effects?: boolean;
 }) {
   const runtime = await createKernelRuntime({
     command: opts.command,
@@ -351,6 +398,79 @@ export async function advanceCanonicalTask(opts: {
           finalValidation.evidence_digest,
         )
       ) {
+        if (current.read.task.execution_route?.repository_mode === "branch_pr") {
+          if (!opts.allow_provider_effects) {
+            return {
+              schema_version: 1,
+              task_id: opts.task_id,
+              action: {
+                kind: "external_wait",
+                reason: "canonical_provider_access_required",
+              },
+            };
+          }
+          await ensureKernelOperationalProjectionStatus({
+            command: opts.command,
+            task_id: opts.task_id,
+          });
+          const workflow = await decideCanonicalWorkflowEffect(opts.command, opts.task_id);
+          const terminalOnBase =
+            workflow.workflowStep.kind === "terminal" &&
+            workflow.workflowStep.authoritativeCheckout === "base_checkout";
+          const postMergeBaseOperation =
+            workflow.workflowStep.kind === "cli_operation" &&
+            [
+              "task.hosted_close.open",
+              "task.hosted_close.finalize",
+              "task.worktree.cleanup",
+            ].includes(workflow.workflowStep.operation.id);
+          const baseCheckout = workflow.workspace.baseCheckoutPath;
+          if (
+            (postMergeBaseOperation || terminalOnBase) &&
+            baseCheckout &&
+            path.resolve(baseCheckout) !== path.resolve(opts.command.resolvedProject.gitRoot)
+          ) {
+            const target = await transferCanonicalControllerToBase({
+              command: opts.command,
+              runtime,
+              task_id: opts.task_id,
+              base_checkout: baseCheckout,
+            });
+            return {
+              schema_version: 1,
+              task_id: opts.task_id,
+              action: {
+                kind: "external_wait",
+                reason: "canonical_controller_transferred",
+                must_run_from: target.resolvedProject.gitRoot,
+              },
+            };
+          }
+          const terminal =
+            workflow.workflowStep.kind === "terminal" &&
+            ["done", "superseded"].includes(workflow.workflowStep.outcome.type);
+          if (!terminal) {
+            const prepared = await prepareCanonicalWorkflowEffect({
+              command: opts.command,
+              runtime,
+              record,
+              decision: workflow,
+            });
+            if (prepared === "prepared") continue;
+            return {
+              schema_version: 1,
+              task_id: opts.task_id,
+              action: {
+                kind: workflow.workflowStep.kind === "wait" ? "external_wait" : "human_required",
+                reason:
+                  prepared === "already_observed"
+                    ? "canonical_workflow_effect_no_progress"
+                    : "canonical_workflow_effect_unavailable",
+                workflow_step: workflow.workflowStep.id,
+              },
+            };
+          }
+        }
         const completion = await runtime.input({ kind: "complete_task" }, operationId);
         if (completion.command.expected_task_revision !== record.aggregate.revision)
           throw new Error("Canonical task changed before completion");

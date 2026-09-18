@@ -11,6 +11,7 @@ import {
   TASK_TRANSITION_TABLE,
   WORK_ITEM_TRANSITION_TABLE,
 } from "./kernel.js";
+import { planScopeExpansionApprovalDigest } from "./authority-lineage.js";
 import type { TaskCommand, TaskState, WorkItemRuntime, WorkItemState } from "./model.js";
 import {
   fingerprint,
@@ -206,6 +207,72 @@ describe("canonical task kernel reducer", () => {
       reduceTaskCommand(
         input(state, { ...command, authority_delta_digest: kernelDigest("delta") }),
       ),
+    ).toMatchObject({ kind: "rejected", code: "PLAN_SCOPE_EXPANSION_REQUIRES_USER" });
+  });
+
+  it("applies only an exact USER-approved additive WorkItem scope expansion", () => {
+    const state = aggregate({ work_items: { kernel: runtime("BLOCKED") } });
+    const addedRoot = "packages/agentplane/src/commands/shared";
+    const widened = {
+      ...plan.work_items[0]!,
+      execution_requirements: {
+        ...requirements,
+        scope_roots: [...requirements.scope_roots, addedRoot],
+      },
+    };
+    const command = amendmentCommand(state, [widened]);
+    const actor = { id: "USER", kind: "USER" as const, transport: "manual" as const };
+    const expandedAuthority = {
+      ...authority,
+      scope_roots: [...authority.scope_roots, addedRoot],
+    };
+    const approvalDigest = planScopeExpansionApprovalDigest({
+      task_id: state.id,
+      current_plan_digest: state.current_plan!.digest,
+      amended_plan_digest: command.amended_plan.digest,
+      actor_id: actor.id,
+    });
+    const approved = reduceTaskCommand({
+      ...input(state, { ...command, authority_delta_digest: approvalDigest }),
+      actor,
+      authority: expandedAuthority,
+    });
+    expect(approved).toMatchObject({
+      kind: "accepted",
+      aggregate: {
+        current_plan: {
+          approval_actor_id: "USER",
+          approval_evidence_digest: approvalDigest,
+        },
+        work_items: { kernel: { state: "READY", definition: widened } },
+      },
+    });
+    expect(
+      reduceTaskCommand({
+        ...input(state, { ...command, authority_delta_digest: approvalDigest }),
+        authority: expandedAuthority,
+      }),
+    ).toMatchObject({ kind: "rejected", code: "PLAN_SCOPE_EXPANSION_REQUIRES_USER" });
+    const expandedEffects = {
+      ...widened,
+      execution_requirements: {
+        ...widened.execution_requirements,
+        repository_effects: [...widened.execution_requirements.repository_effects, "tests"],
+      },
+    };
+    const effectsCommand = amendmentCommand(state, [expandedEffects]);
+    const effectsDigest = planScopeExpansionApprovalDigest({
+      task_id: state.id,
+      current_plan_digest: state.current_plan!.digest,
+      amended_plan_digest: effectsCommand.amended_plan.digest,
+      actor_id: actor.id,
+    });
+    expect(
+      reduceTaskCommand({
+        ...input(state, { ...effectsCommand, authority_delta_digest: effectsDigest }),
+        actor,
+        authority: { ...expandedAuthority, repository_effects: ["source_code", "tests"] },
+      }),
     ).toMatchObject({ kind: "rejected", code: "PLAN_SCOPE_EXPANSION_REQUIRES_USER" });
   });
 

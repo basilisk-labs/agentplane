@@ -27,4 +27,6 @@ export {
   authorityDigest,
   canonicalAuthorityIssues,
   continuationIssues,
+  isAdditivePlanScopeExpansion,
+  planScopeExpansionApprovalDigest,
 } from "./authority-lineage.js";

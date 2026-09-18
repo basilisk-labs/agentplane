@@ -3,6 +3,7 @@ import { createHash, randomUUID } from "node:crypto";
 import {
   canonicalizeJson,
   parseOperationLease,
+  taskKernel,
   type OperationLease,
 } from "@agentplaneorg/core/tasks";
 import type { StateFingerprint } from "@agentplaneorg/core/schemas";
@@ -18,6 +19,23 @@ import type {
 
 /** Durable task extension owned by the formal workflow control plane. */
 export const SIDE_EFFECT_AUTHORITY_EXTENSION_KEY = "agentplane.side_effect_authority";
+const TASK_KERNEL_EXTENSION = "task_kernel";
+
+export const CANONICAL_EFFECT_KIND_BY_OPERATION = {
+  "task.branch.sync_base": "integration",
+  "pr.artifacts.update": "pull_request",
+  "pr.open": "pull_request",
+  "pr.head.publish": "git_remote",
+  "pr.sync_or_verify": "pull_request",
+  "provider.pr.refresh": "pull_request",
+  "provider.pr.update_branch": "integration",
+  "route.remote.refresh": "pull_request",
+  "integration.enqueue": "integration",
+  "integration.run_next": "integration",
+  "task.hosted_close.open": "hosted_ci",
+  "task.hosted_close.finalize": "hosted_ci",
+  "task.worktree.cleanup": "git_remote",
+} as const satisfies Partial<Record<WorkflowOperationId, string>>;
 
 type SideEffectClass =
   | "local_reversible"
@@ -519,6 +537,65 @@ export function evaluateWorkflowOperationAuthority(opts: {
       authorityRef: `route:${opts.fingerprint.task_id}:${opts.fingerprint.digest}`,
       authority: null,
     };
+  }
+  const canonicalKind =
+    CANONICAL_EFFECT_KIND_BY_OPERATION[
+      opts.operation.id as keyof typeof CANONICAL_EFFECT_KIND_BY_OPERATION
+    ];
+  const kernel = opts.task.extensions?.[TASK_KERNEL_EXTENSION];
+  if (canonicalKind && isRecord(kernel) && kernel.kind === "canonical_task") {
+    const { digest, ...contents } = kernel;
+    const aggregate = isRecord(kernel.aggregate) ? kernel.aggregate : null;
+    const plan = aggregate && isRecord(aggregate.current_plan) ? aggregate.current_plan : null;
+    const lineage: unknown = aggregate?.authority_lineage;
+    const approval: unknown = Array.isArray(lineage)
+      ? lineage.find(
+          (entry) => isRecord(entry) && entry.approval_mode !== null && entry.observation === null,
+        )
+      : null;
+    const approvedAuthority =
+      isRecord(approval) && isRecord(approval.authority) ? approval.authority : null;
+    const approvedProvenance =
+      approvedAuthority && isRecord(approvedAuthority.provenance)
+        ? approvedAuthority.provenance
+        : null;
+    const latest: unknown = Array.isArray(lineage) ? lineage.at(-1) : null;
+    const authority = isRecord(latest) && isRecord(latest.authority) ? latest.authority : null;
+    const externalEffects = authority?.external_effects;
+    const authorityDigest = authority?.digest;
+    let lineageIsValid = false;
+    if (
+      aggregate &&
+      Array.isArray(aggregate.plan_history) &&
+      Array.isArray(aggregate.authority_lineage)
+    ) {
+      try {
+        lineageIsValid =
+          taskKernel.canonicalAuthorityIssues(aggregate as taskKernel.TaskAggregate).length === 0;
+      } catch {
+        lineageIsValid = false;
+      }
+    }
+    if (
+      isDigest(digest) &&
+      taskKernel.kernelDigest(contents) === digest &&
+      lineageIsValid &&
+      plan?.state === "APPROVED" &&
+      isRecord(approval) &&
+      approval.approval_mode !== null &&
+      approvedProvenance?.kind === "USER" &&
+      approvedProvenance.parent_authority_digest === null &&
+      Array.isArray(externalEffects) &&
+      externalEffects.includes(canonicalKind) &&
+      isDigest(authorityDigest)
+    ) {
+      return {
+        state: "allowed",
+        requirement,
+        authorityRef: `kernel:${authorityDigest}`,
+        authority: null,
+      };
+    }
   }
   const state = readSideEffectAuthorityState(opts.task);
   if (!state) {
