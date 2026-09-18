@@ -32,6 +32,7 @@ vi.mock("./direct-task-finalization.js", () => ({
 import {
   captureKernelRepositoryBaseline,
   commitCanonicalImplementation,
+  commitCanonicalTerminalTaskArtifacts,
 } from "./kernel-repository-coordinator.js";
 
 const taskId = "202609170000-KERNEL";
@@ -41,8 +42,10 @@ const workOrder = {
   work_order_id: workOrderId,
   authority: { writable_roots: ["/repo/src"] },
 } as never;
+const invalidateStatus = vi.fn();
 const command = {
   resolvedProject: { gitRoot: "/repo" },
+  git: { invalidateStatus },
   config: {
     branch: { task_prefix: "task/" },
     paths: { workflow_dir: ".agentplane/tasks" },
@@ -246,6 +249,46 @@ describe("canonical repository coordinator", () => {
         changed_paths: ["src/change.ts"],
       }),
     ).rejects.toThrow("differs from its observation");
+    expect(mocks.cmdCommit).not.toHaveBeenCalled();
+  });
+
+  it("commits terminal task artifacts without staging an unrelated direct baseline", async () => {
+    mocks.readStatus
+      .mockResolvedValueOnce({
+        command: "git status --short --untracked-files=all",
+        lines: [
+          ` M .agentplane/tasks/${taskId}/README.md`,
+          `?? .agentplane/tasks/${taskId}/quality/result.json`,
+          " M src/user-change.ts",
+        ],
+      })
+      .mockResolvedValueOnce({
+        command: "git status --short --untracked-files=all",
+        lines: [" M src/user-change.ts"],
+      });
+    mocks.cmdCommit.mockResolvedValue(0);
+
+    await expect(commitCanonicalTerminalTaskArtifacts(command, taskId)).resolves.toBe(true);
+
+    expect(mocks.cmdCommit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        taskId,
+        allow: [],
+        allowTasks: true,
+        requireClean: false,
+      }),
+    );
+    expect(invalidateStatus).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not create a terminal artifact commit when the task subtree is clean", async () => {
+    mocks.readStatus.mockResolvedValue({
+      command: "git status --short --untracked-files=all",
+      lines: [" M src/user-change.ts"],
+    });
+
+    await expect(commitCanonicalTerminalTaskArtifacts(command, taskId)).resolves.toBe(false);
+
     expect(mocks.cmdCommit).not.toHaveBeenCalled();
   });
 });

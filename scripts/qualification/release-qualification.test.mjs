@@ -341,7 +341,7 @@ describe("v0.7.1 release qualification contract", () => {
       verification: { phase: "TESTER", state: "ok" },
       evaluator: { phase: "EVALUATOR", state: "pass" },
       task_class: {
-        selected_mode: "direct",
+        repository_mode: "direct",
         repository_effects: ["repository_write", "source_code", "tests", "documentation"],
         external_effects: [],
       },

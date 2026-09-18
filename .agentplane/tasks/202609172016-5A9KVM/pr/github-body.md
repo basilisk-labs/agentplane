@@ -40,7 +40,7 @@ Connect the pure Task Kernel to the mature repository and provider effect adapte
  .../src/commands/shared/side-effect-authority.ts   |  77 ++++
  .../src/commands/task/advance.command.ts           |  22 +-
  .../src/commands/task/kernel-advance.test.ts       | 334 ++++++++++++++
- .../agentplane/src/commands/task/kernel-advance.ts | 263 ++++++++++-
+ .../agentplane/src/commands/task/kernel-advance.ts | 278 +++++++++++-
  .../task/kernel-controller-handoff.test.ts         | 284 ++++++++++++
  .../src/commands/task/kernel-controller-handoff.ts | 400 +++++++++++++++++
  .../src/commands/task/kernel-effect-coordinator.ts | 193 ++++++++
@@ -53,8 +53,8 @@ Connect the pure Task Kernel to the mature repository and provider effect adapte
  .../agentplane/src/commands/task/kernel-plan.ts    |  67 ++-
  .../kernel-provider-effect-coordinator.test.ts     | 337 ++++++++++++++
  .../task/kernel-provider-effect-coordinator.ts     | 489 +++++++++++++++++++++
- .../task/kernel-repository-coordinator.test.ts     | 251 +++++++++++
- .../commands/task/kernel-repository-coordinator.ts | 425 ++++++++++++++++++
+ .../task/kernel-repository-coordinator.test.ts     | 294 +++++++++++++
+ .../commands/task/kernel-repository-coordinator.ts | 475 ++++++++++++++++++++
  .../src/commands/task/kernel-run.test.ts           | 140 ++++++
  .../agentplane/src/commands/task/kernel-run.ts     |  29 +-
  .../src/commands/task/kernel-work-order.ts         |  50 ++-
@@ -68,9 +68,9 @@ Connect the pure Task Kernel to the mature repository and provider effect adapte
  packages/core/src/tasks/task-kernel/kernel.test.ts |  67 +++
  packages/core/src/tasks/task-kernel/kernel.ts      |  52 ++-
  packages/testkit/src/cli-harness.ts                |   6 +-
- .../check-packaged-mixed-scope-lifecycle.mjs       | 115 +++--
- .../qualification/release-qualification.test.mjs   |  25 ++
- 43 files changed, 4746 insertions(+), 132 deletions(-)
+ .../check-packaged-mixed-scope-lifecycle.mjs       | 119 +++--
+ .../qualification/release-qualification.test.mjs   |  27 +-
+ 43 files changed, 4857 insertions(+), 135 deletions(-)
 ```
 
 </details>

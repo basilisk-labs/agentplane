@@ -577,7 +577,7 @@ export function assertPackagedMixedScopeEvidence(evidence) {
     fail("missing_evaluator", "evidence-backed evaluator acceptance was not observed");
   }
   if (
-    evidence.task_class?.selected_mode !== "direct" ||
+    evidence.task_class?.repository_mode !== "direct" ||
     evidence.task_class?.external_effects?.length !== 0 ||
     PACKAGED_MIXED_SCOPE_REQUIRED_EFFECTS.some(
       (effect) => !evidence.task_class?.repository_effects?.includes(effect),
@@ -1079,7 +1079,7 @@ export function runPackagedMixedScopeFixture({ run, cli, packages, tempRoot }) {
       reviewed_changed_paths: changedPaths,
     },
     task_class: {
-      selected_mode: finalTask.execution_route?.selected_mode ?? null,
+      repository_mode: finalTask.execution_route?.repository_mode ?? null,
       repository_effects: finalTask.execution_contract?.declaration?.repository_effects ?? [],
       external_effects: finalTask.execution_contract?.declaration?.external_effects ?? [],
     },

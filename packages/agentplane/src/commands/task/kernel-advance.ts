@@ -29,7 +29,10 @@ import {
   emptyKernelEffectPortResolver,
   type KernelEffectPortResolver,
 } from "./kernel-effect-coordinator.js";
-import { commitCanonicalImplementation } from "./kernel-repository-coordinator.js";
+import {
+  commitCanonicalImplementation,
+  commitCanonicalTerminalTaskArtifacts,
+} from "./kernel-repository-coordinator.js";
 import { readDirectTaskHead } from "./direct-task-finalization.js";
 import {
   decideCanonicalWorkflowEffect,
@@ -363,6 +366,18 @@ export async function advanceCanonicalTask(opts: {
     const { record } = current.read;
     const plan = record.aggregate.current_plan;
     const route = current.next_action;
+    if (
+      route.reason_code === "kernel_task_completed" &&
+      current.read.task.execution_route?.repository_mode !== "branch_pr"
+    ) {
+      await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
+      return {
+        schema_version: 1,
+        task_id: opts.task_id,
+        action: { kind: "terminal", reason: route.reason_code },
+        canonical_revision: record.aggregate.revision,
+      };
+    }
     if (
       route.reason_code === "kernel_effect_dispatch_required" ||
       route.reason_code === "kernel_effect_observation_required" ||
