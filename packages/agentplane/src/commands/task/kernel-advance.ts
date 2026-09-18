@@ -40,6 +40,54 @@ import { transferCanonicalControllerToBase } from "./kernel-controller-handoff.j
 
 type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
 
+export function kernelPlanApprovalOperatorAction(
+  command: CommandContext,
+  taskId: string,
+  context: Awaited<ReturnType<Runtime["native"]["readContext"]>>,
+  plan: k.PlanRecord,
+) {
+  const authorityReference = kernelApprovalReference(context, plan);
+  if (command.config.authority.approval_receipts.trusted_issuers.length === 0) {
+    return {
+      kind: "approve_plan" as const,
+      required_role: "USER" as const,
+      cwd: command.resolvedProject.gitRoot,
+      argv: ["agentplane", "task", "plan", "approve", taskId, "--by", "USER"],
+      authority_reference: authorityReference,
+      transport: "manual_operator" as const,
+    };
+  }
+  return {
+    kind: "approve_plan" as const,
+    required_role: "USER" as const,
+    cwd: command.resolvedProject.gitRoot,
+    argv: [
+      "agentplane",
+      "task",
+      "plan",
+      "approve",
+      taskId,
+      "--approval-receipt",
+      "<base64url-receipt>",
+    ],
+    authority_reference: authorityReference,
+    transport: "signed_user_receipt" as const,
+    approval_receipt: {
+      schema_version: 1 as const,
+      format: "base64url-json+ed25519" as const,
+      request: {
+        approval_type: "plan_approval" as const,
+        task_id: taskId,
+        authority_reference: authorityReference,
+        state_fingerprint: context.repository_fingerprint,
+        operation_id: null,
+        operation_digest: null,
+        state_scope_digest: null,
+      },
+    },
+  };
+}
+
 export async function blockKernelSemanticEpisode(opts: {
   runtime: Runtime;
   directory: string;
@@ -342,6 +390,12 @@ export async function advanceCanonicalTask(opts: {
     }
     if (route.reason_code === "kernel_plan_approval_required" && plan) {
       await runtime.checkpoint(await runtime.observe());
+      const operatorAction = kernelPlanApprovalOperatorAction(
+        opts.command,
+        opts.task_id,
+        context,
+        plan,
+      );
       return {
         schema_version: 1,
         task_id: opts.task_id,
@@ -351,10 +405,7 @@ export async function advanceCanonicalTask(opts: {
           reference: kernelApprovalReference(context, plan),
           repository_fingerprint: context.repository_fingerprint,
         },
-        operator_action: {
-          kind: "approve_plan",
-          argv: ["agentplane", "task", "plan", "approve", opts.task_id, "--by", "USER"],
-        },
+        operator_action: operatorAction,
       };
     }
     const operationId = `${route.reason_code}:${record.digest}:${context.repository_fingerprint}`;

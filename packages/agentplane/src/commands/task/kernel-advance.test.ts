@@ -9,7 +9,7 @@ import {
   type KernelEffectDispatch,
   type KernelEffectPort,
 } from "./kernel-effect-coordinator.js";
-import { blockKernelSemanticEpisode } from "./kernel-advance.js";
+import { blockKernelSemanticEpisode, kernelPlanApprovalOperatorAction } from "./kernel-advance.js";
 import { resumeKernelWorkOrder } from "./kernel-work-order.js";
 
 const digest = (value: string) => k.kernelDigest(value);
@@ -181,6 +181,50 @@ describe("canonical effect coordinator", () => {
 });
 
 describe("canonical semantic episode recovery", () => {
+  it("projects a signed canonical plan approval when trusted issuers are configured", () => {
+    const repositoryFingerprint = digest("repository");
+    const context = {
+      task_id: "task-1",
+      repository_identity: digest("identity"),
+      repository_fingerprint: repositoryFingerprint,
+      ceiling: { scope_roots: ["src"] },
+    } as never;
+    const plan = { revision: 1, digest: digest("plan") } as never;
+    const command = {
+      resolvedProject: { gitRoot: "/repo" },
+      config: { authority: { approval_receipts: { trusted_issuers: [{ id: "bridge" }] } } },
+    } as never;
+
+    const action = kernelPlanApprovalOperatorAction(command, "task-1", context, plan);
+
+    expect(action).toMatchObject({
+      kind: "approve_plan",
+      required_role: "USER",
+      cwd: "/repo",
+      argv: [
+        "agentplane",
+        "task",
+        "plan",
+        "approve",
+        "task-1",
+        "--approval-receipt",
+        "<base64url-receipt>",
+      ],
+      transport: "signed_user_receipt",
+      approval_receipt: {
+        request: {
+          approval_type: "plan_approval",
+          task_id: "task-1",
+          state_fingerprint: repositoryFingerprint,
+          operation_id: null,
+          operation_digest: null,
+          state_scope_digest: null,
+        },
+      },
+    });
+    expect(action.approval_receipt?.request.authority_reference).toBe(action.authority_reference);
+  });
+
   it("persists a replayable WorkItem block before crossing a semantic stop", async () => {
     const directory = await mkdtemp(path.join(os.tmpdir(), "agentplane-kernel-stop-"));
     const input = {

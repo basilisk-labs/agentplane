@@ -10,8 +10,8 @@
  .../commands/shared/side-effect-authority.test.ts  | 110 ++++-
  .../src/commands/shared/side-effect-authority.ts   |  77 ++++
  .../src/commands/task/advance.command.ts           |  22 +-
- .../src/commands/task/kernel-advance.test.ts       | 290 ++++++++++++
- .../agentplane/src/commands/task/kernel-advance.ts | 204 ++++++++-
+ .../src/commands/task/kernel-advance.test.ts       | 334 ++++++++++++++
+ .../agentplane/src/commands/task/kernel-advance.ts | 263 ++++++++++-
  .../task/kernel-controller-handoff.test.ts         | 284 ++++++++++++
  .../src/commands/task/kernel-controller-handoff.ts | 400 +++++++++++++++++
  .../src/commands/task/kernel-effect-coordinator.ts | 193 ++++++++
@@ -39,4 +39,4 @@
  packages/testkit/src/cli-harness.ts                |   6 +-
  .../check-packaged-mixed-scope-lifecycle.mjs       | 115 +++--
  .../qualification/release-qualification.test.mjs   |  25 ++
- 41 files changed, 4499 insertions(+), 127 deletions(-)
+ 41 files changed, 4598 insertions(+), 131 deletions(-)
