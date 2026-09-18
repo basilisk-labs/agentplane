@@ -20,6 +20,7 @@ import {
 } from "../shared/task-backend.js";
 
 import { resolveTaskExecutionLifecycleSummary } from "./execution-summary.js";
+import { readKernelOperationalProjection } from "./kernel-operational-projection.js";
 
 async function detectLocalTaskMetadataErrors(
   ctx: CommandContext,
@@ -73,12 +74,23 @@ export async function cmdTaskShow(opts: {
           message: `Canonical task read refused: ${canonical.kind}.`,
         });
       }
+      const operational = readKernelOperationalProjection(task.extensions);
       process.stdout.write(
         `${JSON.stringify(
           {
             ...projectKernelTask(canonical.record.aggregate),
             title: task.title,
             description: task.description,
+            ...(operational
+              ? {
+                  commit: task.commit,
+                  verification: task.verification,
+                  quality_review: task.quality_review,
+                  execution_route: task.execution_route,
+                  execution_contract: task.execution_contract,
+                  operational_evidence: operational,
+                }
+              : {}),
             canonical_record: canonical.record,
             source: "task_kernel",
           },
