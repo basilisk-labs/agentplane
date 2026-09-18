@@ -31,6 +31,7 @@ Created: 2026-09-17T22:51:10.201Z
 ```text
  docs/developer/harness-dev.mdx                     |  56 ++-
  docs/releases/v0.7.10.md                           |  18 +
+ docs/user/cli-reference.generated.mdx              |   1 +
  .../src/cli/run-cli.core.kernel-transport.test.ts  |  51 ++-
  .../src/commands/acr/acr.command.test.ts           |  21 +
  packages/agentplane/src/commands/acr/generate.ts   |   2 +-
@@ -80,7 +81,7 @@ Created: 2026-09-17T22:51:10.201Z
  packages/testkit/src/cli-harness.ts                |   6 +-
  .../check-packaged-mixed-scope-lifecycle.mjs       | 119 +++--
  .../qualification/release-qualification.test.mjs   |  27 +-
- 51 files changed, 5364 insertions(+), 486 deletions(-)
+ 52 files changed, 5365 insertions(+), 486 deletions(-)
 ```
 
 </details>
