@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check da64abde0e17974fa7fdc31b041b9257888fb343..08af4052664a4cfb72c3e871dcf734ec7b15b300",
+      "command": "git diff --check 08af4052664a4cfb72c3e871dcf734ec7b15b300..1a4b6c3178672200c6c4047ae88805f4a222da91",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB da64abde0e17974fa7fdc31b041b9257888fb343..08af4052664a4cfb72c3e871dcf734ec7b15b300",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 08af4052664a4cfb72c3e871dcf734ec7b15b300..1a4b6c3178672200c6c4047ae88805f4a222da91",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,11 +24,17 @@
         "M\t.agentplane/tasks/202609172016-5A9KVM/pr/review.md",
         "M\t.agentplane/tasks/202609172016-5A9KVM/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202609172016-5A9KVM/supervision/implementation-evidence.json",
+        "A\tpackages/agentplane/src/commands/shared/canonical-pre-merge-evidence.ts",
+        "M\tpackages/agentplane/src/commands/shared/route-decision-blockers.ts",
+        "A\tpackages/agentplane/src/commands/shared/side-effect-authority-policy.ts",
+        "M\tpackages/agentplane/src/commands/shared/side-effect-authority.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification.test.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-finalization.ts",
+        "A\tpackages/agentplane/src/commands/task/git-status-path.test.ts",
+        "A\tpackages/agentplane/src/commands/task/git-status-path.ts",
         "M\tpackages/agentplane/src/commands/task/kernel-advance.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-repository-coordinator.ts",
-        "M\tscripts/qualification/check-packaged-mixed-scope-lifecycle.mjs",
-        "M\tscripts/qualification/release-qualification.test.mjs"
+        "A\tpackages/agentplane/src/commands/task/kernel-semantic-result.ts"
       ]
     },
     {
@@ -38,8 +44,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "da64abde0e17974fa7fdc31b041b9257888fb343",
-  "implementation_commit": "08af4052664a4cfb72c3e871dcf734ec7b15b300",
+  "execution_base_commit": "08af4052664a4cfb72c3e871dcf734ec7b15b300",
+  "implementation_commit": "1a4b6c3178672200c6c4047ae88805f4a222da91",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
