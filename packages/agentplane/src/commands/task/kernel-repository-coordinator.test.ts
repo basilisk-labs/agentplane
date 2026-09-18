@@ -241,6 +241,102 @@ describe("canonical repository coordinator", () => {
     });
   });
 
+  it("replays a persisted followup after an intervening task-artifact commit", async () => {
+    const baseline = {
+      schema_version: 1,
+      kind: "canonical_repository_baseline",
+      task_id: taskId,
+      work_item_id: "work-item",
+      task_revision: 4,
+      work_order_id: workOrderId,
+      checkout: "/repo",
+      branch: `task/${taskId}/canonical`,
+      head: "base-sha",
+      tree: "base-tree",
+      status: { command: "git status --short --untracked-files=all", lines: [] },
+    };
+    const primaryContents = {
+      schema_version: 1,
+      kind: "canonical_repository_commit_intent",
+      task_id: taskId,
+      work_order_id: workOrderId,
+      base_commit: "base-sha",
+      changed_paths: ["src/change.ts"],
+    } as const;
+    const followupContents = {
+      schema_version: 1,
+      kind: "canonical_repository_followup_commit_intent",
+      task_id: taskId,
+      work_order_id: workOrderId,
+      base_commit: "implementation-sha",
+      changed_paths: ["src/prior.ts"],
+    } as const;
+    const primary = { ...primaryContents, digest: k.kernelDigest(primaryContents) };
+    const followup = { ...followupContents, digest: k.kernelDigest(followupContents) };
+    mocks.readStable.mockImplementation((target: string) => {
+      if (target.endsWith("repository-baseline.json"))
+        return Promise.resolve(JSON.stringify(baseline));
+      if (target.endsWith("repository-followup-commit-intent.json"))
+        return Promise.resolve(JSON.stringify(followup));
+      if (target.endsWith("repository-commit-intent.json"))
+        return Promise.resolve(JSON.stringify(primary));
+      return Promise.reject(Object.assign(new Error("missing"), { code: "ENOENT" }));
+    });
+    mocks.readHead
+      .mockResolvedValueOnce("task-artifact-sha")
+      .mockResolvedValueOnce("task-artifact-sha")
+      .mockResolvedValue("followup-sha");
+    mocks.readStatus.mockResolvedValue({
+      command: "git status --short --untracked-files=all",
+      lines: [" M src/prior.ts"],
+    });
+    mocks.cmdCommit.mockResolvedValue(0);
+    mocks.runProcess.mockImplementation(({ args }: { args: string[] }) => {
+      const range = args[3];
+      const stdout =
+        args[0] === "branch"
+          ? `task/${taskId}/canonical\n`
+          : args[0] === "merge-base"
+            ? ""
+            : range === "base-sha..implementation-sha"
+              ? `src/change.ts\n.agentplane/tasks/${taskId}/README.md\n`
+              : range === "implementation-sha..task-artifact-sha"
+                ? `.agentplane/tasks/${taskId}/pr/meta.json\n`
+                : range === "implementation-sha..followup-sha"
+                  ? `src/prior.ts\n.agentplane/tasks/${taskId}/pr/meta.json\n`
+                  : "tree-sha\n";
+      return Promise.resolve({ exitCode: 0, stdout, stderr: "" });
+    });
+    mocks.prepareEvidence.mockResolvedValue({
+      status: "ready",
+      evidence: {
+        artifact_path: `.agentplane/tasks/${taskId}/supervision/implementation-evidence.json`,
+        implementation_commit: "followup-sha",
+        changed_paths: ["src/change.ts", "src/prior.ts"],
+      },
+    });
+
+    const result = await commitCanonicalImplementation({
+      command,
+      directory: "/exchange",
+      work_order: {
+        task: { id: taskId, work_item_id: "work-item", revision: 4 },
+        work_order_id: workOrderId,
+        authority: { writable_roots: ["/repo/src"] },
+      } as never,
+      changed_paths: ["src/change.ts", "src/prior.ts"],
+    });
+
+    expect(mocks.cmdCommit).toHaveBeenCalledTimes(1);
+    expect(mocks.cmdCommit).toHaveBeenCalledWith(
+      expect.objectContaining({ allow: ["src/prior.ts"] }),
+    );
+    expect(result).toMatchObject({
+      implementation_commit: "followup-sha",
+      changed_paths: ["src/change.ts", "src/prior.ts"],
+    });
+  });
+
   it("fails closed when the live delta differs from the Kernel observation", async () => {
     const baseline = {
       schema_version: 1,

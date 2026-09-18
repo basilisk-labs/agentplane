@@ -63,7 +63,7 @@ Created: 2026-09-17T22:51:10.201Z
  .../agentplane/src/commands/task/kernel-plan.ts    |  67 ++-
  .../kernel-provider-effect-coordinator.test.ts     | 337 ++++++++++++
  .../task/kernel-provider-effect-coordinator.ts     | 489 +++++++++++++++++
- .../task/kernel-repository-coordinator.test.ts     | 316 +++++++++++
+ .../task/kernel-repository-coordinator.test.ts     | 412 ++++++++++++++
  .../commands/task/kernel-repository-coordinator.ts | 599 +++++++++++++++++++++
  .../src/commands/task/kernel-run.test.ts           | 140 +++++
  .../agentplane/src/commands/task/kernel-run.ts     |  29 +-
@@ -82,7 +82,7 @@ Created: 2026-09-17T22:51:10.201Z
  packages/testkit/src/cli-harness.ts                |   6 +-
  .../check-packaged-mixed-scope-lifecycle.mjs       | 119 ++--
  .../qualification/release-qualification.test.mjs   |  27 +-
- 53 files changed, 5889 insertions(+), 685 deletions(-)
+ 53 files changed, 5985 insertions(+), 685 deletions(-)
 ```
 
 </details>
