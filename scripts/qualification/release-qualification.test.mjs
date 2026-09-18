@@ -56,6 +56,7 @@ import {
   PACKAGED_MIXED_SCOPE_FULL_REGRESSION_COMMAND,
   PackagedMixedScopeContractError,
   packetExchange,
+  semanticResultFor,
 } from "./check-packaged-mixed-scope-lifecycle.mjs";
 import {
   assertM3SelfHostingEvidence,
@@ -304,6 +305,30 @@ describe("v0.7.1 release qualification contract", () => {
         error instanceof PackagedMixedScopeContractError &&
         error.code === "missing_evaluator_episode",
     );
+  });
+
+  it("serializes canonical exchanges as compact semantic payloads", () => {
+    const canonicalPlan = { work_items: [] };
+    const result = semanticResultFor({
+      packet: { task_id: "task-1", transition_id: "transition-1", state_fingerprint: "state-1" },
+      workOrder: {
+        work_order_id: "work-order-1",
+        role: "PLANNER",
+        canonical_binding: { phase: "planning" },
+      },
+      resultFormat: "semantic_payload_v1",
+      summary: "Prepared the canonical plan.",
+      canonicalPlan,
+    });
+
+    assert.deepEqual(result, {
+      work_order_id: "work-order-1",
+      status: "completed",
+      summary: "Prepared the canonical plan.",
+      findings: [],
+      uncertainty: [],
+      canonical_plan: canonicalPlan,
+    });
   });
 
   it("fails the installed mixed-scope contract for every omitted lifecycle proof", () => {

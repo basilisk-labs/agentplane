@@ -66,8 +66,9 @@ Connect the pure Task Kernel to the mature repository and provider effect adapte
  packages/core/src/tasks/task-kernel/kernel.test.ts |  67 +++
  packages/core/src/tasks/task-kernel/kernel.ts      |  52 ++-
  packages/testkit/src/cli-harness.ts                |   6 +-
- .../check-packaged-mixed-scope-lifecycle.mjs       | 107 +++--
- 40 files changed, 4467 insertions(+), 126 deletions(-)
+ .../check-packaged-mixed-scope-lifecycle.mjs       | 115 +++--
+ .../qualification/release-qualification.test.mjs   |  25 ++
+ 41 files changed, 4499 insertions(+), 127 deletions(-)
 ```
 
 </details>

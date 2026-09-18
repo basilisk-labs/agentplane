@@ -398,9 +398,10 @@ export function packetExchange(packet, expectedRole, observedTask = null) {
   return packet.exchange;
 }
 
-function semanticResultFor({
+export function semanticResultFor({
   packet,
   workOrder,
+  resultFormat,
   summary,
   taskIntent,
   taskPlanProposal,
@@ -409,9 +410,7 @@ function semanticResultFor({
   claimedChecks,
   review,
 }) {
-  const semanticResult = {
-    schema_version: 2,
-    kind: "agent_semantic_result",
+  const payload = {
     work_order_id: workOrder.work_order_id,
     status: "completed",
     summary,
@@ -421,21 +420,27 @@ function semanticResultFor({
     ...(review ? { review } : {}),
   };
   if (workOrder.canonical_binding) {
-    semanticResult.canonical_binding = workOrder.canonical_binding;
     if (workOrder.canonical_binding.phase === "planning") {
       if (!canonicalPlan)
         fail("missing_canonical_plan", "canonical planner result omitted its plan");
-      semanticResult.canonical_plan = canonicalPlan;
+      payload.canonical_plan = canonicalPlan;
     } else if (workOrder.canonical_binding.phase === "implementation") {
       if (!canonicalOutputs) {
         fail("missing_canonical_outputs", "canonical executor result omitted its output claims");
       }
-      semanticResult.canonical_outputs = canonicalOutputs;
+      payload.canonical_outputs = canonicalOutputs;
     }
   } else {
-    if (taskIntent) semanticResult.task_intent = taskIntent;
-    if (taskPlanProposal) semanticResult.task_plan_proposal = taskPlanProposal;
+    if (taskIntent) payload.task_intent = taskIntent;
+    if (taskPlanProposal) payload.task_plan_proposal = taskPlanProposal;
   }
+  if (resultFormat === "semantic_payload_v1") return payload;
+  const semanticResult = {
+    schema_version: 2,
+    kind: "agent_semantic_result",
+    ...payload,
+    ...(workOrder.canonical_binding ? { canonical_binding: workOrder.canonical_binding } : {}),
+  };
   return {
     schema_version: 1,
     kind: "agent_action_result",
@@ -465,6 +470,7 @@ function writePacketResult(accessLog, packet, role, resultOptions) {
       semanticResultFor({
         packet,
         workOrder,
+        resultFormat: exchange.result_format,
         ...resultOptions,
         ...(!workOrder.canonical_binding && resultOptions.taskPlanProposal
           ? { taskPlanProposal: resultOptions.taskPlanProposal(workOrder) }

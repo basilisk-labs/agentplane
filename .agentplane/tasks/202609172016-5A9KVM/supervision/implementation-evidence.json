@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 16ba1eab81349a895127773d72f96ef94ee74e9e..77b34a3768dc9563a472313304483348e339db4f",
+      "command": "git diff --check 77b34a3768dc9563a472313304483348e339db4f..57357832ddf7315913a8f1977876cc733b7efdd8",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 16ba1eab81349a895127773d72f96ef94ee74e9e..77b34a3768dc9563a472313304483348e339db4f",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 77b34a3768dc9563a472313304483348e339db4f..57357832ddf7315913a8f1977876cc733b7efdd8",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,12 +24,6 @@
         "M\t.agentplane/tasks/202609172016-5A9KVM/pr/review.md",
         "M\t.agentplane/tasks/202609172016-5A9KVM/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202609172016-5A9KVM/supervision/implementation-evidence.json",
-        "M\tdocs/developer/harness-dev.mdx",
-        "M\tdocs/releases/v0.7.10.md",
-        "M\tpackages/agentplane/src/commands/acr/acr.command.test.ts",
-        "M\tpackages/agentplane/src/commands/acr/generate.ts",
-        "M\tpackages/agentplane/src/commands/acr/summary.ts",
-        "M\tpackages/testkit/src/cli-harness.ts",
         "M\tscripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
       ]
     },
@@ -40,8 +34,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "16ba1eab81349a895127773d72f96ef94ee74e9e",
-  "implementation_commit": "77b34a3768dc9563a472313304483348e339db4f",
+  "execution_base_commit": "77b34a3768dc9563a472313304483348e339db4f",
+  "implementation_commit": "57357832ddf7315913a8f1977876cc733b7efdd8",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
