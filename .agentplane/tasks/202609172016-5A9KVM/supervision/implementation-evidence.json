@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 0cf28791d0872287963afd005f8a20ce2121166e..547b2d11cfc05ca3abbbdf3b4efd7eb9f6603593",
+      "command": "git diff --check 547b2d11cfc05ca3abbbdf3b4efd7eb9f6603593..2e5d4a6c17653803e5c3031bd50bd2fdc532875e",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 0cf28791d0872287963afd005f8a20ce2121166e..547b2d11cfc05ca3abbbdf3b4efd7eb9f6603593",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 547b2d11cfc05ca3abbbdf3b4efd7eb9f6603593..2e5d4a6c17653803e5c3031bd50bd2fdc532875e",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,8 +24,8 @@
         "M\t.agentplane/tasks/202609172016-5A9KVM/pr/review.md",
         "M\t.agentplane/tasks/202609172016-5A9KVM/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202609172016-5A9KVM/supervision/implementation-evidence.json",
-        "M\tpackages/agentplane/src/commands/task/kernel-advance.test.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-advance.ts"
+        "M\tpackages/agentplane/src/commands/task/show-kernel.test.ts",
+        "M\tpackages/agentplane/src/commands/task/show.ts"
       ]
     },
     {
@@ -35,8 +35,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "0cf28791d0872287963afd005f8a20ce2121166e",
-  "implementation_commit": "547b2d11cfc05ca3abbbdf3b4efd7eb9f6603593",
+  "execution_base_commit": "547b2d11cfc05ca3abbbdf3b4efd7eb9f6603593",
+  "implementation_commit": "2e5d4a6c17653803e5c3031bd50bd2fdc532875e",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [

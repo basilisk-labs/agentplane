@@ -31,8 +31,8 @@
  .../src/commands/task/kernel-work-order.ts         |  50 ++-
  .../src/commands/task/plan-set.command.ts          |  23 +-
  .../agentplane/src/commands/task/run.command.ts    |  26 +-
- .../src/commands/task/show-kernel.test.ts          |  71 +++
- packages/agentplane/src/commands/task/show.ts      |  12 +
+ .../src/commands/task/show-kernel.test.ts          | 113 ++++-
+ packages/agentplane/src/commands/task/show.ts      |  36 ++
  .../src/runner/usecases/kernel-authority.ts        |   4 +
  .../src/tasks/task-kernel/authority-lineage.ts     |  92 +++-
  packages/core/src/tasks/task-kernel/index.ts       |   2 +
@@ -41,4 +41,4 @@
  packages/testkit/src/cli-harness.ts                |   6 +-
  .../check-packaged-mixed-scope-lifecycle.mjs       | 115 +++--
  .../qualification/release-qualification.test.mjs   |  25 ++
- 43 files changed, 4681 insertions(+), 131 deletions(-)
+ 43 files changed, 4746 insertions(+), 132 deletions(-)

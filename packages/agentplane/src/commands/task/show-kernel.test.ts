@@ -10,7 +10,7 @@ import {
   makeKernelRecord,
   TASK_KERNEL_EXTENSION,
 } from "../../adapters/task-backend/kernel-record.js";
-import { cmdTaskShow } from "./show.js";
+import { cmdTaskShow, projectKernelExecutionContract } from "./show.js";
 import { makeRunTaskStatusHandler } from "./status.command.js";
 import { makeRunTaskBriefHandler } from "./brief.command.js";
 import { makeRunTaskNextActionHandler } from "./next-action.command.js";
@@ -51,6 +51,46 @@ function capturedTask() {
 }
 
 describe("task show canonical projection", () => {
+  it("projects execution effects from the approved canonical plan", () => {
+    const contract = projectKernelExecutionContract(
+      {
+        execution_contract: {
+          declaration: {
+            scope_roots: [],
+            repository_effects: [],
+            external_effects: ["legacy-effect"],
+          },
+        },
+      } as never,
+      {
+        current_plan: {
+          work_items: [
+            {
+              execution_requirements: {
+                scope_roots: ["src", "test"],
+                repository_effects: ["source_code", "tests"],
+                external_effects: [],
+              },
+            },
+            {
+              execution_requirements: {
+                scope_roots: ["docs", "src"],
+                repository_effects: ["documentation", "source_code"],
+                external_effects: [],
+              },
+            },
+          ],
+        },
+      } as never,
+    );
+
+    expect(contract?.declaration).toMatchObject({
+      scope_roots: ["docs", "src", "test"],
+      repository_effects: ["documentation", "source_code", "tests"],
+      external_effects: [],
+    });
+  });
+
   it("exposes validated operational evidence without replacing canonical state", async () => {
     const task = capturedTask();
     const projectionContents = {
