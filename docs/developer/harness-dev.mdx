@@ -213,11 +213,27 @@ PATH first, so an explicit profile path wins over inherited manager locations.
 
 ### Scope and current boundary
 
-Task `202608291006-255K66` implements M3 from the
-[rebuild specification](../reference/clean-task-core-rebuild-spec).
-Its approved planning baseline is `36741ce5160d452ca9660a388241cb4da32f842a`.
-The first WorkItem changes read projections only. It does not migrate records, transfer the
-controller, enable canonical writes, dispatch effects, or satisfy final M3 acceptance.
+New tasks use the Task Kernel as the sole lifecycle and authority owner. The application
+coordinator projects Kernel decisions into the existing repository and provider adapters; those
+adapters perform bounded effects but do not create a second task state machine.
+
+The implemented coordinator covers planning and approval, WorkItem dispatch and results,
+AgentPlane-owned repository commits, deterministic verification, independent evaluation, final
+validation, and the `direct` and `branch_pr` effect routes. The branch route prepares a durable
+Kernel effect before publication, PR, integration, hosted-close, or cleanup dispatch. It advances
+only after the existing adapter supplies exact provider or repository readback. An ambiguous
+outcome becomes `IN_DOUBT` and requires reconciliation before replay.
+
+After a proven branch integration, a receipt-bound controller transfer moves the canonical record
+from the task worktree to the base checkout. The transfer verifies source state, destination state,
+authority, and CAS readback, and it can recover an interrupted copy. Compatibility projections
+expose commit, verification, evaluator, and closeout evidence to mature gates and ACR output; they
+cannot authorize an effect or replace Kernel state.
+
+This boundary applies to native canonical tasks. Legacy tasks still require explicit
+`task kernel-migrate` preview/apply admission. The release does not claim automatic conversion of
+ambiguous legacy graphs, broad historical-corpus migration, or completion of the deferred
+Scenario V2 and multi-task-class retirement work.
 
 ### Read contract
 
@@ -254,20 +270,19 @@ returns exit code 2. The typed missing read does not create a synthetic aggregat
 
 Paths below are relative to `packages/agentplane/src`, except the pure core.
 
-| Responsibility                     | Current owner                                                                                                                | Required cutover owner                                                                         |
-| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| Pure transitions and invariants    | `packages/core/src/tasks/task-kernel`                                                                                        | Same kernel; no platform imports.                                                              |
-| Durable record and atomic mutation | `adapters/task-backend/kernel-record.ts`, `kernel-backend-adapter.ts`                                                        | One canonical record and mutation receipt.                                                     |
-| Command read projections           | `commands/task/kernel-read.ts`                                                                                               | Shared validated kernel read with bounded atomic-replacement observation.                      |
-| Synthetic runtime and aggregate    | `adapters/task-backend/task-centric-backend-runtime.ts`                                                                      | Remove mutable `runtimeFrom`/`aggregateFrom` legacy construction after controller transfer.    |
-| Plan and approval                  | `commands/task/plan.ts`, `plan-shared.ts`, `plan-approve.command.ts`                                                         | Canonical plan commands and authority comparison.                                              |
-| WorkItem result application        | `commands/task/task-centric-external-result.ts`, `external-agent-result-application.ts`                                      | One canonical result admission service.                                                        |
-| Route and WorkOrder preparation    | `commands/shared/route-decision.ts`, `runner/usecases/agent-work-order.ts`                                                   | Kernel next action plus separately admitted effects.                                           |
-| Verification and completion        | `commands/task/verify-record-execute.ts`, `finish-execute.ts`, `shared/transitions.ts`                                       | Kernel validation identity and completion predicates.                                          |
-| CLI and managed controller         | `commands/task/advance.command.ts`, `external-agent-supervisor.ts`, `branch-task-supervisor.ts`, `direct-task-supervisor.ts` | Shared canonical application service.                                                          |
-| External effects                   | `adapters/task-backend/kernel-effect-dispatch.ts`, `kernel-observations.ts`                                                  | Intent, dispatch, readback and reconciliation with exact identity.                             |
-| Migration and replay               | `adapters/task-backend/kernel-migration.ts`, `kernel-replay.ts`                                                              | Explicit receipt-bound migration with byte-exact rollback.                                     |
-| Remaining legacy display consumers | Task list, search, export and formatting consumers                                                                           | Inspect separately during retirement; retain only non-authoritative compatibility projections. |
+| Responsibility                     | Canonical owner                                                                                    | Compatibility or adapter boundary                                                                      |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Pure transitions and invariants    | `packages/core/src/tasks/task-kernel`                                                              | No platform imports.                                                                                   |
+| Durable record and atomic mutation | `adapters/task-backend/kernel-record.ts`, `kernel-backend-adapter.ts`                              | Backend CAS only.                                                                                      |
+| Command read projections           | `commands/task/kernel-read.ts`                                                                     | Validated display projection; no authority.                                                            |
+| Plan and approval                  | `commands/task/kernel-plan.ts`, `plan-approve.command.ts`, `runner/usecases/kernel-authority.ts`   | USER approval and continued authority remain digest-bound.                                             |
+| WorkItem application               | `commands/task/kernel-advance.ts`, `kernel-inspection.ts`, `kernel-repository-coordinator.ts`      | Mature commit and verification helpers execute bounded operations.                                     |
+| Verification and completion        | Kernel validation records plus `kernel-operational-projection.ts`                                  | Legacy-shaped verification and review fields are compatibility projections only.                       |
+| CLI and managed controller         | `kernel-advance.ts` and `kernel-run.ts`                                                            | `advance.command.ts` and `run.command.ts` select the canonical service.                                |
+| External effects                   | `kernel-effect-coordinator.ts`, `kernel-provider-effect-coordinator.ts`, and Kernel effect records | The branch supervisor supplies typed publication, PR, integration, hosted-close, and cleanup adapters. |
+| Controller transfer                | `kernel-controller-handoff.ts` and the Kernel `controller_transfer` receipt                        | Task/base checkout copies are suspended and restored around mature Git operations.                     |
+| Migration and replay               | `adapters/task-backend/kernel-migration.ts`, `kernel-replay.ts`                                    | Explicit receipt-bound migration with byte-exact rollback.                                             |
+| Remaining legacy display consumers | Task list, search, export, and formatting consumers                                                | Inspect separately during retirement; retain only non-authoritative compatibility projections.         |
 
 The planning-base recovery helper landed after the frozen M3 planning baseline in PR #5883.
 Its legacy runtime inspection must also be considered when the final integrated import inventory is
@@ -289,6 +304,9 @@ computed. A frozen worktree inventory alone is insufficient retirement evidence.
 
 Each later gate must record its own concrete checkpoint, evidence digests and restore readback.
 This table defines the required rollback boundaries; it is not a claim that those receipts exist.
+The 0.7.10 coordinator implements the production path through `m3-effects` for new canonical
+tasks. The later task-class, corpus-migration, long-run self-hosting, and retirement gates remain
+separate work and are not inferred from the packaged mixed-scope qualification.
 When a plan refinement changes only future gates, a completed WorkItem with a semantically
 unchanged definition must retain its runtime and evidence provenance. New or changed future
 WorkItems must be materialized from the approved revision. Ambiguous prior-plan history must fail

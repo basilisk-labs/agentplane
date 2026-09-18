@@ -13,6 +13,7 @@ import {
   makeRunAcrSchemaHandler,
 } from "./acr.command.js";
 import { buildAcrContextExtension } from "./generate-extensions.js";
+import { summarizeAcr } from "./summary.js";
 import { CliError } from "../../shared/errors.js";
 import { getVersion } from "../../meta/version.js";
 import { readDiagnosticContext } from "../shared/diagnostics.js";
@@ -235,6 +236,26 @@ describe("acr command specs", () => {
 
     expect(record.producer.version).toBe(getVersion());
     expect(record.agent.toolchain).toContainEqual({ name: "agentplane", version: getVersion() });
+  });
+
+  it("summarizes the schema-valid native identity extension", () => {
+    const record = mergeReadyRecord();
+    record.extensions = {
+      "agentplane.native-identity": {
+        identity: {
+          digest: "sha256:native",
+          plan: { revision: 3, digest: "sha256:plan" },
+        },
+        review_identity: { digest: "sha256:review" },
+      },
+    };
+
+    expect(summarizeAcr(record).native_identity).toEqual({
+      digest: "sha256:native",
+      plan_revision: 3,
+      plan_digest: "sha256:plan",
+      review_digest: "sha256:review",
+    });
   });
 
   it("adds the context ACR extension schema version while preserving context evidence", () => {

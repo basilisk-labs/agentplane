@@ -15,8 +15,8 @@ Connect the pure Task Kernel to the mature repository and provider effect adapte
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:7f669cfb91b53caff81c5468251bfcb7bbd072ef546d528760355996e8147bcd
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,7 +27,12 @@ Connect the pure Task Kernel to the mature repository and provider effect adapte
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ docs/developer/harness-dev.mdx                     |  56 ++-
+ docs/releases/v0.7.10.md                           |  18 +
  .../src/cli/run-cli.core.kernel-transport.test.ts  |  51 ++-
+ .../src/commands/acr/acr.command.test.ts           |  21 +
+ packages/agentplane/src/commands/acr/generate.ts   |   2 +-
+ packages/agentplane/src/commands/acr/summary.ts    |   2 +-
  .../src/commands/pr/integrate/internal/finalize.ts |   4 +-
  .../shared/route-decision-blockers.kernel.test.ts  |  67 +++
  .../src/commands/shared/route-decision-blockers.ts |  41 +-
@@ -60,7 +65,9 @@ Connect the pure Task Kernel to the mature repository and provider effect adapte
  packages/core/src/tasks/task-kernel/index.ts       |   2 +
  packages/core/src/tasks/task-kernel/kernel.test.ts |  67 +++
  packages/core/src/tasks/task-kernel/kernel.ts      |  52 ++-
- 33 files changed, 4308 insertions(+), 73 deletions(-)
+ packages/testkit/src/cli-harness.ts                |   6 +-
+ .../check-packaged-mixed-scope-lifecycle.mjs       |  17 -
+ 40 files changed, 4391 insertions(+), 112 deletions(-)
 ```
 
 </details>
