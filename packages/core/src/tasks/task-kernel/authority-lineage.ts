@@ -26,14 +26,20 @@ function sameStringSet(left: readonly string[], right: readonly string[]): boole
   );
 }
 
-export function isAdditivePlanScopeExpansion(input: {
+function scopeCovers(scopeRoots: readonly string[], candidate: string): boolean {
+  return scopeRoots.some(
+    (root) => root === "." || candidate === root || candidate.startsWith(`${root}/`),
+  );
+}
+
+export function additivePlanScopeExpansionRoots(input: {
   current: Pick<PlanRecord, "work_items">;
   amended: Pick<PlanRecord, "work_items">;
   authority: ExecutionAuthority;
-}): boolean {
-  if (input.current.work_items.length !== input.amended.work_items.length) return false;
+}): string[] | null {
+  if (input.current.work_items.length !== input.amended.work_items.length) return null;
   const originals = new Map(input.current.work_items.map((item) => [item.id, item]));
-  let expanded = false;
+  const addedRoots = new Set<string>();
   const valid = input.amended.work_items.every((item) => {
     const original = originals.get(item.id);
     if (!original) return false;
@@ -53,14 +59,24 @@ export function isAdditivePlanScopeExpansion(input: {
       !sameStringSet(currentRequirements.external_effects, amendedRequirements.external_effects) ||
       !sameStringSet(currentRequirements.capabilities, amendedRequirements.capabilities) ||
       !sameStringSet(currentRequirements.resources, amendedRequirements.resources) ||
-      !executionRequirementsAreSubset(input.authority, amendedRequirements)
+      !executionRequirementsAreSubset(input.authority, {
+        ...amendedRequirements,
+        scope_roots: currentRequirements.scope_roots,
+      })
     )
       return false;
-    if (amendedRequirements.scope_roots.length > currentRequirements.scope_roots.length)
-      expanded = true;
+    for (const root of amendedRequirements.scope_roots) {
+      if (!currentRequirements.scope_roots.includes(root)) addedRoots.add(root);
+    }
     return true;
   });
-  return valid && expanded;
+  return valid && addedRoots.size > 0 ? [...addedRoots].toSorted() : null;
+}
+
+export function isAdditivePlanScopeExpansion(
+  input: Parameters<typeof additivePlanScopeExpansionRoots>[0],
+): boolean {
+  return additivePlanScopeExpansionRoots(input) !== null;
 }
 
 export function authorityDigest(authority: Omit<ExecutionAuthority, "digest">) {
@@ -194,6 +210,7 @@ export function continuationIssues(
     observation.kind === "plan_amendment"
       ? {
           ...sameContext,
+          scope_roots: parent.scope_roots,
           provenance: {
             ...sameContext.provenance,
             evidence_digest: parent.provenance.evidence_digest,
@@ -217,11 +234,16 @@ export function continuationIssues(
   )
     return ["observation_binding"];
   if (observation.kind === "plan_amendment") {
+    const addedScopeRoots = observation.added_scope_roots ?? [];
     if (
       child.plan_revision !== parent.plan_revision + 1 ||
       child.plan_digest === parent.plan_digest ||
       child.repository_fingerprint !== parent.repository_fingerprint ||
-      observation.changed_paths.length > 0
+      observation.changed_paths.length > 0 ||
+      JSON.stringify(addedScopeRoots) !==
+        JSON.stringify([...new Set(addedScopeRoots)].toSorted()) ||
+      JSON.stringify(child.scope_roots) !==
+        JSON.stringify([...new Set([...parent.scope_roots, ...addedScopeRoots])].toSorted())
     )
       return ["plan_observation_binding"];
   } else if (observation.kind === "authority_delta") {
@@ -273,7 +295,7 @@ export function continuationAdmissionIssues(
     const unchangedApproval =
       source?.approval_actor_id === plan.approval_actor_id &&
       source?.approval_evidence_digest === plan.approval_evidence_digest;
-    const approvedScopeExpansion =
+    const addedScopeRoots =
       source !== undefined &&
       plan.approval_actor_id !== null &&
       plan.approval_evidence_digest ===
@@ -283,7 +305,14 @@ export function continuationAdmissionIssues(
           amended_plan_digest: plan.digest,
           actor_id: plan.approval_actor_id,
         }) &&
-      isAdditivePlanScopeExpansion({ current: source, amended: plan, authority: parent });
+      additivePlanScopeExpansionRoots({ current: source, amended: plan, authority: parent });
+    const addedAuthorityRoots = Array.isArray(addedScopeRoots)
+      ? addedScopeRoots.filter((root) => !scopeCovers(parent.scope_roots, root))
+      : null;
+    const approvedScopeExpansion =
+      addedAuthorityRoots !== null &&
+      JSON.stringify(record.observation.added_scope_roots ?? []) ===
+        JSON.stringify(addedAuthorityRoots);
     if (
       (!unchangedApproval && !approvedScopeExpansion) ||
       source?.work_items.length !== plan.work_items.length ||

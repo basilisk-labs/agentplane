@@ -15,6 +15,49 @@ import { requireKernelCommit } from "./kernel-runtime-context.js";
 
 type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
 
+export async function continueKernelSemanticStopAuthority(opts: {
+  runtime: Runtime;
+  task_id: string;
+  binding: KernelWorkBinding;
+}) {
+  const read = await opts.runtime.adapter.read(opts.task_id);
+  if (read.kind !== "canonical") throw new Error("Canonical Task unavailable");
+  const aggregate = read.record.aggregate;
+  const item = aggregate.work_items[opts.binding.work_item_id];
+  const plan = aggregate.current_plan;
+  const parent = aggregate.authority_lineage?.at(-1)?.authority;
+  if (
+    item?.state !== "EXECUTING" ||
+    plan?.state !== "APPROVED" ||
+    plan.revision !== opts.binding.plan_revision ||
+    plan.digest !== opts.binding.plan_digest ||
+    item.definition.contract_digest !== opts.binding.contract_digest ||
+    item.attempt !== opts.binding.attempt ||
+    item.claim_id !== opts.binding.claim_id ||
+    !parent ||
+    !opts.runtime.lifecycle.resultFingerprintMatches(
+      read.record,
+      opts.binding,
+      parent.repository_fingerprint,
+    )
+  )
+    throw new Error("Canonical implementation result is stale");
+  const observation = await opts.runtime.observe();
+  if (parent.repository_fingerprint === observation.fingerprint) return;
+  const continuation = await opts.runtime.native.observeContinuation(opts.task_id, parent);
+  if (
+    continuation?.kind !== "repository_implementation" ||
+    continuation.changed_paths.some(
+      (changed) =>
+        !item.definition.execution_requirements.scope_roots.some(
+          (root) => root === "." || changed === root || changed.startsWith(`${root}/`),
+        ),
+    )
+  )
+    throw new Error("Canonical implementation changed paths outside its WorkItem scope");
+  requireKernelCommit(await opts.runtime.authority.continue(opts.task_id));
+}
+
 export async function blockKernelSemanticEpisode(opts: {
   runtime: Runtime;
   directory: string;
@@ -67,6 +110,12 @@ export async function acceptKernelSemanticResult(
   if (semantic.status !== "completed") {
     const binding = workOrder.canonical_binding;
     if (binding && binding.phase !== "planning") {
+      await writeKernelArtifact(directory, "received-result.json", semantic);
+      await continueKernelSemanticStopAuthority({
+        runtime,
+        task_id: taskId,
+        binding: binding as KernelWorkBinding,
+      });
       await blockKernelSemanticEpisode({
         runtime,
         directory,
@@ -129,6 +178,23 @@ export async function acceptKernelSemanticResult(
       const item = aggregate.work_items[binding.work_item_id];
       const plan = aggregate.current_plan;
       const parent = aggregate.authority_lineage?.at(-1)?.authority;
+      changedPaths = [
+        ...new Set(
+          (aggregate.authority_lineage ?? []).flatMap((entry) =>
+            entry.observation?.kind === "repository_implementation"
+              ? entry.observation.changed_paths
+              : [],
+          ),
+        ),
+      ].toSorted();
+      const workOrderRoots = workOrder.authority.writable_roots.map((root) =>
+        path.relative(command.resolvedProject.gitRoot, root).split(path.sep).join("/"),
+      );
+      changedPaths = changedPaths.filter((changed) =>
+        workOrderRoots.some(
+          (root) => root === "" || changed === root || changed.startsWith(`${root}/`),
+        ),
+      );
       if (
         item?.state !== "EXECUTING" ||
         plan?.state !== "APPROVED" ||
@@ -165,7 +231,7 @@ export async function acceptKernelSemanticResult(
           )
         )
           throw new Error("Canonical implementation changed paths outside its WorkItem scope");
-        changedPaths = [...continuation.changed_paths];
+        changedPaths = [...new Set([...changedPaths, ...continuation.changed_paths])].toSorted();
         await writeKernelArtifact(directory, "received-result.json", semantic);
         continueAuthority = true;
       }

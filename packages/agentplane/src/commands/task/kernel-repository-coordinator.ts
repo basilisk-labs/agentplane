@@ -65,7 +65,17 @@ type KernelRepositoryCommitIntent = Readonly<{
   digest: k.Sha256Digest;
 }>;
 
-async function gitValue(command: CommandContext, args: string[], label: string): Promise<string> {
+type KernelRepositoryFollowupCommitIntent = Readonly<{
+  schema_version: 1;
+  kind: "canonical_repository_followup_commit_intent";
+  task_id: string;
+  work_order_id: string;
+  base_commit: string;
+  changed_paths: readonly string[];
+  digest: k.Sha256Digest;
+}>;
+
+async function gitValue(command: CommandContext, args: string[], label: string, empty = false) {
   const result = await runProcess({
     command: "git",
     args,
@@ -73,7 +83,8 @@ async function gitValue(command: CommandContext, args: string[], label: string):
     reject: false,
   });
   const value = result.stdout.trim();
-  if (result.exitCode !== 0 || !value) throw new Error(`Canonical ${label} is unavailable`);
+  if (result.exitCode !== 0 || (!empty && !value))
+    throw new Error(`Canonical ${label} is unavailable`);
   return value;
 }
 
@@ -175,6 +186,54 @@ async function readCommitIntent(directory: string): Promise<KernelRepositoryComm
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
     throw error;
+  }
+}
+
+async function writeFollowupCommitIntent(
+  directory: string,
+  intent: KernelRepositoryFollowupCommitIntent,
+) {
+  await writeKernelIntent(directory, "repository-followup-commit-intent.json", intent);
+}
+
+async function readFollowupCommitIntent(
+  directory: string,
+): Promise<KernelRepositoryFollowupCommitIntent | null> {
+  try {
+    const intent = JSON.parse(
+      await readStableRegularTextNoFollow(
+        path.join(directory, "repository-followup-commit-intent.json"),
+        "canonical repository followup commit intent",
+      ),
+    ) as KernelRepositoryFollowupCommitIntent;
+    const { digest, ...contents } = intent;
+    if (k.kernelDigest(contents) !== digest)
+      throw new Error("Canonical repository followup commit intent is invalid");
+    return intent;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
+    throw error;
+  }
+}
+
+async function writeKernelIntent(
+  directory: string,
+  name: string,
+  intent: KernelRepositoryCommitIntent | KernelRepositoryFollowupCommitIntent,
+) {
+  await mkdir(directory, { recursive: true, mode: 0o700 });
+  const target = path.join(directory, name);
+  try {
+    await writeNewStableRegularFileNoFollow(
+      target,
+      `${JSON.stringify(intent, null, 2)}\n`,
+      "canonical repository commit intent",
+    );
+  } catch (error) {
+    const stored = JSON.parse(
+      await readStableRegularTextNoFollow(target, "canonical repository commit intent"),
+    ) as typeof intent;
+    if (k.kernelDigest(stored) !== k.kernelDigest(intent)) throw error;
   }
 }
 
@@ -306,9 +365,18 @@ export async function commitCanonicalImplementation(opts: {
     .map((line) => pathFromStatusLine(line))
     .filter(Boolean)
     .toSorted();
-  const expected = [...new Set(opts.changed_paths)].toSorted();
-  const intent = await readCommitIntent(opts.directory);
-  const intendedPaths = intent?.changed_paths ?? expected;
+  const authorized = new Set(opts.changed_paths);
+  const adoptedBaseline = [...baselineLines]
+    .map((line) => pathFromStatusLine(line))
+    .filter((candidate): candidate is string => candidate !== null && authorized.has(candidate));
+  const unauthorizedIntroduced = introduced.filter((candidate) => !authorized.has(candidate));
+  if (unauthorizedIntroduced.length > 0) {
+    throw new Error(
+      `Canonical repository delta differs from its observation: ${introduced.join(", ")}.`,
+    );
+  }
+  const expected = [...new Set([...adoptedBaseline, ...introduced])].toSorted();
+  let intent = await readCommitIntent(opts.directory);
   if (
     intent &&
     (intent.task_id !== baseline.task_id || intent.work_order_id !== baseline.work_order_id)
@@ -316,21 +384,23 @@ export async function commitCanonicalImplementation(opts: {
     throw new Error("Canonical repository commit intent identity changed");
   if (head !== baseline.head && !intent)
     throw new Error("Canonical implementation changed Git history before commit dispatch");
+  const persistedPaths = intent?.changed_paths;
   if (
     head === baseline.head &&
-    (introduced.length !== intendedPaths.length ||
-      introduced.some((candidate, index) => candidate !== intendedPaths[index]))
+    persistedPaths &&
+    (expected.length !== persistedPaths.length ||
+      expected.some((candidate, index) => candidate !== persistedPaths[index]))
   ) {
     throw new Error(
-      `Canonical repository delta differs from its observation: ${introduced.join(", ")}.`,
+      `Canonical repository delta differs from its observation: ${expected.join(", ")}.`,
     );
   }
-  if (head === baseline.head && introduced.length === 0) return null;
+  if (head === baseline.head && expected.length === 0) return null;
   const authority = opts.work_order.authority;
   const roots = authority.writable_roots.map((root) =>
     path.relative(baseline.checkout, root).replaceAll(path.sep, "/"),
   );
-  const outsideScope = intendedPaths.filter(
+  const outsideScope = [...authorized].filter(
     (candidate) =>
       !roots.some((root) => root === "" || candidate === root || candidate.startsWith(`${root}/`)),
   );
@@ -339,24 +409,26 @@ export async function commitCanonicalImplementation(opts: {
       `Canonical implementation escaped its commit scope: ${outsideScope.join(", ")}`,
     );
   }
-  const intentContents = {
-    schema_version: 1 as const,
-    kind: "canonical_repository_commit_intent" as const,
-    task_id: baseline.task_id,
-    work_order_id: baseline.work_order_id,
-    base_commit: baseline.head,
-    changed_paths: intendedPaths,
-  };
-  const commitIntent = { ...intentContents, digest: k.kernelDigest(intentContents) };
-  await writeCommitIntent(opts.directory, commitIntent);
-  if (head === baseline.head) {
+  if (!intent) {
+    const intentContents = {
+      schema_version: 1 as const,
+      kind: "canonical_repository_commit_intent" as const,
+      task_id: baseline.task_id,
+      work_order_id: baseline.work_order_id,
+      base_commit: baseline.head,
+      changed_paths: expected,
+    };
+    intent = { ...intentContents, digest: k.kernelDigest(intentContents) };
+    await writeCommitIntent(opts.directory, intent);
+  }
+  const commitPaths = async (paths: readonly string[]) => {
     const exitCode = await cmdCommit({
       ctx: opts.command,
       cwd: baseline.checkout,
       taskId: baseline.task_id,
       message: `🚧 ${baseline.task_id.split("-").at(-1)} task: apply canonical agent result`,
       close: false,
-      allow: [...intendedPaths],
+      allow: [...paths],
       autoAllow: false,
       allowTasks: true,
       allowBase: false,
@@ -370,32 +442,84 @@ export async function commitCanonicalImplementation(opts: {
       closeCheckOnly: false,
     });
     if (exitCode !== 0) throw new Error(`Canonical implementation commit exited ${exitCode}`);
-  } else {
-    const [parent, committed] = await Promise.all([
-      gitValue(opts.command, ["rev-parse", `${head}^`], "implementation parent"),
-      gitValue(
-        opts.command,
-        ["diff", "--name-only", "--diff-filter=ACDMRTUXB", `${baseline.head}..${head}`],
-        "implementation paths",
-      ),
-    ]);
-    const paths = committed
+  };
+  const committedRangePaths = async (base: string, commit: string) => {
+    await gitValue(opts.command, ["merge-base", "--is-ancestor", base, commit], "ancestry", true);
+    const committed = await gitValue(
+      opts.command,
+      ["diff", "--name-only", "--diff-filter=ACDMRTUXB", `${base}..${commit}`],
+      "implementation paths",
+    );
+    return committed
       .split("\n")
       .map((entry) => entry.trim())
       .filter(Boolean)
       .filter((entry) => !taskArtifactPath(opts.command, baseline.task_id, entry))
       .toSorted();
+  };
+  const assertCommittedRange = async (base: string, commit: string, paths: readonly string[]) => {
+    const committedPaths = await committedRangePaths(base, commit);
     if (
-      parent !== baseline.head ||
-      paths.length !== intendedPaths.length ||
-      paths.some((candidate, index) => candidate !== intendedPaths[index])
+      committedPaths.length !== paths.length ||
+      committedPaths.some((candidate, index) => candidate !== paths[index])
     )
       throw new Error("Canonical repository commit is in doubt and cannot be reconciled");
+  };
+  let implementationCommit = head;
+  let primaryDispatched = false;
+  if (implementationCommit === baseline.head) {
+    await commitPaths(intent.changed_paths);
+    implementationCommit = (await readDirectTaskHead(baseline.checkout)) ?? baseline.head;
+    primaryDispatched = true;
   }
-  const implementationCommit = await readDirectTaskHead(baseline.checkout);
+  let followup = await readFollowupCommitIntent(opts.directory);
+  const primaryCommit = followup?.base_commit ?? implementationCommit;
+  if (!primaryDispatched)
+    await assertCommittedRange(baseline.head, primaryCommit, intent.changed_paths);
+  const afterPrimary = await readDirectRepositoryStatus(baseline.checkout);
+  if (!afterPrimary) throw new Error("Canonical repository status after commit is unavailable");
+  const remainingPaths = nonTaskStatusLines(opts.command, baseline.task_id, afterPrimary)
+    .map((line) => pathFromStatusLine(line))
+    .filter((candidate): candidate is string => candidate !== null && authorized.has(candidate))
+    .toSorted();
+  if (
+    followup &&
+    (followup.task_id !== baseline.task_id ||
+      followup.work_order_id !== baseline.work_order_id ||
+      followup.base_commit !== primaryCommit)
+  )
+    throw new Error("Canonical repository followup commit intent identity changed");
+  if (!followup && remainingPaths.length > 0) {
+    const followupContents = {
+      schema_version: 1 as const,
+      kind: "canonical_repository_followup_commit_intent" as const,
+      task_id: baseline.task_id,
+      work_order_id: baseline.work_order_id,
+      base_commit: primaryCommit,
+      changed_paths: remainingPaths,
+    };
+    followup = { ...followupContents, digest: k.kernelDigest(followupContents) };
+    await writeFollowupCommitIntent(opts.directory, followup);
+  }
+  if (followup) {
+    const observedHead = await readDirectTaskHead(baseline.checkout);
+    const committed = observedHead
+      ? await committedRangePaths(followup.base_commit, observedHead)
+      : [];
+    if (observedHead && committed.length === 0) {
+      await commitPaths(followup.changed_paths);
+      implementationCommit = (await readDirectTaskHead(baseline.checkout)) ?? followup.base_commit;
+    } else if (observedHead) {
+      implementationCommit = observedHead;
+    }
+    await assertCommittedRange(followup.base_commit, implementationCommit, followup.changed_paths);
+  }
   if (!implementationCommit || implementationCommit === baseline.head) {
     throw new Error("Canonical implementation commit was not observed");
   }
+  const intendedPaths = [
+    ...new Set([...intent.changed_paths, ...(followup?.changed_paths ?? [])]),
+  ].toSorted();
   const prepared = await prepareDirectImplementationEvidence({
     command: opts.command,
     cwd: baseline.checkout,

@@ -86,7 +86,7 @@ describe("canonical repository coordinator", () => {
     );
   });
 
-  it("commits only the observed scoped delta and freezes commit, tree, and evaluator identity", async () => {
+  it("commits the accumulated observed delta and freezes commit, tree, and evaluator identity", async () => {
     const baseline = {
       schema_version: 1,
       kind: "canonical_repository_baseline",
@@ -98,7 +98,7 @@ describe("canonical repository coordinator", () => {
       tree: "base-tree",
       status: {
         command: "git status --short --untracked-files=all",
-        lines: [`?? .agentplane/tasks/${taskId}/existing.json`],
+        lines: [`?? .agentplane/tasks/${taskId}/existing.json`, " M src/prior.ts"],
       },
     };
     mocks.readStable.mockImplementation((target: string) =>
@@ -107,21 +107,27 @@ describe("canonical repository coordinator", () => {
         : Promise.reject(Object.assign(new Error("missing"), { code: "ENOENT" })),
     );
     mocks.readHead.mockResolvedValueOnce("base-sha").mockResolvedValueOnce("implementation-sha");
-    mocks.readStatus.mockResolvedValue({
-      command: "git status --short --untracked-files=all",
-      lines: [
-        `?? .agentplane/tasks/${taskId}/existing.json`,
-        `?? .agentplane/tasks/${taskId}/exchange.json`,
-        " M src/change.ts",
-      ],
-    });
+    mocks.readStatus
+      .mockResolvedValueOnce({
+        command: "git status --short --untracked-files=all",
+        lines: [
+          `?? .agentplane/tasks/${taskId}/existing.json`,
+          `?? .agentplane/tasks/${taskId}/exchange.json`,
+          " M src/prior.ts",
+          " M src/change.ts",
+        ],
+      })
+      .mockResolvedValue({
+        command: "git status --short --untracked-files=all",
+        lines: [`?? .agentplane/tasks/${taskId}/exchange.json`],
+      });
     mocks.cmdCommit.mockResolvedValue(0);
     mocks.prepareEvidence.mockResolvedValue({
       status: "ready",
       evidence: {
         artifact_path: `.agentplane/tasks/${taskId}/supervision/implementation-evidence.json`,
         implementation_commit: "implementation-sha",
-        changed_paths: ["src/change.ts"],
+        changed_paths: ["src/change.ts", "src/prior.ts"],
       },
     });
 
@@ -129,13 +135,13 @@ describe("canonical repository coordinator", () => {
       command,
       directory: "/exchange",
       work_order: workOrder,
-      changed_paths: ["src/change.ts"],
+      changed_paths: ["src/change.ts", "src/prior.ts"],
     });
 
     expect(mocks.cmdCommit).toHaveBeenCalledWith(
       expect.objectContaining({
         taskId,
-        allow: ["src/change.ts"],
+        allow: ["src/change.ts", "src/prior.ts"],
         allowTasks: true,
         requireClean: false,
       }),
@@ -145,12 +151,12 @@ describe("canonical repository coordinator", () => {
       implementation_commit: "implementation-sha",
       implementation_tree: "tree-sha",
       evaluator_target: "implementation-sha",
-      changed_paths: ["src/change.ts"],
+      changed_paths: ["src/change.ts", "src/prior.ts"],
     });
     expect(result.digest).toMatch(/^sha256:[a-f0-9]{64}$/u);
   });
 
-  it("reconciles a dispatched canonical commit after a crash without committing twice", async () => {
+  it("commits an authorized followup after a partial commit dispatch", async () => {
     const baseline = {
       schema_version: 1,
       kind: "canonical_repository_baseline",
@@ -180,24 +186,38 @@ describe("canonical repository coordinator", () => {
         return Promise.resolve(JSON.stringify(intent));
       return Promise.reject(Object.assign(new Error("missing"), { code: "ENOENT" }));
     });
-    mocks.readHead.mockResolvedValue("implementation-sha");
+    mocks.readHead
+      .mockResolvedValueOnce("implementation-sha")
+      .mockResolvedValueOnce("implementation-sha")
+      .mockResolvedValue("followup-sha");
+    mocks.readStatus.mockResolvedValue({
+      command: "git status --short --untracked-files=all",
+      lines: [" M src/prior.ts"],
+    });
+    mocks.cmdCommit.mockResolvedValue(0);
     mocks.runProcess.mockImplementation(({ args }: { args: string[] }) => {
       const stdout =
         args[0] === "branch"
           ? `task/${taskId}/canonical\n`
-          : args[0] === "diff"
-            ? `src/change.ts\n.agentplane/tasks/${taskId}/README.md\n`
-            : args[1]?.endsWith("^")
-              ? "base-sha\n"
-              : "tree-sha\n";
+          : args[0] === "rev-parse" && args[1] === "implementation-sha^"
+            ? "base-sha\n"
+            : args[0] === "rev-parse" && args[1] === "followup-sha^"
+              ? "implementation-sha\n"
+              : args[0] === "diff" && args[3] === "implementation-sha..implementation-sha"
+                ? `.agentplane/tasks/${taskId}/README.md\n`
+                : args[0] === "diff" && args[3] === "implementation-sha..followup-sha"
+                  ? "src/prior.ts\n"
+                  : args[0] === "diff"
+                    ? `src/change.ts\n.agentplane/tasks/${taskId}/README.md\n`
+                    : "tree-sha\n";
       return Promise.resolve({ exitCode: 0, stdout, stderr: "" });
     });
     mocks.prepareEvidence.mockResolvedValue({
       status: "ready",
       evidence: {
         artifact_path: `.agentplane/tasks/${taskId}/supervision/implementation-evidence.json`,
-        implementation_commit: "implementation-sha",
-        changed_paths: ["src/change.ts", `.agentplane/tasks/${taskId}/README.md`],
+        implementation_commit: "followup-sha",
+        changed_paths: ["src/change.ts", "src/prior.ts", `.agentplane/tasks/${taskId}/README.md`],
       },
     });
 
@@ -209,13 +229,15 @@ describe("canonical repository coordinator", () => {
         work_order_id: workOrderId,
         authority: { writable_roots: ["/repo/src"] },
       } as never,
-      changed_paths: ["src/change.ts"],
+      changed_paths: ["src/change.ts", "src/prior.ts"],
     });
 
-    expect(mocks.cmdCommit).not.toHaveBeenCalled();
+    expect(mocks.cmdCommit).toHaveBeenCalledWith(
+      expect.objectContaining({ allow: ["src/prior.ts"] }),
+    );
     expect(result).toMatchObject({
-      implementation_commit: "implementation-sha",
-      changed_paths: ["src/change.ts"],
+      implementation_commit: "followup-sha",
+      changed_paths: ["src/change.ts", "src/prior.ts"],
     });
   });
 

@@ -1,7 +1,7 @@
- docs/developer/harness-dev.mdx                     |  56 ++-
+ docs/developer/harness-dev.mdx                     |  56 +-
  docs/releases/v0.7.10.md                           |  18 +
  docs/user/cli-reference.generated.mdx              |   1 +
- .../src/cli/run-cli.core.kernel-transport.test.ts  |  51 ++-
+ .../src/cli/run-cli.core.kernel-transport.test.ts  |  81 ++-
  .../src/commands/acr/acr.command.test.ts           |  21 +
  packages/agentplane/src/commands/acr/generate.ts   |   2 +-
  packages/agentplane/src/commands/acr/summary.ts    |   2 +-
@@ -9,45 +9,46 @@
  .../shared/canonical-pre-merge-evidence.ts         |  38 ++
  .../shared/route-decision-blockers.kernel.test.ts  |  67 +++
  .../src/commands/shared/route-decision-blockers.ts |   9 +-
- .../shared/side-effect-authority-policy.ts         | 203 +++++++++
- .../commands/shared/side-effect-authority.test.ts  | 110 ++++-
- .../src/commands/shared/side-effect-authority.ts   | 273 ++++--------
+ .../shared/side-effect-authority-policy.ts         | 203 +++++++
+ .../commands/shared/side-effect-authority.test.ts  | 110 +++-
+ .../src/commands/shared/side-effect-authority.ts   | 273 +++-------
  .../src/commands/task/advance.command.ts           |  22 +-
- .../commands/task/direct-task-verification.test.ts |  32 +-
+ .../commands/task/direct-task-verification.test.ts | 157 +++---
  .../src/commands/task/direct-task-verification.ts  |  12 +-
  .../external-agent-implementation-finalization.ts  |   7 +-
  .../src/commands/task/git-status-path.test.ts      |  21 +
  .../src/commands/task/git-status-path.ts           |  64 +++
- .../src/commands/task/kernel-advance.test.ts       | 334 ++++++++++++++
- .../agentplane/src/commands/task/kernel-advance.ts | 375 +++++++++-------
- .../task/kernel-controller-handoff.test.ts         | 284 ++++++++++++
- .../src/commands/task/kernel-controller-handoff.ts | 400 +++++++++++++++++
- .../src/commands/task/kernel-effect-coordinator.ts | 193 ++++++++
- .../src/commands/task/kernel-exchange.test.ts      | 110 +++++
- .../src/commands/task/kernel-exchange.ts           |  52 ++-
+ .../src/commands/task/kernel-advance.test.ts       | 334 ++++++++++++
+ .../agentplane/src/commands/task/kernel-advance.ts | 375 +++++++------
+ .../task/kernel-controller-handoff.test.ts         | 284 ++++++++++
+ .../src/commands/task/kernel-controller-handoff.ts | 400 ++++++++++++++
+ .../src/commands/task/kernel-effect-coordinator.ts | 193 +++++++
+ .../src/commands/task/kernel-exchange.test.ts      | 110 ++++
+ .../src/commands/task/kernel-exchange.ts           |  52 +-
  .../src/commands/task/kernel-final-validation.ts   |  14 +
- .../src/commands/task/kernel-inspection.ts         | 111 ++++-
- .../task/kernel-operational-projection.test.ts     | 166 +++++++
- .../commands/task/kernel-operational-projection.ts | 131 ++++++
+ .../src/commands/task/kernel-inspection.ts         | 111 +++-
+ .../task/kernel-operational-projection.test.ts     | 166 ++++++
+ .../commands/task/kernel-operational-projection.ts | 131 +++++
  .../agentplane/src/commands/task/kernel-plan.ts    |  67 ++-
- .../kernel-provider-effect-coordinator.test.ts     | 337 ++++++++++++++
- .../task/kernel-provider-effect-coordinator.ts     | 489 +++++++++++++++++++++
- .../task/kernel-repository-coordinator.test.ts     | 294 +++++++++++++
- .../commands/task/kernel-repository-coordinator.ts | 475 ++++++++++++++++++++
- .../src/commands/task/kernel-run.test.ts           | 140 ++++++
+ .../kernel-provider-effect-coordinator.test.ts     | 337 ++++++++++++
+ .../task/kernel-provider-effect-coordinator.ts     | 489 +++++++++++++++++
+ .../task/kernel-repository-coordinator.test.ts     | 316 +++++++++++
+ .../commands/task/kernel-repository-coordinator.ts | 599 +++++++++++++++++++++
+ .../src/commands/task/kernel-run.test.ts           | 140 +++++
  .../agentplane/src/commands/task/kernel-run.ts     |  29 +-
- .../src/commands/task/kernel-semantic-result.ts    | 220 +++++++++
- .../src/commands/task/kernel-work-order.ts         |  50 ++-
+ .../commands/task/kernel-semantic-result.test.ts   |  81 +++
+ .../src/commands/task/kernel-semantic-result.ts    | 286 ++++++++++
+ .../src/commands/task/kernel-work-order.ts         |  50 +-
  .../src/commands/task/plan-set.command.ts          |  23 +-
  .../agentplane/src/commands/task/run.command.ts    |  26 +-
- .../src/commands/task/show-kernel.test.ts          | 113 ++++-
+ .../src/commands/task/show-kernel.test.ts          | 113 +++-
  packages/agentplane/src/commands/task/show.ts      |  36 ++
- .../src/runner/usecases/kernel-authority.ts        |   4 +
- .../src/tasks/task-kernel/authority-lineage.ts     |  92 +++-
+ .../src/runner/usecases/kernel-authority.ts        |  39 +-
+ .../src/tasks/task-kernel/authority-lineage.ts     | 123 ++++-
  packages/core/src/tasks/task-kernel/index.ts       |   2 +
- packages/core/src/tasks/task-kernel/kernel.test.ts |  67 +++
- packages/core/src/tasks/task-kernel/kernel.ts      |  52 ++-
+ packages/core/src/tasks/task-kernel/kernel.test.ts | 273 ++++++----
+ packages/core/src/tasks/task-kernel/kernel.ts      |  55 +-
  packages/testkit/src/cli-harness.ts                |   6 +-
- .../check-packaged-mixed-scope-lifecycle.mjs       | 119 +++--
+ .../check-packaged-mixed-scope-lifecycle.mjs       | 119 ++--
  .../qualification/release-qualification.test.mjs   |  27 +-
- 52 files changed, 5365 insertions(+), 486 deletions(-)
+ 53 files changed, 5889 insertions(+), 685 deletions(-)

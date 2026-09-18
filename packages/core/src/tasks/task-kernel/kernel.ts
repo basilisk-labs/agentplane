@@ -602,7 +602,8 @@ function amendPlan(
         ) &&
           !scopeExpansionApproved) ||
         input.authority?.work_item_id !== null ||
-        !executionRequirementsAreSubset(input.authority, item.execution_requirements)
+        (!scopeExpansionApproved &&
+          !executionRequirementsAreSubset(input.authority, item.execution_requirements))
       );
     })
   ) {

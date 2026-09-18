@@ -350,11 +350,44 @@ export class KernelAuthorityResolver {
     this.assertLineageCeiling(aggregate, context);
     const observation = await this.native.observeContinuation(taskId, parent);
     if (!observation) invalid("native_observation_required");
+    const source = aggregate.plan_history.find((entry) => entry.digest === parent.plan_digest);
+    const scopeExpansionApproved =
+      observation.kind === "plan_amendment" &&
+      source !== undefined &&
+      plan.approval_actor_id !== null &&
+      plan.approval_evidence_digest ===
+        k.planScopeExpansionApprovalDigest({
+          task_id: taskId,
+          current_plan_digest: source.digest,
+          amended_plan_digest: plan.digest,
+          actor_id: plan.approval_actor_id,
+        })
+        ? k.isAdditivePlanScopeExpansion({ current: source, amended: plan, authority: parent })
+        : false;
+    const addedScopeRoots = scopeExpansionApproved
+      ? uniqueSorted(
+          plan.work_items
+            .flatMap((item) => item.execution_requirements.scope_roots)
+            .filter(
+              (candidate) =>
+                !parent.scope_roots.some(
+                  (root) => root === "." || candidate === root || candidate.startsWith(`${root}/`),
+                ),
+            ),
+        )
+      : null;
+    const continuedObservation =
+      observation.kind === "plan_amendment" && addedScopeRoots
+        ? { ...observation, added_scope_roots: addedScopeRoots }
+        : observation;
     const contents = {
       ...parent,
       plan_revision: plan.revision,
       plan_digest: plan.digest,
       repository_fingerprint: context.repository_fingerprint,
+      scope_roots: addedScopeRoots
+        ? uniqueSorted([...parent.scope_roots, ...addedScopeRoots])
+        : parent.scope_roots,
       provenance: {
         ...parent.provenance,
         kind: "SYSTEM" as const,
@@ -369,7 +402,7 @@ export class KernelAuthorityResolver {
     const record: k.CanonicalAuthorityRecord = {
       authority: { ...contents, digest: k.authorityDigest(contents) },
       approval_mode: null,
-      observation,
+      observation: continuedObservation,
     };
     kernelAuthorityRecordSchema.parse(record);
     const issues = k.continuationIssues(parent, record);

@@ -513,6 +513,36 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
       expect(expanded.record.aggregate.current_plan?.approval_evidence_digest).not.toBe(
         amended.record.aggregate.current_plan?.approval_evidence_digest,
       );
+      refined.work_items[1]!.execution_requirements.scope_roots = [
+        "more/result.txt",
+        "more/extra.txt",
+        "docs/user/cli-reference.generated.mdx",
+      ];
+      await runCliSilent([
+        "task",
+        "plan",
+        "set",
+        taskId,
+        "--text",
+        JSON.stringify(refined),
+        "--scope-expansion-approved-by",
+        "USER",
+        "--root",
+        root,
+      ]);
+      const topLevelExpanded = await runtime.adapter.read(taskId);
+      if (topLevelExpanded.kind !== "canonical") throw new Error("Top-level amendment missing");
+      const topLevelAuthority = topLevelExpanded.record.aggregate.authority_lineage?.at(-1);
+      expect(topLevelAuthority).toMatchObject({
+        approval_mode: null,
+        observation: {
+          kind: "plan_amendment",
+          added_scope_roots: ["docs/user/cli-reference.generated.mdx"],
+        },
+      });
+      expect(topLevelAuthority?.authority.scope_roots).toContain(
+        "docs/user/cli-reference.generated.mdx",
+      );
       refined.work_items[1]!.execution_requirements.scope_roots = ["."];
       await refused(
         root,
@@ -528,7 +558,7 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
         ],
         "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
       );
-      expect(await runtime.adapter.read(taskId)).toEqual(expanded);
+      expect(await runtime.adapter.read(taskId)).toEqual(topLevelExpanded);
     },
   );
   it.each([
