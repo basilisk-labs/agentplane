@@ -68,8 +68,8 @@ Created: 2026-09-17T22:51:10.201Z
  packages/core/src/tasks/task-kernel/kernel.test.ts |  67 +++
  packages/core/src/tasks/task-kernel/kernel.ts      |  52 ++-
  packages/testkit/src/cli-harness.ts                |   6 +-
- .../check-packaged-mixed-scope-lifecycle.mjs       |  17 -
- 40 files changed, 4391 insertions(+), 112 deletions(-)
+ .../check-packaged-mixed-scope-lifecycle.mjs       | 107 +++--
+ 40 files changed, 4467 insertions(+), 126 deletions(-)
 ```
 
 </details>

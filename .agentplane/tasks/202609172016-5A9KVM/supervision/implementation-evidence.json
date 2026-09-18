@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check a64b1008e42e1fe23e3666e180ce4ddd9ae2c06c..16ba1eab81349a895127773d72f96ef94ee74e9e",
+      "command": "git diff --check 16ba1eab81349a895127773d72f96ef94ee74e9e..77b34a3768dc9563a472313304483348e339db4f",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB a64b1008e42e1fe23e3666e180ce4ddd9ae2c06c..16ba1eab81349a895127773d72f96ef94ee74e9e",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 16ba1eab81349a895127773d72f96ef94ee74e9e..77b34a3768dc9563a472313304483348e339db4f",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -23,35 +23,14 @@
         "M\t.agentplane/tasks/202609172016-5A9KVM/pr/meta.json",
         "M\t.agentplane/tasks/202609172016-5A9KVM/pr/review.md",
         "M\t.agentplane/tasks/202609172016-5A9KVM/supervision/declared-checks.json",
-        "A\t.agentplane/tasks/202609172016-5A9KVM/supervision/implementation-evidence.json",
-        "M\tpackages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts",
-        "M\tpackages/agentplane/src/commands/pr/integrate/internal/finalize.ts",
-        "A\tpackages/agentplane/src/commands/shared/route-decision-blockers.kernel.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/route-decision-blockers.ts",
-        "M\tpackages/agentplane/src/commands/shared/side-effect-authority.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/side-effect-authority.ts",
-        "M\tpackages/agentplane/src/commands/task/advance.command.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-advance.test.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-advance.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-controller-handoff.test.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-controller-handoff.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-exchange.test.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-exchange.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-inspection.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-operational-projection.test.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-operational-projection.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-plan.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-repository-coordinator.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-run.ts",
-        "M\tpackages/agentplane/src/commands/task/plan-set.command.ts",
-        "M\tpackages/agentplane/src/commands/task/run.command.ts",
-        "M\tpackages/agentplane/src/runner/usecases/kernel-authority.ts",
-        "M\tpackages/core/src/tasks/task-kernel/authority-lineage.ts",
-        "M\tpackages/core/src/tasks/task-kernel/index.ts",
-        "M\tpackages/core/src/tasks/task-kernel/kernel.test.ts",
-        "M\tpackages/core/src/tasks/task-kernel/kernel.ts"
+        "M\t.agentplane/tasks/202609172016-5A9KVM/supervision/implementation-evidence.json",
+        "M\tdocs/developer/harness-dev.mdx",
+        "M\tdocs/releases/v0.7.10.md",
+        "M\tpackages/agentplane/src/commands/acr/acr.command.test.ts",
+        "M\tpackages/agentplane/src/commands/acr/generate.ts",
+        "M\tpackages/agentplane/src/commands/acr/summary.ts",
+        "M\tpackages/testkit/src/cli-harness.ts",
+        "M\tscripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
       ]
     },
     {
@@ -61,14 +40,14 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "a64b1008e42e1fe23e3666e180ce4ddd9ae2c06c",
-  "implementation_commit": "16ba1eab81349a895127773d72f96ef94ee74e9e",
+  "execution_base_commit": "16ba1eab81349a895127773d72f96ef94ee74e9e",
+  "implementation_commit": "77b34a3768dc9563a472313304483348e339db4f",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
       " M .agentplane/tasks/202609172016-5A9KVM/README.md",
       " M .agentplane/tasks/202609172016-5A9KVM/supervision/declared-checks.json",
-      "?? .agentplane/tasks/202609172016-5A9KVM/supervision/implementation-evidence.json"
+      " M .agentplane/tasks/202609172016-5A9KVM/supervision/implementation-evidence.json"
     ],
     "classification": [
       {
@@ -81,7 +60,7 @@
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609172016-5A9KVM/supervision/implementation-evidence.json"
+        "line": " M .agentplane/tasks/202609172016-5A9KVM/supervision/implementation-evidence.json"
       }
     ],
     "final": [],
@@ -89,7 +68,7 @@
     "removed_after_execution_baseline": [
       " M .agentplane/tasks/202609172016-5A9KVM/README.md",
       " M .agentplane/tasks/202609172016-5A9KVM/supervision/declared-checks.json",
-      "?? .agentplane/tasks/202609172016-5A9KVM/supervision/implementation-evidence.json"
+      " M .agentplane/tasks/202609172016-5A9KVM/supervision/implementation-evidence.json"
     ],
     "unchanged_from_execution_baseline": []
   },

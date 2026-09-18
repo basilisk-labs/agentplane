@@ -344,6 +344,36 @@ function mixedScopeTaskPlanProposal(taskId, planningBaseline) {
   };
 }
 
+function mixedScopeCanonicalPlan() {
+  return {
+    work_items: [
+      {
+        id: "mixed-scope-implementation",
+        depends_on: [],
+        required_inputs: [],
+        expected_outputs: ["mixed-scope-product-change"],
+        execution_requirements: {
+          scope_roots: [...PACKAGED_MIXED_SCOPE_REQUIRED_PATHS],
+          repository_effects: ["repository_write", ...PACKAGED_MIXED_SCOPE_REQUIRED_EFFECTS],
+          external_effects: [],
+          capabilities: ["repository_write", "task.verify"],
+          resources: [...PACKAGED_MIXED_SCOPE_REQUIRED_PATHS],
+        },
+        optional: false,
+        contract: {
+          objective:
+            "Implement the bounded greeting source, test, documentation, and metadata change.",
+          acceptance_criteria: [
+            "The greeting source, automated tests, user documentation, and repository metadata satisfy the task.",
+          ],
+          verification_commands: [PACKAGED_MIXED_SCOPE_FULL_REGRESSION_COMMAND],
+          role: "EXECUTOR",
+        },
+      },
+    ],
+  };
+}
+
 export function packetExchange(packet, expectedRole, observedTask = null) {
   if (packet.action?.kind !== "agent_episode" || packet.authority?.role !== expectedRole) {
     if (
@@ -374,9 +404,38 @@ function semanticResultFor({
   summary,
   taskIntent,
   taskPlanProposal,
+  canonicalPlan,
+  canonicalOutputs,
   claimedChecks,
   review,
 }) {
+  const semanticResult = {
+    schema_version: 2,
+    kind: "agent_semantic_result",
+    work_order_id: workOrder.work_order_id,
+    status: "completed",
+    summary,
+    findings: review ? ["The public diff and recorded verification satisfy the task."] : [],
+    uncertainty: [],
+    ...(claimedChecks ? { claimed_checks: claimedChecks } : {}),
+    ...(review ? { review } : {}),
+  };
+  if (workOrder.canonical_binding) {
+    semanticResult.canonical_binding = workOrder.canonical_binding;
+    if (workOrder.canonical_binding.phase === "planning") {
+      if (!canonicalPlan)
+        fail("missing_canonical_plan", "canonical planner result omitted its plan");
+      semanticResult.canonical_plan = canonicalPlan;
+    } else if (workOrder.canonical_binding.phase === "implementation") {
+      if (!canonicalOutputs) {
+        fail("missing_canonical_outputs", "canonical executor result omitted its output claims");
+      }
+      semanticResult.canonical_outputs = canonicalOutputs;
+    }
+  } else {
+    if (taskIntent) semanticResult.task_intent = taskIntent;
+    if (taskPlanProposal) semanticResult.task_plan_proposal = taskPlanProposal;
+  }
   return {
     schema_version: 1,
     kind: "agent_action_result",
@@ -384,19 +443,7 @@ function semanticResultFor({
     transition_id: packet.transition_id,
     state_fingerprint: packet.state_fingerprint,
     role: workOrder.role,
-    result: {
-      schema_version: 2,
-      kind: "agent_semantic_result",
-      work_order_id: workOrder.work_order_id,
-      status: "completed",
-      summary,
-      findings: review ? ["The public diff and recorded verification satisfy the task."] : [],
-      uncertainty: [],
-      ...(taskIntent ? { task_intent: taskIntent } : {}),
-      ...(taskPlanProposal ? { task_plan_proposal: taskPlanProposal } : {}),
-      ...(claimedChecks ? { claimed_checks: claimedChecks } : {}),
-      ...(review ? { review } : {}),
-    },
+    result: semanticResult,
   };
 }
 
@@ -419,8 +466,15 @@ function writePacketResult(accessLog, packet, role, resultOptions) {
         packet,
         workOrder,
         ...resultOptions,
-        ...(resultOptions.taskPlanProposal
+        ...(!workOrder.canonical_binding && resultOptions.taskPlanProposal
           ? { taskPlanProposal: resultOptions.taskPlanProposal(workOrder) }
+          : {}),
+        ...(workOrder.canonical_binding?.phase === "planning" && resultOptions.canonicalPlan
+          ? { canonicalPlan: resultOptions.canonicalPlan(workOrder) }
+          : {}),
+        ...(workOrder.canonical_binding?.phase === "implementation" &&
+        resultOptions.canonicalOutputs
+          ? { canonicalOutputs: resultOptions.canonicalOutputs(workOrder) }
           : {}),
       }),
       null,
@@ -745,6 +799,7 @@ export function runPackagedMixedScopeFixture({ run, cli, packages, tempRoot }) {
   const plan = longMixedScopePlan();
   const plannerExchange = writePacketResult(accessLog, planner, "PLANNER", {
     summary: plan,
+    canonicalPlan: () => mixedScopeCanonicalPlan(),
     taskPlanProposal: (workOrder) =>
       mixedScopeTaskPlanProposal(taskId, workOrder.planning_context.repository_snapshot),
     taskIntent: {
@@ -842,6 +897,13 @@ export function runPackagedMixedScopeFixture({ run, cli, packages, tempRoot }) {
   const executorExchange = writePacketResult(accessLog, executor, "EXECUTOR", {
     summary:
       "Implemented personalized greeting behavior, executable tests, aligned user documentation, and repository ignore metadata.",
+    canonicalOutputs: () => [
+      {
+        id: "mixed-scope-product-change",
+        kind: "repository_diff",
+        digest: taskCentricDigest(productSnapshot(accessLog, repo, "executor_result")),
+      },
+    ],
     claimedChecks: [
       {
         check: "node --test test/greeting.test.mjs",
