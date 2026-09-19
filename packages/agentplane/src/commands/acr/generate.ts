@@ -155,7 +155,7 @@ export async function generateAcr(opts: {
   });
   const mergeReady = residualRisks.length === 0;
   const extensions = {
-    "agentplane.native_identity": nativeIdentity,
+    "agentplane.native-identity": nativeIdentity,
     ...(task.token_usage ? { "agentplane.token-usage": task.token_usage } : {}),
     ...buildAcrContextExtension(task),
   };

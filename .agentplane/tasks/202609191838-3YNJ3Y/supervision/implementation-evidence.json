@@ -1,0 +1,77 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check f9b5ee67b3212a5bd9ced6a41caf5cc74b8f4dd8..624b332da80ad7ef9214380fe9435347041982ac",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB f9b5ee67b3212a5bd9ced6a41caf5cc74b8f4dd8..624b332da80ad7ef9214380fe9435347041982ac",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202609191838-3YNJ3Y/README.md",
+        "M\t.agentplane/tasks/202609191838-3YNJ3Y/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609191838-3YNJ3Y/pr/github-body.md",
+        "M\t.agentplane/tasks/202609191838-3YNJ3Y/pr/meta.json",
+        "M\t.agentplane/tasks/202609191838-3YNJ3Y/pr/review.md",
+        "M\t.agentplane/tasks/202609191838-3YNJ3Y/supervision/declared-checks.json",
+        "M\t.agentplane/tasks/202609191838-3YNJ3Y/supervision/implementation-evidence.json",
+        "M\tscripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "f9b5ee67b3212a5bd9ced6a41caf5cc74b8f4dd8",
+  "implementation_commit": "624b332da80ad7ef9214380fe9435347041982ac",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "MM .agentplane/tasks/202609191838-3YNJ3Y/README.md",
+      "M  .agentplane/tasks/202609191838-3YNJ3Y/supervision/declared-checks.json",
+      "M  .agentplane/tasks/202609191838-3YNJ3Y/supervision/implementation-evidence.json",
+      "MM scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "MM .agentplane/tasks/202609191838-3YNJ3Y/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  .agentplane/tasks/202609191838-3YNJ3Y/supervision/declared-checks.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  .agentplane/tasks/202609191838-3YNJ3Y/supervision/implementation-evidence.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "MM scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "MM .agentplane/tasks/202609191838-3YNJ3Y/README.md",
+      "M  .agentplane/tasks/202609191838-3YNJ3Y/supervision/declared-checks.json",
+      "M  .agentplane/tasks/202609191838-3YNJ3Y/supervision/implementation-evidence.json",
+      "MM scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609191838-3YNJ3Y"
+}
