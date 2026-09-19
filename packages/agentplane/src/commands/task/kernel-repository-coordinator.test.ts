@@ -1,6 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
 
+if (typeof vi.hoisted !== "function") {
+  Object.defineProperty(vi, "hoisted", { value: <T>(factory: () => T): T => factory() });
+}
+
 const mocks = vi.hoisted(() => ({
   runProcess: vi.fn(),
   readStable: vi.fn(),

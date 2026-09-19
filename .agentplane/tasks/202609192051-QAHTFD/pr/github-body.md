@@ -28,10 +28,10 @@ Integrate and regression-test the temporary runtime fixes required to complete b
 
 ```text
  .../src/commands/pr/integrate/internal/prepare.ts  |   1 +
+ .../shared/canonical-pre-merge-evidence.test.ts    | 118 +++++++++++++++++
  .../shared/canonical-pre-merge-evidence.ts         |   3 +-
  .../commands/shared/quality-review-target.test.ts  |  46 +++++++
  .../src/commands/shared/quality-review-target.ts   |  24 +++-
- .../shared/route-decision-blockers.kernel.test.ts  |  36 +++++
  .../src/commands/shared/route-decision-blockers.ts |   1 +
  .../src/commands/shared/workflow-step-branch.ts    |  49 +++----
  .../src/commands/shared/workflow-step.test.ts      |  24 ++++
@@ -39,11 +39,11 @@ Integrate and regression-test the temporary runtime fixes required to complete b
  .../src/commands/task/direct-task-verification.ts  |  80 +++++++++++-
  .../commands/task/hosted-close-premerge.test.ts    |  78 ++++++++++-
  .../src/commands/task/hosted-close-premerge.ts     |  50 ++++++-
+ .../src/commands/task/kernel-advance.test.ts       |  97 +++++++++++++-
  .../agentplane/src/commands/task/kernel-advance.ts | 145 +++++++++++++++++++++
- .../commands/task/kernel-advance.worktree.test.ts  |  91 +++++++++++++
- .../task/kernel-repository-coordinator.test.ts     |   7 +-
+ .../task/kernel-repository-coordinator.test.ts     |  11 +-
  .../commands/task/kernel-repository-coordinator.ts |   3 +
- 16 files changed, 671 insertions(+), 46 deletions(-)
+ 16 files changed, 761 insertions(+), 48 deletions(-)
 ```
 
 </details>
