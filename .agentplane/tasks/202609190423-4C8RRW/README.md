@@ -1,10 +1,10 @@
 ---
 id: "202609190423-4C8RRW"
 title: "Resolve hosted CI baseline drift for the canonical 0.7.10 release recovery"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 30
 origin:
   system: "manual"
 depends_on: []
@@ -20,16 +20,30 @@ verify:
   - "bun run ci:local:full"
   - "bun run knip:check"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-09-19T05:16:03.929Z"
+  updated_by: "USER"
+  note: "Projected from the approved canonical Task Kernel plan."
 verification:
   state: "ok"
-  updated_at: "2026-09-19T05:30:55.603Z"
+  updated_at: "2026-09-19T05:16:03.929Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: canonical Task Kernel final checks passed."
-  attempts: 0
+  note: "Canonical validation sha256:67fdd05ace4a4a3e930d7f74df46b9798bff9c811a632fee12a6e4c2ca1c11bd"
+  attempts: 1
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-19T05:16:03.929Z"
+  updated_by: "EVALUATOR"
+  note: "Canonical EVALUATOR review passed."
+  evaluated_sha: "9562e72b22d5c6d50f94ab02d020fe80f8b86f66"
+  review_identity_digest: "sha256:e9337ac2cbd234b1d32fd742cf6fcb7f15c76b33014da1fddebeb127cd3f24e7"
+  evidence_refs:
+    - ".git/agentplane/kernel/exchanges/202609190423-4C8RRW/fd8ad440d86b9b0ebc7ea2cacd7f365565e914c25587abe7f53f787a0aabefb8/result.json"
+  findings:
+    - "The two source edits only remove unintended exports and do not alter internal behavior."
+    - "The reviewed validator and generated candidate contain the same single new CLI option and exact provenance, with no immutable baseline-anchor change."
+    - "The stable attempt 3 evidence includes a successful full local CI run; the prior failure was caused by concurrent lifecycle activity changing controller-owned task artifacts during docs-schema."
 execution_route:
   frozen: true
   reason_codes:
@@ -226,7 +240,9 @@ execution_contract:
       - "repository_effect:repository_write"
       - "repository_effect:source_code"
       - "task_outcome"
-commit: null
+commit:
+  hash: "4ebbcdd07185c8984d50a94daa24aa9ff07fbf56"
+  message: "Merged via GitHub PR #5969"
 comments: []
 events:
   -
@@ -369,6 +385,22 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.kernel_operational_projection:
+    digest: "sha256:96d01419924ae61eb0a2e55e32703ad50baef2f1e313a33715d32ebb45a43d91"
+    evidence_refs:
+      - ".git/agentplane/kernel/exchanges/202609190423-4C8RRW/fd8ad440d86b9b0ebc7ea2cacd7f365565e914c25587abe7f53f787a0aabefb8/result.json"
+    findings:
+      - "The two source edits only remove unintended exports and do not alter internal behavior."
+      - "The reviewed validator and generated candidate contain the same single new CLI option and exact provenance, with no immutable baseline-anchor change."
+      - "The stable attempt 3 evidence includes a successful full local CI run; the prior failure was caused by concurrent lifecycle activity changing controller-owned task artifacts during docs-schema."
+    implementation_commit: "9562e72b22d5c6d50f94ab02d020fe80f8b86f66"
+    implementation_tree: "6ff4ecdda2c55d03f80b758510f36101dbeb1a2b"
+    projected_at: "2026-09-19T05:16:03.929Z"
+    review_identity_digest: "sha256:e9337ac2cbd234b1d32fd742cf6fcb7f15c76b33014da1fddebeb127cd3f24e7"
+    schema_version: 1
+    source: "task_kernel"
+    verification_evidence_digest: "sha256:67fdd05ace4a4a3e930d7f74df46b9798bff9c811a632fee12a6e4c2ca1c11bd"
+    work_order_id: "sha256:b46e98b8b90710d43561ffb8c8d390e2cf0a1af7df117a6943d63419ef197a6d"
   task_execution_context:
     base_ref: "da36ae806ab1cf537c1804f601365885cf643b46"
     base_sha: "da36ae806ab1cf537c1804f601365885cf643b46"
@@ -954,6 +986,112 @@ extensions:
             evidence_digest: "sha256:e1ec357649a7efd6d0bf9455a40f4649ae15178d6f5c31c6d7f3924011befe88"
             kind: "repository_implementation"
             previous_fingerprint: "sha256:6431d01cbfcaa6db0e8899229a22cdb05be3221c37b6a20409052fd824b74100"
+        -
+          approval_mode: null
+          authority:
+            capabilities:
+              - "repository_write"
+              - "run_tests"
+            completion_requirements:
+              - "work_item_validation"
+              - "final_validation"
+            digest: "sha256:8436c16ccf2031c5c95e468a00a4f52a76e038aac7fe1c2412b4a46c69518266"
+            expires_at: null
+            external_effects: []
+            plan_digest: "sha256:b383f6503851e01e72daa4f0809cb062d984bc011fdc88737576ef32bf426a33"
+            plan_revision: 2
+            policy_digests:
+              - "sha256:23efb6f9b035236bb2705fb639979d0ed084618d76039e5bd191654bfb479f8b"
+            provenance:
+              actor_id: "agentplane:kernel-controller"
+              evidence_digest: "sha256:e947e59e8334b0be5680d9c41c8cc92856ee9fa95960785058e0c75048fa4050"
+              kind: "SYSTEM"
+              parent_authority_digest: "sha256:49fd1369dea3e32e02e9d71ff9161895d70896251f7f0790ee1ac05df5485220"
+            repository_effects:
+              - "documentation"
+              - "release_metadata"
+              - "repository_write"
+              - "source_code"
+              - "tests"
+            repository_fingerprint: "sha256:e2829c4adf4498154b3220d3dc026783135e0304e83efb7cd6df6603cf4abcf4"
+            repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+            resources: []
+            risk:
+              implementation: "bounded"
+              requirements: "bounded"
+              reversibility: "reversible"
+            scope_roots:
+              - "agentplane-recipes"
+              - "docs/user/cli-reference.generated.mdx"
+              - "packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts"
+              - "packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.ts"
+              - "packages/agentplane/src/commands/shared/route-decision-blockers.kernel.test.ts"
+              - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+              - "packages/agentplane/src/commands/shared/side-effect-authority-policy.ts"
+              - "packages/agentplane/src/commands/shared/side-effect-authority.test.ts"
+              - "packages/agentplane/src/commands/shared/side-effect-authority.ts"
+              - "packages/agentplane/src/commands/shared/task-mutation.test.ts"
+              - "packages/agentplane/src/commands/shared/task-mutation.ts"
+              - "packages/agentplane/src/commands/task/advance.command.ts"
+              - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+              - "packages/agentplane/src/commands/task/direct-task-verification.ts"
+              - "packages/agentplane/src/commands/task/external-agent-implementation-finalization.ts"
+              - "packages/agentplane/src/commands/task/finish-execute.ts"
+              - "packages/agentplane/src/commands/task/finish-quality-evidence.ts"
+              - "packages/agentplane/src/commands/task/finish-shared.ts"
+              - "packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts"
+              - "packages/agentplane/src/commands/task/git-status-path.test.ts"
+              - "packages/agentplane/src/commands/task/git-status-path.ts"
+              - "packages/agentplane/src/commands/task/kernel-advance.test.ts"
+              - "packages/agentplane/src/commands/task/kernel-advance.ts"
+              - "packages/agentplane/src/commands/task/kernel-controller-handoff.test.ts"
+              - "packages/agentplane/src/commands/task/kernel-controller-handoff.ts"
+              - "packages/agentplane/src/commands/task/kernel-effect-coordinator.ts"
+              - "packages/agentplane/src/commands/task/kernel-exchange.test.ts"
+              - "packages/agentplane/src/commands/task/kernel-exchange.ts"
+              - "packages/agentplane/src/commands/task/kernel-final-validation.ts"
+              - "packages/agentplane/src/commands/task/kernel-inspection.ts"
+              - "packages/agentplane/src/commands/task/kernel-operational-projection.test.ts"
+              - "packages/agentplane/src/commands/task/kernel-operational-projection.ts"
+              - "packages/agentplane/src/commands/task/kernel-plan.ts"
+              - "packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts"
+              - "packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts"
+              - "packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts"
+              - "packages/agentplane/src/commands/task/kernel-repository-coordinator.ts"
+              - "packages/agentplane/src/commands/task/kernel-run.test.ts"
+              - "packages/agentplane/src/commands/task/kernel-run.ts"
+              - "packages/agentplane/src/commands/task/kernel-semantic-result.test.ts"
+              - "packages/agentplane/src/commands/task/kernel-semantic-result.ts"
+              - "packages/agentplane/src/commands/task/kernel-work-order.ts"
+              - "packages/agentplane/src/commands/task/plan-set.command.ts"
+              - "packages/agentplane/src/commands/task/run.command.ts"
+              - "packages/agentplane/src/commands/task/show-kernel.test.ts"
+              - "packages/agentplane/src/commands/task/show.ts"
+              - "packages/agentplane/src/commands/task/verify-record-execute.ts"
+              - "packages/agentplane/src/commands/task/verify-record.ts"
+              - "packages/agentplane/src/commands/task/verify-record.types.ts"
+              - "packages/agentplane/src/runner/usecases/kernel-authority.ts"
+              - "packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts"
+              - "packages/core/src/tasks/task-kernel/authority-lineage.ts"
+              - "packages/core/src/tasks/task-kernel/index.ts"
+              - "packages/core/src/tasks/task-kernel/kernel.test.ts"
+              - "packages/core/src/tasks/task-kernel/kernel.ts"
+              - "scripts/baselines/v0.7-compatibility-candidate.json"
+              - "scripts/checks/check-compatibility-contract-baseline.mjs"
+            task_id: "202609190423-4C8RRW"
+            validation_requirements:
+              - "bun run bench:compatibility:check"
+              - "bun run ci:local:full"
+              - "bun run knip:check"
+            work_item_id: null
+          observation:
+            changed_paths:
+              - "agentplane-recipes"
+              - "packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts"
+              - "packages/agentplane/src/commands/task/kernel-inspection.ts"
+            evidence_digest: "sha256:3141f582228bc66843231bb702d0829c4ee66fc7705dcf4665045685ce064425"
+            kind: "repository_implementation"
+            previous_fingerprint: "sha256:61bc6f17cc4a374f107f7fcdff7fe100674fb3f26c4d635cbb7eda14ad740d8e"
       controller_transfer: null
       current_plan:
         approval_actor_id: "USER"
@@ -1189,6 +1327,15 @@ extensions:
           event_digests:
             - "sha256:f56474b368e8ebf508f8737979ab1599959945eef754e82ab81b5a20ff4f1181"
           mutation_id: "sha256:a1543212739a2f3ef18f4c9190d18e710db99f2227827166fc0f927ad0f0a40f"
+        sha256:b9d7b1dede22dc23af3812fee5dc3846f4ec4b4db489dfe890a4afd540f3091d:
+          after_revision: 26
+          aggregate_digest: "sha256:2b5ddf2a59cb40c01174bed625747e3630d90180d9bb1b5c59babb7f552a8226"
+          before_revision: 25
+          command_digest: "sha256:487c03287b446250ddeaf37d54d8b6e314d0a15d3799569fe0cf7e1473ea9dfe"
+          effect_ids: []
+          event_digests:
+            - "sha256:8df740d5a93999cf288418721f3c85f47a16dc367c0efae7a6504649c21f27c8"
+          mutation_id: "sha256:b9d7b1dede22dc23af3812fee5dc3846f4ec4b4db489dfe890a4afd540f3091d"
         validation-resolution:sha256:eba4803b146fa3cefd5c6b387d6367331d2bd0d7c2fa08e4dbf9281051c41a72:
           after_revision: 18
           aggregate_digest: "sha256:046d6679f0e590b846fce5e7b7276ba08f137c276cc4015479f28d388238e1e6"
@@ -1254,7 +1401,7 @@ extensions:
               id: "repair-hosted-baselines"
               optional: false
               required_inputs: []
-      revision: 25
+      revision: 26
       schema_version: 1
       state: "FINAL_VALIDATION"
       work_items:
@@ -1308,7 +1455,7 @@ extensions:
               toolchain_digest: "sha256:133d716c0802bfb2c0dbe56a7c3764130f5837cc8197ffff82832a549c59cb89"
             observed_at: "2026-09-19T05:16:03.929Z"
             status: "PASSED"
-    digest: "sha256:412107feccc0ed8d6d6dc417e18f2ed83d006a006cdf237c6f78bb3abef7dc40"
+    digest: "sha256:8ba76868b26312ce6ee75c9c35caec9a3f1c0de7bbfd4bf5567e9aa500425ec7"
     documents:
       contracts:
         sha256:0e0aba60d452a6d18acc68931278331e7bd2f3c30df0371ea204b9800dae87fd:
@@ -1551,6 +1698,15 @@ extensions:
         payload_digest: "sha256:2d30bc7be2469909ae551b6443376cd3e2480f59ba8f86a794d0bfb1ff24eef7"
         task_id: "202609190423-4C8RRW"
         task_revision: 25
+      -
+        command_digest: "sha256:487c03287b446250ddeaf37d54d8b6e314d0a15d3799569fe0cf7e1473ea9dfe"
+        id: "sha256:b9d7b1dede22dc23af3812fee5dc3846f4ec4b4db489dfe890a4afd540f3091d:authority_continued"
+        kind: "authority_continued"
+        mutation_id: "sha256:b9d7b1dede22dc23af3812fee5dc3846f4ec4b4db489dfe890a4afd540f3091d"
+        occurred_at: "2026-09-19T08:14:17.764Z"
+        payload_digest: "sha256:e515dd67f29fabcc44230f03aaf662b946fef29b3e12a5a456dc58320deb0c60"
+        task_id: "202609190423-4C8RRW"
+        task_revision: 26
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
