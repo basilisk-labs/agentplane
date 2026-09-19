@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202609190050-3MJ7GQ",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-19T01:56:25.548Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "c9553e4d79bb04d712091afaa071d8f4c9b9258d",
+  "review_identity_digest": "sha256:28cfa76f14b5919aca7410e3deaaf07182f318d8867c095860eb7d42db07e65a",
+  "findings": [
+    "No actionable defect found: the product diff remains limited to native identity validation and its focused tests; later commits only persist AgentPlane task and PR lifecycle artifacts."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609190050-3MJ7GQ/quality/objects/sha256/16eb63ad7febec61761a050de82b54f98bbcb0a13e92e3215bfbadc7ebcbed8d.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

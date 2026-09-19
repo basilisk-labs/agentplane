@@ -4,7 +4,7 @@ title: "Persist the verified Task Kernel native identity release blocker through
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -28,7 +28,7 @@ verification:
   state: "ok"
   updated_at: "2026-09-19T01:41:31.067Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: canonical Task Kernel final checks passed."
+  note: "Canonical validation sha256:80c0f8fad3b7a60bad0745a0dac2b628c0c078d1386a4f88fb0b15d412be3bb9"
   attempts: 0
 quality_review:
   state: "pass"
@@ -555,7 +555,7 @@ sections:
   Findings: ""
 extensions:
   agentplane.kernel_operational_projection:
-    digest: "sha256:dd80ce1b4f1e60f1f34320ca9a112bfb4569fc24fdfb900a724d10157d96d3e2"
+    digest: "sha256:17940d56e8ca323dbd5b0277b356cc955468ba15ff6daa3210076d77e3ed53ca"
     evidence_refs:
       - "../../../.git/agentplane/kernel/exchanges/202609190050-3MJ7GQ/ad0432a2b6b8cb35245521303cf79353f214c11ea679819664bd1aa31f3422c8/quality-report.json"
     findings:
@@ -566,7 +566,7 @@ extensions:
     review_identity_digest: "sha256:ea2d98232f4ec1ef5d03a23c71dc0e2b01ce7efb95c4eb6d5dd8792ff959517d"
     schema_version: 1
     source: "task_kernel"
-    verification_evidence_digest: "sha256:27b19cd573a1f39663478471805463f36706eb0c1b1cc3af5eea2a964ea6c4ba"
+    verification_evidence_digest: "sha256:80c0f8fad3b7a60bad0745a0dac2b628c0c078d1386a4f88fb0b15d412be3bb9"
     work_order_id: "sha256:08e9f9ea6d2dd0b97967c6710d073b66c1cf4ffa2063ba1880e8b7c16df72627"
   task_execution_context:
     base_ref: "main"
