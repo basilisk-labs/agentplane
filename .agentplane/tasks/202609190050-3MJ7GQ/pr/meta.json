@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:b02b36539b0c66f151161a6c84b30e407192baac8cda948136f3b17e913bbf75",
   "pr_number": 5966,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5966",
+  "pre_merge_closure": {
+    "basis_commit": "08be56971aec26c3366d50e67b4043b47e142377",
+    "branch": "task/202609190050-3MJ7GQ/persist-native-identity-repair",
+    "pr_number": 5966,
+    "recorded_at": "2026-09-19T02:07:15.378Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

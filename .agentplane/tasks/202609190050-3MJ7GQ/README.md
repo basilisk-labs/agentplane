@@ -1,10 +1,11 @@
 ---
 id: "202609190050-3MJ7GQ"
 title: "Persist the verified Task Kernel native identity release blocker through the canonical repository coordinator"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -42,6 +43,22 @@ quality_review:
     - "../../../.git/agentplane/kernel/exchanges/202609190050-3MJ7GQ/ad0432a2b6b8cb35245521303cf79353f214c11ea679819664bd1aa31f3422c8/quality-report.json"
   findings:
     - "No actionable defect found: legacy task-centric identity is preserved, canonical Kernel records are validated before approved-plan identity is accepted, and unapproved or malformed Kernel data returns null."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: null
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "unavailable"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-09-19T02:07:15.311Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -249,9 +266,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "c9553e4d79bb04d712091afaa071d8f4c9b9258d"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "08be56971aec26c3366d50e67b4043b47e142377"
+  message: "✅ 3MJ7GQ task: persist canonical completion"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -265,9 +285,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-09-19T02:07:15.311Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "08be56971aec26c3366d50e67b4043b47e142377"
 doc_version: 3
-doc_updated_at: "2026-09-19T01:41:34.167Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-19T02:07:15.311Z"
+doc_updated_by: "CODER"
 description: "Carry the already validated two-file native identity repair into an AgentPlane-owned commit using the repaired canonical repository coordinator. Scope is only native-task-identity.ts and native-task-identity.test.ts. This unblocks provider publication for task 202609172016-5A9KVM."
 sections:
   Summary: |-
@@ -568,6 +596,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:80c0f8fad3b7a60bad0745a0dac2b628c0c078d1386a4f88fb0b15d412be3bb9"
     work_order_id: "sha256:08e9f9ea6d2dd0b97967c6710d073b66c1cf4ffa2063ba1880e8b7c16df72627"
+  implementation_commit:
+    hash: "c9553e4d79bb04d712091afaa071d8f4c9b9258d"
+    message: "🚧 3MJ7GQ task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "0114c8448541e1a387ff88f83891a87997b442ed"
@@ -1413,3 +1444,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-09-19T02:07:15.311Z`
