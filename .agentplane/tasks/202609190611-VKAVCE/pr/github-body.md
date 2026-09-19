@@ -15,8 +15,8 @@ Release blocker: an evaluator retry without a new repository mutation omitted va
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:8353c8d55cd0876d1de7e87bd20ab223e8ad281f73ae7957de114d5606f314ab
 - Canonical workflow state lives in the task README.
 
 <details>

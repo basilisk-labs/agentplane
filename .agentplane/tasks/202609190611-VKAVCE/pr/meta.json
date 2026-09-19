@@ -3,7 +3,8 @@
   "branch": "task/202609190611-VKAVCE/preserve-evaluator-evidence",
   "created_at": "2026-09-19T06:36:06.689Z",
   "diffstat_sha256": "sha256:f143fcf9831e8c53166a4f02904e76548b8a78d5f2c33b7e2a8bc1205513f190",
-  "last_verified_at": null,
+  "last_verified_at": "2026-09-19T07:17:21.454Z",
+  "last_verified_diffstat_sha256": "sha256:f143fcf9831e8c53166a4f02904e76548b8a78d5f2c33b7e2a8bc1205513f190",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202609190611-VKAVCE",
   "updated_at": "2026-09-19T06:36:06.689Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

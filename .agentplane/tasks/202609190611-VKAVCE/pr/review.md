@@ -6,14 +6,14 @@ Created: 2026-09-19T06:36:06.689Z
 
 - Task: `202609190611-VKAVCE`
 - Title: Preserve evaluator repository evidence for hosted closure
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609190611-VKAVCE/preserve-evaluator-evidence`
 - Canonical task record: `.agentplane/tasks/202609190611-VKAVCE/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:8353c8d55cd0876d1de7e87bd20ab223e8ad281f73ae7957de114d5606f314ab
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
