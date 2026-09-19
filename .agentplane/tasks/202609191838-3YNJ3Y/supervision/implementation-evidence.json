@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check c167bba9a72e882942cbd7e810de524bb18f79f7..f9b5ee67b3212a5bd9ced6a41caf5cc74b8f4dd8",
+      "command": "git diff --check f9b5ee67b3212a5bd9ced6a41caf5cc74b8f4dd8..624b332da80ad7ef9214380fe9435347041982ac",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB c167bba9a72e882942cbd7e810de524bb18f79f7..f9b5ee67b3212a5bd9ced6a41caf5cc74b8f4dd8",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB f9b5ee67b3212a5bd9ced6a41caf5cc74b8f4dd8..624b332da80ad7ef9214380fe9435347041982ac",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -34,35 +34,41 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "c167bba9a72e882942cbd7e810de524bb18f79f7",
-  "implementation_commit": "f9b5ee67b3212a5bd9ced6a41caf5cc74b8f4dd8",
+  "execution_base_commit": "f9b5ee67b3212a5bd9ced6a41caf5cc74b8f4dd8",
+  "implementation_commit": "624b332da80ad7ef9214380fe9435347041982ac",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
-      " M .agentplane/tasks/202609191838-3YNJ3Y/README.md",
-      " M .agentplane/tasks/202609191838-3YNJ3Y/supervision/declared-checks.json",
-      " M .agentplane/tasks/202609191838-3YNJ3Y/supervision/implementation-evidence.json"
+      "MM .agentplane/tasks/202609191838-3YNJ3Y/README.md",
+      "M  .agentplane/tasks/202609191838-3YNJ3Y/supervision/declared-checks.json",
+      "M  .agentplane/tasks/202609191838-3YNJ3Y/supervision/implementation-evidence.json",
+      "MM scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
     ],
     "classification": [
       {
         "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202609191838-3YNJ3Y/README.md"
+        "line": "MM .agentplane/tasks/202609191838-3YNJ3Y/README.md"
       },
       {
         "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202609191838-3YNJ3Y/supervision/declared-checks.json"
+        "line": "M  .agentplane/tasks/202609191838-3YNJ3Y/supervision/declared-checks.json"
       },
       {
         "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202609191838-3YNJ3Y/supervision/implementation-evidence.json"
+        "line": "M  .agentplane/tasks/202609191838-3YNJ3Y/supervision/implementation-evidence.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "MM scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
-      " M .agentplane/tasks/202609191838-3YNJ3Y/README.md",
-      " M .agentplane/tasks/202609191838-3YNJ3Y/supervision/declared-checks.json",
-      " M .agentplane/tasks/202609191838-3YNJ3Y/supervision/implementation-evidence.json"
+      "MM .agentplane/tasks/202609191838-3YNJ3Y/README.md",
+      "M  .agentplane/tasks/202609191838-3YNJ3Y/supervision/declared-checks.json",
+      "M  .agentplane/tasks/202609191838-3YNJ3Y/supervision/implementation-evidence.json",
+      "MM scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
     ],
     "unchanged_from_execution_baseline": []
   },

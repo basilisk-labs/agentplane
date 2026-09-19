@@ -15,14 +15,14 @@ Use the schema-valid ACR extension key agentplane.native-identity while retainin
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-19T18:44:10.802Z
+- Updated: 2026-09-19T19:35:12.709Z
 - Branch: task/202609191838-3YNJ3Y/canonical-3ynj3y
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
@@ -31,8 +31,8 @@ Use the schema-valid ACR extension key agentplane.native-identity while retainin
  .../src/commands/acr/acr.command.test.ts           |  23 +++
  packages/agentplane/src/commands/acr/generate.ts   |   2 +-
  packages/agentplane/src/commands/acr/summary.ts    |   3 +-
- .../check-packaged-mixed-scope-lifecycle.mjs       | 168 ++++++++++++---------
- 5 files changed, 142 insertions(+), 77 deletions(-)
+ .../check-packaged-mixed-scope-lifecycle.mjs       | 201 +++++++++++++--------
+ 5 files changed, 173 insertions(+), 79 deletions(-)
 ```
 
 </details>

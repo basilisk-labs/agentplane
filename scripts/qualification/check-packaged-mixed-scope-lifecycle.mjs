@@ -344,6 +344,36 @@ function mixedScopeTaskPlanProposal(taskId, planningBaseline) {
   };
 }
 
+function mixedScopeCanonicalPlanProposal() {
+  return {
+    work_items: [
+      {
+        id: "mixed-scope-implementation",
+        depends_on: [],
+        required_inputs: [],
+        expected_outputs: ["mixed-scope-product-change"],
+        optional: false,
+        execution_requirements: {
+          scope_roots: [...PACKAGED_MIXED_SCOPE_REQUIRED_PATHS],
+          repository_effects: [...PACKAGED_MIXED_SCOPE_REQUIRED_EFFECTS],
+          external_effects: [],
+          capabilities: ["repository_write", "task.verify"],
+          resources: [],
+        },
+        contract: {
+          objective:
+            "Implement the bounded greeting source, test, documentation, and metadata change.",
+          acceptance_criteria: [
+            "The greeting source, automated test, user guide, and ignore metadata are consistent.",
+          ],
+          verification_commands: [PACKAGED_MIXED_SCOPE_FULL_REGRESSION_COMMAND],
+          role: "EXECUTOR",
+        },
+      },
+    ],
+  };
+}
+
 export function packetExchange(packet, expectedRole, observedTask = null) {
   if (packet.action?.kind !== "agent_episode" || packet.authority?.role !== expectedRole) {
     if (
@@ -373,6 +403,8 @@ function semanticResultFor({
   summary,
   taskIntent,
   taskPlanProposal,
+  canonicalPlan,
+  canonicalOutputs,
   claimedChecks,
   review,
 }) {
@@ -386,6 +418,8 @@ function semanticResultFor({
     uncertainty: [],
     ...(taskIntent ? { task_intent: taskIntent } : {}),
     ...(taskPlanProposal ? { task_plan_proposal: taskPlanProposal } : {}),
+    ...(canonicalPlan ? { canonical_plan: canonicalPlan } : {}),
+    ...(canonicalOutputs ? { canonical_outputs: canonicalOutputs } : {}),
     ...(claimedChecks ? { claimed_checks: claimedChecks } : {}),
     ...(review ? { review } : {}),
   };
@@ -400,6 +434,20 @@ function writePacketResult(accessLog, packet, role, resultOptions) {
   const semanticResult = semanticResultFor({
     workOrder,
     ...resultOptions,
+    ...(workOrder.canonical_binding?.phase === "implementation"
+      ? {
+          canonicalOutputs: workOrder.required_outputs
+            .filter((output) => output.id.startsWith("output:"))
+            .map((output) => {
+              const id = output.id.slice("output:".length);
+              return {
+                id,
+                kind: output.kind,
+                digest: taskCentricDigest({ id, summary: resultOptions.summary }),
+              };
+            }),
+        }
+      : {}),
     ...(resultOptions.taskPlanProposal
       ? { taskPlanProposal: resultOptions.taskPlanProposal(workOrder) }
       : {}),
@@ -771,37 +819,18 @@ export function runPackagedMixedScopeFixture({ run, cli, packages, tempRoot }) {
       rationale: ["The fixture change is local, bounded, reversible, and has no external effects."],
     },
   };
-  let planner = advanceToEpisode(run, cli, repo, taskId, "PLANNER");
-  const initialPlannerOrder = readPacketWorkOrder(accessLog, planner, "PLANNER").workOrder;
-  const initialHasPlanningBaseline = Boolean(
-    initialPlannerOrder.planning_context?.repository_snapshot,
-  );
-  if (!initialHasPlanningBaseline) {
-    const intentExchange = writePacketResult(accessLog, planner, "PLANNER", {
-      summary: "Classify the local mixed-scope fixture before planning it.",
-      taskIntent,
-    });
-    planner = runPacketArgv(
-      run,
-      cli,
-      repo,
-      intentExchange.resume_argv,
-      "planner intent acceptance",
-    );
-    if (planner.action?.kind !== "agent_episode") {
-      fail(
-        "missing_planning_episode",
-        `planner intent advanced to ${planner.action?.kind ?? "unknown"}`,
-      );
-    }
-    packetExchange(planner, "PLANNER");
-  }
+  const planner = advanceToEpisode(run, cli, repo, taskId, "PLANNER");
+  const plannerOrder = readPacketWorkOrder(accessLog, planner, "PLANNER").workOrder;
+  const canonicalPlanning = plannerOrder.canonical_binding?.phase === "planning";
   const plan = longMixedScopePlan();
   const plannerExchange = writePacketResult(accessLog, planner, "PLANNER", {
     summary: plan,
-    taskPlanProposal: (workOrder) =>
-      mixedScopeTaskPlanProposal(taskId, workOrder.planning_context.repository_snapshot),
-    taskIntent: initialHasPlanningBaseline ? taskIntent : undefined,
+    canonicalPlan: canonicalPlanning ? mixedScopeCanonicalPlanProposal() : undefined,
+    taskPlanProposal: canonicalPlanning
+      ? undefined
+      : (workOrder) =>
+          mixedScopeTaskPlanProposal(taskId, workOrder.planning_context.repository_snapshot),
+    taskIntent: canonicalPlanning ? undefined : taskIntent,
   });
   const approval = runPacketArgv(
     run,
