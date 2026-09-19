@@ -30,6 +30,7 @@ import { createKernelRuntime } from "../commands/task/kernel-runtime-context.js"
 import { makeTaskBackendDouble } from "@agentplane/testkit/task";
 import * as taskBackend from "../backends/task-backend.js";
 import { observeKernelTestRunner } from "../commands/task/kernel-run.testkit.js";
+import { readKernelOperationalProjection } from "../commands/task/kernel-operational-projection.js";
 
 async function createTask(root: string): Promise<string> {
   const io = captureStdIO();
@@ -602,6 +603,14 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
           contract: { role: 'EXECUTOR', objective: 'Write result.txt', acceptance_criteria: ['Result exists'], verification_commands: ['node --version'] } }] };
       } else if (order.role === 'EVALUATOR') {
         assert.equal(order.authority.mutation_scope, 'none');
+        if (order.canonical_binding.attempt > 1) {
+          const repositoryEvidence = order.required_inputs.find(input => input.id === 'repository-evidence');
+          assert(repositoryEvidence && repositoryEvidence.required && repositoryEvidence.path);
+          const evidence = JSON.parse(fs.readFileSync(repositoryEvidence.path, 'utf8'));
+          assert.equal(evidence.task_id, order.task.id);
+          assert.equal(evidence.work_item_id, order.task.work_item_id);
+          assert.equal(evidence.evaluator_target, evidence.implementation_commit);
+        }
         result.review = { verdict: ${backendKind === "cloud" ? "order.canonical_binding.attempt === 1 ? 'rework' : 'pass'" : "'pass'"}, missing_tests: [], hidden_assumptions: [], residual_risks: [] };
       } else {
         assert(order.required_outputs.some(output => output.id === 'output:source'));
@@ -718,6 +727,12 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
       const completed = await runtime.adapter.read(taskId);
       if (completed.kind !== "canonical") throw new Error("Missing completed task");
       expect(completed.record.aggregate.final_validation?.status).toBe("PASSED");
+      if (backendKind === "cloud") {
+        const task = await command.taskBackend.getTask(taskId);
+        expect(readKernelOperationalProjection(task?.extensions)).toMatchObject({
+          source: "task_kernel",
+        });
+      }
       // Recovery reuses the persisted validation instead of recording a second mutation.
       if (backendKind === "cloud")
         expect(

@@ -37,6 +37,72 @@ export type KernelValidationEvidence = {
 
 type InspectionBinding = Extract<KernelEpisodeBinding, { phase: "inspection" }>;
 
+type ResolvedRepositoryEvidence = Readonly<{
+  directory: string;
+  evidence: KernelRepositoryEvidence;
+}>;
+
+async function resolveInspectionRepositoryEvidence(
+  command: CommandContext,
+  record: KernelRecord,
+  workItemId: string,
+  resultDirectory: string,
+): Promise<ResolvedRepositoryEvidence | null> {
+  const head = await readDirectTaskHead(command.resolvedProject.gitRoot);
+  const currentOrderId = `sha256:${path.basename(resultDirectory)}`;
+  let current: KernelRepositoryEvidence | null = null;
+  try {
+    current = await readKernelRepositoryEvidence(resultDirectory);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+  }
+  if (current) {
+    if (
+      current.task_id !== record.aggregate.id ||
+      current.work_item_id !== workItemId ||
+      current.work_order_id !== currentOrderId ||
+      path.resolve(current.checkout) !== path.resolve(command.resolvedProject.gitRoot) ||
+      current.evaluator_target !== current.implementation_commit ||
+      head !== current.implementation_commit
+    ) {
+      throw new Error("Canonical evaluator target differs from repository evidence");
+    }
+    return { directory: resultDirectory, evidence: current };
+  }
+
+  for (const mutationId of Object.keys(record.aggregate.mutation_receipts)
+    .filter((id) => /^result:sha256:[a-f0-9]{64}$/u.test(id))
+    .toReversed()) {
+    const directory = await kernelExchangeDirectory(
+      command,
+      record.aggregate.id,
+      mutationId.slice("result:".length),
+    );
+    if (directory === resultDirectory) continue;
+    let candidate: KernelRepositoryEvidence;
+    try {
+      candidate = await readKernelRepositoryEvidence(directory);
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === "ENOENT") continue;
+      throw error;
+    }
+    if (candidate.task_id !== record.aggregate.id || candidate.work_item_id !== workItemId)
+      continue;
+    if (
+      candidate.work_order_id !== `sha256:${path.basename(directory)}` ||
+      candidate.task_revision > record.aggregate.revision ||
+      path.resolve(candidate.checkout) !== path.resolve(command.resolvedProject.gitRoot) ||
+      candidate.evaluator_target !== candidate.implementation_commit
+    ) {
+      throw new Error("Canonical evaluator target differs from retained repository evidence");
+    }
+    if (candidate.implementation_commit === head) {
+      return { directory, evidence: candidate };
+    }
+  }
+  return null;
+}
+
 export async function issueKernelInspection(
   command: CommandContext,
   runtime: Runtime,
@@ -90,22 +156,13 @@ export async function issueKernelInspection(
     }
   }
   if (!resultPath) throw new Error("Canonical received implementation evidence missing");
-  let repositoryEvidence: KernelRepositoryEvidence | null = null;
-  try {
-    repositoryEvidence = await readKernelRepositoryEvidence(resultDirectory!);
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
-  }
-  if (
-    repositoryEvidence &&
-    (repositoryEvidence.task_id !== record.aggregate.id ||
-      repositoryEvidence.work_item_id !== workItemId ||
-      repositoryEvidence.work_order_id !== `sha256:${path.basename(resultDirectory!)}` ||
-      (await readDirectTaskHead(command.resolvedProject.gitRoot)) !==
-        repositoryEvidence.implementation_commit)
-  ) {
-    throw new Error("Canonical evaluator target differs from repository evidence");
-  }
+  const resolvedRepositoryEvidence = await resolveInspectionRepositoryEvidence(
+    command,
+    record,
+    workItemId,
+    resultDirectory!,
+  );
+  const repositoryEvidence = resolvedRepositoryEvidence?.evidence ?? null;
   const order = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse({
     schema_version: 2,
     kind: "agent_work_order",
@@ -176,7 +233,7 @@ export async function issueKernelInspection(
             {
               id: "repository-evidence",
               kind: "source_artifact" as const,
-              path: path.join(resultDirectory!, "repository-evidence.json"),
+              path: path.join(resolvedRepositoryEvidence!.directory, "repository-evidence.json"),
               digest: repositoryEvidence.digest,
               description:
                 "AgentPlane-owned commit, tree, changed-path, and evaluator-target evidence.",

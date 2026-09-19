@@ -1,0 +1,38 @@
+# PR Review
+
+Created: 2026-09-19T06:36:06.689Z
+
+## Task
+
+- Task: `202609190611-VKAVCE`
+- Title: Preserve evaluator repository evidence for hosted closure
+- Status: DOING
+- Branch: `task/202609190611-VKAVCE/preserve-evaluator-evidence`
+- Canonical task record: `.agentplane/tasks/202609190611-VKAVCE/README.md`
+
+## Verification
+
+- State: pending
+- Note: Not recorded yet.
+- Canonical workflow state lives in the task README.
+
+## Handoff Notes
+
+- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
+
+<!-- BEGIN AUTO SUMMARY -->
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-09-19T06:36:06.689Z
+- Branch: task/202609190611-VKAVCE/preserve-evaluator-evidence
+- Head: computed live by `agentplane pr check` / `agentplane integrate`
+
+```text
+ .../src/cli/run-cli.core.kernel-transport.test.ts  | 15 ++++
+ .../src/commands/task/kernel-inspection.ts         | 91 ++++++++++++++++++----
+ 2 files changed, 89 insertions(+), 17 deletions(-)
+```
+
+</details>
+<!-- END AUTO SUMMARY -->
