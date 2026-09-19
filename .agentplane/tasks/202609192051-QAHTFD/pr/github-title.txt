@@ -1,1 +1,1 @@
-✅ QAHTFD task: Productize release-blocking AgentPlane controller fixes for 0.7.10 [202609192051-QAHTFD]
+🚧 QAHTFD task: Productize release-blocking AgentPlane controller fixes for 0.7.10 [202609192051-QAHTFD]
