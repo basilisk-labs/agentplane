@@ -4,7 +4,7 @@ title: "Productize release-blocking AgentPlane controller fixes for 0.7.10"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 64
+revision: 67
 origin:
   system: "manual"
 depends_on: []
@@ -25,9 +25,9 @@ plan_approval:
   note: "Projected from the approved canonical Task Kernel plan."
 verification:
   state: "ok"
-  updated_at: "2026-09-19T22:52:12.524Z"
+  updated_at: "2026-09-19T23:15:00.316Z"
   updated_by: "SUPERVISOR"
-  note: "Canonical validation sha256:38ae36c739240d65690ce786bcbeff34b578606497f613c24ead1cce03e4d15b"
+  note: "Canonical validation sha256:697e59fab32846843cde12fd10dae4f4fd9171538dd0908d66a7689ed3f78488"
   attempts: 0
 quality_review:
   state: "pass"
@@ -107,6 +107,7 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/workflow-step.test.ts"
       - "packages/agentplane/src/commands/task/direct-task-finalization.test.ts"
       - "packages/agentplane/src/commands/task/direct-task-finalization.ts"
+      - "packages/agentplane/src/commands/task/direct-task-verification.qualification.test.ts"
       - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
       - "packages/agentplane/src/commands/task/direct-task-verification.ts"
       - "packages/agentplane/src/commands/task/hosted-close-premerge.test.ts"
@@ -115,6 +116,7 @@ execution_contract:
       - "packages/agentplane/src/commands/task/kernel-advance.ts"
       - "packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts"
       - "packages/agentplane/src/commands/task/kernel-repository-coordinator.ts"
+      - "packages/agentplane/src/commands/task/kernel-worktree-routing.ts"
     external_effects: []
     repository_effects:
       - "repository_write"
@@ -190,7 +192,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:c922ca0ca891bec64b6c0292e1ae7ec60bb88feaf3b822dda104031c8a587c01"
+      digest: "sha256:84dfd4c36a7809a652f79e085640d7d87a11865fcda021ae678c6c9599d9ecb3"
       escalation_reasons:
         - "central_path:packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.ts"
@@ -221,6 +223,7 @@ execution_contract:
           - "packages/agentplane/src/commands/shared/workflow-step.test.ts"
           - "packages/agentplane/src/commands/task/direct-task-finalization.test.ts"
           - "packages/agentplane/src/commands/task/direct-task-finalization.ts"
+          - "packages/agentplane/src/commands/task/direct-task-verification.qualification.test.ts"
           - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
           - "packages/agentplane/src/commands/task/direct-task-verification.ts"
           - "packages/agentplane/src/commands/task/hosted-close-premerge.test.ts"
@@ -229,6 +232,7 @@ execution_contract:
           - "packages/agentplane/src/commands/task/kernel-advance.ts"
           - "packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts"
           - "packages/agentplane/src/commands/task/kernel-repository-coordinator.ts"
+          - "packages/agentplane/src/commands/task/kernel-worktree-routing.ts"
         external_effects: []
         repository_effects:
           - "repository_write"
@@ -280,8 +284,14 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "verify"
+    at: "2026-09-19T23:15:00.316Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: canonical Task Kernel final checks passed."
 doc_version: 3
-doc_updated_at: "2026-09-19T22:52:13.613Z"
+doc_updated_at: "2026-09-19T23:15:01.635Z"
 doc_updated_by: "SUPERVISOR"
 description: "Integrate and regression-test the temporary runtime fixes required to complete branch_pr publication: canonical task worktree recovery, hook-retry staging refresh, rewritten managed-artifact commit identity, canonical pre-merge evidence compatibility, hosted-close closure basis, and exact-HEAD release qualification. Preserve fail-closed authority and scope checks. Then take the change through PR integration as the final prerequisite for release 0.7.10."
 sections:
@@ -384,6 +394,89 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-09-19T23:15:00.316Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: canonical Task Kernel final checks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:2294f0e766950f1bfbdcdcdebdb2679481c9ef5d417aa0c99d7e2ea8fbec16c4, input_digest=sha256:d1f4fcccf3d8d03387def1eb99ac4607c25d53728d2508d26446a0ad8ed2ab50
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun test packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.test.ts packages/agentplane/src/commands/task/hosted-close-premerge.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/shared/workflow-step.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609192051-QAHTFD/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609192051-QAHTFD Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609192051-QAHTFD/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609192051-QAHTFD Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun test packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.test.ts packages/agentplane/src/commands/task/hosted-close-premerge.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/shared/workflow-step.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609192051-QAHTFD/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609192051-QAHTFD Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609192051-QAHTFD/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609192051-QAHTFD Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609192051-QAHTFD/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609192051-QAHTFD Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bun test packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.test.ts packages/agentplane/src/commands/task/hosted-close-premerge.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/shared/workflow-step.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609192051-QAHTFD/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609192051-QAHTFD Verification Contract check real_e2e (1/2)
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609192051-QAHTFD/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609192051-QAHTFD Verification Contract check real_e2e (2/2)
+
+    Check: task_outcome
+    Command: bun test packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.test.ts packages/agentplane/src/commands/task/hosted-close-premerge.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/shared/workflow-step.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609192051-QAHTFD/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609192051-QAHTFD Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609192051-QAHTFD/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609192051-QAHTFD Verification Contract check task_outcome (2/2)
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:f1465aec1c3d4f4f46ef4a06348cd2f30981bb8c18fa652aee51096386c2117f
+    - policy_digest: sha256:ef062519baf46c86afe08917acaa5fee95a58d60c19dd2296cc7baa608814158
+    - capability_digest: sha256:c7773401c9187b30d35df078ee87d7ccbc0bacb24096a0983e571daa25cb3928
+    - checks_digest: sha256:dedb918c3eb96d000d69a55243868d3ded8b33cbcb68e5d710c8351735acd5e3
+    - identity_digest: sha256:248b940eb67bbf56c82cb2fde105b0e3bfecfafea1b9b546702edf11c10be312
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task plan set 202609192051-QAHTFD --text "<task-specific-plan>" --updated-by PLANNER
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -391,7 +484,7 @@ sections:
   Findings: ""
 extensions:
   agentplane.kernel_operational_projection:
-    digest: "sha256:e601ca533da00d789bea6f379f3b60bb5ccc86d2df198a156af7f161589e7f37"
+    digest: "sha256:b360dcbd9b5bd342bf01eec43d760437f051d2236f907984078ce2c506201f76"
     evidence_refs:
       - "../../../.git/agentplane/kernel/exchanges/202609192051-QAHTFD/f41e83ba5b001f71ac88a59a97da5f0abf6e5b4b06047eccaa3430c4f58dd663/quality-report.json"
     findings:
@@ -405,7 +498,7 @@ extensions:
     review_identity_digest: "sha256:ace40ddcb403d6f8c782fecc3fd89402108552482b572427f493f718c26d898b"
     schema_version: 1
     source: "task_kernel"
-    verification_evidence_digest: "sha256:38ae36c739240d65690ce786bcbeff34b578606497f613c24ead1cce03e4d15b"
+    verification_evidence_digest: "sha256:697e59fab32846843cde12fd10dae4f4fd9171538dd0908d66a7689ed3f78488"
     work_order_id: "sha256:157ae7e957036f139434c6acfb3691bd7a643c20aa29e0a7978826be88d9c77c"
   task_execution_context:
     base_ref: "main"
@@ -963,14 +1056,14 @@ extensions:
       effects: []
       final_validation:
         evidence_digests:
-          - "sha256:38ae36c739240d65690ce786bcbeff34b578606497f613c24ead1cce03e4d15b"
+          - "sha256:697e59fab32846843cde12fd10dae4f4fd9171538dd0908d66a7689ed3f78488"
         identity:
           check_id: "canonical-final-contracts"
           command_digest: "sha256:4a513d614320a30090a84386bc16a4742fe4c0a2d611a5b34cfc33a1783710aa"
-          environment_digest: "sha256:c3a5da001a0d6677bc150747824a25cf894599bd2f94fb0216f0fd28e09e392c"
+          environment_digest: "sha256:db15715b9254faa1281772d250710414d0320605ea167e62fc90f236254f780f"
           implementation_identity: "sha256:d992348abbbe9bd66a2350fbb0ca4974f5d082690c100bd275c10c2422963149"
           toolchain_digest: "sha256:cf316c517aaab7eaebeef394c4292584754c0246efec889362d098f74a76e6f8"
-        observed_at: "2026-09-19T22:44:25.995Z"
+        observed_at: "2026-09-19T23:06:45.738Z"
         status: "PASSED"
       id: "202609192051-QAHTFD"
       intent_digest: "sha256:c352f3dfcc7948d95588efa011cd21100e4a7df4839e792c786430d0dc704856"
@@ -994,6 +1087,15 @@ extensions:
           event_digests:
             - "sha256:ee0293ceec9e3847348e52f32d6d857273abec1f3fdf9d1f1213c4851cd40b1d"
           mutation_id: "final-validation:sha256:38ae36c739240d65690ce786bcbeff34b578606497f613c24ead1cce03e4d15b:58"
+        final-validation:sha256:697e59fab32846843cde12fd10dae4f4fd9171538dd0908d66a7689ed3f78488:59:
+          after_revision: 60
+          aggregate_digest: "sha256:761a01a0b0db3bc4b50d0c9324103e24e203b1ee86989a20b7158a93d46bf7b0"
+          before_revision: 59
+          command_digest: "sha256:ee96f80f707cf26f90d899d97e2a2a5c2fa49dc57f009232c21b6532286a5fb8"
+          effect_ids: []
+          event_digests:
+            - "sha256:22fe8f0cc5e9fcc179db4219679b4ce2e926aaeb1151b95a25546824d1742471"
+          mutation_id: "final-validation:sha256:697e59fab32846843cde12fd10dae4f4fd9171538dd0908d66a7689ed3f78488:59"
         kernel_work_item_blocked:sha256:42f9c71ed1a39db6efd149aae6aa22b14aa3b8183cd31db9bf0add43651be2db:sha256:4e208c478a274622342b23060e9678b0e228a7a6509cbe57f022f6f37f4c4889:
           after_revision: 22
           aggregate_digest: "sha256:c05237fd4dd790aa1b8a9689dc76a040d5d5967749d974f66ff87e1dc8aaff3b"
@@ -1508,7 +1610,7 @@ extensions:
             - "sha256:6df42b85548442553d01bdf9db7468e119295012385c2f6d7adaa8ba98dec746"
           mutation_id: "validation:sha256:f41e83ba5b001f71ac88a59a97da5f0abf6e5b4b06047eccaa3430c4f58dd663"
       plan_history: []
-      revision: 59
+      revision: 60
       schema_version: 1
       state: "FINAL_VALIDATION"
       work_items:
@@ -1672,7 +1774,7 @@ extensions:
               toolchain_digest: "sha256:4eb6121e9843a7fd87350127f5a506fca3d1bbc5809cdf627b2cf3fac318d1c7"
             observed_at: "2026-09-19T22:09:39.456Z"
             status: "PASSED"
-    digest: "sha256:0e3dd54e72c26c3d8f1a1eea6ad15cc4b957b310d190c6d4d66693a0fa9095ee"
+    digest: "sha256:22d4ce74067a9b6fdaf16a8ee7c32c8c6eb0503916f36a3760be6c3b82c0cde9"
     documents:
       contracts:
         sha256:7668b680d809731090ef8e4212cac3f1af27e338bf2d91fadc294bfe558c4473:
@@ -2235,6 +2337,15 @@ extensions:
         payload_digest: "sha256:d6512137eb07b457dbf04b1e53dba290fbdd78df0b4df2142935afcdb57f9bbb"
         task_id: "202609192051-QAHTFD"
         task_revision: 59
+      -
+        command_digest: "sha256:ee96f80f707cf26f90d899d97e2a2a5c2fa49dc57f009232c21b6532286a5fb8"
+        id: "final-validation:sha256:697e59fab32846843cde12fd10dae4f4fd9171538dd0908d66a7689ed3f78488:59:final_validation_recorded"
+        kind: "final_validation_recorded"
+        mutation_id: "final-validation:sha256:697e59fab32846843cde12fd10dae4f4fd9171538dd0908d66a7689ed3f78488:59"
+        occurred_at: "2026-09-19T23:14:54.560Z"
+        payload_digest: "sha256:c7d1d84116545068ce2e8f1d72f06b262dcc51e47e03f8e256fbafbe41cf2344"
+        task_id: "202609192051-QAHTFD"
+        task_revision: 60
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
@@ -2337,6 +2448,89 @@ NativeTaskIdentityRef:
 - capability_digest: sha256:c7773401c9187b30d35df078ee87d7ccbc0bacb24096a0983e571daa25cb3928
 - checks_digest: sha256:0e99a99f13e3ceafa1a632c00bc362ee886ded70bcffbdbcf1448a68fb8dd08d
 - identity_digest: sha256:673da1c16d4c0450c45f05b091b9bb9b896157be68fdf817dff657f03f7b5ba6
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task plan set 202609192051-QAHTFD --text "<task-specific-plan>" --updated-by PLANNER
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-19T23:15:00.316Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: canonical Task Kernel final checks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:2294f0e766950f1bfbdcdcdebdb2679481c9ef5d417aa0c99d7e2ea8fbec16c4, input_digest=sha256:d1f4fcccf3d8d03387def1eb99ac4607c25d53728d2508d26446a0ad8ed2ab50
+
+Details:
+
+Check: affected_unit_integration
+Command: bun test packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.test.ts packages/agentplane/src/commands/task/hosted-close-premerge.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/shared/workflow-step.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609192051-QAHTFD/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609192051-QAHTFD Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609192051-QAHTFD/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609192051-QAHTFD Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun test packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.test.ts packages/agentplane/src/commands/task/hosted-close-premerge.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/shared/workflow-step.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609192051-QAHTFD/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609192051-QAHTFD Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609192051-QAHTFD/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609192051-QAHTFD Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609192051-QAHTFD/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609192051-QAHTFD Verification Contract check full_regression
+
+Check: real_e2e
+Command: bun test packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.test.ts packages/agentplane/src/commands/task/hosted-close-premerge.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/shared/workflow-step.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609192051-QAHTFD/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609192051-QAHTFD Verification Contract check real_e2e (1/2)
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609192051-QAHTFD/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609192051-QAHTFD Verification Contract check real_e2e (2/2)
+
+Check: task_outcome
+Command: bun test packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.test.ts packages/agentplane/src/commands/task/hosted-close-premerge.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/shared/workflow-step.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609192051-QAHTFD/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609192051-QAHTFD Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609192051-QAHTFD/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609192051-QAHTFD Verification Contract check task_outcome (2/2)
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:f1465aec1c3d4f4f46ef4a06348cd2f30981bb8c18fa652aee51096386c2117f
+- policy_digest: sha256:ef062519baf46c86afe08917acaa5fee95a58d60c19dd2296cc7baa608814158
+- capability_digest: sha256:c7773401c9187b30d35df078ee87d7ccbc0bacb24096a0983e571daa25cb3928
+- checks_digest: sha256:dedb918c3eb96d000d69a55243868d3ded8b33cbcb68e5d710c8351735acd5e3
+- identity_digest: sha256:248b940eb67bbf56c82cb2fde105b0e3bfecfafea1b9b546702edf11c10be312
 
 DecisionContextRef:
 - operator_action: stop
