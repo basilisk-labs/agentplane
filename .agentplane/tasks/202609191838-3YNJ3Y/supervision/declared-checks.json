@@ -1,0 +1,57 @@
+{
+  "checks": [
+    {
+      "check_ids": [],
+      "command": "bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts",
+      "duration_ms": 7533,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:4cdd77c58cb33fa26351fa8ddd2089ca1974081d391932447f4dc013ee9b35f2",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /private/tmp/agentplane-e2e-fix.4LnBEJ/repo/.agentplane/worktrees/202609191838-3YNJ3Y-canonical-3ynj3y\n\n\n Test Files  1 passed (1)\n      Tests  4 passed (4)\n   Start at  21:45:09\n   Duration  7.16s (transform 1.66s, setup 0ms, import 1.39s, tests 5.68s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [],
+      "command": "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/acr/acr.command.test.ts",
+      "duration_ms": 907,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:4cdd77c58cb33fa26351fa8ddd2089ca1974081d391932447f4dc013ee9b35f2",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /private/tmp/agentplane-e2e-fix.4LnBEJ/repo/.agentplane/worktrees/202609191838-3YNJ3Y-canonical-3ynj3y\n\n\n Test Files  1 passed (1)\n      Tests  13 passed (13)\n   Start at  21:45:16\n   Duration  564ms (transform 332ms, setup 0ms, import 488ms, tests 20ms, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [],
+      "command": "node scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs",
+      "duration_ms": 15238,
+      "exit_code": 1,
+      "runtime": {
+        "environment_digest": "sha256:4cdd77c58cb33fa26351fa8ddd2089ca1974081d391932447f4dc013ee9b35f2",
+        "executable_digest": "sha256:ee6fb0e015284d83a91e8ec5213f43a157f8a392b58555301682892ba928c04a",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": null,
+      "stderr_tail": "Cannot read properties of undefined (reading 'repository_snapshot')\n",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": "Declared check failed: node scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs",
+  "schema_version": 1,
+  "status": "failed",
+  "task_id": "202609191838-3YNJ3Y"
+}
