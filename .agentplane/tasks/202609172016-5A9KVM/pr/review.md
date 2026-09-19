@@ -13,7 +13,7 @@ Created: 2026-09-17T22:51:10.201Z
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:7f669cfb91b53caff81c5468251bfcb7bbd072ef546d528760355996e8147bcd
+- Note: Canonical validation sha256:e527a143c35af7e8ae563c540defc54db9250eace763ca7f520d330681fa543f
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -32,34 +32,40 @@ Created: 2026-09-17T22:51:10.201Z
  docs/developer/harness-dev.mdx                     |  56 +-
  docs/releases/v0.7.10.md                           |  18 +
  docs/user/cli-reference.generated.mdx              |   1 +
- .../src/cli/run-cli.core.kernel-transport.test.ts  |  81 ++-
+ .../src/cli/run-cli.core.kernel-transport.test.ts  |  90 +++-
  .../src/commands/acr/acr.command.test.ts           |  21 +
  packages/agentplane/src/commands/acr/generate.ts   |   2 +-
  packages/agentplane/src/commands/acr/summary.ts    |   2 +-
  .../src/commands/pr/integrate/internal/finalize.ts |   4 +-
- .../shared/canonical-pre-merge-evidence.ts         |  38 ++
- .../shared/route-decision-blockers.kernel.test.ts  |  67 +++
- .../src/commands/shared/route-decision-blockers.ts |   9 +-
+ .../shared/canonical-pre-merge-evidence.ts         |  41 ++
+ .../shared/route-decision-blockers.kernel.test.ts  |  82 +++
+ .../src/commands/shared/route-decision-blockers.ts |  15 +-
  .../shared/side-effect-authority-policy.ts         | 203 +++++++
  .../commands/shared/side-effect-authority.test.ts  | 110 +++-
  .../src/commands/shared/side-effect-authority.ts   | 273 +++-------
+ .../src/commands/shared/task-mutation.test.ts      |  43 ++
+ .../src/commands/shared/task-mutation.ts           |  17 +-
  .../src/commands/task/advance.command.ts           |  22 +-
  .../commands/task/direct-task-verification.test.ts | 157 +++---
  .../src/commands/task/direct-task-verification.ts  |  12 +-
  .../external-agent-implementation-finalization.ts  |   7 +-
+ .../agentplane/src/commands/task/finish-execute.ts |   4 +
+ .../src/commands/task/finish-quality-evidence.ts   |  18 +-
+ .../agentplane/src/commands/task/finish-shared.ts  |   2 +
+ .../task/finish.quality-review-target.unit.test.ts |  25 +
  .../src/commands/task/git-status-path.test.ts      |  21 +
  .../src/commands/task/git-status-path.ts           |  64 +++
  .../src/commands/task/kernel-advance.test.ts       | 334 ++++++++++++
- .../agentplane/src/commands/task/kernel-advance.ts | 375 +++++++------
+ .../agentplane/src/commands/task/kernel-advance.ts | 461 ++++++++++------
  .../task/kernel-controller-handoff.test.ts         | 284 ++++++++++
  .../src/commands/task/kernel-controller-handoff.ts | 400 ++++++++++++++
  .../src/commands/task/kernel-effect-coordinator.ts | 193 +++++++
  .../src/commands/task/kernel-exchange.test.ts      | 110 ++++
  .../src/commands/task/kernel-exchange.ts           |  52 +-
- .../src/commands/task/kernel-final-validation.ts   |  14 +
+ .../src/commands/task/kernel-final-validation.ts   | 134 ++++-
  .../src/commands/task/kernel-inspection.ts         | 111 +++-
- .../task/kernel-operational-projection.test.ts     | 166 ++++++
- .../commands/task/kernel-operational-projection.ts | 131 +++++
+ .../task/kernel-operational-projection.test.ts     | 211 ++++++++
+ .../commands/task/kernel-operational-projection.ts | 168 ++++++
  .../agentplane/src/commands/task/kernel-plan.ts    |  67 ++-
  .../kernel-provider-effect-coordinator.test.ts     | 337 ++++++++++++
  .../task/kernel-provider-effect-coordinator.ts     | 489 +++++++++++++++++
@@ -69,11 +75,14 @@ Created: 2026-09-17T22:51:10.201Z
  .../agentplane/src/commands/task/kernel-run.ts     |  29 +-
  .../commands/task/kernel-semantic-result.test.ts   |  81 +++
  .../src/commands/task/kernel-semantic-result.ts    | 286 ++++++++++
- .../src/commands/task/kernel-work-order.ts         |  50 +-
+ .../src/commands/task/kernel-work-order.ts         |  57 +-
  .../src/commands/task/plan-set.command.ts          |  23 +-
  .../agentplane/src/commands/task/run.command.ts    |  26 +-
  .../src/commands/task/show-kernel.test.ts          | 113 +++-
  packages/agentplane/src/commands/task/show.ts      |  36 ++
+ .../src/commands/task/verify-record-execute.ts     |  17 +-
+ .../agentplane/src/commands/task/verify-record.ts  |   1 +
+ .../src/commands/task/verify-record.types.ts       |   1 +
  .../src/runner/usecases/kernel-authority.ts        |  39 +-
  .../src/tasks/task-kernel/authority-lineage.ts     | 123 ++++-
  packages/core/src/tasks/task-kernel/index.ts       |   2 +
@@ -82,7 +91,7 @@ Created: 2026-09-17T22:51:10.201Z
  packages/testkit/src/cli-harness.ts                |   6 +-
  .../check-packaged-mixed-scope-lifecycle.mjs       | 119 ++--
  .../qualification/release-qualification.test.mjs   |  27 +-
- 53 files changed, 5985 insertions(+), 685 deletions(-)
+ 62 files changed, 6405 insertions(+), 721 deletions(-)
 ```
 
 </details>
