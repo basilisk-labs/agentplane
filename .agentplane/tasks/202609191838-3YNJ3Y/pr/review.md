@@ -29,12 +29,12 @@ Created: 2026-09-19T18:44:10.802Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/cli/run-cli.core.task-hosted-close.test.ts | 23 ++++++++++++++++++++++
- .../src/commands/acr/acr.command.test.ts           | 23 ++++++++++++++++++++++
- packages/agentplane/src/commands/acr/generate.ts   |  2 +-
- packages/agentplane/src/commands/acr/summary.ts    |  3 ++-
- .../check-packaged-mixed-scope-lifecycle.mjs       | 23 ++++++----------------
- 5 files changed, 55 insertions(+), 19 deletions(-)
+ .../src/cli/run-cli.core.task-hosted-close.test.ts |  23 +++++
+ .../src/commands/acr/acr.command.test.ts           |  23 +++++
+ packages/agentplane/src/commands/acr/generate.ts   |   2 +-
+ packages/agentplane/src/commands/acr/summary.ts    |   3 +-
+ .../check-packaged-mixed-scope-lifecycle.mjs       | 103 ++++++++++++---------
+ 5 files changed, 109 insertions(+), 45 deletions(-)
 ```
 
 </details>
