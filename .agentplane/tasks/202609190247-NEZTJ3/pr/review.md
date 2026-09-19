@@ -24,7 +24,7 @@ Created: 2026-09-19T03:38:19.549Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-19T03:38:19.549Z
+- Updated: 2026-09-19T04:06:26.296Z
 - Branch: task/202609190247-NEZTJ3/canonical-release-recovery
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
