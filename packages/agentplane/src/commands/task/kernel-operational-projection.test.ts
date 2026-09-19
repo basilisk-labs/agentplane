@@ -121,10 +121,55 @@ describe("canonical operational evidence projection", () => {
       task_id: "T-1",
     });
 
-    expect(writeTask).toHaveBeenCalledWith(
-      { ...task, revision: 10, status: "DONE" },
-      { expectedRevision: 9 },
-    );
+    expect(writeTask).toHaveBeenCalledOnce();
+    const [written, options] = writeTask.mock.calls[0]!;
+    expect(options).toEqual({ expectedRevision: 9 });
+    expect(written).toMatchObject({ ...task, revision: 10, status: "DONE" });
+    expect(written.verification).toMatchObject({
+      state: "ok",
+      attempts: 1,
+      note: `Canonical validation ${k.kernelDigest("verification")}`,
+    });
+  });
+
+  it("synchronizes the projection with restored final-validation evidence", async () => {
+    const writeTask = taskWriter();
+    const projectionContents = {
+      schema_version: 1 as const,
+      source: "task_kernel" as const,
+      work_order_id: k.kernelDigest("order"),
+      implementation_commit: "a".repeat(40),
+      implementation_tree: "b".repeat(40),
+      verification_evidence_digest: k.kernelDigest("work-item-verification"),
+      review_identity_digest: k.kernelDigest("review"),
+      evidence_refs: ["evidence"],
+      findings: ["reviewed"],
+      projected_at: "2026-09-18T00:00:00.000Z",
+    };
+    const projection = { ...projectionContents, digest: k.kernelDigest(projectionContents) };
+    const task = {
+      id: "T-1",
+      revision: 9,
+      status: "DONE",
+      verification: { state: "ok", attempts: 1, note: "old" },
+      extensions: { "agentplane.kernel_operational_projection": projection },
+    };
+    const finalEvidence = k.kernelDigest("final-validation");
+
+    await ensureKernelOperationalProjectionStatus({
+      command: {
+        taskBackend: { getTask: vi.fn().mockResolvedValue(task), writeTask },
+      } as never,
+      task_id: "T-1",
+      verification_evidence_digest: finalEvidence,
+    });
+
+    const written = writeTask.mock.calls[0]![0];
+    expect(readKernelOperationalProjection(written.extensions)).toMatchObject({
+      verification_evidence_digest: finalEvidence,
+      review_identity_digest: k.kernelDigest("review"),
+    });
+    expect(written.verification?.note).toBe(`Canonical validation ${finalEvidence}`);
   });
 
   it("is idempotent for an identical evidence projection", async () => {

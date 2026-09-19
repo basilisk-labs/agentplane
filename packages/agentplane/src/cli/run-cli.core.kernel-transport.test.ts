@@ -105,6 +105,11 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
       execFileSync("git", ["-c", "core.hooksPath=/dev/null", ...args], { cwd: root });
     git(["add", "."]);
     git(["commit", "-m", "canonical worktree fixture"]);
+    const primaryPacket = await runJson(root, ["task", "advance", taskId, "--agent-json"]);
+    const primaryExchange = primaryPacket.exchange as { directory: string };
+    const primaryOrder = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(
+      JSON.parse(await readFile(path.join(primaryExchange.directory, "work-order.json"), "utf8")),
+    );
     const linked = path.join(root, ".agentplane/worktrees/canonical-context");
     git(["worktree", "add", "-b", "canonical-context", linked]);
     const initial = await loadCommandContext({ cwd: linked });
@@ -124,6 +129,7 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
     const order = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(
       JSON.parse(await readFile(path.join(exchange.directory, "work-order.json"), "utf8")),
     );
+    expect(order.work_order_id).not.toBe(primaryOrder.work_order_id);
     expect(order.state_fingerprint.worktree).toBe(initial.resolvedProject.gitRoot);
     expect(order.canonical_binding?.repository_fingerprint).toBe(before.fingerprint);
     await writeFile(path.join(linked, "local-change.txt"), "local change");
@@ -708,12 +714,13 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
       const completed = await runtime.adapter.read(taskId);
       if (completed.kind !== "canonical") throw new Error("Missing completed task");
       expect(completed.record.aggregate.final_validation?.status).toBe("PASSED");
+      // Recovery reuses the persisted validation instead of recording a second mutation.
       if (backendKind === "cloud")
         expect(
           Object.keys(completed.record.aggregate.mutation_receipts).filter((id) =>
             id.startsWith("final-validation:"),
           ),
-        ).toHaveLength(2);
+        ).toHaveLength(1);
       expect(await readFile(path.join(root, "result.txt"), "utf8")).toBe("managed implementation");
       expect(execute).toHaveBeenCalledTimes(backendKind === "cloud" ? 5 : 3);
       const again = await runJson(root, ["task", "run", taskId, "--json"]);

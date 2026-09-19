@@ -153,7 +153,12 @@ export async function buildKernelAgentWorkOrder(opts: {
   return AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse({
     schema_version: 2,
     kind: "agent_work_order",
-    work_order_id: k.kernelDigest({ binding, revision: aggregate.revision, record: record.digest }),
+    work_order_id: k.kernelDigest({
+      binding,
+      revision: aggregate.revision,
+      record: record.digest,
+      state_fingerprint: fingerprint.digest,
+    }),
     role: implementation?.contract.role ?? "PLANNER",
     task: {
       id: aggregate.id,

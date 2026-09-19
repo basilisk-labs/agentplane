@@ -49,6 +49,21 @@ describe("canonical pre-merge evidence", () => {
     expect(hasCanonicalPreMergeEvidence(canonicalTask())).toBe(true);
   });
 
+  it("keeps canonical evidence current after a task-artifact closure commit", () => {
+    const task = canonicalTask() as {
+      commit: { hash: string };
+      extensions: Record<string, unknown>;
+    };
+    const implementationCommit = task.commit.hash;
+    task.commit.hash = "b".repeat(40);
+    task.extensions.implementation_commit = {
+      hash: implementationCommit,
+      message: "canonical implementation",
+    };
+
+    expect(hasCanonicalPreMergeEvidence(task as never)).toBe(true);
+  });
+
   it("fails closed after either projection is changed", () => {
     const task = canonicalTask() as {
       extensions: {

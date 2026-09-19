@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 1a4b6c3178672200c6c4047ae88805f4a222da91..265e7609d929352b06f5afeced9cb1a61bca6c84",
+      "command": "git diff --check 265e7609d929352b06f5afeced9cb1a61bca6c84..35867096b52f05c366bcbe34e1da2dba5c636504",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 1a4b6c3178672200c6c4047ae88805f4a222da91..265e7609d929352b06f5afeced9cb1a61bca6c84",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 265e7609d929352b06f5afeced9cb1a61bca6c84..35867096b52f05c366bcbe34e1da2dba5c636504",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -22,19 +22,8 @@
         "M\t.agentplane/tasks/202609172016-5A9KVM/pr/github-body.md",
         "M\t.agentplane/tasks/202609172016-5A9KVM/pr/meta.json",
         "M\t.agentplane/tasks/202609172016-5A9KVM/pr/review.md",
-        "M\t.agentplane/tasks/202609172016-5A9KVM/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202609172016-5A9KVM/supervision/implementation-evidence.json",
-        "M\tdocs/user/cli-reference.generated.mdx",
-        "M\tpackages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts",
-        "M\tpackages/agentplane/src/commands/task/direct-task-verification.test.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-repository-coordinator.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-semantic-result.test.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-semantic-result.ts",
-        "M\tpackages/agentplane/src/runner/usecases/kernel-authority.ts",
-        "M\tpackages/core/src/tasks/task-kernel/authority-lineage.ts",
-        "M\tpackages/core/src/tasks/task-kernel/kernel.test.ts",
-        "M\tpackages/core/src/tasks/task-kernel/kernel.ts"
+        "M\tpackages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts"
       ]
     },
     {
@@ -44,22 +33,13 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "1a4b6c3178672200c6c4047ae88805f4a222da91",
-  "implementation_commit": "265e7609d929352b06f5afeced9cb1a61bca6c84",
+  "execution_base_commit": "265e7609d929352b06f5afeced9cb1a61bca6c84",
+  "implementation_commit": "35867096b52f05c366bcbe34e1da2dba5c636504",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
       " M .agentplane/tasks/202609172016-5A9KVM/README.md",
-      " M .agentplane/tasks/202609172016-5A9KVM/supervision/declared-checks.json",
-      " M .agentplane/tasks/202609172016-5A9KVM/supervision/implementation-evidence.json",
-      " M packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts",
-      " M packages/agentplane/src/commands/task/direct-task-verification.test.ts",
-      " M packages/agentplane/src/commands/task/kernel-semantic-result.ts",
-      " M packages/agentplane/src/runner/usecases/kernel-authority.ts",
-      " M packages/core/src/tasks/task-kernel/authority-lineage.ts",
-      " M packages/core/src/tasks/task-kernel/kernel.test.ts",
-      " M packages/core/src/tasks/task-kernel/kernel.ts",
-      "?? packages/agentplane/src/commands/task/kernel-semantic-result.test.ts"
+      " M .agentplane/tasks/202609172016-5A9KVM/supervision/implementation-evidence.json"
     ],
     "classification": [
       {
@@ -68,59 +48,14 @@
       },
       {
         "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202609172016-5A9KVM/supervision/declared-checks.json"
-      },
-      {
-        "classification": "removed_during_execution",
         "line": " M .agentplane/tasks/202609172016-5A9KVM/supervision/implementation-evidence.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/direct-task-verification.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/kernel-semantic-result.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/runner/usecases/kernel-authority.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/core/src/tasks/task-kernel/authority-lineage.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/core/src/tasks/task-kernel/kernel.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/core/src/tasks/task-kernel/kernel.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? packages/agentplane/src/commands/task/kernel-semantic-result.test.ts"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
       " M .agentplane/tasks/202609172016-5A9KVM/README.md",
-      " M .agentplane/tasks/202609172016-5A9KVM/supervision/declared-checks.json",
-      " M .agentplane/tasks/202609172016-5A9KVM/supervision/implementation-evidence.json",
-      " M packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts",
-      " M packages/agentplane/src/commands/task/direct-task-verification.test.ts",
-      " M packages/agentplane/src/commands/task/kernel-semantic-result.ts",
-      " M packages/agentplane/src/runner/usecases/kernel-authority.ts",
-      " M packages/core/src/tasks/task-kernel/authority-lineage.ts",
-      " M packages/core/src/tasks/task-kernel/kernel.test.ts",
-      " M packages/core/src/tasks/task-kernel/kernel.ts",
-      "?? packages/agentplane/src/commands/task/kernel-semantic-result.test.ts"
+      " M .agentplane/tasks/202609172016-5A9KVM/supervision/implementation-evidence.json"
     ],
     "unchanged_from_execution_baseline": []
   },

@@ -3,6 +3,10 @@ import { createHash } from "node:crypto";
 import { canonicalizeJson, taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
+import {
+  readKernelRecord,
+  TASK_KERNEL_EXTENSION,
+} from "../../adapters/task-backend/kernel-record.js";
 
 export type NativeTaskIdentity = {
   schema_version: 1;
@@ -54,20 +58,48 @@ function requiredCheckIds(task: TaskData): string[] {
     .toSorted();
 }
 
+function approvedPlanIdentity(task: TaskData) {
+  const taskCentric = taskCentricAggregateFromExtensions(task.extensions)?.current_plan;
+  if (
+    taskCentric?.approval.state === "approved" &&
+    isSha256(taskCentric.approval.approved_digest)
+  ) {
+    return {
+      revision: taskCentric.revision,
+      digest: taskCentric.digest,
+      approval_state: taskCentric.approval.state,
+      approved_digest: taskCentric.approval.approved_digest,
+    };
+  }
+  const raw = task.extensions?.[TASK_KERNEL_EXTENSION] as
+    | { repository_identity?: unknown }
+    | undefined;
+  if (!isSha256(raw?.repository_identity)) return null;
+  const read = readKernelRecord(task, raw.repository_identity);
+  const plan = read.kind === "canonical" ? read.record.aggregate.current_plan : null;
+  if (plan?.state !== "APPROVED") return null;
+  return {
+    revision: plan.revision,
+    digest: plan.digest,
+    approval_state: "approved" as const,
+    approved_digest: plan.digest,
+  };
+}
+
 /**
  * Resolve the immutable native owners used by current verification and review.
  * A task without an accepted Plan remains a legacy task until the retirement
  * migration creates one; callers must not manufacture a current identity.
  */
 export function resolveNativeTaskIdentity(task: TaskData): NativeTaskIdentity | null {
-  const plan = taskCentricAggregateFromExtensions(task.extensions)?.current_plan;
+  const plan = approvedPlanIdentity(task);
   const contract = task.execution_contract;
   const verificationContract = contract?.verification.contract;
   const contractDigest = verificationContract?.digest;
   if (
-    plan?.approval.state !== "approved" ||
+    plan?.approval_state !== "approved" ||
     !isSha256(plan.digest) ||
-    plan.approval.approved_digest !== plan.digest ||
+    plan.approved_digest !== plan.digest ||
     !verificationContract ||
     !isSha256(contractDigest)
   ) {
@@ -97,12 +129,7 @@ export function resolveNativeTaskIdentity(task: TaskData): NativeTaskIdentity | 
     schema_version: 1 as const,
     kind: "agentplane.native_task_identity" as const,
     task_id: task.id,
-    plan: {
-      revision: plan.revision,
-      digest: plan.digest,
-      approval_state: plan.approval.state,
-      approved_digest: plan.approval.approved_digest,
-    },
+    plan,
     policy,
     capability,
     checks: { ...checks, digest: sha256(checks) },

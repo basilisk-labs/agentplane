@@ -108,15 +108,52 @@ export async function projectKernelOperationalEvidence(opts: {
 export async function ensureKernelOperationalProjectionStatus(opts: {
   command: CommandContext;
   task_id: string;
+  verification_evidence_digest?: k.Sha256Digest;
 }): Promise<void> {
   const task = await opts.command.taskBackend.getTask(opts.task_id);
-  if (!task || !readKernelOperationalProjection(task.extensions)) {
+  const existing = task ? readKernelOperationalProjection(task.extensions) : null;
+  if (!task || !existing) {
     throw new Error("Canonical operational projection is unavailable");
   }
-  if (task.status === "DONE") return;
+  const verificationEvidenceDigest =
+    opts.verification_evidence_digest ?? existing.verification_evidence_digest;
+  const projectionContents = {
+    schema_version: existing.schema_version,
+    source: existing.source,
+    work_order_id: existing.work_order_id,
+    implementation_commit: existing.implementation_commit,
+    implementation_tree: existing.implementation_tree,
+    verification_evidence_digest: verificationEvidenceDigest,
+    review_identity_digest: existing.review_identity_digest,
+    evidence_refs: existing.evidence_refs,
+    findings: existing.findings,
+    projected_at: existing.projected_at,
+  };
+  const projection: Projection = {
+    ...projectionContents,
+    digest: k.kernelDigest(projectionContents),
+  };
+  if (task.status === "DONE" && projection.digest === existing.digest) return;
   const revision = task.revision ?? 0;
   await opts.command.taskBackend.writeTask(
-    { ...task, revision: revision + 1, status: "DONE" },
+    {
+      ...task,
+      revision: revision + 1,
+      status: "DONE",
+      verification: {
+        ...(task.verification ?? {
+          state: "ok",
+          attempts: 1,
+          updated_at: existing.projected_at,
+          updated_by: "SUPERVISOR",
+        }),
+        note: `Canonical validation ${verificationEvidenceDigest}`,
+      },
+      extensions: {
+        ...task.extensions,
+        [KERNEL_OPERATIONAL_PROJECTION]: projection,
+      },
+    },
     { expectedRevision: revision },
   );
 }

@@ -1,4 +1,7 @@
-import { runKernelFinalValidation } from "./kernel-final-validation.js";
+import {
+  restoreKernelFinalValidation,
+  runKernelFinalValidation,
+} from "./kernel-final-validation.js";
 import { verificationChildEnv } from "../shared/pr-meta/verify-log.js";
 import { issueKernelInspection, resumeKernelInspection } from "./kernel-inspection.js";
 import path from "node:path";
@@ -143,6 +146,84 @@ export async function advanceCanonicalTask(opts: {
     const { record } = current.read;
     const plan = record.aggregate.current_plan;
     const route = current.next_action;
+    const operationId = `${route.reason_code}:${record.digest}:${context.repository_fingerprint}`;
+    finalValidation ??= restoreKernelFinalValidation(record, context.repository_fingerprint);
+    const persistedValidationEvidence =
+      record.aggregate.final_validation?.status === "PASSED"
+        ? record.aggregate.final_validation.evidence_digests.at(-1)
+        : undefined;
+    if (
+      current.read.task.execution_route?.repository_mode === "branch_pr" &&
+      !finalValidation &&
+      persistedValidationEvidence &&
+      ["kernel_final_validation_required", "kernel_task_completion_required"].includes(
+        route.reason_code,
+      )
+    ) {
+      const workflow = await decideCanonicalWorkflowEffect(opts.command, opts.task_id);
+      const terminalOnBase =
+        workflow.workflowStep.kind === "terminal" &&
+        workflow.workflowStep.authoritativeCheckout === "base_checkout";
+      const postMergeBaseOperation =
+        workflow.workflowStep.kind === "cli_operation" &&
+        ["task.hosted_close.finalize", "task.worktree.cleanup"].includes(
+          workflow.workflowStep.operation.id,
+        );
+      if (postMergeBaseOperation || terminalOnBase) {
+        await ensureKernelOperationalProjectionStatus({
+          command: opts.command,
+          task_id: opts.task_id,
+          verification_evidence_digest: persistedValidationEvidence,
+        });
+        const baseCheckout = workflow.workspace.baseCheckoutPath;
+        if (
+          baseCheckout &&
+          path.resolve(baseCheckout) !== path.resolve(opts.command.resolvedProject.gitRoot)
+        ) {
+          const target = await transferCanonicalControllerToBase({
+            command: opts.command,
+            runtime,
+            task_id: opts.task_id,
+            base_checkout: baseCheckout,
+          });
+          return {
+            schema_version: 1,
+            task_id: opts.task_id,
+            action: {
+              kind: "external_wait",
+              reason: "canonical_controller_transferred",
+              must_run_from: target.resolvedProject.gitRoot,
+            },
+          };
+        }
+        if (terminalOnBase) {
+          const completion = await runtime.input({ kind: "complete_task" }, operationId);
+          if (completion.command.expected_task_revision !== record.aggregate.revision)
+            throw new Error("Canonical task changed before completion");
+          requireKernelCommit(await runtime.lifecycle.apply(completion));
+          continue;
+        }
+        const prepared = await prepareCanonicalWorkflowEffect({
+          command: opts.command,
+          runtime,
+          record,
+          decision: workflow,
+        });
+        if (prepared === "prepared") continue;
+        return {
+          schema_version: 1,
+          task_id: opts.task_id,
+          action: {
+            kind: "human_required",
+            reason:
+              prepared === "already_observed"
+                ? "canonical_workflow_effect_no_progress"
+                : "canonical_workflow_effect_unavailable",
+            workflow_step: workflow.workflowStep.id,
+          },
+        };
+      }
+    }
     if (
       route.reason_code === "kernel_task_completed" &&
       current.read.task.execution_route?.repository_mode !== "branch_pr"
@@ -200,7 +281,6 @@ export async function advanceCanonicalTask(opts: {
         operator_action: operatorAction,
       };
     }
-    const operationId = `${route.reason_code}:${record.digest}:${context.repository_fingerprint}`;
     const parent = record.aggregate.authority_lineage?.at(-1)?.authority;
     if (
       plan?.state === "APPROVED" &&
@@ -255,7 +335,9 @@ export async function advanceCanonicalTask(opts: {
           await ensureKernelOperationalProjectionStatus({
             command: opts.command,
             task_id: opts.task_id,
+            verification_evidence_digest: finalValidation.evidence_digest,
           });
+          await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
           const workflow = await decideCanonicalWorkflowEffect(opts.command, opts.task_id);
           const terminalOnBase =
             workflow.workflowStep.kind === "terminal" &&
