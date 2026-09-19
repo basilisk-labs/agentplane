@@ -34,7 +34,6 @@ export type {
   SideEffectAuthorityRecord,
   SideEffectAuthorityState,
   WorkflowAuthorityDecision,
-  WorkflowOperationCapabilityDecision,
 } from "./side-effect-authority-policy.js";
 import type {
   SideEffectAuthorityAuditEntry,

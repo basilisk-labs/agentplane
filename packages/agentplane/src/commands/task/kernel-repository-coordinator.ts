@@ -278,9 +278,7 @@ export async function captureKernelRepositoryBaseline(
   };
 }
 
-export async function readKernelRepositoryBaseline(
-  directory: string,
-): Promise<KernelRepositoryBaseline> {
+async function readKernelRepositoryBaseline(directory: string): Promise<KernelRepositoryBaseline> {
   return JSON.parse(
     await readStableRegularTextNoFollow(
       path.join(directory, "repository-baseline.json"),
