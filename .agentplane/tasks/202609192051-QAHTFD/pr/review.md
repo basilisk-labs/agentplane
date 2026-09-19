@@ -13,7 +13,7 @@ Created: 2026-09-19T20:59:01.339Z
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:c48c85d1bbd14eebd2bdf1e6a8ee59f74f68e9bf3173a2408961ea6c1950be71
+- Note: Canonical validation sha256:35fec45279147b57c16f517d8f23b27106f9afffeb05684eb7f383b102ba2171
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -37,15 +37,17 @@ Created: 2026-09-19T20:59:01.339Z
  .../src/commands/shared/route-decision-blockers.ts |   1 +
  .../src/commands/shared/workflow-step-branch.ts    |  49 +++----
  .../src/commands/shared/workflow-step.test.ts      |  24 ++++
+ .../commands/task/direct-task-finalization.test.ts |  47 ++++++-
+ .../src/commands/task/direct-task-finalization.ts  |   8 +-
  .../commands/task/direct-task-verification.test.ts |  79 +++++++++++
  .../src/commands/task/direct-task-verification.ts  |  80 +++++++++++-
  .../commands/task/hosted-close-premerge.test.ts    |  78 ++++++++++-
  .../src/commands/task/hosted-close-premerge.ts     |  50 ++++++-
  .../src/commands/task/kernel-advance.test.ts       |  97 +++++++++++++-
  .../agentplane/src/commands/task/kernel-advance.ts | 145 +++++++++++++++++++++
- .../task/kernel-repository-coordinator.test.ts     |  11 +-
- .../commands/task/kernel-repository-coordinator.ts |   3 +
- 16 files changed, 761 insertions(+), 48 deletions(-)
+ .../task/kernel-repository-coordinator.test.ts     |  28 +++-
+ .../commands/task/kernel-repository-coordinator.ts |   5 +-
+ 18 files changed, 828 insertions(+), 55 deletions(-)
 ```
 
 </details>

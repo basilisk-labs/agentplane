@@ -6,12 +6,14 @@
  .../src/commands/shared/route-decision-blockers.ts |   1 +
  .../src/commands/shared/workflow-step-branch.ts    |  49 +++----
  .../src/commands/shared/workflow-step.test.ts      |  24 ++++
+ .../commands/task/direct-task-finalization.test.ts |  47 ++++++-
+ .../src/commands/task/direct-task-finalization.ts  |   8 +-
  .../commands/task/direct-task-verification.test.ts |  79 +++++++++++
  .../src/commands/task/direct-task-verification.ts  |  80 +++++++++++-
  .../commands/task/hosted-close-premerge.test.ts    |  78 ++++++++++-
  .../src/commands/task/hosted-close-premerge.ts     |  50 ++++++-
  .../src/commands/task/kernel-advance.test.ts       |  97 +++++++++++++-
  .../agentplane/src/commands/task/kernel-advance.ts | 145 +++++++++++++++++++++
- .../task/kernel-repository-coordinator.test.ts     |  11 +-
- .../commands/task/kernel-repository-coordinator.ts |   3 +
- 16 files changed, 761 insertions(+), 48 deletions(-)
+ .../task/kernel-repository-coordinator.test.ts     |  28 +++-
+ .../commands/task/kernel-repository-coordinator.ts |   5 +-
+ 18 files changed, 828 insertions(+), 55 deletions(-)

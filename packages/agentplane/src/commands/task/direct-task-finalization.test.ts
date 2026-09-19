@@ -1,5 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+if (typeof vi.hoisted !== "function") {
+  Object.defineProperty(vi, "hoisted", { value: <T>(factory: () => T): T => factory() });
+}
+
 const mocks = vi.hoisted(() => ({
   cmdFinish: vi.fn(),
   mkdir: vi.fn(),
@@ -94,6 +98,33 @@ describe("direct task finalization", () => {
     ).resolves.toEqual({ status: "ready", commit: "def456" });
   });
 
+  it("preserves both endpoints of a committed rename for supervisor reconciliation", async () => {
+    mocks.runProcess
+      .mockResolvedValueOnce({ exitCode: 0, stdout: "def456\n", stderr: "" })
+      .mockResolvedValueOnce({
+        exitCode: 0,
+        stdout: "src/previous.ts\nsrc/current.ts\n",
+        stderr: "",
+      });
+
+    await expect(
+      resolveDirectImplementationCommit({
+        command,
+        cwd: "/repo",
+        task_id: TASK_ID,
+        execution_base_commit: "abc123",
+        allowed_paths: ["src"],
+        observed_changed_paths: ["src/previous.ts", "src/current.ts"],
+      }),
+    ).resolves.toEqual({ status: "ready", commit: "def456" });
+    expect(mocks.runProcess).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        args: ["diff", "--no-renames", "--name-only", "--diff-filter=ACDMRTUXB", "abc123..def456"],
+      }),
+    );
+  });
+
   it.each(["committed", "missing", "foreign-base", "unavailable"] as const)(
     "proves base-identical observed writes against their semantic baseline: %s",
     async (variant) => {
@@ -126,7 +157,13 @@ describe("direct task finalization", () => {
       expect(mocks.runProcess).toHaveBeenNthCalledWith(
         2,
         expect.objectContaining({
-          args: ["diff", "--name-only", "--diff-filter=ACDMRTUXB", "integration-base..merge-head"],
+          args: [
+            "diff",
+            "--no-renames",
+            "--name-only",
+            "--diff-filter=ACDMRTUXB",
+            "integration-base..merge-head",
+          ],
         }),
       );
       expect(mocks.runProcess).toHaveBeenNthCalledWith(
@@ -139,7 +176,13 @@ describe("direct task finalization", () => {
         expect(mocks.runProcess).toHaveBeenNthCalledWith(
           4,
           expect.objectContaining({
-            args: ["diff", "--name-only", "--diff-filter=ACDMRTUXB", "semantic-base..merge-head"],
+            args: [
+              "diff",
+              "--no-renames",
+              "--name-only",
+              "--diff-filter=ACDMRTUXB",
+              "semantic-base..merge-head",
+            ],
           }),
         );
       }

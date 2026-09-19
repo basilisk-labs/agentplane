@@ -448,7 +448,7 @@ export async function commitCanonicalImplementation(opts: {
     await gitValue(opts.command, ["merge-base", "--is-ancestor", base, commit], "ancestry", true);
     const committed = await gitValue(
       opts.command,
-      ["diff", "--name-only", "--diff-filter=ACDMRTUXB", `${base}..${commit}`],
+      ["diff", "--no-renames", "--name-only", "--diff-filter=ACDMRTUXB", `${base}..${commit}`],
       "implementation paths",
     );
     return committed

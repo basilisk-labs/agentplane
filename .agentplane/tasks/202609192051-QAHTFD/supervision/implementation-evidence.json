@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 7d0818aeb1f14e0f799628a3a72d7e51db7c8048..9b64e057ccadec109b07d7ee15befcc24fa0ff3a",
+      "command": "git diff --check 9b64e057ccadec109b07d7ee15befcc24fa0ff3a..a27c8d563389158f8b0b2e886946a165e995b00a",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 7d0818aeb1f14e0f799628a3a72d7e51db7c8048..9b64e057ccadec109b07d7ee15befcc24fa0ff3a",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 9b64e057ccadec109b07d7ee15befcc24fa0ff3a..a27c8d563389158f8b0b2e886946a165e995b00a",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -22,10 +22,12 @@
         "M\t.agentplane/tasks/202609192051-QAHTFD/pr/github-body.md",
         "M\t.agentplane/tasks/202609192051-QAHTFD/pr/meta.json",
         "M\t.agentplane/tasks/202609192051-QAHTFD/pr/review.md",
+        "M\t.agentplane/tasks/202609192051-QAHTFD/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202609192051-QAHTFD/supervision/implementation-evidence.json",
-        "M\tpackages/agentplane/src/commands/task/direct-task-verification.test.ts",
-        "M\tpackages/agentplane/src/commands/task/direct-task-verification.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-advance.worktree.test.ts"
+        "R100\tpackages/agentplane/src/commands/shared/route-decision-blockers.kernel.test.ts\tpackages/agentplane/src/commands/shared/canonical-pre-merge-evidence.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-advance.test.ts",
+        "D\tpackages/agentplane/src/commands/task/kernel-advance.worktree.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts"
       ]
     },
     {
@@ -35,18 +37,23 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "7d0818aeb1f14e0f799628a3a72d7e51db7c8048",
-  "implementation_commit": "9b64e057ccadec109b07d7ee15befcc24fa0ff3a",
+  "execution_base_commit": "9b64e057ccadec109b07d7ee15befcc24fa0ff3a",
+  "implementation_commit": "a27c8d563389158f8b0b2e886946a165e995b00a",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
       " M .agentplane/tasks/202609192051-QAHTFD/README.md",
+      " M .agentplane/tasks/202609192051-QAHTFD/supervision/declared-checks.json",
       " M .agentplane/tasks/202609192051-QAHTFD/supervision/implementation-evidence.json"
     ],
     "classification": [
       {
         "classification": "removed_during_execution",
         "line": " M .agentplane/tasks/202609192051-QAHTFD/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609192051-QAHTFD/supervision/declared-checks.json"
       },
       {
         "classification": "removed_during_execution",
@@ -57,6 +64,7 @@
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
       " M .agentplane/tasks/202609192051-QAHTFD/README.md",
+      " M .agentplane/tasks/202609192051-QAHTFD/supervision/declared-checks.json",
       " M .agentplane/tasks/202609192051-QAHTFD/supervision/implementation-evidence.json"
     ],
     "unchanged_from_execution_baseline": []
