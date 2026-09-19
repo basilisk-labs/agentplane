@@ -1,10 +1,15 @@
 {
-  "base": "da36ae806ab1cf537c1804f601365885cf643b46",
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-09-19T05:44:25Z",
+  "base": "main",
   "branch": "task/202609190423-4C8RRW/hosted-baseline-repair",
   "created_at": "2026-09-19T04:54:00.931Z",
   "diffstat_sha256": "sha256:7462979de358e6db21bb48cac9c603b36a75e386884c0196705685c020f3dfb9",
   "last_verified_at": "2026-09-19T05:30:55.603Z",
   "last_verified_diffstat_sha256": "sha256:7462979de358e6db21bb48cac9c603b36a75e386884c0196705685c020f3dfb9",
+  "merge_commit": "4ebbcdd07185c8984d50a94daa24aa9ff07fbf56",
+  "merge_strategy": "merge",
+  "merged_at": "2026-09-19T05:44:25Z",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -14,8 +19,9 @@
     "target_project": "basilisk-labs/agentplane"
   },
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202609190423-4C8RRW",
-  "updated_at": "2026-09-19T04:54:00.931Z",
+  "updated_at": "2026-09-19T05:44:25Z",
   "verify": {
     "status": "pass"
   }
