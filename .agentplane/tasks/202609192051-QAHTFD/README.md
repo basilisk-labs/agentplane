@@ -4,7 +4,7 @@ title: "Productize release-blocking AgentPlane controller fixes for 0.7.10"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 71
+revision: 72
 origin:
   system: "manual"
 depends_on: []
@@ -32,31 +32,30 @@ verification:
 quality_review:
   state: "pass"
   provenance: "human_supplied"
-  updated_at: "2026-09-19T23:16:07.503Z"
+  updated_at: "2026-09-19T23:39:12.340Z"
   updated_by: "HUMAN"
-  note: "Full test audit passed after removing redundant route coverage, restoring fail-closed workflow precedence, isolating qualification tests, and passing the complete local CI contract."
+  note: "Full test audit found complete coverage for changed controller behavior after removing one redundant route case; full local CI and exact-head hosted CI passed."
   evaluated_sha: "acce882d4fcd1ee370bfb70945730f1a6db3e57d"
-  review_identity_digest: "sha256:7c83e2b95a11529f70ab35867d8ad1a7fe50ac79be23bcb78da46b709d9d065a"
+  review_identity_digest: "sha256:5b86638f6a7826cec2d15cdc386ec416d67988b5ce6787769894d42f7e4c3e37"
   evidence_refs:
-    - ".agentplane/tasks/202609192051-QAHTFD/quality/20260919-231607177-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609192051-QAHTFD/quality/20260919-231607177-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609192051-QAHTFD/quality/objects/sha256/454cd7deed114e7de7f1aa49b44f6a0c7cf31528ce6612dc05560bd584f0c037.md"
-    - ".agentplane/tasks/202609192051-QAHTFD/quality/20260919-231607177-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609192051-QAHTFD/quality/20260919-231607177-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609192051-QAHTFD/quality/20260919-233911987-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609192051-QAHTFD/quality/20260919-233911987-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609192051-QAHTFD/quality/objects/sha256/f6493bd4fdb2f8a6629b805a7b7f9f4f9cc1d41ba62047e2dc6199ee36381603.md"
+    - ".agentplane/tasks/202609192051-QAHTFD/quality/20260919-233911987-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609192051-QAHTFD/quality/20260919-233911987-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609192051-QAHTFD/README.md"
     - ".agentplane/tasks/202609192051-QAHTFD/quality/objects/sha256/ec7f99f7b6d1eaaa1b23a0968483d7f223d48d6c934a61e20130287392eebfd3.patch"
-    - ".agentplane/tasks/202609192051-QAHTFD/quality/objects/sha256/b872caa4c903de1e06b76f89a212d1d7143cdcf9a19627b4ca7984871fb3f1a5.json"
-    - ".agentplane/tasks/202609192051-QAHTFD/quality/objects/sha256/3b7bb1b3ed34acc0c7d551a27b57d3e00ce58277a12288f8d82542c45339ff13.json"
+    - ".agentplane/tasks/202609192051-QAHTFD/quality/objects/sha256/a6bdac83980b6373342bcb0c6f7350c3e910ac69ec406d8216b511b863668fe5.json"
+    - ".agentplane/tasks/202609192051-QAHTFD/quality/objects/sha256/7165d28c4189b49234b93bd0580d193ba0c032f859e832e29df96f697060d962.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
     - ".agentplane/policy/workflow.release.md"
-    - "bun run ci:local:full passed on committed exact implementation tree 5f15085e11fc0cfdcef92821a3eb67564c09aa14"
-    - "Focused controller suite: 120/120 passed"
-    - "Route regression suite: 65/65 passed"
+    - ".agentplane/tasks/202609192051-QAHTFD/supervision/declared-checks.json"
+    - ".agentplane/tasks/202609192051-QAHTFD/verification/20260919233818115-f3416eea6946e254.json"
   findings:
-    - "No blocking correctness or coverage gap remains in the changed controller paths; the broad worktree route that masked five safety expectations was removed."
+    - "Version-neutral release qualification, detached-clean-checkout cleanup, worktree orchestration, rename endpoint handling, fail-closed authority, and recovery routes have distinct behavioral coverage."
 execution_route:
   frozen: true
   reason_codes:

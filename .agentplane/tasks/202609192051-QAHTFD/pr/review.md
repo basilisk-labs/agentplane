@@ -6,14 +6,14 @@ Created: 2026-09-19T20:59:01.339Z
 
 - Task: `202609192051-QAHTFD`
 - Title: Productize release-blocking AgentPlane controller fixes for 0.7.10
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609192051-QAHTFD/canonical-qahtfd`
 - Canonical task record: `.agentplane/tasks/202609192051-QAHTFD/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Verified: canonical Task Kernel final checks passed.
+- Note: Canonical validation sha256:1a2bb856be8c6c8e3ac27409d1132758fdb7482f516c0ce32515a59c59679314
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
