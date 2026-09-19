@@ -2241,6 +2241,12 @@ function validateReviewedCandidate({
       required: true,
     },
     {
+      command: "task plan set",
+      name: "scope-expansion-approved-by",
+      kind: "string",
+      valueHint: "<role>",
+    },
+    {
       command: "task run",
       name: "allow-danger-full-access",
       kind: "boolean",
@@ -2766,6 +2772,12 @@ function validateReviewedCandidate({
       command: "task plan approve",
       name: "host-user-decision",
       source_task: "202608211020-FGAPJC",
+    },
+    {
+      kind: "option",
+      command: "task plan set",
+      name: "scope-expansion-approved-by",
+      source_task: "202609162254-YE48GC",
     },
     {
       kind: "option",

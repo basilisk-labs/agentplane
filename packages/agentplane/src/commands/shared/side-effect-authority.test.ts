@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { buildStateFingerprint, type StateFingerprint } from "@agentplaneorg/core/schemas";
-import { createOperationLease, type ExecutionGrant } from "@agentplaneorg/core/tasks";
+import { createOperationLease, taskKernel, type ExecutionGrant } from "@agentplaneorg/core/tasks";
 
 import {
   assessWorkflowOperationCapability,
@@ -145,6 +145,114 @@ function approvedTask(
 }
 
 describe("side-effect authority", () => {
+  it("accepts exact provider classes from a USER-approved canonical authority", () => {
+    const approvalEvidence = taskKernel.kernelDigest("manual approval");
+    const planDigest = taskKernel.kernelDigest("approved plan");
+    const repositoryFingerprint = taskKernel.kernelDigest("repository before implementation");
+    const authorityContents = {
+      task_id: taskId,
+      plan_revision: 1,
+      plan_digest: planDigest,
+      work_item_id: null,
+      repository_identity: taskKernel.kernelDigest("repository"),
+      repository_fingerprint: repositoryFingerprint,
+      scope_roots: ["packages/agentplane"],
+      repository_effects: ["source_code"],
+      external_effects: ["pull_request"],
+      capabilities: ["provider_read", "provider_write", "network"],
+      resources: ["workspace", "provider"],
+      validation_requirements: ["focused"],
+      policy_digests: [taskKernel.kernelDigest("policy")],
+      completion_requirements: ["verified"],
+      risk: {
+        requirements: "material",
+        implementation: "material",
+        reversibility: "recovery_required",
+      },
+      provenance: {
+        kind: "USER" as const,
+        actor_id: "USER",
+        evidence_digest: approvalEvidence,
+        parent_authority_digest: null,
+      },
+      expires_at: null,
+    };
+    const authority = {
+      ...authorityContents,
+      digest: taskKernel.authorityDigest(authorityContents),
+    };
+    const continuationContents = {
+      ...authority,
+      repository_fingerprint: taskKernel.kernelDigest("repository after implementation"),
+      provenance: {
+        ...authority.provenance,
+        kind: "SYSTEM" as const,
+        actor_id: "agentplane",
+        parent_authority_digest: authority.digest,
+      },
+    };
+    const continuation = {
+      ...continuationContents,
+      digest: taskKernel.authorityDigest(continuationContents),
+    };
+    const contents = {
+      kind: "canonical_task",
+      aggregate: {
+        schema_version: 1,
+        id: taskId,
+        revision: 2,
+        state: "ACTIVE",
+        intent_digest: taskKernel.kernelDigest("intent"),
+        current_plan: {
+          revision: 1,
+          digest: planDigest,
+          state: "APPROVED",
+          approval_actor_id: "USER",
+          approval_evidence_digest: approvalEvidence,
+          work_items: [],
+        },
+        plan_history: [],
+        work_items: {},
+        final_validation: null,
+        effects: [],
+        mutation_receipts: {},
+        controller_transfer: null,
+        migration_receipts: [],
+        authority_lineage: [
+          { approval_mode: "manual_operator", observation: null, authority },
+          {
+            approval_mode: null,
+            observation: {
+              kind: "repository_implementation",
+              evidence_digest: taskKernel.kernelDigest("implementation evidence"),
+              previous_fingerprint: repositoryFingerprint,
+              changed_paths: ["packages/agentplane"],
+            },
+            authority: continuation,
+          },
+        ],
+      },
+    };
+    const task = {
+      extensions: {
+        task_kernel: { ...contents, digest: taskKernel.kernelDigest(contents) },
+      },
+    };
+
+    expect(
+      evaluateWorkflowOperationAuthority({ task, operation, fingerprint: fingerprint() }),
+    ).toMatchObject({ state: "allowed", authorityRef: `kernel:${continuation.digest}` });
+
+    const tampered = structuredClone(task);
+    const kernel = tampered.extensions.task_kernel as {
+      aggregate: { authority_lineage: { authority: { external_effects: string[] } }[] };
+    };
+    kernel.aggregate.authority_lineage[1]!.authority.external_effects.push("integration");
+    expect(
+      evaluateWorkflowOperationAuthority({ task: tampered, operation, fingerprint: fingerprint() }),
+    ).toMatchObject({ state: "approval_required" });
+  });
+
   it("classifies every formal workflow operation deliberately", () => {
     expect(Object.keys(WORKFLOW_OPERATION_AUTHORITY_POLICY).toSorted()).toEqual(
       Object.keys(WORKFLOW_OPERATION_REGISTRY).toSorted(),

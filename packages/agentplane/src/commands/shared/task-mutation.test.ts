@@ -148,6 +148,49 @@ describe("applyTaskMutation", () => {
     expect(writeTask).not.toHaveBeenCalled();
   });
 
+  it("allows an explicit compatibility projection only when the Task Kernel record is preserved", async () => {
+    let currentTask = mkTask({ extensions: { task_kernel: { digest: "kernel-record" } } });
+    const store = {
+      update: vi.fn(async (_taskId: string, updater: (task: TaskData) => Promise<TaskData>) => {
+        currentTask = cloneTask(await updater(cloneTask(currentTask)));
+        return { changed: true, task: cloneTask(currentTask) };
+      }),
+    };
+    const ctx = mkCtx(mkBackend());
+
+    vi.doMock("./task-backend.js", async () => {
+      const actual = await vi.importActual("./task-backend.js");
+      return { ...actual, backendUsesLocalTaskStore: () => true };
+    });
+    vi.doMock("./task-store.js", async () => {
+      const actual = await vi.importActual("./task-store.js");
+      return { ...actual, getTaskStore: () => store };
+    });
+
+    const { applyTaskMutation } = await import("./task-mutation.js");
+    const { setTaskFieldsIntent } = await import("./task-store.js");
+    await expect(
+      applyTaskMutation({
+        ctx,
+        taskId: "T-1",
+        allowCanonicalProjection: true,
+        build: () => ({ intents: setTaskFieldsIntent({ status: "DONE" }) }),
+      }),
+    ).resolves.toMatchObject({ task: { status: "DONE" } });
+    expect(currentTask.extensions?.task_kernel).toEqual({ digest: "kernel-record" });
+
+    await expect(
+      applyTaskMutation({
+        ctx,
+        taskId: "T-1",
+        allowCanonicalProjection: true,
+        build: (current) => ({
+          nextTask: { ...current, extensions: { ...current.extensions, task_kernel: {} } },
+        }),
+      }),
+    ).rejects.toThrow("changed the Task Kernel record");
+  });
+
   it("uses store updates on the local backend path when the builder returns a next task", async () => {
     let currentTask = mkTask();
     const store = {

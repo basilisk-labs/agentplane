@@ -105,6 +105,11 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
       execFileSync("git", ["-c", "core.hooksPath=/dev/null", ...args], { cwd: root });
     git(["add", "."]);
     git(["commit", "-m", "canonical worktree fixture"]);
+    const primaryPacket = await runJson(root, ["task", "advance", taskId, "--agent-json"]);
+    const primaryExchange = primaryPacket.exchange as { directory: string };
+    const primaryOrder = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(
+      JSON.parse(await readFile(path.join(primaryExchange.directory, "work-order.json"), "utf8")),
+    );
     const linked = path.join(root, ".agentplane/worktrees/canonical-context");
     git(["worktree", "add", "-b", "canonical-context", linked]);
     const initial = await loadCommandContext({ cwd: linked });
@@ -124,6 +129,7 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
     const order = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(
       JSON.parse(await readFile(path.join(exchange.directory, "work-order.json"), "utf8")),
     );
+    expect(order.work_order_id).not.toBe(primaryOrder.work_order_id);
     expect(order.state_fingerprint.worktree).toBe(initial.resolvedProject.gitRoot);
     expect(order.canonical_binding?.repository_fingerprint).toBe(before.fingerprint);
     await writeFile(path.join(linked, "local-change.txt"), "local change");
@@ -250,10 +256,10 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
         plan_revision: 1,
       });
       const waiting = await runJson(root, ["task", "advance", taskId, "--agent-json"]);
-      expect(waiting.action).toMatchObject({
-        kind: "external_wait",
-        reason: "kernel_work_item_result_required",
-      });
+      expect(waiting.action).toMatchObject({ kind: "agent_episode" });
+      expect((waiting.exchange as { result_path: string }).result_path).toBe(
+        implementationExchange.result_path,
+      );
       await writeFile(path.join(root, "result.txt"), "implementation");
       const result = {
         schema_version: 2,
@@ -483,13 +489,86 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
         root,
       ]);
       expect(await runtime.adapter.read(taskId)).toEqual(amended);
-      refined.work_items[1]!.execution_requirements.scope_roots = ["."];
+      refined.work_items[1]!.execution_requirements.scope_roots = [
+        "more/result.txt",
+        "more/extra.txt",
+      ];
       await refused(
         root,
         ["task", "plan", "set", taskId, "--text", JSON.stringify(refined)],
         "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
       );
-      expect(await runtime.adapter.read(taskId)).toEqual(amended);
+      expect(
+        await runCliSilent([
+          "task",
+          "plan",
+          "set",
+          taskId,
+          "--text",
+          JSON.stringify(refined),
+          "--scope-expansion-approved-by",
+          "USER",
+          "--root",
+          root,
+        ]),
+      ).toBe(0);
+      const expanded = await runtime.adapter.read(taskId);
+      if (expanded.kind !== "canonical") throw new Error("Approved amendment missing");
+      expect(expanded.record.aggregate.current_plan).toMatchObject({
+        revision: 3,
+        approval_actor_id: "USER",
+      });
+      expect(expanded.record.aggregate.current_plan?.approval_evidence_digest).not.toBe(
+        amended.record.aggregate.current_plan?.approval_evidence_digest,
+      );
+      refined.work_items[1]!.execution_requirements.scope_roots = [
+        "more/result.txt",
+        "more/extra.txt",
+        "docs/user/cli-reference.generated.mdx",
+      ];
+      expect(
+        await runCliSilent([
+          "task",
+          "plan",
+          "set",
+          taskId,
+          "--text",
+          JSON.stringify(refined),
+          "--scope-expansion-approved-by",
+          "USER",
+          "--root",
+          root,
+        ]),
+      ).toBe(0);
+      const topLevelExpanded = await runtime.adapter.read(taskId);
+      if (topLevelExpanded.kind !== "canonical") throw new Error("Top-level amendment missing");
+      const topLevelAuthority = topLevelExpanded.record.aggregate.authority_lineage?.at(-1);
+      expect(topLevelAuthority).toMatchObject({
+        approval_mode: null,
+        observation: {
+          kind: "plan_amendment",
+          added_scope_roots: ["docs/user/cli-reference.generated.mdx"],
+        },
+      });
+      expect(topLevelAuthority?.authority.scope_roots).toContain(
+        "docs/user/cli-reference.generated.mdx",
+      );
+      refined.work_items[1]!.execution_requirements.scope_roots = ["."];
+      await refused(
+        root,
+        [
+          "task",
+          "plan",
+          "set",
+          taskId,
+          "--text",
+          JSON.stringify(refined),
+          "--scope-expansion-approved-by",
+          "USER",
+        ],
+        "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+      );
+      expect(await runtime.adapter.read(taskId)).toEqual(topLevelExpanded);
     },
   );
   it.each([
@@ -639,12 +718,13 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
       const completed = await runtime.adapter.read(taskId);
       if (completed.kind !== "canonical") throw new Error("Missing completed task");
       expect(completed.record.aggregate.final_validation?.status).toBe("PASSED");
+      // Recovery reuses the persisted validation instead of recording a second mutation.
       if (backendKind === "cloud")
         expect(
           Object.keys(completed.record.aggregate.mutation_receipts).filter((id) =>
             id.startsWith("final-validation:"),
           ),
-        ).toHaveLength(2);
+        ).toHaveLength(1);
       expect(await readFile(path.join(root, "result.txt"), "utf8")).toBe("managed implementation");
       expect(execute).toHaveBeenCalledTimes(backendKind === "cloud" ? 5 : 3);
       const again = await runJson(root, ["task", "run", taskId, "--json"]);

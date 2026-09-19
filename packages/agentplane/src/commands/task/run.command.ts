@@ -38,6 +38,10 @@ import {
   directTaskSupervisionDisposition,
 } from "./supervision-outcome-disposition.js";
 import { requireKernelIssuanceEligibility } from "./kernel-cutover.js";
+import {
+  recoverCanonicalControllerSuspensions,
+  resolveCanonicalControllerCommand,
+} from "./kernel-controller-handoff.js";
 
 export {
   makeRunTaskRunResolveEffectHandler,
@@ -105,17 +109,26 @@ export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
       const initialCommandCtx = await deps.getPreparationContext("task run", {
         includeRemote: parsed.remote,
       });
+      await recoverCanonicalControllerSuspensions({
+        command: initialCommandCtx,
+        task_id: parsed.taskId,
+      });
       const canonicalSource = await initialCommandCtx.taskBackend.getTask(parsed.taskId);
       if (
         canonicalSource?.extensions &&
         Object.hasOwn(canonicalSource.extensions, TASK_KERNEL_EXTENSION)
       ) {
+        const command = await resolveCanonicalControllerCommand({
+          command: initialCommandCtx,
+          task_id: parsed.taskId,
+        });
         output.json(
           await runCanonicalTask({
-            command: initialCommandCtx,
+            command,
             task_id: parsed.taskId,
             dry_run: true,
             sandbox: parsed.sandbox,
+            allow_remote: parsed.remote,
           }),
         );
         return 0;
@@ -159,16 +172,25 @@ export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
     const initialCommandCtx = await deps.getExecutionContext("task run", {
       includeRemote: parsed.remote,
     });
+    await recoverCanonicalControllerSuspensions({
+      command: initialCommandCtx,
+      task_id: parsed.taskId,
+    });
     const canonicalSource = await initialCommandCtx.taskBackend.getTask(parsed.taskId);
     if (
       canonicalSource?.extensions &&
       Object.hasOwn(canonicalSource.extensions, TASK_KERNEL_EXTENSION)
     ) {
+      const command = await resolveCanonicalControllerCommand({
+        command: initialCommandCtx,
+        task_id: parsed.taskId,
+      });
       output.json(
         await runCanonicalTask({
-          command: initialCommandCtx,
+          command,
           task_id: parsed.taskId,
           sandbox: parsed.sandbox,
+          allow_remote: parsed.remote,
         }),
       );
       return 0;

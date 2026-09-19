@@ -32,6 +32,14 @@ export function assertLegacyMutation(task: TaskData): void {
     );
 }
 
+function assertCanonicalProjectionPreserved(opts: { current: TaskData; next: TaskData }): void {
+  const current = opts.current.extensions?.[TASK_KERNEL_EXTENSION];
+  const next = opts.next.extensions?.[TASK_KERNEL_EXTENSION];
+  if (current === undefined || JSON.stringify(current) !== JSON.stringify(next)) {
+    throw new Error("Canonical compatibility projection changed the Task Kernel record");
+  }
+}
+
 function assertTaskCentricProjection(opts: { current: TaskData; next: TaskData }): void {
   const task = opts.next;
   const aggregate = taskCentricAggregateFromExtensions(task.extensions);
@@ -209,6 +217,7 @@ export async function applyTaskMutation(opts: {
   ) => Promise<TaskMutationPlan | null | undefined> | TaskMutationPlan | null | undefined;
   writeOptions?: TaskWriteOptions;
   beforePersist?: PreparedTaskMutationObserver;
+  allowCanonicalProjection?: boolean;
 }): Promise<{ changed: boolean; task: TaskData; mode: "local-store" | "backend" }> {
   const policyAction = opts.policyAction ?? "task_mutation";
 
@@ -217,7 +226,7 @@ export async function applyTaskMutation(opts: {
     const result = await store.update(
       opts.taskId,
       async (current) => {
-        assertLegacyMutation(current);
+        if (!opts.allowCanonicalProjection) assertLegacyMutation(current);
         assertTaskMutationPolicy({
           ctx: opts.ctx,
           taskId: opts.taskId,
@@ -232,6 +241,7 @@ export async function applyTaskMutation(opts: {
             current,
             next: plan.nextTask,
           });
+          if (opts.allowCanonicalProjection) assertCanonicalProjectionPreserved({ current, next });
           assertTaskCentricProjection({ current, next });
           return next;
         }
@@ -240,6 +250,7 @@ export async function applyTaskMutation(opts: {
             current,
             next: applyTaskStoreIntentsToTask(current, plan.intents),
           });
+          if (opts.allowCanonicalProjection) assertCanonicalProjectionPreserved({ current, next });
           assertTaskCentricProjection({ current, next });
           return next;
         }
@@ -251,6 +262,10 @@ export async function applyTaskMutation(opts: {
       },
     );
     return { ...result, mode: "local-store" };
+  }
+
+  if (opts.allowCanonicalProjection) {
+    throw new Error("Canonical compatibility projection requires the native local task store");
   }
 
   const current = await loadTaskFromContext({ ctx: opts.ctx, taskId: opts.taskId });

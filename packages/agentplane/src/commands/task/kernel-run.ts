@@ -29,6 +29,7 @@ import { buildMonotonicLifecycleTiming } from "../shared/lifecycle-stage-timing.
 import { advanceCanonicalTask } from "./kernel-advance.js";
 import { writeKernelArtifact } from "./kernel-exchange.js";
 import { createKernelRuntime } from "./kernel-runtime-context.js";
+import { createKernelProviderEffectPortResolver } from "./kernel-provider-effect-coordinator.js";
 
 type Packet = Awaited<ReturnType<typeof advanceCanonicalTask>>;
 
@@ -71,6 +72,7 @@ async function executeKernelPacket(
   taskId: string,
   packet: Extract<Packet, { exchange: object }>,
   sandbox?: string,
+  allowRemote = false,
 ) {
   const directory = packet.exchange.directory;
   const workOrder = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(
@@ -185,7 +187,7 @@ async function executeKernelPacket(
   const capture = async () => {
     const current = await runtime.adapter.read(taskId);
     if (current.kind !== "canonical") throw new Error("Canonical run state unavailable");
-    return buildKernelStateFingerprint({
+    return await buildKernelStateFingerprint({
       command,
       record: current.record,
       context: await runtime.native.readContext(taskId),
@@ -413,6 +415,11 @@ async function executeKernelPacket(
       task_id: taskId,
       transport: "managed",
       result_path: packet.exchange.result_path,
+      effect_port_resolver: createKernelProviderEffectPortResolver({
+        command,
+        allow_remote: allowRemote,
+      }),
+      allow_provider_effects: allowRemote,
     });
   } finally {
     await lease.release();
@@ -424,6 +431,7 @@ export async function runCanonicalTask(opts: {
   task_id: string;
   dry_run?: boolean;
   sandbox?: string;
+  allow_remote?: boolean;
 }) {
   if (opts.dry_run) {
     const runtime = await createKernelRuntime({
@@ -440,10 +448,25 @@ export async function runCanonicalTask(opts: {
     };
   }
   let packet: Packet | Awaited<ReturnType<typeof executeKernelPacket>> = await advanceCanonicalTask(
-    { command: opts.command, task_id: opts.task_id, transport: "managed" },
+    {
+      command: opts.command,
+      task_id: opts.task_id,
+      transport: "managed",
+      effect_port_resolver: createKernelProviderEffectPortResolver({
+        command: opts.command,
+        allow_remote: opts.allow_remote === true,
+      }),
+      allow_provider_effects: opts.allow_remote === true,
+    },
   );
   for (let episode = 0; episode < 16 && "exchange" in packet; episode++) {
-    packet = await executeKernelPacket(opts.command, opts.task_id, packet, opts.sandbox);
+    packet = await executeKernelPacket(
+      opts.command,
+      opts.task_id,
+      packet,
+      opts.sandbox,
+      opts.allow_remote === true,
+    );
   }
   return packet;
 }
