@@ -610,6 +610,30 @@ describe("typed WorkflowStep reducer", () => {
     expect(step.operation.id).toBe("worktree.prepare");
   });
 
+  it("prepares a worktree for an initialized active task observed on the base checkout", () => {
+    const step = reduceRouteState(
+      routeState({
+        prFlow: null,
+        blockers: [],
+        resume: { ...resume, branch: resume.base_branch },
+        taskWorktree: {
+          state: "clean",
+          branch: resume.base_branch,
+          worktreePath: resume.workspace_root,
+          changedPaths: [],
+        },
+      }),
+    );
+
+    expect(step).toMatchObject({
+      kind: "cli_operation",
+      phase: "worktree_needed",
+      compatibility: { code: "start_or_recover_worktree" },
+    });
+    if (step.kind !== "cli_operation") throw new Error("expected a CLI operation");
+    expect(step.operation.id).toBe("worktree.prepare");
+  });
+
   it("does not infer included-batch ownership from task prose", () => {
     const step = reduceRouteState(
       routeState({

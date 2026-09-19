@@ -12,8 +12,8 @@ Created: 2026-09-19T20:59:01.339Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:c48c85d1bbd14eebd2bdf1e6a8ee59f74f68e9bf3173a2408961ea6c1950be71
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -31,14 +31,20 @@ Created: 2026-09-19T20:59:01.339Z
 ```text
  .../src/commands/pr/integrate/internal/prepare.ts  |   1 +
  .../shared/canonical-pre-merge-evidence.ts         |   3 +-
+ .../commands/shared/quality-review-target.test.ts  |  46 +++++++
  .../src/commands/shared/quality-review-target.ts   |  24 +++-
+ .../shared/route-decision-blockers.kernel.test.ts  |  36 +++++
  .../src/commands/shared/route-decision-blockers.ts |   1 +
  .../src/commands/shared/workflow-step-branch.ts    |  49 +++----
+ .../src/commands/shared/workflow-step.test.ts      |  24 ++++
+ .../commands/task/direct-task-verification.test.ts |  34 +++++
  .../src/commands/task/direct-task-verification.ts  |  59 ++++++++-
+ .../commands/task/hosted-close-premerge.test.ts    |  78 ++++++++++-
  .../src/commands/task/hosted-close-premerge.ts     |  50 ++++++-
  .../agentplane/src/commands/task/kernel-advance.ts | 145 +++++++++++++++++++++
+ .../task/kernel-repository-coordinator.test.ts     |   7 +-
  .../commands/task/kernel-repository-coordinator.ts |   3 +
- 9 files changed, 292 insertions(+), 43 deletions(-)
+ 15 files changed, 514 insertions(+), 46 deletions(-)
 ```
 
 </details>

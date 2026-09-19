@@ -11,6 +11,7 @@ const mocks = vi.hoisted(() => ({
   prepareEvidence: vi.fn(),
   readStatus: vi.fn(),
   readHead: vi.fn(),
+  stage: vi.fn(),
 }));
 
 vi.mock("@agentplaneorg/core/process", () => ({ runProcess: mocks.runProcess }));
@@ -45,7 +46,7 @@ const workOrder = {
 const invalidateStatus = vi.fn();
 const command = {
   resolvedProject: { gitRoot: "/repo" },
-  git: { invalidateStatus },
+  git: { invalidateStatus, stage: mocks.stage },
   config: {
     branch: { task_prefix: "task/" },
     paths: { workflow_dir: ".agentplane/tasks" },
@@ -145,6 +146,10 @@ describe("canonical repository coordinator", () => {
         allowTasks: true,
         requireClean: false,
       }),
+    );
+    expect(mocks.stage).toHaveBeenCalledWith(["src/change.ts", "src/prior.ts"]);
+    expect(mocks.stage.mock.invocationCallOrder[0]).toBeLessThan(
+      mocks.cmdCommit.mock.invocationCallOrder[0]!,
     );
     expect(result).toMatchObject({
       base_commit: "base-sha",

@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check a843b955ca9cbab2dd7389b4dbcb5e503e580def..0c527cd5a9c41d41a1ba38bc44c92817356ca278",
+      "command": "git diff --check 0c527cd5a9c41d41a1ba38bc44c92817356ca278..852e2de3c0737c1aaff820ca29b05a65b4b769f0",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,27 +13,19 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB a843b955ca9cbab2dd7389b4dbcb5e503e580def..0c527cd5a9c41d41a1ba38bc44c92817356ca278",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 0c527cd5a9c41d41a1ba38bc44c92817356ca278..852e2de3c0737c1aaff820ca29b05a65b4b769f0",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "A\t.agentplane/tasks/202609192051-QAHTFD/README.md",
-        "A\t.agentplane/tasks/202609192051-QAHTFD/pr/diffstat.txt",
-        "A\t.agentplane/tasks/202609192051-QAHTFD/pr/github-body.md",
-        "A\t.agentplane/tasks/202609192051-QAHTFD/pr/github-title.txt",
-        "A\t.agentplane/tasks/202609192051-QAHTFD/pr/meta.json",
-        "A\t.agentplane/tasks/202609192051-QAHTFD/pr/review.md",
-        "A\t.agentplane/tasks/202609192051-QAHTFD/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json",
-        "A\t.agentplane/tasks/202609192051-QAHTFD/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
-        "M\tpackages/agentplane/src/commands/pr/integrate/internal/prepare.ts",
-        "M\tpackages/agentplane/src/commands/shared/canonical-pre-merge-evidence.ts",
+        "M\t.agentplane/tasks/202609192051-QAHTFD/README.md",
+        "M\t.agentplane/tasks/202609192051-QAHTFD/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609192051-QAHTFD/pr/github-body.md",
+        "M\t.agentplane/tasks/202609192051-QAHTFD/pr/meta.json",
+        "M\t.agentplane/tasks/202609192051-QAHTFD/pr/review.md",
+        "A\t.agentplane/tasks/202609192051-QAHTFD/quality/objects/sha256/5404e4f80074675cc911e313ac7ead8157492b68fa4c1a9bc85f094f038d9414.json",
+        "A\t.agentplane/tasks/202609192051-QAHTFD/supervision/implementation-evidence.json",
         "M\tpackages/agentplane/src/commands/shared/quality-review-target.ts",
-        "M\tpackages/agentplane/src/commands/shared/route-decision-blockers.ts",
-        "M\tpackages/agentplane/src/commands/shared/workflow-step-branch.ts",
-        "M\tpackages/agentplane/src/commands/task/direct-task-verification.ts",
-        "M\tpackages/agentplane/src/commands/task/hosted-close-premerge.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-advance.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-repository-coordinator.ts"
+        "M\tpackages/agentplane/src/commands/task/hosted-close-premerge.ts"
       ]
     },
     {
@@ -43,89 +35,35 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "a843b955ca9cbab2dd7389b4dbcb5e503e580def",
-  "implementation_commit": "0c527cd5a9c41d41a1ba38bc44c92817356ca278",
+  "execution_base_commit": "0c527cd5a9c41d41a1ba38bc44c92817356ca278",
+  "implementation_commit": "852e2de3c0737c1aaff820ca29b05a65b4b769f0",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
-      "AM .agentplane/tasks/202609192051-QAHTFD/README.md",
-      "A  .agentplane/tasks/202609192051-QAHTFD/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json",
-      "A  .agentplane/tasks/202609192051-QAHTFD/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
-      "M  packages/agentplane/src/commands/pr/integrate/internal/prepare.ts",
-      "M  packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.ts",
-      "M  packages/agentplane/src/commands/shared/quality-review-target.ts",
-      "M  packages/agentplane/src/commands/shared/route-decision-blockers.ts",
-      "M  packages/agentplane/src/commands/shared/workflow-step-branch.ts",
-      "M  packages/agentplane/src/commands/task/direct-task-verification.ts",
-      "M  packages/agentplane/src/commands/task/hosted-close-premerge.ts",
-      "M  packages/agentplane/src/commands/task/kernel-advance.ts",
-      "M  packages/agentplane/src/commands/task/kernel-repository-coordinator.ts"
+      " M .agentplane/tasks/202609192051-QAHTFD/README.md",
+      "?? .agentplane/tasks/202609192051-QAHTFD/quality/objects/sha256/5404e4f80074675cc911e313ac7ead8157492b68fa4c1a9bc85f094f038d9414.json",
+      "?? .agentplane/tasks/202609192051-QAHTFD/supervision/implementation-evidence.json"
     ],
     "classification": [
       {
         "classification": "removed_during_execution",
-        "line": "AM .agentplane/tasks/202609192051-QAHTFD/README.md"
+        "line": " M .agentplane/tasks/202609192051-QAHTFD/README.md"
       },
       {
         "classification": "removed_during_execution",
-        "line": "A  .agentplane/tasks/202609192051-QAHTFD/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
+        "line": "?? .agentplane/tasks/202609192051-QAHTFD/quality/objects/sha256/5404e4f80074675cc911e313ac7ead8157492b68fa4c1a9bc85f094f038d9414.json"
       },
       {
         "classification": "removed_during_execution",
-        "line": "A  .agentplane/tasks/202609192051-QAHTFD/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "M  packages/agentplane/src/commands/pr/integrate/internal/prepare.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "M  packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "M  packages/agentplane/src/commands/shared/quality-review-target.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "M  packages/agentplane/src/commands/shared/route-decision-blockers.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "M  packages/agentplane/src/commands/shared/workflow-step-branch.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "M  packages/agentplane/src/commands/task/direct-task-verification.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "M  packages/agentplane/src/commands/task/hosted-close-premerge.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "M  packages/agentplane/src/commands/task/kernel-advance.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "M  packages/agentplane/src/commands/task/kernel-repository-coordinator.ts"
+        "line": "?? .agentplane/tasks/202609192051-QAHTFD/supervision/implementation-evidence.json"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
-      "AM .agentplane/tasks/202609192051-QAHTFD/README.md",
-      "A  .agentplane/tasks/202609192051-QAHTFD/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json",
-      "A  .agentplane/tasks/202609192051-QAHTFD/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
-      "M  packages/agentplane/src/commands/pr/integrate/internal/prepare.ts",
-      "M  packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.ts",
-      "M  packages/agentplane/src/commands/shared/quality-review-target.ts",
-      "M  packages/agentplane/src/commands/shared/route-decision-blockers.ts",
-      "M  packages/agentplane/src/commands/shared/workflow-step-branch.ts",
-      "M  packages/agentplane/src/commands/task/direct-task-verification.ts",
-      "M  packages/agentplane/src/commands/task/hosted-close-premerge.ts",
-      "M  packages/agentplane/src/commands/task/kernel-advance.ts",
-      "M  packages/agentplane/src/commands/task/kernel-repository-coordinator.ts"
+      " M .agentplane/tasks/202609192051-QAHTFD/README.md",
+      "?? .agentplane/tasks/202609192051-QAHTFD/quality/objects/sha256/5404e4f80074675cc911e313ac7ead8157492b68fa4c1a9bc85f094f038d9414.json",
+      "?? .agentplane/tasks/202609192051-QAHTFD/supervision/implementation-evidence.json"
     ],
     "unchanged_from_execution_baseline": []
   },
