@@ -4,7 +4,7 @@ title: "Persist the verified Task Kernel native identity release blocker through
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -26,10 +26,10 @@ plan_approval:
   note: "Projected from the approved canonical Task Kernel plan."
 verification:
   state: "ok"
-  updated_at: "2026-09-19T01:00:54.307Z"
+  updated_at: "2026-09-19T01:39:38.395Z"
   updated_by: "SUPERVISOR"
-  note: "Canonical validation sha256:27b19cd573a1f39663478471805463f36706eb0c1b1cc3af5eea2a964ea6c4ba"
-  attempts: 1
+  note: "Verified: canonical Task Kernel final checks passed."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -89,12 +89,73 @@ execution_contract:
     schema_version: 2
     scope_roots: []
   observed:
-    authority_violations: []
-    changed_components: []
-    changed_paths: []
+    authority_violations:
+      - "repository_effect:tests"
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/shared/native-task-identity.test.ts"
+      - "packages/agentplane/src/commands/shared/native-task-identity.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-13"
+        result: "pass"
+      -
+        id: "recorded-check-14"
+        result: "pass"
+      -
+        id: "recorded-check-15"
+        result: "pass"
+      -
+        id: "recorded-check-16"
+        result: "pass"
+      -
+        id: "recorded-check-17"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
+      -
+        id: "verification-record"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_release_metadata"
@@ -118,6 +179,7 @@ execution_contract:
           - "repository_effect:release_metadata"
           - "repository_effect:repository_write"
           - "repository_effect:source_code"
+          - "repository_effect:tests"
           - "task_outcome"
         external_effects:
           - "network_read"
@@ -129,8 +191,10 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:58d14d82a249d768c409144b62d2d36d562276aea769a836c0ffe2a19855686b"
+      digest: "sha256:37980aaac245161e5f95ccbddaa4c795a0cfa19e407c4344530a1886b5cd9f1e"
       escalation_reasons:
+        - "central_path:packages/agentplane/src/commands/shared/native-task-identity.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/native-task-identity.ts"
         - "effect_release_metadata"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
@@ -140,10 +204,16 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/shared/native-task-identity.test.ts"
+          - "packages/agentplane/src/commands/shared/native-task-identity.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -176,15 +246,22 @@ execution_contract:
       - "repository_effect:release_metadata"
       - "repository_effect:repository_write"
       - "repository_effect:source_code"
+      - "repository_effect:tests"
       - "task_outcome"
 commit:
   hash: "c9553e4d79bb04d712091afaa071d8f4c9b9258d"
   message: "AgentPlane-owned canonical implementation commit"
 comments: []
-events: []
+events:
+  -
+    type: "verify"
+    at: "2026-09-19T01:39:38.395Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: canonical Task Kernel final checks passed."
 doc_version: 3
-doc_updated_at: "2026-09-19T00:50:09.412Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-19T01:39:39.524Z"
+doc_updated_by: "SUPERVISOR"
 description: "Carry the already validated two-file native identity repair into an AgentPlane-owned commit using the repaired canonical repository coordinator. Scope is only native-task-identity.ts and native-task-identity.test.ts. This unblocks provider publication for task 202609172016-5A9KVM."
 sections:
   Summary: |-
@@ -203,6 +280,137 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-19T01:39:38.395Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: canonical Task Kernel final checks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:75f5d5b5178010a8261c197b72b72c29c9d5059d4ab112bcd0760437209cec3b, input_digest=sha256:b3d04889fce7b595f71aa9e453da07f920d29867c3e0ae744666869a61f30d82
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run lint
+    Result: pass
+    Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check affected_unit_integration (1/4)
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check affected_unit_integration (2/4)
+
+    Check: affected_unit_integration
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/native-task-identity.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check affected_unit_integration (3/4)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check affected_unit_integration (4/4)
+
+    Check: critical_paths
+    Command: bun run lint
+    Result: pass
+    Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check critical_paths (1/4)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check critical_paths (2/4)
+
+    Check: critical_paths
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/native-task-identity.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check critical_paths (3/4)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check critical_paths (4/4)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bun run lint
+    Result: pass
+    Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check real_e2e (1/4)
+
+    Check: real_e2e
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check real_e2e (2/4)
+
+    Check: real_e2e
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/native-task-identity.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check real_e2e (3/4)
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check real_e2e (4/4)
+
+    Check: task_outcome
+    Command: bun run lint
+    Result: pass
+    Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check task_outcome (1/4)
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check task_outcome (2/4)
+
+    Check: task_outcome
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/native-task-identity.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check task_outcome (3/4)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check task_outcome (4/4)
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:4ca727abd6c68d0b632098a81ff05da785e838bfca751724ff918dc1a9da3450
+    - policy_digest: sha256:9b668d089af056af9741759543ed685caaa27c913a3aa16d382cfde5faf1adc7
+    - capability_digest: sha256:c7773401c9187b30d35df078ee87d7ccbc0bacb24096a0983e571daa25cb3928
+    - checks_digest: sha256:3c89d07b7a8d7261d297267a54a193703e3be7a307ba5c96f6cbd7077e34a175
+    - identity_digest: sha256:8925c55ca02eff1ad4406d0e6ba083c5abdf65299addbb1b2b5b797658d2c59b
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task plan set 202609190050-3MJ7GQ --text "<task-specific-plan>" --updated-by PLANNER
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -357,14 +565,14 @@ extensions:
       effects: []
       final_validation:
         evidence_digests:
-          - "sha256:0ccc3e483129a9e77175bf9a40eb43e38d9f3d3c0cfc956a24c13396666242d3"
+          - "sha256:80c0f8fad3b7a60bad0745a0dac2b628c0c078d1386a4f88fb0b15d412be3bb9"
         identity:
           check_id: "canonical-final-contracts"
           command_digest: "sha256:98efef3117d5c4b0ed436eb0752b888530cb1b1e32754e3ffe4f1609643fddbf"
           environment_digest: "sha256:3e91da2d1003a8f2309e10e80c8b8e015214276ec032e779dc33cef2fc26d4f7"
           implementation_identity: "sha256:30157dc1d2b985e11231e04d3d412a5755273d0f62f92a217a8d189a15176e8e"
-          toolchain_digest: "sha256:133d716c0802bfb2c0dbe56a7c3764130f5837cc8197ffff82832a549c59cb89"
-        observed_at: "2026-09-19T01:11:43.357Z"
+          toolchain_digest: "sha256:b9095f68790545a72c081c126f06b5039b98ff6ba21bd3e7e3a2f1a485fa5dbe"
+        observed_at: "2026-09-19T01:30:54.636Z"
         status: "PASSED"
       id: "202609190050-3MJ7GQ"
       intent_digest: "sha256:4c398499cdf43a73e7d02a09cbce1b3d7e972caad933dabb6f65d7887062fc70"
@@ -388,6 +596,24 @@ extensions:
           event_digests:
             - "sha256:8b62ea6edc9ab3da566aee4e7c5ed08371b7db9e40dcaf99a21273b13378b770"
           mutation_id: "final-validation:sha256:0ccc3e483129a9e77175bf9a40eb43e38d9f3d3c0cfc956a24c13396666242d3:14"
+        final-validation:sha256:26d6a3d05a99ffef00c38dc597660bc1c0759f3f4708061c38f287263d6e2bd6:16:
+          after_revision: 17
+          aggregate_digest: "sha256:403fed9e52ba40af6a689af3bfd841b9e7b3a3175402d86a458a9a2d24aa057a"
+          before_revision: 16
+          command_digest: "sha256:adefe9db3cbf68453f6edcbc070fd6f55dadd94baa564867b2487a9d9afb6cf4"
+          effect_ids: []
+          event_digests:
+            - "sha256:98c0a229626cd7f740aa63b598614ab272c7c48b4478456a764b1957804eb699"
+          mutation_id: "final-validation:sha256:26d6a3d05a99ffef00c38dc597660bc1c0759f3f4708061c38f287263d6e2bd6:16"
+        final-validation:sha256:80c0f8fad3b7a60bad0745a0dac2b628c0c078d1386a4f88fb0b15d412be3bb9:17:
+          after_revision: 18
+          aggregate_digest: "sha256:c0f34ade395368ef9f628f478010626a4e4b364e7bbf1a0764c734e2f0d4ef2c"
+          before_revision: 17
+          command_digest: "sha256:af44e4a30997b697b8f5b94bf90cc3627eea9a608831241fb24aef16ed44a1f1"
+          effect_ids: []
+          event_digests:
+            - "sha256:079899efeb01617ff12cc739c586b94330a03cc63b5a76db078ee4297fcddbdb"
+          mutation_id: "final-validation:sha256:80c0f8fad3b7a60bad0745a0dac2b628c0c078d1386a4f88fb0b15d412be3bb9:17"
         final-validation:sha256:b05cc6c830465d2d1fc9353824faab0daae7b127cf3f956551dfe1d564e8e9ec:13:
           after_revision: 14
           aggregate_digest: "sha256:a544cc02305bbde08ae5a94058707628d0cdc57b120cdf5ae5d74448ea32aa26"
@@ -397,6 +623,15 @@ extensions:
           event_digests:
             - "sha256:54341a631549149cbae1cc30fa885c66561a59902672ec456ba3e50e4a709d85"
           mutation_id: "final-validation:sha256:b05cc6c830465d2d1fc9353824faab0daae7b127cf3f956551dfe1d564e8e9ec:13"
+        final-validation:sha256:b0d1114e1852a5aa7004aeb162b7fadf9a595bb07b9bb077214a4af5f7469325:15:
+          after_revision: 16
+          aggregate_digest: "sha256:78eda95f0cc88d12516d975e18eb105cbba8e53bc25d7f6531ad6f250487f12c"
+          before_revision: 15
+          command_digest: "sha256:21ab38660f2e68e85badddc8a6a1b730a9af1366cf78df85c133bcd66d67012d"
+          effect_ids: []
+          event_digests:
+            - "sha256:6ad6ba6577e63b1cf8fd223a658810158dccb1c8e9f8b6100c05519f2167db89"
+          mutation_id: "final-validation:sha256:b0d1114e1852a5aa7004aeb162b7fadf9a595bb07b9bb077214a4af5f7469325:15"
         final-validation:sha256:dad15395e71b25c17aac17ebf509cf7ab29a3eeda380492f5e26a31de99ad16b:11:
           after_revision: 12
           aggregate_digest: "sha256:48d07097ef0e1562b55f7810148cd0077102cf4e0fe68570d50532d5f249b37d"
@@ -506,7 +741,7 @@ extensions:
             - "sha256:c867ebf5af32dc627c2ae0cab1a9026fa9969d9ed6ac29bf14740fbd3931ba8b"
           mutation_id: "validation:sha256:ad0432a2b6b8cb35245521303cf79353f214c11ea679819664bd1aa31f3422c8"
       plan_history: []
-      revision: 15
+      revision: 18
       schema_version: 1
       state: "FINAL_VALIDATION"
       work_items:
@@ -560,7 +795,7 @@ extensions:
               toolchain_digest: "sha256:133d716c0802bfb2c0dbe56a7c3764130f5837cc8197ffff82832a549c59cb89"
             observed_at: "2026-09-19T01:00:54.307Z"
             status: "PASSED"
-    digest: "sha256:9a5622d251f1c3e6a2ef87f42a1aae05336435d45fb4b577c099bd258f5e9b41"
+    digest: "sha256:2a04b76ca054e1b438e6b6d451a9c0e6a91272bc60246d98a24f69b5e9333691"
     documents:
       contracts:
         sha256:13d646a596d87a50c8f0bbbb2ac7024d64ff70ed45e86f2b81a3b960a236f882:
@@ -713,6 +948,33 @@ extensions:
         payload_digest: "sha256:179b6cc03aae98944b41881b266119186e3c0764957dc311ceb8780d51eaacec"
         task_id: "202609190050-3MJ7GQ"
         task_revision: 15
+      -
+        command_digest: "sha256:21ab38660f2e68e85badddc8a6a1b730a9af1366cf78df85c133bcd66d67012d"
+        id: "final-validation:sha256:b0d1114e1852a5aa7004aeb162b7fadf9a595bb07b9bb077214a4af5f7469325:15:final_validation_recorded"
+        kind: "final_validation_recorded"
+        mutation_id: "final-validation:sha256:b0d1114e1852a5aa7004aeb162b7fadf9a595bb07b9bb077214a4af5f7469325:15"
+        occurred_at: "2026-09-19T01:16:46.822Z"
+        payload_digest: "sha256:5f805c1668a6ffc35e8ad3c3549b2ea1778658d92fe4872ef86314d6b03f992d"
+        task_id: "202609190050-3MJ7GQ"
+        task_revision: 16
+      -
+        command_digest: "sha256:adefe9db3cbf68453f6edcbc070fd6f55dadd94baa564867b2487a9d9afb6cf4"
+        id: "final-validation:sha256:26d6a3d05a99ffef00c38dc597660bc1c0759f3f4708061c38f287263d6e2bd6:16:final_validation_recorded"
+        kind: "final_validation_recorded"
+        mutation_id: "final-validation:sha256:26d6a3d05a99ffef00c38dc597660bc1c0759f3f4708061c38f287263d6e2bd6:16"
+        occurred_at: "2026-09-19T01:21:06.683Z"
+        payload_digest: "sha256:337e06d84312b19d1e0f727462ad460e979740ceb05e415258cb18f2a428dcb8"
+        task_id: "202609190050-3MJ7GQ"
+        task_revision: 17
+      -
+        command_digest: "sha256:af44e4a30997b697b8f5b94bf90cc3627eea9a608831241fb24aef16ed44a1f1"
+        id: "final-validation:sha256:80c0f8fad3b7a60bad0745a0dac2b628c0c078d1386a4f88fb0b15d412be3bb9:17:final_validation_recorded"
+        kind: "final_validation_recorded"
+        mutation_id: "final-validation:sha256:80c0f8fad3b7a60bad0745a0dac2b628c0c078d1386a4f88fb0b15d412be3bb9:17"
+        occurred_at: "2026-09-19T01:39:33.506Z"
+        payload_digest: "sha256:6ca3254aaabfe248a9372f668eda2ba19c598c4de6e197ce2d91d124dff9b968"
+        task_id: "202609190050-3MJ7GQ"
+        task_revision: 18
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
@@ -744,6 +1006,137 @@ PLANNER fallback scaffold for "Persist the verified Task Kernel native identity 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-19T01:39:38.395Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: canonical Task Kernel final checks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:75f5d5b5178010a8261c197b72b72c29c9d5059d4ab112bcd0760437209cec3b, input_digest=sha256:b3d04889fce7b595f71aa9e453da07f920d29867c3e0ae744666869a61f30d82
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run lint
+Result: pass
+Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check affected_unit_integration (1/4)
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check affected_unit_integration (2/4)
+
+Check: affected_unit_integration
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/native-task-identity.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check affected_unit_integration (3/4)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check affected_unit_integration (4/4)
+
+Check: critical_paths
+Command: bun run lint
+Result: pass
+Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check critical_paths (1/4)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check critical_paths (2/4)
+
+Check: critical_paths
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/native-task-identity.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check critical_paths (3/4)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check critical_paths (4/4)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check full_regression
+
+Check: real_e2e
+Command: bun run lint
+Result: pass
+Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check real_e2e (1/4)
+
+Check: real_e2e
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check real_e2e (2/4)
+
+Check: real_e2e
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/native-task-identity.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check real_e2e (3/4)
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check real_e2e (4/4)
+
+Check: task_outcome
+Command: bun run lint
+Result: pass
+Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check task_outcome (1/4)
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check task_outcome (2/4)
+
+Check: task_outcome
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/native-task-identity.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check task_outcome (3/4)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609190050-3MJ7GQ/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609190050-3MJ7GQ Verification Contract check task_outcome (4/4)
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:4ca727abd6c68d0b632098a81ff05da785e838bfca751724ff918dc1a9da3450
+- policy_digest: sha256:9b668d089af056af9741759543ed685caaa27c913a3aa16d382cfde5faf1adc7
+- capability_digest: sha256:c7773401c9187b30d35df078ee87d7ccbc0bacb24096a0983e571daa25cb3928
+- checks_digest: sha256:3c89d07b7a8d7261d297267a54a193703e3be7a307ba5c96f6cbd7077e34a175
+- identity_digest: sha256:8925c55ca02eff1ad4406d0e6ba083c5abdf65299addbb1b2b5b797658d2c59b
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task plan set 202609190050-3MJ7GQ --text "<task-specific-plan>" --updated-by PLANNER
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
