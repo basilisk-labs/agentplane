@@ -45,7 +45,7 @@ export function isManagedTaskArtifact(relativePath: string): boolean {
   );
 }
 
-function isDerivedTaskArtifact(relativePath: string): boolean {
+export function isDerivedTaskArtifact(relativePath: string): boolean {
   return MANAGED_TASK_ARTIFACT_DIRECTORIES.some((directory) => relativePath.startsWith(directory));
 }
 

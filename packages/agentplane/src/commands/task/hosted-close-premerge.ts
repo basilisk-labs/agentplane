@@ -3,6 +3,7 @@ import { execFileAsync } from "@agentplaneorg/core/process";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
+import { isDerivedTaskArtifact, isManagedTaskArtifact } from "../shared/quality-review-target.js";
 import { readPreMergeClosureMarker, type PrMeta } from "../shared/pr-meta.js";
 
 export function taskIsClosedForMerge(task: TaskData, mergeCommit: string): boolean {
@@ -100,7 +101,14 @@ async function reviewedCommitIsCoveredByBasis(opts: {
     .filter(Boolean);
   const normalizedWorkflowDir = opts.workflowDir.replaceAll("\\", "/").replaceAll(/\/+$/gu, "");
   const taskPrefix = `${normalizedWorkflowDir}/${opts.taskId}/`;
-  return changed.length > 0 && changed.every((name) => name.startsWith(taskPrefix));
+  const relativePaths = changed.flatMap((name) =>
+    name.startsWith(taskPrefix) ? [name.slice(taskPrefix.length)] : [],
+  );
+  return (
+    relativePaths.length === changed.length &&
+    relativePaths.every((name) => isManagedTaskArtifact(name)) &&
+    relativePaths.some((name) => isDerivedTaskArtifact(name))
+  );
 }
 
 function markerPredates(value: string | null | undefined, markerTime: number): boolean {
