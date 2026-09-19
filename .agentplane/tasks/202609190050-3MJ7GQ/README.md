@@ -1,10 +1,10 @@
 ---
 id: "202609190050-3MJ7GQ"
 title: "Persist the verified Task Kernel native identity release blocker through the canonical repository coordinator"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -357,14 +357,14 @@ extensions:
       effects: []
       final_validation:
         evidence_digests:
-          - "sha256:b05cc6c830465d2d1fc9353824faab0daae7b127cf3f956551dfe1d564e8e9ec"
+          - "sha256:0ccc3e483129a9e77175bf9a40eb43e38d9f3d3c0cfc956a24c13396666242d3"
         identity:
           check_id: "canonical-final-contracts"
           command_digest: "sha256:98efef3117d5c4b0ed436eb0752b888530cb1b1e32754e3ffe4f1609643fddbf"
           environment_digest: "sha256:3e91da2d1003a8f2309e10e80c8b8e015214276ec032e779dc33cef2fc26d4f7"
           implementation_identity: "sha256:30157dc1d2b985e11231e04d3d412a5755273d0f62f92a217a8d189a15176e8e"
           toolchain_digest: "sha256:133d716c0802bfb2c0dbe56a7c3764130f5837cc8197ffff82832a549c59cb89"
-        observed_at: "2026-09-19T01:07:24.829Z"
+        observed_at: "2026-09-19T01:11:43.357Z"
         status: "PASSED"
       id: "202609190050-3MJ7GQ"
       intent_digest: "sha256:4c398499cdf43a73e7d02a09cbce1b3d7e972caad933dabb6f65d7887062fc70"
@@ -379,6 +379,15 @@ extensions:
           event_digests:
             - "sha256:a9422d8f080282735c5dd1085e635236297a9acaae61be461458365928bdf027"
           mutation_id: "capture:202609190050-3MJ7GQ"
+        final-validation:sha256:0ccc3e483129a9e77175bf9a40eb43e38d9f3d3c0cfc956a24c13396666242d3:14:
+          after_revision: 15
+          aggregate_digest: "sha256:85f53d23ee3281dedeb41717e1d77ad58a7e0c602d66de48a69e4d8c2a4e774c"
+          before_revision: 14
+          command_digest: "sha256:3bb315fe7ef62ce8eb2b91cfa97e42b00a0bf0ddf3b1b12db1aba56c0966576b"
+          effect_ids: []
+          event_digests:
+            - "sha256:8b62ea6edc9ab3da566aee4e7c5ed08371b7db9e40dcaf99a21273b13378b770"
+          mutation_id: "final-validation:sha256:0ccc3e483129a9e77175bf9a40eb43e38d9f3d3c0cfc956a24c13396666242d3:14"
         final-validation:sha256:b05cc6c830465d2d1fc9353824faab0daae7b127cf3f956551dfe1d564e8e9ec:13:
           after_revision: 14
           aggregate_digest: "sha256:a544cc02305bbde08ae5a94058707628d0cdc57b120cdf5ae5d74448ea32aa26"
@@ -497,7 +506,7 @@ extensions:
             - "sha256:c867ebf5af32dc627c2ae0cab1a9026fa9969d9ed6ac29bf14740fbd3931ba8b"
           mutation_id: "validation:sha256:ad0432a2b6b8cb35245521303cf79353f214c11ea679819664bd1aa31f3422c8"
       plan_history: []
-      revision: 14
+      revision: 15
       schema_version: 1
       state: "FINAL_VALIDATION"
       work_items:
@@ -551,7 +560,7 @@ extensions:
               toolchain_digest: "sha256:133d716c0802bfb2c0dbe56a7c3764130f5837cc8197ffff82832a549c59cb89"
             observed_at: "2026-09-19T01:00:54.307Z"
             status: "PASSED"
-    digest: "sha256:6723b3db7b4d2220f7742eb1f275727855127e5fd6bb282b47a8f2a3ad572cfe"
+    digest: "sha256:9a5622d251f1c3e6a2ef87f42a1aae05336435d45fb4b577c099bd258f5e9b41"
     documents:
       contracts:
         sha256:13d646a596d87a50c8f0bbbb2ac7024d64ff70ed45e86f2b81a3b960a236f882:
@@ -695,6 +704,15 @@ extensions:
         payload_digest: "sha256:5b5e84084316b48b88a059b03915167e0bec7c39cc646f7b5c09d71e37c24137"
         task_id: "202609190050-3MJ7GQ"
         task_revision: 14
+      -
+        command_digest: "sha256:3bb315fe7ef62ce8eb2b91cfa97e42b00a0bf0ddf3b1b12db1aba56c0966576b"
+        id: "final-validation:sha256:0ccc3e483129a9e77175bf9a40eb43e38d9f3d3c0cfc956a24c13396666242d3:14:final_validation_recorded"
+        kind: "final_validation_recorded"
+        mutation_id: "final-validation:sha256:0ccc3e483129a9e77175bf9a40eb43e38d9f3d3c0cfc956a24c13396666242d3:14"
+        occurred_at: "2026-09-19T01:12:47.766Z"
+        payload_digest: "sha256:179b6cc03aae98944b41881b266119186e3c0764957dc311ceb8780d51eaacec"
+        task_id: "202609190050-3MJ7GQ"
+        task_revision: 15
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
