@@ -411,6 +411,22 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
       selectedBlocker: routeBlockerFor(state, "missing_included_batch_metadata"),
     });
   }
+  if (
+    !state.taskWorktree ||
+    state.taskWorktree.state === "not_present" ||
+    state.taskWorktree.branch === state.resume.base_branch ||
+    state.resume.branch === state.resume.base_branch
+  ) {
+    const slug = workSlug(state.task);
+    return cliOperationStep({
+      state,
+      operationId: "worktree.prepare",
+      params: { taskId: id, agent: state.task.owner, slug },
+      code: "start_or_recover_worktree",
+      summary: "create or recover the dedicated branch_pr worktree before continuing the task",
+      selectedBlocker: routeBlockerFor(state, "on_base_checkout", "missing_pr_branch"),
+    });
+  }
   if (state.resume.runner.next_action === "wait") return runnerWaitStep(state);
   if (worktreeBlocker?.code === "task_worktree_state_unavailable") {
     return worktreeResolutionStep(state, worktreeBlocker);
@@ -425,28 +441,12 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
   if (baseSyncStep) return baseSyncStep;
   const recoveryStep = conflictReworkRouteStep(state) ?? providerUpdateBranchStep(state);
   if (recoveryStep) return recoveryStep;
-  if (state.taskWorktree?.state === "not_present" && hasRouteBlocker(state, "pr_meta_stale")) {
-    const slug = workSlug(state.task);
-    return cliOperationStep({
-      state,
-      operationId: "worktree.prepare",
-      params: { taskId: id, agent: state.task.owner, slug },
-      code: "start_or_recover_worktree",
-      summary: "recover the dedicated branch_pr worktree before task-scoped PR operations",
-      selectedBlocker: routeBlockerFor(state, "on_base_checkout", "missing_pr_branch"),
-    });
-  }
   if (hasRouteBlocker(state, "implementation_rework_required")) {
     return implementationReworkStep(state);
   }
   const batchVerificationStep = primaryBatchVerificationStep(state);
   if (batchVerificationStep) return batchVerificationStep;
-  if (
-    state.taskWorktree !== undefined &&
-    state.taskWorktree.state !== "not_present" &&
-    state.taskWorktree.state !== "unavailable" &&
-    hasRouteBlocker(state, "pr_meta_stale")
-  ) {
+  if (state.taskWorktree.state !== "unavailable" && hasRouteBlocker(state, "pr_meta_stale")) {
     return cliOperationStep({
       state,
       operationId: "pr.artifacts.update",
@@ -471,21 +471,6 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
   if (closeStep) return closeStep;
   if (hasRouteBlocker(state, "branch_head_missing")) {
     return branchHeadRepairStep(state);
-  }
-  if (
-    state.prFlow?.pr.state === "not_found" &&
-    state.prFlow.branch.name &&
-    state.taskWorktree?.state === "not_present"
-  ) {
-    const slug = workSlug(state.task);
-    return cliOperationStep({
-      state,
-      operationId: "worktree.prepare",
-      params: { taskId: id, agent: state.task.owner, slug },
-      code: "start_or_recover_worktree",
-      summary: "recover the existing task branch into one dedicated worktree before opening a PR",
-      selectedBlocker: routeBlockerFor(state, "on_base_checkout"),
-    });
   }
   const taskCentric = taskCentricAggregateFromExtensions(state.task.extensions);
   if (incompleteRequiredWorkItems(taskCentric).length > 0) return branchImplementationStep(state);

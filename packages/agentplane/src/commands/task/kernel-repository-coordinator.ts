@@ -420,6 +420,9 @@ export async function commitCanonicalImplementation(opts: {
     await writeCommitIntent(opts.directory, intent);
   }
   const commitPaths = async (paths: readonly string[]) => {
+    // A rejected hook can leave an older version of an authorized path staged.
+    // Refresh the implementation paths before the guarded commit retries them.
+    await opts.command.git.stage([...paths]);
     const exitCode = await cmdCommit({
       ctx: opts.command,
       cwd: baseline.checkout,

@@ -1,0 +1,10 @@
+ .../src/commands/pr/integrate/internal/prepare.ts  |   1 +
+ .../shared/canonical-pre-merge-evidence.ts         |   3 +-
+ .../src/commands/shared/quality-review-target.ts   |  22 +++-
+ .../src/commands/shared/route-decision-blockers.ts |   1 +
+ .../src/commands/shared/workflow-step-branch.ts    |  49 +++----
+ .../src/commands/task/direct-task-verification.ts  |  59 ++++++++-
+ .../src/commands/task/hosted-close-premerge.ts     |  42 +++++-
+ .../agentplane/src/commands/task/kernel-advance.ts | 145 +++++++++++++++++++++
+ .../commands/task/kernel-repository-coordinator.ts |   3 +
+ 9 files changed, 283 insertions(+), 42 deletions(-)

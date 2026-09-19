@@ -52,8 +52,7 @@ export function legacyPreMergeClosureWasRecordedAfterVerification(meta: PrMeta):
 }
 
 export type PreMergeClosureFreshness =
-  | { fresh: true; basisCommit: string }
-  | { fresh: false; reason: string };
+  { fresh: true; basisCommit: string } | { fresh: false; reason: string };
 
 async function gitCommitIsAncestor(opts: {
   gitRoot: string;
@@ -74,6 +73,36 @@ async function gitCommitIsAncestor(opts: {
   }
 }
 
+async function reviewedCommitIsCoveredByBasis(opts: {
+  gitRoot: string;
+  reviewedSha: string;
+  basisCommit: string;
+  taskId: string;
+  workflowDir: string;
+}): Promise<boolean> {
+  if (
+    await gitCommitIsAncestor({
+      gitRoot: opts.gitRoot,
+      ancestor: opts.reviewedSha,
+      descendant: opts.basisCommit,
+    })
+  ) {
+    return true;
+  }
+  const { stdout } = await execFileAsync(
+    "git",
+    ["diff", "--name-only", opts.reviewedSha, opts.basisCommit],
+    { cwd: opts.gitRoot, env: process.env },
+  );
+  const changed = String(stdout)
+    .split("\n")
+    .map((value) => value.trim())
+    .filter(Boolean);
+  const normalizedWorkflowDir = opts.workflowDir.replaceAll("\\", "/").replaceAll(/\/+$/gu, "");
+  const taskPrefix = `${normalizedWorkflowDir}/${opts.taskId}/`;
+  return changed.length > 0 && changed.every((name) => name.startsWith(taskPrefix));
+}
+
 function markerPredates(value: string | null | undefined, markerTime: number): boolean {
   const comparedTime = Date.parse(value ?? "");
   return Number.isFinite(comparedTime) && Number.isFinite(markerTime) && markerTime < comparedTime;
@@ -86,6 +115,7 @@ export async function assessPreMergeClosureFreshness(opts: {
   branch: string;
   prNumber: number;
   branchHeadSha: string;
+  workflowDir?: string;
 }): Promise<PreMergeClosureFreshness> {
   const marker = readPreMergeClosureMarker(opts.meta);
   if (!marker) return { fresh: false, reason: "pre-merge closure marker is missing" };
@@ -128,10 +158,12 @@ export async function assessPreMergeClosureFreshness(opts: {
     return { fresh: false, reason: "task commit is not covered by the closure basis commit" };
   }
   if (
-    !(await gitCommitIsAncestor({
+    !(await reviewedCommitIsCoveredByBasis({
       gitRoot: opts.gitRoot,
-      ancestor: reviewedSha,
-      descendant: marker.basisCommit,
+      reviewedSha,
+      basisCommit: marker.basisCommit,
+      taskId: opts.task.id,
+      workflowDir: opts.workflowDir ?? ".agentplane/tasks",
     }))
   ) {
     return { fresh: false, reason: "quality-reviewed commit is not covered by the closure basis" };

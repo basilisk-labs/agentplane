@@ -1,5 +1,6 @@
 import { runProcess } from "@agentplaneorg/core/process";
-import { mkdir, readFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, symlink } from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
@@ -27,6 +28,56 @@ const BUN_ZERO_TEST_PATTERNS = [
   /\bno tests? (?:found|matched|ran|were run)\b/iu,
   /\bran 0 tests?\b/iu,
 ] as const;
+
+async function verificationCheckout(cwd: string, command: string, env: NodeJS.ProcessEnv) {
+  if (!command.includes("scripts/qualification/run-v0.7.1-release-qualification.mjs")) {
+    return { cwd, cleanup: async () => undefined };
+  }
+  const checkout = await mkdtemp(path.join(os.tmpdir(), "agentplane-verification-"));
+  const added = await runProcess({
+    command: "git",
+    args: ["worktree", "add", "--detach", checkout, "HEAD"],
+    cwd,
+    env,
+    timeoutMs: 60_000,
+    maxBuffer: 1024 * 1024,
+    reject: false,
+  });
+  if (added.exitCode !== 0) {
+    await rm(checkout, { recursive: true, force: true });
+    throw new Error(`Unable to create clean verification checkout: ${added.stderr}`);
+  }
+  const cleanup = async () => {
+    await runProcess({
+      command: "git",
+      args: ["worktree", "remove", "--force", checkout],
+      cwd,
+      env,
+      timeoutMs: 60_000,
+      maxBuffer: 1024 * 1024,
+      reject: false,
+    });
+    await rm(checkout, { recursive: true, force: true });
+  };
+  try {
+    const dependencyRoots = [
+      "node_modules",
+      "packages/agentplane/node_modules",
+      "packages/core/node_modules",
+      "packages/testkit/node_modules",
+    ];
+    for (const relative of dependencyRoots) {
+      const target = path.join(cwd, relative);
+      const link = path.join(checkout, relative);
+      await mkdir(path.dirname(link), { recursive: true });
+      await symlink(target, link, "dir");
+    }
+    return { cwd: checkout, cleanup };
+  } catch (error) {
+    await cleanup();
+    throw error;
+  }
+}
 
 type DirectTaskCheck = {
   runtime?: LocalRuntimeEvidence;
@@ -429,6 +480,7 @@ export async function runDirectTaskVerification(opts: {
     let exitCode: number | null = 0;
     let zeroTests = false;
     let infrastructureFailure = false;
+    let isolatedCheckout: Awaited<ReturnType<typeof verificationCheckout>> | null = null;
     const completedCheck = (error?: unknown): DirectTaskCheck => ({
       runtime,
       ...(infrastructureFailure || (error && isVerificationInfrastructureError(error))
@@ -452,6 +504,7 @@ export async function runDirectTaskVerification(opts: {
       ]),
     });
     try {
+      isolatedCheckout = await verificationCheckout(opts.cwd, command, env);
       for (const parsed of parsedSequence) {
         const remainingTimeoutMs = parsedSequence.length === 1 ? timeoutBudgetMs : deadline - now();
         if (remainingTimeoutMs <= 0) {
@@ -463,7 +516,7 @@ export async function runDirectTaskVerification(opts: {
         const executed = await (opts.run_process ?? runProcess)({
           command: parsed.executable,
           args: parsed.args,
-          cwd: opts.cwd,
+          cwd: isolatedCheckout.cwd,
           env,
           timeoutMs: remainingTimeoutMs,
           maxBuffer: 1024 * 1024,
@@ -505,6 +558,8 @@ export async function runDirectTaskVerification(opts: {
         reason: `Declared check could not run: ${command}`,
       };
       return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
+    } finally {
+      await isolatedCheckout?.cleanup();
     }
   }
   if (missingRequiredCheckReason) {
