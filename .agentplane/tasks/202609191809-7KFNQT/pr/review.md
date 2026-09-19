@@ -6,14 +6,14 @@ Created: 2026-09-19T18:13:49.136Z
 
 - Task: `202609191809-7KFNQT`
 - Title: Replace versioned README header generation with one static shared image
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609191809-7KFNQT/canonical-7kfnqt`
 - Canonical task record: `.agentplane/tasks/202609191809-7KFNQT/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:f3c78ddcda8db2ff30f86724cdbc983b8099be75ade6296c87b7a663c66c1e24
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
