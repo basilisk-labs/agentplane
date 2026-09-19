@@ -24,7 +24,10 @@ export {
 export type * from "./model.js";
 
 export {
+  additivePlanScopeExpansionRoots,
   authorityDigest,
   canonicalAuthorityIssues,
   continuationIssues,
+  isAdditivePlanScopeExpansion,
+  planScopeExpansionApprovalDigest,
 } from "./authority-lineage.js";

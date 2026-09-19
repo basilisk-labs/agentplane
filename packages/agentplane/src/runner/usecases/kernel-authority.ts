@@ -350,10 +350,44 @@ export class KernelAuthorityResolver {
     this.assertLineageCeiling(aggregate, context);
     const observation = await this.native.observeContinuation(taskId, parent);
     if (!observation) invalid("native_observation_required");
+    const sourcePlan =
+      observation.kind === "plan_amendment"
+        ? aggregate.plan_history.find((entry) => entry.digest === parent.plan_digest)
+        : undefined;
+    const addedScopeRoots =
+      sourcePlan &&
+      plan.approval_actor_id !== null &&
+      plan.approval_evidence_digest ===
+        k.planScopeExpansionApprovalDigest({
+          task_id: taskId,
+          current_plan_digest: sourcePlan.digest,
+          amended_plan_digest: plan.digest,
+          actor_id: plan.approval_actor_id,
+        })
+        ? (
+            k.additivePlanScopeExpansionRoots({
+              current: sourcePlan,
+              amended: plan,
+              authority: parent,
+            }) ?? []
+          )
+            .filter(
+              (candidate) =>
+                !parent.scope_roots.some(
+                  (root) => root === "." || candidate === root || candidate.startsWith(`${root}/`),
+                ),
+            )
+            .toSorted()
+        : [];
+    const boundObservation =
+      observation.kind === "plan_amendment"
+        ? { ...observation, added_scope_roots: addedScopeRoots }
+        : observation;
     const contents = {
       ...parent,
       plan_revision: plan.revision,
       plan_digest: plan.digest,
+      scope_roots: uniqueSorted([...parent.scope_roots, ...addedScopeRoots]),
       repository_fingerprint: context.repository_fingerprint,
       provenance: {
         ...parent.provenance,
@@ -365,7 +399,7 @@ export class KernelAuthorityResolver {
     const record: k.CanonicalAuthorityRecord = {
       authority: { ...contents, digest: k.authorityDigest(contents) },
       approval_mode: null,
-      observation,
+      observation: boundObservation,
     };
     kernelAuthorityRecordSchema.parse(record);
     const issues = k.continuationIssues(parent, record);

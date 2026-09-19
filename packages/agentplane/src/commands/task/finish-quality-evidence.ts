@@ -26,6 +26,7 @@ import {
   latestVerificationInputDigest,
   resolveNativeTaskIdentity,
 } from "../shared/native-task-identity.js";
+import { hasCanonicalPreMergeEvidence } from "../shared/canonical-pre-merge-evidence.js";
 import { evaluatorAcceptanceCriteria } from "../evaluator/evaluator-review-shared.js";
 
 export function assertNativeTaskIdentityBeforeFinish(opts: {
@@ -111,14 +112,15 @@ export async function assertQualityReviewBeforeFinish(opts: {
     assertEvaluatorQualityReviewPassed({
       task: loaded.task,
       expectedSha,
-      expectedReviewIdentityDigest:
-        buildNativeQualityReviewIdentity({
-          task: loaded.task,
-          native_identity: nativeIdentity,
-          verification_input_digest: latestVerificationInputDigest(loaded.task),
-          acceptance_criteria: evaluatorAcceptanceCriteria(loaded.task),
-          implementation_sha: expectedSha,
-        })?.digest ?? null,
+      expectedReviewIdentityDigest: hasCanonicalPreMergeEvidence(loaded.task)
+        ? loaded.task.quality_review?.review_identity_digest
+        : (buildNativeQualityReviewIdentity({
+            task: loaded.task,
+            native_identity: nativeIdentity,
+            verification_input_digest: latestVerificationInputDigest(loaded.task),
+            acceptance_criteria: evaluatorAcceptanceCriteria(loaded.task),
+            implementation_sha: expectedSha,
+          })?.digest ?? null),
       command: "finish",
     });
   }

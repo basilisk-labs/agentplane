@@ -209,6 +209,14 @@ function isFullRegressionCheck(parsed: ParsedDirectTaskCheck): boolean {
   ) {
     return true;
   }
+  if (
+    parsed.executable === "bun" &&
+    parsed.args.length === 2 &&
+    parsed.args[0] === "run" &&
+    parsed.script === "test"
+  ) {
+    return true;
+  }
   if (parsed.executable === "bun" && parsed.args.length === 1 && parsed.args[0] === "test") {
     return true;
   }
@@ -374,9 +382,11 @@ export async function runDirectTaskVerification(opts: {
   if (requiresFullRegression && !hasFullRegressionCommand) {
     if (rootPackage?.scripts.has("ci:local:full")) {
       commands.push(`${rootPackage.runner} run ci:local:full`);
+    } else if (rootPackage?.scripts.has("test")) {
+      commands.push(`${rootPackage.runner} run test`);
     } else {
       missingRequiredCheckReason =
-        "Verification Contract requires full_regression, but package.json does not define ci:local:full.";
+        "Verification Contract requires full_regression, but package.json defines neither ci:local:full nor test.";
     }
   }
   if (commands.length === 0) {

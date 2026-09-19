@@ -3,6 +3,8 @@ import {
   authorityDigest,
   canonicalAuthorityIssues,
   continuationAdmissionIssues,
+  isAdditivePlanScopeExpansion,
+  planScopeExpansionApprovalDigest,
 } from "./authority-lineage.js";
 import { kernelDigest } from "./digest.js";
 export { kernelDigest } from "./digest.js";
@@ -542,13 +544,6 @@ function amendPlan(
   if (aggregate.state !== "ACTIVE" && aggregate.state !== "FINAL_VALIDATION") {
     return rejected("ILLEGAL_TASK_TRANSITION", [aggregate.state, command.kind]);
   }
-  if (command.authority_delta_digest) {
-    return rejected(
-      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
-      [command.authority_delta_digest],
-      "request_authority_delta",
-    );
-  }
   const proposed = command.amended_plan;
   if (proposed.revision !== current.revision + 1) {
     return rejected("PLAN_REVISION_MISMATCH", [String(proposed.revision)]);
@@ -563,7 +558,32 @@ function amendPlan(
   const issues = validateWorkItemDefinitions(proposed.work_items);
   if (issues.length > 0) return rejected("WORK_ITEM_DEPENDENCY_INCOMPLETE", issues);
   const originals = new Map(current.work_items.map((item) => [item.id, item]));
+  const scopeExpansions = proposed.work_items.filter((item) => {
+    const original = originals.get(item.id);
+    return (
+      original?.execution_requirements !== undefined &&
+      item.execution_requirements !== undefined &&
+      !executionRequirementsAreSubset(original.execution_requirements, item.execution_requirements)
+    );
+  });
+  const scopeExpansionApprovalDigest = planScopeExpansionApprovalDigest({
+    task_id: aggregate.id,
+    current_plan_digest: current.digest,
+    amended_plan_digest: proposed.digest,
+    actor_id: input.actor.id,
+  });
+  const scopeExpansionApproved =
+    scopeExpansions.length > 0 &&
+    input.actor.kind === "USER" &&
+    command.authority_delta_digest === scopeExpansionApprovalDigest &&
+    input.authority !== null &&
+    isAdditivePlanScopeExpansion({
+      current,
+      amended: proposed,
+      authority: input.authority,
+    });
   if (
+    (command.authority_delta_digest !== null && !scopeExpansionApproved) ||
     proposed.work_items.length !== current.work_items.length ||
     proposed.work_items.some((item) => {
       const original = originals.get(item.id);
@@ -576,12 +596,14 @@ function amendPlan(
         !original.depends_on.every((id) => item.depends_on.includes(id)) ||
         !item.execution_requirements ||
         !original.execution_requirements ||
-        !executionRequirementsAreSubset(
+        (!executionRequirementsAreSubset(
           original.execution_requirements,
           item.execution_requirements,
-        ) ||
-        !input.authority ||
-        !executionRequirementsAreSubset(input.authority, item.execution_requirements)
+        ) &&
+          !scopeExpansionApproved) ||
+        input.authority?.work_item_id !== null ||
+        (!scopeExpansionApproved &&
+          !executionRequirementsAreSubset(input.authority, item.execution_requirements))
       );
     })
   ) {
@@ -633,7 +655,16 @@ function amendPlan(
     ...aggregate,
     revision: aggregate.revision + 1,
     state: "ACTIVE",
-    current_plan: { ...current, ...proposed },
+    current_plan: {
+      ...current,
+      ...proposed,
+      ...(scopeExpansionApproved
+        ? {
+            approval_actor_id: input.actor.id,
+            approval_evidence_digest: scopeExpansionApprovalDigest,
+          }
+        : {}),
+    },
     plan_history: [...aggregate.plan_history, { ...current, state: "SUPERSEDED" }],
     work_items: refreshReadyItems(workItems),
     final_validation: null,

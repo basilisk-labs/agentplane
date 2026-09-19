@@ -3,6 +3,7 @@ import {
   AGENT_WORK_ORDER_V2_ZOD_SCHEMA,
   AGENT_SEMANTIC_RESULT_ZOD_SCHEMA,
   type AgentSemanticResult,
+  type AgentWorkOrderV2,
 } from "@agentplaneorg/core/schemas";
 import { taskKernel as k, type KernelEpisodeBinding } from "@agentplaneorg/core/tasks";
 import type { KernelCommandInput } from "../../adapters/task-backend/kernel-backend-adapter.js";
@@ -18,6 +19,12 @@ import {
   kernelExchangeDirectory,
 } from "./kernel-exchange.js";
 import { runDirectTaskVerification } from "./direct-task-verification.js";
+import { readDirectTaskHead } from "./direct-task-finalization.js";
+import {
+  readKernelRepositoryEvidence,
+  type KernelRepositoryEvidence,
+} from "./kernel-repository-coordinator.js";
+import { projectKernelOperationalEvidence } from "./kernel-operational-projection.js";
 
 type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
 export type KernelValidationEvidence = {
@@ -25,6 +32,7 @@ export type KernelValidationEvidence = {
   result_digest: string;
   review_digest: string;
   checks: Awaited<ReturnType<typeof runDirectTaskVerification>>;
+  repository_evidence: KernelRepositoryEvidence | null;
 };
 
 type InspectionBinding = Extract<KernelEpisodeBinding, { phase: "inspection" }>;
@@ -62,6 +70,7 @@ export async function issueKernelInspection(
     result_digest: item.result_digest,
   };
   let resultPath: string | undefined;
+  let resultDirectory: string | undefined;
   for (const mutationId of Object.keys(record.aggregate.mutation_receipts)
     .filter((id) => /^result:sha256:[a-f0-9]{64}$/u.test(id))
     .toReversed()) {
@@ -76,10 +85,27 @@ export async function issueKernelInspection(
     );
     if (k.kernelDigest(semantic) === item.result_digest) {
       resultPath = candidate;
+      resultDirectory = directory;
       break;
     }
   }
   if (!resultPath) throw new Error("Canonical received implementation evidence missing");
+  let repositoryEvidence: KernelRepositoryEvidence | null = null;
+  try {
+    repositoryEvidence = await readKernelRepositoryEvidence(resultDirectory!);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+  }
+  if (
+    repositoryEvidence &&
+    (repositoryEvidence.task_id !== record.aggregate.id ||
+      repositoryEvidence.work_item_id !== workItemId ||
+      repositoryEvidence.work_order_id !== `sha256:${path.basename(resultDirectory!)}` ||
+      (await readDirectTaskHead(command.resolvedProject.gitRoot)) !==
+        repositoryEvidence.implementation_commit)
+  ) {
+    throw new Error("Canonical evaluator target differs from repository evidence");
+  }
   const order = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse({
     schema_version: 2,
     kind: "agent_work_order",
@@ -98,7 +124,7 @@ export async function issueKernelInspection(
       unresolved_questions: [],
     },
     canonical_binding: binding,
-    state_fingerprint: buildKernelStateFingerprint({
+    state_fingerprint: await buildKernelStateFingerprint({
       command,
       record,
       context,
@@ -145,6 +171,19 @@ export async function issueKernelInspection(
           "Native-accepted implementation result and evidence references. Digest uses canonical JSON.",
         required: true,
       },
+      ...(repositoryEvidence
+        ? [
+            {
+              id: "repository-evidence",
+              kind: "source_artifact" as const,
+              path: path.join(resultDirectory!, "repository-evidence.json"),
+              digest: repositoryEvidence.digest,
+              description:
+                "AgentPlane-owned commit, tree, changed-path, and evaluator-target evidence.",
+              required: true,
+            },
+          ]
+        : []),
       ...item.output_manifests.map((manifest) => ({
         id: manifest.id,
         kind: "source_artifact",
@@ -191,6 +230,7 @@ export async function acceptKernelInspection(
   runtime: Runtime,
   directory: string,
   semantic: AgentSemanticResult,
+  workOrder?: AgentWorkOrderV2,
 ) {
   const binding = semantic.canonical_binding;
   if (binding?.phase !== "inspection" || !semantic.review)
@@ -223,6 +263,21 @@ export async function acceptKernelInspection(
       summary: semantic.summary,
     };
   const contract = read.record.documents!.contracts[String(binding.contract_digest)]!;
+  const repositoryEvidenceInput = workOrder?.required_inputs.find(
+    (input) => input.id === "repository-evidence",
+  );
+  const repositoryEvidence = repositoryEvidenceInput?.path
+    ? await readKernelRepositoryEvidence(path.dirname(repositoryEvidenceInput.path))
+    : null;
+  if (
+    repositoryEvidence &&
+    (repositoryEvidence.digest !== repositoryEvidenceInput?.digest ||
+      repositoryEvidence.evaluator_target !== repositoryEvidence.implementation_commit ||
+      (await readDirectTaskHead(command.resolvedProject.gitRoot)) !==
+        repositoryEvidence.implementation_commit)
+  ) {
+    throw new Error("Canonical inspection commit identity changed");
+  }
   const evidencePath = path.join(directory, "validation.json");
   let evidence: KernelValidationEvidence;
   try {
@@ -255,10 +310,17 @@ export async function acceptKernelInspection(
       result_digest: binding.result_digest,
       review_digest: k.kernelDigest(semantic),
       checks,
+      repository_evidence: repositoryEvidence,
     };
     const observed = await runtime.observe();
     if (observed.fingerprint !== binding.repository_fingerprint)
       throw new Error("Canonical repository changed during validation");
+    if (
+      repositoryEvidence &&
+      (await readDirectTaskHead(command.resolvedProject.gitRoot)) !==
+        repositoryEvidence.implementation_commit
+    )
+      throw new Error("Canonical evaluator target changed during validation");
     await writeKernelArtifact(directory, "validation.json", evidence);
   }
   if (
@@ -326,6 +388,33 @@ export async function acceptKernelInspection(
       ),
     ),
   );
+  if (validation.status === "PASSED" && repositoryEvidence) {
+    const reportPath = path.join(directory, "quality-report.json");
+    const findings = semantic.findings.length > 0 ? semantic.findings : [semantic.summary];
+    await writeKernelArtifact(directory, "quality-report.json", {
+      schema_version: 1,
+      kind: "canonical_quality_review",
+      task_id: binding.task_id,
+      work_order_id: semantic.work_order_id,
+      verdict: semantic.review.verdict,
+      findings,
+      residual_risks: semantic.review.residual_risks,
+      review_identity_digest: k.kernelDigest(semantic),
+      repository_evidence_digest: repositoryEvidence.digest,
+    });
+    await projectKernelOperationalEvidence({
+      command,
+      task_id: binding.task_id,
+      repository_evidence: repositoryEvidence,
+      verification_evidence_digest: k.kernelDigest(evidence),
+      review_identity_digest: k.kernelDigest(semantic),
+      evidence_refs: [
+        path.relative(command.resolvedProject.gitRoot, reportPath).replaceAll(path.sep, "/"),
+      ],
+      findings,
+      projected_at: validation.observed_at,
+    });
+  }
 }
 
 export async function resumeKernelInspection(
@@ -345,20 +434,22 @@ export async function resumeKernelInspection(
       record.aggregate.id,
       mutationId.slice("validation:".length),
     );
-    const semantic = AGENT_SEMANTIC_RESULT_ZOD_SCHEMA.parse(
-      JSON.parse(
-        await readStableRegularTextNoFollow(
-          path.join(directory, "inspection-result.json"),
-          "canonical saved inspection",
-        ),
-      ),
-    );
+    const [semantic, workOrder] = await Promise.all([
+      readStableRegularTextNoFollow(
+        path.join(directory, "inspection-result.json"),
+        "canonical saved inspection",
+      ).then((raw) => AGENT_SEMANTIC_RESULT_ZOD_SCHEMA.parse(JSON.parse(raw))),
+      readStableRegularTextNoFollow(
+        path.join(directory, "work-order.json"),
+        "canonical saved inspection work order",
+      ).then((raw) => AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(JSON.parse(raw))),
+    ]);
     if (
       semantic.canonical_binding?.phase === "inspection" &&
       semantic.canonical_binding.work_item_id === workItemId &&
       item.validation.evidence_digests.includes(k.kernelDigest(semantic))
     )
-      return acceptKernelInspection(command, runtime, directory, semantic);
+      return acceptKernelInspection(command, runtime, directory, semantic, workOrder);
   }
   throw new Error("Canonical native validation evidence is missing");
 }

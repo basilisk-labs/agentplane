@@ -39,6 +39,11 @@ import { executeExternalAgentVerification } from "./external-agent-verification.
 import { activeExecutionGrantForTask, resolveConfiguredAuthority } from "./configured-authority.js";
 import type { TaskAdvanceParsed } from "./advance.spec.js";
 import { requireKernelIssuanceEligibility } from "./kernel-cutover.js";
+import { createKernelProviderEffectPortResolver } from "./kernel-provider-effect-coordinator.js";
+import {
+  recoverCanonicalControllerSuspensions,
+  resolveCanonicalControllerCommand,
+} from "./kernel-controller-handoff.js";
 
 export function makeRunTaskAdvanceHandler(deps: {
   getContext: (command: string, options: { includeRemote: boolean }) => Promise<CommandContext>;
@@ -61,14 +66,24 @@ export function makeRunTaskAdvanceHandler(deps: {
       });
     }
     const initialCommand = await deps.getContext("task advance", { includeRemote: parsed.remote });
+    await recoverCanonicalControllerSuspensions({
+      command: initialCommand,
+      task_id: parsed.taskId,
+    });
     const localSource = await initialCommand.taskBackend.getTask(parsed.taskId);
-    const command =
+    let command =
       localSource?.extensions && Object.hasOwn(localSource.extensions, TASK_KERNEL_EXTENSION)
         ? initialCommand
         : await resolveTaskOwnerCommandContext({
             ctx: initialCommand,
             taskId: parsed.taskId,
           });
+    if (localSource?.extensions && Object.hasOwn(localSource.extensions, TASK_KERNEL_EXTENSION)) {
+      command = await resolveCanonicalControllerCommand({
+        command,
+        task_id: parsed.taskId,
+      });
+    }
     const source = await command.taskBackend.getTask(parsed.taskId);
     if (source?.extensions && Object.hasOwn(source.extensions, TASK_KERNEL_EXTENSION)) {
       if (parsed.workflowRecovery)
@@ -83,6 +98,11 @@ export function makeRunTaskAdvanceHandler(deps: {
         task_id: parsed.taskId,
         transport: "host",
         result_path: parsed.result,
+        effect_port_resolver: createKernelProviderEffectPortResolver({
+          command,
+          allow_remote: parsed.remote,
+        }),
+        allow_provider_effects: parsed.remote,
       });
       createCliEmitter().json(packet);
       return 0;

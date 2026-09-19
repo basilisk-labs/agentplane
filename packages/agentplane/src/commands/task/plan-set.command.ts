@@ -14,6 +14,7 @@ export type TaskPlanSetParsed = {
   text?: string;
   file?: string;
   updatedBy?: string;
+  scopeExpansionApprovedBy?: string;
 };
 
 export const taskPlanSetSpec: CommandSpec<TaskPlanSetParsed> = {
@@ -39,6 +40,13 @@ export const taskPlanSetSpec: CommandSpec<TaskPlanSetParsed> = {
       name: "updated-by",
       valueHint: "<id>",
       description: "Optional. Sets doc_updated_by when writing the plan.",
+    },
+    {
+      kind: "string",
+      name: "scope-expansion-approved-by",
+      valueHint: "<role>",
+      description:
+        "Explicit manual approval for an additive canonical WorkItem scope expansion. Requires USER.",
     },
   ],
   examples: [
@@ -67,6 +75,13 @@ export const taskPlanSetSpec: CommandSpec<TaskPlanSetParsed> = {
         message: "Invalid value for --updated-by: empty.",
       });
     }
+    const scopeExpansionApprovedBy = raw.opts["scope-expansion-approved-by"];
+    if (scopeExpansionApprovedBy !== undefined && scopeExpansionApprovedBy !== "USER") {
+      throw usageError({
+        spec: taskPlanSetSpec,
+        message: "--scope-expansion-approved-by requires exact USER authority.",
+      });
+    }
   },
   parse: (raw) => {
     return {
@@ -74,6 +89,10 @@ export const taskPlanSetSpec: CommandSpec<TaskPlanSetParsed> = {
       text: typeof raw.opts.text === "string" ? raw.opts.text : undefined,
       file: typeof raw.opts.file === "string" ? raw.opts.file : undefined,
       updatedBy: typeof raw.opts["updated-by"] === "string" ? raw.opts["updated-by"] : undefined,
+      scopeExpansionApprovedBy:
+        typeof raw.opts["scope-expansion-approved-by"] === "string"
+          ? raw.opts["scope-expansion-approved-by"]
+          : undefined,
     };
   },
 };
@@ -84,7 +103,9 @@ export function makeRunTaskPlanSetHandler(getCtx: (cmd: string) => Promise<Comma
     const source = await command.taskBackend.getTask(p.taskId);
     if (source?.extensions && Object.hasOwn(source.extensions, TASK_KERNEL_EXTENSION)) {
       const text = p.file ? await readFile(path.resolve(ctx.cwd, p.file), "utf8") : (p.text ?? "");
-      const result = await setCanonicalPlan(command, p.taskId, JSON.parse(text));
+      const result = await setCanonicalPlan(command, p.taskId, JSON.parse(text), {
+        scopeExpansionApprovedBy: p.scopeExpansionApprovedBy,
+      });
       createCliEmitter().json({
         task_id: p.taskId,
         canonical_revision: result.record.aggregate.revision,

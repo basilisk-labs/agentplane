@@ -115,6 +115,7 @@ async function recordVerificationResult(opts: {
   command: ExecuteVerifyRecordCommandOptions["command"];
   verificationSnapshot?: ExecuteVerifyRecordCommandOptions["verificationSnapshot"];
   beforePersist?: ExecuteVerifyRecordCommandOptions["beforePersist"];
+  allowCanonicalProjection?: ExecuteVerifyRecordCommandOptions["allowCanonicalProjection"];
 }): Promise<void> {
   const initialCtx =
     opts.ctx ??
@@ -147,6 +148,7 @@ async function recordVerificationResult(opts: {
       policyAction: "task_verify",
       phase: "verify",
       beforePersist: opts.beforePersist,
+      allowCanonicalProjection: opts.allowCanonicalProjection,
       build: async (current) => {
         const baseExecutionContract =
           opts.verificationSnapshot?.execution_contract ??
@@ -162,12 +164,14 @@ async function recordVerificationResult(opts: {
         const doc =
           (typeof current.doc === "string" ? current.doc : "") ||
           (await backend.getTaskDoc!(current.id));
-        assertVerifyStepsFilled({
-          taskId: current.id,
-          sectionText: extractDocSection(doc, "Verify Steps"),
-          action: "record verification",
-          guidance: "fill it before running `agentplane verify ...`",
-        });
+        if (!opts.allowCanonicalProjection) {
+          assertVerifyStepsFilled({
+            taskId: current.id,
+            sectionText: extractDocSection(doc, "Verify Steps"),
+            action: "record verification",
+            guidance: "fill it before running `agentplane verify ...`",
+          });
+        }
         const verificationScope = extractDocSection(doc, "Verify Steps")?.trim() ?? "";
         const batchTaskIds = normalizeBranchPrBatchTaskIds(current, current.id);
         const qualificationDependencies = isQualificationTask(current)
@@ -580,6 +584,7 @@ export async function executeVerifyRecordCommand(
       command: opts.command,
       verificationSnapshot: opts.verificationSnapshot,
       beforePersist: opts.beforePersist,
+      allowCanonicalProjection: opts.allowCanonicalProjection,
     });
     return 0;
   } catch (err) {

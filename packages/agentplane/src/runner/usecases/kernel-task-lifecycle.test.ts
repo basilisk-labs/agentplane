@@ -524,6 +524,7 @@ it.each(["source", "task", "failed-check"])(
       {
         resolvedProject: { gitRoot: root },
         memo: { gitCommonDir: Promise.resolve(path.join(root, ".git")) },
+        taskBackend: { getTask: () => Promise.resolve({ id: "FINAL" }) },
       } as never,
       runtime as never,
       record as never,

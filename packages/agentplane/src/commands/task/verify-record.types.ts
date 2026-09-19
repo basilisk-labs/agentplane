@@ -50,4 +50,5 @@ export type ExecuteVerifyRecordCommandOptions = {
   command: VerifyCommandName;
   verificationSnapshot?: VerificationSnapshot;
   beforePersist?: PreparedTaskMutationObserver;
+  allowCanonicalProjection?: boolean;
 };

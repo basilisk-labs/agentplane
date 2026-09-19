@@ -1,31 +1,81 @@
-import { runKernelFinalValidation } from "./kernel-final-validation.js";
+import {
+  restoreKernelFinalValidation,
+  runKernelFinalValidation,
+} from "./kernel-final-validation.js";
 import { verificationChildEnv } from "../shared/pr-meta/verify-log.js";
-import {
-  issueKernelInspection,
-  acceptKernelInspection,
-  resumeKernelInspection,
-} from "./kernel-inspection.js";
-import { canonicalPlanFromProposal } from "./kernel-plan.js";
+import { issueKernelInspection, resumeKernelInspection } from "./kernel-inspection.js";
 import path from "node:path";
-import {
-  repositoryEffectsForPath,
-  taskKernel as k,
-  kernelPlanProposalSchema,
-} from "@agentplaneorg/core/tasks";
-import type { KernelCommandInput } from "../../adapters/task-backend/kernel-backend-adapter.js";
-import type { KernelWorkBinding } from "../../runner/usecases/kernel-task-lifecycle.js";
+import { repositoryEffectsForPath, taskKernel as k } from "@agentplaneorg/core/tasks";
 import { kernelApprovalReference } from "../../runner/usecases/kernel-authority.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { createKernelRuntime, requireKernelCommit } from "./kernel-runtime-context.js";
-import { buildKernelAgentWorkOrder } from "./kernel-work-order.js";
+import { buildKernelAgentWorkOrder, resumeKernelWorkOrder } from "./kernel-work-order.js";
+import { issueKernelExchange } from "./kernel-exchange.js";
 import {
-  issueKernelExchange,
-  readKernelOrderResult,
-  writeKernelArtifact,
-} from "./kernel-exchange.js";
-import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
+  coordinateKernelEffect,
+  emptyKernelEffectPortResolver,
+  type KernelEffectPortResolver,
+} from "./kernel-effect-coordinator.js";
+import { commitCanonicalTerminalTaskArtifacts } from "./kernel-repository-coordinator.js";
+import {
+  decideCanonicalWorkflowEffect,
+  prepareCanonicalWorkflowEffect,
+} from "./kernel-provider-effect-coordinator.js";
+import { ensureKernelOperationalProjectionStatus } from "./kernel-operational-projection.js";
+import { transferCanonicalControllerToBase } from "./kernel-controller-handoff.js";
+import { acceptKernelSemanticResult } from "./kernel-semantic-result.js";
+
+export { blockKernelSemanticEpisode } from "./kernel-semantic-result.js";
 
 type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
+
+export function kernelPlanApprovalOperatorAction(
+  command: CommandContext,
+  taskId: string,
+  context: Awaited<ReturnType<Runtime["native"]["readContext"]>>,
+  plan: k.PlanRecord,
+) {
+  const authorityReference = kernelApprovalReference(context, plan);
+  if (command.config.authority.approval_receipts.trusted_issuers.length === 0) {
+    return {
+      kind: "approve_plan" as const,
+      required_role: "USER" as const,
+      cwd: command.resolvedProject.gitRoot,
+      argv: ["agentplane", "task", "plan", "approve", taskId, "--by", "USER"],
+      authority_reference: authorityReference,
+      transport: "manual_operator" as const,
+    };
+  }
+  return {
+    kind: "approve_plan" as const,
+    required_role: "USER" as const,
+    cwd: command.resolvedProject.gitRoot,
+    argv: [
+      "agentplane",
+      "task",
+      "plan",
+      "approve",
+      taskId,
+      "--approval-receipt",
+      "<base64url-receipt>",
+    ],
+    authority_reference: authorityReference,
+    transport: "signed_user_receipt" as const,
+    approval_receipt: {
+      schema_version: 1 as const,
+      format: "base64url-json+ed25519" as const,
+      request: {
+        approval_type: "plan_approval" as const,
+        task_id: taskId,
+        authority_reference: authorityReference,
+        state_fingerprint: context.repository_fingerprint,
+        operation_id: null,
+        operation_digest: null,
+        state_scope_digest: null,
+      },
+    },
+  };
+}
 
 async function authorityDeltaStop(runtime: Runtime, taskId: string) {
   const prepared = await runtime.authority.prepareDelta(taskId, repositoryEffectsForPath);
@@ -58,156 +108,13 @@ async function authorityDeltaStop(runtime: Runtime, taskId: string) {
   };
 }
 
-async function acceptKernelSemanticResult(
-  command: CommandContext,
-  taskId: string,
-  runtime: Runtime,
-  resultPath: string,
-) {
-  const { directory, workOrder, semantic } = await readKernelOrderResult(
-    command,
-    taskId,
-    resultPath,
-  );
-  const inputPath = path.join(directory, "command-input.json");
-  let saved: KernelCommandInput | null = null;
-  try {
-    saved = JSON.parse(
-      await readStableRegularTextNoFollow(inputPath, "native command input"),
-    ) as KernelCommandInput;
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
-  }
-  if (semantic.status !== "completed")
-    return {
-      kind: "human_required",
-      reason: `semantic_${semantic.status}`,
-      summary: semantic.summary,
-    };
-  const binding = workOrder.canonical_binding!;
-  if (binding.phase === "inspection")
-    return (await acceptKernelInspection(command, runtime, directory, semantic)) ?? null;
-  const mutationId = `result:${workOrder.work_order_id}`;
-  if (saved) await writeKernelArtifact(directory, "received-result.json", semantic);
-  if (binding.phase === "planning") {
-    if (semantic.canonical_outputs)
-      throw new Error("Planning cannot submit implementation outputs");
-    const proposal = kernelPlanProposalSchema.parse(semantic.canonical_plan);
-    const read = await runtime.adapter.read(taskId);
-    if (read.kind !== "canonical") throw new Error("Canonical Task unavailable");
-    const observation = await runtime.observe();
-    if (
-      !saved &&
-      (read.record.aggregate.revision !== workOrder.task.revision ||
-        observation.fingerprint !== binding.repository_fingerprint)
-    )
-      throw new Error("Canonical planning result is stale");
-    const plan = canonicalPlanFromProposal(proposal, binding.plan_revision + 1);
-    await writeKernelArtifact(directory, "received-result.json", semantic);
-    const input = saved ?? (await runtime.input({ kind: "propose_plan", plan }, mutationId, true));
-    await writeKernelArtifact(directory, "command-input.json", input);
-    requireKernelCommit(
-      await runtime.lifecycle.apply(
-        input,
-        proposal.work_items.map((item) => item.contract),
-      ),
-    );
-  } else {
-    if (semantic.canonical_plan) throw new Error("Implementation cannot replace the approved plan");
-    if (!semantic.canonical_outputs) throw new Error("Canonical outputs are required");
-    if (!saved) {
-      const read = await runtime.adapter.read(taskId);
-      if (read.kind !== "canonical") throw new Error("Canonical Task unavailable");
-      const aggregate = read.record.aggregate;
-      const item = aggregate.work_items[binding.work_item_id];
-      const plan = aggregate.current_plan;
-      const parent = aggregate.authority_lineage?.at(-1)?.authority;
-      if (
-        item?.state !== "EXECUTING" ||
-        plan?.state !== "APPROVED" ||
-        plan.revision !== binding.plan_revision ||
-        plan.digest !== binding.plan_digest ||
-        item.definition.contract_digest !== binding.contract_digest ||
-        item.attempt !== binding.attempt ||
-        item.claim_id !== binding.claim_id ||
-        !parent ||
-        !runtime.lifecycle.resultFingerprintMatches(
-          read.record,
-          binding as KernelWorkBinding,
-          parent.repository_fingerprint,
-        )
-      )
-        throw new Error("Canonical implementation result is stale");
-      const outputIds = semantic.canonical_outputs.map((output) => output.id);
-      if (
-        new Set(outputIds).size !== outputIds.length ||
-        outputIds.length !== item.definition.expected_outputs.length ||
-        item.definition.expected_outputs.some((id) => !outputIds.includes(id))
-      )
-        throw new Error("Canonical output claims do not match the WorkItem contract");
-      const observation = await runtime.observe();
-      if (parent.repository_fingerprint !== observation.fingerprint) {
-        const continuation = await runtime.native.observeContinuation(taskId, parent);
-        if (
-          continuation?.kind !== "repository_implementation" ||
-          continuation.changed_paths.some(
-            (changed) =>
-              !parent.scope_roots.some(
-                (root) => root === "." || changed === root || changed.startsWith(`${root}/`),
-              ),
-          )
-        )
-          throw new Error("Canonical implementation changed paths outside its WorkItem scope");
-        await writeKernelArtifact(directory, "received-result.json", semantic);
-        requireKernelCommit(await runtime.authority.continue(taskId));
-      }
-      await writeKernelArtifact(directory, "received-result.json", semantic);
-    }
-    const context = await runtime.native.readContext(taskId);
-    const input =
-      saved ??
-      (await runtime.input(
-        {
-          kind: "accept_work_item_result",
-          work_item_id: binding.work_item_id,
-          plan_revision: binding.plan_revision,
-          plan_digest: binding.plan_digest as k.Sha256Digest,
-          result_digest: k.kernelDigest(semantic),
-          output_manifests: semantic.canonical_outputs.map((output) => ({
-            ...output,
-            digest: output.digest as k.Sha256Digest,
-            task_id: taskId,
-            plan_revision: binding.plan_revision,
-            work_item_id: binding.work_item_id,
-            attempt: binding.attempt,
-            repository_fingerprint: context.repository_fingerprint,
-          })),
-        },
-        mutationId,
-      ));
-    await writeKernelArtifact(directory, "command-input.json", input);
-    const {
-      phase: _phase,
-      repository_identity: _repository,
-      authority_digest: _authority,
-      ...workBinding
-    } = binding;
-    requireKernelCommit(
-      await runtime.lifecycle.receiveResult(input, workBinding as KernelWorkBinding),
-    );
-  }
-  await writeKernelArtifact(directory, "accepted-result.json", {
-    mutation_id: mutationId,
-    semantic_digest: k.kernelDigest(semantic),
-  });
-  return null;
-}
-
 export async function advanceCanonicalTask(opts: {
   command: CommandContext;
   task_id: string;
   result_path?: string;
   transport: "host" | "managed";
+  effect_port_resolver?: KernelEffectPortResolver;
+  allow_provider_effects?: boolean;
 }) {
   const runtime = await createKernelRuntime({
     command: opts.command,
@@ -239,12 +146,129 @@ export async function advanceCanonicalTask(opts: {
     const { record } = current.read;
     const plan = record.aggregate.current_plan;
     const route = current.next_action;
+    const operationId = `${route.reason_code}:${record.digest}:${context.repository_fingerprint}`;
+    finalValidation ??= restoreKernelFinalValidation(record, context.repository_fingerprint);
+    const persistedValidationEvidence =
+      record.aggregate.final_validation?.status === "PASSED"
+        ? record.aggregate.final_validation.evidence_digests.at(-1)
+        : undefined;
+    if (
+      current.read.task.execution_route?.repository_mode === "branch_pr" &&
+      !finalValidation &&
+      persistedValidationEvidence &&
+      ["kernel_final_validation_required", "kernel_task_completion_required"].includes(
+        route.reason_code,
+      )
+    ) {
+      const workflow = await decideCanonicalWorkflowEffect(opts.command, opts.task_id);
+      const terminalOnBase =
+        workflow.workflowStep.kind === "terminal" &&
+        workflow.workflowStep.authoritativeCheckout === "base_checkout";
+      const postMergeBaseOperation =
+        workflow.workflowStep.kind === "cli_operation" &&
+        ["task.hosted_close.finalize", "task.worktree.cleanup"].includes(
+          workflow.workflowStep.operation.id,
+        );
+      if (postMergeBaseOperation || terminalOnBase) {
+        await ensureKernelOperationalProjectionStatus({
+          command: opts.command,
+          task_id: opts.task_id,
+          verification_evidence_digest: persistedValidationEvidence,
+        });
+        const baseCheckout = workflow.workspace.baseCheckoutPath;
+        if (
+          baseCheckout &&
+          path.resolve(baseCheckout) !== path.resolve(opts.command.resolvedProject.gitRoot)
+        ) {
+          const target = await transferCanonicalControllerToBase({
+            command: opts.command,
+            runtime,
+            task_id: opts.task_id,
+            base_checkout: baseCheckout,
+          });
+          return {
+            schema_version: 1,
+            task_id: opts.task_id,
+            action: {
+              kind: "external_wait",
+              reason: "canonical_controller_transferred",
+              must_run_from: target.resolvedProject.gitRoot,
+            },
+          };
+        }
+        if (terminalOnBase) {
+          const completion = await runtime.input({ kind: "complete_task" }, operationId);
+          if (completion.command.expected_task_revision !== record.aggregate.revision)
+            throw new Error("Canonical task changed before completion");
+          requireKernelCommit(await runtime.lifecycle.apply(completion));
+          continue;
+        }
+        const prepared = await prepareCanonicalWorkflowEffect({
+          command: opts.command,
+          runtime,
+          record,
+          decision: workflow,
+        });
+        if (prepared === "prepared") continue;
+        return {
+          schema_version: 1,
+          task_id: opts.task_id,
+          action: {
+            kind: "human_required",
+            reason:
+              prepared === "already_observed"
+                ? "canonical_workflow_effect_no_progress"
+                : "canonical_workflow_effect_unavailable",
+            workflow_step: workflow.workflowStep.id,
+          },
+        };
+      }
+    }
+    if (
+      route.reason_code === "kernel_task_completed" &&
+      current.read.task.execution_route?.repository_mode !== "branch_pr"
+    ) {
+      await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
+      return {
+        schema_version: 1,
+        task_id: opts.task_id,
+        action: { kind: "terminal", reason: route.reason_code },
+        canonical_revision: record.aggregate.revision,
+      };
+    }
+    if (
+      route.reason_code === "kernel_effect_dispatch_required" ||
+      route.reason_code === "kernel_effect_observation_required" ||
+      route.reason_code === "kernel_effect_reconciliation_required"
+    ) {
+      const coordinated = await coordinateKernelEffect({
+        runtime,
+        record,
+        route,
+        resolve_port: opts.effect_port_resolver ?? emptyKernelEffectPortResolver,
+      });
+      if (coordinated.kind === "stop") {
+        return {
+          schema_version: 1,
+          task_id: opts.task_id,
+          action: coordinated.action,
+          canonical_revision: record.aggregate.revision,
+        };
+      }
+      continue;
+    }
     if (route.reason_code === "kernel_plan_required") {
-      const order = buildKernelAgentWorkOrder({ command: opts.command, record, context });
+      const order = await buildKernelAgentWorkOrder({ command: opts.command, record, context });
       return issueKernelExchange(opts.command, order, opts.transport);
     }
     if (route.reason_code === "kernel_plan_approval_required" && plan) {
       await runtime.checkpoint(await runtime.observe());
+      const operatorAction = kernelPlanApprovalOperatorAction(
+        opts.command,
+        opts.task_id,
+        context,
+        plan,
+      );
       return {
         schema_version: 1,
         task_id: opts.task_id,
@@ -254,13 +278,9 @@ export async function advanceCanonicalTask(opts: {
           reference: kernelApprovalReference(context, plan),
           repository_fingerprint: context.repository_fingerprint,
         },
-        operator_action: {
-          kind: "approve_plan",
-          argv: ["agentplane", "task", "plan", "approve", opts.task_id, "--by", "USER"],
-        },
+        operator_action: operatorAction,
       };
     }
-    const operationId = `${route.reason_code}:${record.digest}:${context.repository_fingerprint}`;
     const parent = record.aggregate.authority_lineage?.at(-1)?.authority;
     if (
       plan?.state === "APPROVED" &&
@@ -301,6 +321,81 @@ export async function advanceCanonicalTask(opts: {
           finalValidation.evidence_digest,
         )
       ) {
+        if (current.read.task.execution_route?.repository_mode === "branch_pr") {
+          if (!opts.allow_provider_effects) {
+            return {
+              schema_version: 1,
+              task_id: opts.task_id,
+              action: {
+                kind: "external_wait",
+                reason: "canonical_provider_access_required",
+              },
+            };
+          }
+          await ensureKernelOperationalProjectionStatus({
+            command: opts.command,
+            task_id: opts.task_id,
+            verification_evidence_digest: finalValidation.evidence_digest,
+          });
+          await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
+          const workflow = await decideCanonicalWorkflowEffect(opts.command, opts.task_id);
+          const terminalOnBase =
+            workflow.workflowStep.kind === "terminal" &&
+            workflow.workflowStep.authoritativeCheckout === "base_checkout";
+          const postMergeBaseOperation =
+            workflow.workflowStep.kind === "cli_operation" &&
+            [
+              "task.hosted_close.open",
+              "task.hosted_close.finalize",
+              "task.worktree.cleanup",
+            ].includes(workflow.workflowStep.operation.id);
+          const baseCheckout = workflow.workspace.baseCheckoutPath;
+          if (
+            (postMergeBaseOperation || terminalOnBase) &&
+            baseCheckout &&
+            path.resolve(baseCheckout) !== path.resolve(opts.command.resolvedProject.gitRoot)
+          ) {
+            const target = await transferCanonicalControllerToBase({
+              command: opts.command,
+              runtime,
+              task_id: opts.task_id,
+              base_checkout: baseCheckout,
+            });
+            return {
+              schema_version: 1,
+              task_id: opts.task_id,
+              action: {
+                kind: "external_wait",
+                reason: "canonical_controller_transferred",
+                must_run_from: target.resolvedProject.gitRoot,
+              },
+            };
+          }
+          const terminal =
+            workflow.workflowStep.kind === "terminal" &&
+            ["done", "superseded"].includes(workflow.workflowStep.outcome.type);
+          if (!terminal) {
+            const prepared = await prepareCanonicalWorkflowEffect({
+              command: opts.command,
+              runtime,
+              record,
+              decision: workflow,
+            });
+            if (prepared === "prepared") continue;
+            return {
+              schema_version: 1,
+              task_id: opts.task_id,
+              action: {
+                kind: workflow.workflowStep.kind === "wait" ? "external_wait" : "human_required",
+                reason:
+                  prepared === "already_observed"
+                    ? "canonical_workflow_effect_no_progress"
+                    : "canonical_workflow_effect_unavailable",
+                workflow_step: workflow.workflowStep.id,
+              },
+            };
+          }
+        }
         const completion = await runtime.input({ kind: "complete_task" }, operationId);
         if (completion.command.expected_task_revision !== record.aggregate.revision)
           throw new Error("Canonical task changed before completion");
@@ -408,13 +503,35 @@ export async function advanceCanonicalTask(opts: {
           task_id: opts.task_id,
           action: { kind: "human_required", reason: "canonical_begin_dispatch_uncertain" },
         };
-      const order = buildKernelAgentWorkOrder({
+      const order = await buildKernelAgentWorkOrder({
         command: opts.command,
         record: result.record,
         context,
         implementation: begun.work_order,
       });
       return issueKernelExchange(opts.command, order, opts.transport, result.record);
+    }
+    if (route.reason_code === "kernel_work_item_result_required" && route.work_item_id) {
+      const resolved = await runtime.authority.resolve(opts.task_id, route.work_item_id);
+      const resumed = resumeKernelWorkOrder({
+        record,
+        work_item_id: route.work_item_id,
+        authority: resolved.authority,
+        repository_fingerprint: resolved.context.repository_fingerprint,
+      });
+      if (!resumed)
+        return {
+          schema_version: 1,
+          task_id: opts.task_id,
+          action: { kind: "human_required", reason: "canonical_result_dispatch_unavailable" },
+        };
+      const order = await buildKernelAgentWorkOrder({
+        command: opts.command,
+        record,
+        context: resolved.context,
+        implementation: resumed,
+      });
+      return issueKernelExchange(opts.command, order, opts.transport, record);
     }
     return {
       schema_version: 1,

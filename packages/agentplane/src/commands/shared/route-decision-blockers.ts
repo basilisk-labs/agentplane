@@ -21,6 +21,10 @@ import {
   summarizeTaskWorktreeChanges,
   type TaskWorktreeCleanliness,
 } from "./task-worktree-cleanliness.js";
+
+import { hasCanonicalPreMergeEvidence } from "./canonical-pre-merge-evidence.js";
+
+export { hasCanonicalPreMergeEvidence } from "./canonical-pre-merge-evidence.js";
 import {
   qualityReviewHasRetiredExchange,
   qualityReviewIsFreshForHead,
@@ -304,6 +308,7 @@ export async function deriveBlockers(opts: {
     });
   }
   if (opts.workflowMode === "branch_pr") {
+    const canonicalPreMergeEvidence = hasCanonicalPreMergeEvidence(opts.task);
     let verificationReason: string | null = null;
     let verificationRecoveryHint: string | null = null;
     const finalizedDoneTask =
@@ -313,8 +318,9 @@ export async function deriveBlockers(opts: {
     addVerificationRequiredBlocker({
       blockers,
       task: opts.task,
-      acceptedVerificationRecord:
-        opts.task.verification?.state === "ok" && !finalizedDoneTask
+      acceptedVerificationRecord: canonicalPreMergeEvidence
+        ? true
+        : opts.task.verification?.state === "ok" && !finalizedDoneTask
           ? await hasAcceptedVerificationForCurrentImplementation({
               ...opts,
               execution: opts.execution,
@@ -545,7 +551,10 @@ export async function deriveBlockers(opts: {
             taskId: opts.task.id,
             workflowMode: opts.workflowMode,
           });
-          if (opts.prFlow?.pr.state === "OPEN" || preMerge.open) {
+          if (
+            (opts.prFlow?.pr.state === "OPEN" || preMerge.open) &&
+            !hasCanonicalPreMergeEvidence(opts.task)
+          ) {
             addBlocker(
               blockers,
               "pre_merge_closure_missing",

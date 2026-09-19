@@ -14,6 +14,7 @@ const mocks = vi.hoisted(() => ({
   isTaskSetLocalOnlyAdvance: vi.fn(),
   readCommitInfo: vi.fn(),
   hasAcceptedVerificationRecord: vi.fn(),
+  hasCanonicalPreMergeEvidence: vi.fn(),
   checkTaskBlueprintSnapshotDrift: vi.fn(),
 }));
 
@@ -43,6 +44,9 @@ vi.mock("../shared/task-verification-records.js", () => ({
     task.execution_contract?.source === "legacy_compatibility"
       ? []
       : (task.execution_contract?.verification.contract?.selected_checks ?? []),
+}));
+vi.mock("../shared/canonical-pre-merge-evidence.js", () => ({
+  hasCanonicalPreMergeEvidence: mocks.hasCanonicalPreMergeEvidence,
 }));
 vi.mock("../blueprint/snapshot-artifact.js", () => ({
   checkTaskBlueprintSnapshotDrift: mocks.checkTaskBlueprintSnapshotDrift,
@@ -114,6 +118,7 @@ describe("finish quality review target selection", () => {
     mocks.isTaskSetLocalOnlyAdvance.mockReset();
     mocks.readCommitInfo.mockReset();
     mocks.hasAcceptedVerificationRecord.mockReset().mockResolvedValue(true);
+    mocks.hasCanonicalPreMergeEvidence.mockReset().mockReturnValue(false);
     mocks.checkTaskBlueprintSnapshotDrift.mockReset().mockResolvedValue({
       state: "current",
       path: ".agentplane/tasks/T-1/blueprint/resolved.json",
@@ -206,6 +211,26 @@ extensions:
     expect(mocks.hasAcceptedVerificationRecord).toHaveBeenCalledWith(
       expect.objectContaining({ evaluatedSha: "artifact-review-sha" }),
     );
+  });
+
+  it("accepts the review identity authenticated by canonical pre-merge evidence", async () => {
+    const loaded = mkLoadedTask();
+    loaded.task.quality_review = {
+      ...loaded.task.quality_review!,
+      review_identity_digest: "sha256:canonical-review",
+    };
+    mocks.hasCanonicalPreMergeEvidence.mockReturnValue(true);
+    const { assertQualityReviewBeforeFinish } = await import("./finish-quality-evidence.js");
+
+    await expect(
+      assertQualityReviewBeforeFinish({
+        ctx: mkCtx(),
+        loadedTasks: [loaded],
+        taskCommitInfo: { hash: "impl-sha", message: "feat: implementation" },
+        implementationCommitInfo: null,
+        execution: mkExecution(),
+      }),
+    ).resolves.toBeUndefined();
   });
 
   it("accepts a reviewed descendant containing linked batch task artifacts", async () => {

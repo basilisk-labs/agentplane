@@ -26,7 +26,12 @@ export function canonicalPlanFromProposal(
 }
 
 /** Explicit native planning entrypoint. The input describes intent and never carries approval. */
-export async function setCanonicalPlan(command: CommandContext, taskId: string, value: unknown) {
+export async function setCanonicalPlan(
+  command: CommandContext,
+  taskId: string,
+  value: unknown,
+  options: { scopeExpansionApprovedBy?: string } = {},
+) {
   const proposal = kernelPlanProposalSchema.parse(value);
   const runtime = await createKernelRuntime({
     command,
@@ -58,22 +63,52 @@ export async function setCanonicalPlan(command: CommandContext, taskId: string, 
     );
   }
   const amended = { revision: plan.revision, digest: plan.digest, work_items: plan.work_items };
-  requireKernelCommit(
-    await runtime.lifecycle.apply(
-      await runtime.input(
-        {
-          kind: "amend_plan",
-          plan_revision: current.revision,
-          plan_digest: current.digest,
-          amended_plan: amended,
-          amendment_digest: k.kernelDigest(amended),
-          authority_delta_digest: null,
+  const approvalDigest = options.scopeExpansionApprovedBy
+    ? k.planScopeExpansionApprovalDigest({
+        task_id: taskId,
+        current_plan_digest: current.digest,
+        amended_plan_digest: amended.digest,
+        actor_id: options.scopeExpansionApprovedBy,
+      })
+    : null;
+  const amendmentRuntime = approvalDigest
+    ? await createKernelRuntime({
+        command,
+        task_id: taskId,
+        transport: "manual",
+        operation_id: `amend-user:${approvalDigest}`,
+        approval: {
+          kind: "manual_operator",
+          actor_id: options.scopeExpansionApprovedBy!,
+          invocation_id: approvalDigest,
         },
-        `amend:${plan.digest}`,
-      ),
-      contracts,
-    ),
+      })
+    : runtime;
+  let amendmentInput = await amendmentRuntime.input(
+    {
+      kind: "amend_plan",
+      plan_revision: current.revision,
+      plan_digest: current.digest,
+      amended_plan: amended,
+      amendment_digest: k.kernelDigest(amended),
+      authority_delta_digest: approvalDigest,
+    },
+    `amend:${plan.digest}`,
   );
+  if (approvalDigest) {
+    const approval = await amendmentRuntime.native.readApproval(taskId);
+    if (
+      approval?.kind !== "manual_operator" ||
+      approval.actor_id !== options.scopeExpansionApprovedBy ||
+      approval.invocation_id !== approvalDigest
+    )
+      throw new Error("Canonical plan scope expansion requires exact manual USER approval");
+    amendmentInput = {
+      ...amendmentInput,
+      actor: { ...amendmentInput.actor, id: approval.actor_id, kind: "USER" },
+    };
+  }
+  requireKernelCommit(await amendmentRuntime.lifecycle.apply(amendmentInput, contracts));
   // M1 compares all authority dimensions before native continuation binds the refined plan.
-  return requireKernelCommit(await runtime.authority.continue(taskId));
+  return requireKernelCommit(await amendmentRuntime.authority.continue(taskId));
 }

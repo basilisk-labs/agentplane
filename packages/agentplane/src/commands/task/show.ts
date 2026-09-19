@@ -20,6 +20,28 @@ import {
 } from "../shared/task-backend.js";
 
 import { resolveTaskExecutionLifecycleSummary } from "./execution-summary.js";
+import { readKernelOperationalProjection } from "./kernel-operational-projection.js";
+import type { TaskData } from "../../backends/task-backend.js";
+import type { taskKernel } from "@agentplaneorg/core/tasks";
+
+export function projectKernelExecutionContract(
+  task: TaskData,
+  aggregate: taskKernel.TaskAggregate,
+) {
+  if (!task.execution_contract || !aggregate.current_plan) return task.execution_contract;
+  const requirements = aggregate.current_plan.work_items.map((item) => item.execution_requirements);
+  const union = (key: "scope_roots" | "repository_effects" | "external_effects") =>
+    [...new Set(requirements.flatMap((requirement) => requirement[key]))].toSorted();
+  return {
+    ...task.execution_contract,
+    declaration: {
+      ...task.execution_contract.declaration,
+      scope_roots: union("scope_roots"),
+      repository_effects: union("repository_effects"),
+      external_effects: union("external_effects"),
+    },
+  };
+}
 
 async function detectLocalTaskMetadataErrors(
   ctx: CommandContext,
@@ -73,12 +95,26 @@ export async function cmdTaskShow(opts: {
           message: `Canonical task read refused: ${canonical.kind}.`,
         });
       }
+      const operational = readKernelOperationalProjection(task.extensions);
       process.stdout.write(
         `${JSON.stringify(
           {
             ...projectKernelTask(canonical.record.aggregate),
             title: task.title,
             description: task.description,
+            ...(operational
+              ? {
+                  commit: task.commit,
+                  verification: task.verification,
+                  quality_review: task.quality_review,
+                  execution_route: task.execution_route,
+                  execution_contract: projectKernelExecutionContract(
+                    task,
+                    canonical.record.aggregate,
+                  ),
+                  operational_evidence: operational,
+                }
+              : {}),
             canonical_record: canonical.record,
             source: "task_kernel",
           },
