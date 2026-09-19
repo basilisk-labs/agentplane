@@ -6,14 +6,14 @@ Created: 2026-09-19T03:38:19.549Z
 
 - Task: `202609190247-NEZTJ3`
 - Title: Land the verified 0.7.10 canonical release recovery fixes with independent evidence
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609190247-NEZTJ3/canonical-release-recovery`
 - Canonical task record: `.agentplane/tasks/202609190247-NEZTJ3/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:1725d2eb3699163a9ad5bc7ee80cae009106e9a7c42f5d9ec1eaa92947608c4d
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

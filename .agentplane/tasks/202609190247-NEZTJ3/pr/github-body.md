@@ -15,8 +15,8 @@ Land the verified 0.7.10 canonical release recovery fixes with independent evide
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:1725d2eb3699163a9ad5bc7ee80cae009106e9a7c42f5d9ec1eaa92947608c4d
 - Canonical workflow state lives in the task README.
 
 <details>
