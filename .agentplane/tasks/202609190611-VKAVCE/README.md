@@ -1,10 +1,11 @@
 ---
 id: "202609190611-VKAVCE"
 title: "Preserve evaluator repository evidence for hosted closure"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 32
+revision: 33
 origin:
   system: "manual"
 depends_on: []
@@ -44,6 +45,22 @@ quality_review:
     - "The attempt 4 evaluator WorkOrder contains repository-evidence from AgentPlane-owned exchange 07526d8c3a72f7d26452a5594f898917136efa89f726ae895831e78024fbc352."
     - "The retained evidence is bound to task 202609190611-VKAVCE, the same work item, and current implementation commit f9063b500c9a406d6820c4b66b1d862cb792ed14."
     - "Regression coverage exercises the no-new-commit retry topology and the focused and full native checks previously passed on the unchanged implementation commit."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: null
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "unavailable"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-09-19T07:42:51.199Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -226,9 +243,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "f9063b500c9a406d6820c4b66b1d862cb792ed14"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "da25f313d01d95586e32577b2118738e8ca70d74"
+  message: "✅ VKAVCE task: persist canonical completion"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -236,9 +256,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-09-19T07:42:51.199Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "da25f313d01d95586e32577b2118738e8ca70d74"
 doc_version: 3
-doc_updated_at: "2026-09-19T07:17:22.439Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-19T07:42:51.199Z"
+doc_updated_by: "CODER"
 description: "Release blocker: an evaluator retry without a new repository mutation omitted valid repository evidence from an earlier attempt for the same work item. The passing inspection skipped operational projection, so hosted-close for PR #5969 refused legacy mutation. Preserve or recover same-work-item repository evidence across evaluator retries, keep digest and commit identity checks fail-closed, and add regression coverage."
 sections:
   Summary: |-
@@ -362,6 +390,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:8353c8d55cd0876d1de7e87bd20ab223e8ad281f73ae7957de114d5606f314ab"
     work_order_id: "sha256:07526d8c3a72f7d26452a5594f898917136efa89f726ae895831e78024fbc352"
+  implementation_commit:
+    hash: "f9063b500c9a406d6820c4b66b1d862cb792ed14"
+    message: "🚧 VKAVCE task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "4ebbcdd07185c8984d50a94daa24aa9ff07fbf56"
@@ -1311,3 +1342,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-09-19T07:42:51.199Z`

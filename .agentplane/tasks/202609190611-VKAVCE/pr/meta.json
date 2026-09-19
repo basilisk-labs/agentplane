@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:f143fcf9831e8c53166a4f02904e76548b8a78d5f2c33b7e2a8bc1205513f190",
   "pr_number": 5971,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5971",
+  "pre_merge_closure": {
+    "basis_commit": "da25f313d01d95586e32577b2118738e8ca70d74",
+    "branch": "task/202609190611-VKAVCE/preserve-evaluator-evidence",
+    "pr_number": 5971,
+    "recorded_at": "2026-09-19T07:42:51.259Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
