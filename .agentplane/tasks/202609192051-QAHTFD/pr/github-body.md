@@ -35,14 +35,15 @@ Integrate and regression-test the temporary runtime fixes required to complete b
  .../src/commands/shared/route-decision-blockers.ts |   1 +
  .../src/commands/shared/workflow-step-branch.ts    |  49 +++----
  .../src/commands/shared/workflow-step.test.ts      |  24 ++++
- .../commands/task/direct-task-verification.test.ts |  34 +++++
- .../src/commands/task/direct-task-verification.ts  |  59 ++++++++-
+ .../commands/task/direct-task-verification.test.ts |  79 +++++++++++
+ .../src/commands/task/direct-task-verification.ts  |  80 +++++++++++-
  .../commands/task/hosted-close-premerge.test.ts    |  78 ++++++++++-
  .../src/commands/task/hosted-close-premerge.ts     |  50 ++++++-
  .../agentplane/src/commands/task/kernel-advance.ts | 145 +++++++++++++++++++++
+ .../commands/task/kernel-advance.worktree.test.ts  |  91 +++++++++++++
  .../task/kernel-repository-coordinator.test.ts     |   7 +-
  .../commands/task/kernel-repository-coordinator.ts |   3 +
- 15 files changed, 514 insertions(+), 46 deletions(-)
+ 16 files changed, 671 insertions(+), 46 deletions(-)
 ```
 
 </details>

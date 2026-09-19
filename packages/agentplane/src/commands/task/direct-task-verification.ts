@@ -29,8 +29,29 @@ const BUN_ZERO_TEST_PATTERNS = [
   /\bran 0 tests?\b/iu,
 ] as const;
 
-async function verificationCheckout(cwd: string, command: string, env: NodeJS.ProcessEnv) {
-  if (!command.includes("scripts/qualification/run-v0.7.1-release-qualification.mjs")) {
+function requiresIsolatedQualificationCheckout(
+  command: string,
+  parsedSequence: readonly ParsedDirectTaskCheck[],
+): boolean {
+  const invokesQualificationRunner =
+    /(?:^|\s)scripts\/qualification\/run-v[^/\s]+-release-qualification\.mjs(?:\s|$)/u.test(
+      command,
+    );
+  const invokesQualificationScript = parsedSequence.some(
+    ({ script }) =>
+      script === "qualification:gate" ||
+      (script !== null && /^e2e:v\d+\.\d+\.\d+(?:-[^:]+)?:gate$/u.test(script)),
+  );
+  return invokesQualificationRunner || invokesQualificationScript;
+}
+
+async function verificationCheckout(
+  cwd: string,
+  command: string,
+  parsedSequence: readonly ParsedDirectTaskCheck[],
+  env: NodeJS.ProcessEnv,
+) {
+  if (!requiresIsolatedQualificationCheckout(command, parsedSequence)) {
     return { cwd, cleanup: async () => undefined };
   }
   const checkout = await mkdtemp(path.join(os.tmpdir(), "agentplane-verification-"));
@@ -504,7 +525,7 @@ export async function runDirectTaskVerification(opts: {
       ]),
     });
     try {
-      isolatedCheckout = await verificationCheckout(opts.cwd, command, env);
+      isolatedCheckout = await verificationCheckout(opts.cwd, command, parsedSequence, env);
       for (const parsed of parsedSequence) {
         const remainingTimeoutMs = parsedSequence.length === 1 ? timeoutBudgetMs : deadline - now();
         if (remainingTimeoutMs <= 0) {

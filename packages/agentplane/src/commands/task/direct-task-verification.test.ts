@@ -897,6 +897,12 @@ describe("direct task verification", () => {
 
   it("gives the canonical provider qualification its bounded release window", async () => {
     const cwd = await root();
+    await execFileAsync("git", ["init", "-b", "main"], { cwd });
+    await execFileAsync("git", ["config", "user.name", "AgentPlane Test"], { cwd });
+    await execFileAsync("git", ["config", "user.email", "test@example.com"], { cwd });
+    await writeFile(path.join(cwd, "README.md"), "fixture\n", "utf8");
+    await execFileAsync("git", ["add", "README.md"], { cwd });
+    await execFileAsync("git", ["commit", "-m", "fixture"], { cwd });
     mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "provider gate ok", stderr: "" });
 
     const result = await runVerification(cwd, { verify: ["bun run e2e:v0.7.1:gate"] });
@@ -909,6 +915,7 @@ describe("direct task verification", () => {
         timeoutMs: 150 * 60_000,
       }),
     );
+    expect(mocks.runProcess.mock.calls[0]?.[0].cwd).not.toBe(cwd);
   });
 
   it("runs release qualification from a detached clean checkout and removes it", async () => {
@@ -940,6 +947,44 @@ describe("direct task verification", () => {
     await expect(readFile(path.join(verificationCwd, ".git"), "utf8")).rejects.toMatchObject({
       code: "ENOENT",
     });
+  });
+
+  it("removes the detached checkout when dependency setup fails", async () => {
+    const cwd = await root();
+    await execFileAsync("git", ["init", "-b", "main"], { cwd });
+    await execFileAsync("git", ["config", "user.name", "AgentPlane Test"], { cwd });
+    await execFileAsync("git", ["config", "user.email", "test@example.com"], { cwd });
+    await writeFile(path.join(cwd, "README.md"), "fixture\n", "utf8");
+    await writeFile(path.join(cwd, "node_modules"), "tracked conflict\n", "utf8");
+    await execFileAsync("git", ["add", "README.md"], { cwd });
+    await execFileAsync("git", ["add", "-f", "node_modules"], { cwd });
+    await execFileAsync("git", ["commit", "-m", "fixture"], { cwd });
+    const nativeRunProcess = processRunner.runProcess;
+    let verificationCwd = "";
+    const process = vi
+      .spyOn(processRunner, "runProcess")
+      .mockImplementation(async (input: Parameters<typeof nativeRunProcess>[0]) => {
+        if (input.command === "git" && input.args[0] === "worktree" && input.args[1] === "add") {
+          verificationCwd = input.args[3]!;
+        }
+        return nativeRunProcess(input);
+      });
+    try {
+      const result = await runVerification(cwd, {
+        verify: [
+          "node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full",
+        ],
+      });
+
+      expect(result.status).toBe("failed");
+      expect(verificationCwd).not.toBe("");
+      await expect(readFile(path.join(verificationCwd, ".git"), "utf8")).rejects.toMatchObject({
+        code: "ENOENT",
+      });
+      expect(mocks.runProcess).not.toHaveBeenCalled();
+    } finally {
+      process.mockRestore();
+    }
   });
 
   it.each([
