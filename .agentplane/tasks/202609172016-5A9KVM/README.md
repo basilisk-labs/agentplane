@@ -4,7 +4,7 @@ title: "Complete canonical Task application coordinator for 0.7.10"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 146
+revision: 147
 origin:
   system: "manual"
 depends_on: []
@@ -3142,6 +3142,97 @@ extensions:
             evidence_digest: "sha256:5e9b44176d399cef89169578c019b194ef29c9b82012fed4af6ab6525624de90"
             kind: "repository_implementation"
             previous_fingerprint: "sha256:beed8745d659eb02c415a479c301ea7d6a3836980b4df3d2096db64e2a8b2ace"
+        -
+          approval_mode: null
+          authority:
+            capabilities:
+              - "git_read"
+              - "git_write"
+              - "network"
+              - "provider_read"
+              - "provider_write"
+              - "repository_read"
+              - "repository_write"
+              - "run_tests"
+            completion_requirements:
+              - "work_item_validation"
+              - "final_validation"
+            digest: "sha256:d2155e2f08b65b2c9a08f1c1b95d6b513fcf7290e156920b61520c51d216d3b3"
+            expires_at: null
+            external_effects:
+              - "git_remote"
+              - "hosted_ci"
+              - "integration"
+              - "pull_request"
+            plan_digest: "sha256:c545a900b67f8ac3b350737403d3f9f523ec11a5bb4f21d3144ad02cc4ac3e5e"
+            plan_revision: 7
+            policy_digests:
+              - "sha256:23efb6f9b035236bb2705fb639979d0ed084618d76039e5bd191654bfb479f8b"
+            provenance:
+              actor_id: "agentplane:kernel-controller"
+              evidence_digest: "sha256:f2ae8850c9a249185765d152e3bde093462d29120edd0fbe8ab0c276885d1928"
+              kind: "SYSTEM"
+              parent_authority_digest: "sha256:01719ce93a11706c6881344cf4ab673f2c742312cbb8054152f56bac77cf4a67"
+            repository_effects:
+              - "ci"
+              - "documentation"
+              - "git_commit"
+              - "repository_write"
+              - "source_code"
+              - "tests"
+            repository_fingerprint: "sha256:5a3f1cd1112133d6b7b0b356e9a3585fd9a3adbdaa6c6ecbed961c5be7936698"
+            repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+            resources: []
+            risk:
+              implementation: "bounded"
+              requirements: "bounded"
+              reversibility: "reversible"
+            scope_roots:
+              - "docs/developer"
+              - "docs/releases"
+              - "docs/user/cli-reference.generated.mdx"
+              - "packages/agentplane/src/cli"
+              - "packages/agentplane/src/commands/acr"
+              - "packages/agentplane/src/commands/cleanup"
+              - "packages/agentplane/src/commands/commit"
+              - "packages/agentplane/src/commands/evaluator"
+              - "packages/agentplane/src/commands/hosted"
+              - "packages/agentplane/src/commands/integration"
+              - "packages/agentplane/src/commands/pr"
+              - "packages/agentplane/src/commands/shared"
+              - "packages/agentplane/src/commands/task"
+              - "packages/agentplane/src/runner/usecases/kernel-authority.ts"
+              - "packages/core/src/runner"
+              - "packages/core/src/task"
+              - "packages/core/src/tasks/task-kernel/authority-lineage.ts"
+              - "packages/core/src/tasks/task-kernel/index.ts"
+              - "packages/core/src/tasks/task-kernel/kernel.test.ts"
+              - "packages/core/src/tasks/task-kernel/kernel.ts"
+              - "packages/testkit/src"
+              - "scripts/qualification"
+            task_id: "202609172016-5A9KVM"
+            validation_requirements:
+              - "bun run ci:local:full"
+              - "bun run lint"
+              - "bun run package:install-smoke"
+              - "bun run qualification:mixed-scope-lifecycle"
+              - "bun run test:cli:critical"
+              - "bun run test:fast"
+              - "bun run typecheck"
+              - "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task packages/agentplane/src/commands/evaluator"
+              - "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task packages/agentplane/src/commands/integration packages/agentplane/src/commands/pr"
+              - "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/kernel-run.test.ts"
+              - "bunx vitest --config vitest.workspace.ts run --project core packages/core/src/task"
+            work_item_id: null
+          observation:
+            changed_paths:
+              - "packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts"
+              - "packages/agentplane/src/commands/shared/task-mutation.ts"
+              - "packages/agentplane/src/commands/task/kernel-advance.ts"
+              - "packages/agentplane/src/commands/task/kernel-operational-projection.test.ts"
+            evidence_digest: "sha256:d036124425385b43dc63f9198f2a68f832c3d4031a8b48f5dc4ceb7494206bb3"
+            kind: "repository_implementation"
+            previous_fingerprint: "sha256:cb78277a9e0baab7f88555a0957f6293d28b3a1e0ab9f9cea43bc36537908454"
       controller_transfer: null
       current_plan:
         approval_actor_id: "USER"
@@ -4159,6 +4250,15 @@ extensions:
           event_digests:
             - "sha256:0acd9f57df80654e178f7e6ce1ea50b68b8df6a6f2c1b54d530216203323575a"
           mutation_id: "sha256:47b25713aebf05a99d5b77d9025890dec593c853396ccf4eda385aceeebc1146"
+        sha256:59efa6cce3c750592d95ab9b111071f2e3255b9438a45fdc21900bd3bb955c01:
+          after_revision: 144
+          aggregate_digest: "sha256:946d8b419a2dabf3be716a281af36876a472d26fc0425a9f26c59d1903c4fe31"
+          before_revision: 143
+          command_digest: "sha256:601d736fb7957dace717d20872d7a047e579c6f00b4afa09a28733c0b9995d3e"
+          effect_ids: []
+          event_digests:
+            - "sha256:c819ecb5039ace3aecaeb7550dafc4fa9bf7eb1a3f097267b0a1cff278f1f204"
+          mutation_id: "sha256:59efa6cce3c750592d95ab9b111071f2e3255b9438a45fdc21900bd3bb955c01"
         sha256:5a23428013fd9cdd3129682e5fa4f8d037ccaa0d0927d1c4baaa9b514851653e:
           after_revision: 50
           aggregate_digest: "sha256:c7cd8b580e97943b12471ea5cde23a66d002700932a08a1b663cf73c2604ac1f"
@@ -5426,7 +5526,7 @@ extensions:
               optional: false
               required_inputs:
                 - "canonical-provider-effects-implemented"
-      revision: 143
+      revision: 144
       schema_version: 1
       state: "FINAL_VALIDATION"
       work_items:
@@ -5680,7 +5780,7 @@ extensions:
               toolchain_digest: "sha256:04bec368c49807e4d0c1d9fa7b2ff3352150517c88ee4492325423407c5f4aec"
             observed_at: "2026-09-17T22:52:22.687Z"
             status: "PASSED"
-    digest: "sha256:798572a66687cadc3b31600f5f9b1c23f5b7b417c62ee572b6cb2be2b258a6ee"
+    digest: "sha256:eea4601cc665f71d908e962a765e95dc1cb580a59946847d53bf6ef3eb0865f1"
     documents:
       contracts:
         sha256:335ecb7db8aeb5d48fb118427799c45816904046413aef68a9bc93bcff55d7a6:
@@ -7027,6 +7127,15 @@ extensions:
         payload_digest: "sha256:5f64ce5daf5dde7e1fab8a4da7fd61cc3000b26a9aea7391b73cf94eaa9219d1"
         task_id: "202609172016-5A9KVM"
         task_revision: 143
+      -
+        command_digest: "sha256:601d736fb7957dace717d20872d7a047e579c6f00b4afa09a28733c0b9995d3e"
+        id: "sha256:59efa6cce3c750592d95ab9b111071f2e3255b9438a45fdc21900bd3bb955c01:authority_continued"
+        kind: "authority_continued"
+        mutation_id: "sha256:59efa6cce3c750592d95ab9b111071f2e3255b9438a45fdc21900bd3bb955c01"
+        occurred_at: "2026-09-19T02:43:18.035Z"
+        payload_digest: "sha256:5d11ec7c356cccac8c7891c4938c27bbbf368cc1fac7cafb2abc8a5c95acc9a4"
+        task_id: "202609172016-5A9KVM"
+        task_revision: 144
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
