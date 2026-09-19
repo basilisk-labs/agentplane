@@ -1,10 +1,12 @@
 ---
 id: "202609191838-3YNJ3Y"
 title: "Repair ACR native identity and release real-E2E fixtures"
-status: "DOING"
+result_summary: "Repaired ACR native identity compatibility and canonical release real-E2E fixtures."
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 80
+revision: 81
 origin:
   system: "manual"
 depends_on: []
@@ -45,6 +47,22 @@ quality_review:
   findings:
     - "No repository implementation delta was introduced; the reviewed ACR and fixture repairs remain unchanged."
     - "The previous validation failure was caused by missing package-local Bun dependency links in the controller's isolated checkout."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: null
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "unavailable"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-09-19T20:07:45.121Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -248,9 +266,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "d9d6183291a2d9a40cce01d66c1a7cba62cb419f"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "8c023360f8039b90567195b27b59d6e180dcb27d"
+  message: "🚧 3YNJ3Y task: apply canonical agent result"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: exact-head local qualification and 14/14 hosted checks passed for PR #5975."
 events:
   -
     type: "verify"
@@ -258,9 +279,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-09-19T20:07:45.121Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: exact-head local qualification and 14/14 hosted checks passed for PR #5975."
+    commit: "8c023360f8039b90567195b27b59d6e180dcb27d"
 doc_version: 3
-doc_updated_at: "2026-09-19T19:34:36.197Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-19T20:07:45.121Z"
+doc_updated_by: "INTEGRATOR"
 description: "Use the schema-valid ACR extension key agentplane.native-identity while retaining summary read compatibility for the legacy underscore key; update hosted-close fixtures to materialize completed canonical work items; remove unsupported task doc mutation from the packaged mixed-scope fixture. Preserve all unrelated production behavior. This replaces fixture-only tasks after correct cli-core execution exposed the ACR schema mismatch."
 sections:
   Summary: |-
@@ -437,6 +466,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:a90f7b5e326cef768c4583ab064706b3f7fc73f584eb7f861be60f40c0f0a2a3"
     work_order_id: "sha256:9c4ef2eeb82032c22f624b62a4af185fda0a890416189f54b59eee533d0f9740"
+  implementation_commit:
+    hash: "d9d6183291a2d9a40cce01d66c1a7cba62cb419f"
+    message: "🚧 3YNJ3Y task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "ef8068df34a264d6eccc51190b4f6e3c43d27ab8"
@@ -2628,3 +2660,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-09-19T20:07:45.121Z`

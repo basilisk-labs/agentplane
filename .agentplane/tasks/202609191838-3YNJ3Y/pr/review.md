@@ -6,7 +6,7 @@ Created: 2026-09-19T18:44:10.802Z
 
 - Task: `202609191838-3YNJ3Y`
 - Title: Repair ACR native identity and release real-E2E fixtures
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609191838-3YNJ3Y/canonical-3ynj3y`
 - Canonical task record: `.agentplane/tasks/202609191838-3YNJ3Y/README.md`
 
