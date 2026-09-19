@@ -3,7 +3,7 @@
     {
       "check_ids": [],
       "command": "bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts",
-      "duration_ms": 7533,
+      "duration_ms": 7479,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:4cdd77c58cb33fa26351fa8ddd2089ca1974081d391932447f4dc013ee9b35f2",
@@ -14,12 +14,12 @@
       },
       "script": null,
       "stderr_tail": "",
-      "stdout_tail": "\n RUN  v4.1.9 /private/tmp/agentplane-e2e-fix.4LnBEJ/repo/.agentplane/worktrees/202609191838-3YNJ3Y-canonical-3ynj3y\n\n\n Test Files  1 passed (1)\n      Tests  4 passed (4)\n   Start at  21:45:09\n   Duration  7.16s (transform 1.66s, setup 0ms, import 1.39s, tests 5.68s, environment 0ms)\n\n"
+      "stdout_tail": "\n RUN  v4.1.9 /private/tmp/agentplane-e2e-fix.4LnBEJ/repo/.agentplane/worktrees/202609191838-3YNJ3Y-canonical-3ynj3y\n\n\n Test Files  1 passed (1)\n      Tests  4 passed (4)\n   Start at  21:50:06\n   Duration  7.13s (transform 1.64s, setup 0ms, import 1.39s, tests 5.68s, environment 0ms)\n\n"
     },
     {
       "check_ids": [],
       "command": "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/acr/acr.command.test.ts",
-      "duration_ms": 907,
+      "duration_ms": 905,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:4cdd77c58cb33fa26351fa8ddd2089ca1974081d391932447f4dc013ee9b35f2",
@@ -30,12 +30,12 @@
       },
       "script": null,
       "stderr_tail": "",
-      "stdout_tail": "\n RUN  v4.1.9 /private/tmp/agentplane-e2e-fix.4LnBEJ/repo/.agentplane/worktrees/202609191838-3YNJ3Y-canonical-3ynj3y\n\n\n Test Files  1 passed (1)\n      Tests  13 passed (13)\n   Start at  21:45:16\n   Duration  564ms (transform 332ms, setup 0ms, import 488ms, tests 20ms, environment 0ms)\n\n"
+      "stdout_tail": "\n RUN  v4.1.9 /private/tmp/agentplane-e2e-fix.4LnBEJ/repo/.agentplane/worktrees/202609191838-3YNJ3Y-canonical-3ynj3y\n\n\n Test Files  1 passed (1)\n      Tests  13 passed (13)\n   Start at  21:50:13\n   Duration  548ms (transform 324ms, setup 0ms, import 477ms, tests 15ms, environment 0ms)\n\n"
     },
     {
       "check_ids": [],
       "command": "node scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs",
-      "duration_ms": 15238,
+      "duration_ms": 13900,
       "exit_code": 1,
       "runtime": {
         "environment_digest": "sha256:4cdd77c58cb33fa26351fa8ddd2089ca1974081d391932447f4dc013ee9b35f2",

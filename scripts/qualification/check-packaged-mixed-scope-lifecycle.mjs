@@ -401,12 +401,7 @@ function semanticResultFor({
 }
 
 function writePacketResult(accessLog, packet, role, resultOptions) {
-  const exchange = packetExchange(packet, role);
-  const workOrderPath = path.join(exchange.directory, exchange.work_order_ref);
-  const workOrder = parseJson(
-    readTracked(accessLog, workOrderPath, `${role.toLowerCase()}_work_order`),
-    `${role} work order`,
-  );
+  const { exchange, workOrder } = readPacketWorkOrder(accessLog, packet, role);
   const expectedResultPath = path.join(exchange.directory, exchange.result_ref);
   if (normalizedPath(exchange.result_path) !== normalizedPath(expectedResultPath)) {
     fail("invalid_exchange_path", `${role} result path is not bound to its public exchange`);
@@ -429,6 +424,16 @@ function writePacketResult(accessLog, packet, role, resultOptions) {
     `${role.toLowerCase()}_result`,
   );
   return exchange;
+}
+
+function readPacketWorkOrder(accessLog, packet, role) {
+  const exchange = packetExchange(packet, role);
+  const workOrderPath = path.join(exchange.directory, exchange.work_order_ref);
+  const workOrder = parseJson(
+    readTracked(accessLog, workOrderPath, `${role.toLowerCase()}_work_order`),
+    `${role} work order`,
+  );
+  return { exchange, workOrder };
 }
 
 function advanceToEpisode(run, cli, repo, taskId, expectedRole) {
@@ -747,32 +752,55 @@ export function runPackagedMixedScopeFixture({ run, cli, packages, tempRoot }) {
   const taskId = created.task_id;
   assert.equal(created.status, "semantic_input_required");
 
-  const planner = advanceToEpisode(run, cli, repo, taskId, "PLANNER");
+  const taskIntent = {
+    task_kind: "code",
+    mutation_scope: "code",
+    risk_flags: [],
+    tags: ["qualification", "mixed-scope", "installed-package"],
+    blueprint_request: "code.direct",
+    execution: {
+      schema_version: 2,
+      preferred_mode: "direct",
+      scope_roots: [...PACKAGED_MIXED_SCOPE_REQUIRED_PATHS],
+      repository_effects: ["repository_write", "source_code", "tests", "documentation"],
+      external_effects: [],
+      requirements_uncertainty: "bounded",
+      implementation_uncertainty: "bounded",
+      reversibility: "reversible",
+      rationale: ["The fixture change is local, bounded, reversible, and has no external effects."],
+    },
+  };
+  let planner = advanceToEpisode(run, cli, repo, taskId, "PLANNER");
+  const initialPlannerOrder = readPacketWorkOrder(accessLog, planner, "PLANNER").workOrder;
+  const initialHasPlanningBaseline = Boolean(
+    initialPlannerOrder.planning_context?.repository_snapshot,
+  );
+  if (!initialHasPlanningBaseline) {
+    const intentExchange = writePacketResult(accessLog, planner, "PLANNER", {
+      summary: "Classify the local mixed-scope fixture before planning it.",
+      taskIntent,
+    });
+    planner = runPacketArgv(
+      run,
+      cli,
+      repo,
+      intentExchange.resume_argv,
+      "planner intent acceptance",
+    );
+    if (planner.action?.kind !== "agent_episode") {
+      fail(
+        "missing_planning_episode",
+        `planner intent advanced to ${planner.action?.kind ?? "unknown"}`,
+      );
+    }
+    packetExchange(planner, "PLANNER");
+  }
   const plan = longMixedScopePlan();
   const plannerExchange = writePacketResult(accessLog, planner, "PLANNER", {
     summary: plan,
     taskPlanProposal: (workOrder) =>
       mixedScopeTaskPlanProposal(taskId, workOrder.planning_context.repository_snapshot),
-    taskIntent: {
-      task_kind: "code",
-      mutation_scope: "code",
-      risk_flags: [],
-      tags: ["qualification", "mixed-scope", "installed-package"],
-      blueprint_request: "code.direct",
-      execution: {
-        schema_version: 2,
-        preferred_mode: "direct",
-        scope_roots: [...PACKAGED_MIXED_SCOPE_REQUIRED_PATHS],
-        repository_effects: ["repository_write", "source_code", "tests", "documentation"],
-        external_effects: [],
-        requirements_uncertainty: "bounded",
-        implementation_uncertainty: "bounded",
-        reversibility: "reversible",
-        rationale: [
-          "The fixture change is local, bounded, reversible, and has no external effects.",
-        ],
-      },
-    },
+    taskIntent: initialHasPlanningBaseline ? taskIntent : undefined,
   });
   const approval = runPacketArgv(
     run,
