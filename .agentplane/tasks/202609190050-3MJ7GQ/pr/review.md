@@ -13,7 +13,7 @@ Created: 2026-09-19T00:59:45.018Z
 ## Verification
 
 - State: ok
-- Note: Verified: canonical Task Kernel final checks passed.
+- Note: Canonical validation sha256:80c0f8fad3b7a60bad0745a0dac2b628c0c078d1386a4f88fb0b15d412be3bb9
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-09-19T00:59:45.018Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-19T00:59:45.018Z
+- Updated: 2026-09-19T01:42:44.829Z
 - Branch: task/202609190050-3MJ7GQ/persist-native-identity-repair
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
