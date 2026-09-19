@@ -369,7 +369,6 @@ export function packetExchange(packet, expectedRole, observedTask = null) {
 }
 
 function semanticResultFor({
-  packet,
   workOrder,
   summary,
   taskIntent,
@@ -378,25 +377,17 @@ function semanticResultFor({
   review,
 }) {
   return {
-    schema_version: 1,
-    kind: "agent_action_result",
-    task_id: packet.task_id,
-    transition_id: packet.transition_id,
-    state_fingerprint: packet.state_fingerprint,
-    role: workOrder.role,
-    result: {
-      schema_version: 2,
-      kind: "agent_semantic_result",
-      work_order_id: workOrder.work_order_id,
-      status: "completed",
-      summary,
-      findings: review ? ["The public diff and recorded verification satisfy the task."] : [],
-      uncertainty: [],
-      ...(taskIntent ? { task_intent: taskIntent } : {}),
-      ...(taskPlanProposal ? { task_plan_proposal: taskPlanProposal } : {}),
-      ...(claimedChecks ? { claimed_checks: claimedChecks } : {}),
-      ...(review ? { review } : {}),
-    },
+    schema_version: 2,
+    kind: "agent_semantic_result",
+    work_order_id: workOrder.work_order_id,
+    status: "completed",
+    summary,
+    findings: review ? ["The public diff and recorded verification satisfy the task."] : [],
+    uncertainty: [],
+    ...(taskIntent ? { task_intent: taskIntent } : {}),
+    ...(taskPlanProposal ? { task_plan_proposal: taskPlanProposal } : {}),
+    ...(claimedChecks ? { claimed_checks: claimedChecks } : {}),
+    ...(review ? { review } : {}),
   };
 }
 
@@ -406,21 +397,29 @@ function writePacketResult(accessLog, packet, role, resultOptions) {
   if (normalizedPath(exchange.result_path) !== normalizedPath(expectedResultPath)) {
     fail("invalid_exchange_path", `${role} result path is not bound to its public exchange`);
   }
+  const semanticResult = semanticResultFor({
+    workOrder,
+    ...resultOptions,
+    ...(resultOptions.taskPlanProposal
+      ? { taskPlanProposal: resultOptions.taskPlanProposal(workOrder) }
+      : {}),
+  });
+  const result =
+    exchange.result_format === "semantic_payload_v1"
+      ? semanticResult
+      : {
+          schema_version: 1,
+          kind: "agent_action_result",
+          task_id: packet.task_id,
+          transition_id: packet.transition_id,
+          state_fingerprint: packet.state_fingerprint,
+          role: workOrder.role,
+          result: semanticResult,
+        };
   writeTracked(
     accessLog,
     exchange.result_path,
-    `${JSON.stringify(
-      semanticResultFor({
-        packet,
-        workOrder,
-        ...resultOptions,
-        ...(resultOptions.taskPlanProposal
-          ? { taskPlanProposal: resultOptions.taskPlanProposal(workOrder) }
-          : {}),
-      }),
-      null,
-      2,
-    )}\n`,
+    `${JSON.stringify(result, null, 2)}\n`,
     `${role.toLowerCase()}_result`,
   );
   return exchange;
