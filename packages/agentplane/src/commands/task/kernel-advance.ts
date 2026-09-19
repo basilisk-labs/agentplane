@@ -24,6 +24,7 @@ import {
 import { ensureKernelOperationalProjectionStatus } from "./kernel-operational-projection.js";
 import { transferCanonicalControllerToBase } from "./kernel-controller-handoff.js";
 import { acceptKernelSemanticResult } from "./kernel-semantic-result.js";
+import { ensureCanonicalTaskWorktree } from "./kernel-worktree-routing.js";
 
 export { blockKernelSemanticEpisode } from "./kernel-semantic-result.js";
 
@@ -483,6 +484,19 @@ export async function advanceCanonicalTask(opts: {
       );
       continue;
     }
+    const worktreeAction = await ensureCanonicalTaskWorktree({
+      command: opts.command,
+      task: current.read.task,
+      taskId: opts.task_id,
+      reasonCode: route.reason_code,
+      hasWorkItem: route.work_item_id !== null,
+    });
+    if (worktreeAction)
+      return {
+        schema_version: 1,
+        task_id: opts.task_id,
+        action: worktreeAction,
+      };
     if (route.reason_code === "kernel_work_item_execution_required" && route.work_item_id) {
       const item = record.aggregate.work_items[route.work_item_id]!;
       const begun = await runtime.lifecycle.begin(

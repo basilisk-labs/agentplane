@@ -1,18 +1,41 @@
 import { describe, expect, it, vi } from "vitest";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
-import { mkdtemp, readFile } from "node:fs/promises";
+import { execFile } from "node:child_process";
+import { mkdtemp, readFile, realpath, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { promisify } from "node:util";
 
+if (typeof vi.hoisted !== "function") {
+  Object.defineProperty(vi, "hoisted", { value: <T>(factory: () => T): T => factory() });
+}
+
+const advanceMocks = vi.hoisted(() => ({
+  createKernelRuntime: vi.fn(),
+}));
+
+vi.mock("./kernel-runtime-context.js", () => ({
+  createKernelRuntime: advanceMocks.createKernelRuntime,
+  requireKernelCommit: vi.fn(),
+}));
+vi.mock("./kernel-final-validation.js", () => ({
+  restoreKernelFinalValidation: vi.fn(() => null),
+  runKernelFinalValidation: vi.fn(),
+}));
 import {
   coordinateKernelEffect,
   type KernelEffectDispatch,
   type KernelEffectPort,
 } from "./kernel-effect-coordinator.js";
-import { blockKernelSemanticEpisode, kernelPlanApprovalOperatorAction } from "./kernel-advance.js";
+import {
+  advanceCanonicalTask,
+  blockKernelSemanticEpisode,
+  kernelPlanApprovalOperatorAction,
+} from "./kernel-advance.js";
 import { resumeKernelWorkOrder } from "./kernel-work-order.js";
 
 const digest = (value: string) => k.kernelDigest(value);
+const execFileAsync = promisify(execFile);
 
 function effect(state: k.EffectState = "PREPARED"): k.ExternalEffect {
   return {
@@ -330,5 +353,75 @@ describe("canonical semantic episode recovery", () => {
         repository_fingerprint: repositoryFingerprint,
       }),
     ).toBeNull();
+  });
+});
+
+describe("canonical task worktree routing", () => {
+  it("redirects a semantic result episode to an existing canonical task worktree", async () => {
+    vi.resetAllMocks();
+    const repository = await mkdtemp(path.join(os.tmpdir(), "agentplane-kernel-advance-"));
+    const worktree = path.join(repository, "task-worktree");
+    const branch = "task/202609192051-QAHTFD/canonical-qahtfd";
+    await execFileAsync("git", ["init", "-b", "main"], { cwd: repository });
+    await execFileAsync("git", ["config", "user.name", "AgentPlane Test"], { cwd: repository });
+    await execFileAsync("git", ["config", "user.email", "test@example.com"], {
+      cwd: repository,
+    });
+    await writeFile(path.join(repository, "README.md"), "fixture\n", "utf8");
+    await execFileAsync("git", ["add", "README.md"], { cwd: repository });
+    await execFileAsync("git", ["commit", "-m", "fixture"], { cwd: repository });
+    await execFileAsync("git", ["worktree", "add", "-b", branch, worktree], {
+      cwd: repository,
+    });
+    const canonicalWorktree = await realpath(worktree);
+    advanceMocks.createKernelRuntime.mockResolvedValue({
+      native: {
+        readContext: vi.fn().mockResolvedValue({ repository_fingerprint: "sha256:fingerprint" }),
+      },
+      lifecycle: {
+        read: vi.fn().mockResolvedValue({
+          read: {
+            kind: "canonical",
+            task: {
+              owner: "CODER",
+              execution_route: { repository_mode: "branch_pr" },
+            },
+            record: {
+              digest: "sha256:record",
+              aggregate: {
+                revision: 1,
+                current_plan: null,
+                final_validation: null,
+                work_items: { tests: { claim_id: "sha256:claim" } },
+              },
+            },
+          },
+          next_action: {
+            reason_code: "kernel_work_item_result_required",
+            work_item_id: "tests",
+          },
+        }),
+      },
+    });
+
+    await expect(
+      advanceCanonicalTask({
+        command: {
+          resolvedProject: { gitRoot: repository },
+          config: { branch: { task_prefix: "task/" } },
+        } as never,
+        task_id: "202609192051-QAHTFD",
+        transport: "host",
+      }),
+    ).resolves.toEqual({
+      schema_version: 1,
+      task_id: "202609192051-QAHTFD",
+      action: {
+        kind: "external_wait",
+        reason: "canonical_worktree_prepared",
+        must_run_from: canonicalWorktree,
+      },
+    });
+    await rm(repository, { recursive: true, force: true });
   });
 });

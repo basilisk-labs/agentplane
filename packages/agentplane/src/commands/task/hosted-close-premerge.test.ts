@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -18,7 +18,9 @@ async function commit(
   text: string,
   message: string,
 ): Promise<string> {
-  await writeFile(path.join(root, fileName), text, "utf8");
+  const target = path.join(root, fileName);
+  await mkdir(path.dirname(target), { recursive: true });
+  await writeFile(target, text, "utf8");
   await execFileAsync("git", ["add", fileName], { cwd: root });
   await execFileAsync("git", ["commit", "-m", message], { cwd: root });
   const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
@@ -232,6 +234,78 @@ describe("pre-merge closure freshness", () => {
         branch: "task/T-1/work",
         prNumber: 101,
         branchHeadSha: history.head,
+      }),
+    ).resolves.toMatchObject({
+      fresh: false,
+      reason: "quality-reviewed commit is not covered by the closure basis",
+    });
+  });
+
+  it("accepts a reviewed SHA rewritten only through managed derived artifacts", async () => {
+    const root = await mkdtemp(path.join(tmpdir(), "agentplane-premerge-rewrite-"));
+    roots.push(root);
+    await execFileAsync("git", ["init", "-b", "task/T-1/work"], { cwd: root });
+    await execFileAsync("git", ["config", "user.name", "AgentPlane Test"], { cwd: root });
+    await execFileAsync("git", ["config", "user.email", "test@example.com"], { cwd: root });
+    const implementation = await commit(root, "impl.txt", "implementation\n", "implementation");
+    const reviewed = await commit(
+      root,
+      ".agentplane/tasks/T-1/quality/prior/quality-report.json",
+      "{}\n",
+      "quality review",
+    );
+    await execFileAsync("git", ["reset", "--hard", implementation], { cwd: root });
+    const basis = await commit(
+      root,
+      ".agentplane/tasks/T-1/verification/latest.json",
+      "{}\n",
+      "rewritten verification",
+    );
+    const head = await commit(root, "closure.txt", "closure\n", "pre-merge closure");
+    const rewrittenTask = task(implementation);
+    rewrittenTask.quality_review = { ...rewrittenTask.quality_review!, evaluated_sha: reviewed };
+
+    await expect(
+      assessPreMergeClosureFreshness({
+        gitRoot: root,
+        task: rewrittenTask,
+        meta: meta(basis),
+        branch: "task/T-1/work",
+        prNumber: 101,
+        branchHeadSha: head,
+        workflowDir: ".agentplane/tasks",
+      }),
+    ).resolves.toEqual({ fresh: true, basisCommit: basis });
+  });
+
+  it("rejects a reviewed SHA rewrite that contains source changes", async () => {
+    const root = await mkdtemp(path.join(tmpdir(), "agentplane-premerge-source-rewrite-"));
+    roots.push(root);
+    await execFileAsync("git", ["init", "-b", "task/T-1/work"], { cwd: root });
+    await execFileAsync("git", ["config", "user.name", "AgentPlane Test"], { cwd: root });
+    await execFileAsync("git", ["config", "user.email", "test@example.com"], { cwd: root });
+    const implementation = await commit(root, "impl.txt", "implementation\n", "implementation");
+    const reviewed = await commit(
+      root,
+      ".agentplane/tasks/T-1/quality/prior/quality-report.json",
+      "{}\n",
+      "quality review",
+    );
+    await execFileAsync("git", ["reset", "--hard", implementation], { cwd: root });
+    const basis = await commit(root, "src/reworked.ts", "export const value = 1;\n", "rewrite");
+    const head = await commit(root, "closure.txt", "closure\n", "pre-merge closure");
+    const rewrittenTask = task(implementation);
+    rewrittenTask.quality_review = { ...rewrittenTask.quality_review!, evaluated_sha: reviewed };
+
+    await expect(
+      assessPreMergeClosureFreshness({
+        gitRoot: root,
+        task: rewrittenTask,
+        meta: meta(basis),
+        branch: "task/T-1/work",
+        prNumber: 101,
+        branchHeadSha: head,
+        workflowDir: ".agentplane/tasks",
       }),
     ).resolves.toMatchObject({
       fresh: false,

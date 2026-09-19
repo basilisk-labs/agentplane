@@ -131,7 +131,13 @@ async function committedPaths(opts: {
 }): Promise<string[] | null> {
   const result = await runProcess({
     command: "git",
-    args: ["diff", "--name-only", "--diff-filter=ACDMRTUXB", `${opts.base}..${opts.commit}`],
+    args: [
+      "diff",
+      "--no-renames",
+      "--name-only",
+      "--diff-filter=ACDMRTUXB",
+      `${opts.base}..${opts.commit}`,
+    ],
     cwd: opts.cwd,
     reject: false,
   });

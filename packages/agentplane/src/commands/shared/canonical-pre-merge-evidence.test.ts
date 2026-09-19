@@ -64,6 +64,42 @@ describe("canonical pre-merge evidence", () => {
     expect(hasCanonicalPreMergeEvidence(task as never)).toBe(true);
   });
 
+  it("accepts final validation evidence independently of the projection digest", () => {
+    const task = canonicalTask() as {
+      extensions: {
+        task_kernel: {
+          kind: string;
+          digest: string;
+          aggregate: { final_validation: { evidence_digests: string[] } };
+        };
+      };
+    };
+    const kernel = task.extensions.task_kernel;
+    kernel.aggregate.final_validation.evidence_digests = [
+      k.kernelDigest("final-validation-receipt"),
+    ];
+    kernel.digest = k.kernelDigest({ kind: kernel.kind, aggregate: kernel.aggregate });
+
+    expect(hasCanonicalPreMergeEvidence(task as never)).toBe(true);
+  });
+
+  it("rejects passed final validation without immutable evidence", () => {
+    const task = canonicalTask() as {
+      extensions: {
+        task_kernel: {
+          kind: string;
+          digest: string;
+          aggregate: { final_validation: { evidence_digests: string[] } };
+        };
+      };
+    };
+    const kernel = task.extensions.task_kernel;
+    kernel.aggregate.final_validation.evidence_digests = [];
+    kernel.digest = k.kernelDigest({ kind: kernel.kind, aggregate: kernel.aggregate });
+
+    expect(hasCanonicalPreMergeEvidence(task as never)).toBe(false);
+  });
+
   it("fails closed after either projection is changed", () => {
     const task = canonicalTask() as {
       extensions: {

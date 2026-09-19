@@ -1,6 +1,5 @@
 import path from "node:path";
 import { mkdir } from "node:fs/promises";
-
 import { parseTaskIdFromBranch } from "@agentplaneorg/core/git";
 import { runProcess } from "@agentplaneorg/core/process";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
@@ -420,6 +419,9 @@ export async function commitCanonicalImplementation(opts: {
     await writeCommitIntent(opts.directory, intent);
   }
   const commitPaths = async (paths: readonly string[]) => {
+    // A rejected hook can leave an older version of an authorized path staged.
+    // Refresh the implementation paths before the guarded commit retries them.
+    await opts.command.git.stage([...paths]);
     const exitCode = await cmdCommit({
       ctx: opts.command,
       cwd: baseline.checkout,
@@ -445,7 +447,7 @@ export async function commitCanonicalImplementation(opts: {
     await gitValue(opts.command, ["merge-base", "--is-ancestor", base, commit], "ancestry", true);
     const committed = await gitValue(
       opts.command,
-      ["diff", "--name-only", "--diff-filter=ACDMRTUXB", `${base}..${commit}`],
+      ["diff", "--no-renames", "--name-only", "--diff-filter=ACDMRTUXB", `${base}..${commit}`],
       "implementation paths",
     );
     return committed

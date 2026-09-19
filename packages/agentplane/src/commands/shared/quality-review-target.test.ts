@@ -363,6 +363,31 @@ describe("quality review target resolver", () => {
     );
   });
 
+  it.each([
+    ["managed derived artifacts", "verification/latest.json", "{}\n", true],
+    ["source changes", "src/reworked.ts", "export const reworked = true;\n", false],
+  ])(
+    "resolves a reviewed target across a rewrite containing %s",
+    async (_, rewritten, body, managed) => {
+      const root = await mkGitRepoRoot();
+      const taskId = "202607240736-REWRITTEN";
+      const baseSha = await commitPath(root, "src/base.ts", "export {}\n", "feat: establish base");
+      const reviewedSha = await commitPath(
+        root,
+        `.agentplane/tasks/${taskId}/quality/prior/quality-report.json`,
+        "{}\n",
+        "test: record prior quality artifact",
+      );
+      await execFileAsync("git", ["reset", "--hard", baseSha], { cwd: root });
+      const rewrittenPath = managed ? `.agentplane/tasks/${taskId}/${rewritten}` : rewritten;
+      const rewrittenSha = await commitPath(root, rewrittenPath, body, "test: rewrite target");
+
+      await expect(
+        resolveTarget({ root, taskId, previousEvaluatedSha: reviewedSha }),
+      ).resolves.toBe(managed ? reviewedSha : rewrittenSha);
+    },
+  );
+
   it("selects a semantic commit created after the recorded review", async () => {
     const root = await mkGitRepoRoot();
     const taskId = "202607240736-SEMANTIC";

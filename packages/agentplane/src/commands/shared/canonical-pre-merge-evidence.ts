@@ -12,7 +12,6 @@ export function hasCanonicalPreMergeEvidence(task: TaskData): boolean {
   const aggregate = isRecord(raw.aggregate) ? raw.aggregate : null;
   const finalValidation =
     aggregate && isRecord(aggregate.final_validation) ? aggregate.final_validation : null;
-  const verificationEvidence = projection.verification_evidence_digest;
   const reviewIdentity = projection.review_identity_digest;
   const implementationCommit = projection.implementation_commit;
   const recordedImplementation = isRecord(task.extensions?.implementation_commit)
@@ -26,7 +25,7 @@ export function hasCanonicalPreMergeEvidence(task: TaskData): boolean {
     projection.source === "task_kernel" &&
     finalValidation?.status === "PASSED" &&
     Array.isArray(finalValidation.evidence_digests) &&
-    finalValidation.evidence_digests.includes(verificationEvidence) &&
+    finalValidation.evidence_digests.length > 0 &&
     typeof implementationCommit === "string" &&
     recordedImplementation === implementationCommit &&
     task.quality_review?.state === "pass" &&

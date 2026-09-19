@@ -1,6 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
 
+if (typeof vi.hoisted !== "function") {
+  Object.defineProperty(vi, "hoisted", { value: <T>(factory: () => T): T => factory() });
+}
+
 const mocks = vi.hoisted(() => ({
   runProcess: vi.fn(),
   readStable: vi.fn(),
@@ -11,6 +15,7 @@ const mocks = vi.hoisted(() => ({
   prepareEvidence: vi.fn(),
   readStatus: vi.fn(),
   readHead: vi.fn(),
+  stage: vi.fn(),
 }));
 
 vi.mock("@agentplaneorg/core/process", () => ({ runProcess: mocks.runProcess }));
@@ -45,7 +50,7 @@ const workOrder = {
 const invalidateStatus = vi.fn();
 const command = {
   resolvedProject: { gitRoot: "/repo" },
-  git: { invalidateStatus },
+  git: { invalidateStatus, stage: mocks.stage },
   config: {
     branch: { task_prefix: "task/" },
     paths: { workflow_dir: ".agentplane/tasks" },
@@ -146,6 +151,10 @@ describe("canonical repository coordinator", () => {
         requireClean: false,
       }),
     );
+    expect(mocks.stage).toHaveBeenCalledWith(["src/change.ts", "src/prior.ts"]);
+    expect(mocks.stage.mock.invocationCallOrder[0]).toBeLessThan(
+      mocks.cmdCommit.mock.invocationCallOrder[0]!,
+    );
     expect(result).toMatchObject({
       base_commit: "base-sha",
       implementation_commit: "implementation-sha",
@@ -203,9 +212,9 @@ describe("canonical repository coordinator", () => {
             ? "base-sha\n"
             : args[0] === "rev-parse" && args[1] === "followup-sha^"
               ? "implementation-sha\n"
-              : args[0] === "diff" && args[3] === "implementation-sha..implementation-sha"
+              : args[0] === "diff" && args[4] === "implementation-sha..implementation-sha"
                 ? `.agentplane/tasks/${taskId}/README.md\n`
-                : args[0] === "diff" && args[3] === "implementation-sha..followup-sha"
+                : args[0] === "diff" && args[4] === "implementation-sha..followup-sha"
                   ? "src/prior.ts\n"
                   : args[0] === "diff"
                     ? `src/change.ts\n.agentplane/tasks/${taskId}/README.md\n`
@@ -239,6 +248,17 @@ describe("canonical repository coordinator", () => {
       implementation_commit: "followup-sha",
       changed_paths: ["src/change.ts", "src/prior.ts"],
     });
+    expect(mocks.runProcess).toHaveBeenCalledWith(
+      expect.objectContaining({
+        args: [
+          "diff",
+          "--no-renames",
+          "--name-only",
+          "--diff-filter=ACDMRTUXB",
+          "implementation-sha..followup-sha",
+        ],
+      }),
+    );
   });
 
   it("replays a persisted followup after an intervening task-artifact commit", async () => {
@@ -292,7 +312,7 @@ describe("canonical repository coordinator", () => {
     });
     mocks.cmdCommit.mockResolvedValue(0);
     mocks.runProcess.mockImplementation(({ args }: { args: string[] }) => {
-      const range = args[3];
+      const range = args[4];
       const stdout =
         args[0] === "branch"
           ? `task/${taskId}/canonical\n`

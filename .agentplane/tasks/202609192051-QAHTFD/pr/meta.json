@@ -1,0 +1,25 @@
+{
+  "base": "main",
+  "branch": "task/202609192051-QAHTFD/canonical-qahtfd",
+  "created_at": "2026-09-19T20:59:01.339Z",
+  "diffstat_sha256": "sha256:c25c71448e4e658d75501f096c9618ce7917fec92cf49cb420aa735666f46b0d",
+  "last_verified_at": "2026-09-19T23:38:18.115Z",
+  "last_verified_diffstat_sha256": "sha256:c25c71448e4e658d75501f096c9618ce7917fec92cf49cb420aa735666f46b0d",
+  "pr_number": 5976,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5976",
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202609192051-QAHTFD",
+  "updated_at": "2026-09-19T22:54:07.040Z",
+  "verify": {
+    "status": "pass"
+  }
+}

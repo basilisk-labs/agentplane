@@ -1,6 +1,5 @@
 import path from "node:path";
 import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
-
 import type { TaskData } from "../../backends/task-backend.js";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import type { PrFlowStatusReport } from "../pr/flow-status.js";
@@ -364,6 +363,7 @@ export async function deriveBlockers(opts: {
           branch: opts.prFlow.branch.name,
           prNumber: opts.prFlow.pr.prNumber,
           branchHeadSha: opts.prFlow.branch.headSha,
+          workflowDir: opts.ctx.config.paths.workflow_dir,
         })
       : { fresh: false as const, reason: "PR metadata is unavailable" };
     if (!freshness.fresh) {

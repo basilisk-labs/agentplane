@@ -45,7 +45,7 @@ export function isManagedTaskArtifact(relativePath: string): boolean {
   );
 }
 
-function isDerivedTaskArtifact(relativePath: string): boolean {
+export function isDerivedTaskArtifact(relativePath: string): boolean {
   return MANAGED_TASK_ARTIFACT_DIRECTORIES.some((directory) => relativePath.startsWith(directory));
 }
 
@@ -406,12 +406,30 @@ export async function resolveQualityReviewTargetSha(opts: {
     const match = taskArtifactPrefixes.find((candidate) => name.startsWith(candidate.prefix));
     return match ? name.slice(match.prefix.length) : null;
   };
+  let previousReviewAcceptedAcrossRewrite = false;
   const previousEvaluatedSha = await (async (): Promise<string | null> => {
     const candidate = opts.previousEvaluatedSha?.trim();
     if (!candidate) return null;
     const resolved = await gitRevParse(opts.gitRoot, [`${candidate}^{commit}`]).catch(() => null);
     if (!resolved) return null;
-    return (await gitIsAncestor(opts.gitRoot, resolved, head)) ? resolved : null;
+    if (await gitIsAncestor(opts.gitRoot, resolved, head)) return resolved;
+    const rewrittenChanges = await gitDiffNames(opts.gitRoot, resolved, head, {
+      range: "two-dot",
+    }).catch(() => null);
+    const rewrittenTaskArtifacts = rewrittenChanges?.flatMap((name) => {
+      const relativePath = taskRelativePath(name);
+      return relativePath === null ? [] : [{ name, relativePath }];
+    });
+    if (
+      rewrittenChanges &&
+      rewrittenTaskArtifacts?.length === rewrittenChanges.length &&
+      rewrittenTaskArtifacts.every(({ relativePath }) => isManagedTaskArtifact(relativePath)) &&
+      rewrittenTaskArtifacts.some(({ relativePath }) => isDerivedTaskArtifact(relativePath))
+    ) {
+      previousReviewAcceptedAcrossRewrite = true;
+      return resolved;
+    }
+    return null;
   })();
   const baseHeadSha = await (async (): Promise<string | null> => {
     if (opts.workflowMode !== "branch_pr") return null;
@@ -425,6 +443,8 @@ export async function resolveQualityReviewTargetSha(opts: {
       ? await gitRevParse(opts.gitRoot, [`${baseRef}^{commit}`]).catch(() => null)
       : null;
   })();
+
+  if (previousReviewAcceptedAcrossRewrite) return previousEvaluatedSha;
 
   let current = head;
   let currentTaskArtifactHead: string | null = null;
