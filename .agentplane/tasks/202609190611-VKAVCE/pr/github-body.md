@@ -22,7 +22,7 @@ Release blocker: an evaluator retry without a new repository mutation omitted va
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-19T06:36:06.689Z
+- Updated: 2026-09-19T07:18:51.142Z
 - Branch: task/202609190611-VKAVCE/preserve-evaluator-evidence
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
