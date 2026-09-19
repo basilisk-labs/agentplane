@@ -1,7 +1,8 @@
 import type { AgentChangeRecord } from "@agentplaneorg/core/schemas";
 
 export function summarizeAcr(record: AgentChangeRecord) {
-  const nativeIdentity = record.extensions?.["agentplane.native_identity"] as
+  const nativeIdentity = (record.extensions?.["agentplane.native-identity"] ??
+    record.extensions?.["agentplane.native_identity"]) as
     | {
         identity?: { plan?: { revision?: unknown; digest?: unknown }; digest?: unknown };
         review_identity?: { digest?: unknown } | null;

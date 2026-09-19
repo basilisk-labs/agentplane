@@ -344,6 +344,36 @@ function mixedScopeTaskPlanProposal(taskId, planningBaseline) {
   };
 }
 
+function mixedScopeCanonicalPlanProposal() {
+  return {
+    work_items: [
+      {
+        id: "mixed-scope-implementation",
+        depends_on: [],
+        required_inputs: [],
+        expected_outputs: ["mixed-scope-product-change"],
+        optional: false,
+        execution_requirements: {
+          scope_roots: [...PACKAGED_MIXED_SCOPE_REQUIRED_PATHS],
+          repository_effects: [...PACKAGED_MIXED_SCOPE_REQUIRED_EFFECTS],
+          external_effects: [],
+          capabilities: ["repository_write", "task.verify"],
+          resources: [],
+        },
+        contract: {
+          objective:
+            "Implement the bounded greeting source, test, documentation, and metadata change.",
+          acceptance_criteria: [
+            "The greeting source, automated test, user guide, and ignore metadata are consistent.",
+          ],
+          verification_commands: [PACKAGED_MIXED_SCOPE_FULL_REGRESSION_COMMAND],
+          role: "EXECUTOR",
+        },
+      },
+    ],
+  };
+}
+
 export function packetExchange(packet, expectedRole, observedTask = null) {
   if (packet.action?.kind !== "agent_episode" || packet.authority?.role !== expectedRole) {
     if (
@@ -369,66 +399,91 @@ export function packetExchange(packet, expectedRole, observedTask = null) {
 }
 
 function semanticResultFor({
-  packet,
   workOrder,
   summary,
   taskIntent,
   taskPlanProposal,
+  canonicalPlan,
+  canonicalOutputs,
   claimedChecks,
   review,
 }) {
   return {
-    schema_version: 1,
-    kind: "agent_action_result",
-    task_id: packet.task_id,
-    transition_id: packet.transition_id,
-    state_fingerprint: packet.state_fingerprint,
-    role: workOrder.role,
-    result: {
-      schema_version: 2,
-      kind: "agent_semantic_result",
-      work_order_id: workOrder.work_order_id,
-      status: "completed",
-      summary,
-      findings: review ? ["The public diff and recorded verification satisfy the task."] : [],
-      uncertainty: [],
-      ...(taskIntent ? { task_intent: taskIntent } : {}),
-      ...(taskPlanProposal ? { task_plan_proposal: taskPlanProposal } : {}),
-      ...(claimedChecks ? { claimed_checks: claimedChecks } : {}),
-      ...(review ? { review } : {}),
-    },
+    schema_version: 2,
+    kind: "agent_semantic_result",
+    work_order_id: workOrder.work_order_id,
+    status: "completed",
+    summary,
+    findings: review ? ["The public diff and recorded verification satisfy the task."] : [],
+    uncertainty: [],
+    ...(taskIntent ? { task_intent: taskIntent } : {}),
+    ...(taskPlanProposal ? { task_plan_proposal: taskPlanProposal } : {}),
+    ...(canonicalPlan ? { canonical_plan: canonicalPlan } : {}),
+    ...(canonicalOutputs ? { canonical_outputs: canonicalOutputs } : {}),
+    ...(claimedChecks ? { claimed_checks: claimedChecks } : {}),
+    ...(review ? { review } : {}),
   };
 }
 
 function writePacketResult(accessLog, packet, role, resultOptions) {
+  const { exchange, workOrder } = readPacketWorkOrder(accessLog, packet, role);
+  const expectedResultPath = path.join(exchange.directory, exchange.result_ref);
+  if (normalizedPath(exchange.result_path) !== normalizedPath(expectedResultPath)) {
+    fail("invalid_exchange_path", `${role} result path is not bound to its public exchange`);
+  }
+  const semanticResult = semanticResultFor({
+    workOrder,
+    ...resultOptions,
+    ...(workOrder.canonical_binding?.phase === "implementation"
+      ? {
+          canonicalOutputs: workOrder.required_outputs
+            .filter((output) => output.id.startsWith("output:"))
+            .map((output) => {
+              const id = output.id.slice("output:".length);
+              return {
+                id,
+                kind: output.kind,
+                digest: taskCentricDigest({ id, summary: resultOptions.summary }),
+              };
+            }),
+        }
+      : {}),
+    ...(resultOptions.taskPlanProposal
+      ? { taskPlanProposal: resultOptions.taskPlanProposal(workOrder) }
+      : {}),
+  });
+  const compactSemanticResult = Object.fromEntries(
+    Object.entries(semanticResult).filter(([key]) => key !== "schema_version" && key !== "kind"),
+  );
+  const result =
+    exchange.result_format === "semantic_payload_v1"
+      ? compactSemanticResult
+      : {
+          schema_version: 1,
+          kind: "agent_action_result",
+          task_id: packet.task_id,
+          transition_id: packet.transition_id,
+          state_fingerprint: packet.state_fingerprint,
+          role: workOrder.role,
+          result: semanticResult,
+        };
+  writeTracked(
+    accessLog,
+    exchange.result_path,
+    `${JSON.stringify(result, null, 2)}\n`,
+    `${role.toLowerCase()}_result`,
+  );
+  return exchange;
+}
+
+function readPacketWorkOrder(accessLog, packet, role) {
   const exchange = packetExchange(packet, role);
   const workOrderPath = path.join(exchange.directory, exchange.work_order_ref);
   const workOrder = parseJson(
     readTracked(accessLog, workOrderPath, `${role.toLowerCase()}_work_order`),
     `${role} work order`,
   );
-  const expectedResultPath = path.join(exchange.directory, exchange.result_ref);
-  if (normalizedPath(exchange.result_path) !== normalizedPath(expectedResultPath)) {
-    fail("invalid_exchange_path", `${role} result path is not bound to its public exchange`);
-  }
-  writeTracked(
-    accessLog,
-    exchange.result_path,
-    `${JSON.stringify(
-      semanticResultFor({
-        packet,
-        workOrder,
-        ...resultOptions,
-        ...(resultOptions.taskPlanProposal
-          ? { taskPlanProposal: resultOptions.taskPlanProposal(workOrder) }
-          : {}),
-      }),
-      null,
-      2,
-    )}\n`,
-    `${role.toLowerCase()}_result`,
-  );
-  return exchange;
+  return { exchange, workOrder };
 }
 
 function advanceToEpisode(run, cli, repo, taskId, expectedRole) {
@@ -730,6 +785,12 @@ export function runPackagedMixedScopeFixture({ run, cli, packages, tempRoot }) {
       "Add a personalized greeting with tests and user documentation",
       "--description",
       "Change source behavior, automated tests, the user guide, and .gitignore without external effects.",
+      "--task-kind",
+      "code",
+      "--mutation-scope",
+      "code",
+      "--tag",
+      "code",
       "--route",
       "auto",
       "--verify",
@@ -741,49 +802,35 @@ export function runPackagedMixedScopeFixture({ run, cli, packages, tempRoot }) {
   const taskId = created.task_id;
   assert.equal(created.status, "semantic_input_required");
 
-  run(
-    process.execPath,
-    [
-      cli,
-      "task",
-      "doc",
-      "set",
-      taskId,
-      "--section",
-      "Verify Steps",
-      "--text",
-      `1. Run \`${PACKAGED_MIXED_SCOPE_FULL_REGRESSION_COMMAND}\`. Expected: personalized greeting behavior and its regression tests pass.`,
-      "--updated-by",
-      "ORCHESTRATOR",
-    ],
-    { cwd: repo },
-  );
+  const taskIntent = {
+    task_kind: "code",
+    mutation_scope: "code",
+    risk_flags: [],
+    tags: ["qualification", "mixed-scope", "installed-package"],
+    execution: {
+      schema_version: 2,
+      preferred_mode: "direct",
+      scope_roots: [...PACKAGED_MIXED_SCOPE_REQUIRED_PATHS],
+      repository_effects: ["repository_write", "source_code", "tests", "documentation"],
+      external_effects: [],
+      requirements_uncertainty: "bounded",
+      implementation_uncertainty: "bounded",
+      reversibility: "reversible",
+      rationale: ["The fixture change is local, bounded, reversible, and has no external effects."],
+    },
+  };
   const planner = advanceToEpisode(run, cli, repo, taskId, "PLANNER");
+  const plannerOrder = readPacketWorkOrder(accessLog, planner, "PLANNER").workOrder;
+  const canonicalPlanning = plannerOrder.canonical_binding?.phase === "planning";
   const plan = longMixedScopePlan();
   const plannerExchange = writePacketResult(accessLog, planner, "PLANNER", {
     summary: plan,
-    taskPlanProposal: (workOrder) =>
-      mixedScopeTaskPlanProposal(taskId, workOrder.planning_context.repository_snapshot),
-    taskIntent: {
-      task_kind: "code",
-      mutation_scope: "code",
-      risk_flags: [],
-      tags: ["qualification", "mixed-scope", "installed-package"],
-      blueprint_request: "code.direct",
-      execution: {
-        schema_version: 2,
-        preferred_mode: "direct",
-        scope_roots: [...PACKAGED_MIXED_SCOPE_REQUIRED_PATHS],
-        repository_effects: ["repository_write", "source_code", "tests", "documentation"],
-        external_effects: [],
-        requirements_uncertainty: "bounded",
-        implementation_uncertainty: "bounded",
-        reversibility: "reversible",
-        rationale: [
-          "The fixture change is local, bounded, reversible, and has no external effects.",
-        ],
-      },
-    },
+    canonicalPlan: canonicalPlanning ? mixedScopeCanonicalPlanProposal() : undefined,
+    taskPlanProposal: canonicalPlanning
+      ? undefined
+      : (workOrder) =>
+          mixedScopeTaskPlanProposal(taskId, workOrder.planning_context.repository_snapshot),
+    taskIntent: canonicalPlanning ? undefined : taskIntent,
   });
   const approval = runPacketArgv(
     run,
