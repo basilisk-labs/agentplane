@@ -1,10 +1,12 @@
 ---
 id: "202609191809-7KFNQT"
 title: "Replace versioned README header generation with one static shared image"
+result_summary: "Replaced versioned README header generation with one static shared image and removed related generators and gates."
+risk_level: "low"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -49,6 +51,22 @@ quality_review:
     - "All 13 current README consumers use the shared docs/assets/header.svg with correct relative or raw GitHub paths, and the shared SVG contains no visible release version."
     - "The per-surface SVG directory and generator are deleted; package scripts and the release gate no longer reference them."
     - "scripts/README.md is regenerated, the generic sequence fixture is neutral, and no historical release record below docs/releases/** changed."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: null
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "unavailable"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-09-19T20:35:43.991Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -393,9 +411,12 @@ execution_contract:
       - "repository_effect:source_code"
       - "task_outcome"
 commit:
-  hash: "001050d41ccb7b272bfa6167528577830f78e300"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "4114efcb7b93a2a21c817603e53d1c2a44ada820"
+  message: "Merge remote-tracking branch 'origin/main' into task/202609191809-7KFNQT/canonical-7kfnqt"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: static shared header change passed local qualification and 14/14 hosted checks on synchronized PR #5974."
 events:
   -
     type: "verify"
@@ -403,9 +424,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-09-19T20:35:43.991Z"
+    author: "INTEGRATOR"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: static shared header change passed local qualification and 14/14 hosted checks on synchronized PR #5974."
+    commit: "4114efcb7b93a2a21c817603e53d1c2a44ada820"
 doc_version: 3
-doc_updated_at: "2026-09-19T18:23:23.295Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-19T20:35:43.991Z"
+doc_updated_by: "INTEGRATOR"
 description: "Use one version-independent docs/assets/header.svg for all 13 current README surfaces; remove visible version text from that shared image; delete the per-surface SVG variants and their generator; remove the associated package scripts and release gate; regenerate scripts/README.md; preserve generic direct-task verification sequence coverage with neutral fixture names; keep historical docs/releases/** records unchanged. This replaces blocked task 202609191755-BXKBCP whose final shell-style absence check was incompatible with AgentPlane's argv-only verification runner."
 sections:
   Summary: |-
@@ -650,6 +679,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:f3c78ddcda8db2ff30f86724cdbc983b8099be75ade6296c87b7a663c66c1e24"
     work_order_id: "sha256:be2cba9cc8a78fa4d417d66700d91e05551c992bdf3d4aa132e62ccf10207933"
+  implementation_commit:
+    hash: "001050d41ccb7b272bfa6167528577830f78e300"
+    message: "🚧 7KFNQT task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "ef8068df34a264d6eccc51190b4f6e3c43d27ab8"
@@ -1443,3 +1475,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-09-19T20:35:43.991Z`
