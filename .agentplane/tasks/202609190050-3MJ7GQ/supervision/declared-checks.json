@@ -1,0 +1,57 @@
+{
+  "checks": [
+    {
+      "check_ids": [],
+      "command": "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/native-task-identity.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts",
+      "duration_ms": 1322,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:4cdd77c58cb33fa26351fa8ddd2089ca1974081d391932447f4dc013ee9b35f2",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /private/tmp/agentplane-0710-e2e.fVouCy/repo/.agentplane/worktrees/202609190050-3MJ7GQ-persist-native-identity-repair\n\n\n Test Files  2 passed (2)\n      Tests  15 passed (15)\n   Start at  04:07:26\n   Duration  879ms (transform 695ms, setup 0ms, import 1.10s, tests 23ms, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [],
+      "command": "bun run typecheck",
+      "duration_ms": 275,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:4cdd77c58cb33fa26351fa8ddd2089ca1974081d391932447f4dc013ee9b35f2",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [],
+      "command": "bun run lint",
+      "duration_ms": 59889,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:4cdd77c58cb33fa26351fa8ddd2089ca1974081d391932447f4dc013ee9b35f2",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "lint",
+      "stderr_tail": "$ bun run lint:core && bun run lint:website\n$ eslint packages scripts eslint.config.cjs vitest.config.ts\n$ eslint website\n",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202609190050-3MJ7GQ"
+}
