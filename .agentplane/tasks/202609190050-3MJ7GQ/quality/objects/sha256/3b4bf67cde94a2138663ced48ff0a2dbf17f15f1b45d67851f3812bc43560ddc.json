@@ -1,0 +1,44 @@
+{
+  "native_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_task_identity",
+    "task_id": "202609190050-3MJ7GQ",
+    "plan": {
+      "revision": 1,
+      "digest": "sha256:4ca727abd6c68d0b632098a81ff05da785e838bfca751724ff918dc1a9da3450",
+      "approval_state": "approved",
+      "approved_digest": "sha256:4ca727abd6c68d0b632098a81ff05da785e838bfca751724ff918dc1a9da3450"
+    },
+    "policy": {
+      "digest": "sha256:9b668d089af056af9741759543ed685caaa27c913a3aa16d382cfde5faf1adc7"
+    },
+    "capability": {
+      "digest": "sha256:c7773401c9187b30d35df078ee87d7ccbc0bacb24096a0983e571daa25cb3928"
+    },
+    "checks": {
+      "verification_contract_digest": "sha256:37980aaac245161e5f95ccbddaa4c795a0cfa19e407c4344530a1886b5cd9f1e",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "digest": "sha256:b231f0db3ede4d9bf4c0461a034736e8cd43a88cfbc73711f4b8ad54c6374aa2"
+    },
+    "digest": "sha256:6006ad1e6ad0dd3348a9911ea686ca9a9fea66a55f7df4a5b720df16702eb11d"
+  },
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202609190050-3MJ7GQ",
+    "plan_digest": "sha256:4ca727abd6c68d0b632098a81ff05da785e838bfca751724ff918dc1a9da3450",
+    "policy_digest": "sha256:9b668d089af056af9741759543ed685caaa27c913a3aa16d382cfde5faf1adc7",
+    "capability_digest": "sha256:c7773401c9187b30d35df078ee87d7ccbc0bacb24096a0983e571daa25cb3928",
+    "checks_digest": "sha256:b231f0db3ede4d9bf4c0461a034736e8cd43a88cfbc73711f4b8ad54c6374aa2",
+    "verification_input_digest": "sha256:d8b232c7359122cd62733f3998760bfc916690f173b6cc2af50a0e90ed4d940c",
+    "acceptance_digest": "sha256:f1d6b0876cdb81419cd10f78682cdcdf82a68499e8ee5ccc28202b6d7848d2f7",
+    "implementation_sha": "c9553e4d79bb04d712091afaa071d8f4c9b9258d",
+    "digest": "sha256:28cfa76f14b5919aca7410e3deaaf07182f318d8867c095860eb7d42db07e65a"
+  }
+}
