@@ -31,8 +31,8 @@ Use the schema-valid ACR extension key agentplane.native-identity while retainin
  .../src/commands/acr/acr.command.test.ts           |  23 +++
  packages/agentplane/src/commands/acr/generate.ts   |   2 +-
  packages/agentplane/src/commands/acr/summary.ts    |   3 +-
- .../check-packaged-mixed-scope-lifecycle.mjs       | 166 +++++++++++----------
- 5 files changed, 140 insertions(+), 77 deletions(-)
+ .../check-packaged-mixed-scope-lifecycle.mjs       | 165 +++++++++++----------
+ 5 files changed, 139 insertions(+), 77 deletions(-)
 ```
 
 </details>

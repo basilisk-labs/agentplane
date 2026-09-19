@@ -756,7 +756,6 @@ export function runPackagedMixedScopeFixture({ run, cli, packages, tempRoot }) {
     mutation_scope: "code",
     risk_flags: [],
     tags: ["qualification", "mixed-scope", "installed-package"],
-    blueprint_request: "code.direct",
     execution: {
       schema_version: 2,
       preferred_mode: "direct",
