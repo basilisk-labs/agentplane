@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -45,8 +45,6 @@ quality_review:
     - "No actionable defect found: legacy task-centric identity is preserved, canonical Kernel records are validated before approved-plan identity is accepted, and unapproved or malformed Kernel data returns null."
 token_usage:
   agent_runs: 0
-  cached_input_observed_agent_runs: 0
-  cached_input_tokens: null
   input_tokens: null
   journal_digest: null
   observed_agent_runs: 0
@@ -818,6 +816,15 @@ extensions:
           event_digests:
             - "sha256:d2e05c313f94fe70aec62a9b7b4a157e61cc03a24e9fb1b16184a84daf82bda5"
           mutation_id: "final-validation:sha256:e2cb911ba715091d633dd220f0ee685de63d0ce6f6e81b6f3627b94512ff7b19:12"
+        kernel_task_completion_required:sha256:2a04b76ca054e1b438e6b6d451a9c0e6a91272bc60246d98a24f69b5e9333691:sha256:30157dc1d2b985e11231e04d3d412a5755273d0f62f92a217a8d189a15176e8e:
+          after_revision: 19
+          aggregate_digest: "sha256:2b1772f76f8dc6ce7ff9b4f4746b55d66b593c4974665ad762878828901fe1ab"
+          before_revision: 18
+          command_digest: "sha256:14c60e7fc451c1a9389ea4c03fd51ab30f455f1a2b1b0be0498410fbcc9c3b3f"
+          effect_ids: []
+          event_digests:
+            - "sha256:ee2bf5b5c3f2364901aaa5c091a5877547b4e080a603eb1c422a77655e7f5070"
+          mutation_id: "kernel_task_completion_required:sha256:2a04b76ca054e1b438e6b6d451a9c0e6a91272bc60246d98a24f69b5e9333691:sha256:30157dc1d2b985e11231e04d3d412a5755273d0f62f92a217a8d189a15176e8e"
         kernel_work_item_claim_required:sha256:d8a56347a3c359c82f66829f3eebd7d5b2a6d5c9101307e77be9a56d14d8f89d:sha256:9e420a2a28c5c4376122fb1dd09c95b4c8e8d96a1a43dd6858a07d37b772a755:
           after_revision: 5
           aggregate_digest: "sha256:a0ce9c1fb91f64562d287f24f0ffafca0ef2e4d30921757679a54eb95c256955"
@@ -909,9 +916,9 @@ extensions:
             - "sha256:c867ebf5af32dc627c2ae0cab1a9026fa9969d9ed6ac29bf14740fbd3931ba8b"
           mutation_id: "validation:sha256:ad0432a2b6b8cb35245521303cf79353f214c11ea679819664bd1aa31f3422c8"
       plan_history: []
-      revision: 18
+      revision: 19
       schema_version: 1
-      state: "FINAL_VALIDATION"
+      state: "COMPLETED"
       work_items:
         persist-native-identity-repair:
           attempt: 1
@@ -963,7 +970,7 @@ extensions:
               toolchain_digest: "sha256:133d716c0802bfb2c0dbe56a7c3764130f5837cc8197ffff82832a549c59cb89"
             observed_at: "2026-09-19T01:00:54.307Z"
             status: "PASSED"
-    digest: "sha256:2a04b76ca054e1b438e6b6d451a9c0e6a91272bc60246d98a24f69b5e9333691"
+    digest: "sha256:7ee9935994fedd92c54432391283d6b9f141477019e199f3ee68b3e2ad2d96de"
     documents:
       contracts:
         sha256:13d646a596d87a50c8f0bbbb2ac7024d64ff70ed45e86f2b81a3b960a236f882:
@@ -1143,6 +1150,15 @@ extensions:
         payload_digest: "sha256:6ca3254aaabfe248a9372f668eda2ba19c598c4de6e197ce2d91d124dff9b968"
         task_id: "202609190050-3MJ7GQ"
         task_revision: 18
+      -
+        command_digest: "sha256:14c60e7fc451c1a9389ea4c03fd51ab30f455f1a2b1b0be0498410fbcc9c3b3f"
+        id: "kernel_task_completion_required:sha256:2a04b76ca054e1b438e6b6d451a9c0e6a91272bc60246d98a24f69b5e9333691:sha256:30157dc1d2b985e11231e04d3d412a5755273d0f62f92a217a8d189a15176e8e:task_completed"
+        kind: "task_completed"
+        mutation_id: "kernel_task_completion_required:sha256:2a04b76ca054e1b438e6b6d451a9c0e6a91272bc60246d98a24f69b5e9333691:sha256:30157dc1d2b985e11231e04d3d412a5755273d0f62f92a217a8d189a15176e8e"
+        occurred_at: "2026-09-19T02:34:04.514Z"
+        payload_digest: "sha256:d72fafa730676d3d4b27c08c339d7b93ef4e22641a24dbd72003ee7ba77be701"
+        task_id: "202609190050-3MJ7GQ"
+        task_revision: 19
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
