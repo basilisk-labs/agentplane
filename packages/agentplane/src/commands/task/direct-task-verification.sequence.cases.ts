@@ -66,7 +66,7 @@ describe("direct task verification sequences", () => {
     runProcess
       .mockResolvedValueOnce({ exitCode: 0, stdout: "generated", stderr: "" })
       .mockResolvedValueOnce({ exitCode: 0, stdout: "fresh", stderr: "" });
-    const check = "bun run docs:readme-header:generate && bun run docs:readme-header:check";
+    const check = "bun run first && bun run second";
     const result = await runDirectTaskVerification({
       command: command(cwd),
       task: { verify: [check], task_kind: "code", mutation_scope: "code" },
@@ -81,11 +81,11 @@ describe("direct task verification sequences", () => {
     });
     expect(runProcess).toHaveBeenNthCalledWith(
       1,
-      expect.objectContaining({ command: "bun", args: ["run", "docs:readme-header:generate"] }),
+      expect.objectContaining({ command: "bun", args: ["run", "first"] }),
     );
     expect(runProcess).toHaveBeenNthCalledWith(
       2,
-      expect.objectContaining({ command: "bun", args: ["run", "docs:readme-header:check"] }),
+      expect.objectContaining({ command: "bun", args: ["run", "second"] }),
     );
   });
 

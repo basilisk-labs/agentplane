@@ -99,7 +99,7 @@ function renderTable(entries) {
 function buildReadme(entries) {
   const lines = [
     '<p align="center">',
-    '  <img src="../docs/assets/readme-headers/scripts.svg" alt="Agentplane scripts header" style="width:100%;max-width:100%;"/>',
+    '  <img src="../docs/assets/header.svg" alt="Agentplane header" style="width:100%;max-width:100%;"/>',
     "</p>",
     "",
     "# Scripts README",
