@@ -6,7 +6,7 @@ Created: 2026-09-19T00:59:45.018Z
 
 - Task: `202609190050-3MJ7GQ`
 - Title: Persist the verified Task Kernel native identity release blocker through the canonical repository coordinator
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609190050-3MJ7GQ/persist-native-identity-repair`
 - Canonical task record: `.agentplane/tasks/202609190050-3MJ7GQ/README.md`
 
