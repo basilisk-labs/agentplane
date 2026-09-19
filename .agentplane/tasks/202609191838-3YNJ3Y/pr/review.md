@@ -33,8 +33,8 @@ Created: 2026-09-19T18:44:10.802Z
  .../src/commands/acr/acr.command.test.ts           | 23 ++++++++++++++++++++++
  packages/agentplane/src/commands/acr/generate.ts   |  2 +-
  packages/agentplane/src/commands/acr/summary.ts    |  3 ++-
- .../check-packaged-mixed-scope-lifecycle.mjs       | 17 ----------------
- 5 files changed, 49 insertions(+), 19 deletions(-)
+ .../check-packaged-mixed-scope-lifecycle.mjs       | 23 ++++++----------------
+ 5 files changed, 55 insertions(+), 19 deletions(-)
 ```
 
 </details>
