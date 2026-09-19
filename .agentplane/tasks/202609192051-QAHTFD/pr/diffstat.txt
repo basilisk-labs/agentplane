@@ -1,19 +1,19 @@
  .../src/commands/pr/integrate/internal/prepare.ts  |   1 +
- .../shared/canonical-pre-merge-evidence.test.ts    | 118 +++++++++++++++++
+ .../shared/canonical-pre-merge-evidence.test.ts    | 118 ++++++++++++++++++++
  .../shared/canonical-pre-merge-evidence.ts         |   3 +-
- .../commands/shared/quality-review-target.test.ts  |  46 +++++++
+ .../commands/shared/quality-review-target.test.ts  |  25 +++++
  .../src/commands/shared/quality-review-target.ts   |  24 +++-
- .../src/commands/shared/route-decision-blockers.ts |   1 +
- .../src/commands/shared/workflow-step-branch.ts    |  49 +++----
- .../src/commands/shared/workflow-step.test.ts      |  24 ++++
- .../commands/task/direct-task-finalization.test.ts |  47 ++++++-
+ .../src/commands/shared/route-decision-blockers.ts |   2 +-
+ .../commands/task/direct-task-finalization.test.ts |  47 +++++++-
  .../src/commands/task/direct-task-finalization.ts  |   8 +-
- .../commands/task/direct-task-verification.test.ts |  79 +++++++++++
- .../src/commands/task/direct-task-verification.ts  |  80 +++++++++++-
- .../commands/task/hosted-close-premerge.test.ts    |  78 ++++++++++-
- .../src/commands/task/hosted-close-premerge.ts     |  50 ++++++-
- .../src/commands/task/kernel-advance.test.ts       |  97 +++++++++++++-
- .../agentplane/src/commands/task/kernel-advance.ts | 145 +++++++++++++++++++++
- .../task/kernel-repository-coordinator.test.ts     |  28 +++-
- .../commands/task/kernel-repository-coordinator.ts |   5 +-
- 18 files changed, 828 insertions(+), 55 deletions(-)
+ .../direct-task-verification.qualification.test.ts | 104 ++++++++++++++++++
+ .../commands/task/direct-task-verification.test.ts |  16 ---
+ .../src/commands/task/direct-task-verification.ts  |  80 +++++++++++++-
+ .../commands/task/hosted-close-premerge.test.ts    |  78 ++++++++++++-
+ .../src/commands/task/hosted-close-premerge.ts     |  47 +++++++-
+ .../src/commands/task/kernel-advance.test.ts       |  97 ++++++++++++++++-
+ .../agentplane/src/commands/task/kernel-advance.ts |  14 +++
+ .../task/kernel-repository-coordinator.test.ts     |  28 ++++-
+ .../commands/task/kernel-repository-coordinator.ts |   6 +-
+ .../src/commands/task/kernel-worktree-routing.ts   | 121 +++++++++++++++++++++
+ 18 files changed, 780 insertions(+), 39 deletions(-)

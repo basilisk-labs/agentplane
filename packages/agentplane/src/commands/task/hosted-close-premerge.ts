@@ -53,7 +53,8 @@ export function legacyPreMergeClosureWasRecordedAfterVerification(meta: PrMeta):
 }
 
 export type PreMergeClosureFreshness =
-  { fresh: true; basisCommit: string } | { fresh: false; reason: string };
+  | { fresh: true; basisCommit: string }
+  | { fresh: false; reason: string };
 
 async function gitCommitIsAncestor(opts: {
   gitRoot: string;

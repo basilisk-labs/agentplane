@@ -24,16 +24,7 @@ import {
 import { ensureKernelOperationalProjectionStatus } from "./kernel-operational-projection.js";
 import { transferCanonicalControllerToBase } from "./kernel-controller-handoff.js";
 import { acceptKernelSemanticResult } from "./kernel-semantic-result.js";
-import { buildTaskRouteDecision } from "../shared/route-decision.js";
-import { executeBranchWorkflowOperation } from "./branch-task-supervisor-operations.js";
-import { cmdWorkStart } from "../branch/work-start.js";
-import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
-import {
-  findWorktreeForBranch,
-  gitCurrentBranch,
-  parseTaskIdFromBranch,
-  taskBranchName,
-} from "@agentplaneorg/core/git";
+import { ensureCanonicalTaskWorktree } from "./kernel-worktree-routing.js";
 
 export { blockKernelSemanticEpisode } from "./kernel-semantic-result.js";
 
@@ -493,142 +484,20 @@ export async function advanceCanonicalTask(opts: {
       );
       continue;
     }
-    if (
-      route.work_item_id &&
-      ["kernel_work_item_execution_required", "kernel_work_item_result_required"].includes(
-        route.reason_code,
-      ) &&
-      current.read.task.execution_route?.repository_mode === "branch_pr"
-    ) {
-      const currentBranch = await gitCurrentBranch(opts.command.resolvedProject.gitRoot);
-      if (
-        parseTaskIdFromBranch(opts.command.config.branch.task_prefix, currentBranch) !==
-        opts.task_id
-      ) {
-        const expectedBranch = taskBranchName({
-          taskPrefix: opts.command.config.branch.task_prefix,
-          taskId: opts.task_id,
-          slug: `canonical-${opts.task_id.split("-").at(-1)!.toLowerCase()}`,
-        });
-        const target = await findWorktreeForBranch(
-          opts.command.resolvedProject.gitRoot,
-          expectedBranch,
-        );
-        if (target) {
-          return {
-            schema_version: 1,
-            task_id: opts.task_id,
-            action: {
-              kind: "external_wait" as const,
-              reason: "canonical_worktree_prepared",
-              must_run_from: target,
-            },
-          };
-        }
-      }
-    }
+    const worktreeAction = await ensureCanonicalTaskWorktree({
+      command: opts.command,
+      task: current.read.task,
+      taskId: opts.task_id,
+      reasonCode: route.reason_code,
+      hasWorkItem: route.work_item_id !== null,
+    });
+    if (worktreeAction)
+      return {
+        schema_version: 1,
+        task_id: opts.task_id,
+        action: worktreeAction,
+      };
     if (route.reason_code === "kernel_work_item_execution_required" && route.work_item_id) {
-      if (current.read.task.execution_route?.repository_mode === "branch_pr") {
-        const taskOwner = current.read.task.owner;
-        const workflow = await buildTaskRouteDecision({
-          ctx: opts.command,
-          cwd: opts.command.resolvedProject.gitRoot,
-          rootOverride: null,
-          includeRemote: false,
-          freshHead: true,
-          taskId: opts.task_id,
-        });
-        const alreadyInTaskWorktree =
-          parseTaskIdFromBranch(
-            opts.command.config.branch.task_prefix,
-            workflow.workspace.branch ?? "",
-          ) === opts.task_id;
-        const routedCheckout = workflow.workspace.taskWorktreePath;
-        if (
-          !alreadyInTaskWorktree &&
-          routedCheckout &&
-          path.resolve(routedCheckout) !== path.resolve(opts.command.resolvedProject.gitRoot)
-        ) {
-          return {
-            schema_version: 1,
-            task_id: opts.task_id,
-            action: {
-              kind: "external_wait" as const,
-              reason: "canonical_worktree_prepared",
-              must_run_from: routedCheckout,
-            },
-          };
-        }
-        const prepareOperation =
-          !alreadyInTaskWorktree &&
-          workflow.workflowStep.kind === "cli_operation" &&
-          workflow.workflowStep.operation.id === "worktree.prepare"
-            ? workflow.workflowStep.operation
-            : null;
-        const issuedOnBase =
-          !alreadyInTaskWorktree &&
-          path.resolve(
-            workflow.executionPacket.mustRunFrom ?? opts.command.resolvedProject.gitRoot,
-          ) === path.resolve(opts.command.resolvedProject.gitRoot);
-        if (prepareOperation || issuedOnBase) {
-          const prepared = prepareOperation
-            ? await executeBranchWorkflowOperation({
-                decision: workflow,
-                operation: prepareOperation,
-              })
-            : await (async () => {
-                const taskCommand = await loadTaskCommandContext({
-                  ctx: opts.command,
-                  taskIds: [opts.task_id],
-                });
-                const exitCode = await cmdWorkStart({
-                  ctx: opts.command,
-                  cwd: opts.command.resolvedProject.gitRoot,
-                  taskId: opts.task_id,
-                  agent: taskOwner,
-                  slug: `canonical-${opts.task_id.split("-").at(-1)!.toLowerCase()}`,
-                  worktree: true,
-                  base: taskCommand.execution.base_ref,
-                  baseSha: taskCommand.execution.base_sha,
-                  workflowMode: "branch_pr",
-                  quiet: true,
-                });
-                return {
-                  status: exitCode === 0 ? ("succeeded" as const) : ("failed" as const),
-                  detail: `prepared canonical task worktree for ${opts.task_id}`,
-                };
-              })();
-          if (prepared.status !== "succeeded") {
-            throw new Error(`Canonical worktree preparation failed: ${prepared.detail}`);
-          }
-          const refreshed = await buildTaskRouteDecision({
-            ctx: opts.command,
-            cwd: opts.command.resolvedProject.gitRoot,
-            rootOverride: null,
-            includeRemote: false,
-            freshHead: true,
-            taskId: opts.task_id,
-          });
-          const expectedBranch = taskBranchName({
-            taskPrefix: opts.command.config.branch.task_prefix,
-            taskId: opts.task_id,
-            slug: `canonical-${opts.task_id.split("-").at(-1)!.toLowerCase()}`,
-          });
-          const target =
-            refreshed.workspace.taskWorktreePath ??
-            (await findWorktreeForBranch(opts.command.resolvedProject.gitRoot, expectedBranch));
-          if (!target) throw new Error("Canonical worktree preparation has no task checkout");
-          return {
-            schema_version: 1,
-            task_id: opts.task_id,
-            action: {
-              kind: "external_wait" as const,
-              reason: "canonical_worktree_prepared",
-              must_run_from: target,
-            },
-          };
-        }
-      }
       const item = record.aggregate.work_items[route.work_item_id]!;
       const begun = await runtime.lifecycle.begin(
         await runtime.input(

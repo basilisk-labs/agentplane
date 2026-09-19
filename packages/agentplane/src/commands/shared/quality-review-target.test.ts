@@ -363,51 +363,30 @@ describe("quality review target resolver", () => {
     );
   });
 
-  it("preserves a reviewed target across a managed derived-artifact rewrite", async () => {
-    const root = await mkGitRepoRoot();
-    const taskId = "202607240736-REWRITTEN-EVIDENCE";
-    const baseSha = await commitPath(root, "src/base.ts", "export {}\n", "feat: establish base");
-    const reviewedSha = await commitPath(
-      root,
-      `.agentplane/tasks/${taskId}/quality/prior/quality-report.json`,
-      "{}\n",
-      "test: record prior quality artifact",
-    );
-    await execFileAsync("git", ["reset", "--hard", baseSha], { cwd: root });
-    await commitPath(
-      root,
-      `.agentplane/tasks/${taskId}/verification/latest.json`,
-      "{}\n",
-      "test: rewrite managed evidence",
-    );
+  it.each([
+    ["managed derived artifacts", "verification/latest.json", "{}\n", true],
+    ["source changes", "src/reworked.ts", "export const reworked = true;\n", false],
+  ])(
+    "resolves a reviewed target across a rewrite containing %s",
+    async (_, rewritten, body, managed) => {
+      const root = await mkGitRepoRoot();
+      const taskId = "202607240736-REWRITTEN";
+      const baseSha = await commitPath(root, "src/base.ts", "export {}\n", "feat: establish base");
+      const reviewedSha = await commitPath(
+        root,
+        `.agentplane/tasks/${taskId}/quality/prior/quality-report.json`,
+        "{}\n",
+        "test: record prior quality artifact",
+      );
+      await execFileAsync("git", ["reset", "--hard", baseSha], { cwd: root });
+      const rewrittenPath = managed ? `.agentplane/tasks/${taskId}/${rewritten}` : rewritten;
+      const rewrittenSha = await commitPath(root, rewrittenPath, body, "test: rewrite target");
 
-    await expect(resolveTarget({ root, taskId, previousEvaluatedSha: reviewedSha })).resolves.toBe(
-      reviewedSha,
-    );
-  });
-
-  it("does not preserve a reviewed target across a rewrite containing source changes", async () => {
-    const root = await mkGitRepoRoot();
-    const taskId = "202607240736-REWRITTEN-SOURCE";
-    const baseSha = await commitPath(root, "src/base.ts", "export {}\n", "feat: establish base");
-    const reviewedSha = await commitPath(
-      root,
-      `.agentplane/tasks/${taskId}/quality/prior/quality-report.json`,
-      "{}\n",
-      "test: record prior quality artifact",
-    );
-    await execFileAsync("git", ["reset", "--hard", baseSha], { cwd: root });
-    const rewrittenSha = await commitPath(
-      root,
-      "src/reworked.ts",
-      "export const reworked = true;\n",
-      "fix: rewrite source",
-    );
-
-    await expect(resolveTarget({ root, taskId, previousEvaluatedSha: reviewedSha })).resolves.toBe(
-      rewrittenSha,
-    );
-  });
+      await expect(
+        resolveTarget({ root, taskId, previousEvaluatedSha: reviewedSha }),
+      ).resolves.toBe(managed ? reviewedSha : rewrittenSha);
+    },
+  );
 
   it("selects a semantic commit created after the recorded review", async () => {
     const root = await mkGitRepoRoot();

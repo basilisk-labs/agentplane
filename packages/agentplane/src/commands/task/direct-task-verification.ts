@@ -52,7 +52,7 @@ async function verificationCheckout(
   env: NodeJS.ProcessEnv,
 ) {
   if (!requiresIsolatedQualificationCheckout(command, parsedSequence)) {
-    return { cwd, cleanup: async () => undefined };
+    return { cwd, cleanup: () => Promise.resolve() };
   }
   const checkout = await mkdtemp(path.join(os.tmpdir(), "agentplane-verification-"));
   const added = await runProcess({
