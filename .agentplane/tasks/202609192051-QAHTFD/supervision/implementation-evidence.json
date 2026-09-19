@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 9b64e057ccadec109b07d7ee15befcc24fa0ff3a..a27c8d563389158f8b0b2e886946a165e995b00a",
+      "command": "git diff --check a27c8d563389158f8b0b2e886946a165e995b00a..8efb2e7f464ffed8a838c775bfdc5d3b8aa60365",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 9b64e057ccadec109b07d7ee15befcc24fa0ff3a..a27c8d563389158f8b0b2e886946a165e995b00a",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB a27c8d563389158f8b0b2e886946a165e995b00a..8efb2e7f464ffed8a838c775bfdc5d3b8aa60365",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -22,12 +22,13 @@
         "M\t.agentplane/tasks/202609192051-QAHTFD/pr/github-body.md",
         "M\t.agentplane/tasks/202609192051-QAHTFD/pr/meta.json",
         "M\t.agentplane/tasks/202609192051-QAHTFD/pr/review.md",
+        "A\t.agentplane/tasks/202609192051-QAHTFD/quality/objects/sha256/5462b90358f54b48b9e7edccaf76eb3ce8a62e6dadb58dcc612629427e73198b.json",
         "M\t.agentplane/tasks/202609192051-QAHTFD/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202609192051-QAHTFD/supervision/implementation-evidence.json",
-        "R100\tpackages/agentplane/src/commands/shared/route-decision-blockers.kernel.test.ts\tpackages/agentplane/src/commands/shared/canonical-pre-merge-evidence.test.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-advance.test.ts",
-        "D\tpackages/agentplane/src/commands/task/kernel-advance.worktree.test.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts"
+        "M\tpackages/agentplane/src/commands/task/direct-task-finalization.test.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-finalization.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-repository-coordinator.ts"
       ]
     },
     {
@@ -37,14 +38,15 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "9b64e057ccadec109b07d7ee15befcc24fa0ff3a",
-  "implementation_commit": "a27c8d563389158f8b0b2e886946a165e995b00a",
+  "execution_base_commit": "a27c8d563389158f8b0b2e886946a165e995b00a",
+  "implementation_commit": "8efb2e7f464ffed8a838c775bfdc5d3b8aa60365",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
       " M .agentplane/tasks/202609192051-QAHTFD/README.md",
       " M .agentplane/tasks/202609192051-QAHTFD/supervision/declared-checks.json",
-      " M .agentplane/tasks/202609192051-QAHTFD/supervision/implementation-evidence.json"
+      " M .agentplane/tasks/202609192051-QAHTFD/supervision/implementation-evidence.json",
+      "?? .agentplane/tasks/202609192051-QAHTFD/quality/objects/sha256/5462b90358f54b48b9e7edccaf76eb3ce8a62e6dadb58dcc612629427e73198b.json"
     ],
     "classification": [
       {
@@ -58,6 +60,10 @@
       {
         "classification": "removed_during_execution",
         "line": " M .agentplane/tasks/202609192051-QAHTFD/supervision/implementation-evidence.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609192051-QAHTFD/quality/objects/sha256/5462b90358f54b48b9e7edccaf76eb3ce8a62e6dadb58dcc612629427e73198b.json"
       }
     ],
     "final": [],
@@ -65,7 +71,8 @@
     "removed_after_execution_baseline": [
       " M .agentplane/tasks/202609192051-QAHTFD/README.md",
       " M .agentplane/tasks/202609192051-QAHTFD/supervision/declared-checks.json",
-      " M .agentplane/tasks/202609192051-QAHTFD/supervision/implementation-evidence.json"
+      " M .agentplane/tasks/202609192051-QAHTFD/supervision/implementation-evidence.json",
+      "?? .agentplane/tasks/202609192051-QAHTFD/quality/objects/sha256/5462b90358f54b48b9e7edccaf76eb3ce8a62e6dadb58dcc612629427e73198b.json"
     ],
     "unchanged_from_execution_baseline": []
   },

@@ -16,7 +16,7 @@ Integrate and regression-test the temporary runtime fixes required to complete b
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:35fec45279147b57c16f517d8f23b27106f9afffeb05684eb7f383b102ba2171
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
