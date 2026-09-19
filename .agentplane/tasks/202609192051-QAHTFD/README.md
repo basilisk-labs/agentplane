@@ -4,7 +4,7 @@ title: "Productize release-blocking AgentPlane controller fixes for 0.7.10"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 67
+revision: 68
 origin:
   system: "manual"
 depends_on: []
@@ -31,19 +31,32 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  provenance: "evaluator_supplied"
-  updated_at: "2026-09-19T22:09:39.456Z"
-  updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "8efb2e7f464ffed8a838c775bfdc5d3b8aa60365"
-  review_identity_digest: "sha256:ace40ddcb403d6f8c782fecc3fd89402108552482b572427f493f718c26d898b"
+  provenance: "human_supplied"
+  updated_at: "2026-09-19T23:16:07.503Z"
+  updated_by: "HUMAN"
+  note: "Full test audit passed after removing redundant route coverage, restoring fail-closed workflow precedence, isolating qualification tests, and passing the complete local CI contract."
+  evaluated_sha: "acce882d4fcd1ee370bfb70945730f1a6db3e57d"
+  review_identity_digest: "sha256:7c83e2b95a11529f70ab35867d8ad1a7fe50ac79be23bcb78da46b709d9d065a"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202609192051-QAHTFD/f41e83ba5b001f71ac88a59a97da5f0abf6e5b4b06047eccaa3430c4f58dd663/quality-report.json"
+    - ".agentplane/tasks/202609192051-QAHTFD/quality/20260919-231607177-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609192051-QAHTFD/quality/20260919-231607177-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609192051-QAHTFD/quality/objects/sha256/454cd7deed114e7de7f1aa49b44f6a0c7cf31528ce6612dc05560bd584f0c037.md"
+    - ".agentplane/tasks/202609192051-QAHTFD/quality/20260919-231607177-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609192051-QAHTFD/quality/20260919-231607177-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609192051-QAHTFD/README.md"
+    - ".agentplane/tasks/202609192051-QAHTFD/quality/objects/sha256/ec7f99f7b6d1eaaa1b23a0968483d7f223d48d6c934a61e20130287392eebfd3.patch"
+    - ".agentplane/tasks/202609192051-QAHTFD/quality/objects/sha256/b872caa4c903de1e06b76f89a212d1d7143cdcf9a19627b4ca7984871fb3f1a5.json"
+    - ".agentplane/tasks/202609192051-QAHTFD/quality/objects/sha256/3b7bb1b3ed34acc0c7d551a27b57d3e00ce58277a12288f8d82542c45339ff13.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+    - ".agentplane/policy/workflow.release.md"
+    - "bun run ci:local:full passed on committed exact implementation tree 5f15085e11fc0cfdcef92821a3eb67564c09aa14"
+    - "Focused controller suite: 120/120 passed"
+    - "Route regression suite: 65/65 passed"
   findings:
-    - "Both committed-path readers now disable rename collapsing before comparing immutable Git evidence with supervisor-observed paths."
-    - "The direct evidence regression proves both rename endpoints are accepted only when returned by the endpoint-complete command."
-    - "The canonical coordinator regression proves its durable followup reconciliation uses the same endpoint-complete command."
-    - "Repository evidence binds exactly four source/test paths to implementation commit 8efb2e7f464ffed8a838c775bfdc5d3b8aa60365; no authority roots or scope predicates changed."
+    - "No blocking correctness or coverage gap remains in the changed controller paths; the broad worktree route that masked five safety expectations was removed."
 execution_route:
   frozen: true
   reason_codes:
