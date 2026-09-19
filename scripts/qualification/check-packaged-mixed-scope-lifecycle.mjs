@@ -404,9 +404,12 @@ function writePacketResult(accessLog, packet, role, resultOptions) {
       ? { taskPlanProposal: resultOptions.taskPlanProposal(workOrder) }
       : {}),
   });
+  const compactSemanticResult = Object.fromEntries(
+    Object.entries(semanticResult).filter(([key]) => key !== "schema_version" && key !== "kind"),
+  );
   const result =
     exchange.result_format === "semantic_payload_v1"
-      ? semanticResult
+      ? compactSemanticResult
       : {
           schema_version: 1,
           kind: "agent_action_result",
