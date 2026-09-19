@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 1a8dbe72d297300127f8fd27143b42b5bafd1a33..5a0bfbf1dfd5fa4eafaeaa6eae639eca883bcec5",
+      "command": "git diff --check 5a0bfbf1dfd5fa4eafaeaa6eae639eca883bcec5..d99f148b8d36f6b94181c20ae4013f6849b6e98a",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 1a8dbe72d297300127f8fd27143b42b5bafd1a33..5a0bfbf1dfd5fa4eafaeaa6eae639eca883bcec5",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 5a0bfbf1dfd5fa4eafaeaa6eae639eca883bcec5..d99f148b8d36f6b94181c20ae4013f6849b6e98a",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -22,9 +22,8 @@
         "M\t.agentplane/tasks/202609191838-3YNJ3Y/pr/github-body.md",
         "M\t.agentplane/tasks/202609191838-3YNJ3Y/pr/meta.json",
         "M\t.agentplane/tasks/202609191838-3YNJ3Y/pr/review.md",
-        "A\t.agentplane/tasks/202609191838-3YNJ3Y/quality/objects/sha256/5404e4f80074675cc911e313ac7ead8157492b68fa4c1a9bc85f094f038d9414.json",
-        "A\t.agentplane/tasks/202609191838-3YNJ3Y/supervision/declared-checks.json",
-        "A\t.agentplane/tasks/202609191838-3YNJ3Y/supervision/implementation-evidence.json",
+        "M\t.agentplane/tasks/202609191838-3YNJ3Y/supervision/declared-checks.json",
+        "M\t.agentplane/tasks/202609191838-3YNJ3Y/supervision/implementation-evidence.json",
         "M\tscripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
       ]
     },
@@ -35,15 +34,14 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "1a8dbe72d297300127f8fd27143b42b5bafd1a33",
-  "implementation_commit": "5a0bfbf1dfd5fa4eafaeaa6eae639eca883bcec5",
+  "execution_base_commit": "5a0bfbf1dfd5fa4eafaeaa6eae639eca883bcec5",
+  "implementation_commit": "d99f148b8d36f6b94181c20ae4013f6849b6e98a",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
       " M .agentplane/tasks/202609191838-3YNJ3Y/README.md",
-      "?? .agentplane/tasks/202609191838-3YNJ3Y/quality/objects/sha256/5404e4f80074675cc911e313ac7ead8157492b68fa4c1a9bc85f094f038d9414.json",
-      "?? .agentplane/tasks/202609191838-3YNJ3Y/supervision/declared-checks.json",
-      "?? .agentplane/tasks/202609191838-3YNJ3Y/supervision/implementation-evidence.json"
+      " M .agentplane/tasks/202609191838-3YNJ3Y/supervision/declared-checks.json",
+      " M .agentplane/tasks/202609191838-3YNJ3Y/supervision/implementation-evidence.json"
     ],
     "classification": [
       {
@@ -52,24 +50,19 @@
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609191838-3YNJ3Y/quality/objects/sha256/5404e4f80074675cc911e313ac7ead8157492b68fa4c1a9bc85f094f038d9414.json"
+        "line": " M .agentplane/tasks/202609191838-3YNJ3Y/supervision/declared-checks.json"
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609191838-3YNJ3Y/supervision/declared-checks.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609191838-3YNJ3Y/supervision/implementation-evidence.json"
+        "line": " M .agentplane/tasks/202609191838-3YNJ3Y/supervision/implementation-evidence.json"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
       " M .agentplane/tasks/202609191838-3YNJ3Y/README.md",
-      "?? .agentplane/tasks/202609191838-3YNJ3Y/quality/objects/sha256/5404e4f80074675cc911e313ac7ead8157492b68fa4c1a9bc85f094f038d9414.json",
-      "?? .agentplane/tasks/202609191838-3YNJ3Y/supervision/declared-checks.json",
-      "?? .agentplane/tasks/202609191838-3YNJ3Y/supervision/implementation-evidence.json"
+      " M .agentplane/tasks/202609191838-3YNJ3Y/supervision/declared-checks.json",
+      " M .agentplane/tasks/202609191838-3YNJ3Y/supervision/implementation-evidence.json"
     ],
     "unchanged_from_execution_baseline": []
   },
