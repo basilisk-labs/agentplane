@@ -1,10 +1,11 @@
 ---
 id: "202609201158-FA0PDY"
 title: "Align 0.7.10 workspace lock versions"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -43,6 +44,22 @@ quality_review:
     - "Pass: the only bun.lock changes are the three requested 0.6.24 to 0.7.10 replacements."
     - "Pass: no 0.6.24 entry remains in bun.lock."
     - "Pass: frozen install, release parity, formatting and diff hygiene all succeeded."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: null
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "unavailable"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-09-20T12:35:17.494Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -211,9 +228,12 @@ execution_contract:
       - "repository_effect:repository_write"
       - "task_outcome"
 commit:
-  hash: "069c9eacea852c6b25767f5414eb6c3596a63563"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "c23f647d6c8df740724b3a454fe71ce6312babf2"
+  message: "✅ FA0PDY task: persist canonical completion"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -221,9 +241,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-09-20T12:35:17.494Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "c23f647d6c8df740724b3a454fe71ce6312babf2"
 doc_version: 3
-doc_updated_at: "2026-09-20T12:32:34.459Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-20T12:35:17.494Z"
+doc_updated_by: "CODER"
 description: "Update the three stale AgentPlane workspace dependency versions in bun.lock from 0.6.24 to 0.7.10, verify frozen installation and release parity, and merge the focused correction before publication."
 sections:
   Summary: |-
@@ -335,6 +363,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:fedb95e60203438c6f08f2a2033793a77e403cfb5ec707746cab11a991407b68"
     work_order_id: "sha256:90788afcf1e38c932b4356b8479cb986ca74af7b425032dd86e90a965e0c607c"
+  implementation_commit:
+    hash: "069c9eacea852c6b25767f5414eb6c3596a63563"
+    message: "🚧 FA0PDY task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "73f8fb697cbdfa1aff576adc44dcf273b4ffa17e"
@@ -861,3 +892,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-09-20T12:35:17.494Z`

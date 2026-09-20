@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:5faca3e24a39860db9335ecf7b52a9c6d0b9f30cf82b9a6c5adc4b1de65315fd",
   "pr_number": 5984,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5984",
+  "pre_merge_closure": {
+    "basis_commit": "c23f647d6c8df740724b3a454fe71ce6312babf2",
+    "branch": "task/202609201158-FA0PDY/canonical-fa0pdy",
+    "pr_number": 5984,
+    "recorded_at": "2026-09-20T12:35:17.555Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
