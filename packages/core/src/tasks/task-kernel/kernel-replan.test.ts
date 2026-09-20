@@ -69,4 +69,69 @@ describe("canonical blocked-plan replanning", () => {
       code: "ILLEGAL_TASK_TRANSITION",
     });
   });
+
+  it("accepts a replacement proposal under fresh planning authority after rejection", () => {
+    const { digest: _fixtureDigest, ...authorityContents } = authority;
+    const approvedAuthority = { ...authorityContents, digest: authorityDigest(authorityContents) };
+    const rejectedPlan = { ...plan, state: "REJECTED" as const };
+    const state = aggregate({
+      state: "PLANNING",
+      current_plan: rejectedPlan,
+      work_items: { kernel: runtime("BLOCKED") },
+      authority_lineage: [{ authority: approvedAuthority }],
+    });
+    const revision = plan.revision + 1;
+    const work_items = plan.work_items;
+    const proposal = {
+      revision,
+      work_items,
+      digest: kernelDigest({ revision, work_items }),
+      state: "PROPOSED" as const,
+      approval_actor_id: null,
+      approval_evidence_digest: null,
+    };
+    const { digest: _approvedDigest, ...planningContents } = {
+      ...approvedAuthority,
+      scope_roots: [],
+      repository_effects: [],
+      external_effects: [],
+      capabilities: [],
+      resources: [],
+      plan_revision: rejectedPlan.revision,
+      plan_digest: rejectedPlan.digest,
+      provenance: {
+        kind: "SYSTEM" as const,
+        actor_id: "agentplane:kernel-controller",
+        evidence_digest: kernelDigest("native-planning"),
+        parent_authority_digest: null,
+      },
+    };
+    const planningAuthority = {
+      ...planningContents,
+      digest: authorityDigest(planningContents),
+    };
+    const command: TaskCommand = {
+      kind: "propose_plan",
+      task_id: state.id,
+      expected_task_revision: state.revision,
+      expected_state_fingerprint: fingerprint,
+      plan: proposal,
+    };
+
+    expect(
+      reduceTaskCommand({
+        ...input(state, command),
+        actor: {
+          id: "agentplane:kernel-controller",
+          kind: "SYSTEM",
+          transport: "managed",
+          capabilities: [],
+        },
+        authority: planningAuthority,
+      }),
+    ).toMatchObject({
+      kind: "accepted",
+      aggregate: { state: "AWAITING_PLAN_APPROVAL", current_plan: proposal },
+    });
+  });
 });

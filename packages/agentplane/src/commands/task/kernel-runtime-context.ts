@@ -188,7 +188,14 @@ export async function createKernelRuntime(opts: {
       if (payload.kind !== "capture_intent" && payload.kind !== "propose_plan")
         throw new Error("Planning authority cannot execute implementation commands");
       const read = await adapter.read(opts.task_id);
-      if (read.kind === "canonical" && read.record.aggregate.authority_lineage?.length)
+      if (
+        read.kind === "canonical" &&
+        read.record.aggregate.authority_lineage?.length &&
+        !(
+          read.record.aggregate.state === "PLANNING" &&
+          read.record.aggregate.current_plan?.state === "REJECTED"
+        )
+      )
         throw new Error("Planning cannot replace canonical user authority");
       const plan = read.kind === "canonical" ? read.record.aggregate.current_plan : null;
       const contents = {
