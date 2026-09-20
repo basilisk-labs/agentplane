@@ -8,6 +8,8 @@ import {
   runDirectTaskVerification,
 } from "./direct-task-verification.js";
 import { resolveImplementationVerificationTask } from "./external-agent-implementation-recovery.js";
+import { readDirectRepositoryStatus } from "./direct-task-finalization.js";
+import { pathFromStatusLine } from "./git-status-path.js";
 import { cmdVerifyParsed } from "./verify-record.js";
 import { kernelExchangeDirectory, writeKernelArtifact } from "./kernel-exchange.js";
 import type { createKernelRuntime } from "./kernel-runtime-context.js";
@@ -38,24 +40,74 @@ function finalValidationCommands(record: KernelRecord): string[] {
   ];
 }
 
-export function restoreKernelFinalValidation(
+export function finalValidationIdentityMatches(opts: {
+  stored_identity: string;
+  repository_fingerprint: string;
+  previous_evaluator_target: string | null;
+  resolved_evaluator_target: string | null;
+  status_lines: readonly string[] | null;
+  task_artifact_prefix: string;
+}): boolean {
+  if (opts.stored_identity === opts.repository_fingerprint) return true;
+  return (
+    opts.previous_evaluator_target !== null &&
+    opts.resolved_evaluator_target === opts.previous_evaluator_target &&
+    opts.status_lines?.every((line) =>
+      pathFromStatusLine(line).startsWith(opts.task_artifact_prefix),
+    ) === true
+  );
+}
+
+async function resolveEvaluatorTarget(
+  command: CommandContext,
+  taskId: string,
+  previousEvaluatedSha: string | null,
+): Promise<string | null> {
+  if (!previousEvaluatedSha) return null;
+  return await resolveQualityReviewTargetSha({
+    gitRoot: command.resolvedProject.gitRoot,
+    workflowDir: command.config.paths.workflow_dir,
+    taskId,
+    previousEvaluatedSha,
+    workflowMode: "branch_pr",
+  });
+}
+
+export async function restoreKernelFinalValidation(
+  command: CommandContext,
   record: KernelRecord,
   repositoryFingerprint: string,
-): {
+): Promise<{
   fingerprint: string;
   environment_digest: string;
   evidence_digest: k.Sha256Digest;
   plan_digest: string;
-} | null {
+} | null> {
   const plan = record.aggregate.current_plan;
   const validation = record.aggregate.final_validation;
   const evidenceDigest = validation?.evidence_digests.at(-1);
   const environmentDigest = k.kernelDigest(verificationChildEnv());
+  const repositoryEvidence = await listKernelRepositoryEvidence(command, record);
+  const previousEvaluatorTarget = repositoryEvidence.at(-1)?.implementation_commit ?? null;
+  const resolvedEvaluatorTarget = await resolveEvaluatorTarget(
+    command,
+    record.aggregate.id,
+    previousEvaluatorTarget,
+  );
+  const status = await readDirectRepositoryStatus(command.resolvedProject.gitRoot);
+  const taskArtifactPrefix = `${command.config.paths.workflow_dir}/${record.aggregate.id}/`;
   if (
     plan?.state !== "APPROVED" ||
     validation?.status !== "PASSED" ||
     validation.identity.check_id !== "canonical-final-contracts" ||
-    validation.identity.implementation_identity !== repositoryFingerprint ||
+    !finalValidationIdentityMatches({
+      stored_identity: validation.identity.implementation_identity,
+      repository_fingerprint: repositoryFingerprint,
+      previous_evaluator_target: previousEvaluatorTarget,
+      resolved_evaluator_target: resolvedEvaluatorTarget,
+      status_lines: status?.lines ?? null,
+      task_artifact_prefix: taskArtifactPrefix,
+    }) ||
     validation.identity.command_digest !== k.kernelDigest(finalValidationCommands(record)) ||
     validation.identity.environment_digest !== environmentDigest ||
     !evidenceDigest
@@ -102,10 +154,10 @@ export async function runKernelFinalValidation(
     throw new Error("Canonical final validation authority is stale");
   const commands = finalValidationCommands(record);
   const repositoryEvidence = await listKernelRepositoryEvidence(command, record);
-  const evaluatorTarget = repositoryEvidence.at(-1)?.implementation_commit ?? null;
-  if (evaluatorTarget && !(await evaluatorTargetRemainsCurrent(command, taskId, evaluatorTarget))) {
-    throw new Error("Canonical final validation commit identity changed");
-  }
+  const previousEvaluatorTarget = repositoryEvidence.at(-1)?.implementation_commit ?? null;
+  const evaluatorTarget = await resolveEvaluatorTarget(command, taskId, previousEvaluatorTarget);
+  if (previousEvaluatorTarget && !evaluatorTarget)
+    throw new Error("Canonical final validation commit identity is unavailable");
   // Retain only a digest of the check environment, never its values. No check cache spans invocations.
   const environmentDigest = k.kernelDigest(verificationChildEnv());
   const binding = {
