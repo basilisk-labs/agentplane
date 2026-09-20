@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { test } from "node:test";
 
@@ -63,21 +63,66 @@ function captures(relativePath, pattern) {
   return values.map((symbol) => `${relativePath}#${symbol}`);
 }
 
+function walkTypeScriptFiles(relativeRoot) {
+  const files = [];
+  const absoluteRoot = path.join(ROOT, relativeRoot);
+  for (const entry of readdirSync(absoluteRoot, { withFileTypes: true })) {
+    const relativePath = path.join(relativeRoot, entry.name);
+    if (entry.isDirectory()) files.push(...walkTypeScriptFiles(relativePath));
+    if (
+      entry.isFile() &&
+      entry.name.endsWith(".ts") &&
+      !map.inventory.excluded_suffixes.some((suffix) => entry.name.endsWith(suffix))
+    ) {
+      files.push(relativePath);
+    }
+  }
+  return files;
+}
+
+function ownershipCandidates() {
+  const declarationPattern =
+    /export\s+(?:async\s+)?(?:class\s+(KernelBackendAdapter|[A-Za-z0-9]*(?:Engine|Orchestrator|Scheduler|Coordinator))|function\s+((?:reduce[A-Za-z0-9]*Command|(?:advance|run)[A-Za-z0-9]*Task|(?:coordinate|dispatch)[A-Za-z0-9]*Effect|supervise[A-Za-z0-9]*Step|(?:apply|write)[A-Za-z0-9]*Mutation)))\b/gu;
+  return map.inventory.roots
+    .flatMap((root) => walkTypeScriptFiles(root))
+    .flatMap((relativePath) => {
+      const symbols = [];
+      for (const match of sourceFor(relativePath).matchAll(declarationPattern)) {
+        symbols.push(`${relativePath}#${match[1] ?? match[2]}`);
+      }
+      return symbols;
+    })
+    .toSorted();
+}
+
 test("pins one reducer, writer, and application coordinator", () => {
-  assert.deepEqual(
-    map.canonical_owners.map(({ role }) => role).toSorted(),
-    expectedOwnerRoles,
-  );
+  assert.deepEqual(map.canonical_owners.map(({ role }) => role).toSorted(), expectedOwnerRoles);
   assert.equal(new Set(map.canonical_owners.map(({ id }) => id)).size, 3);
   for (const owner of map.canonical_owners) assertSymbolExists(owner.path, owner.symbol);
+  assert.deepEqual(
+    map.canonical_owners
+      .filter(({ ownership_state }) => ownership_state === "observed_current")
+      .map(({ role }) => role)
+      .toSorted(),
+    ["domain_reducer", "state_writer"],
+  );
+  assert.equal(
+    map.canonical_owners.find(({ role }) => role === "application_coordinator")?.ownership_state,
+    "target_after_convergence",
+  );
+  assert.equal(map.convergence_state.status, "mapped_not_converged");
+  assert.equal(
+    map.convergence_state.target_application_coordinator,
+    "packages/agentplane/src/commands/shared/workflow-supervisor.ts#superviseWorkflowStep",
+  );
 });
 
 test("maps every lifecycle responsibility to exactly one canonical owner", () => {
-  assert.deepEqual(
-    map.responsibilities.map(({ id }) => id).toSorted(),
-    expectedResponsibilities,
+  assert.deepEqual(map.responsibilities.map(({ id }) => id).toSorted(), expectedResponsibilities);
+  assert.equal(
+    new Set(map.responsibilities.map(({ id }) => id)).size,
+    expectedResponsibilities.length,
   );
-  assert.equal(new Set(map.responsibilities.map(({ id }) => id)).size, expectedResponsibilities.length);
   const ownerIds = new Set(map.canonical_owners.map(({ id }) => id));
   for (const responsibility of map.responsibilities) {
     assert.ok(ownerIds.has(responsibility.owner_id), `${responsibility.id}: unknown owner`);
@@ -86,8 +131,7 @@ test("maps every lifecycle responsibility to exactly one canonical owner", () =>
 });
 
 test("maps every production task advance and run entrypoint", () => {
-  const entrypointPattern =
-    /export function (makeRunTask(?:Advance|Run)[A-Za-z0-9]*Handler)\b/gu;
+  const entrypointPattern = /export function (makeRunTask(?:Advance|Run)[A-Za-z0-9]*Handler)\b/gu;
   const discovered = [
     ...captures("packages/agentplane/src/commands/task/advance.command.ts", entrypointPattern),
     ...captures("packages/agentplane/src/commands/task/run.command.ts", entrypointPattern),
@@ -104,7 +148,10 @@ test("classifies competing owners and every retained helper individually", () =>
   const keys = map.symbol_classifications.map(key);
   assert.equal(new Set(keys).size, keys.length, "a symbol has more than one classification");
   for (const row of map.symbol_classifications) {
-    assert.ok(allowedClassifications.has(row.classification), `${key(row)}: unknown classification`);
+    assert.ok(
+      allowedClassifications.has(row.classification),
+      `${key(row)}: unknown classification`,
+    );
     assert.ok(row.reason, `${key(row)}: missing classification reason`);
     assertSymbolExists(row.path, row.symbol);
   }
@@ -116,7 +163,11 @@ test("classifies competing owners and every retained helper individually", () =>
     "coordinateKernelEffect",
   ]) {
     const row = map.symbol_classifications.find((candidate) => candidate.symbol === symbol);
-    assert.equal(row?.classification, "later_deletion_candidate", `${symbol}: competing owner retained`);
+    assert.equal(
+      row?.classification,
+      "later_deletion_candidate",
+      `${symbol}: competing owner retained`,
+    );
   }
   for (const symbol of [
     "WorkItemScheduler",
@@ -125,49 +176,16 @@ test("classifies competing owners and every retained helper individually", () =>
     "aggregateValidation",
   ]) {
     const row = map.symbol_classifications.find((candidate) => candidate.symbol === symbol);
-    assert.equal(row?.classification, "retained_pure_helper", `${symbol}: pure helper not retained`);
+    assert.equal(
+      row?.classification,
+      "retained_pure_helper",
+      `${symbol}: pure helper not retained`,
+    );
   }
 });
 
 test("rejects an unmapped reducer, outer loop, scheduler, or coordinator", () => {
-  const discovered = [
-    ...captures(
-      "packages/core/src/tasks/task-kernel/kernel.ts",
-      /export function (reduce[A-Za-z0-9]*Command)\b/gu,
-    ),
-    ...captures(
-      "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts",
-      /export class (Kernel[A-Za-z0-9]*Adapter)\b/gu,
-    ),
-    ...captures(
-      "packages/agentplane/src/commands/shared/workflow-supervisor.ts",
-      /export async function (supervise[A-Za-z0-9]*Step)\b/gu,
-    ),
-    ...captures(
-      "packages/core/src/tasks/task-centric/lifecycle.ts",
-      /export class ([A-Za-z0-9]*(?:Engine|Orchestrator|Scheduler))\b/gu,
-    ),
-    ...captures(
-      "packages/core/src/tasks/task-centric/orchestrator.ts",
-      /export class ([A-Za-z0-9]*(?:Engine|Orchestrator|Scheduler))\b/gu,
-    ),
-    ...captures(
-      "packages/core/src/tasks/task-centric/graph.ts",
-      /export class ([A-Za-z0-9]*(?:Engine|Orchestrator|Scheduler))\b/gu,
-    ),
-    ...captures(
-      "packages/agentplane/src/commands/task/kernel-advance.ts",
-      /export async function ((?:advance|run|coordinate)[A-Za-z0-9]*(?:Task|Effect))\b/gu,
-    ),
-    ...captures(
-      "packages/agentplane/src/commands/task/kernel-run.ts",
-      /export async function ((?:advance|run|coordinate)[A-Za-z0-9]*(?:Task|Effect))\b/gu,
-    ),
-    ...captures(
-      "packages/agentplane/src/commands/task/kernel-effect-coordinator.ts",
-      /export async function ((?:advance|run|coordinate)[A-Za-z0-9]*(?:Task|Effect))\b/gu,
-    ),
-  ].toSorted();
+  const discovered = ownershipCandidates();
   const mapped = map.boundary_inventory.map(key).toSorted();
   assert.deepEqual(mapped, discovered);
   assert.equal(
@@ -176,7 +194,18 @@ test("rejects an unmapped reducer, outer loop, scheduler, or coordinator", () =>
     3,
   );
   for (const row of map.boundary_inventory) {
-    assert.ok(allowedClassifications.has(row.classification), `${key(row)}: unknown classification`);
+    assert.ok(
+      allowedClassifications.has(row.classification),
+      `${key(row)}: unknown classification`,
+    );
     assertSymbolExists(row.path, row.symbol);
+  }
+  const deletionCandidates = new Set(
+    map.symbol_classifications
+      .filter(({ classification }) => classification === "later_deletion_candidate")
+      .map(key),
+  );
+  for (const currentOwner of map.convergence_state.current_parallel_owners) {
+    assert.ok(deletionCandidates.has(currentOwner), `${currentOwner}: parallel owner not retired`);
   }
 });

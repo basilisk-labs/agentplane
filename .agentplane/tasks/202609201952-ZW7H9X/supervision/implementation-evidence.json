@@ -1,0 +1,73 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 4470b04c34da735ffb46914ea6e6398a54eb39ac..203bbe0032250537299887f35607a0df6a66dd8e",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 4470b04c34da735ffb46914ea6e6398a54eb39ac..203bbe0032250537299887f35607a0df6a66dd8e",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202609201952-ZW7H9X/README.md",
+        "A\t.agentplane/tasks/202609201952-ZW7H9X/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202609201952-ZW7H9X/pr/github-body.md",
+        "A\t.agentplane/tasks/202609201952-ZW7H9X/pr/github-title.txt",
+        "A\t.agentplane/tasks/202609201952-ZW7H9X/pr/meta.json",
+        "A\t.agentplane/tasks/202609201952-ZW7H9X/pr/review.md",
+        "A\t.agentplane/tasks/202609201952-ZW7H9X/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json",
+        "A\t.agentplane/tasks/202609201952-ZW7H9X/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "A\tscripts/checks/lifecycle-owner-map.json",
+        "A\tscripts/checks/lifecycle-owner-map.test.mjs"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "4470b04c34da735ffb46914ea6e6398a54eb39ac",
+  "implementation_commit": "203bbe0032250537299887f35607a0df6a66dd8e",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "?? .agentplane/tasks/202609201952-ZW7H9X/README.md",
+      "?? .agentplane/tasks/202609201952-ZW7H9X/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json",
+      "?? .agentplane/tasks/202609201952-ZW7H9X/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609201952-ZW7H9X/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609201952-ZW7H9X/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609201952-ZW7H9X/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "?? .agentplane/tasks/202609201952-ZW7H9X/README.md",
+      "?? .agentplane/tasks/202609201952-ZW7H9X/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json",
+      "?? .agentplane/tasks/202609201952-ZW7H9X/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609201952-ZW7H9X"
+}

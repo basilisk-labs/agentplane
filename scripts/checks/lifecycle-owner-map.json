@@ -1,26 +1,49 @@
 {
   "schema_version": 1,
   "baseline": "v0.7.10",
+  "inventory": {
+    "roots": [
+      "packages/core/src/tasks",
+      "packages/agentplane/src/commands/task",
+      "packages/agentplane/src/commands/shared",
+      "packages/agentplane/src/adapters/task-backend"
+    ],
+    "excluded_suffixes": [".test.ts", ".testkit.ts"]
+  },
   "canonical_owners": [
     {
       "id": "task-kernel-domain-reducer",
       "role": "domain_reducer",
+      "ownership_state": "observed_current",
       "path": "packages/core/src/tasks/task-kernel/kernel.ts",
       "symbol": "reduceTaskCommand"
     },
     {
       "id": "kernel-backend-state-writer",
       "role": "state_writer",
+      "ownership_state": "observed_current",
       "path": "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts",
       "symbol": "KernelBackendAdapter.persist"
     },
     {
       "id": "task-application-coordinator",
       "role": "application_coordinator",
+      "ownership_state": "target_after_convergence",
       "path": "packages/agentplane/src/commands/shared/workflow-supervisor.ts",
       "symbol": "superviseWorkflowStep"
     }
   ],
+  "convergence_state": {
+    "status": "mapped_not_converged",
+    "target_application_coordinator": "packages/agentplane/src/commands/shared/workflow-supervisor.ts#superviseWorkflowStep",
+    "current_parallel_owners": [
+      "packages/core/src/tasks/task-centric/lifecycle.ts#LifecycleEngine",
+      "packages/core/src/tasks/task-centric/orchestrator.ts#TaskCentricOrchestrator",
+      "packages/agentplane/src/commands/task/kernel-advance.ts#advanceCanonicalTask",
+      "packages/agentplane/src/commands/task/kernel-run.ts#runCanonicalTask",
+      "packages/agentplane/src/commands/task/kernel-effect-coordinator.ts#coordinateKernelEffect"
+    ]
+  },
   "responsibilities": [
     {
       "id": "command_event_reduction",
@@ -171,6 +194,12 @@
       "reason": "Effect coordination must use the single application coordinator boundary."
     },
     {
+      "path": "packages/agentplane/src/adapters/task-backend/kernel-effect-dispatch.ts",
+      "symbol": "dispatchKernelEffect",
+      "classification": "later_deletion_candidate",
+      "reason": "The staged dispatch boundary must not become a second application coordinator."
+    },
+    {
       "path": "packages/agentplane/src/commands/shared/task-mutation.ts",
       "symbol": "applyTaskMutation",
       "classification": "compatibility_only",
@@ -181,6 +210,12 @@
       "symbol": "writeTaskMutation",
       "classification": "compatibility_only",
       "reason": "Legacy persistence is not a canonical Kernel writer."
+    },
+    {
+      "path": "packages/agentplane/src/commands/shared/task-mutation.ts",
+      "symbol": "applyTaskCollectionMutation",
+      "classification": "compatibility_only",
+      "reason": "Legacy collection persistence is not a canonical Kernel writer."
     },
     {
       "path": "packages/core/src/tasks/task-centric/graph.ts",
@@ -270,6 +305,26 @@
       "path": "packages/agentplane/src/commands/task/kernel-effect-coordinator.ts",
       "symbol": "coordinateKernelEffect",
       "classification": "later_deletion_candidate"
+    },
+    {
+      "path": "packages/agentplane/src/adapters/task-backend/kernel-effect-dispatch.ts",
+      "symbol": "dispatchKernelEffect",
+      "classification": "later_deletion_candidate"
+    },
+    {
+      "path": "packages/agentplane/src/commands/shared/task-mutation.ts",
+      "symbol": "writeTaskMutation",
+      "classification": "compatibility_only"
+    },
+    {
+      "path": "packages/agentplane/src/commands/shared/task-mutation.ts",
+      "symbol": "applyTaskMutation",
+      "classification": "compatibility_only"
+    },
+    {
+      "path": "packages/agentplane/src/commands/shared/task-mutation.ts",
+      "symbol": "applyTaskCollectionMutation",
+      "classification": "compatibility_only"
     }
   ]
 }
