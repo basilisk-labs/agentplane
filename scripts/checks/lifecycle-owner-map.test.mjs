@@ -34,7 +34,7 @@ const allowedClassifications = new Set([
 ]);
 
 function escapeRegex(value) {
-  return value.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+  return value.replaceAll(/[.*+?^${}()|[\]\\]/gu, "\\$&");
 }
 
 function sourceFor(relativePath) {
@@ -136,7 +136,7 @@ test("maps every production task advance and run entrypoint", () => {
     ...captures("packages/agentplane/src/commands/task/advance.command.ts", entrypointPattern),
     ...captures("packages/agentplane/src/commands/task/run.command.ts", entrypointPattern),
   ].toSorted();
-  const mapped = map.production_entrypoints.map(key).toSorted();
+  const mapped = map.production_entrypoints.map((row) => key(row)).toSorted();
   assert.deepEqual(mapped, discovered);
   for (const entrypoint of map.production_entrypoints) {
     assert.ok(entrypoint.mode === "mutating" || entrypoint.mode === "read_only");
@@ -145,7 +145,7 @@ test("maps every production task advance and run entrypoint", () => {
 });
 
 test("classifies competing owners and every retained helper individually", () => {
-  const keys = map.symbol_classifications.map(key);
+  const keys = map.symbol_classifications.map((row) => key(row));
   assert.equal(new Set(keys).size, keys.length, "a symbol has more than one classification");
   for (const row of map.symbol_classifications) {
     assert.ok(
@@ -186,7 +186,7 @@ test("classifies competing owners and every retained helper individually", () =>
 
 test("rejects an unmapped reducer, outer loop, scheduler, or coordinator", () => {
   const discovered = ownershipCandidates();
-  const mapped = map.boundary_inventory.map(key).toSorted();
+  const mapped = map.boundary_inventory.map((row) => key(row)).toSorted();
   assert.deepEqual(mapped, discovered);
   assert.equal(
     map.boundary_inventory.filter(({ classification }) => classification === "canonical_owner")
@@ -203,7 +203,7 @@ test("rejects an unmapped reducer, outer loop, scheduler, or coordinator", () =>
   const deletionCandidates = new Set(
     map.symbol_classifications
       .filter(({ classification }) => classification === "later_deletion_candidate")
-      .map(key),
+      .map((row) => key(row)),
   );
   for (const currentOwner of map.convergence_state.current_parallel_owners) {
     assert.ok(deletionCandidates.has(currentOwner), `${currentOwner}: parallel owner not retired`);
