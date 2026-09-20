@@ -22,6 +22,8 @@ import {
 } from "./direct-task-finalization.js";
 import { pathFromStatusLine } from "./external-agent-implementation-finalization.js";
 
+export { commitCanonicalTerminalTaskArtifacts } from "./kernel-terminal-artifacts.js";
+
 export type KernelRepositoryBaseline = Readonly<{
   schema_version: 1;
   kind: "canonical_repository_baseline";
@@ -101,56 +103,6 @@ function nonTaskStatusLines(
     const candidate = pathFromStatusLine(line);
     return !candidate || !taskArtifactPath(command, taskId, candidate);
   });
-}
-
-function taskStatusLines(
-  command: CommandContext,
-  taskId: string,
-  status: DirectRepositoryStatus,
-): string[] {
-  return status.lines.filter((line) => {
-    const candidate = pathFromStatusLine(line);
-    return candidate !== null && taskArtifactPath(command, taskId, candidate);
-  });
-}
-
-/** Persist terminal Kernel state without staging an unrelated direct-workflow baseline. */
-export async function commitCanonicalTerminalTaskArtifacts(
-  command: CommandContext,
-  taskId: string,
-): Promise<boolean> {
-  command.git.invalidateStatus();
-  const before = await readDirectRepositoryStatus(command.resolvedProject.gitRoot);
-  if (!before) throw new Error("Canonical terminal repository status is unavailable");
-  if (taskStatusLines(command, taskId, before).length === 0) return false;
-
-  const exitCode = await cmdCommit({
-    ctx: command,
-    cwd: command.resolvedProject.gitRoot,
-    taskId,
-    message: `✅ ${taskId.split("-").at(-1)} task: persist canonical completion`,
-    close: false,
-    allow: [],
-    autoAllow: false,
-    allowTasks: true,
-    allowBase: false,
-    allowPolicy: false,
-    allowConfig: false,
-    allowHooks: false,
-    allowCI: false,
-    requireClean: false,
-    quiet: true,
-    closeUnstageOthers: false,
-    closeCheckOnly: false,
-  });
-  if (exitCode !== 0) throw new Error(`Canonical terminal artifact commit exited ${exitCode}`);
-
-  command.git.invalidateStatus();
-  const after = await readDirectRepositoryStatus(command.resolvedProject.gitRoot);
-  if (!after || taskStatusLines(command, taskId, after).length > 0) {
-    throw new Error("Canonical terminal task artifacts remain dirty after commit");
-  }
-  return true;
 }
 
 async function writeCommitIntent(directory: string, intent: KernelRepositoryCommitIntent) {

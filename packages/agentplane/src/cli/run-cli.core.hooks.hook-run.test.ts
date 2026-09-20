@@ -716,7 +716,7 @@ describe("runCli hooks run", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () => {
     expect(status.stdout.trim()).toBe("");
   });
 
-  it("pre-push hook resolves bun from NVM_BIN when PATH omits it", async () => {
+  it("pre-push hook resolves bun from NVM_BIN without selecting its stale node", async () => {
     const root = await mkGitRepoRoot();
     await writeFile(
       path.join(root, "package.json"),
@@ -741,20 +741,23 @@ describe("runCli hooks run", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () => {
 
     const fakeBinDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-bun-bin-"));
     const fakeBunPath = path.join(fakeBinDir, "bun");
+    const staleNodePath = path.join(fakeBinDir, "node");
     await writeFile(
       fakeBunPath,
       [
         "#!/bin/sh",
         'case "$2" in',
-        `  format:check) exec "${process.execPath}" scripts/format-check.mjs ;;`,
-        `  ci:local:fast|ci:local:full) exec "${process.execPath}" scripts/ci-fast.mjs ;;`,
+        "  format:check) exec node scripts/format-check.mjs ;;",
+        "  ci:local:fast|ci:local:full) exec node scripts/ci-fast.mjs ;;",
         "  *) exit 64 ;;",
         "esac",
         "",
       ].join("\n"),
       "utf8",
     );
+    await writeFile(staleNodePath, "#!/bin/sh\nexit 91\n", "utf8");
     await chmod(fakeBunPath, 0o755);
+    await chmod(staleNodePath, 0o755);
 
     const output = execFileSync(process.execPath, [PRE_PUSH_HOOK_SCRIPT], {
       cwd: root,

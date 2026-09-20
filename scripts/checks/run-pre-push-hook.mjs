@@ -23,9 +23,9 @@ function pushUnique(entries, value) {
 
 function withPreferredRuntimePath(baseEnv = process.env) {
   const preferredEntries = [];
+  pushUnique(preferredEntries, path.dirname(process.execPath));
   pushUnique(preferredEntries, String(baseEnv.NVM_BIN ?? "").trim());
   pushUnique(preferredEntries, path.join(String(baseEnv.VOLTA_HOME ?? "").trim(), "bin"));
-  pushUnique(preferredEntries, path.dirname(process.execPath));
   pushUnique(
     preferredEntries,
     path.join(String(baseEnv.HOME ?? os.homedir()).trim(), ".bun", "bin"),

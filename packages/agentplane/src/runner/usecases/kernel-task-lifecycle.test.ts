@@ -183,6 +183,45 @@ async function fixture(kind: "local" | "cloud" = "local") {
 }
 
 describe("canonical lifecycle application service", () => {
+  it("retries one transient task README replacement collision", async () => {
+    const taskId = "202609201929-RETRY1";
+    const read = vi
+      .fn()
+      .mockRejectedValueOnce(
+        new Error(`task README ${taskId} path changed while it was being read: /repo/README.md`),
+      )
+      .mockResolvedValueOnce({ kind: "missing" });
+    const adapter = {
+      read,
+    } as unknown as KernelBackendAdapter;
+
+    await expect(new KernelTaskLifecycle(adapter).read(taskId, null)).resolves.toMatchObject({
+      read: { kind: "missing" },
+    });
+    expect(read).toHaveBeenCalledTimes(2);
+  });
+
+  it("fails closed after a persistent task README replacement collision", async () => {
+    const taskId = "202609201929-RETRY2";
+    const collision = new Error(
+      `task README ${taskId} changed while it was being read: /repo/README.md`,
+    );
+    const read = vi.fn().mockRejectedValue(collision);
+    const adapter = { read } as unknown as KernelBackendAdapter;
+
+    await expect(new KernelTaskLifecycle(adapter).read(taskId, null)).rejects.toBe(collision);
+    expect(read).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not retry an unrelated task read failure", async () => {
+    const error = new Error("task README is invalid");
+    const read = vi.fn().mockRejectedValue(error);
+    const adapter = { read } as unknown as KernelBackendAdapter;
+
+    await expect(new KernelTaskLifecycle(adapter).read("T-1", null)).rejects.toBe(error);
+    expect(read).toHaveBeenCalledTimes(1);
+  });
+
   it.each(["local", "cloud"] as const)(
     "runs creation, plan, claim and receipt on %s without legacy authority",
     async (kind) => {
