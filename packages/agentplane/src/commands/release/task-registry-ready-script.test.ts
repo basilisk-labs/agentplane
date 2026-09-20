@@ -15,6 +15,8 @@ async function makeRepo(
     id: string;
     status: string;
     title?: string;
+    taskKind?: string;
+    tags?: string[];
     mergedPr?: boolean;
     dependsOn?: string[];
   }[],
@@ -31,11 +33,14 @@ async function makeRepo(
         `id: ${task.id}`,
         `title: ${task.title ?? "Test task"}`,
         `status: ${task.status}`,
+        ...(task.taskKind ? [`task_kind: ${task.taskKind}`] : []),
         task.dependsOn?.length
           ? ["depends_on:", ...task.dependsOn.map((dependency) => `  - "${dependency}"`)].join("\n")
           : "depends_on: []",
         "tags:",
-        task.title?.startsWith("Release AgentPlane") ? '  - "release"' : '  - "code"',
+        ...(task.tags ?? [task.title?.startsWith("Release AgentPlane") ? "release" : "code"]).map(
+          (tag) => `  - "${tag}"`,
+        ),
         "---",
         "",
       ].join("\n"),
@@ -100,8 +105,8 @@ async function writeReleasePlan(
   );
 }
 
-async function runRegistryCheck(root: string) {
-  return execFileAsync("node", [SCRIPT_PATH], { cwd: root }).then(
+async function runRegistryCheck(root: string, args: string[] = []) {
+  return execFileAsync("node", [SCRIPT_PATH, ...args], { cwd: root }).then(
     () => ({ ok: true as const, stderr: "" }),
     (error: unknown) => {
       const stderr =
@@ -185,6 +190,39 @@ describe("check-task-registry-ready script", () => {
     await expect(
       execFileAsync("node", [SCRIPT_PATH, "--allow-active-release-task"], { cwd: root }),
     ).resolves.toBeDefined();
+  });
+
+  it("allows canonical release metadata without requiring the legacy title", async () => {
+    const root = await makeRepo([
+      {
+        id: "202605190001-ABC123",
+        status: "DOING",
+        title: "Publish and verify AgentPlane 0.6.3",
+        taskKind: "release",
+        tags: ["release", "v0.6.3"],
+      },
+    ]);
+
+    await expect(
+      execFileAsync("node", [SCRIPT_PATH, "--allow-active-release-task"], { cwd: root }),
+    ).resolves.toBeDefined();
+  });
+
+  it("rejects canonical release metadata for another version", async () => {
+    const root = await makeRepo([
+      {
+        id: "202605190001-ABC123",
+        status: "DOING",
+        title: "Publish and verify AgentPlane 0.6.2",
+        taskKind: "release",
+        tags: ["release", "v0.6.2"],
+      },
+    ]);
+
+    const result = await runRegistryCheck(root, ["--allow-active-release-task"]);
+
+    expect(result.ok).toBe(false);
+    expect(result.stderr).toContain("DOING task blocks release readiness");
   });
 
   it("does not allow unrelated DOING tasks that merely mention the release version", async () => {
