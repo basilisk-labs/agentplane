@@ -148,7 +148,11 @@ export async function advanceCanonicalTask(opts: {
     const plan = record.aggregate.current_plan;
     const route = current.next_action;
     const operationId = `${route.reason_code}:${record.digest}:${context.repository_fingerprint}`;
-    finalValidation ??= restoreKernelFinalValidation(record, context.repository_fingerprint);
+    finalValidation ??= await restoreKernelFinalValidation(
+      opts.command,
+      record,
+      context.repository_fingerprint,
+    );
     const persistedValidationEvidence =
       record.aggregate.final_validation?.status === "PASSED"
         ? record.aggregate.final_validation.evidence_digests.at(-1)

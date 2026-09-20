@@ -2,6 +2,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
+import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
 import { projectEvaluatorQualityReportToContext } from "../../context/evaluator-projection.js";
 import type { EvaluatorSgrResult } from "../../evaluators/sgr-result.js";
 import { CliError } from "../../shared/errors.js";
@@ -28,6 +29,12 @@ import {
 } from "./evaluator-review-usecase.js";
 import { reportPaths, resolveEvaluatorPromptPath } from "./evaluator-review-support.js";
 import { evaluatorWorkOrderReviewDigest } from "./evaluator-work-order.js";
+
+export function evaluatorReviewAllowsCanonicalProjection(
+  task: Pick<TaskData, "extensions">,
+): boolean {
+  return Object.hasOwn(task.extensions ?? {}, TASK_KERNEL_EXTENSION);
+}
 
 async function persistReview(opts: {
   ctx: CommandContext;
@@ -106,6 +113,7 @@ async function persistReview(opts: {
     taskId: opts.task.id,
     policyAction: "task_verify",
     phase: "verify",
+    allowCanonicalProjection: evaluatorReviewAllowsCanonicalProjection(opts.task),
     build: () => ({
       intents: setTaskFieldsIntent({
         quality_review: {
