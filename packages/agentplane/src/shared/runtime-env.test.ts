@@ -34,7 +34,9 @@ describe("withPreferredRuntimePath", () => {
     });
     const entries = String(env.PATH ?? "").split(path.delimiter);
 
-    expect(entries[0]).toBe("/tmp/custom/bin");
+    if (typeof process.versions.bun !== "string") {
+      expect(entries.indexOf(path.dirname(process.execPath))).toBeLessThan(entries.indexOf(nvmBin));
+    }
     expect(entries).toContain(nvmBin);
     expect(entries).toContain("/tmp/custom/bin");
     expect(entries).toContain("/usr/bin");
@@ -51,6 +53,24 @@ describe("withPreferredRuntimePath", () => {
     const entries = String(env.PATH ?? "").split(path.delimiter);
 
     expect(entries.filter((entry) => entry === bunBin)).toHaveLength(1);
+  });
+
+  it("keeps the active Node runtime ahead of stale inherited NVM_BIN", async () => {
+    const root = await fixture("agentplane-runtime-stale-nvm-");
+    const staleNvmBin = path.join(root, "stale-nvm", "bin");
+    await mkdir(staleNvmBin, { recursive: true });
+    await writeFile(path.join(staleNvmBin, "node"), "#!/bin/sh\nexit 0\n");
+    await chmod(path.join(staleNvmBin, "node"), 0o755);
+
+    const env = withPreferredRuntimePath({
+      HOME: root,
+      NVM_BIN: staleNvmBin,
+      PATH: staleNvmBin,
+    });
+
+    if (typeof process.versions.bun !== "string") {
+      expect(resolvePreferredNodeExecutable(env)).toBe(process.execPath);
+    }
   });
 
   it("falls back to os.homedir when HOME is unset", () => {
@@ -79,11 +99,9 @@ describe("deterministic local runtime resolution", () => {
     const base = { PATH: "/inherited/bin", HOME: "/fixture/home", SECRET: "not-evidence" };
     const overrides = { PATH: "/profile/bin", BUN_INSTALL: "/profile/bun" };
     const env = withPreferredRuntimePath(base, overrides);
-    expect(env.PATH!.split(path.delimiter).slice(0, 3)).toEqual([
-      "/profile/bin",
-      "/profile/bun/bin",
-      "/inherited/bin",
-    ]);
+    const entries = env.PATH!.split(path.delimiter);
+    expect(entries[0]).toBe("/profile/bin");
+    expect(entries.indexOf("/profile/bun/bin")).toBeLessThan(entries.indexOf("/inherited/bin"));
     expect(base.PATH).toBe("/inherited/bin");
     expect(overrides.PATH).toBe("/profile/bin");
     expect(JSON.stringify(localRuntimeEvidence("missing-test-runtime", env))).not.toContain(

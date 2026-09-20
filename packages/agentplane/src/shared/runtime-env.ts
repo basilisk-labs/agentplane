@@ -18,6 +18,11 @@ export function withPreferredRuntimePath(
   // Explicit profile PATH remains first. Inherited PATH keeps its original order.
   for (const entry of String(overrides.PATH ?? "").split(path.delimiter))
     pushUnique(entries, entry);
+  // A Node process has already selected a compatible runtime. Keep that exact runtime ahead of
+  // inherited manager hints, which may point at a stale Node version.
+  if (overrides.PATH === undefined && typeof process.versions.bun !== "string") {
+    pushUnique(entries, path.dirname(process.execPath));
+  }
   for (const [key, suffix] of [
     ["NVM_BIN", ""],
     ["VOLTA_HOME", "bin"],

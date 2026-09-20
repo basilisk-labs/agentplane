@@ -13,6 +13,7 @@ const mocks = vi.hoisted(() => ({
   cmdCommit: vi.fn(),
   loadTask: vi.fn(),
   prepareEvidence: vi.fn(),
+  materializeCloseTail: vi.fn(),
   readStatus: vi.fn(),
   readHead: vi.fn(),
   stage: vi.fn(),
@@ -33,6 +34,9 @@ vi.mock("./direct-task-finalization.js", () => ({
   readDirectRepositoryStatus: mocks.readStatus,
   readDirectTaskHead: mocks.readHead,
 }));
+vi.mock("./finish-close.js", () => ({
+  materializeBranchPrCloseTail: mocks.materializeCloseTail,
+}));
 
 import {
   captureKernelRepositoryBaseline,
@@ -52,7 +56,7 @@ const command = {
   resolvedProject: { gitRoot: "/repo" },
   git: { invalidateStatus, stage: mocks.stage },
   config: {
-    branch: { task_prefix: "task/" },
+    branch: { task_prefix: "task", task_close_prefix: "task-close" },
     paths: { workflow_dir: ".agentplane/tasks" },
   },
 } as never;
@@ -64,6 +68,7 @@ describe("canonical repository coordinator", () => {
       execution_route: { repository_mode: "branch_pr" },
     });
     mocks.readHead.mockResolvedValue("base-sha");
+    mocks.materializeCloseTail.mockResolvedValue(`task-close/${taskId}/base-sha`);
     mocks.readStatus.mockResolvedValue({
       command: "git status --short --untracked-files=all",
       lines: [],
@@ -479,6 +484,36 @@ describe("canonical repository coordinator", () => {
       }),
     );
     expect(invalidateStatus).toHaveBeenCalledTimes(2);
+  });
+
+  it("materializes terminal task artifacts on a close branch when running from main", async () => {
+    mocks.runProcess.mockImplementation(({ args }: { args: string[] }) =>
+      Promise.resolve({
+        exitCode: 0,
+        stdout: args[0] === "branch" ? "main\n" : "tree-sha\n",
+        stderr: "",
+      }),
+    );
+    mocks.readStatus
+      .mockResolvedValueOnce({
+        command: "git status --short --untracked-files=all",
+        lines: [` M .agentplane/tasks/${taskId}/README.md`, " M src/user-change.ts"],
+      })
+      .mockResolvedValueOnce({
+        command: "git status --short --untracked-files=all",
+        lines: [" M src/user-change.ts"],
+      });
+
+    await expect(commitCanonicalTerminalTaskArtifacts(command, taskId)).resolves.toBe(true);
+
+    expect(mocks.materializeCloseTail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        ctx: command,
+        taskId,
+        closeUnstageOthers: true,
+      }),
+    );
+    expect(mocks.cmdCommit).not.toHaveBeenCalled();
   });
 
   it("does not create a terminal artifact commit when the task subtree is clean", async () => {
