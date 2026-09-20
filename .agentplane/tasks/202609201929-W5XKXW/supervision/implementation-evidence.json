@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 4470b04c34da735ffb46914ea6e6398a54eb39ac..35a8a9911c6eebf64c36dfee33256ab8d9165f70",
+      "command": "git diff --check 35a8a9911c6eebf64c36dfee33256ab8d9165f70..cdd53d90ad1c9ede95a539d5c3409ffab7744b13",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,29 +13,18 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 4470b04c34da735ffb46914ea6e6398a54eb39ac..35a8a9911c6eebf64c36dfee33256ab8d9165f70",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 35a8a9911c6eebf64c36dfee33256ab8d9165f70..cdd53d90ad1c9ede95a539d5c3409ffab7744b13",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "A\t.agentplane/tasks/202609201929-W5XKXW/README.md",
-        "A\t.agentplane/tasks/202609201929-W5XKXW/pr/diffstat.txt",
-        "A\t.agentplane/tasks/202609201929-W5XKXW/pr/github-body.md",
-        "A\t.agentplane/tasks/202609201929-W5XKXW/pr/github-title.txt",
-        "A\t.agentplane/tasks/202609201929-W5XKXW/pr/meta.json",
-        "A\t.agentplane/tasks/202609201929-W5XKXW/pr/review.md",
-        "A\t.agentplane/tasks/202609201929-W5XKXW/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json",
-        "A\t.agentplane/tasks/202609201929-W5XKXW/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
-        "M\tpackages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts",
-        "A\tpackages/agentplane/src/commands/release/check-published-packages-script.test.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-repository-coordinator.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-terminal-artifacts.ts",
-        "M\tpackages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts",
-        "M\tpackages/agentplane/src/runner/usecases/kernel-task-lifecycle.ts",
-        "M\tpackages/agentplane/src/shared/runtime-env.test.ts",
-        "M\tpackages/agentplane/src/shared/runtime-env.ts",
-        "M\tscripts/checks/run-pre-push-hook.mjs",
-        "M\tscripts/release/check-published-packages.mjs"
+        "M\t.agentplane/tasks/202609201929-W5XKXW/README.md",
+        "M\t.agentplane/tasks/202609201929-W5XKXW/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609201929-W5XKXW/pr/github-body.md",
+        "M\t.agentplane/tasks/202609201929-W5XKXW/pr/meta.json",
+        "M\t.agentplane/tasks/202609201929-W5XKXW/pr/review.md",
+        "A\t.agentplane/tasks/202609201929-W5XKXW/supervision/implementation-evidence.json",
+        "M\tpackages/core/src/tasks/task-kernel/authority-delta.test.ts",
+        "M\tpackages/core/src/tasks/task-kernel/authority-lineage.ts"
       ]
     },
     {
@@ -45,101 +34,41 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "4470b04c34da735ffb46914ea6e6398a54eb39ac",
-  "implementation_commit": "35a8a9911c6eebf64c36dfee33256ab8d9165f70",
+  "execution_base_commit": "35a8a9911c6eebf64c36dfee33256ab8d9165f70",
+  "implementation_commit": "cdd53d90ad1c9ede95a539d5c3409ffab7744b13",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
-      " M packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts",
-      " M packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts",
-      " M packages/agentplane/src/commands/task/kernel-repository-coordinator.ts",
-      " M packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts",
-      " M packages/agentplane/src/runner/usecases/kernel-task-lifecycle.ts",
-      " M packages/agentplane/src/shared/runtime-env.test.ts",
-      " M packages/agentplane/src/shared/runtime-env.ts",
-      " M scripts/checks/run-pre-push-hook.mjs",
-      " M scripts/release/check-published-packages.mjs",
-      "?? .agentplane/tasks/202609201929-W5XKXW/README.md",
-      "?? .agentplane/tasks/202609201929-W5XKXW/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json",
-      "?? .agentplane/tasks/202609201929-W5XKXW/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
-      "?? packages/agentplane/src/commands/release/check-published-packages-script.test.ts",
-      "?? packages/agentplane/src/commands/task/kernel-terminal-artifacts.ts"
+      " M .agentplane/tasks/202609201929-W5XKXW/README.md",
+      " M packages/core/src/tasks/task-kernel/authority-delta.test.ts",
+      " M packages/core/src/tasks/task-kernel/authority-lineage.ts",
+      "?? .agentplane/tasks/202609201929-W5XKXW/supervision/implementation-evidence.json"
     ],
     "classification": [
       {
         "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts"
+        "line": " M .agentplane/tasks/202609201929-W5XKXW/README.md"
       },
       {
         "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts"
+        "line": " M packages/core/src/tasks/task-kernel/authority-delta.test.ts"
       },
       {
         "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/kernel-repository-coordinator.ts"
+        "line": " M packages/core/src/tasks/task-kernel/authority-lineage.ts"
       },
       {
         "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/runner/usecases/kernel-task-lifecycle.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/shared/runtime-env.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/shared/runtime-env.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M scripts/checks/run-pre-push-hook.mjs"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M scripts/release/check-published-packages.mjs"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609201929-W5XKXW/README.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609201929-W5XKXW/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609201929-W5XKXW/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? packages/agentplane/src/commands/release/check-published-packages-script.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? packages/agentplane/src/commands/task/kernel-terminal-artifacts.ts"
+        "line": "?? .agentplane/tasks/202609201929-W5XKXW/supervision/implementation-evidence.json"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
-      " M packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts",
-      " M packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts",
-      " M packages/agentplane/src/commands/task/kernel-repository-coordinator.ts",
-      " M packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts",
-      " M packages/agentplane/src/runner/usecases/kernel-task-lifecycle.ts",
-      " M packages/agentplane/src/shared/runtime-env.test.ts",
-      " M packages/agentplane/src/shared/runtime-env.ts",
-      " M scripts/checks/run-pre-push-hook.mjs",
-      " M scripts/release/check-published-packages.mjs",
-      "?? .agentplane/tasks/202609201929-W5XKXW/README.md",
-      "?? .agentplane/tasks/202609201929-W5XKXW/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json",
-      "?? .agentplane/tasks/202609201929-W5XKXW/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
-      "?? packages/agentplane/src/commands/release/check-published-packages-script.test.ts",
-      "?? packages/agentplane/src/commands/task/kernel-terminal-artifacts.ts"
+      " M .agentplane/tasks/202609201929-W5XKXW/README.md",
+      " M packages/core/src/tasks/task-kernel/authority-delta.test.ts",
+      " M packages/core/src/tasks/task-kernel/authority-lineage.ts",
+      "?? .agentplane/tasks/202609201929-W5XKXW/supervision/implementation-evidence.json"
     ],
     "unchanged_from_execution_baseline": []
   },

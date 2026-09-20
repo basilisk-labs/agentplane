@@ -15,8 +15,8 @@ In one PR: make task README stable reads tolerate only bounded transient replace
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:9d5b7edbf3307a7ca865ebbdb36bb6eed06adaed89df4619c18bc119b7a6b738
 - Canonical workflow state lives in the task README.
 
 <details>

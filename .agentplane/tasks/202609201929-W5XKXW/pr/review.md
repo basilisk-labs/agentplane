@@ -6,14 +6,14 @@ Created: 2026-09-20T20:29:05.070Z
 
 - Task: `202609201929-W5XKXW`
 - Title: Fix four release reliability gaps discovered during AgentPlane 0.7.10 publication
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609201929-W5XKXW/canonical-w5xkxw`
 - Canonical task record: `.agentplane/tasks/202609201929-W5XKXW/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:9d5b7edbf3307a7ca865ebbdb36bb6eed06adaed89df4619c18bc119b7a6b738
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
