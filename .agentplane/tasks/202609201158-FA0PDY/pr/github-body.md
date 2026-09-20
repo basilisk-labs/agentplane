@@ -15,8 +15,8 @@ Update the three stale AgentPlane workspace dependency versions in bun.lock from
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:fedb95e60203438c6f08f2a2033793a77e403cfb5ec707746cab11a991407b68
 - Canonical workflow state lives in the task README.
 
 <details>

@@ -3,7 +3,8 @@
   "branch": "task/202609201158-FA0PDY/canonical-fa0pdy",
   "created_at": "2026-09-20T12:04:09.667Z",
   "diffstat_sha256": "sha256:5faca3e24a39860db9335ecf7b52a9c6d0b9f30cf82b9a6c5adc4b1de65315fd",
-  "last_verified_at": null,
+  "last_verified_at": "2026-09-20T12:32:33.446Z",
+  "last_verified_diffstat_sha256": "sha256:5faca3e24a39860db9335ecf7b52a9c6d0b9f30cf82b9a6c5adc4b1de65315fd",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202609201158-FA0PDY",
   "updated_at": "2026-09-20T12:04:09.667Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
