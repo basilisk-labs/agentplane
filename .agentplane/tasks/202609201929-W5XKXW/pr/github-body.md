@@ -22,7 +22,7 @@ In one PR: make task README stable reads tolerate only bounded transient replace
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-20T20:29:05.070Z
+- Updated: 2026-09-20T21:26:00.799Z
 - Branch: task/202609201929-W5XKXW/canonical-w5xkxw
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
