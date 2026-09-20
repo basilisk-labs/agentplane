@@ -24,7 +24,7 @@ Created: 2026-09-20T12:04:09.667Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-20T12:04:09.667Z
+- Updated: 2026-09-20T12:34:09.241Z
 - Branch: task/202609201158-FA0PDY/canonical-fa0pdy
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
