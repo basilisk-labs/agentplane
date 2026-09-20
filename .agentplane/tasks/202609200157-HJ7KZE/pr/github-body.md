@@ -28,12 +28,12 @@ Add a first-class Task Kernel transition for explicit replanning after an approv
 
 ```text
  .../src/commands/task/kernel-runtime-context.ts    |   9 +-
- .../src/commands/task/plan-reject.command.test.ts  | 105 ++++++++++++++++
- .../src/commands/task/plan-reject.command.ts       |  70 ++++++++++-
- .../src/tasks/task-kernel/kernel-replan.test.ts    | 137 +++++++++++++++++++++
- packages/core/src/tasks/task-kernel/kernel.ts      |  16 ++-
+ .../src/commands/task/plan-reject.command.test.ts  | 105 ++++++++++++++
+ .../src/commands/task/plan-reject.command.ts       |  70 +++++++++-
+ .../src/tasks/task-kernel/kernel-replan.test.ts    | 154 +++++++++++++++++++++
+ packages/core/src/tasks/task-kernel/kernel.ts      |  15 +-
  packages/core/src/tasks/task-kernel/model.ts       |   9 +-
- 6 files changed, 341 insertions(+), 5 deletions(-)
+ 6 files changed, 358 insertions(+), 4 deletions(-)
 ```
 
 </details>

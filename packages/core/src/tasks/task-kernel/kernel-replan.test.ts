@@ -133,5 +133,22 @@ describe("canonical blocked-plan replanning", () => {
       kind: "accepted",
       aggregate: { state: "AWAITING_PLAN_APPROVAL", current_plan: proposal },
     });
+
+    expect(
+      reduceTaskCommand({
+        ...input(state, command),
+        actor: {
+          id: "agentplane:kernel-controller",
+          kind: "SYSTEM",
+          transport: "managed",
+          capabilities: [],
+        },
+        authority: { ...planningAuthority, digest: kernelDigest("tampered-authority") },
+      }),
+    ).toMatchObject({
+      kind: "rejected",
+      code: "AUTHORITY_SCOPE_EXCEEDED",
+      facts: ["authority_digest"],
+    });
   });
 });
