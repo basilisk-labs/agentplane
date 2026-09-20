@@ -27,9 +27,9 @@ Implement only roadmap LC-01 on the published v0.7.10 baseline. Audit the live s
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- scripts/checks/lifecycle-owner-map.json     | 275 ++++++++++++++++++++++++++++
- scripts/checks/lifecycle-owner-map.test.mjs | 182 ++++++++++++++++++
- 2 files changed, 457 insertions(+)
+ scripts/checks/lifecycle-owner-map.json     | 330 ++++++++++++++++++++++++++++
+ scripts/checks/lifecycle-owner-map.test.mjs | 211 ++++++++++++++++++
+ 2 files changed, 541 insertions(+)
 ```
 
 </details>

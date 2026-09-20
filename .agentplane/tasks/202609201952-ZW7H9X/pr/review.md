@@ -29,9 +29,9 @@ Created: 2026-09-20T21:27:13.605Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- scripts/checks/lifecycle-owner-map.json     | 275 ++++++++++++++++++++++++++++
- scripts/checks/lifecycle-owner-map.test.mjs | 182 ++++++++++++++++++
- 2 files changed, 457 insertions(+)
+ scripts/checks/lifecycle-owner-map.json     | 330 ++++++++++++++++++++++++++++
+ scripts/checks/lifecycle-owner-map.test.mjs | 211 ++++++++++++++++++
+ 2 files changed, 541 insertions(+)
 ```
 
 </details>
