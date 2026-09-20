@@ -26,9 +26,17 @@ describe("task plan reject canonical routing", () => {
   it("rejects the canonical plan instead of mutating only the task-centric projection", async () => {
     const plan = { revision: 2, digest: k.kernelDigest("plan"), state: "APPROVED" };
     const apply = vi.fn().mockResolvedValue({ committed: true });
-    const input = vi
-      .fn()
-      .mockImplementation((payload: unknown) => Promise.resolve({ command: payload }));
+    const input = vi.fn().mockImplementation((payload: unknown) =>
+      Promise.resolve({
+        command: payload,
+        actor: { id: "agentplane:kernel-controller", kind: "SYSTEM", transport: "manual" },
+      }),
+    );
+    const readApproval = vi.fn().mockResolvedValue({
+      kind: "manual_operator",
+      actor_id: "USER",
+      invocation_id: `task-plan-reject:T-1:${k.kernelDigest("Revise verification scope")}`,
+    });
     mocks.createKernelRuntime.mockResolvedValue({
       observe: vi.fn().mockResolvedValue({ fingerprint: k.kernelDigest("repository") }),
       checkpoint: vi.fn().mockResolvedValue(undefined),
@@ -38,6 +46,7 @@ describe("task plan reject canonical routing", () => {
           record: { aggregate: { current_plan: plan } },
         }),
       },
+      native: { readApproval },
       input,
       lifecycle: { apply },
     });
@@ -64,6 +73,15 @@ describe("task plan reject canonical routing", () => {
     ).resolves.toBe(0);
 
     expect(mocks.legacyReject).not.toHaveBeenCalled();
+    const [runtimeOptions] = mocks.createKernelRuntime.mock.calls[0] as [
+      {
+        task_id: string;
+        transport: string;
+        approval: { kind: string; actor_id: string };
+      },
+    ];
+    expect(runtimeOptions).toMatchObject({ task_id: "T-1", transport: "manual" });
+    expect(runtimeOptions.approval).toMatchObject({ kind: "manual_operator", actor_id: "USER" });
     const [payload, mutationId] = input.mock.calls[0] as [
       {
         kind: string;
@@ -80,7 +98,8 @@ describe("task plan reject canonical routing", () => {
     });
     expect(payload.rejection_evidence_digest).toMatch(/^sha256:[0-9a-f]{64}$/u);
     expect(mutationId).toMatch(/^reject:sha256:[0-9a-f]{64}$/u);
-    expect(apply).toHaveBeenCalledOnce();
+    const [appliedInput] = apply.mock.calls[0] as [{ actor: { id: string; kind: string } }];
+    expect(appliedInput.actor).toEqual(expect.objectContaining({ id: "USER", kind: "USER" }));
     write.mockRestore();
   });
 });

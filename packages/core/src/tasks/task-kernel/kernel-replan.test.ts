@@ -31,6 +31,12 @@ describe("canonical blocked-plan replanning", () => {
     const result = reduceTaskCommand({
       ...input(state, rejection(state, true)),
       authority: validAuthority,
+      actor: {
+        id: "USER",
+        kind: "USER",
+        transport: "manual",
+        capabilities: [],
+      },
     });
 
     expect(result.kind).toBe("accepted");
@@ -55,6 +61,10 @@ describe("canonical blocked-plan replanning", () => {
       code: "ILLEGAL_TASK_TRANSITION",
     });
     expect(reduceTaskCommand(input(blocked, rejection(blocked, false)))).toMatchObject({
+      kind: "rejected",
+      code: "ILLEGAL_TASK_TRANSITION",
+    });
+    expect(reduceTaskCommand(input(blocked, rejection(blocked, true)))).toMatchObject({
       kind: "rejected",
       code: "ILLEGAL_TASK_TRANSITION",
     });

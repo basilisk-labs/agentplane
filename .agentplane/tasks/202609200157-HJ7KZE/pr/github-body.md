@@ -27,12 +27,12 @@ Add a first-class Task Kernel transition for explicit replanning after an approv
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/task/plan-reject.command.test.ts  | 86 ++++++++++++++++++++++
- .../src/commands/task/plan-reject.command.ts       | 48 +++++++++++-
- .../src/tasks/task-kernel/kernel-replan.test.ts    | 62 ++++++++++++++++
- packages/core/src/tasks/task-kernel/kernel.ts      |  8 +-
- packages/core/src/tasks/task-kernel/model.ts       |  9 ++-
- 5 files changed, 210 insertions(+), 3 deletions(-)
+ .../src/commands/task/plan-reject.command.test.ts  | 105 +++++++++++++++++++++
+ .../src/commands/task/plan-reject.command.ts       |  70 +++++++++++++-
+ .../src/tasks/task-kernel/kernel-replan.test.ts    |  72 ++++++++++++++
+ packages/core/src/tasks/task-kernel/kernel.ts      |  10 +-
+ packages/core/src/tasks/task-kernel/model.ts       |   9 +-
+ 5 files changed, 263 insertions(+), 3 deletions(-)
 ```
 
 </details>
