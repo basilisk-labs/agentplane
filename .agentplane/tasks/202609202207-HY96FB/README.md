@@ -1,10 +1,11 @@
 ---
 id: "202609202207-HY96FB"
 title: "Fix canonical verification projection metadata so Kernel final-validation records remain current through operational projection and pre-merge closure"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -43,6 +44,22 @@ quality_review:
     - "Existing passing verification metadata is returned unchanged by both initial projection and later status restoration."
     - "Pending or missing verification metadata still follows the pre-existing compatibility fallback, and downstream signed-record validation remains untouched."
     - "Focused tests cover the initial projection, restored status, changed final-validation evidence digest, fallback behavior, and idempotency."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: null
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "unavailable"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-09-20T22:25:28.531Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -248,9 +265,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "7aa178a018a150995f10d1ba7bf0173030a44251"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "5e06dc308b6b9a3c2cb895cbf44723cc95bed63d"
+  message: "✅ HY96FB task: persist canonical completion"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -258,9 +278,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-09-20T22:25:28.531Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "5e06dc308b6b9a3c2cb895cbf44723cc95bed63d"
 doc_version: 3
-doc_updated_at: "2026-09-20T22:23:08.072Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-20T22:25:28.531Z"
+doc_updated_by: "CODER"
 description: "The 0.7.10 Kernel final-validation writer records note 'Verified: canonical Task Kernel final checks passed.' but kernel-operational-projection overwrites task.verification.note with 'Canonical validation <digest>'. recordMetadataMatches then rejects the otherwise valid signed record as verification_metadata_changed, blocking PR closure. Preserve the exact verification metadata owned by the accepted record/projection, add regression coverage, and keep fail-closed verification identity checks intact."
 sections:
   Summary: |-
@@ -432,6 +460,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:5683461023f637acc9275e0533d2697b85942a1e03b1f234966015f8bb374235"
     work_order_id: "sha256:ba99195b9e3024091c6c5a820a4d14c3d6c271c7b038bef6d649c22892a3a64b"
+  implementation_commit:
+    hash: "7aa178a018a150995f10d1ba7bf0173030a44251"
+    message: "🚧 HY96FB task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "4470b04c34da735ffb46914ea6e6398a54eb39ac"
@@ -1046,3 +1077,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-09-20T22:25:28.531Z`
