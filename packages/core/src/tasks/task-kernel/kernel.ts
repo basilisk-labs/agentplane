@@ -196,7 +196,11 @@ function requiredAuthority(input: KernelInput, workItemId: string | null): Kerne
     return rejected("AUTHORITY_SCOPE_EXCEEDED", ["authority_expired_or_invalid_time"]);
   }
   const persisted = input.aggregate.authority_lineage?.at(-1)?.authority;
-  if (persisted && input.command.kind !== "approve_plan") {
+  const rejectedPlanReplanning =
+    input.command.kind === "propose_plan" &&
+    input.aggregate.state === "PLANNING" &&
+    input.aggregate.current_plan?.state === "REJECTED";
+  if (persisted && input.command.kind !== "approve_plan" && !rejectedPlanReplanning) {
     if (authority.digest !== authorityDigest(authority))
       return rejected("AUTHORITY_SCOPE_EXCEEDED", ["authority_digest"]);
     if (

@@ -29,12 +29,13 @@ Created: 2026-09-20T02:16:12.463Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/task/plan-reject.command.test.ts  | 105 +++++++++++++++++++++
- .../src/commands/task/plan-reject.command.ts       |  70 +++++++++++++-
- .../src/tasks/task-kernel/kernel-replan.test.ts    |  72 ++++++++++++++
- packages/core/src/tasks/task-kernel/kernel.ts      |  10 +-
+ .../src/commands/task/kernel-runtime-context.ts    |   9 +-
+ .../src/commands/task/plan-reject.command.test.ts  | 105 ++++++++++++++++
+ .../src/commands/task/plan-reject.command.ts       |  70 ++++++++++-
+ .../src/tasks/task-kernel/kernel-replan.test.ts    | 137 +++++++++++++++++++++
+ packages/core/src/tasks/task-kernel/kernel.ts      |  16 ++-
  packages/core/src/tasks/task-kernel/model.ts       |   9 +-
- 5 files changed, 263 insertions(+), 3 deletions(-)
+ 6 files changed, 341 insertions(+), 5 deletions(-)
 ```
 
 </details>
