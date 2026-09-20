@@ -177,7 +177,10 @@ describe("canonical repository coordinator", () => {
       branch: `task/${taskId}/canonical`,
       head: "base-sha",
       tree: "base-tree",
-      status: { command: "git status --short --untracked-files=all", lines: [] },
+      status: {
+        command: "git status --short --untracked-files=all",
+        lines: [" M src/change.ts"],
+      },
     };
     const intentContents = {
       schema_version: 1,
@@ -213,7 +216,7 @@ describe("canonical repository coordinator", () => {
             : args[0] === "rev-parse" && args[1] === "followup-sha^"
               ? "implementation-sha\n"
               : args[0] === "diff" && args[4] === "implementation-sha..implementation-sha"
-                ? `.agentplane/tasks/${taskId}/README.md\n`
+                ? ""
                 : args[0] === "diff" && args[4] === "implementation-sha..followup-sha"
                   ? "src/prior.ts\n"
                   : args[0] === "diff"
@@ -258,6 +261,67 @@ describe("canonical repository coordinator", () => {
           "implementation-sha..followup-sha",
         ],
       }),
+    );
+  });
+
+  it("adopts an exact writable baseline file after an approved scope expansion", async () => {
+    const baseline = {
+      schema_version: 1,
+      kind: "canonical_repository_baseline",
+      task_id: taskId,
+      work_item_id: "work-item",
+      task_revision: 4,
+      work_order_id: workOrderId,
+      checkout: "/repo",
+      branch: `task/${taskId}/canonical`,
+      head: "base-sha",
+      tree: "base-tree",
+      status: {
+        command: "git status --short --untracked-files=all",
+        lines: [" M bun.lock", " M src/unrelated.ts"],
+      },
+    };
+    mocks.readStable.mockImplementation((target: string) =>
+      target.endsWith("repository-baseline.json")
+        ? Promise.resolve(JSON.stringify(baseline))
+        : Promise.reject(Object.assign(new Error("missing"), { code: "ENOENT" })),
+    );
+    mocks.readHead.mockResolvedValueOnce("base-sha").mockResolvedValueOnce("implementation-sha");
+    mocks.readStatus
+      .mockResolvedValueOnce({
+        command: "git status --short --untracked-files=all",
+        lines: [" M bun.lock", " M src/change.ts", " M src/unrelated.ts"],
+      })
+      .mockResolvedValue({
+        command: "git status --short --untracked-files=all",
+        lines: [" M src/unrelated.ts"],
+      });
+    mocks.cmdCommit.mockResolvedValue(0);
+    mocks.prepareEvidence.mockResolvedValue({
+      status: "ready",
+      evidence: {
+        artifact_path: `.agentplane/tasks/${taskId}/supervision/implementation-evidence.json`,
+        implementation_commit: "implementation-sha",
+        changed_paths: ["bun.lock", "src/change.ts"],
+      },
+    });
+
+    await commitCanonicalImplementation({
+      command,
+      directory: "/exchange",
+      work_order: {
+        task: { id: taskId, work_item_id: "work-item", revision: 4 },
+        work_order_id: workOrderId,
+        authority: { writable_roots: ["/repo/bun.lock", "/repo/src"] },
+      } as never,
+      changed_paths: ["src/change.ts"],
+    });
+
+    expect(mocks.cmdCommit).toHaveBeenCalledWith(
+      expect.objectContaining({ allow: ["bun.lock", "src/change.ts"] }),
+    );
+    expect(mocks.cmdCommit).not.toHaveBeenCalledWith(
+      expect.objectContaining({ allow: expect.arrayContaining(["src/unrelated.ts"]) }),
     );
   });
 

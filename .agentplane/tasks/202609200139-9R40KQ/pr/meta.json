@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202609200139-9R40KQ/canonical-9r40kq",
+  "created_at": "2026-09-20T05:44:50.837Z",
+  "diffstat_sha256": "sha256:99f87416c07283d38aff75189b41a1f041703bf434389e2a3f9e9be005813688",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202609200139-9R40KQ",
+  "updated_at": "2026-09-20T05:44:50.837Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

@@ -354,7 +354,7 @@ export async function commitCanonicalImplementation(opts: {
   );
   const currentLines = new Set(nonTaskStatusLines(opts.command, baseline.task_id, status));
   const lostBaseline = [...baselineLines].filter((line) => !currentLines.has(line));
-  if (lostBaseline.length > 0) {
+  if (head === baseline.head && lostBaseline.length > 0) {
     throw new Error("Canonical implementation changed its dirty baseline");
   }
   const introduced = [...currentLines]
@@ -362,7 +362,15 @@ export async function commitCanonicalImplementation(opts: {
     .map((line) => pathFromStatusLine(line))
     .filter(Boolean)
     .toSorted();
-  const authorized = new Set(opts.changed_paths);
+  const authority = opts.work_order.authority;
+  const roots = authority.writable_roots.map((root) =>
+    path.relative(baseline.checkout, root).replaceAll(path.sep, "/"),
+  );
+  const exactRoots = new Set(roots.filter(Boolean));
+  const approvedBaseline = [...baselineLines]
+    .map((line) => pathFromStatusLine(line))
+    .filter((candidate): candidate is string => candidate !== null && exactRoots.has(candidate));
+  const authorized = new Set([...opts.changed_paths, ...approvedBaseline]);
   const adoptedBaseline = [...baselineLines]
     .map((line) => pathFromStatusLine(line))
     .filter((candidate): candidate is string => candidate !== null && authorized.has(candidate));
@@ -385,18 +393,16 @@ export async function commitCanonicalImplementation(opts: {
   if (
     head === baseline.head &&
     persistedPaths &&
-    (expected.length !== persistedPaths.length ||
-      expected.some((candidate, index) => candidate !== persistedPaths[index]))
+    (persistedPaths.some((candidate) => !expected.includes(candidate)) ||
+      expected.some(
+        (candidate) => !persistedPaths.includes(candidate) && !approvedBaseline.includes(candidate),
+      ))
   ) {
     throw new Error(
       `Canonical repository delta differs from its observation: ${expected.join(", ")}.`,
     );
   }
   if (head === baseline.head && expected.length === 0) return null;
-  const authority = opts.work_order.authority;
-  const roots = authority.writable_roots.map((root) =>
-    path.relative(baseline.checkout, root).replaceAll(path.sep, "/"),
-  );
   const outsideScope = [...authorized].filter(
     (candidate) =>
       !roots.some((root) => root === "" || candidate === root || candidate.startsWith(`${root}/`)),
@@ -449,6 +455,7 @@ export async function commitCanonicalImplementation(opts: {
       opts.command,
       ["diff", "--no-renames", "--name-only", "--diff-filter=ACDMRTUXB", `${base}..${commit}`],
       "implementation paths",
+      true,
     );
     return committed
       .split("\n")
