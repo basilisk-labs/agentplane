@@ -36,9 +36,11 @@ In one PR: make task README stable reads tolerate only bounded transient replace
  .../src/runner/usecases/kernel-task-lifecycle.ts   |  19 +++-
  packages/agentplane/src/shared/runtime-env.test.ts |  30 ++++--
  packages/agentplane/src/shared/runtime-env.ts      |   5 +
+ .../src/tasks/task-kernel/authority-delta.test.ts  |  94 ++++++++++++++++++-
+ .../src/tasks/task-kernel/authority-lineage.ts     |   8 +-
  scripts/checks/run-pre-push-hook.mjs               |   2 +-
  scripts/release/check-published-packages.mjs       |  23 ++++-
- 11 files changed, 327 insertions(+), 67 deletions(-)
+ 13 files changed, 427 insertions(+), 69 deletions(-)
 ```
 
 </details>
