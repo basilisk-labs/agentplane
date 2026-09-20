@@ -15,8 +15,8 @@ Implement only roadmap LC-01 on the published v0.7.10 baseline. Audit the live s
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
