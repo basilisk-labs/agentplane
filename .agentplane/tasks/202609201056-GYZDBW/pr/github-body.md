@@ -22,7 +22,7 @@ Apply the canonical hosted-close guard and place its regression scenario in a de
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-20T11:09:20.160Z
+- Updated: 2026-09-20T11:23:36.072Z
 - Branch: task/202609201056-GYZDBW/canonical-gyzdbw
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
