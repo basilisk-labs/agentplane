@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -32,18 +32,32 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  provenance: "evaluator_supplied"
-  updated_at: "2026-09-20T22:13:42.462Z"
-  updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "7aa178a018a150995f10d1ba7bf0173030a44251"
-  review_identity_digest: "sha256:27be8a44ffd25615b824dbae471437dc44d77101faedd98fde14f7b13df0f4c7"
+  provenance: "human_supplied"
+  updated_at: "2026-09-20T23:08:39.644Z"
+  updated_by: "HUMAN"
+  note: "The exact PR diff preserves accepted verification metadata in both projection paths, keeps fallback behavior for missing or non-ok state, and adds focused regression coverage. No semantic rework is required."
+  evaluated_sha: "a945357dcc9453c25521e439396afc2a5c4a99eb"
+  review_identity_digest: "sha256:e9755ab0b2445d0555b698dd7982155996a6e23355968878a4259a94d1fec016"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202609202207-HY96FB/44fe82b365f2ae1dde3123c97e403fcee51b481d9342e41b2ebcd24e95585e35/quality-report.json"
+    - ".agentplane/tasks/202609202207-HY96FB/quality/20260920-230839368-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609202207-HY96FB/quality/20260920-230839368-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609202207-HY96FB/quality/objects/sha256/96a7d0c00121553a0e96be92db4910af966445dc1cf7f4081addbd9f024f4f3a.md"
+    - ".agentplane/tasks/202609202207-HY96FB/quality/20260920-230839368-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609202207-HY96FB/quality/20260920-230839368-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609202207-HY96FB/README.md"
+    - ".agentplane/tasks/202609202207-HY96FB/quality/objects/sha256/3396eebf8c760c6fd194aff1ad249a366bc90c9f95283bfa490000b38303c74d.patch"
+    - ".agentplane/tasks/202609202207-HY96FB/quality/objects/sha256/9753f8ba024f204a02620931983936ff0168809886140d52fc5c603571cd3298.json"
+    - ".agentplane/tasks/202609202207-HY96FB/verification/20260920230807061-fc6e320d2d7d162e.json"
+    - ".agentplane/tasks/202609202207-HY96FB/quality/objects/sha256/c4f7c496d3568b0a0fda3524bd0fcebe5e05f015d0d7573c109e01c0f7df546f.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+    - "git diff origin/main...HEAD -- packages/agentplane/src/commands/task/kernel-operational-projection.ts packages/agentplane/src/commands/task/kernel-operational-projection.test.ts"
+    - "GitHub Actions Core CI run 35542624801 completed successfully for exact head a945357dcc9453c25521e439396afc2a5c4a99eb"
+    - "Canonical full local CI rerun completed successfully after accepting the current main repository fingerprint."
   findings:
-    - "Existing passing verification metadata is returned unchanged by both initial projection and later status restoration."
-    - "Pending or missing verification metadata still follows the pre-existing compatibility fallback, and downstream signed-record validation remains untouched."
-    - "Focused tests cover the initial projection, restored status, changed final-validation evidence digest, fallback behavior, and idempotency."
+    - "Both projection functions now share one state-sensitive helper: accepted state=ok metadata is preserved verbatim, while absent or non-ok metadata receives the existing canonical fallback."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -337,7 +351,7 @@ events:
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
 doc_version: 3
-doc_updated_at: "2026-09-20T23:08:08.081Z"
+doc_updated_at: "2026-09-20T23:08:39.653Z"
 doc_updated_by: "CODER"
 description: "The 0.7.10 Kernel final-validation writer records note 'Verified: canonical Task Kernel final checks passed.' but kernel-operational-projection overwrites task.verification.note with 'Canonical validation <digest>'. recordMetadataMatches then rejects the otherwise valid signed record as verification_metadata_changed, blocking PR closure. Preserve the exact verification metadata owned by the accepted record/projection, add regression coverage, and keep fail-closed verification identity checks intact."
 sections:
