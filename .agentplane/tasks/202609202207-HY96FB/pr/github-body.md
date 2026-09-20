@@ -22,7 +22,7 @@ The 0.7.10 Kernel final-validation writer records note 'Verified: canonical Task
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-20T22:12:33.845Z
+- Updated: 2026-09-20T22:23:58.894Z
 - Branch: task/202609202207-HY96FB/canonical-hy96fb
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
