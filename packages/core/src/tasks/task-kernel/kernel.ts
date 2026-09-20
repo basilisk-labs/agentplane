@@ -200,10 +200,11 @@ function requiredAuthority(input: KernelInput, workItemId: string | null): Kerne
     input.command.kind === "propose_plan" &&
     input.aggregate.state === "PLANNING" &&
     input.aggregate.current_plan?.state === "REJECTED";
-  if (persisted && input.command.kind !== "approve_plan" && !rejectedPlanReplanning) {
+  if (persisted && input.command.kind !== "approve_plan") {
     if (authority.digest !== authorityDigest(authority))
       return rejected("AUTHORITY_SCOPE_EXCEEDED", ["authority_digest"]);
     if (
+      !rejectedPlanReplanning &&
       kernelDigest(authority) !== kernelDigest(persisted) &&
       !compareExecutionAuthority(persisted, authority).ok
     )
