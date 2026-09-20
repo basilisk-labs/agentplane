@@ -6,14 +6,14 @@ Created: 2026-09-20T22:12:33.845Z
 
 - Task: `202609202207-HY96FB`
 - Title: Fix canonical verification projection metadata so Kernel final-validation records remain current through operational ...
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609202207-HY96FB/canonical-hy96fb`
 - Canonical task record: `.agentplane/tasks/202609202207-HY96FB/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
