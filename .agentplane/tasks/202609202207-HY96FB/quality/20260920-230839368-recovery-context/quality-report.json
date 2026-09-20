@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202609202207-HY96FB",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-20T23:08:39.644Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "The exact PR diff preserves accepted verification metadata in both projection paths, keeps fallback behavior for missing or non-ok state, and adds focused regression coverage. No semantic rework is required.",
+  "evaluated_sha": "a945357dcc9453c25521e439396afc2a5c4a99eb",
+  "review_identity_digest": "sha256:e9755ab0b2445d0555b698dd7982155996a6e23355968878a4259a94d1fec016",
+  "findings": [
+    "Both projection functions now share one state-sensitive helper: accepted state=ok metadata is preserved verbatim, while absent or non-ok metadata receives the existing canonical fallback."
+  ],
+  "evidence_refs": [
+    "git diff origin/main...HEAD -- packages/agentplane/src/commands/task/kernel-operational-projection.ts packages/agentplane/src/commands/task/kernel-operational-projection.test.ts",
+    "GitHub Actions Core CI run 35542624801 completed successfully for exact head a945357dcc9453c25521e439396afc2a5c4a99eb",
+    "Canonical full local CI rerun completed successfully after accepting the current main repository fingerprint."
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "The helper intentionally preserves any state=ok verification object verbatim; callers remain responsible for validating that record before projection."
+  ]
+}

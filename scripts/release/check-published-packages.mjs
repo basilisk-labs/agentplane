@@ -4,8 +4,27 @@ import { spawn } from "node:child_process";
 import { defineCheck, runScriptMain } from "../lib/script-runtime.mjs";
 
 const ROOT = process.cwd();
-const MAX_ATTEMPTS = Number.parseInt(process.env.AGENTPLANE_PUBLISH_SMOKE_ATTEMPTS ?? "8", 10);
-const DELAY_MS = Number.parseInt(process.env.AGENTPLANE_PUBLISH_SMOKE_DELAY_MS ?? "5000", 10);
+
+function boundedInteger(name, fallback, { min, max }) {
+  const raw = process.env[name] ?? String(fallback);
+  if (!/^\d+$/u.test(raw)) throw new Error(`${name} must be an integer between ${min} and ${max}`);
+  const value = Number.parseInt(raw, 10);
+  if (!Number.isSafeInteger(value) || value < min || value > max) {
+    throw new Error(`${name} must be an integer between ${min} and ${max}`);
+  }
+  return value;
+}
+
+// npm can acknowledge a publish while the tarball is still being processed. Allow up to two
+// minutes by default while retaining explicit, bounded controls for tests and recovery runs.
+const MAX_ATTEMPTS = boundedInteger("AGENTPLANE_PUBLISH_SMOKE_ATTEMPTS", 24, {
+  min: 1,
+  max: 120,
+});
+const DELAY_MS = boundedInteger("AGENTPLANE_PUBLISH_SMOKE_DELAY_MS", 5000, {
+  min: 0,
+  max: 60_000,
+});
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));

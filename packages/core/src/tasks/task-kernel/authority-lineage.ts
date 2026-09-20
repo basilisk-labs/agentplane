@@ -151,10 +151,16 @@ export function canonicalAuthorityIssues(aggregate: TaskAggregate): string[] {
       authority.provenance.evidence_digest === parent?.provenance.evidence_digest &&
       JSON.stringify(record.observation?.added_scope_roots ?? []) ===
         JSON.stringify(approvedExpansionRoots);
+    const continuedApprovedPlanAuthority =
+      record.approval_mode === null &&
+      parent?.plan_revision === authority.plan_revision &&
+      parent.plan_digest === authority.plan_digest &&
+      parent.provenance.evidence_digest === authority.provenance.evidence_digest;
     if (
       record.observation?.kind !== "authority_delta" &&
       plan?.approval_evidence_digest !== authority.provenance.evidence_digest &&
-      !approvedPlanAmendment
+      !approvedPlanAmendment &&
+      !continuedApprovedPlanAuthority
     )
       issues.push("authority_plan");
     if (record.observation?.kind === "authority_delta") {
