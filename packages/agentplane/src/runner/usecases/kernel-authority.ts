@@ -299,11 +299,9 @@ export class KernelAuthorityResolver {
 
   private assertLineageCeiling(aggregate: k.TaskAggregate, context: NativeAuthorityContext) {
     const records = aggregate.authority_lineage ?? [];
-    const first = records[0]?.authority;
     const latest = records.at(-1)?.authority;
-    if (!first || !latest || k.canonicalAuthorityIssues(aggregate).length > 0)
+    if (!latest || k.canonicalAuthorityIssues(aggregate).length > 0)
       invalid("canonical_authority_lineage_invalid");
-    this.assertCeiling(first, context);
     this.assertCeiling(latest, {
       ...context,
       ceiling: {

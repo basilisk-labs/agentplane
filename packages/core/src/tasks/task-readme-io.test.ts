@@ -41,6 +41,7 @@ async function currentProcessDomainId(): Promise<string | null> {
 async function crashedLockRecord(
   generation: string,
   ownerProcessDomainId?: string | null,
+  ownerCommand = "missing",
 ): Promise<string> {
   const resolvedProcessDomainId =
     ownerProcessDomainId === undefined ? await currentProcessDomainId() : ownerProcessDomainId;
@@ -50,7 +51,7 @@ async function crashedLockRecord(
     process_instance_id: "crashed-owner",
     owner_process_domain_id: resolvedProcessDomainId,
     owner_pid: 2_147_483_647,
-    owner_command: "missing",
+    owner_command: ownerCommand,
     owner_started_at: "2026-01-01T00:00:00.000Z",
     acquired_at: "2026-01-01T00:00:00.000Z",
   })}\n`;
@@ -118,6 +119,58 @@ describe("updateTaskReadmeAtomic", () => {
       await expect(readFile(lockPath, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
       const entries = await readdir(root);
       expect(entries.filter((name) => name.includes(".recovery"))).toEqual([]);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it("recovers a large lock record produced by a long owner command", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-core-lock-"));
+    const taskDir = path.join(root, "202601010101-ABCDE");
+    const readmePath = path.join(taskDir, "README.md");
+    const lockPath = path.join(root, ".202601010101-ABCDE.README.md.lock");
+    await writeFile(
+      lockPath,
+      await crashedLockRecord(
+        "crashed-long-command",
+        undefined,
+        `agentplane ${"x".repeat(32 * 1024)}`,
+      ),
+      "utf8",
+    );
+
+    try {
+      let called = false;
+      await withTaskReadmeTransaction(
+        readmePath,
+        () => {
+          called = true;
+        },
+        { timeoutMs: 20, retryMs: 1 },
+      );
+      expect(called).toBe(true);
+      await expect(readFile(lockPath, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it("retains a lock record above the bounded read limit fail-closed", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-core-lock-"));
+    const readmePath = path.join(root, "202601010101-ABCDE", "README.md");
+    const lockPath = path.join(root, ".202601010101-ABCDE.README.md.lock");
+    const lockRecord = await crashedLockRecord(
+      "oversized-command",
+      undefined,
+      `agentplane ${"x".repeat(1024 * 1024)}`,
+    );
+    await writeFile(lockPath, lockRecord, "utf8");
+
+    try {
+      await expect(
+        withTaskReadmeTransaction(readmePath, () => null, { timeoutMs: 20, retryMs: 1 }),
+      ).rejects.toThrow(/owner_status=unverified; unverifiable locks are retained fail-closed/u);
+      expect(await readFile(lockPath, "utf8")).toBe(lockRecord);
     } finally {
       await rm(root, { recursive: true, force: true });
     }

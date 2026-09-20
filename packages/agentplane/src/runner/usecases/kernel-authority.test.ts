@@ -9,6 +9,10 @@ import {
 } from "../../adapters/authority/user-approval-receipt.js";
 import { KernelBackendAdapter } from "../../adapters/task-backend/kernel-backend-adapter.js";
 import {
+  makeKernelRecord,
+  TASK_KERNEL_EXTENSION,
+} from "../../adapters/task-backend/kernel-record.js";
+import {
   kernelReplayJourney,
   replayRepositoryIdentity,
 } from "../../adapters/task-backend/kernel-replay-journey.test-fixtures.js";
@@ -188,6 +192,23 @@ async function fixture(
     },
     setObservation: (next: k.AuthorityObservation) => {
       observation = next;
+    },
+    replaceAggregate: (aggregate: k.TaskAggregate) => {
+      if (!saved) throw new Error("task fixture missing");
+      const current = saved.extensions?.[TASK_KERNEL_EXTENSION];
+      if (!current || typeof current !== "object") throw new Error("kernel record missing");
+      const record = current as { events?: readonly k.DomainEvent[] };
+      saved = {
+        ...saved,
+        extensions: {
+          ...saved.extensions,
+          [TASK_KERNEL_EXTENSION]: makeKernelRecord(
+            replayRepositoryIdentity,
+            aggregate,
+            record.events ?? [],
+          ),
+        },
+      };
     },
   };
 }
@@ -466,6 +487,32 @@ describe("canonical native authority", () => {
     await expect(f.resolver.resolve(f.taskId)).rejects.toThrow("native_policy_changed");
     f.values.occurred_at = "2026-08-31T10:11:00.000Z";
     await expect(f.resolver.resolve(f.taskId)).rejects.toThrow("authority_expired");
+  });
+
+  it("validates the latest approved authority against the current native ceiling", async () => {
+    const f = await fixture();
+    await f.resolver.approve(f.taskId);
+    const read = await f.adapter.read(f.taskId);
+    if (read.kind !== "canonical") throw new Error(read.kind);
+    const first = read.record.aggregate.authority_lineage?.[0]?.authority;
+    if (!first) throw new Error("approved authority missing");
+    const policyDigests = [k.kernelDigest("replacement-policy")];
+    const latestContents = { ...first, policy_digests: policyDigests };
+    const latest = { ...latestContents, digest: k.authorityDigest(latestContents) };
+    const aggregate: k.TaskAggregate = {
+      ...read.record.aggregate,
+      authority_lineage: [
+        ...(read.record.aggregate.authority_lineage ?? []),
+        { authority: latest, approval_mode: "manual_operator", observation: null },
+      ],
+    };
+    expect(k.canonicalAuthorityIssues(aggregate)).toEqual([]);
+    f.replaceAggregate(aggregate);
+    f.values.ceiling = { ...f.values.ceiling, policy_digests: policyDigests };
+
+    await expect(f.resolver.resolve(f.taskId)).resolves.toMatchObject({
+      authority: { digest: latest.digest, policy_digests: policyDigests },
+    });
   });
 
   it("binds an unsigned host decision to the native channel instead of trusting its JSON identity", async () => {
