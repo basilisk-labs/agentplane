@@ -1,10 +1,11 @@
 ---
 id: "202609201056-GYZDBW"
 title: "Isolate canonical hosted-close regression"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -47,6 +48,22 @@ quality_review:
     - "Pass: classifyKernelCutover identifies canonical records by the existing task_kernel extension and the command returns before task, PR metadata, evidence, incident or Git mutation."
     - "Pass: the integration scenario proves success, unchanged merge HEAD, unchanged canonical task bytes and a clean repository."
     - "Pass: legacy hosted-close coverage remains unchanged, focused tests pass, and docs-schema reports the same 10 oversized-test baseline entries."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: null
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "unavailable"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-09-20T11:38:07.717Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -259,9 +276,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "9bbc4ad63d66a49bae93543efbb9b39b5a77a5e9"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "48bff69ea11589d1497a901a1e4b2db92a74cf7c"
+  message: "✅ GYZDBW task: persist canonical completion"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -269,9 +289,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-09-20T11:38:07.717Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "48bff69ea11589d1497a901a1e4b2db92a74cf7c"
 doc_version: 3
-doc_updated_at: "2026-09-20T11:21:15.661Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-20T11:38:07.717Z"
+doc_updated_by: "CODER"
 description: "Apply the canonical hosted-close guard and place its regression scenario in a dedicated CLI test file so the existing hosted-close suite stays within the oversized-test baseline. Supersedes blocked tasks 202609201011-DNQ0JJ and 202609201040-33NC6D without weakening any gate."
 sections:
   Summary: |-
@@ -443,6 +471,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:54c9004ff04ae66e6a0bf7bec63e996e1aa8aa2b3e892614565182eaf09493b7"
     work_order_id: "sha256:c9aeca341091885bb26c79cd89309f2808d1ec378c8fd16364dde088a5723ce7"
+  implementation_commit:
+    hash: "9bbc4ad63d66a49bae93543efbb9b39b5a77a5e9"
+    message: "🚧 GYZDBW task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "c9265ac7041aba0df47b89c7bc81c111d4a5c70d"
@@ -1052,3 +1083,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-09-20T11:38:07.717Z`
