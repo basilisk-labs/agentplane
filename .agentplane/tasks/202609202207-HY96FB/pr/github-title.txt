@@ -1,1 +1,1 @@
-✅ HY96FB task: Fix canonical verification projection metadata so Kernel final-validation records remain curr... [202609202207-HY96FB]
+🚧 HY96FB task: Fix canonical verification projection metadata so Kernel final-validation records remain curr... [202609202207-HY96FB]
