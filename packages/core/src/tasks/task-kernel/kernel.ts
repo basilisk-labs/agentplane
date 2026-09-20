@@ -752,6 +752,8 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
         aggregate.current_plan.state === "APPROVED" &&
         aggregate.state === "ACTIVE" &&
         Object.values(aggregate.work_items).some((item) => item.state === "BLOCKED") &&
+        input.actor.kind === "USER" &&
+        input.actor.transport === "manual" &&
         command.rejection_evidence_digest !== undefined &&
         isSha256Digest(command.rejection_evidence_digest);
       if (aggregate.current_plan.state !== "PROPOSED" && !approvedBlockedReplan) {

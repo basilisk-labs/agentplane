@@ -65,11 +65,23 @@ export function makeRunTaskPlanRejectHandler(getCtx: (cmd: string) => Promise<Co
     const command = await getCtx("task plan reject");
     const source = await command.taskBackend.getTask(p.taskId);
     if (source?.extensions && Object.hasOwn(source.extensions, TASK_KERNEL_EXTENSION)) {
+      if (!/^USER(?::[A-Za-z0-9._@-]+)?$/u.test(p.by)) {
+        throw usageError({
+          spec: taskPlanRejectSpec,
+          message: "Canonical approved-plan rejection requires --by USER.",
+        });
+      }
+      const invocationId = `task-plan-reject:${p.taskId}:${k.kernelDigest(p.note)}`;
       const runtime = await createKernelRuntime({
         command,
         task_id: p.taskId,
         transport: "manual",
         operation_id: `reject:${k.kernelDigest({ by: p.by, note: p.note })}`,
+        approval: {
+          kind: "manual_operator",
+          actor_id: p.by,
+          invocation_id: invocationId,
+        },
       });
       await runtime.checkpoint(await runtime.observe());
       const read = await runtime.adapter.read(p.taskId);
@@ -83,18 +95,28 @@ export function makeRunTaskPlanRejectHandler(getCtx: (cmd: string) => Promise<Co
         actor: p.by,
         note: p.note,
       });
+      const approval = await runtime.native.readApproval(p.taskId);
+      if (
+        approval?.kind !== "manual_operator" ||
+        approval.actor_id !== p.by ||
+        approval.invocation_id !== invocationId
+      ) {
+        throw new Error("Canonical plan rejection requires exact manual USER approval");
+      }
+      const rejectionInput = await runtime.input(
+        {
+          kind: "reject_plan",
+          plan_revision: plan.revision,
+          plan_digest: plan.digest,
+          rejection_evidence_digest: rejectionEvidence,
+        },
+        `reject:${rejectionEvidence}`,
+      );
       const result = requireKernelCommit(
-        await runtime.lifecycle.apply(
-          await runtime.input(
-            {
-              kind: "reject_plan",
-              plan_revision: plan.revision,
-              plan_digest: plan.digest,
-              rejection_evidence_digest: rejectionEvidence,
-            },
-            `reject:${rejectionEvidence}`,
-          ),
-        ),
+        await runtime.lifecycle.apply({
+          ...rejectionInput,
+          actor: { ...rejectionInput.actor, id: approval.actor_id, kind: "USER" },
+        }),
       );
       createCliEmitter().json({
         task_id: p.taskId,
