@@ -16,7 +16,7 @@ Implement only roadmap LC-01 on the published v0.7.10 baseline. Audit the live s
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:e696edae36404af5f8b2d31db93b20c38d644d88a2b2534f3b7b1e979c83f4cc
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
