@@ -1,0 +1,22 @@
+{
+  "base": "main",
+  "branch": "task/202609200336-EJTVES/canonical-ejtves",
+  "created_at": "2026-09-20T03:50:14.188Z",
+  "diffstat_sha256": "sha256:cba9c5e0de53bda5a54f63976d5ff2ebd4ba5434e0da876ed70985183282ef29",
+  "last_verified_at": "2026-09-20T04:06:42.240Z",
+  "last_verified_diffstat_sha256": "sha256:cba9c5e0de53bda5a54f63976d5ff2ebd4ba5434e0da876ed70985183282ef29",
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202609200336-EJTVES",
+  "updated_at": "2026-09-20T03:50:14.188Z",
+  "verify": {
+    "status": "pass"
+  }
+}
