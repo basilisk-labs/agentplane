@@ -1,0 +1,114 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609201952-ZW7H9X-8bd10f48a243d0a3a2b56173",
+  "prepared_at": "2026-09-20T22:01:49.756Z",
+  "task": {
+    "id": "202609201952-ZW7H9X",
+    "revision": 23,
+    "objective": "LC-01: establish Task Kernel as the sole domain reducer with one application coordinator boundary\n\nImplement only roadmap LC-01 on the published v0.7.10 baseline. Audit the live source first. Record a symbol-level ownership map for state mutation, scheduling, admission, completion, and effects. Preserve all hosted, recovery, context, authority, and effect guarantees. Do not retain or add a competing reducer, kernel-specific outer loop, or third coordinator. Acceptance: each frozen case has one Kernel command/event path, one canonical writer, and one effect owner; every production entrypoint and retained pure helper is mapped; any missing guarantee is reported as a concrete blocker.",
+    "acceptance_criteria": [
+      "node --test scripts/checks/lifecycle-owner-map.test.mjs",
+      "- In scope: Implement only roadmap LC-01 on the published v0.7.10 baseline. Audit the live source first. Record a symbol-level ownership map for state mutation, scheduling, admission, completion, and effects. Preserve all hosted, recovery, context, authority, and effect guarantees. Do not retain or add a competing reducer, kernel-specific outer loop, or third coordinator. Acceptance: each frozen case has one Kernel command/event path, one canonical writer, and one effect owner; every production entrypoint and retained pure helper is mapped; any missing guarantee is reported as a concrete blocker.\n- Out of scope: unrelated refactors not required for \"LC-01: establish Task Kernel as the sole domain reducer with one application coordinator boundary\".",
+      "PLANNER semantic plan required. Replace this placeholder with a task-specific implementation plan before approval.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `node --test scripts/checks/lifecycle-owner-map.test.mjs`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n3. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "42024102a9915e00bb1e15d4d692258d715a4624",
+  "diff_base_sha": "4470b04c34da735ffb46914ea6e6398a54eb39ac",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609201952-ZW7H9X/quality/20260920-220149756-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:369daf0c30d6da8c08f6ec9529ecefd2dd0f303d1de81dd543a38df54be3d73d",
+    "prompt_path": ".agentplane/tasks/202609201952-ZW7H9X/quality/objects/sha256/4db64b357e1754a05882d1eba37081880c0d4d9180eeb6eef5f7117d288220b8.md",
+    "result_schema_path": ".agentplane/tasks/202609201952-ZW7H9X/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202609201952-ZW7H9X",
+    "plan_digest": "sha256:7dd44f856aab1f0b0a792f3d48a9792d2eabb65752ea3b64a30400de1e683e0a",
+    "policy_digest": "sha256:9b668d089af056af9741759543ed685caaa27c913a3aa16d382cfde5faf1adc7",
+    "capability_digest": "sha256:c7773401c9187b30d35df078ee87d7ccbc0bacb24096a0983e571daa25cb3928",
+    "checks_digest": "sha256:bd4b654fb4027cc5711b59122140c2bdb2e48b294987bd2ac58b5d742003de0f",
+    "verification_input_digest": "sha256:32b6132157c6173fdb27347995b4c51e1a7eb3403a6d30d227b29f324267b04b",
+    "acceptance_digest": "sha256:34c15464e291d251173fb52a29c6558cf7772fda592c22057360fb0560bbee0f",
+    "implementation_sha": "42024102a9915e00bb1e15d4d692258d715a4624",
+    "digest": "sha256:0a009193b9766a473fcb6fe827e69452dd3f63546dbd9a2fe3283514ecd4faaf"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609201952-ZW7H9X/README.md",
+      "sha256": "sha256:448f2afb841c9898ea5c0812244584956c7447a1e121fbd8772a43f66036c41f",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609201952-ZW7H9X/quality/objects/sha256/9d8182b4bd71fc5bbd9b212bb9fec8fd379a093aa683c917d5939bb20083f359.patch",
+      "sha256": "sha256:9d8182b4bd71fc5bbd9b212bb9fec8fd379a093aa683c917d5939bb20083f359",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609201952-ZW7H9X/quality/objects/sha256/03b51040381a4b12fba40bcb8e7a500bd8b85c55037caee2d80134d708a5ab5a.json",
+      "sha256": "sha256:03b51040381a4b12fba40bcb8e7a500bd8b85c55037caee2d80134d708a5ab5a",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202609201952-ZW7H9X/quality/objects/sha256/d691265a1121b2a4171db306cd5a8c7e41f13acc1244b92927d7ca552ae72287.json",
+      "sha256": "sha256:d691265a1121b2a4171db306cd5a8c7e41f13acc1244b92927d7ca552ae72287",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

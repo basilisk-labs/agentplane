@@ -4,7 +4,7 @@ title: "LC-01: establish Task Kernel as the sole domain reducer with one applica
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -34,17 +34,28 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-20T21:33:57.564Z"
+  updated_at: "2026-09-20T22:01:50.072Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "231cde552ec4ded27ecc2cf48284291546f8a58f"
-  review_identity_digest: "sha256:ad17efe685af2871852051eb4fa4769a63545a89a3e6367c5673b2133692c4ef"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "42024102a9915e00bb1e15d4d692258d715a4624"
+  review_identity_digest: "sha256:0a009193b9766a473fcb6fe827e69452dd3f63546dbd9a2fe3283514ecd4faaf"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202609201952-ZW7H9X/2a517d92759b44c723382bb83627d1511f9760d228564c41820210f97167f2dc/quality-report.json"
+    - ".agentplane/tasks/202609201952-ZW7H9X/quality/20260920-220149756-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609201952-ZW7H9X/quality/20260920-220149756-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609201952-ZW7H9X/quality/objects/sha256/4db64b357e1754a05882d1eba37081880c0d4d9180eeb6eef5f7117d288220b8.md"
+    - ".agentplane/tasks/202609201952-ZW7H9X/quality/20260920-220149756-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609201952-ZW7H9X/quality/20260920-220149756-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609201952-ZW7H9X/quality/20260920-220149756-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609201952-ZW7H9X/README.md"
+    - ".agentplane/tasks/202609201952-ZW7H9X/quality/objects/sha256/9d8182b4bd71fc5bbd9b212bb9fec8fd379a093aa683c917d5939bb20083f359.patch"
+    - ".agentplane/tasks/202609201952-ZW7H9X/quality/objects/sha256/03b51040381a4b12fba40bcb8e7a500bd8b85c55037caee2d80134d708a5ab5a.json"
+    - ".agentplane/tasks/202609201952-ZW7H9X/quality/objects/sha256/d691265a1121b2a4171db306cd5a8c7e41f13acc1244b92927d7ca552ae72287.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The production inventory now traverses every declared lifecycle root, maps all discovered reducer, writer, scheduler, coordinator, and outer-loop candidates, and fails closed on an unmapped candidate in a new file."
-    - "Current parallel owners are explicitly separated from the target application coordinator, so the map does not claim runtime convergence before later deletion work."
-    - "All requested lifecycle responsibilities and every exported task advance/run handler resolve to existing source symbols without changing runtime code."
+    - "No blocking defect found: the map distinguishes observed current owners from the target coordinator and explicitly records mapped_not_converged instead of claiming completed convergence."
 execution_route:
   frozen: true
   reason_codes:

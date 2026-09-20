@@ -1,0 +1,44 @@
+{
+  "native_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_task_identity",
+    "task_id": "202609201952-ZW7H9X",
+    "plan": {
+      "revision": 1,
+      "digest": "sha256:7dd44f856aab1f0b0a792f3d48a9792d2eabb65752ea3b64a30400de1e683e0a",
+      "approval_state": "approved",
+      "approved_digest": "sha256:7dd44f856aab1f0b0a792f3d48a9792d2eabb65752ea3b64a30400de1e683e0a"
+    },
+    "policy": {
+      "digest": "sha256:9b668d089af056af9741759543ed685caaa27c913a3aa16d382cfde5faf1adc7"
+    },
+    "capability": {
+      "digest": "sha256:c7773401c9187b30d35df078ee87d7ccbc0bacb24096a0983e571daa25cb3928"
+    },
+    "checks": {
+      "verification_contract_digest": "sha256:74a1ecb59693372c24d4a1ef23c0d9d5dcd8597c8ea6b79a52161a3e0f9d35c3",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "digest": "sha256:bd4b654fb4027cc5711b59122140c2bdb2e48b294987bd2ac58b5d742003de0f"
+    },
+    "digest": "sha256:ab90b82f091f22754876b340bbeaf976307f3ee1b4a27026e76e5d1aa95946df"
+  },
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202609201952-ZW7H9X",
+    "plan_digest": "sha256:7dd44f856aab1f0b0a792f3d48a9792d2eabb65752ea3b64a30400de1e683e0a",
+    "policy_digest": "sha256:9b668d089af056af9741759543ed685caaa27c913a3aa16d382cfde5faf1adc7",
+    "capability_digest": "sha256:c7773401c9187b30d35df078ee87d7ccbc0bacb24096a0983e571daa25cb3928",
+    "checks_digest": "sha256:bd4b654fb4027cc5711b59122140c2bdb2e48b294987bd2ac58b5d742003de0f",
+    "verification_input_digest": "sha256:32b6132157c6173fdb27347995b4c51e1a7eb3403a6d30d227b29f324267b04b",
+    "acceptance_digest": "sha256:34c15464e291d251173fb52a29c6558cf7772fda592c22057360fb0560bbee0f",
+    "implementation_sha": "42024102a9915e00bb1e15d4d692258d715a4624",
+    "digest": "sha256:0a009193b9766a473fcb6fe827e69452dd3f63546dbd9a2fe3283514ecd4faaf"
+  }
+}
