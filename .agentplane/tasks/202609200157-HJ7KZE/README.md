@@ -1,10 +1,11 @@
 ---
 id: "202609200157-HJ7KZE"
 title: "Add canonical blocked-plan replanning transition"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 43
+revision: 44
 origin:
   system: "manual"
 depends_on: []
@@ -41,6 +42,22 @@ quality_review:
     - "Pass: exact USER/manual rejection evidence is required before an approved blocked plan can enter PLANNING."
     - "Pass: replacement planning authority is zero-scope, remains bound to the rejected plan and repository fingerprint, and must have a valid content digest."
     - "Pass: the negative regression rejects a tampered planning authority with AUTHORITY_SCOPE_EXCEEDED and authority_digest."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: null
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "unavailable"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-09-20T03:09:04.803Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -221,9 +238,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "69f7f5d4d0445d618e8c2ed46d2ba8da35f6673d"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "9dc9c1a3e62a2bc50c14c2fc7b327a43ed64a2e1"
+  message: "✅ HJ7KZE task: persist canonical completion"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -231,9 +251,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-09-20T03:09:04.803Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "9dc9c1a3e62a2bc50c14c2fc7b327a43ed64a2e1"
 doc_version: 3
-doc_updated_at: "2026-09-20T03:06:00.885Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-20T03:09:04.803Z"
+doc_updated_by: "CODER"
 description: "Add a first-class Task Kernel transition for explicit replanning after an approved WorkItem is blocked; route canonical plan rejection through it, preserve blocked attempt evidence, and cover fail-closed behavior."
 sections:
   Summary: |-
@@ -357,6 +385,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:ddf6d604cfe5ac0b71338515373a058de15f944328407cca5f463082b4c6a16f"
     work_order_id: "sha256:b0235ac352ff79554e9a718ab33baa9efba1f46a1e3459482ac584dc07d22010"
+  implementation_commit:
+    hash: "69f7f5d4d0445d618e8c2ed46d2ba8da35f6673d"
+    message: "🚧 HJ7KZE task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "8aee6c026bf45c569aaa698a4c6b8cced9423505"
@@ -1648,3 +1679,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-09-20T03:09:04.803Z`
