@@ -1,0 +1,106 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check b701a2e48016f1a56304d090d5ac87c59fbfe581..0b56d96c9b4c1d1b05d7ca76f68f3c7c9bb39e6e",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB b701a2e48016f1a56304d090d5ac87c59fbfe581..0b56d96c9b4c1d1b05d7ca76f68f3c7c9bb39e6e",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202609192353-V24DRJ/README.md",
+        "A\t.agentplane/tasks/202609192353-V24DRJ/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202609192353-V24DRJ/pr/github-body.md",
+        "A\t.agentplane/tasks/202609192353-V24DRJ/pr/github-title.txt",
+        "A\t.agentplane/tasks/202609192353-V24DRJ/pr/meta.json",
+        "A\t.agentplane/tasks/202609192353-V24DRJ/pr/review.md",
+        "A\t.agentplane/tasks/202609192353-V24DRJ/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json",
+        "A\t.agentplane/tasks/202609192353-V24DRJ/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "A\tpackages/agentplane/src/commands/evaluator/evaluator-review-apply.test.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-review-apply.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-advance.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-final-validation.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-final-validation.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "b701a2e48016f1a56304d090d5ac87c59fbfe581",
+  "implementation_commit": "0b56d96c9b4c1d1b05d7ca76f68f3c7c9bb39e6e",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "AM .agentplane/tasks/202609192353-V24DRJ/README.md",
+      "A  .agentplane/tasks/202609192353-V24DRJ/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json",
+      "A  .agentplane/tasks/202609192353-V24DRJ/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+      "A  packages/agentplane/src/commands/evaluator/evaluator-review-apply.test.ts",
+      "M  packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts",
+      "M  packages/agentplane/src/commands/task/kernel-advance.ts",
+      "A  packages/agentplane/src/commands/task/kernel-final-validation.test.ts",
+      "M  packages/agentplane/src/commands/task/kernel-final-validation.ts"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "AM .agentplane/tasks/202609192353-V24DRJ/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  .agentplane/tasks/202609192353-V24DRJ/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  .agentplane/tasks/202609192353-V24DRJ/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  packages/agentplane/src/commands/evaluator/evaluator-review-apply.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/task/kernel-advance.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  packages/agentplane/src/commands/task/kernel-final-validation.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/task/kernel-final-validation.ts"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "AM .agentplane/tasks/202609192353-V24DRJ/README.md",
+      "A  .agentplane/tasks/202609192353-V24DRJ/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json",
+      "A  .agentplane/tasks/202609192353-V24DRJ/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+      "A  packages/agentplane/src/commands/evaluator/evaluator-review-apply.test.ts",
+      "M  packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts",
+      "M  packages/agentplane/src/commands/task/kernel-advance.ts",
+      "A  packages/agentplane/src/commands/task/kernel-final-validation.test.ts",
+      "M  packages/agentplane/src/commands/task/kernel-final-validation.ts"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609192353-V24DRJ"
+}

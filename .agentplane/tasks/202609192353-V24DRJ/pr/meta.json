@@ -3,7 +3,8 @@
   "branch": "task/202609192353-V24DRJ/canonical-v24drj",
   "created_at": "2026-09-20T00:19:00.343Z",
   "diffstat_sha256": "sha256:80188bbb4e0f37dce711924c75444aafb51bc271c773963e5330cf76fa1473cb",
-  "last_verified_at": null,
+  "last_verified_at": "2026-09-20T00:55:07.292Z",
+  "last_verified_diffstat_sha256": "sha256:80188bbb4e0f37dce711924c75444aafb51bc271c773963e5330cf76fa1473cb",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202609192353-V24DRJ",
   "updated_at": "2026-09-20T00:19:00.343Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
