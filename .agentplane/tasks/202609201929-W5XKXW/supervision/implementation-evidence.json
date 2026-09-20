@@ -1,0 +1,77 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 35a8a9911c6eebf64c36dfee33256ab8d9165f70..cdd53d90ad1c9ede95a539d5c3409ffab7744b13",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 35a8a9911c6eebf64c36dfee33256ab8d9165f70..cdd53d90ad1c9ede95a539d5c3409ffab7744b13",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202609201929-W5XKXW/README.md",
+        "M\t.agentplane/tasks/202609201929-W5XKXW/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609201929-W5XKXW/pr/github-body.md",
+        "M\t.agentplane/tasks/202609201929-W5XKXW/pr/meta.json",
+        "M\t.agentplane/tasks/202609201929-W5XKXW/pr/review.md",
+        "A\t.agentplane/tasks/202609201929-W5XKXW/supervision/implementation-evidence.json",
+        "M\tpackages/core/src/tasks/task-kernel/authority-delta.test.ts",
+        "M\tpackages/core/src/tasks/task-kernel/authority-lineage.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "35a8a9911c6eebf64c36dfee33256ab8d9165f70",
+  "implementation_commit": "cdd53d90ad1c9ede95a539d5c3409ffab7744b13",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M .agentplane/tasks/202609201929-W5XKXW/README.md",
+      " M packages/core/src/tasks/task-kernel/authority-delta.test.ts",
+      " M packages/core/src/tasks/task-kernel/authority-lineage.ts",
+      "?? .agentplane/tasks/202609201929-W5XKXW/supervision/implementation-evidence.json"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609201929-W5XKXW/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/src/tasks/task-kernel/authority-delta.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/src/tasks/task-kernel/authority-lineage.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609201929-W5XKXW/supervision/implementation-evidence.json"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M .agentplane/tasks/202609201929-W5XKXW/README.md",
+      " M packages/core/src/tasks/task-kernel/authority-delta.test.ts",
+      " M packages/core/src/tasks/task-kernel/authority-lineage.ts",
+      "?? .agentplane/tasks/202609201929-W5XKXW/supervision/implementation-evidence.json"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609201929-W5XKXW"
+}

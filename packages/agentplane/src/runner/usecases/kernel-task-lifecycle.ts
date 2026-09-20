@@ -14,6 +14,7 @@ import {
 } from "../../adapters/task-backend/kernel-documents.js";
 import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
 import { readKernelNextAction } from "../../adapters/task-backend/kernel-next-action.js";
+import { isStableFileReadCollision } from "../../shared/stable-file.js";
 
 export type KernelWorkBinding = Readonly<{
   task_id: string;
@@ -59,8 +60,18 @@ const lifecycleCommands = new Set<taskKernel.TaskCommand["kind"]>([
 export class KernelTaskLifecycle {
   constructor(private readonly adapter: KernelBackendAdapter) {}
 
+  private async readTask(taskId: string) {
+    const label = `task README ${taskId}`;
+    try {
+      return await this.adapter.read(taskId);
+    } catch (error) {
+      if (!isStableFileReadCollision(error, label)) throw error;
+      return this.adapter.read(taskId);
+    }
+  }
+
   async read(taskId: string, fingerprint: taskKernel.Sha256Digest | null) {
-    const read = await this.adapter.read(taskId);
+    const read = await this.readTask(taskId);
     return { read, next_action: readKernelNextAction(read, fingerprint) };
   }
 
@@ -94,7 +105,7 @@ export class KernelTaskLifecycle {
     contracts: readonly KernelWorkContract[] = [],
   ): Promise<KernelAdapterResult> {
     if (!lifecycleCommands.has(input.command.kind)) return unavailable("not_a_lifecycle_command");
-    const read = await this.adapter.read(input.command.task_id);
+    const read = await this.readTask(input.command.task_id);
     if (read.kind !== "canonical") return this.adapter.execute(input);
     if (!read.record.documents) return unavailable("document_migration_required");
     if (input.command.kind === "accept_work_item_result")
@@ -122,7 +133,7 @@ export class KernelTaskLifecycle {
   ): Promise<{ result: KernelAdapterResult; work_order: KernelWorkOrder | null }> {
     if (input.command.kind !== "transition_work_item" || input.command.action !== "begin")
       return { result: unavailable("begin_command_required"), work_order: null };
-    const read = await this.adapter.read(input.command.task_id);
+    const read = await this.readTask(input.command.task_id);
     if (
       read.kind === "canonical" &&
       Object.hasOwn(read.record.aggregate.mutation_receipts, input.mutation_id)
@@ -278,7 +289,7 @@ export class KernelTaskLifecycle {
   ): Promise<KernelAdapterResult> {
     const command = input.command;
     if (command.kind !== "accept_work_item_result") return unavailable("result_command_required");
-    const read = await this.adapter.read(command.task_id);
+    const read = await this.readTask(command.task_id);
     if (read.kind !== "canonical") return this.adapter.execute(input);
     if (!read.record.documents) return unavailable("document_migration_required");
     const aggregate = read.record.aggregate;
