@@ -1,10 +1,10 @@
 ---
 id: "202609200336-EJTVES"
 title: "Replace generated per-document social images with the standard static site image"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -27,7 +27,7 @@ verification:
   state: "ok"
   updated_at: "2026-09-20T04:06:42.240Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: canonical Task Kernel final checks passed."
+  note: "Canonical validation sha256:edcb5324dc949ef6fdb86339f74e8b8682b4e777ddbf7b7e22495e8fb122a591"
   attempts: 0
 quality_review:
   state: "pass"
@@ -889,7 +889,7 @@ sections:
   Findings: ""
 extensions:
   agentplane.kernel_operational_projection:
-    digest: "sha256:a3f99fd9152b974447c333417cf087d59beb99915ce6a9ade874d86cbe1b5758"
+    digest: "sha256:0c8382a565b493afb5ed9abddd0a0d4caf56001cb5de7e761947bd1ec1f9bd98"
     evidence_refs:
       - "../../../.git/agentplane/kernel/exchanges/202609200336-EJTVES/7fcb87d9bc55b448aea918b18c4dba7c5d3cb4ce541ced02c8c70ad735b2eff1/quality-report.json"
     findings:
@@ -900,7 +900,7 @@ extensions:
     review_identity_digest: "sha256:5046804f7f6753c1d4339aae309c334d5d4c8405445d40a1d3ff6fa47b892ac6"
     schema_version: 1
     source: "task_kernel"
-    verification_evidence_digest: "sha256:50a196905efe5a11f5845ce7bad7534760157d166d904c9c2a85b7b29420a638"
+    verification_evidence_digest: "sha256:edcb5324dc949ef6fdb86339f74e8b8682b4e777ddbf7b7e22495e8fb122a591"
     work_order_id: "sha256:c09d98152c607a3ea924550cd519ef0e837a82002c756a47d441e620dcd2149c"
   task_execution_context:
     base_ref: "main"
@@ -1295,14 +1295,14 @@ extensions:
       effects: []
       final_validation:
         evidence_digests:
-          - "sha256:9c986ecc3229390c1f7e99c76f06c1ff86d1da326c5fda1e86ddc9bf5334e09f"
+          - "sha256:edcb5324dc949ef6fdb86339f74e8b8682b4e777ddbf7b7e22495e8fb122a591"
         identity:
           check_id: "canonical-final-contracts"
           command_digest: "sha256:706b55c2e0d2ec1cb0b4ae3ab6ab59a6c7a7a2024cbcb018f078dbbe2075f468"
-          environment_digest: "sha256:18f6bbfaa4e146b6541787053af508437d914cc93adbec8216c3bf6083b37022"
+          environment_digest: "sha256:829efccbae01f1fa48c8caf96a1fc538f78718383f3576192bdec2e635fb085d"
           implementation_identity: "sha256:858e01b303a2ff3436dcb6f98839e32c0133bd0027e3f532ba63b942048c68e1"
           toolchain_digest: "sha256:66b51d940d347ec9ac75e8e1239442e18ed5278edacee508f5ad8bdf7f2f8263"
-        observed_at: "2026-09-20T03:58:59.075Z"
+        observed_at: "2026-09-20T04:23:23.582Z"
         status: "PASSED"
       id: "202609200336-EJTVES"
       intent_digest: "sha256:4542ee8e19bdbbeabd7a60b5b2ea0cf4085c57b7d6ec5b08170f6a5a9d13d48b"
@@ -1326,6 +1326,15 @@ extensions:
           event_digests:
             - "sha256:18582557d4456172bfc5687408c7fff7a28a870d9d005bc010e465fc813352f0"
           mutation_id: "final-validation:sha256:9c986ecc3229390c1f7e99c76f06c1ff86d1da326c5fda1e86ddc9bf5334e09f:11"
+        final-validation:sha256:edcb5324dc949ef6fdb86339f74e8b8682b4e777ddbf7b7e22495e8fb122a591:12:
+          after_revision: 13
+          aggregate_digest: "sha256:d25caa403dee679500d763698b40f115a615bab5f097d7d0c049ac6a5442f7dc"
+          before_revision: 12
+          command_digest: "sha256:41e99336e9bc7b770d6bf34aed0a9613a01658817407eee118f09773240a486b"
+          effect_ids: []
+          event_digests:
+            - "sha256:67bb7ac0f40a53189b4a9582e70a1fa1a4b402fe2467d8427acfb9311336adf3"
+          mutation_id: "final-validation:sha256:edcb5324dc949ef6fdb86339f74e8b8682b4e777ddbf7b7e22495e8fb122a591:12"
         kernel_work_item_claim_required:sha256:5d7e9022b02b3fcfdd922681f83f92b8009b511a451442a60a369507ec8889d3:sha256:17a0685851ce238a2f2341766a4c6f0c62a36a3f85fc302823e21f736622b494:
           after_revision: 5
           aggregate_digest: "sha256:9992f84ea27cf5ff205d56c9dde24fd93fb6ae8a21aa5ccdcc43b3660b522ed4"
@@ -1417,7 +1426,7 @@ extensions:
             - "sha256:b8dc1f7280ceb154f1a4dd009dcc7dd7c44efa58fb4ea78ff1ee611540ee159b"
           mutation_id: "validation:sha256:7fcb87d9bc55b448aea918b18c4dba7c5d3cb4ce541ced02c8c70ad735b2eff1"
       plan_history: []
-      revision: 12
+      revision: 13
       schema_version: 1
       state: "FINAL_VALIDATION"
       work_items:
@@ -1505,7 +1514,7 @@ extensions:
               toolchain_digest: "sha256:aa828f6327988a61159b0907b629436aef725e465ab8df0bb8179509f1012721"
             observed_at: "2026-09-20T03:51:15.017Z"
             status: "PASSED"
-    digest: "sha256:794bd17fe5405a1d45e564dfe28733e5c2dfa61b9b319058f9a05cf889c9ec43"
+    digest: "sha256:9c3cff33fa68ef3309e9a224f75e5d8461100928802d226bb52bbbc41e10bddd"
     documents:
       contracts:
         sha256:fde90dc268bc8557ed094825d88b758e96317fa91e8636e9b139603170c040e9:
@@ -1634,6 +1643,15 @@ extensions:
         payload_digest: "sha256:9e549d5b36bd56fef56919030b686bf2c89c370449146299ed7a802bfe2aff52"
         task_id: "202609200336-EJTVES"
         task_revision: 12
+      -
+        command_digest: "sha256:41e99336e9bc7b770d6bf34aed0a9613a01658817407eee118f09773240a486b"
+        id: "final-validation:sha256:edcb5324dc949ef6fdb86339f74e8b8682b4e777ddbf7b7e22495e8fb122a591:12:final_validation_recorded"
+        kind: "final_validation_recorded"
+        mutation_id: "final-validation:sha256:edcb5324dc949ef6fdb86339f74e8b8682b4e777ddbf7b7e22495e8fb122a591:12"
+        occurred_at: "2026-09-20T04:30:46.272Z"
+        payload_digest: "sha256:c4638fb792606faa5c5415baa5a7d87aa3eb27ff86f5452698e903e04dcd9c4f"
+        task_id: "202609200336-EJTVES"
+        task_revision: 13
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
