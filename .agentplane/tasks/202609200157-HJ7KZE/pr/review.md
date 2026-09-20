@@ -6,14 +6,14 @@ Created: 2026-09-20T02:16:12.463Z
 
 - Task: `202609200157-HJ7KZE`
 - Title: Add canonical blocked-plan replanning transition
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609200157-HJ7KZE/canonical-hj7kze`
 - Canonical task record: `.agentplane/tasks/202609200157-HJ7KZE/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:ddf6d604cfe5ac0b71338515373a058de15f944328407cca5f463082b4c6a16f
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
