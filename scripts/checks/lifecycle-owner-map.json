@@ -1,0 +1,275 @@
+{
+  "schema_version": 1,
+  "baseline": "v0.7.10",
+  "canonical_owners": [
+    {
+      "id": "task-kernel-domain-reducer",
+      "role": "domain_reducer",
+      "path": "packages/core/src/tasks/task-kernel/kernel.ts",
+      "symbol": "reduceTaskCommand"
+    },
+    {
+      "id": "kernel-backend-state-writer",
+      "role": "state_writer",
+      "path": "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts",
+      "symbol": "KernelBackendAdapter.persist"
+    },
+    {
+      "id": "task-application-coordinator",
+      "role": "application_coordinator",
+      "path": "packages/agentplane/src/commands/shared/workflow-supervisor.ts",
+      "symbol": "superviseWorkflowStep"
+    }
+  ],
+  "responsibilities": [
+    {
+      "id": "command_event_reduction",
+      "owner_id": "task-kernel-domain-reducer",
+      "operation_path": "packages/core/src/tasks/task-kernel/kernel.ts",
+      "operation_symbol": "reduceTaskCommand"
+    },
+    {
+      "id": "authority_admission",
+      "owner_id": "task-kernel-domain-reducer",
+      "operation_path": "packages/core/src/tasks/task-kernel/kernel.ts",
+      "operation_symbol": "requiredAuthority"
+    },
+    {
+      "id": "transition_admission",
+      "owner_id": "task-kernel-domain-reducer",
+      "operation_path": "packages/core/src/tasks/task-kernel/kernel.ts",
+      "operation_symbol": "preconditions"
+    },
+    {
+      "id": "scheduling_readiness",
+      "owner_id": "task-kernel-domain-reducer",
+      "operation_path": "packages/core/src/tasks/task-kernel/kernel.ts",
+      "operation_symbol": "refreshReadyItems"
+    },
+    {
+      "id": "completion_eligibility",
+      "owner_id": "task-kernel-domain-reducer",
+      "operation_path": "packages/core/src/tasks/task-kernel/kernel.ts",
+      "operation_symbol": "isTaskCompletionEligible"
+    },
+    {
+      "id": "canonical_state_persistence",
+      "owner_id": "kernel-backend-state-writer",
+      "operation_path": "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts",
+      "operation_symbol": "KernelBackendAdapter.persist"
+    },
+    {
+      "id": "effect_operation_admission",
+      "owner_id": "task-application-coordinator",
+      "operation_path": "packages/agentplane/src/commands/shared/workflow-supervisor.ts",
+      "operation_symbol": "stopReason"
+    },
+    {
+      "id": "effect_dispatch",
+      "owner_id": "task-application-coordinator",
+      "operation_path": "packages/agentplane/src/commands/shared/workflow-supervisor.ts",
+      "operation_symbol": "superviseWorkflowStep"
+    },
+    {
+      "id": "effect_observation",
+      "owner_id": "task-application-coordinator",
+      "operation_path": "packages/agentplane/src/commands/shared/workflow-supervisor.ts",
+      "operation_symbol": "refreshAfterOperation"
+    },
+    {
+      "id": "effect_reconciliation",
+      "owner_id": "task-application-coordinator",
+      "operation_path": "packages/agentplane/src/commands/shared/route-decision.ts",
+      "operation_symbol": "buildTaskRouteDecision"
+    },
+    {
+      "id": "hosted_state_observation",
+      "owner_id": "task-application-coordinator",
+      "operation_path": "packages/agentplane/src/commands/shared/route-decision.ts",
+      "operation_symbol": "buildTaskRouteDecision"
+    },
+    {
+      "id": "recovery_routing",
+      "owner_id": "task-application-coordinator",
+      "operation_path": "packages/agentplane/src/commands/shared/route-decision.ts",
+      "operation_symbol": "buildTaskRouteDecision"
+    },
+    {
+      "id": "semantic_context_projection",
+      "owner_id": "task-application-coordinator",
+      "operation_path": "packages/agentplane/src/runner/usecases/agent-work-order.ts",
+      "operation_symbol": "prepareAgentWorkOrder"
+    },
+    {
+      "id": "final_validation_execution",
+      "owner_id": "task-application-coordinator",
+      "operation_path": "packages/agentplane/src/commands/task/kernel-final-validation.ts",
+      "operation_symbol": "runKernelFinalValidation"
+    }
+  ],
+  "production_entrypoints": [
+    {
+      "path": "packages/agentplane/src/commands/task/advance.command.ts",
+      "symbol": "makeRunTaskAdvanceHandler",
+      "mode": "mutating"
+    },
+    {
+      "path": "packages/agentplane/src/commands/task/run.command.ts",
+      "symbol": "makeRunTaskRunHandler",
+      "mode": "mutating"
+    },
+    {
+      "path": "packages/agentplane/src/commands/task/run.command.ts",
+      "symbol": "makeRunTaskRunStatusHandler",
+      "mode": "read_only"
+    },
+    {
+      "path": "packages/agentplane/src/commands/task/run.command.ts",
+      "symbol": "makeRunTaskRunInspectHandler",
+      "mode": "read_only"
+    },
+    {
+      "path": "packages/agentplane/src/commands/task/run.command.ts",
+      "symbol": "makeRunTaskRunReconcileHandler",
+      "mode": "mutating"
+    },
+    {
+      "path": "packages/agentplane/src/commands/task/run.command.ts",
+      "symbol": "makeRunTaskRunLogsHandler",
+      "mode": "read_only"
+    }
+  ],
+  "symbol_classifications": [
+    {
+      "path": "packages/core/src/tasks/task-centric/lifecycle.ts",
+      "symbol": "LifecycleEngine",
+      "classification": "later_deletion_candidate",
+      "reason": "Competing lifecycle decision engine; Task Kernel owns domain transitions."
+    },
+    {
+      "path": "packages/core/src/tasks/task-centric/orchestrator.ts",
+      "symbol": "TaskCentricOrchestrator",
+      "classification": "later_deletion_candidate",
+      "reason": "Competing task outer loop; the application coordinator must replace it."
+    },
+    {
+      "path": "packages/agentplane/src/commands/task/kernel-advance.ts",
+      "symbol": "advanceCanonicalTask",
+      "classification": "later_deletion_candidate",
+      "reason": "Kernel-specific outer loop must converge into the application coordinator."
+    },
+    {
+      "path": "packages/agentplane/src/commands/task/kernel-run.ts",
+      "symbol": "runCanonicalTask",
+      "classification": "later_deletion_candidate",
+      "reason": "Kernel-specific managed loop must converge into the application coordinator."
+    },
+    {
+      "path": "packages/agentplane/src/commands/task/kernel-effect-coordinator.ts",
+      "symbol": "coordinateKernelEffect",
+      "classification": "later_deletion_candidate",
+      "reason": "Effect coordination must use the single application coordinator boundary."
+    },
+    {
+      "path": "packages/agentplane/src/commands/shared/task-mutation.ts",
+      "symbol": "applyTaskMutation",
+      "classification": "compatibility_only",
+      "reason": "Legacy task records remain readable and mutable only until their explicit migration boundary."
+    },
+    {
+      "path": "packages/agentplane/src/commands/shared/task-mutation.ts",
+      "symbol": "writeTaskMutation",
+      "classification": "compatibility_only",
+      "reason": "Legacy persistence is not a canonical Kernel writer."
+    },
+    {
+      "path": "packages/core/src/tasks/task-centric/graph.ts",
+      "symbol": "WorkItemScheduler",
+      "classification": "retained_pure_helper",
+      "reason": "Deterministic selection has no lifecycle or persistence authority."
+    },
+    {
+      "path": "packages/core/src/tasks/task-centric/lifecycle.ts",
+      "symbol": "incompleteRequiredWorkItems",
+      "classification": "retained_pure_helper",
+      "reason": "Pure completion query may remain while it has no mutation authority."
+    },
+    {
+      "path": "packages/core/src/tasks/task-centric/lifecycle.ts",
+      "symbol": "evaluateTaskCompletion",
+      "classification": "retained_pure_helper",
+      "reason": "Pure completion evaluation may remain while Kernel owns the transition."
+    },
+    {
+      "path": "packages/core/src/tasks/task-centric/lifecycle.ts",
+      "symbol": "aggregateValidation",
+      "classification": "retained_pure_helper",
+      "reason": "Pure validation aggregation may remain without becoming a second reducer."
+    },
+    {
+      "path": "packages/agentplane/src/commands/shared/route-decision.ts",
+      "symbol": "buildTaskRouteDecision",
+      "classification": "coordinator_capability",
+      "reason": "Supplies hosted, recovery, and route observation to the application coordinator."
+    },
+    {
+      "path": "packages/agentplane/src/runner/usecases/agent-work-order.ts",
+      "symbol": "prepareAgentWorkOrder",
+      "classification": "coordinator_capability",
+      "reason": "Supplies bounded semantic context without lifecycle ownership."
+    },
+    {
+      "path": "packages/agentplane/src/commands/task/kernel-final-validation.ts",
+      "symbol": "runKernelFinalValidation",
+      "classification": "coordinator_capability",
+      "reason": "Executes validation while Kernel retains completion authority."
+    }
+  ],
+  "boundary_inventory": [
+    {
+      "path": "packages/core/src/tasks/task-kernel/kernel.ts",
+      "symbol": "reduceTaskCommand",
+      "classification": "canonical_owner"
+    },
+    {
+      "path": "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts",
+      "symbol": "KernelBackendAdapter",
+      "classification": "canonical_owner"
+    },
+    {
+      "path": "packages/agentplane/src/commands/shared/workflow-supervisor.ts",
+      "symbol": "superviseWorkflowStep",
+      "classification": "canonical_owner"
+    },
+    {
+      "path": "packages/core/src/tasks/task-centric/lifecycle.ts",
+      "symbol": "LifecycleEngine",
+      "classification": "later_deletion_candidate"
+    },
+    {
+      "path": "packages/core/src/tasks/task-centric/orchestrator.ts",
+      "symbol": "TaskCentricOrchestrator",
+      "classification": "later_deletion_candidate"
+    },
+    {
+      "path": "packages/core/src/tasks/task-centric/graph.ts",
+      "symbol": "WorkItemScheduler",
+      "classification": "retained_pure_helper"
+    },
+    {
+      "path": "packages/agentplane/src/commands/task/kernel-advance.ts",
+      "symbol": "advanceCanonicalTask",
+      "classification": "later_deletion_candidate"
+    },
+    {
+      "path": "packages/agentplane/src/commands/task/kernel-run.ts",
+      "symbol": "runCanonicalTask",
+      "classification": "later_deletion_candidate"
+    },
+    {
+      "path": "packages/agentplane/src/commands/task/kernel-effect-coordinator.ts",
+      "symbol": "coordinateKernelEffect",
+      "classification": "later_deletion_candidate"
+    }
+  ]
+}
