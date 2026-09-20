@@ -6,14 +6,14 @@ Created: 2026-09-20T11:09:20.160Z
 
 - Task: `202609201056-GYZDBW`
 - Title: Isolate canonical hosted-close regression
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609201056-GYZDBW/canonical-gyzdbw`
 - Canonical task record: `.agentplane/tasks/202609201056-GYZDBW/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:54c9004ff04ae66e6a0bf7bec63e996e1aa8aa2b3e892614565182eaf09493b7
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

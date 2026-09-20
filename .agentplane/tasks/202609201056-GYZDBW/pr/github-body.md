@@ -15,8 +15,8 @@ Apply the canonical hosted-close guard and place its regression scenario in a de
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:54c9004ff04ae66e6a0bf7bec63e996e1aa8aa2b3e892614565182eaf09493b7
 - Canonical workflow state lives in the task README.
 
 <details>
