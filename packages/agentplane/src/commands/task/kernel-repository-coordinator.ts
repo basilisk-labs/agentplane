@@ -353,33 +353,27 @@ export async function commitCanonicalImplementation(opts: {
     nonTaskStatusLines(opts.command, baseline.task_id, baseline.status),
   );
   const currentLines = new Set(nonTaskStatusLines(opts.command, baseline.task_id, status));
-  const lostBaseline = [...baselineLines].filter((line) => !currentLines.has(line));
-  if (head === baseline.head && lostBaseline.length > 0) {
+  if (head === baseline.head && [...baselineLines].some((line) => !currentLines.has(line)))
     throw new Error("Canonical implementation changed its dirty baseline");
-  }
   const introduced = [...currentLines]
     .filter((line) => !baselineLines.has(line))
     .map((line) => pathFromStatusLine(line))
     .filter(Boolean)
     .toSorted();
-  const authority = opts.work_order.authority;
-  const roots = authority.writable_roots.map((root) =>
+  const roots = opts.work_order.authority.writable_roots.map((root) =>
     path.relative(baseline.checkout, root).replaceAll(path.sep, "/"),
   );
-  const exactRoots = new Set(roots.filter(Boolean));
-  const approvedBaseline = [...baselineLines]
+  const baselinePaths = [...baselineLines]
     .map((line) => pathFromStatusLine(line))
-    .filter((candidate): candidate is string => candidate !== null && exactRoots.has(candidate));
+    .filter((candidate): candidate is string => candidate !== null);
+  const approvedBaseline = baselinePaths.filter((candidate) => roots.includes(candidate));
   const authorized = new Set([...opts.changed_paths, ...approvedBaseline]);
-  const adoptedBaseline = [...baselineLines]
-    .map((line) => pathFromStatusLine(line))
-    .filter((candidate): candidate is string => candidate !== null && authorized.has(candidate));
+  const adoptedBaseline = baselinePaths.filter((candidate) => authorized.has(candidate));
   const unauthorizedIntroduced = introduced.filter((candidate) => !authorized.has(candidate));
-  if (unauthorizedIntroduced.length > 0) {
+  if (unauthorizedIntroduced.length > 0)
     throw new Error(
       `Canonical repository delta differs from its observation: ${introduced.join(", ")}.`,
     );
-  }
   const expected = [...new Set([...adoptedBaseline, ...introduced])].toSorted();
   let intent = await readCommitIntent(opts.directory);
   if (
@@ -407,11 +401,10 @@ export async function commitCanonicalImplementation(opts: {
     (candidate) =>
       !roots.some((root) => root === "" || candidate === root || candidate.startsWith(`${root}/`)),
   );
-  if (outsideScope.length > 0) {
+  if (outsideScope.length > 0)
     throw new Error(
       `Canonical implementation escaped its commit scope: ${outsideScope.join(", ")}`,
     );
-  }
   if (!intent) {
     const intentContents = {
       schema_version: 1 as const,

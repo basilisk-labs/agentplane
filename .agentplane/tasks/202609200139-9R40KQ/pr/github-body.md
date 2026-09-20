@@ -15,8 +15,8 @@ Publish the exact 0.7.10 candidate from protected main through the GitHub Publis
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:41d37776507a4cd264570962d9e0ef62be422c5031a166594432d7bbfa2800be
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -29,15 +29,15 @@ Publish the exact 0.7.10 candidate from protected main through the GitHub Publis
 ```text
  bun.lock                                           |  6 +-
  docs/releases/v0.7.10.md                           | 47 ++++++++++++---
- .../task/kernel-repository-coordinator.test.ts     | 68 +++++++++++++++++++++-
- .../commands/task/kernel-repository-coordinator.ts | 23 +++++---
+ .../task/kernel-repository-coordinator.test.ts     | 66 +++++++++++++++++++++-
+ .../commands/task/kernel-repository-coordinator.ts | 32 +++++------
  .../src/policy/rules/task-bound-mutation.test.ts   | 26 ---------
  .../src/policy/rules/task-bound-mutation.ts        | 12 +---
  .../src/runner/usecases/kernel-authority.test.ts   | 47 +++++++++++++++
  .../src/runner/usecases/kernel-authority.ts        |  4 +-
- packages/core/src/tasks/task-readme-io.test.ts     | 55 ++++++++++++++++-
+ packages/core/src/tasks/task-readme-io.test.ts     | 55 +++++++++++++++++-
  packages/core/src/tasks/task-readme-io.ts          |  2 +-
- 10 files changed, 228 insertions(+), 62 deletions(-)
+ 10 files changed, 227 insertions(+), 70 deletions(-)
 ```
 
 </details>

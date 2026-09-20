@@ -320,9 +320,7 @@ describe("canonical repository coordinator", () => {
     expect(mocks.cmdCommit).toHaveBeenCalledWith(
       expect.objectContaining({ allow: ["bun.lock", "src/change.ts"] }),
     );
-    expect(mocks.cmdCommit).not.toHaveBeenCalledWith(
-      expect.objectContaining({ allow: expect.arrayContaining(["src/unrelated.ts"]) }),
-    );
+    expect(mocks.cmdCommit).toHaveBeenCalledTimes(1);
   });
 
   it("replays a persisted followup after an intervening task-artifact commit", async () => {
