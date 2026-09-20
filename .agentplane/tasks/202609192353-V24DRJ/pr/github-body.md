@@ -15,8 +15,8 @@ Productize two defects observed while integrating PR #5976: managed task/review 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:447edce5334980f107eb30138a9f7c4a0a12d49827b1857d3e56e1587d1436eb
 - Canonical workflow state lives in the task README.
 
 <details>

@@ -6,14 +6,14 @@ Created: 2026-09-20T00:19:00.343Z
 
 - Task: `202609192353-V24DRJ`
 - Title: Fix canonical final-validation recovery loops before 0.7.10 release
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609192353-V24DRJ/canonical-v24drj`
 - Canonical task record: `.agentplane/tasks/202609192353-V24DRJ/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:447edce5334980f107eb30138a9f7c4a0a12d49827b1857d3e56e1587d1436eb
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
