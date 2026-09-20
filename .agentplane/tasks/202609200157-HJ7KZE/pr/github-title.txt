@@ -1,1 +1,1 @@
-🚧 HJ7KZE task: Add canonical blocked-plan replanning transition [202609200157-HJ7KZE]
+✅ HJ7KZE task: Add canonical blocked-plan replanning transition [202609200157-HJ7KZE]
