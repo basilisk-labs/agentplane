@@ -1,6 +1,10 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
+import { createCliEmitter } from "../../cli/output.js";
+import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
+import { taskKernel as k } from "@agentplaneorg/core/tasks";
 import type { CommandContext } from "../shared/task-backend.js";
+import { createKernelRuntime, requireKernelCommit } from "./kernel-runtime-context.js";
 
 import { cmdTaskPlanReject } from "./plan.js";
 
@@ -58,8 +62,50 @@ export const taskPlanRejectSpec: CommandSpec<TaskPlanRejectParsed> = {
 
 export function makeRunTaskPlanRejectHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
   return async (ctx: CommandCtx, p: TaskPlanRejectParsed): Promise<number> => {
+    const command = await getCtx("task plan reject");
+    const source = await command.taskBackend.getTask(p.taskId);
+    if (source?.extensions && Object.hasOwn(source.extensions, TASK_KERNEL_EXTENSION)) {
+      const runtime = await createKernelRuntime({
+        command,
+        task_id: p.taskId,
+        transport: "manual",
+        operation_id: `reject:${k.kernelDigest({ by: p.by, note: p.note })}`,
+      });
+      await runtime.checkpoint(await runtime.observe());
+      const read = await runtime.adapter.read(p.taskId);
+      if (read.kind !== "canonical") throw new Error(`Explicit migration required: ${read.kind}`);
+      const plan = read.record.aggregate.current_plan;
+      if (!plan) throw new Error("Canonical task has no plan to reject");
+      const rejectionEvidence = k.kernelDigest({
+        task_id: p.taskId,
+        plan_revision: plan.revision,
+        plan_digest: plan.digest,
+        actor: p.by,
+        note: p.note,
+      });
+      const result = requireKernelCommit(
+        await runtime.lifecycle.apply(
+          await runtime.input(
+            {
+              kind: "reject_plan",
+              plan_revision: plan.revision,
+              plan_digest: plan.digest,
+              rejection_evidence_digest: rejectionEvidence,
+            },
+            `reject:${rejectionEvidence}`,
+          ),
+        ),
+      );
+      createCliEmitter().json({
+        task_id: p.taskId,
+        canonical_revision: result.record.aggregate.revision,
+        plan_digest: plan.digest,
+        rejection_evidence_digest: rejectionEvidence,
+      });
+      return 0;
+    }
     return await cmdTaskPlanReject({
-      ctx: await getCtx("task plan reject"),
+      ctx: command,
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride,
       taskId: p.taskId,

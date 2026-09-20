@@ -1,0 +1,6 @@
+ .../src/commands/task/plan-reject.command.test.ts  | 86 ++++++++++++++++++++++
+ .../src/commands/task/plan-reject.command.ts       | 48 +++++++++++-
+ .../src/tasks/task-kernel/kernel-replan.test.ts    | 62 ++++++++++++++++
+ packages/core/src/tasks/task-kernel/kernel.ts      |  8 +-
+ packages/core/src/tasks/task-kernel/model.ts       |  9 ++-
+ 5 files changed, 210 insertions(+), 3 deletions(-)

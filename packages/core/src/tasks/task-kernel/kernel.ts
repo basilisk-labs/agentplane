@@ -748,7 +748,13 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       if (!planMatches(aggregate.current_plan, command.plan_revision, command.plan_digest)) {
         return rejected("PLAN_DIGEST_MISMATCH", [command.plan_digest]);
       }
-      if (aggregate.current_plan.state !== "PROPOSED") {
+      const approvedBlockedReplan =
+        aggregate.current_plan.state === "APPROVED" &&
+        aggregate.state === "ACTIVE" &&
+        Object.values(aggregate.work_items).some((item) => item.state === "BLOCKED") &&
+        command.rejection_evidence_digest !== undefined &&
+        isSha256Digest(command.rejection_evidence_digest);
+      if (aggregate.current_plan.state !== "PROPOSED" && !approvedBlockedReplan) {
         return rejected("ILLEGAL_TASK_TRANSITION", [aggregate.current_plan.state, "REJECTED"]);
       }
       next = {

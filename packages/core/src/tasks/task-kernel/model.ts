@@ -270,7 +270,14 @@ export type TaskCommand =
   | CommandEnvelope<"capture_intent", { intent_digest: Sha256Digest }>
   | CommandEnvelope<"transition_task", { action: "request_human" | "block" | "resume" | "cancel" }>
   | CommandEnvelope<"propose_plan", { plan: PlanRecord }>
-  | CommandEnvelope<"reject_plan", { plan_revision: number; plan_digest: Sha256Digest }>
+  | CommandEnvelope<
+      "reject_plan",
+      {
+        plan_revision: number;
+        plan_digest: Sha256Digest;
+        rejection_evidence_digest?: Sha256Digest;
+      }
+    >
   | CommandEnvelope<
       "approve_plan",
       {
