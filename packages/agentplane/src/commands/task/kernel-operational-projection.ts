@@ -1,10 +1,18 @@
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
 
 import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
+import type { TaskData } from "../../backends/task-backend.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import type { KernelRepositoryEvidence } from "./kernel-repository-coordinator.js";
 
 export const KERNEL_OPERATIONAL_PROJECTION = "agentplane.kernel_operational_projection";
+
+function projectedVerification(
+  verification: TaskData["verification"],
+  fallback: NonNullable<TaskData["verification"]>,
+): NonNullable<TaskData["verification"]> {
+  return verification?.state === "ok" ? verification : fallback;
+}
 
 type Projection = Readonly<{
   schema_version: 1;
@@ -77,13 +85,13 @@ export async function projectKernelOperationalEvidence(opts: {
         hash: opts.repository_evidence.implementation_commit,
         message: "AgentPlane-owned canonical implementation commit",
       },
-      verification: {
+      verification: projectedVerification(task.verification, {
         state: "ok",
         attempts: Math.max(1, task.verification?.attempts ?? 0),
         updated_at: opts.projected_at,
         updated_by: "SUPERVISOR",
         note: `Canonical validation ${opts.verification_evidence_digest}`,
-      },
+      }),
       quality_review: {
         state: "pass",
         provenance: "evaluator_supplied",
@@ -140,15 +148,13 @@ export async function ensureKernelOperationalProjectionStatus(opts: {
       ...task,
       revision: revision + 1,
       status: "DONE",
-      verification: {
-        ...(task.verification ?? {
-          state: "ok",
-          attempts: 1,
-          updated_at: existing.projected_at,
-          updated_by: "SUPERVISOR",
-        }),
+      verification: projectedVerification(task.verification, {
+        state: "ok",
+        attempts: 1,
+        updated_at: existing.projected_at,
+        updated_by: "SUPERVISOR",
         note: `Canonical validation ${verificationEvidenceDigest}`,
-      },
+      }),
       extensions: {
         ...task.extensions,
         [KERNEL_OPERATIONAL_PROJECTION]: projection,

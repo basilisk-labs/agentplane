@@ -92,6 +92,44 @@ describe("canonical operational evidence projection", () => {
     });
   });
 
+  it("preserves accepted verification metadata during the initial projection", async () => {
+    const writeTask = taskWriter();
+    const verification = {
+      state: "ok",
+      attempts: 2,
+      updated_at: "2026-09-17T00:00:00.000Z",
+      updated_by: "SUPERVISOR",
+      note: "Verified: canonical Task Kernel final checks passed.",
+    };
+    const task = {
+      id: "T-1",
+      revision: 7,
+      verification,
+      extensions: { [TASK_KERNEL_EXTENSION]: { kind: "canonical_task" } },
+    };
+
+    await projectKernelOperationalEvidence({
+      command: {
+        taskBackend: { getTask: vi.fn().mockResolvedValue(task), writeTask },
+      } as never,
+      task_id: "T-1",
+      repository_evidence: {
+        task_id: "T-1",
+        work_order_id: k.kernelDigest("order"),
+        implementation_commit: "a".repeat(40),
+        implementation_tree: "b".repeat(40),
+        evaluator_target: "a".repeat(40),
+      } as never,
+      verification_evidence_digest: k.kernelDigest("verification"),
+      review_identity_digest: k.kernelDigest("review"),
+      evidence_refs: ["evidence"],
+      findings: ["reviewed"],
+      projected_at: "2026-09-18T00:00:00.000Z",
+    });
+
+    expect(writeTask.mock.calls[0]![0].verification).toEqual(verification);
+  });
+
   it("restores the pre-merge status projection after a Kernel effect write", async () => {
     const writeTask = taskWriter();
     const projectionContents = {
@@ -169,7 +207,7 @@ describe("canonical operational evidence projection", () => {
       verification_evidence_digest: finalEvidence,
       review_identity_digest: k.kernelDigest("review"),
     });
-    expect(written.verification?.note).toBe(`Canonical validation ${finalEvidence}`);
+    expect(written.verification).toEqual(task.verification);
   });
 
   it("is idempotent for an identical evidence projection", async () => {
