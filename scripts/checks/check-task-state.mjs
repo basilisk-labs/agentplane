@@ -190,6 +190,7 @@ export function checkTaskState(repoRoot, opts = {}) {
     }
     const status = String(frontMatter.status ?? "").trim();
     const title = String(frontMatter.title ?? "").trim();
+    const taskKind = String(frontMatter.task_kind ?? "").trim();
     const tags = new Set(readTaskFrontMatterList(readmeText, "tags"));
     const mergedPendingClose =
       status === "DONE" ? null : readMergedPendingCloseState(tasksRoot, taskId);
@@ -204,7 +205,8 @@ export function checkTaskState(repoRoot, opts = {}) {
       status === "DOING" &&
       packageVersion &&
       tags.has("release") &&
-      title === `Release AgentPlane v${packageVersion}`;
+      (title === `Release AgentPlane v${packageVersion}` ||
+        (taskKind === "release" && tags.has(`v${packageVersion}`)));
     const doingAllowedForRelease =
       opts.releaseReady === true &&
       (ignoredReleaseTaskIds.has(taskId) || activeReleaseTaskDoingAllowed);
