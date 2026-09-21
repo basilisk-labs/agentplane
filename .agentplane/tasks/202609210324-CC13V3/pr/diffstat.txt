@@ -48,6 +48,8 @@
  .../agentplane/src/commands/task/run.command.ts    | 268 ++----
  packages/agentplane/src/commands/task/run.spec.ts  |  10 +-
  .../src/runner/usecases/agent-work-order-build.ts  |  12 +-
+ .../usecases/roadmap-scenario-owner-parity.test.ts | 139 +++
+ .../runner/usecases/scenario-materialize-task.ts   |  10 +-
  .../src/runner/usecases/semantic-role.ts           |  10 +
  .../runner/usecases/task-knowledge-request.test.ts |  50 +-
  .../src/runner/usecases/task-knowledge-request.ts  |  62 +-
@@ -63,4 +65,4 @@
  packages/core/src/tasks/task-centric/index.ts      |  10 +
  packages/core/src/tasks/task-centric/lifecycle.ts  |  62 ++
  schemas/agent-semantic-result.schema.json          |   6 +-
- 65 files changed, 6523 insertions(+), 872 deletions(-)
+ 67 files changed, 6670 insertions(+), 874 deletions(-)
