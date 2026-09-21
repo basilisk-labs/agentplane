@@ -430,7 +430,7 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
       }
       await writeFile(path.join(root, "result.txt"), "changed after inspection");
       await expect(
-        acceptKernelInspection(command, runtime, inspectionExchange.directory, review),
+        acceptKernelInspection(command, runtime, inspectionExchange.directory, review, inspection),
       ).rejects.toThrow("stale");
       await writeFile(path.join(root, "result.txt"), "implementation");
       const apply = runtime.lifecycle.apply.bind(runtime.lifecycle);
@@ -441,7 +441,7 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
         return result;
       });
       await expect(
-        acceptKernelInspection(command, runtime, inspectionExchange.directory, review),
+        acceptKernelInspection(command, runtime, inspectionExchange.directory, review, inspection),
       ).rejects.toThrow("crash after durable validation");
       crash.mockRestore();
       const interrupted = await runtime.adapter.read(taskId);
@@ -456,7 +456,13 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
         status: "passed",
         checks: [{ command: "node --version", exit_code: 0 }],
       });
-      await acceptKernelInspection(command, runtime, inspectionExchange.directory, review);
+      await acceptKernelInspection(
+        command,
+        runtime,
+        inspectionExchange.directory,
+        review,
+        inspection,
+      );
       expect(
         JSON.parse(
           await readFile(path.join(inspectionExchange.directory, "validation.json"), "utf8"),
