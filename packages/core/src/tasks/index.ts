@@ -227,6 +227,10 @@ export {
   kernelPlanProposalSchema,
   kernelEpisodeBindingSchema,
   kernelOutputClaimsSchema,
+  kernelMigrationSemanticAssessmentRequestSchema,
+  kernelMigrationSemanticAssessmentSchema,
   type KernelEpisodeBinding,
   type KernelPlanProposal,
+  type KernelMigrationSemanticAssessment,
+  type KernelMigrationSemanticAssessmentRequest,
 } from "./kernel-semantic.js";
