@@ -715,7 +715,7 @@ describe("recordTaskCentricExternalResult", () => {
 
     const aggregate = taskCentricAggregateFromExtensions(backend.current().extensions)!;
     expect(aggregate.lifecycle).toBe("PLANNING");
-    expect(aggregate.work_items.a?.state).toBe("READY");
+    expect(aggregate.work_items.a?.state).toBe("PLANNED");
     expect(taskCentricReplanRequiredFromExtensions(backend.current().extensions)).toBe(true);
   });
 

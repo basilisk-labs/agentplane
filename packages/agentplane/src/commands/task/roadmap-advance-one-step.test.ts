@@ -28,18 +28,15 @@ describe("LC-03 common advance-one-step coordinator", () => {
     ).toBe(true);
   });
 
-  it("keeps public entrypoints as wrappers around the sole coordinator", async () => {
-    const [command, compatibility, coordinator] = await Promise.all([
+  it("keeps the public entrypoint as a wrapper around the sole coordinator", async () => {
+    const [command, coordinator] = await Promise.all([
       readFile(new URL("advance.command.ts", import.meta.url), "utf8"),
-      readFile(new URL("kernel-advance.ts", import.meta.url), "utf8"),
       readFile(new URL("advance-task-step.ts", import.meta.url), "utf8"),
     ]);
 
     expect(command).toContain("advanceTaskStep");
     expect(command).not.toMatch(/for\s*\(/u);
     expect(command).not.toContain("supervisePersistedWorkflowEpisode");
-    expect(compatibility).toContain('from "./advance-task-step.js"');
-    expect(compatibility).not.toMatch(/for\s*\(/u);
     expect(coordinator).toContain("export async function advanceTaskStep");
   });
 

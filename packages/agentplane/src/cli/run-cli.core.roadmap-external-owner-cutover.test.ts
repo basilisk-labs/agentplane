@@ -1,7 +1,6 @@
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { TASK_KERNEL_EXTENSION } from "../adapters/task-backend/kernel-record.js";
 import {
   captureStdIO,
   commitAll,
@@ -61,7 +60,7 @@ describe("LC-15 external owner cutover", { timeout: 120_000 }, () => {
     const taskId = created.stdout.trim();
     const command = await loadCommandContext({ cwd: root, rootOverride: root });
     const task = await command.taskBackend.getTask(taskId);
-    expect(task?.extensions).toHaveProperty(TASK_KERNEL_EXTENSION);
+    expect(task?.extensions).toHaveProperty("task_kernel");
 
     const advanced = await invoke(root, ["task", "advance", taskId, "--agent-json"]);
     expect(advanced.code, advanced.stderr).toBe(0);
@@ -92,7 +91,7 @@ describe("LC-15 external owner cutover", { timeout: 120_000 }, () => {
       id: "202609210002-XYZ1",
       status: "TODO",
       extensions: {
-        [TASK_KERNEL_EXTENSION]: { schema_version: 999, kind: "canonical_task" },
+        task_kernel: { schema_version: 999, kind: "canonical_task" },
       },
     });
     await command.taskBackend.writeTask(task);

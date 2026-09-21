@@ -28,10 +28,10 @@ import {
   type KernelEffectPort,
 } from "./kernel-effect-coordinator.js";
 import {
-  advanceCanonicalTask,
+  advanceTaskStep,
   blockKernelSemanticEpisode,
   kernelPlanApprovalOperatorAction,
-} from "./kernel-advance.js";
+} from "./advance-task-step.js";
 import { resumeKernelWorkOrder } from "./kernel-work-order.js";
 
 const digest = (value: string) => k.kernelDigest(value);
@@ -405,7 +405,7 @@ describe("canonical task worktree routing", () => {
     });
 
     await expect(
-      advanceCanonicalTask({
+      advanceTaskStep({
         command: {
           resolvedProject: { gitRoot: repository },
           config: { branch: { task_prefix: "task/" } },

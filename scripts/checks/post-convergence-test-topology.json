@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "baseline": "v0.7.10 plus accepted LC-04 through LC-23",
+  "deleted_cases": [
+    {
+      "file": "packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts",
+      "title": "keeps canonical WorkItem scope authoritative over a legacy execution-contract mutation",
+      "removed_behavior": "task run --dry-run runner bundle projection after managed transport became a loop around the canonical Kernel packet",
+      "retained_route": "packages/agentplane/src/commands/task/roadmap-semantic-admission.test.ts",
+      "evidence": "the runner bundle subject no longer exists; canonical WorkItem scope is admitted at the shared semantic boundary"
+    },
+    {
+      "file": "packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts",
+      "title": "does not let an empty legacy declaration erase canonical WorkItem scope",
+      "removed_behavior": "legacy execution-contract overlay on the removed task run --dry-run bundle",
+      "retained_route": "packages/agentplane/src/commands/task/roadmap-semantic-admission.test.ts",
+      "evidence": "the legacy runner bundle subject no longer exists; empty-scope rejection remains owned by canonical admission"
+    }
+  ],
+  "removed_test_only_production_surfaces": [
+    {
+      "path": "packages/agentplane/src/commands/task/kernel-advance.ts",
+      "export": "advanceCanonicalTask",
+      "replacement": "advanceTaskStep from packages/agentplane/src/commands/task/advance-task-step.ts"
+    },
+    {
+      "path": "packages/core/src/tasks/task-centric/index.ts",
+      "export": "dead task-centric barrel",
+      "replacement": "named current primitives exported explicitly from packages/core/src/tasks/index.ts"
+    }
+  ],
+  "invariant_ownership": {
+    "negative": {
+      "title_pattern": "reject|refus|fail|invalid|missing|unknown|unsafe|forbid|without|cannot|does not|doesn't",
+      "primary_routes_own_cases": true,
+      "representative_owners": [
+        "packages/agentplane/src/commands/task/roadmap-semantic-admission.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.roadmap-external-owner-cutover.test.ts"
+      ]
+    },
+    "recovery": {
+      "title_pattern": "recover|retry|replay|resume|crash|in-doubt|reconcile|uncertain effect",
+      "primary_routes_own_cases": true,
+      "representative_owners": [
+        "packages/agentplane/src/commands/task/roadmap-common-recovery.test.ts",
+        "packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts"
+      ]
+    },
+    "migration": {
+      "title_pattern": "migrat|legacy|historical|quarantine|downgrade|old record",
+      "primary_routes_own_cases": true,
+      "representative_owners": [
+        "packages/agentplane/src/commands/task/roadmap-lifecycle-migration-preview.test.ts",
+        "packages/agentplane/src/commands/task/roadmap-lifecycle-migration-apply.test.ts"
+      ]
+    },
+    "authority": {
+      "title_pattern": "authority|permission|approval|scope|forged|user grant|network|side effect",
+      "primary_routes_own_cases": true,
+      "representative_owners": [
+        "packages/agentplane/src/commands/task/roadmap-semantic-admission.test.ts",
+        "packages/agentplane/src/commands/task/roadmap-branch-publication-parity.test.ts"
+      ]
+    },
+    "concurrency": {
+      "title_pattern": "concurr|race|cas|lease|claim|parallel|lock|revision conflict",
+      "primary_routes_own_cases": true,
+      "representative_owners": [
+        "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts",
+        "packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts"
+      ]
+    }
+  },
+  "expected_skip_sites": [
+    { "file": "packages/core/src/fs/atomic-write.test.ts", "reason": "POSIX permission semantics are not available on Windows" },
+    { "file": "packages/agentplane/src/runner/observation/protected-filesystem.test.ts", "reason": "POSIX symlink and permission semantics are not available on Windows" },
+    { "file": "packages/agentplane/src/runner/observation/artifacts.test.ts", "reason": "POSIX symlink semantics are not available on Windows" },
+    { "file": "packages/agentplane/src/runner/process-supervision.process-tree.test.ts", "reason": "POSIX process groups are not available on Windows" },
+    { "file": "packages/agentplane/src/runner/result-manifest.test.ts", "reason": "POSIX filesystem semantics are not available on Windows" },
+    { "file": "packages/agentplane/src/runner/process-supervision.test.ts", "reason": "POSIX process and signal semantics are not available on Windows" },
+    { "file": "packages/agentplane/src/runner/runtime-env.integration.test.ts", "reason": "POSIX executable environment semantics are not available on Windows" },
+    { "file": "packages/agentplane/src/runner/process-supervision/process-tree.test.ts", "reason": "POSIX process groups are not available on Windows" },
+    { "file": "packages/agentplane/src/runner/process-supervision/signals.test.ts", "reason": "POSIX signals are not available on Windows" },
+    { "file": "packages/agentplane/src/cli/local-ci-selection.test.ts", "reason": "the local CI runtime contract is POSIX-specific" },
+    { "file": "packages/agentplane/src/commands/release/generate-bun-cli-assets-script.test.ts", "reason": "the Bun asset shell fixture is POSIX-specific" },
+    { "file": "packages/agentplane/src/commands/release/publish-workflow-contract.test.ts", "reason": "the release shell fixture is POSIX-specific" },
+    { "file": "packages/agentplane/src/commands/task/finish.state.unit.test.ts", "reason": "the fixture exercises Node-only module mocking and is skipped under Bun" },
+    { "file": "packages/agentplane/src/commands/task/start.unit.test.ts", "reason": "the fixture exercises Node-only module mocking and is skipped under Bun" },
+    { "file": "packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts", "reason": "network packaging is explicit opt-in only" }
+  ],
+  "measurements": {
+    "host": "Darwin 27.0.0 arm64; macOS 27.0; Bun 1.4.2; Node v24.18.0",
+    "fast": {
+      "command": "bun run test:fast",
+      "before": {
+        "files": 676,
+        "cases": 5803,
+        "expected_failures": 6,
+        "expected_skips": 1,
+        "wall_seconds": [311.63, 307.19, 306.73]
+      },
+      "after": {
+        "files": 676,
+        "cases": 5801,
+        "expected_failures": 0,
+        "expected_skips": 1,
+        "wall_seconds": [326.2, 320.19, 304.31]
+      }
+    },
+    "release_critical": {
+      "command": "bun run test:release:critical",
+      "before": {
+        "files": 3,
+        "cases": 15,
+        "expected_failures": 0,
+        "expected_skips": 0,
+        "wall_seconds": [12.89, 12.62, 12.67]
+      },
+      "after": {
+        "files": 3,
+        "cases": 15,
+        "expected_failures": 0,
+        "expected_skips": 0,
+        "wall_seconds": [13.36, 12.58, 12.95]
+      }
+    },
+    "performance_claim": null,
+    "measurement_conclusion": "Fast-suite median changed from 307.19s to 320.19s and release-critical median changed from 12.67s to 12.95s. No speedup is established; the accepted impact is correctness and removal of obsolete topology only."
+  }
+}

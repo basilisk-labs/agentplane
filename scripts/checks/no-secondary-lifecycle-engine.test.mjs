@@ -58,13 +58,18 @@ test("retired lifecycle owners are absent from the production import graph", () 
     existsSync(path.join(ROOT, "packages/core/src/tasks/task-centric/orchestrator.ts")),
     false,
   );
+  assert.equal(
+    existsSync(path.join(ROOT, "packages/agentplane/src/commands/task/kernel-advance.ts")),
+    false,
+  );
+  assert.equal(existsSync(path.join(ROOT, "packages/core/src/tasks/task-centric/index.ts")), false);
   const production = productionTypeScriptFiles("packages/agentplane/src")
     .map((file) => `${file}\n${source(file)}`)
     .join("\n");
   assert.doesNotMatch(production, /import[^\n]+kernel-advance\.js/u);
   assert.doesNotMatch(production, /\brunCanonicalTask\b/u);
   assert.doesNotMatch(production, /\bcoordinateKernelEffect\b/u);
-  assert.doesNotMatch(source("packages/core/src/tasks/task-centric/index.ts"), /orchestrator\.js/u);
+  assert.doesNotMatch(source("packages/core/src/tasks/index.ts"), /task-centric\/index\.js/u);
 });
 
 test("public task exports cannot acquire a lifecycle engine through a wildcard", () => {
@@ -107,10 +112,7 @@ test("retained lifecycle helpers have named current consumers", () => {
   for (const [symbol, consumer] of consumers) {
     assert.match(source(consumer), new RegExp(`\\b${symbol}\\b`, "u"), `${symbol}: no consumer`);
   }
-  for (const bridge of retirement.test_only_compatibility) {
-    assert.ok(bridge.consumers.length > 0, `${bridge.export}: unnamed test consumer`);
-    for (const consumer of bridge.consumers) assert.match(source(consumer), /kernel-advance\.js/u);
-  }
+  assert.deepEqual(retirement.test_only_compatibility, []);
 });
 
 test("cold migration still decodes exact historical bytes", async () => {

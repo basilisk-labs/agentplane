@@ -2,7 +2,10 @@
   "schema_version": 1,
   "baseline": "v0.7.10",
   "scope": "production lifecycle ownership only",
-  "removed_production_modules": ["packages/core/src/tasks/task-centric/orchestrator.ts"],
+  "removed_production_modules": [
+    "packages/core/src/tasks/task-centric/orchestrator.ts",
+    "packages/core/src/tasks/task-centric/index.ts"
+  ],
   "removed_production_exports": [
     "TaskCentricOrchestrator",
     "TaskCentricOrchestratorPorts",
@@ -26,16 +29,7 @@
     "ContextPort",
     "assertAutonomousRepositoryCapabilities"
   ],
-  "test_only_compatibility": [
-    {
-      "path": "packages/agentplane/src/commands/task/kernel-advance.ts",
-      "export": "advanceCanonicalTask",
-      "consumers": [
-        "packages/agentplane/src/commands/task/kernel-advance.test.ts",
-        "packages/agentplane/src/runner/usecases/roadmap-scenario-owner-parity.test.ts"
-      ]
-    }
-  ],
+  "test_only_compatibility": [],
   "retained_cold_readers": [
     "packages/core/src/tasks/task-centric/compatibility.ts#mapTaskCentricKernelMigration",
     "packages/agentplane/src/commands/task/migration-preview.ts#previewLifecycleOwnerMigration"

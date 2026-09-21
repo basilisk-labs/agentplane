@@ -4,7 +4,7 @@ import path from "node:path";
 import { AGENT_WORK_ORDER_V2_ZOD_SCHEMA } from "@agentplaneorg/core/schemas";
 import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
-import { advanceCanonicalTask } from "../../commands/task/kernel-advance.js";
+import { advanceTaskStep } from "../../commands/task/advance-task-step.js";
 import { createKernelRuntime } from "../../commands/task/kernel-runtime-context.js";
 import { runTaskNewParsed } from "../../commands/task/new.js";
 import { runCliSilent } from "@agentplane/testkit";
@@ -106,12 +106,12 @@ describe("LC-17 Recipe V1 owner parity", { timeout: 120_000 }, () => {
       current_plan: null,
     });
 
-    const recipePacket = await advanceCanonicalTask({
+    const recipePacket = await advanceTaskStep({
       command,
       task_id: recipe.task_id,
       transport: "host",
     });
-    const ordinaryPacket = await advanceCanonicalTask({
+    const ordinaryPacket = await advanceTaskStep({
       command,
       task_id: ordinary.task_id,
       transport: "host",

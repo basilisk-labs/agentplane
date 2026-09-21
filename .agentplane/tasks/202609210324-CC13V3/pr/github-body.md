@@ -30,9 +30,11 @@ Use agentplane-roadmap-r2/tasks/LC-04.md through LC-24.md as the authoritative c
  artifacts/m03-0.7.10-vs-0.7.11-local-replay.json   |  332 +++++++
  docs/user/task-lifecycle.mdx                       |   38 +
  docs/user/workflow.mdx                             |   68 +-
+ .../task-backend/kernel-backend-adapter.test.ts    |   76 ++
  .../adapters/task-backend/kernel-next-action.ts    |   55 +-
+ .../task-backend/kernel-record-invariants.ts       |    2 +-
  .../src/cli/run-cli.core.kernel-transport.test.ts  |   23 +-
- ...cli.core.roadmap-external-owner-cutover.test.ts |  105 ++
+ ...cli.core.roadmap-external-owner-cutover.test.ts |  104 ++
  ...-cli.core.roadmap-managed-owner-cutover.test.ts |  226 +++++
  .../installed-migration-matrix-script.test.ts      |    2 +
  .../commands/shared/semantic-result-admission.ts   |   49 +
@@ -55,8 +57,8 @@ Use agentplane-roadmap-r2/tasks/LC-04.md through LC-24.md as the authoritative c
  .../src/commands/task/direct-task-supervisor.ts    |  564 -----------
  .../src/commands/task/direct-task-verification.ts  |   35 +
  .../src/commands/task/external-agent-exchange.ts   |   13 +-
- .../src/commands/task/kernel-advance.test.ts       |    8 +-
- .../agentplane/src/commands/task/kernel-advance.ts |    7 +-
+ .../src/commands/task/kernel-advance.test.ts       |   14 +-
+ .../agentplane/src/commands/task/kernel-advance.ts |    9 -
  .../agentplane/src/commands/task/kernel-cutover.ts |   15 +-
  .../src/commands/task/kernel-effect-coordinator.ts |    4 +-
  .../src/commands/task/kernel-exchange.ts           |  108 ++-
@@ -73,7 +75,7 @@ Use agentplane-roadmap-r2/tasks/LC-04.md through LC-24.md as the authoritative c
  .../src/commands/task/migration-preview.ts         |  265 ++++++
  .../src/commands/task/ordinary-advance-step.ts     |   32 +-
  .../src/commands/task/quality-review-gate.ts       |   11 +-
- .../commands/task/roadmap-advance-one-step.test.ts |    3 +-
+ .../commands/task/roadmap-advance-one-step.test.ts |   10 +-
  .../task/roadmap-branch-publication-parity.test.ts |  126 +++
  .../task/roadmap-check-review-separation.test.ts   |   93 ++
  .../commands/task/roadmap-common-recovery.test.ts  |  274 ++++++
@@ -92,7 +94,9 @@ Use agentplane-roadmap-r2/tasks/LC-04.md through LC-24.md as the authoritative c
  packages/agentplane/src/commands/task/run.spec.ts  |   10 +-
  .../task/supervision-outcome-disposition.test.ts   |  123 ---
  .../task/supervision-outcome-disposition.ts        |  130 ---
+ .../task/task-centric-external-result.test.ts      |    2 +-
  .../src/runner/usecases/agent-work-order-build.ts  |   12 +-
+ .../usecases/agent-work-order.integration.test.ts  |  132 +--
  .../usecases/roadmap-scenario-owner-parity.test.ts |  139 +++
  .../runner/usecases/scenario-materialize-task.ts   |   10 +-
  .../src/runner/usecases/semantic-role.ts           |   10 +
@@ -107,22 +111,25 @@ Use agentplane-roadmap-r2/tasks/LC-04.md through LC-24.md as the authoritative c
  packages/core/src/tasks/kernel-semantic.ts         |   39 +-
  .../core/src/tasks/task-centric/compatibility.ts   |  364 ++++++-
  packages/core/src/tasks/task-centric/graph.ts      |  117 ++-
- packages/core/src/tasks/task-centric/index.ts      |   33 +-
+ packages/core/src/tasks/task-centric/index.ts      |   87 --
  packages/core/src/tasks/task-centric/lifecycle.ts  |   62 ++
  .../src/tasks/task-centric/orchestrator.test.ts    |  540 -----------
  .../core/src/tasks/task-centric/orchestrator.ts    |  474 ---------
  packages/core/src/tasks/task-centric/ports.ts      |  141 ---
- .../src/tasks/task-centric/task-centric.test.ts    |   22 -
+ .../task-centric/replacement-plan-recovery.test.ts |   13 +-
+ .../src/tasks/task-centric/task-centric.test.ts    |   73 +-
  schemas/agent-semantic-result.schema.json          |    6 +-
  scripts/bench/paired-m03-local-replay.mjs          |  307 ++++++
  scripts/bench/paired-m03-local-replay.test.mjs     |   54 ++
- scripts/checks/lifecycle-engine-retirement.json    |   46 +
+ .../check-post-convergence-test-topology.mjs       |  122 +++
+ scripts/checks/lifecycle-engine-retirement.json    |   40 +
  scripts/checks/lifecycle-owner-map.json            |   92 +-
  scripts/checks/lifecycle-owner-map.test.mjs        |   44 +-
- .../checks/no-secondary-lifecycle-engine.test.mjs  |  138 +++
+ .../checks/no-secondary-lifecycle-engine.test.mjs  |  140 +++
+ scripts/checks/post-convergence-test-topology.json |  130 +++
  scripts/checks/single-live-supervisor.test.mjs     |   49 +
  .../release/check-local-tarball-install-smoke.mjs  |   27 +-
- 95 files changed, 8107 insertions(+), 6039 deletions(-)
+ 102 files changed, 8463 insertions(+), 6275 deletions(-)
 ```
 
 </details>

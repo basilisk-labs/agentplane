@@ -2,8 +2,8 @@
   "checks": [
     {
       "check_ids": [],
-      "command": "bun run bench:agent-efficiency:check",
-      "duration_ms": 228,
+      "command": "bun run docs:bootstrap:check",
+      "duration_ms": 353,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
@@ -12,14 +12,14 @@
         "status": "resolved",
         "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
       },
-      "script": "bench:agent-efficiency:check",
-      "stderr_tail": "$ node scripts/checks/check-agent-efficiency-baseline.mjs\n",
-      "stdout_tail": "Agent-efficiency baseline OK (10 RF-04 scenarios; 10 measured cost metrics; structural_sha256=sha256:a9b855c5887f697c21690d7386c627c555f8d46d7b083cab8c54636411e47351; timing_compared=false; summaries=0)\n"
+      "script": "docs:bootstrap:check",
+      "stderr_tail": "$ node scripts/checks/check-agent-bootstrap-fresh.mjs\n",
+      "stdout_tail": "../../../../../../../../../var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-bootstrap-doc-42JwWl/agent-bootstrap.generated.mdx 23ms\nok: bootstrap doc, startup command blocks, quickstart/roles, runtime docs, troubleshooting, and release recovery docs are aligned\n"
     },
     {
       "check_ids": [],
-      "command": "bun run bench:agent-efficiency:replay:check",
-      "duration_ms": 233,
+      "command": "bun run docs:onboarding:check",
+      "duration_ms": 167,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
@@ -28,9 +28,9 @@
         "status": "resolved",
         "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
       },
-      "script": "bench:agent-efficiency:replay:check",
-      "stderr_tail": "$ node scripts/checks/check-agent-efficiency-replay.mjs\n",
-      "stdout_tail": "RF-04 replay baseline OK (50 runs; 70/70 outcomes; 27/27 provider token cells; 170/170 scalar cells; structural_sha256=sha256:006ddc6d2b8e8c350a879edeb7140d36dbbd31c0c745b96f57792871b9099ee4; diagnostics_sha256=sha256:01c7b81828826b44d18d0b6a26288ac62b031cf4e30242a421f77ec37b2ca44e)\n"
+      "script": "docs:onboarding:check",
+      "stderr_tail": "$ node scripts/checks/check-agent-onboarding-scenario.mjs\n",
+      "stdout_tail": "ok: agent onboarding scenario surfaces are aligned\n"
     }
   ],
   "kind": "direct_task_declared_checks",
