@@ -292,7 +292,6 @@ const BACKEND_CRITICAL_FILES = [
   "packages/agentplane/src/commands/doctor.fast.test.ts",
   "packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts",
   "packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.tasks.update-scrub.test.ts",
 ];
 
 const RELEASE_CRITICAL_FILES = [
