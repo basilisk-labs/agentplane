@@ -407,6 +407,7 @@ function validateReviewedCandidate({
     "202609071501-VN1FN4",
     "202609130858-RMHWQ5",
     "202609162254-YE48GC",
+    "202609211330-5A54M1",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -454,7 +455,12 @@ function validateReviewedCandidate({
   assert(
     hashJson(preReleasePackageDelta) ===
       hashJson({
-        source_tasks: ["202608021231-SHYJGK", "202608112259-T3ZDDM", "202608171853-X3FD5M"],
+        source_tasks: [
+          "202608021231-SHYJGK",
+          "202608112259-T3ZDDM",
+          "202608171853-X3FD5M",
+          "202609211330-5A54M1",
+        ],
         classification: "additive",
         section: "package_manifests",
         from_sha256: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
@@ -1568,6 +1574,11 @@ function validateReviewedCandidate({
           valueHint: "<proof.json>",
         },
         {
+          kind: "string",
+          name: "assessment",
+          valueHint: "<migration-assessment.json>",
+        },
+        {
           default: false,
           kind: "boolean",
           name: "yes",
@@ -2157,6 +2168,12 @@ function validateReviewedCandidate({
       kind: "boolean",
       name: "apply",
       valueHint: null,
+    },
+    {
+      command: "task kernel-migrate",
+      kind: "string",
+      name: "assessment",
+      valueHint: "<migration-assessment.json>",
     },
     {
       command: "task kernel-migrate",
@@ -2941,6 +2958,12 @@ function validateReviewedCandidate({
       command: "task kernel-migrate",
       name: "apply",
       source_task: "202608291006-2A6BJC",
+    },
+    {
+      kind: "option",
+      command: "task kernel-migrate",
+      name: "assessment",
+      source_task: "202609210324-CC13V3",
     },
     {
       kind: "option",

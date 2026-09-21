@@ -4,6 +4,8 @@ import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { taskKernel as k } from "@agentplaneorg/core/tasks";
+import { verificationChildEnv } from "../shared/pr-meta/verify-log.js";
 
 if (typeof vi.hoisted !== "function") {
   Object.defineProperty(vi, "hoisted", { value: <T>(factory: () => T): T => factory() });
@@ -17,6 +19,7 @@ const mocks = vi.hoisted(() => ({
   prepareCanonicalWorkflowEffect: vi.fn(),
   restoreKernelFinalValidation: vi.fn().mockResolvedValue(null),
   runKernelFinalValidation: vi.fn(),
+  ensureKernelOperationalProjectionEvidence: vi.fn().mockResolvedValue(undefined),
 }));
 
 vi.mock("./kernel-runtime-context.js", () => ({
@@ -38,6 +41,9 @@ vi.mock("./kernel-provider-effect-coordinator.js", () => ({
 vi.mock("./kernel-repository-coordinator.js", () => ({
   commitCanonicalTerminalTaskArtifacts: mocks.commitCanonicalTerminalTaskArtifacts,
 }));
+vi.mock("./kernel-operational-projection.js", () => ({
+  ensureKernelOperationalProjectionEvidence: mocks.ensureKernelOperationalProjectionEvidence,
+}));
 
 import { advanceTaskStep } from "./advance-task-step.js";
 
@@ -46,6 +52,9 @@ const temporaryRoots: string[] = [];
 
 afterEach(async () => {
   vi.clearAllMocks();
+  mocks.commitCanonicalTerminalTaskArtifacts.mockResolvedValue(false);
+  mocks.restoreKernelFinalValidation.mockResolvedValue(null);
+  mocks.ensureKernelOperationalProjectionEvidence.mockResolvedValue(undefined);
   await Promise.all(
     temporaryRoots.splice(0).map((root) => rm(root, { recursive: true, force: true })),
   );
@@ -104,6 +113,127 @@ async function repositorySnapshot(root: string, evidencePath: string, record: un
 }
 
 describe("LC-20 terminal replay", () => {
+  it("commits terminal task artifacts only after complete_task is persisted", async () => {
+    const events: string[] = [];
+    const evidenceDigest = `sha256:${"e".repeat(64)}`;
+    const planDigest = `sha256:${"p".repeat(64)}`;
+    const record = {
+      digest: `sha256:${"r".repeat(64)}`,
+      aggregate: {
+        revision: 12,
+        current_plan: { digest: planDigest },
+        final_validation: { status: "PASSED", evidence_digests: [evidenceDigest] },
+        authority_lineage: [],
+        work_items: {},
+        effects: [],
+      },
+    };
+    const completion = { command: { expected_task_revision: 12 } };
+    const runtime = {
+      native: {
+        readContext: vi.fn().mockResolvedValue({ repository_fingerprint: "sha256:repo" }),
+      },
+      lifecycle: {
+        read: vi.fn().mockResolvedValue({
+          read: {
+            kind: "canonical",
+            task: { execution_route: { repository_mode: "branch_pr" } },
+            record,
+          },
+          next_action: {
+            reason_code: "kernel_task_completion_required",
+            work_item_id: null,
+            effect_id: null,
+          },
+        }),
+        apply: vi.fn().mockImplementation(() => {
+          events.push("complete_task");
+          return Promise.resolve({ kind: "committed" });
+        }),
+      },
+      input: vi.fn().mockResolvedValue(completion),
+      checkpoint: vi.fn(),
+    };
+    mocks.createKernelRuntime.mockResolvedValue(runtime);
+    mocks.restoreKernelFinalValidation.mockResolvedValue({
+      fingerprint: "sha256:repo",
+      environment_digest: k.kernelDigest(verificationChildEnv()),
+      evidence_digest: evidenceDigest,
+      plan_digest: planDigest,
+    });
+    mocks.commitCanonicalTerminalTaskArtifacts.mockImplementation(() => {
+      events.push("terminal_artifacts");
+      return Promise.reject(new Error("stop after ordering proof"));
+    });
+
+    await expect(
+      advanceTaskStep({
+        command: { resolvedProject: { gitRoot: "/repo" } } as never,
+        task_id: "task-1",
+        transport: "host",
+        allow_provider_effects: true,
+      }),
+    ).rejects.toThrow("stop after ordering proof");
+
+    expect(events).toEqual(["complete_task", "terminal_artifacts"]);
+  });
+
+  it("does not commit terminal task artifacts when complete_task fails", async () => {
+    const evidenceDigest = `sha256:${"e".repeat(64)}`;
+    const planDigest = `sha256:${"p".repeat(64)}`;
+    const record = {
+      digest: `sha256:${"r".repeat(64)}`,
+      aggregate: {
+        revision: 12,
+        current_plan: { digest: planDigest },
+        final_validation: { status: "PASSED", evidence_digests: [evidenceDigest] },
+        authority_lineage: [],
+        work_items: {},
+        effects: [],
+      },
+    };
+    const runtime = {
+      native: {
+        readContext: vi.fn().mockResolvedValue({ repository_fingerprint: "sha256:repo" }),
+      },
+      lifecycle: {
+        read: vi.fn().mockResolvedValue({
+          read: {
+            kind: "canonical",
+            task: { execution_route: { repository_mode: "branch_pr" } },
+            record,
+          },
+          next_action: {
+            reason_code: "kernel_task_completion_required",
+            work_item_id: null,
+            effect_id: null,
+          },
+        }),
+        apply: vi.fn().mockRejectedValue(new Error("stale completion")),
+      },
+      input: vi.fn().mockResolvedValue({ command: { expected_task_revision: 12 } }),
+      checkpoint: vi.fn(),
+    };
+    mocks.createKernelRuntime.mockResolvedValue(runtime);
+    mocks.restoreKernelFinalValidation.mockResolvedValue({
+      fingerprint: "sha256:repo",
+      environment_digest: k.kernelDigest(verificationChildEnv()),
+      evidence_digest: evidenceDigest,
+      plan_digest: planDigest,
+    });
+
+    await expect(
+      advanceTaskStep({
+        command: { resolvedProject: { gitRoot: "/repo" } } as never,
+        task_id: "task-1",
+        transport: "host",
+        allow_provider_effects: true,
+      }),
+    ).rejects.toThrow("stale completion");
+
+    expect(mocks.commitCanonicalTerminalTaskArtifacts).not.toHaveBeenCalled();
+  });
+
   it("keeps repeated locally terminal reads byte-stable without provider, check, or Kernel writes", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-terminal-noop-"));
     temporaryRoots.push(root);
