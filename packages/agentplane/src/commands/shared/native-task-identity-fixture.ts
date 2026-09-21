@@ -21,6 +21,7 @@ import {
   resolveNativeTaskIdentity,
 } from "./native-task-identity.js";
 import { loadCommandContext, type CommandContext } from "./task-backend.js";
+import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
 
 type FixtureGitIdentity =
   | { kind: "commit"; sha: string; ref: string | null }
@@ -244,11 +245,30 @@ export async function materializeLegacyDrainIdentityFixture(opts: {
   task_id: string;
   work_items_completed?: boolean;
   task_terminal?: boolean;
+  adopt_canonical_as_legacy?: boolean;
+  ownership_only?: boolean;
 }): Promise<boolean> {
   const ctx = await loadCommandContext({ cwd: opts.root, rootOverride: opts.root });
   const rawTask = await ctx.taskBackend.getTask(opts.task_id);
   if (!rawTask) throw new Error(`Task not found: ${opts.task_id}`);
-  const existingAggregate = taskCentricAggregateFromExtensions(rawTask.extensions);
+  const fixtureTask = opts.adopt_canonical_as_legacy
+    ? (() => {
+        const extensions = { ...rawTask.extensions };
+        delete extensions[TASK_KERNEL_EXTENSION];
+        return { ...rawTask, extensions };
+      })()
+    : rawTask;
+  const ownershipChanged =
+    taskCentricDigest(fixtureTask.extensions) !== taskCentricDigest(rawTask.extensions);
+  if (opts.ownership_only) {
+    if (!opts.adopt_canonical_as_legacy) {
+      throw new Error("Legacy ownership-only fixture requires explicit canonical adoption.");
+    }
+    if (!ownershipChanged) return false;
+    await ctx.taskBackend.writeTask(fixtureTask, { expectedRevision: rawTask.revision ?? 1 });
+    return true;
+  }
+  const existingAggregate = taskCentricAggregateFromExtensions(fixtureTask.extensions);
   const completionSatisfied =
     opts.work_items_completed !== true ||
     Object.values(existingAggregate?.work_items ?? {}).every((item) => item.state === "COMPLETED");
@@ -256,7 +276,8 @@ export async function materializeLegacyDrainIdentityFixture(opts: {
     opts.task_terminal !== true ||
     (existingAggregate?.lifecycle === "COMPLETED" && rawTask.status === "DONE");
   if (
-    resolveNativeTaskIdentity(rawTask) &&
+    !ownershipChanged &&
+    resolveNativeTaskIdentity(fixtureTask) &&
     existingAggregate?.revision === rawTask.revision &&
     completionSatisfied &&
     terminalSatisfied
@@ -270,7 +291,7 @@ export async function materializeLegacyDrainIdentityFixture(opts: {
     git = { kind: "unborn", ref: "HEAD" };
   }
   const prepared = withLegacyDrainIdentityFixture({
-    task: rawTask,
+    task: fixtureTask,
     config: ctx.config,
     git,
     work_items_completed: opts.work_items_completed,
