@@ -27,33 +27,37 @@ Use agentplane-roadmap-r2/tasks/LC-04.md through LC-24.md as the authoritative c
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../adapters/task-backend/kernel-next-action.ts    |  55 +++++-
- .../commands/shared/semantic-result-admission.ts   |  49 +++++
+ .../adapters/task-backend/kernel-next-action.ts    |  55 ++-
+ .../commands/shared/semantic-result-admission.ts   |  49 ++
  .../src/commands/shared/workflow-step-branch.ts    |  13 +-
- .../src/commands/shared/workflow-step-factory.ts   |  85 ++++++++-
+ .../src/commands/shared/workflow-step-factory.ts   |  85 +++-
+ .../src/commands/task/advance-task-step.ts         |   9 +-
+ .../src/commands/task/direct-task-verification.ts  |  35 ++
  .../src/commands/task/external-agent-exchange.ts   |  13 +-
- .../src/commands/task/kernel-exchange.ts           |  36 ++--
+ .../src/commands/task/kernel-exchange.ts           | 108 +++--
+ .../src/commands/task/kernel-inspection.ts         | 512 +++++++++++++++++----
  .../agentplane/src/commands/task/kernel-run.ts     |  12 +-
  .../src/commands/task/kernel-semantic-result.ts    |   4 +-
  .../src/commands/task/kernel-work-order.ts         |   5 +-
- .../commands/task/roadmap-curator-parity.test.ts   | 207 +++++++++++++++++++++
- .../task/roadmap-semantic-admission.test.ts        | 129 +++++++++++++
- .../task/roadmap-workitem-readiness.test.ts        | 150 +++++++++++++++
+ .../task/roadmap-check-review-separation.test.ts   |  93 ++++
+ .../commands/task/roadmap-curator-parity.test.ts   | 207 +++++++++
+ .../task/roadmap-semantic-admission.test.ts        | 129 ++++++
+ .../task/roadmap-workitem-readiness.test.ts        | 150 ++++++
  .../src/runner/usecases/agent-work-order-build.ts  |  12 +-
  .../src/runner/usecases/semantic-role.ts           |  10 +
- .../runner/usecases/task-knowledge-request.test.ts |  50 ++++-
- .../src/runner/usecases/task-knowledge-request.ts  |  62 +++---
+ .../runner/usecases/task-knowledge-request.test.ts |  50 +-
+ .../src/runner/usecases/task-knowledge-request.ts  |  62 ++-
  .../runner/usecases/task-run-semantic-prompt.ts    |  10 +-
  .../core/src/runner/agent-semantic-result.test.ts  |   1 +
  packages/core/src/runner/agent-semantic-result.ts  |   7 +-
  packages/core/src/runner/agent-work-order.test.ts  |   9 +
  packages/core/src/runner/agent-work-order.ts       |   5 +-
  packages/core/src/tasks/kernel-semantic.ts         |   2 +-
- packages/core/src/tasks/task-centric/graph.ts      | 117 ++++++++----
+ packages/core/src/tasks/task-centric/graph.ts      | 117 +++--
  packages/core/src/tasks/task-centric/index.ts      |   3 +
  packages/core/src/tasks/task-centric/lifecycle.ts  |   4 +
  schemas/agent-semantic-result.schema.json          |   6 +-
- 26 files changed, 919 insertions(+), 137 deletions(-)
+ 30 files changed, 1519 insertions(+), 258 deletions(-)
 ```
 
 </details>

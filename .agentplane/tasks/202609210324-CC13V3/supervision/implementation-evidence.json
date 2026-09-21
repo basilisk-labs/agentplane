@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 2a16e8e38dfc8813a50a61699e87428c80bf1598..e366d1c7a4873b6ff01a6efc6f1fe86d0ebc3f2f",
+      "command": "git diff --check e366d1c7a4873b6ff01a6efc6f1fe86d0ebc3f2f..a31b9dd4befbd066e0fa41222133545d6005df01",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 2a16e8e38dfc8813a50a61699e87428c80bf1598..e366d1c7a4873b6ff01a6efc6f1fe86d0ebc3f2f",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB e366d1c7a4873b6ff01a6efc6f1fe86d0ebc3f2f..a31b9dd4befbd066e0fa41222133545d6005df01",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -22,15 +22,21 @@
         "M\t.agentplane/tasks/202609210324-CC13V3/pr/github-body.md",
         "M\t.agentplane/tasks/202609210324-CC13V3/pr/meta.json",
         "M\t.agentplane/tasks/202609210324-CC13V3/pr/review.md",
-        "A\t.agentplane/tasks/202609210324-CC13V3/quality/objects/sha256/5404e4f80074675cc911e313ac7ead8157492b68fa4c1a9bc85f094f038d9414.json",
-        "A\t.agentplane/tasks/202609210324-CC13V3/supervision/declared-checks.json",
-        "A\t.agentplane/tasks/202609210324-CC13V3/supervision/implementation-evidence.json",
-        "A\tpackages/agentplane/src/commands/shared/semantic-result-admission.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-exchange.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-exchange.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-run.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-semantic-result.ts",
-        "A\tpackages/agentplane/src/commands/task/roadmap-semantic-admission.test.ts"
+        "M\t.agentplane/tasks/202609210324-CC13V3/supervision/declared-checks.json",
+        "M\t.agentplane/tasks/202609210324-CC13V3/supervision/implementation-evidence.json",
+        "M\tpackages/agentplane/src/commands/task/kernel-work-order.ts",
+        "A\tpackages/agentplane/src/commands/task/roadmap-curator-parity.test.ts",
+        "M\tpackages/agentplane/src/runner/usecases/agent-work-order-build.ts",
+        "A\tpackages/agentplane/src/runner/usecases/semantic-role.ts",
+        "M\tpackages/agentplane/src/runner/usecases/task-knowledge-request.test.ts",
+        "M\tpackages/agentplane/src/runner/usecases/task-knowledge-request.ts",
+        "M\tpackages/agentplane/src/runner/usecases/task-run-semantic-prompt.ts",
+        "M\tpackages/core/src/runner/agent-semantic-result.test.ts",
+        "M\tpackages/core/src/runner/agent-semantic-result.ts",
+        "M\tpackages/core/src/runner/agent-work-order.test.ts",
+        "M\tpackages/core/src/runner/agent-work-order.ts",
+        "M\tpackages/core/src/tasks/kernel-semantic.ts",
+        "M\tschemas/agent-semantic-result.schema.json"
       ]
     },
     {
@@ -40,15 +46,26 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "2a16e8e38dfc8813a50a61699e87428c80bf1598",
-  "implementation_commit": "e366d1c7a4873b6ff01a6efc6f1fe86d0ebc3f2f",
+  "execution_base_commit": "e366d1c7a4873b6ff01a6efc6f1fe86d0ebc3f2f",
+  "implementation_commit": "a31b9dd4befbd066e0fa41222133545d6005df01",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
       " M .agentplane/tasks/202609210324-CC13V3/README.md",
-      "?? .agentplane/tasks/202609210324-CC13V3/quality/objects/sha256/5404e4f80074675cc911e313ac7ead8157492b68fa4c1a9bc85f094f038d9414.json",
-      "?? .agentplane/tasks/202609210324-CC13V3/supervision/declared-checks.json",
-      "?? .agentplane/tasks/202609210324-CC13V3/supervision/implementation-evidence.json"
+      " M .agentplane/tasks/202609210324-CC13V3/supervision/declared-checks.json",
+      " M .agentplane/tasks/202609210324-CC13V3/supervision/implementation-evidence.json",
+      " M packages/agentplane/src/commands/task/kernel-work-order.ts",
+      " M packages/agentplane/src/runner/usecases/agent-work-order-build.ts",
+      " M packages/agentplane/src/runner/usecases/task-knowledge-request.test.ts",
+      " M packages/agentplane/src/runner/usecases/task-knowledge-request.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-semantic-prompt.ts",
+      " M packages/core/src/runner/agent-semantic-result.test.ts",
+      " M packages/core/src/runner/agent-semantic-result.ts",
+      " M packages/core/src/runner/agent-work-order.test.ts",
+      " M packages/core/src/runner/agent-work-order.ts",
+      " M packages/core/src/tasks/kernel-semantic.ts",
+      "?? packages/agentplane/src/commands/task/roadmap-curator-parity.test.ts",
+      "?? packages/agentplane/src/runner/usecases/semantic-role.ts"
     ],
     "classification": [
       {
@@ -57,24 +74,79 @@
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609210324-CC13V3/quality/objects/sha256/5404e4f80074675cc911e313ac7ead8157492b68fa4c1a9bc85f094f038d9414.json"
+        "line": " M .agentplane/tasks/202609210324-CC13V3/supervision/declared-checks.json"
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609210324-CC13V3/supervision/declared-checks.json"
+        "line": " M .agentplane/tasks/202609210324-CC13V3/supervision/implementation-evidence.json"
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609210324-CC13V3/supervision/implementation-evidence.json"
+        "line": " M packages/agentplane/src/commands/task/kernel-work-order.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/usecases/agent-work-order-build.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/usecases/task-knowledge-request.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/usecases/task-knowledge-request.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/usecases/task-run-semantic-prompt.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/src/runner/agent-semantic-result.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/src/runner/agent-semantic-result.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/src/runner/agent-work-order.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/src/runner/agent-work-order.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/src/tasks/kernel-semantic.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/roadmap-curator-parity.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/runner/usecases/semantic-role.ts"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
       " M .agentplane/tasks/202609210324-CC13V3/README.md",
-      "?? .agentplane/tasks/202609210324-CC13V3/quality/objects/sha256/5404e4f80074675cc911e313ac7ead8157492b68fa4c1a9bc85f094f038d9414.json",
-      "?? .agentplane/tasks/202609210324-CC13V3/supervision/declared-checks.json",
-      "?? .agentplane/tasks/202609210324-CC13V3/supervision/implementation-evidence.json"
+      " M .agentplane/tasks/202609210324-CC13V3/supervision/declared-checks.json",
+      " M .agentplane/tasks/202609210324-CC13V3/supervision/implementation-evidence.json",
+      " M packages/agentplane/src/commands/task/kernel-work-order.ts",
+      " M packages/agentplane/src/runner/usecases/agent-work-order-build.ts",
+      " M packages/agentplane/src/runner/usecases/task-knowledge-request.test.ts",
+      " M packages/agentplane/src/runner/usecases/task-knowledge-request.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-semantic-prompt.ts",
+      " M packages/core/src/runner/agent-semantic-result.test.ts",
+      " M packages/core/src/runner/agent-semantic-result.ts",
+      " M packages/core/src/runner/agent-work-order.test.ts",
+      " M packages/core/src/runner/agent-work-order.ts",
+      " M packages/core/src/tasks/kernel-semantic.ts",
+      "?? packages/agentplane/src/commands/task/roadmap-curator-parity.test.ts",
+      "?? packages/agentplane/src/runner/usecases/semantic-role.ts"
     ],
     "unchanged_from_execution_baseline": []
   },

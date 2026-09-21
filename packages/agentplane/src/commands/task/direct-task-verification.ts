@@ -126,6 +126,17 @@ export type DirectTaskVerificationResult = {
   reason: string | null;
 };
 
+export type DirectTaskVerificationInputIdentity = Readonly<{
+  schema_version: 1;
+  kind: "direct_task_verification_input";
+  cwd: string;
+  commands: readonly string[];
+  platform: NodeJS.Platform;
+  arch: string;
+  node: string;
+  runtimes: readonly LocalRuntimeEvidence[];
+}>;
+
 type AdditionalDirectTaskCommand = Readonly<{
   command: string;
   timeout_ms?: number;
@@ -224,6 +235,30 @@ function mergedOutput(values: readonly string[]): string {
 
 export function parseDirectTaskCheck(command: string): ParsedDirectTaskCheck | null {
   return parseDeclaredTaskCheck(command);
+}
+
+/** Material inputs that must remain equal before immutable check evidence can be reused. */
+export function directTaskVerificationInputIdentity(opts: {
+  cwd: string;
+  commands: readonly string[];
+}): DirectTaskVerificationInputIdentity {
+  const commands = [...new Set(opts.commands)];
+  const env = verificationChildEnv();
+  return Object.freeze({
+    schema_version: 1,
+    kind: "direct_task_verification_input",
+    cwd: path.resolve(opts.cwd),
+    commands,
+    platform: process.platform,
+    arch: process.arch,
+    node: process.version,
+    runtimes: commands.flatMap(
+      (command) =>
+        parseDeclaredTaskCheckSequence(command)?.map(({ executable }) =>
+          localRuntimeEvidence(executable, env, opts.cwd),
+        ) ?? [],
+    ),
+  });
 }
 
 function directTaskCheckTimeoutMs(script: string | null): number {

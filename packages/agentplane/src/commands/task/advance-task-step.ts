@@ -411,7 +411,14 @@ async function advanceCanonicalRoute(opts: {
         );
         continue;
       }
-      return issueKernelInspection(opts.command, runtime, record, route.work_item_id);
+      const inspection = await issueKernelInspection(
+        opts.command,
+        runtime,
+        record,
+        route.work_item_id,
+      );
+      if (inspection === null) continue;
+      return inspection;
     }
     if (route.reason_code === "kernel_work_item_materialization_required" && plan) {
       requireKernelCommit(
