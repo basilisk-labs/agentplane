@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check c3251ea9f455601dcd9b5174515f4269b9450db3..ffe2f74e99cc3caf8c10aa1c7f358ceaee0db88a",
+      "command": "git diff --check ffe2f74e99cc3caf8c10aa1c7f358ceaee0db88a..d47e4b20b84ac0575ff5e0e1b6a84beebffeee22",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB c3251ea9f455601dcd9b5174515f4269b9450db3..ffe2f74e99cc3caf8c10aa1c7f358ceaee0db88a",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB ffe2f74e99cc3caf8c10aa1c7f358ceaee0db88a..d47e4b20b84ac0575ff5e0e1b6a84beebffeee22",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,9 +24,7 @@
         "M\t.agentplane/tasks/202609210324-CC13V3/pr/review.md",
         "M\t.agentplane/tasks/202609210324-CC13V3/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202609210324-CC13V3/supervision/implementation-evidence.json",
-        "M\tpackages/agentplane/src/commands/task/kernel-cutover.ts",
         "M\tpackages/agentplane/src/commands/task/kernel-migrate.command.ts",
-        "M\tpackages/agentplane/src/commands/task/migration-apply.ts",
         "M\tpackages/agentplane/src/commands/task/roadmap-lifecycle-migration-apply.test.ts"
       ]
     },
@@ -37,8 +35,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "c3251ea9f455601dcd9b5174515f4269b9450db3",
-  "implementation_commit": "ffe2f74e99cc3caf8c10aa1c7f358ceaee0db88a",
+  "execution_base_commit": "ffe2f74e99cc3caf8c10aa1c7f358ceaee0db88a",
+  "implementation_commit": "d47e4b20b84ac0575ff5e0e1b6a84beebffeee22",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [

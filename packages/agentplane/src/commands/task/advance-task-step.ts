@@ -25,12 +25,7 @@ import { ensureKernelOperationalProjectionEvidence } from "./kernel-operational-
 import { transferCanonicalControllerToBase } from "./kernel-controller-handoff.js";
 import { acceptKernelSemanticResult } from "./kernel-semantic-result.js";
 import { ensureCanonicalTaskWorktree } from "./kernel-worktree-routing.js";
-import type { CommandCtx } from "../../cli/spec/spec.js";
-import type { TaskAdvanceParsed } from "./advance.spec.js";
-import {
-  advanceOrdinaryRoute,
-  canonicalCompletionPrecedesWorkflow,
-} from "./ordinary-advance-step.js";
+import { canonicalCompletionPrecedesWorkflow } from "./ordinary-advance-step.js";
 
 export { blockKernelSemanticEpisode } from "./kernel-semantic-result.js";
 
@@ -537,23 +532,12 @@ async function advanceCanonicalRoute(opts: {
     action: { kind: "human_required", reason: "canonical_transition_budget_exhausted" },
   };
 }
-export type AdvanceTaskStepOptions =
-  | ({ kind: "canonical" } & Parameters<typeof advanceCanonicalRoute>[0])
-  | {
-      kind: "ordinary";
-      ctx: CommandCtx;
-      parsed: TaskAdvanceParsed;
-      command: CommandContext;
-    };
+export type AdvanceTaskStepOptions = Parameters<typeof advanceCanonicalRoute>[0];
 
 export async function advanceTaskStep(opts: AdvanceTaskStepOptions) {
-  return opts.kind === "canonical"
-    ? await advanceCanonicalRoute(opts)
-    : await advanceOrdinaryRoute(opts);
+  return await advanceCanonicalRoute(opts);
 }
 
-export async function advanceCanonicalTask(
-  opts: Omit<Extract<AdvanceTaskStepOptions, { kind: "canonical" }>, "kind">,
-) {
-  return await advanceTaskStep({ kind: "canonical", ...opts });
+export async function advanceCanonicalTask(opts: AdvanceTaskStepOptions) {
+  return await advanceTaskStep(opts);
 }

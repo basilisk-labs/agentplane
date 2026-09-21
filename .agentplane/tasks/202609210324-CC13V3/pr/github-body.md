@@ -28,11 +28,14 @@ Use agentplane-roadmap-r2/tasks/LC-04.md through LC-24.md as the authoritative c
 
 ```text
  .../adapters/task-backend/kernel-next-action.ts    |  55 +-
+ .../src/cli/run-cli.core.kernel-transport.test.ts  |  15 +-
+ ...cli.core.roadmap-external-owner-cutover.test.ts | 105 +++
  .../commands/shared/semantic-result-admission.ts   |  49 ++
  .../shared/supervisor-execution-episode.ts         |  21 +
  .../src/commands/shared/workflow-step-branch.ts    |  13 +-
  .../src/commands/shared/workflow-step-factory.ts   |  85 +-
- .../src/commands/task/advance-task-step.ts         |   9 +-
+ .../src/commands/task/advance-task-step.ts         |  35 +-
+ .../src/commands/task/advance.command.ts           | 168 ++--
  .../task/branch-task-supervisor-operations.ts      |  40 +
  .../src/commands/task/branch-task-supervisor.ts    |  40 +-
  .../src/commands/task/direct-task-finalization.ts  |  38 +
@@ -58,6 +61,7 @@ Use agentplane-roadmap-r2/tasks/LC-04.md through LC-24.md as the authoritative c
  .../src/commands/task/migration-preview.ts         | 265 ++++++
  .../src/commands/task/ordinary-advance-step.ts     |  32 +-
  .../src/commands/task/quality-review-gate.ts       |  11 +-
+ .../commands/task/roadmap-advance-one-step.test.ts |   3 +-
  .../task/roadmap-branch-publication-parity.test.ts | 126 +++
  .../task/roadmap-check-review-separation.test.ts   |  93 ++
  .../commands/task/roadmap-common-recovery.test.ts  | 274 ++++++
@@ -85,7 +89,7 @@ Use agentplane-roadmap-r2/tasks/LC-04.md through LC-24.md as the authoritative c
  packages/core/src/tasks/task-centric/index.ts      |  10 +
  packages/core/src/tasks/task-centric/lifecycle.ts  |  62 ++
  schemas/agent-semantic-result.schema.json          |   6 +-
- 58 files changed, 5961 insertions(+), 557 deletions(-)
+ 62 files changed, 6172 insertions(+), 663 deletions(-)
 ```
 
 </details>

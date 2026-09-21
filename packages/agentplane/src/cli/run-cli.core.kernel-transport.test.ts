@@ -276,9 +276,15 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
         ],
       };
       const beforeInvalid = await runtime.adapter.read(taskId);
-      for (const invalid of [
-        { ...result, canonical_binding: { ...result.canonical_binding, claim_id: "foreign" } },
-        { ...result, canonical_outputs: [] },
+      for (const { invalid, message } of [
+        {
+          invalid: {
+            ...result,
+            canonical_binding: { ...result.canonical_binding, claim_id: "foreign" },
+          },
+          message: "canonical_binding",
+        },
+        { invalid: { ...result, canonical_outputs: [] }, message: "Canonical output claims" },
       ]) {
         await writeFile(implementationExchange.result_path, JSON.stringify(invalid));
         await refused(
@@ -291,7 +297,7 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
             implementationExchange.result_path,
             "--agent-json",
           ],
-          "Canonical",
+          message,
         );
         expect(await runtime.adapter.read(taskId)).toEqual(beforeInvalid);
       }
@@ -603,6 +609,7 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
           contract: { role: 'EXECUTOR', objective: 'Write result.txt', acceptance_criteria: ['Result exists'], verification_commands: ['node --version'] } }] };
       } else if (order.role === 'EVALUATOR') {
         assert.equal(order.authority.mutation_scope, 'none');
+        result.findings = ['The implementation was inspected against the issued contract.'];
         if (order.canonical_binding.attempt > 1) {
           const repositoryEvidence = order.required_inputs.find(input => input.id === 'repository-evidence');
           assert(repositoryEvidence && repositoryEvidence.required && repositoryEvidence.path);

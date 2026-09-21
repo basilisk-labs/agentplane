@@ -50,7 +50,8 @@ describe("LC-03 common advance-one-step coordinator", () => {
       readFile(new URL("../shared/workflow-supervisor.ts", import.meta.url), "utf8"),
     ]);
 
-    expect(coordinator).toContain("advanceOrdinaryRoute");
+    expect(coordinator).not.toContain("advanceOrdinaryRoute");
+    expect(coordinator).not.toContain('kind: "ordinary"');
     expect(ordinary).toContain("result_schema_ref");
     expect(ordinary).toContain("resume_argv");
     expect(ordinary).toContain("effect_in_doubt");
