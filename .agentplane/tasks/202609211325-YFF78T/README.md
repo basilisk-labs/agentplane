@@ -4,7 +4,7 @@ title: "Repair canonical branch-PR completion persistence and record the reviewe
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -296,6 +296,24 @@ extensions:
           event_digests:
             - "sha256:bdad21fb916c51ed631c83b881512e0f85192443aa037f0b5d6fc48179f911a2"
           mutation_id: "capture:202609211325-YFF78T"
+        kernel_work_item_claim_required:sha256:677deac778fa38aaf26ef3a62cf266fe28e81642f057ea71e6e56e100f5336fd:sha256:2399e02108a9099fa85713d02150366e5cd19f2968c796a533d48e8580e8ff3c:
+          after_revision: 5
+          aggregate_digest: "sha256:ad4601f0dfee70fd837c5b49348d879740c389d992c1cd382cd90659c23cc779"
+          before_revision: 4
+          command_digest: "sha256:bdbdf6049d88a4850ff4e9c479c8291179cdae25ecce0c94b4d74d229a5d3eca"
+          effect_ids: []
+          event_digests:
+            - "sha256:4bbc1b143de6a57d67cbe99762af2cf27cedc10feb4791e007d0802b6a19dacd"
+          mutation_id: "kernel_work_item_claim_required:sha256:677deac778fa38aaf26ef3a62cf266fe28e81642f057ea71e6e56e100f5336fd:sha256:2399e02108a9099fa85713d02150366e5cd19f2968c796a533d48e8580e8ff3c"
+        kernel_work_item_materialization_required:sha256:6130b0cfc8c6dcbbc9afa83c032edefc20c72882586afa5531abc2fbe008f372:sha256:2399e02108a9099fa85713d02150366e5cd19f2968c796a533d48e8580e8ff3c:
+          after_revision: 4
+          aggregate_digest: "sha256:bccc77b7d21badd07e86c9996c12bd84a6cbcffee8e72807d9e2e17cf2cd6b14"
+          before_revision: 3
+          command_digest: "sha256:d09539a94f9e90957b8d993d952b9c0ff059ed0267c3b8ea31ab699a375f4642"
+          effect_ids: []
+          event_digests:
+            - "sha256:e725c3e2c67d9e4407c2831b817e93392834c39c3b2bc57de4d7b94191a2e68b"
+          mutation_id: "kernel_work_item_materialization_required:sha256:6130b0cfc8c6dcbbc9afa83c032edefc20c72882586afa5531abc2fbe008f372:sha256:2399e02108a9099fa85713d02150366e5cd19f2968c796a533d48e8580e8ff3c"
         result:sha256:63926a509bbd34e158fef748177a4629129981b913e89d502e775bc79ed8104e:
           after_revision: 2
           aggregate_digest: "sha256:8eab48a2c4f68f0a92ce6b7ef74e3b258860257d904dac6416cf5a6429bce7ef"
@@ -315,11 +333,43 @@ extensions:
             - "sha256:9e8ec660e46ccad9bbd95289f76d39bd35bc3eb956b71a1c830357dcf4890ddb"
           mutation_id: "sha256:9ace2f7a5dd14bcc05b0d23c12b36971f2bf3c2010de527ad8efddae12292d3b"
       plan_history: []
-      revision: 3
+      revision: 5
       schema_version: 1
       state: "ACTIVE"
-      work_items: {}
-    digest: "sha256:6130b0cfc8c6dcbbc9afa83c032edefc20c72882586afa5531abc2fbe008f372"
+      work_items:
+        completion-and-compatibility-repair:
+          attempt: 1
+          claim_id: "sha256:1e054f0cd4c631d55544fba7f3da75522974b34a12820b3cae86bfe7748fd76d"
+          definition:
+            contract_digest: "sha256:cbacdc5c8030c9768a634922c3c434212f0552871805465c91b99004c65f5905"
+            depends_on: []
+            execution_requirements:
+              capabilities:
+                - "repository_write"
+                - "task.verify"
+              external_effects: []
+              repository_effects:
+                - "source_code"
+                - "tests"
+                - "release_metadata"
+              resources: []
+              scope_roots:
+                - "packages/agentplane/src/commands/task/advance-task-step.ts"
+                - "packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
+                - "packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts"
+                - "scripts/baselines/v0.7-compatibility-candidate.json"
+            expected_outputs:
+              - "canonical-completion-persistence-proof"
+              - "reviewed-compatibility-candidate"
+            id: "completion-and-compatibility-repair"
+            optional: false
+            required_inputs: []
+          output_manifests: []
+          result_digest: null
+          revision: 2
+          state: "CLAIMED"
+          validation: null
+    digest: "sha256:f610d429dcc7c3777ab9c3a099106689e398cec2b3adf53454a2f09610d7a448"
     documents:
       contracts:
         sha256:cbacdc5c8030c9768a634922c3c434212f0552871805465c91b99004c65f5905:
@@ -367,6 +417,24 @@ extensions:
         payload_digest: "sha256:8b894fd1d9eede9fa4fff43cf8cf98a83ed8217946a44dad0bb15931ffd5d322"
         task_id: "202609211325-YFF78T"
         task_revision: 3
+      -
+        command_digest: "sha256:d09539a94f9e90957b8d993d952b9c0ff059ed0267c3b8ea31ab699a375f4642"
+        id: "kernel_work_item_materialization_required:sha256:6130b0cfc8c6dcbbc9afa83c032edefc20c72882586afa5531abc2fbe008f372:sha256:2399e02108a9099fa85713d02150366e5cd19f2968c796a533d48e8580e8ff3c:work_items_materialized"
+        kind: "work_items_materialized"
+        mutation_id: "kernel_work_item_materialization_required:sha256:6130b0cfc8c6dcbbc9afa83c032edefc20c72882586afa5531abc2fbe008f372:sha256:2399e02108a9099fa85713d02150366e5cd19f2968c796a533d48e8580e8ff3c"
+        occurred_at: "2026-09-21T13:26:44.002Z"
+        payload_digest: "sha256:65712c2a1da8380d008f22d3ef7a3bcd55819e440c88d04b41b962e540b4341f"
+        task_id: "202609211325-YFF78T"
+        task_revision: 4
+      -
+        command_digest: "sha256:bdbdf6049d88a4850ff4e9c479c8291179cdae25ecce0c94b4d74d229a5d3eca"
+        id: "kernel_work_item_claim_required:sha256:677deac778fa38aaf26ef3a62cf266fe28e81642f057ea71e6e56e100f5336fd:sha256:2399e02108a9099fa85713d02150366e5cd19f2968c796a533d48e8580e8ff3c:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "kernel_work_item_claim_required:sha256:677deac778fa38aaf26ef3a62cf266fe28e81642f057ea71e6e56e100f5336fd:sha256:2399e02108a9099fa85713d02150366e5cd19f2968c796a533d48e8580e8ff3c"
+        occurred_at: "2026-09-21T13:26:47.850Z"
+        payload_digest: "sha256:bc18f549bd285e143a017087b2bb0a7ed067d6adc7d081a7e0aaa4082dfc205d"
+        task_id: "202609211325-YFF78T"
+        task_revision: 5
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
