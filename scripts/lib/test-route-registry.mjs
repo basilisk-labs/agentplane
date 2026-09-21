@@ -703,9 +703,9 @@ const RUNNER_TEST_FILES = [
 ];
 
 const ROUTE_ORACLE_TEST_FILES = [
-  "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts",
+  "packages/agentplane/src/commands/task/agent-action-packet.test.ts",
+  "packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts",
   "packages/agentplane/src/cli/command-guide.test.ts",
   "packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts",
 ];
