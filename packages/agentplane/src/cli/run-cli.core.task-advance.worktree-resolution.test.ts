@@ -1,25 +1,23 @@
 import {
+  approveTaskPlan,
+  createLegacyTaskAggregate,
+  createRepositorySnapshot,
+  createTaskPlanRevision,
+  materializeApprovedWorkItems,
+  taskKernel as k,
   taskCentricAggregateFromExtensions,
+  taskCentricDigest,
   withTaskCentricAggregate,
 } from "@agentplaneorg/core/tasks";
 import { LocalBackend } from "../backends/task-backend.js";
 import { recoverWorkPlanningBase } from "../commands/branch/work-resume-planning-base.js";
 import { execFile, spawn } from "node:child_process";
-import { mkdir, readdir, readFile, realpath, rm, writeFile } from "node:fs/promises";
+import { readdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
 import {
-  advanceSupervisorExecutionEpisodeState,
-  completeSupervisorExecutionEpisode,
-  createSupervisorExecutionEpisodeJournal,
-  startSupervisorExecutionEpisode,
-  type AgentWorkOrderV2,
-} from "@agentplaneorg/core/schemas";
-
-import {
   captureStdIO,
-  setTaskVerifySteps,
   installRunCliIntegrationHarness,
   mkGitRepoRootWithBranch,
   runCliSilent,
@@ -27,31 +25,13 @@ import {
 } from "@agentplane/testkit";
 
 import { buildTaskRouteDecision } from "../commands/shared/route-decision.js";
-import {
-  createSupervisorEpisodeStore,
-  resolveSupervisorExecutionEpisodePath,
-} from "../commands/shared/supervisor-execution-episode.js";
 import { loadCommandContext } from "../commands/shared/task-backend.js";
-import { agentTransitionId } from "../commands/task/agent-action-packet.js";
-import type { ExternalAgentExchange } from "../commands/task/external-agent-exchange.js";
 import { defaultConfig } from "./core-imports.js";
 import { runCli } from "./run-cli.js";
 
 installRunCliIntegrationHarness();
 
 const execFileAsync = promisify(execFile);
-
-type AgentPacket = {
-  task_id: string;
-  transition_id: string;
-  state_fingerprint: string;
-  authority: { role: string };
-  exchange?: {
-    directory: string;
-    work_order_ref: string;
-    result_ref: string;
-  };
-};
 
 async function createTask(
   root: string,
@@ -109,192 +89,302 @@ async function writeHarnessGitignore(root: string): Promise<void> {
   );
 }
 
-async function readAgentPacket(root: string, taskId: string): Promise<AgentPacket> {
-  const io = captureStdIO();
-  try {
-    const code = await runCli(["task", "advance", taskId, "--agent-json", "--root", root]);
-    expect(code, io.stderr).toBe(0);
-    return JSON.parse(io.stdout) as AgentPacket;
-  } finally {
-    io.restore();
-  }
+async function readHead(root: string): Promise<string> {
+  const result = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+  return result.stdout.trim();
 }
 
-async function writeCompletedResult(packet: AgentPacket): Promise<string> {
-  if (!packet.exchange) throw new Error("expected an external-agent exchange");
-  const workOrder = JSON.parse(
-    await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
-  ) as { work_order_id: string; role: string };
-  const resultPath = path.join(packet.exchange.directory, packet.exchange.result_ref);
-  await writeFile(
-    resultPath,
-    `${JSON.stringify(
+async function writeLegacyTerminalTask(root: string, taskId: string): Promise<void> {
+  const command = await loadCommandContext({ cwd: root, rootOverride: root });
+  const task = (await command.taskBackend.getTask(taskId))!;
+  const now = new Date().toISOString();
+  const aggregate = createLegacyTaskAggregate({
+    id: taskId,
+    revision: task.revision!,
+    title: task.title,
+    description: task.description ?? task.title,
+    status: "DONE",
+    acceptance_criteria: [],
+    captured_at: now,
+    updated_at: now,
+  });
+  const { task_kernel: _kernel, ...extensions } = task.extensions ?? {};
+  await command.taskBackend.writeTask({
+    ...task,
+    status: "DONE",
+    extensions: withTaskCentricAggregate(extensions, aggregate),
+  });
+}
+
+async function writeLegacyApprovedTask(
+  root: string,
+  taskId: string,
+  targetSha: string,
+  dependsOn: string[] = [],
+): Promise<void> {
+  const command = await loadCommandContext({ cwd: root, rootOverride: root });
+  const task = (await command.taskBackend.getTask(taskId))!;
+  const now = new Date().toISOString();
+  const snapshot = createRepositorySnapshot({
+    git: { kind: "commit", sha: targetSha, ref: "refs/heads/main" },
+    dirty_paths: [],
+    policy_digest: taskCentricDigest("policy"),
+    config_digest: taskCentricDigest("config"),
+    context_digest: taskCentricDigest("context"),
+    task_history_cursor: `task:${taskId}`,
+    captured_at: now,
+  });
+  const validation = {
+    schema_version: 1 as const,
+    criteria: [
       {
-        schema_version: 1,
-        kind: "agent_action_result",
-        task_id: packet.task_id,
-        transition_id: packet.transition_id,
-        state_fingerprint: packet.state_fingerprint,
-        role: workOrder.role,
-        result: {
-          schema_version: 2,
-          kind: "agent_semantic_result",
-          work_order_id: workOrder.work_order_id,
-          status: "completed",
-          summary: "Keep the intended worktree changes.",
-          findings: [],
-          uncertainty: [],
+        id: "worktree-contract",
+        description: "Preserve the authoritative worktree and exact external-episode contract.",
+        required: true,
+        check_ids: ["task-check"],
+      },
+    ],
+    checks: [
+      {
+        id: "task-check",
+        kind: "deterministic" as const,
+        required: true,
+        capability: "task.verify",
+      },
+    ],
+    evidence_fingerprint: snapshot.digest,
+  };
+  const proposal = {
+    schema_version: 1 as const,
+    task_id: taskId,
+    planning_baseline: snapshot,
+    work_items: {
+      schema_version: 1 as const,
+      work_items: [
+        {
+          id: "exercise-worktree",
+          objective: "Exercise the authoritative external-agent worktree.",
+          depends_on: [],
+          required_inputs: [],
+          expected_outputs: ["worktree-result"],
+          scope_roots: ["."],
+          acceptance_criteria: validation.criteria,
+          validation,
+          context: {
+            required_sources: [],
+            optional_sources: [],
+            symbol_hints: [],
+            max_bytes: 65_536,
+          },
+          risk: "low" as const,
+          capabilities: ["task.verify"],
+          resource_claims: [{ kind: "workspace" as const, resource: ".", mode: "write" as const }],
+          optional: false,
+          priority: 1,
+        },
+      ],
+    },
+    assumptions: [],
+    unresolved_questions: [],
+    top_level_validation: validation,
+  };
+  const draft = createTaskPlanRevision({ proposal, revision: 1, created_at: now });
+  const plan = approveTaskPlan({
+    plan: draft,
+    expected_digest: draft.digest,
+    actor: "USER",
+    approved_at: now,
+  });
+  const aggregate = materializeApprovedWorkItems({
+    task: createLegacyTaskAggregate({
+      id: taskId,
+      revision: task.revision!,
+      title: task.title,
+      description: task.description ?? task.title,
+      status: "TODO",
+      acceptance_criteria: validation.criteria.map((criterion) => criterion.description),
+      captured_at: now,
+      updated_at: now,
+    }),
+    plan,
+    now,
+  });
+  const { task_kernel: _kernel, ...extensions } = task.extensions ?? {};
+  await command.taskBackend.writeTask({
+    ...task,
+    status: "DOING",
+    revision: aggregate.revision,
+    depends_on: dependsOn,
+    plan_approval: { state: "approved", updated_at: now, updated_by: "USER", note: null },
+    extensions: withTaskCentricAggregate(extensions, aggregate),
+  });
+}
+
+async function publicCompletionRegression() {
+  const root = await mkGitRepoRootWithBranch("main");
+  const config = defaultConfig();
+  config.workflow_mode = "branch_pr";
+  await writeConfig(root, config);
+  await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+  const taskId = await createTask(root, "Canonical completion persistence");
+  await writeHarnessGitignore(root);
+  await execFileAsync("git", ["add", "."], { cwd: root });
+  await execFileAsync("git", ["commit", "-m", "test: seed completion persistence"], {
+    cwd: root,
+  });
+  await execFileAsync("git", ["switch", "-c", `task/${taskId}/completion-persistence`], {
+    cwd: root,
+  });
+
+  const command = await loadCommandContext({ cwd: root, rootOverride: root });
+  const task = (await command.taskBackend.getTask(taskId))!;
+  const kernel = task.extensions!.task_kernel as { aggregate: Record<string, unknown> };
+  const aggregate = kernel.aggregate;
+  const evidenceDigest = `sha256:${"e".repeat(64)}` as k.Sha256Digest;
+  const planDigest = `sha256:${"a".repeat(64)}` as k.Sha256Digest;
+  const completionRecord = {
+    digest: `sha256:${"b".repeat(64)}` as k.Sha256Digest,
+    aggregate: {
+      ...aggregate,
+      current_plan: { digest: planDigest },
+      final_validation: { status: "PASSED", evidence_digests: [evidenceDigest] },
+    },
+  };
+  const completedRecord = {
+    ...completionRecord,
+    aggregate: { ...completionRecord.aggregate, state: "COMPLETED", revision: 2 },
+  };
+  const read = vi
+    .fn()
+    .mockResolvedValueOnce({
+      read: {
+        kind: "canonical",
+        task,
+        record: completionRecord,
+      },
+      next_action: {
+        reason_code: "kernel_task_completion_required",
+        work_item_id: null,
+        effect_id: null,
+      },
+    })
+    .mockResolvedValue({
+      read: {
+        kind: "canonical",
+        task: { ...task, status: "DONE" },
+        record: completedRecord,
+      },
+      next_action: {
+        reason_code: "kernel_task_completed",
+        work_item_id: null,
+        effect_id: null,
+      },
+    });
+  const apply = vi.fn().mockImplementation(async () => {
+    const current = (await command.taskBackend.getTask(taskId))!;
+    const currentKernel = current.extensions!.task_kernel as {
+      aggregate: Record<string, unknown>;
+    };
+    const revision = current.revision! + 1;
+    await command.taskBackend.writeTask(
+      {
+        ...current,
+        status: "DONE",
+        revision,
+        extensions: {
+          ...current.extensions,
+          task_kernel: {
+            ...currentKernel,
+            aggregate: { ...currentKernel.aggregate, state: "COMPLETED", revision },
+          },
         },
       },
-      null,
-      2,
-    )}\n`,
-    "utf8",
-  );
-  return resultPath;
-}
+      { expectedRevision: current.revision },
+    );
+    return { kind: "committed", record: completedRecord, receipts: [], replayed: false };
+  });
+  const runtime = {
+    native: {
+      readContext: vi.fn().mockResolvedValue({ repository_fingerprint: "sha256:repo" }),
+    },
+    lifecycle: { read, apply },
+    input: vi.fn().mockResolvedValue({ command: { expected_task_revision: task.revision } }),
+    checkpoint: vi.fn(),
+  };
+  const [kernelRuntime, kernelFinalValidation, kernelProjection, kernelProviderEffects, verifyLog] =
+    await Promise.all([
+      import("../commands/task/kernel-runtime-context.js"),
+      import("../commands/task/kernel-final-validation.js"),
+      import("../commands/task/kernel-operational-projection.js"),
+      import("../commands/task/kernel-provider-effect-coordinator.js"),
+      import("../commands/shared/pr-meta/verify-log.js"),
+    ]);
+  const originalCreateKernelRuntime = kernelRuntime.createKernelRuntime;
+  const originalRestoreKernelFinalValidation = kernelFinalValidation.restoreKernelFinalValidation;
+  const originalEnsureKernelOperationalProjectionEvidence =
+    kernelProjection.ensureKernelOperationalProjectionEvidence;
+  const originalDecideCanonicalWorkflowEffect = kernelProviderEffects.decideCanonicalWorkflowEffect;
+  const runtimeSpy = vi
+    .spyOn(kernelRuntime, "createKernelRuntime")
+    .mockResolvedValue(runtime as never);
+  const validationSpy = vi
+    .spyOn(kernelFinalValidation, "restoreKernelFinalValidation")
+    .mockResolvedValue({
+      fingerprint: "sha256:repo",
+      environment_digest: k.kernelDigest(verifyLog.verificationChildEnv()),
+      evidence_digest: evidenceDigest,
+      plan_digest: planDigest,
+    });
+  const projectionSpy = vi
+    .spyOn(kernelProjection, "ensureKernelOperationalProjectionEvidence")
+    .mockResolvedValue(undefined);
+  const workflowSpy = vi
+    .spyOn(kernelProviderEffects, "decideCanonicalWorkflowEffect")
+    .mockResolvedValue({
+      workspace: { baseCheckoutPath: root },
+      workflowStep: { kind: "terminal", outcome: { type: "done" } },
+    } as never);
 
-async function returnAgentResult(root: string, taskId: string, resultPath: string) {
   const io = captureStdIO();
   try {
     const code = await runCli([
       "task",
       "advance",
       taskId,
-      "--result",
-      resultPath,
       "--agent-json",
+      "--remote",
       "--root",
       root,
     ]);
-    return { code, stdout: io.stdout, stderr: io.stderr };
+    expect(code, io.stderr).toBe(0);
+    expect(JSON.parse(io.stdout)).toMatchObject({
+      action: { kind: "terminal", reason: "kernel_task_completed" },
+    });
   } finally {
     io.restore();
+    workflowSpy.mockImplementation(originalDecideCanonicalWorkflowEffect);
+    projectionSpy.mockImplementation(originalEnsureKernelOperationalProjectionEvidence);
+    validationSpy.mockImplementation(originalRestoreKernelFinalValidation);
+    runtimeSpy.mockImplementation(originalCreateKernelRuntime);
   }
-}
 
-async function approveStructuredPlan(root: string, taskId: string): Promise<void> {
-  const packet = await readAgentPacket(root, taskId);
-  expect(packet.authority.role).toBe("PLANNER");
-  if (!packet.exchange) throw new Error("expected a planning exchange");
-  const workOrder = JSON.parse(
-    await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
-  ) as AgentWorkOrderV2;
-  const criterion = {
-    id: "worktree-contract",
-    description: "Preserve the authoritative worktree and exact external-episode contract.",
-    required: true,
-    check_ids: ["task-check"],
-  };
-  const validation = {
-    schema_version: 1,
-    criteria: [criterion],
-    checks: [
-      { id: "task-check", kind: "deterministic", required: true, capability: "task.verify" },
-    ],
-    evidence_fingerprint: workOrder.planning_context!.repository_snapshot.digest,
-  };
-  const resultPath = path.join(packet.exchange.directory, "result.json");
-  await writeFile(
-    resultPath,
-    JSON.stringify({
-      schema_version: 1,
-      kind: "agent_action_result",
-      task_id: taskId,
-      transition_id: packet.transition_id,
-      state_fingerprint: packet.state_fingerprint,
-      role: "PLANNER",
-      result: {
-        schema_version: 2,
-        kind: "agent_semantic_result",
-        work_order_id: workOrder.work_order_id,
-        status: "completed",
-        summary: "Exercise the worktree contract through one approved structured WorkItem.",
-        findings: [],
-        uncertainty: [],
-        task_intent: {
-          task_kind: "code",
-          mutation_scope: "code",
-          risk_flags: [],
-          tags: ["code"],
-          execution: {
-            schema_version: 2,
-            preferred_mode: "branch_pr",
-            scope_roots: ["."],
-            repository_effects: ["repository_write", "source_code"],
-            external_effects: [],
-            requirements_uncertainty: "bounded",
-            implementation_uncertainty: "bounded",
-            reversibility: "reversible",
-            rationale: ["The fixture authorizes only local worktree payload changes."],
-          },
-        },
-        task_plan_proposal: {
-          schema_version: 1,
-          task_id: taskId,
-          planning_baseline: workOrder.planning_context!.repository_snapshot,
-          work_items: {
-            schema_version: 1,
-            work_items: [
-              {
-                id: "exercise-worktree",
-                objective: "Exercise the authoritative external-agent worktree.",
-                depends_on: [],
-                required_inputs: [],
-                expected_outputs: ["worktree-result"],
-                scope_roots: ["."],
-                acceptance_criteria: [criterion],
-                validation,
-                context: {
-                  required_sources: [],
-                  optional_sources: [],
-                  symbol_hints: [],
-                  max_bytes: 65_536,
-                },
-                risk: "low",
-                capabilities: ["task.verify"],
-                resource_claims: [{ kind: "workspace", resource: ".", mode: "write" }],
-                optional: false,
-                priority: 1,
-              },
-            ],
-          },
-          assumptions: [],
-          unresolved_questions: [],
-          top_level_validation: validation,
-        },
-      },
-    }),
-  );
-  const io = captureStdIO();
-  try {
-    expect(
-      await runCli([
-        "task",
-        "advance",
-        taskId,
-        "--result",
-        resultPath,
-        "--agent-json",
-        "--root",
-        root,
-      ]),
-      io.stderr,
-    ).toBe(0);
-    const approval = JSON.parse(io.stdout) as { action: { kind: string } };
-    expect(approval.action.kind).toBe("approval_required");
-  } finally {
-    io.restore();
-  }
-  await setTaskVerifySteps(root, taskId);
+  const persisted = (await command.taskBackend.getTask(taskId))!;
+  expect(persisted.status).toBe("DONE");
   expect(
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]),
-  ).toBe(0);
-}
-
-async function readHead(root: string): Promise<string> {
-  const result = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
-  return result.stdout.trim();
+    (persisted.extensions!.task_kernel as { aggregate: { state: string } }).aggregate.state,
+  ).toBe("COMPLETED");
+  const status = await execFileAsync(
+    "git",
+    ["status", "--short", "--untracked-files=all", `.agentplane/tasks/${taskId}`],
+    { cwd: root },
+  );
+  expect(status.stdout).toBe("");
+  const committedReadme = await execFileAsync(
+    "git",
+    ["show", `HEAD:.agentplane/tasks/${taskId}/README.md`],
+    { cwd: root },
+  );
+  expect(committedReadme.stdout).toContain('status: "DONE"');
 }
 
 describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => {
@@ -320,35 +410,13 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
         root,
         "Completed prerequisite for planning-base recovery",
       );
-      expect(
-        await runCliSilent([
-          "task",
-          "set-status",
-          dependencyId,
-          "DONE",
-          "--force",
-          "--yes",
-          "--root",
-          root,
-        ]),
-      ).toBe(0);
-      expect(
-        await runCliSilent([
-          "task",
-          "update",
-          taskId,
-          "--depends-on",
-          dependencyId,
-          "--root",
-          root,
-        ]),
-      ).toBe(0);
+      await writeLegacyTerminalTask(root, dependencyId);
       await execFileAsync("git", ["add", `${workflowDir}/${dependencyId}`], { cwd: root });
       await writeFile(path.join(root, "prerequisite.txt"), "completed prerequisite\n");
       await execFileAsync("git", ["add", "prerequisite.txt"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "test: prerequisite landed"], { cwd: root });
       const target = await readHead(root);
-      await approveStructuredPlan(root, taskId);
+      await writeLegacyApprovedTask(root, taskId, target, [dependencyId]);
       expect(
         await runCliSilent([
           "work",
@@ -674,278 +742,8 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
     },
   );
 
-  it("recovers a completed stale journal and replaces prior implementation metadata", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
-    const config = defaultConfig();
-    config.workflow_mode = "branch_pr";
-    await writeConfig(root, config);
-    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
-    const taskId = await createTask(root);
-    await writeHarnessGitignore(root);
-    await mkdir(path.join(root, "scripts"), { recursive: true });
-    await writeFile(
-      path.join(root, "scripts", "check-resolution.mjs"),
-      'import { readFileSync } from "node:fs";\nimport { strict as assert } from "node:assert";\nassert.equal(readFileSync("intended-resolution.txt", "utf8"), "keep\\n");\n',
-      "utf8",
-    );
-    await writeFile(
-      path.join(root, "package.json"),
-      JSON.stringify({ scripts: { "ci:local:full": "node scripts/check-resolution.mjs" } }),
-      "utf8",
-    );
-    await execFileAsync("git", ["add", "."], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "test: seed worktree resolution"], { cwd: root });
-    await approveStructuredPlan(root, taskId);
-    await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "test: approve structured worktree plan"], {
-      cwd: root,
-    });
-
-    const slug = "external-resolution";
-    const taskWorktree = path.join(root, ".agentplane", "worktrees", `${taskId}-${slug}`);
-    await runCliSilent([
-      "work",
-      "start",
-      taskId,
-      "--agent",
-      "CODER",
-      "--slug",
-      slug,
-      "--worktree",
-      "--root",
-      root,
-    ]);
-    await runCliSilent([
-      "task",
-      "start-ready",
-      taskId,
-      "--author",
-      "CODER",
-      "--body",
-      "Start: reproduce external task-worktree resolution.",
-      "--root",
-      taskWorktree,
-    ]);
-    await execFileAsync("git", ["add", "."], { cwd: taskWorktree });
-    await execFileAsync("git", ["commit", "-m", "test: persist start-ready fixture"], {
-      cwd: taskWorktree,
-    });
-    const priorImplementationHeadResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
-      cwd: taskWorktree,
-    });
-    const priorImplementationHead = priorImplementationHeadResult.stdout.trim();
-    await runCliSilent([
-      "task",
-      "set-status",
-      taskId,
-      "DOING",
-      "--commit",
-      priorImplementationHead,
-      "--root",
-      taskWorktree,
-    ]);
-    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: taskWorktree });
-    await execFileAsync("git", ["commit", "-m", "test: persist prior implementation metadata"], {
-      cwd: taskWorktree,
-    });
-    await writeFile(path.join(taskWorktree, "intended-resolution.txt"), "keep\n", "utf8");
-    const pendingTaskReadme = path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md");
-    await writeFile(
-      pendingTaskReadme,
-      `${await readFile(pendingTaskReadme, "utf8")}\n<!-- pending baseline task metadata -->\n`,
-      "utf8",
-    );
-
-    const taskCommand = await loadCommandContext({ cwd: taskWorktree, rootOverride: taskWorktree });
-    const currentDecision = await buildTaskRouteDecision({
-      ctx: taskCommand,
-      cwd: taskWorktree,
-      rootOverride: taskWorktree,
-      taskId,
-      includeRemote: false,
-    });
-    const oldFingerprint = `sha256:${"a".repeat(64)}`;
-    const prior = createSupervisorExecutionEpisodeJournal({
-      task_id: taskId,
-      task_revision: currentDecision.workflowStep.preconditionFingerprint.task_revision,
-      state_fingerprint_digest: oldFingerprint,
-      budget: {
-        max_episodes: 4,
-        max_agent_runs: 4,
-        max_input_tokens: null,
-        max_output_tokens: null,
-        max_total_tokens: null,
-        max_wall_time_ms: null,
-        max_changed_files: null,
-        max_diff_lines: null,
-        max_no_progress_episodes: null,
-      },
-    });
-    const priorStarted = startSupervisorExecutionEpisode({
-      journal: prior,
-      role: "EVALUATOR",
-      kind: "evaluator_episode",
-      operation_identity: { test: "completed prior external episode" },
-      precondition_fingerprint_digest: oldFingerprint,
-    });
-    if (priorStarted.status !== "started") throw new Error("expected prior supervisor intent");
-    const priorCompleted = completeSupervisorExecutionEpisode({
-      journal: priorStarted.journal,
-      operation_key: priorStarted.operation_key,
-      result: { verdict: "rework" },
-    });
-    const priorReady = advanceSupervisorExecutionEpisodeState({
-      journal: priorCompleted,
-      state_fingerprint_digest: oldFingerprint,
-      route_observation: { test: "prior result persisted" },
-    });
-    const stale = startSupervisorExecutionEpisode({
-      journal: priorReady,
-      role: "EXECUTOR",
-      kind: "agent_episode",
-      operation_identity: { test: "changed route after prior result" },
-      precondition_fingerprint_digest: currentDecision.workflowStep.preconditionFingerprint.digest,
-    });
-    if (stale.status !== "stopped" || stale.stop.reason !== "stale_state") {
-      throw new Error("expected stale supervisor journal fixture");
-    }
-    const journalPath = await resolveSupervisorExecutionEpisodePath({
-      git_root: taskWorktree,
-      task_id: taskId,
-    });
-    await createSupervisorEpisodeStore(journalPath).write(priorReady);
-
-    const packet = await readAgentPacket(taskWorktree, taskId);
-    expect(packet.authority.role).toBe("EXECUTOR");
-    const resultPath = await writeCompletedResult(packet);
-    if (!packet.exchange) throw new Error("expected task-worktree resolution exchange");
-    const exchange = JSON.parse(
-      await readFile(path.join(packet.exchange.directory, "exchange.json"), "utf8"),
-    ) as ExternalAgentExchange;
-    expect(exchange).toMatchObject({
-      task_id: taskId,
-      transition_id: packet.transition_id,
-      state_fingerprint: packet.state_fingerprint,
-      role: "EXECUTOR",
-      purpose: "task_worktree_resolution",
-      checkout: await realpath(taskWorktree),
-      status: "issued",
-    });
-    expect(exchange.baseline.changed_paths).toContain(` M .agentplane/tasks/${taskId}/README.md`);
-    const accepted = await returnAgentResult(taskWorktree, taskId, resultPath);
-    expect(accepted.code, accepted.stderr).toBe(0);
-    expect(accepted.stderr).not.toMatch(/unsupported purpose|stale/iu);
-    expect(
-      JSON.parse(await readFile(path.join(packet.exchange.directory, "exchange.json"), "utf8")),
-    ).toMatchObject({ status: "consumed" });
-    expect(exchange.baseline.head).not.toBe(priorImplementationHead);
-    const taskReadme = await readFile(
-      path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md"),
-      "utf8",
-    );
-    expect(taskReadme).toMatch(/commit:\n {2}hash: "[0-9a-f]{40}"/u);
-    expect(taskReadme).not.toContain(`hash: "${priorImplementationHead}"`);
-    const committedContent = await execFileAsync(
-      "git",
-      ["show", "HEAD~1:intended-resolution.txt"],
-      { cwd: taskWorktree },
-    );
-    expect(committedContent.stdout).toBe("keep\n");
-  });
-
-  it("accepts a fresh read-only worktree observation without implementation authority", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
-    const config = defaultConfig();
-    config.workflow_mode = "branch_pr";
-    await writeConfig(root, config);
-    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
-    const taskId = await createTask(root);
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Report the closed task worktree state without mutating it.",
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--root",
-      root,
-    ]);
-    await setTaskVerifySteps(root, taskId);
-    expect(
-      await runCliSilent([
-        "task",
-        "plan",
-        "approve",
-        taskId,
-        "--by",
-        "ORCHESTRATOR",
-        "--root",
-        root,
-      ]),
-    ).toBe(0);
-    await writeHarnessGitignore(root);
-    await execFileAsync("git", ["add", "."], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "test: seed read-only resolution"], {
-      cwd: root,
-    });
-
-    const slug = "read-only-resolution";
-    const taskWorktree = path.join(root, ".agentplane", "worktrees", `${taskId}-${slug}`);
-    await runCliSilent([
-      "work",
-      "start",
-      taskId,
-      "--agent",
-      "CODER",
-      "--slug",
-      slug,
-      "--worktree",
-      "--root",
-      root,
-    ]);
-    await runCliSilent([
-      "task",
-      "set-status",
-      taskId,
-      "DONE",
-      "--force",
-      "--yes",
-      "--root",
-      taskWorktree,
-    ]);
-    await execFileAsync("git", ["add", "."], { cwd: taskWorktree });
-    await execFileAsync("git", ["commit", "-m", "test: persist closed task fixture"], {
-      cwd: taskWorktree,
-    });
-    await writeFile(path.join(taskWorktree, "unresolved-local.txt"), "observe only\n", "utf8");
-
-    const packet = await readAgentPacket(taskWorktree, taskId);
-    expect(packet.transition_id).toBe(
-      agentTransitionId("agent.task_worktree_resolution", packet.state_fingerprint),
-    );
-    if (!packet.exchange) throw new Error("expected read-only worktree exchange");
-    const workOrder = JSON.parse(
-      await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
-    ) as { authority: { sandbox: string } };
-    expect(workOrder.authority.sandbox).toBe("read-only");
-    const resultPath = await writeCompletedResult(packet);
-    const accepted = await returnAgentResult(taskWorktree, taskId, resultPath);
-
-    expect(accepted.code, accepted.stderr).toBe(0);
-    expect(
-      JSON.parse(await readFile(path.join(packet.exchange.directory, "exchange.json"), "utf8")),
-    ).toMatchObject({ status: "consumed" });
-    const unresolvedStatus = await execFileAsync(
-      "git",
-      ["status", "--short", "unresolved-local.txt"],
-      { cwd: taskWorktree },
-    );
-    expect(unresolvedStatus.stdout).toContain("unresolved-local.txt");
-    const latestSubject = await execFileAsync("git", ["log", "-1", "--format=%s"], {
-      cwd: taskWorktree,
-    });
-    expect(latestSubject.stdout).toContain("record worktree observation");
-  });
+  it(
+    "commits the canonical COMPLETED projection through the public branch_pr route",
+    publicCompletionRegression,
+  );
 });
