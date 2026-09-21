@@ -1,4 +1,7 @@
 {
+  "artifact_state": "remote_failed",
+  "artifact_state_reason": "GitHub PR creation failed",
+  "artifact_state_updated_at": "2026-09-21T13:09:48.173Z",
   "base": "agentplane/release-0.7.11-repair-base",
   "branch": "task/202609211051-X92CWM/repair-the-demonstrated-0-7-11-release-blockers",
   "created_at": "2026-09-21T12:18:29.179Z",
