@@ -3,7 +3,8 @@
   "branch": "task/202609211330-5A54M1/repair-canonical-branch-pr-completion-persistenc",
   "created_at": "2026-09-21T14:16:18.707Z",
   "diffstat_sha256": "sha256:36742aaf5f85e4b42ef293146777a129a066986374b93efc499e6b668c849222",
-  "last_verified_at": null,
+  "last_verified_at": "2026-09-21T14:34:30.156Z",
+  "last_verified_diffstat_sha256": "sha256:36742aaf5f85e4b42ef293146777a129a066986374b93efc499e6b668c849222",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202609211330-5A54M1",
   "updated_at": "2026-09-21T14:16:18.707Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

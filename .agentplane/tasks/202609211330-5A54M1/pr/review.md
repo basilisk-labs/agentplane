@@ -6,14 +6,14 @@ Created: 2026-09-21T14:16:18.707Z
 
 - Task: `202609211330-5A54M1`
 - Title: Repair canonical branch-PR completion persistence and record the reviewed 0.7.11 compatibility candidate
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609211330-5A54M1/repair-canonical-branch-pr-completion-persistenc`
 - Canonical task record: `.agentplane/tasks/202609211330-5A54M1/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
