@@ -82,6 +82,15 @@ function logicalRequest(taskId: string, decision: TaskRouteDecision, operation: 
   };
 }
 
+/** Exact identity shared by dispatch, replay reconciliation, and hosted-observation tests. */
+export function canonicalWorkflowRequestDigest(
+  taskId: string,
+  decision: TaskRouteDecision,
+  operation: WorkflowOperation,
+): k.Sha256Digest {
+  return k.kernelDigest(logicalRequest(taskId, decision, operation));
+}
+
 function effectId(operation: WorkflowOperation, requestDigest: k.Sha256Digest): string {
   return `workflow:${operation.id}:${requestDigest.slice("sha256:".length, "sha256:".length + 16)}`;
 }
@@ -110,7 +119,7 @@ function matchesEffectRequest(
   return (
     CANONICAL_EFFECT_KIND_BY_OPERATION[operation.id as SupportedOperationId] ===
       dispatch.effect.kind &&
-    k.kernelDigest(logicalRequest(dispatch.task_id, decision, operation)) ===
+    canonicalWorkflowRequestDigest(dispatch.task_id, decision, operation) ===
       dispatch.effect.request_digest
   );
 }
@@ -437,7 +446,7 @@ export function canonicalWorkflowEffectForDecision(
   if (!operation || !authority) return null;
   const kind = CANONICAL_EFFECT_KIND_BY_OPERATION[operation.id];
   if (!authority.external_effects.includes(kind)) return null;
-  const requestDigest = k.kernelDigest(logicalRequest(record.aggregate.id, decision, operation));
+  const requestDigest = canonicalWorkflowRequestDigest(record.aggregate.id, decision, operation);
   return {
     id: effectId(operation, requestDigest),
     kind,

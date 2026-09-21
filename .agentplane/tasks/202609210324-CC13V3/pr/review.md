@@ -48,7 +48,7 @@ Created: 2026-09-21T03:47:54.341Z
  .../src/commands/task/kernel-exchange.ts           | 108 +++--
  .../src/commands/task/kernel-inspection.ts         | 527 +++++++++++++++++----
  .../kernel-provider-effect-coordinator.test.ts     |   1 +
- .../task/kernel-provider-effect-coordinator.ts     |  11 +-
+ .../task/kernel-provider-effect-coordinator.ts     |  24 +-
  .../agentplane/src/commands/task/kernel-run.ts     |  12 +-
  .../src/commands/task/kernel-semantic-result.ts    |   4 +-
  .../src/commands/task/kernel-work-order.ts         |   5 +-
@@ -60,6 +60,7 @@ Created: 2026-09-21T03:47:54.341Z
  .../task/roadmap-common-review-application.test.ts | 155 ++++++
  .../commands/task/roadmap-curator-parity.test.ts   | 207 ++++++++
  .../task/roadmap-direct-coordinator-parity.test.ts | 194 ++++++++
+ .../task/roadmap-integration-parity.test.ts        | 264 +++++++++++
  .../task/roadmap-semantic-admission.test.ts        | 129 +++++
  .../task/roadmap-workitem-readiness.test.ts        | 150 ++++++
  .../src/runner/usecases/agent-work-order-build.ts  |  12 +-
@@ -76,7 +77,7 @@ Created: 2026-09-21T03:47:54.341Z
  packages/core/src/tasks/task-centric/index.ts      |   5 +
  packages/core/src/tasks/task-centric/lifecycle.ts  |  62 +++
  schemas/agent-semantic-result.schema.json          |   6 +-
- 47 files changed, 2418 insertions(+), 540 deletions(-)
+ 48 files changed, 2693 insertions(+), 542 deletions(-)
 ```
 
 </details>

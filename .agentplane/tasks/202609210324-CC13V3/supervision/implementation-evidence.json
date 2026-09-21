@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 64d3af988d25918e401d6f9636dec3404dd2dd23..aa07590fd30e7390abecc9b903919f651e33c6ca",
+      "command": "git diff --check aa07590fd30e7390abecc9b903919f651e33c6ca..8f366f76f9b1cab3b31af0972f638c9e4331fe60",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 64d3af988d25918e401d6f9636dec3404dd2dd23..aa07590fd30e7390abecc9b903919f651e33c6ca",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB aa07590fd30e7390abecc9b903919f651e33c6ca..8f366f76f9b1cab3b31af0972f638c9e4331fe60",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,15 +24,13 @@
         "M\t.agentplane/tasks/202609210324-CC13V3/pr/review.md",
         "M\t.agentplane/tasks/202609210324-CC13V3/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202609210324-CC13V3/supervision/implementation-evidence.json",
-        "M\tpackages/agentplane/src/commands/task/direct-task-finalization.ts",
-        "M\tpackages/agentplane/src/commands/task/direct-task-supervisor-closeout.test.ts",
-        "M\tpackages/agentplane/src/commands/task/direct-task-supervisor-closeout.ts",
-        "M\tpackages/agentplane/src/commands/task/direct-task-supervisor-operation.test.ts",
-        "M\tpackages/agentplane/src/commands/task/direct-task-supervisor-operation.ts",
-        "M\tpackages/agentplane/src/commands/task/direct-task-supervisor.test.ts",
-        "M\tpackages/agentplane/src/commands/task/direct-task-supervisor.ts",
+        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor-operations.ts",
+        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-worktree-routing.ts",
         "M\tpackages/agentplane/src/commands/task/ordinary-advance-step.ts",
-        "A\tpackages/agentplane/src/commands/task/roadmap-direct-coordinator-parity.test.ts"
+        "A\tpackages/agentplane/src/commands/task/roadmap-branch-publication-parity.test.ts"
       ]
     },
     {
@@ -42,8 +40,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "64d3af988d25918e401d6f9636dec3404dd2dd23",
-  "implementation_commit": "aa07590fd30e7390abecc9b903919f651e33c6ca",
+  "execution_base_commit": "aa07590fd30e7390abecc9b903919f651e33c6ca",
+  "implementation_commit": "8f366f76f9b1cab3b31af0972f638c9e4331fe60",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
