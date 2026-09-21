@@ -357,7 +357,7 @@ describe("direct task verification", () => {
     mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "16 pass", stderr: "" });
     process.env.AGENTPLANE_AGENT_MODE = "1";
     process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN = "/maintenance/agentplane.js";
-    const check = "bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts";
+    const check = "bun test packages/agentplane/src/commands/task/agent-action-packet.test.ts";
 
     const result = await runVerification(cwd, {
       verify: [check],
@@ -381,7 +381,7 @@ describe("direct task verification", () => {
       | undefined;
     expect(invocation).toMatchObject({
       command: "bun",
-      args: ["test", "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"],
+      args: ["test", "packages/agentplane/src/commands/task/agent-action-packet.test.ts"],
       cwd,
       timeoutMs: 30 * 60_000,
     });

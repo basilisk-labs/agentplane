@@ -413,7 +413,6 @@ const V07_SUPERVISOR_FILES = [
   "packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts",
   "packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts",
   "packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts",
   "packages/agentplane/src/cli/run-cli.core.task-run.test.ts",
 ];
 
