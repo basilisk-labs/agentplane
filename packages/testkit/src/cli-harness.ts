@@ -303,6 +303,12 @@ export async function approveTaskPlan(root: string, taskId: string): Promise<voi
 }
 
 export async function setTaskVerifySteps(root: string, taskId: string): Promise<void> {
+  await materializeLegacyDrainIdentityFixture({
+    root,
+    task_id: taskId,
+    adopt_canonical_as_legacy: true,
+    ownership_only: true,
+  });
   const io = captureStdIO();
   try {
     const code = await runCli([

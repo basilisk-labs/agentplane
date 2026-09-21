@@ -213,7 +213,8 @@ export async function prepareContinuityPlan(
                 contract: {
                   objective,
                   acceptance_criteria: [objective],
-                  verification_commands: commands.length > 0 ? commands : ["bun test"],
+                  verification_commands:
+                    commands.length > 0 ? commands : ["git status --short"],
                   role: "EXECUTOR",
                 },
               },

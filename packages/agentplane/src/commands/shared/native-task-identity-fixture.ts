@@ -259,7 +259,7 @@ export async function materializeLegacyDrainIdentityFixture(opts: {
       })()
     : rawTask;
   const ownershipChanged =
-    taskCentricDigest(fixtureTask.extensions) !== taskCentricDigest(rawTask.extensions);
+    taskCentricDigest(fixtureTask.extensions ?? {}) !== taskCentricDigest(rawTask.extensions ?? {});
   if (opts.ownership_only) {
     if (!opts.adopt_canonical_as_legacy) {
       throw new Error("Legacy ownership-only fixture requires explicit canonical adoption.");

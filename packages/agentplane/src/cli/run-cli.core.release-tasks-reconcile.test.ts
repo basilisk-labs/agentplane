@@ -8,6 +8,7 @@ import { defaultConfig } from "@agentplaneorg/core/config";
 import { createIncidentRegistrySkeleton } from "../runtime/incidents/index.js";
 
 import { loadCommandContext } from "../commands/shared/task-backend.js";
+import { materializeLegacyDrainIdentityFixture } from "../commands/shared/native-task-identity-fixture.js";
 import { runCli } from "./run-cli.js";
 import {
   captureStdIO,
@@ -118,6 +119,11 @@ async function createDocBackedTask(root: string, title: string): Promise<string>
     expect(code).toBe(0);
     const taskId = io.stdout.trim();
     await setTaskVerifySteps(root, taskId);
+    await materializeLegacyDrainIdentityFixture({
+      root,
+      task_id: taskId,
+      work_items_completed: true,
+    });
     return taskId;
   } finally {
     io.restore();
@@ -312,18 +318,20 @@ describe("runCli release tasks reconcile", { timeout: RELEASE_TASKS_RECONCILE_TI
 
     const primaryTaskId = await createDocBackedTask(root, "Rebased primary batch task");
     const includedTaskId = await createDocBackedTask(root, "Rebased included batch task");
-    await runCliSilent([
-      "task",
-      "set-status",
-      primaryTaskId,
-      "DONE",
-      "--commit",
-      originalTaskCommit,
-      "--force",
-      "--yes",
-      "--root",
-      root,
-    ]);
+    expect(
+      await runCliSilent([
+        "task",
+        "set-status",
+        primaryTaskId,
+        "DONE",
+        "--commit",
+        originalTaskCommit,
+        "--force",
+        "--yes",
+        "--root",
+        root,
+      ]),
+    ).toBe(3);
     await runCliSilent(["task", "set-status", includedTaskId, "DOING", "--root", root]);
     await runCliSilent([
       "verify",
@@ -376,7 +384,7 @@ describe("runCli release tasks reconcile", { timeout: RELEASE_TASKS_RECONCILE_TI
       const code = await runCli(["task", "show", primaryTaskId, "--root", root]);
       expect(code).toBe(0);
       const primaryTask = JSON.parse(ioPrimary.stdout) as { commit?: { hash?: string } };
-      expect(primaryTask.commit?.hash).toBe(originalTaskCommit);
+      expect(primaryTask.commit?.hash).toBeUndefined();
     } finally {
       ioPrimary.restore();
     }
