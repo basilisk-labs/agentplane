@@ -22,7 +22,7 @@ Dependency evidence: LC-02 merged as PR #5990 at main 4f28ee5433e7666de75437015b
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-21T02:30:45.367Z
+- Updated: 2026-09-21T02:52:39.274Z
 - Branch: task/202609210154-5R1Q9A/canonical-5r1q9a
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
