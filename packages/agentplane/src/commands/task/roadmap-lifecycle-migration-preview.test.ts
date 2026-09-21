@@ -1,5 +1,6 @@
 import {
-  createLegacyTaskAggregate,
+  renderTaskReadme,
+  TASK_CENTRIC_EXTENSION_KEY,
   taskCentricDigest,
   taskKernel as k,
   type TaskAggregate,
@@ -10,6 +11,7 @@ import { describe, expect, it } from "vitest";
 import { previewLifecycleOwnerMigration } from "./migration-preview.js";
 
 const digest = (value: unknown) => k.kernelDigest(value);
+const RUNTIME_EXTENSION = "agentplane.task_centric_runtime";
 
 function runtime(
   overrides: Partial<TaskCentricMigrationRuntime> = {},
@@ -172,27 +174,44 @@ function parallelTask(): TaskAggregate {
   };
 }
 
+function sourceBytes(opts: {
+  task?: TaskAggregate;
+  runtime?: TaskCentricMigrationRuntime;
+  status?: "TODO" | "DOING" | "DONE" | "BLOCKED";
+  revision?: number;
+}) {
+  const task = opts.task;
+  return Buffer.from(
+    renderTaskReadme(
+      {
+        schema_version: 1,
+        doc_version: 3,
+        id: task?.id ?? "task-1",
+        title: "Migration fixture",
+        description: "Preserve exact migration meaning",
+        status: opts.status ?? (task?.lifecycle === "COMPLETED" ? "DONE" : "DOING"),
+        priority: "med",
+        owner: "CODER",
+        tags: [],
+        depends_on: [],
+        verify: ["Preserve accepted work"],
+        revision: opts.revision ?? task?.revision ?? 1,
+        extensions: task
+          ? {
+              [TASK_CENTRIC_EXTENSION_KEY]: task,
+              [RUNTIME_EXTENSION]: { schema_version: 1, ...(opts.runtime ?? runtime()) },
+            }
+          : {},
+      } as never,
+      "# Migration fixture\n",
+    ),
+  );
+}
+
 describe("LC-13 lifecycle-owner migration preview", () => {
   it("is byte-deterministic, read-only, and needs no agent for an exact legacy mapping", () => {
-    const task = createLegacyTaskAggregate({
-      id: "task-1",
-      revision: 1,
-      title: "Legacy task",
-      description: "No parallel plan exists",
-      status: "TODO",
-      acceptance_criteria: ["Create a plan"],
-      captured_at: "2026-09-21T00:00:00.000Z",
-      updated_at: "2026-09-21T00:00:00.000Z",
-    });
-    const state = runtime();
-    const original = structuredClone({ task, state });
-    const input = {
-      task_id: "task-1",
-      source_revision: 1,
-      source_bytes: Buffer.from("exact legacy bytes\r\n", "utf8"),
-      task,
-      runtime: state,
-    };
+    const input = sourceBytes({ status: "TODO", revision: 1 });
+    const original = Buffer.from(input);
 
     const first = previewLifecycleOwnerMigration(input);
     const second = previewLifecycleOwnerMigration(input);
@@ -203,24 +222,43 @@ describe("LC-13 lifecycle-owner migration preview", () => {
       semantic_assessment: null,
       mapping: { blockers: [], semantic_assessment_fields: [] },
     });
-    expect({ task, state }).toEqual(original);
+    expect(input).toEqual(original);
+    expect(first.source_bytes.value).toBe(input.toString("base64"));
   });
 
   it("accounts for every source leaf and emits one bytes-bound assessment for real meaning gaps", () => {
     const task = parallelTask();
-    const source = Buffer.from("parallel owner source bytes\n", "utf8");
-    const preview = previewLifecycleOwnerMigration({
-      task_id: task.id,
-      source_revision: task.revision,
-      source_bytes: source,
-      task,
-      runtime: runtime(),
-    });
+    const source = sourceBytes({ task });
+    const preview = previewLifecycleOwnerMigration(source);
     const paths = preview.mapping.field_mappings.map((entry) => entry.source_path);
 
     expect(new Set(paths).size).toBe(paths.length);
     expect(paths).toContain("task.current_plan.proposal.work_items.work_items.0.objective");
     expect(paths).toContain("task.work_items.build.output_manifests.0.digest");
+    expect(paths).toContain("source.frontmatter.owner");
+    const mapped = (path: string) =>
+      preview.mapping.field_mappings.find((entry) => entry.source_path === path);
+    expect(mapped("task.current_plan.proposal.planning_baseline.digest")).toMatchObject({
+      disposition: "retained_evidence",
+      target: "migration.source_evidence",
+    });
+    expect(mapped("task.current_plan.approval.approved_digest")).toMatchObject({
+      disposition: "retained_evidence",
+    });
+    expect(mapped("task.current_plan.proposal.work_items.work_items.0.priority")).toMatchObject({
+      disposition: "semantic_assessment",
+    });
+    expect(mapped("task.work_items.build.output_manifests.0.producer.attempt")).toMatchObject({
+      disposition: "kernel_owner",
+      target: "task.work_items.build.output_manifests.0.attempt",
+    });
+    expect(mapped("task.work_items.build.output_manifests.0.schema")).toMatchObject({
+      disposition: "retained_evidence",
+    });
+    expect(mapped("source.frontmatter.owner")).toMatchObject({
+      disposition: "retained_evidence",
+      target: "migration.source_evidence",
+    });
     expect(preview.status).toBe("semantic_assessment_required");
     expect(preview.semantic_assessment).toMatchObject({
       kind: "kernel_migration_semantic_assessment",
@@ -236,13 +274,7 @@ describe("LC-13 lifecycle-owner migration preview", () => {
 
   it("retains accepted outputs and validation identities in the formal projection", () => {
     const task = parallelTask();
-    const preview = previewLifecycleOwnerMigration({
-      task_id: task.id,
-      source_revision: task.revision,
-      source_bytes: Buffer.from("accepted source"),
-      task,
-      runtime: runtime(),
-    });
+    const preview = previewLifecycleOwnerMigration(sourceBytes({ task }));
     const item = task.work_items.build!;
 
     expect(preview.formal_projection.work_items.build).toMatchObject({
@@ -313,13 +345,9 @@ describe("LC-13 lifecycle-owner migration preview", () => {
         },
       ],
     });
-    const preview = previewLifecycleOwnerMigration({
-      task_id: "task-1",
-      source_revision: 4,
-      source_bytes: Buffer.from("stale source"),
-      task,
-      runtime: state,
-    });
+    const preview = previewLifecycleOwnerMigration(
+      sourceBytes({ task, runtime: state, revision: 4 }),
+    );
 
     expect(preview.status).toBe("blocked");
     expect(preview.semantic_assessment).toBeNull();
@@ -333,6 +361,26 @@ describe("LC-13 lifecycle-owner migration preview", () => {
       lease_ids: ["lease-1"],
       effect_operation_ids: ["publish-1"],
       checkpoint_revisions: [4],
+      checkpoint_refs: ["exchange/result.json"],
     });
+  });
+
+  it("maps a terminal legacy source to the existing read-only archive disposition", () => {
+    const preview = previewLifecycleOwnerMigration(sourceBytes({ status: "DONE", revision: 1 }));
+
+    expect(preview).toMatchObject({
+      source_class: "legacy",
+      status: "ready",
+      semantic_assessment: null,
+      formal_projection: { disposition: "read_only_archive", state: "COMPLETED" },
+      mapping: { blockers: [], semantic_assessment_fields: [] },
+    });
+    expect(
+      preview.mapping.field_mappings.every(
+        (entry) =>
+          entry.disposition === "retained_evidence" &&
+          entry.target === "read_only_archive.source_bytes",
+      ),
+    ).toBe(true);
   });
 });

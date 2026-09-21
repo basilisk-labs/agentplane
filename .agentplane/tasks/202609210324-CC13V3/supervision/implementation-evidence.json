@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 709052e7d7df1268bcb1d87d9c893d28c28d07ad..6a8c2763399776b73279f64d96a42c4d9357e67a",
+      "command": "git diff --check 6a8c2763399776b73279f64d96a42c4d9357e67a..0f510fd18708711e3872dfe25b2c8989d1fc7ff8",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 709052e7d7df1268bcb1d87d9c893d28c28d07ad..6a8c2763399776b73279f64d96a42c4d9357e67a",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 6a8c2763399776b73279f64d96a42c4d9357e67a..0f510fd18708711e3872dfe25b2c8989d1fc7ff8",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,7 +24,12 @@
         "M\t.agentplane/tasks/202609210324-CC13V3/pr/review.md",
         "M\t.agentplane/tasks/202609210324-CC13V3/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202609210324-CC13V3/supervision/implementation-evidence.json",
-        "A\tpackages/agentplane/src/commands/task/roadmap-common-recovery.test.ts"
+        "A\tpackages/agentplane/src/commands/task/migration-preview.ts",
+        "A\tpackages/agentplane/src/commands/task/roadmap-lifecycle-migration-preview.test.ts",
+        "M\tpackages/core/src/tasks/index.ts",
+        "M\tpackages/core/src/tasks/kernel-semantic.ts",
+        "M\tpackages/core/src/tasks/task-centric/compatibility.ts",
+        "M\tpackages/core/src/tasks/task-centric/index.ts"
       ]
     },
     {
@@ -34,8 +39,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "709052e7d7df1268bcb1d87d9c893d28c28d07ad",
-  "implementation_commit": "6a8c2763399776b73279f64d96a42c4d9357e67a",
+  "execution_base_commit": "6a8c2763399776b73279f64d96a42c4d9357e67a",
+  "implementation_commit": "0f510fd18708711e3872dfe25b2c8989d1fc7ff8",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [

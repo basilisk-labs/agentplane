@@ -51,7 +51,7 @@ Use agentplane-roadmap-r2/tasks/LC-04.md through LC-24.md as the authoritative c
  .../src/commands/task/kernel-semantic-result.ts    |   4 +-
  .../src/commands/task/kernel-work-order.ts         |   5 +-
  .../src/commands/task/kernel-worktree-routing.ts   |  72 ++-
- .../src/commands/task/migration-preview.ts         | 159 +++++++
+ .../src/commands/task/migration-preview.ts         | 260 ++++++++++
  .../src/commands/task/ordinary-advance-step.ts     |  32 +-
  .../src/commands/task/quality-review-gate.ts       |  11 +-
  .../task/roadmap-branch-publication-parity.test.ts | 126 +++++
@@ -61,7 +61,7 @@ Use agentplane-roadmap-r2/tasks/LC-04.md through LC-24.md as the authoritative c
  .../commands/task/roadmap-curator-parity.test.ts   | 207 ++++++++
  .../task/roadmap-direct-coordinator-parity.test.ts | 194 ++++++++
  .../task/roadmap-integration-parity.test.ts        | 264 +++++++++++
- .../roadmap-lifecycle-migration-preview.test.ts    | 338 +++++++++++++
+ .../roadmap-lifecycle-migration-preview.test.ts    | 386 +++++++++++++++
  .../task/roadmap-semantic-admission.test.ts        | 129 +++++
  .../task/roadmap-workitem-readiness.test.ts        | 150 ++++++
  .../src/runner/usecases/agent-work-order-build.ts  |  12 +-
@@ -75,12 +75,12 @@ Use agentplane-roadmap-r2/tasks/LC-04.md through LC-24.md as the authoritative c
  packages/core/src/runner/agent-work-order.ts       |   5 +-
  packages/core/src/tasks/index.ts                   |   4 +
  packages/core/src/tasks/kernel-semantic.ts         |  39 +-
- .../core/src/tasks/task-centric/compatibility.ts   | 243 +++++++++-
+ .../core/src/tasks/task-centric/compatibility.ts   | 364 +++++++++++++-
  packages/core/src/tasks/task-centric/graph.ts      | 117 +++--
  packages/core/src/tasks/task-centric/index.ts      |  10 +
  packages/core/src/tasks/task-centric/lifecycle.ts  |  62 +++
  schemas/agent-semantic-result.schema.json          |   6 +-
- 53 files changed, 3752 insertions(+), 543 deletions(-)
+ 53 files changed, 4022 insertions(+), 543 deletions(-)
 ```
 
 </details>

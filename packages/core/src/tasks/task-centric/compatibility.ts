@@ -298,6 +298,7 @@ export type TaskCentricKernelMigrationMapping = Readonly<{
     lease_ids: readonly string[];
     effect_operation_ids: readonly string[];
     checkpoint_revisions: readonly number[];
+    checkpoint_refs: readonly string[];
   }>;
   retained: Readonly<{
     plan_digest: Sha256Digest | null;
@@ -324,6 +325,37 @@ function compareText(left: string, right: string): number {
 function fieldMapping(path: string): TaskCentricMigrationFieldMapping {
   const relative = path.replace(/^task\./u, "").replace(/^runtime\./u, "");
   const root = relative.split(".")[0] ?? relative;
+  if (path.startsWith("source.frontmatter.")) {
+    const name = path.slice("source.frontmatter.".length).split(".")[0];
+    const targets: Readonly<Record<string, string>> = {
+      id: "task.id",
+      revision: "task.revision",
+      status: "task.state",
+      title: "documents.intent",
+      description: "documents.intent",
+      verify: "documents.intent.acceptance_criteria",
+    };
+    return targets[name ?? ""]
+      ? {
+          source_path: path,
+          disposition: "kernel_owner",
+          target: targets[name ?? ""]!,
+          reason_code: null,
+        }
+      : {
+          source_path: path,
+          disposition: "retained_evidence",
+          target: "migration.source_evidence",
+          reason_code: null,
+        };
+  }
+  if (path === "source.body")
+    return {
+      source_path: path,
+      disposition: "retained_evidence",
+      target: "migration.source_evidence",
+      reason_code: null,
+    };
   if (path.startsWith("runtime.leases.")) {
     return {
       source_path: path,
@@ -335,30 +367,61 @@ function fieldMapping(path: string): TaskCentricMigrationFieldMapping {
   if (path.startsWith("runtime.pending_effects.")) {
     return {
       source_path: path,
-      disposition: "kernel_owner",
-      target: "task.effects",
+      disposition: "retained_evidence",
+      target: "migration.source_evidence",
       reason_code: null,
     };
   }
   if (path.startsWith("task.current_plan.") || path.startsWith("task.plan_history.")) {
-    const semantic =
-      path.includes(".work_items.") &&
-      ["objective", "scope_roots", "capabilities", "resource_claims", "risk", "validation"].some(
-        (name) => path.includes(`.${name}`),
-      );
-    return semantic
-      ? {
-          source_path: path,
-          disposition: "semantic_assessment",
-          target: "task.current_plan.work_items + documents.contracts + authority",
-          reason_code: "legacy_plan_semantics_require_explicit_kernel_contract",
-        }
-      : {
-          source_path: path,
-          disposition: "kernel_owner",
-          target: path.replace(/^task\./u, "task."),
-          reason_code: null,
-        };
+    const semantic = [
+      ".objective",
+      ".scope_roots",
+      ".capabilities",
+      ".resource_claims",
+      ".risk",
+      ".priority",
+      ".validation",
+      ".acceptance_criteria",
+      ".context",
+      ".top_level_validation",
+      ".assumptions",
+      ".unresolved_questions",
+    ].some((name) => path.includes(name));
+    if (semantic)
+      return {
+        source_path: path,
+        disposition: "semantic_assessment",
+        target: "task.current_plan.work_items + documents.contracts + authority",
+        reason_code: "legacy_plan_semantics_require_explicit_kernel_contract",
+      };
+    const retained = [
+      ".planning_baseline",
+      ".created_at",
+      ".approved_at",
+      ".approved_digest",
+      ".policy_facts",
+      ".schema_version",
+      ".proposal.task_id",
+    ].some((name) => path.includes(name));
+    if (retained)
+      return {
+        source_path: path,
+        disposition: "retained_evidence",
+        target: "migration.source_evidence",
+        reason_code: null,
+      };
+    const target = path
+      .replace(/\.approval\.state$/u, ".state")
+      .replace(/\.approval\.approved_by$/u, ".approval_actor_id")
+      .replace(/\.proposal\.work_items\.work_items\./u, ".work_items.")
+      .replace(/\.proposal\.work_items\.schema_version$/u, ".work_items")
+      .replace(/\.proposal\.schema_version$/u, ".work_items");
+    return {
+      source_path: path,
+      disposition: "kernel_owner",
+      target: target.replace(/^task\./u, "task."),
+      reason_code: null,
+    };
   }
   if (path.startsWith("task.work_items.")) {
     const semantic = path.endsWith(".validation_result") || path.includes(".validation_result.");
@@ -369,15 +432,34 @@ function fieldMapping(path: string): TaskCentricMigrationFieldMapping {
           target: "task.work_items[].validation",
           reason_code: "legacy_validation_identity_requires_explicit_binding",
         }
-      : {
-          source_path: path,
-          disposition: "kernel_owner",
-          target: path
-            .replace(/^task\.work_items\./u, "task.work_items.")
-            .replace(/\.output_manifests\./u, ".output_manifests."),
-          reason_code: null,
-        };
+      : path.includes(".last_failure") ||
+          (path.includes(".output_manifests.") &&
+            [".schema_version", ".schema", ".provenance"].some((name) => path.includes(name)))
+        ? {
+            source_path: path,
+            disposition: "retained_evidence",
+            target: "migration.source_evidence",
+            reason_code: null,
+          }
+        : {
+            source_path: path,
+            disposition: "kernel_owner",
+            target: path
+              .replace(/(task\.work_items\.[^.]+)\.id$/u, "$1.definition.id")
+              .replace(/^task\.work_items\./u, "task.work_items.")
+              .replace(/\.output_manifests\./u, ".output_manifests.")
+              .replace(/\.producer\./u, ".")
+              .replace(/\.repository_snapshot_digest$/u, ".repository_fingerprint"),
+            reason_code: null,
+          };
   }
+  if (path === "task.final_validation" || path.startsWith("task.final_validation."))
+    return {
+      source_path: path,
+      disposition: "semantic_assessment",
+      target: "task.final_validation",
+      reason_code: "legacy_validation_identity_requires_explicit_binding",
+    };
   const retainedRoots = new Set([
     "event_cursor",
     "updated_at",
@@ -406,12 +488,20 @@ function fieldMapping(path: string): TaskCentricMigrationFieldMapping {
     final_validation: "task.final_validation",
     mutation_receipts: "task.mutation_receipts",
   };
-  return {
-    source_path: path,
-    disposition: "kernel_owner",
-    target: targets[root] ?? "migration.source_evidence",
-    reason_code: null,
-  };
+  const target = targets[root];
+  return target
+    ? {
+        source_path: path,
+        disposition: "kernel_owner",
+        target,
+        reason_code: null,
+      }
+    : {
+        source_path: path,
+        disposition: "retained_evidence",
+        target: "migration.source_evidence",
+        reason_code: null,
+      };
 }
 
 /**
@@ -423,6 +513,8 @@ export function mapTaskCentricKernelMigration(opts: {
   runtime: TaskCentricMigrationRuntime;
   source_task_id: string;
   source_revision: number;
+  source_record?: unknown;
+  terminal_archive?: boolean;
 }): TaskCentricKernelMigrationMapping {
   const blockers: { source_path: string; reason_code: string }[] = [];
   if (opts.task.id !== opts.source_task_id)
@@ -444,8 +536,28 @@ export function mapTaskCentricKernelMigration(opts: {
             : "legacy_effect_intent_pending",
       });
   }
-  const fieldMappings = [...leafPaths(opts.task, "task"), ...leafPaths(opts.runtime, "runtime")]
-    .map((sourcePath) => fieldMapping(sourcePath))
+  const fieldMappings = [
+    ...(opts.source_record === undefined ? [] : leafPaths(opts.source_record, "source")),
+    ...leafPaths(opts.task, "task"),
+    ...leafPaths(opts.runtime, "runtime"),
+  ]
+    .map((sourcePath) =>
+      opts.terminal_archive
+        ? {
+            source_path: sourcePath,
+            disposition: "retained_evidence" as const,
+            target: "read_only_archive.source_bytes",
+            reason_code: null,
+          }
+        : sourcePath === "task.final_validation" && opts.task.final_validation === null
+          ? {
+              source_path: sourcePath,
+              disposition: "kernel_owner" as const,
+              target: "task.final_validation",
+              reason_code: null,
+            }
+          : fieldMapping(sourcePath),
+    )
     .toSorted((left, right) => compareText(left.source_path, right.source_path));
   const semantic = fieldMappings
     .filter((entry) => entry.disposition === "semantic_assessment")
@@ -484,6 +596,15 @@ export function mapTaskCentricKernelMigration(opts: {
       checkpoint_revisions: opts.runtime.checkpoints
         .map((checkpoint) => checkpoint.task_revision)
         .toSorted((left, right) => left - right),
+      checkpoint_refs: [
+        ...new Set(
+          opts.runtime.checkpoints.flatMap((checkpoint) => [
+            ...checkpoint.context_refs,
+            ...checkpoint.validation_refs,
+            ...checkpoint.artifact_refs,
+          ]),
+        ),
+      ].toSorted(),
     },
     retained: {
       plan_digest: opts.task.current_plan?.digest ?? null,
