@@ -173,40 +173,16 @@ async function advanceCanonicalRoute(opts: {
         route.reason_code,
       )
     ) {
-      const workflow = await decideCanonicalWorkflowEffect(opts.command, opts.task_id);
-      if (canonicalCompletionPrecedesWorkflow(workflow.workflowStep)) {
-        await ensureKernelOperationalProjectionEvidence({
-          command: opts.command,
-          task_id: opts.task_id,
-          verification_evidence_digest: persistedValidationEvidence,
-        });
-        const baseCheckout = workflow.workspace.baseCheckoutPath;
-        if (
-          baseCheckout &&
-          path.resolve(baseCheckout) !== path.resolve(opts.command.resolvedProject.gitRoot)
-        ) {
-          const target = await transferCanonicalControllerToBase({
-            command: opts.command,
-            runtime,
-            task_id: opts.task_id,
-            base_checkout: baseCheckout,
-          });
-          return {
-            schema_version: 1,
-            task_id: opts.task_id,
-            action: {
-              kind: "external_wait",
-              reason: "canonical_controller_transferred",
-              must_run_from: target.resolvedProject.gitRoot,
-            },
-          };
-        }
-        const completion = await runtime.input({ kind: "complete_task" }, operationId);
-        if (completion.command.expected_task_revision !== record.aggregate.revision)
-          throw new Error("Canonical task changed before completion");
-        requireKernelCommit(await runtime.lifecycle.apply(completion));
-        continue;
-      }
+      await ensureKernelOperationalProjectionEvidence({
+        command: opts.command,
+        task_id: opts.task_id,
+        verification_evidence_digest: persistedValidationEvidence,
+      });
+      const completion = await runtime.input({ kind: "complete_task" }, operationId);
+      if (completion.command.expected_task_revision !== record.aggregate.revision)
+        throw new Error("Canonical task changed before completion");
+      requireKernelCommit(await runtime.lifecycle.apply(completion));
+      continue;
     }
     if (
       route.reason_code === "kernel_task_completed" &&
@@ -232,6 +208,28 @@ async function advanceCanonicalRoute(opts: {
         };
       }
       const workflow = await decideCanonicalWorkflowEffect(opts.command, opts.task_id);
+      const baseCheckout = workflow.workspace.baseCheckoutPath;
+      if (
+        canonicalCompletionPrecedesWorkflow(workflow.workflowStep) &&
+        baseCheckout &&
+        path.resolve(baseCheckout) !== path.resolve(opts.command.resolvedProject.gitRoot)
+      ) {
+        const target = await transferCanonicalControllerToBase({
+          command: opts.command,
+          runtime,
+          task_id: opts.task_id,
+          base_checkout: baseCheckout,
+        });
+        return {
+          schema_version: 1,
+          task_id: opts.task_id,
+          action: {
+            kind: "external_wait",
+            reason: "canonical_controller_transferred",
+            must_run_from: target.resolvedProject.gitRoot,
+          },
+        };
+      }
       const terminal =
         workflow.workflowStep.kind === "terminal" &&
         ["done", "superseded"].includes(workflow.workflowStep.outcome.type);
@@ -366,51 +364,6 @@ async function advanceCanonicalRoute(opts: {
             verification_evidence_digest: finalValidation.evidence_digest,
           });
           await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
-          const workflow = await decideCanonicalWorkflowEffect(opts.command, opts.task_id);
-          const completionFirst = canonicalCompletionPrecedesWorkflow(workflow.workflowStep);
-          const baseCheckout = workflow.workspace.baseCheckoutPath;
-          if (
-            completionFirst &&
-            baseCheckout &&
-            path.resolve(baseCheckout) !== path.resolve(opts.command.resolvedProject.gitRoot)
-          ) {
-            const target = await transferCanonicalControllerToBase({
-              command: opts.command,
-              runtime,
-              task_id: opts.task_id,
-              base_checkout: baseCheckout,
-            });
-            return {
-              schema_version: 1,
-              task_id: opts.task_id,
-              action: {
-                kind: "external_wait",
-                reason: "canonical_controller_transferred",
-                must_run_from: target.resolvedProject.gitRoot,
-              },
-            };
-          }
-          if (!completionFirst) {
-            const prepared = await prepareCanonicalWorkflowEffect({
-              command: opts.command,
-              runtime,
-              record,
-              decision: workflow,
-            });
-            if (prepared === "prepared") continue;
-            return {
-              schema_version: 1,
-              task_id: opts.task_id,
-              action: {
-                kind: workflow.workflowStep.kind === "wait" ? "external_wait" : "human_required",
-                reason:
-                  prepared === "already_observed"
-                    ? "canonical_workflow_effect_no_progress"
-                    : "canonical_workflow_effect_unavailable",
-                workflow_step: workflow.workflowStep.id,
-              },
-            };
-          }
         }
         const completion = await runtime.input({ kind: "complete_task" }, operationId);
         if (completion.command.expected_task_revision !== record.aggregate.revision)

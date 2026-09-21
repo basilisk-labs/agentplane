@@ -58,4 +58,20 @@ describe("LC-03 common advance-one-step coordinator", () => {
     expect(supervisor).toContain("stale precondition fingerprint");
     expect(supervisor).toContain("repeated idempotency key");
   });
+
+  it("enters COMPLETED before dispatching any branch workflow effect", async () => {
+    const coordinator = await readFile(new URL("advance-task-step.ts", import.meta.url), "utf8");
+    const finalValidation = coordinator.lastIndexOf(
+      'route.reason_code === "kernel_task_completion_required"',
+    );
+    const validationFallback = coordinator.indexOf("const checked =", finalValidation);
+    const completionBranch = coordinator.slice(finalValidation, validationFallback);
+
+    expect(finalValidation).toBeGreaterThan(-1);
+    expect(validationFallback).toBeGreaterThan(finalValidation);
+    expect(completionBranch).toContain('runtime.input({ kind: "complete_task" }');
+    expect(completionBranch).not.toContain("prepareCanonicalWorkflowEffect");
+    expect(coordinator).toContain('route.reason_code === "kernel_task_completed"');
+    expect(coordinator).toContain("prepareCanonicalWorkflowEffect");
+  });
 });
