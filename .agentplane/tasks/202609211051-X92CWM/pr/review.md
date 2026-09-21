@@ -6,7 +6,7 @@ Created: 2026-09-21T12:18:29.179Z
 
 - Task: `202609211051-X92CWM`
 - Title: Repair the demonstrated 0.7.11 release blockers without weakening gates: project canonical plan approval for branch-P...
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609211051-X92CWM/repair-the-demonstrated-0-7-11-release-blockers`
 - Canonical task record: `.agentplane/tasks/202609211051-X92CWM/README.md`
 
