@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202609210002-0TQ72H",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-21T01:26:22.636Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "f0be471aa0ac62f0595feadb2e19d8620fa1a4d5",
+  "review_identity_digest": "sha256:f9075203ce7c96a098912a752e1d1e5281076f1060afc3da472b66012e26159e",
+  "findings": [
+    "The reducer recognizes digest-validated Kernel final-validation evidence before legacy planning checks.",
+    "The focused regression proves a DOING compatibility projection with a stale Plan placeholder requests pr.open authority instead of agent.planning."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609210002-0TQ72H/quality/objects/sha256/1403834264f80c23ba4ce450697a32eca4a1dd9b5dfb231c98d713bf94bbeb55.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Canonical branch closeout depends on hasCanonicalPreMergeEvidence remaining fail-closed over both Kernel and operational projection digests."
+  ],
+  "residual_risks": []
+}

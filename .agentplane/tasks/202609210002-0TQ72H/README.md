@@ -4,7 +4,7 @@ title: "LC-02: route all supported Plan and WorkItem lifecycle writes through th
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -26,19 +26,29 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-21T00:50:24.547Z"
+  updated_at: "2026-09-21T01:26:22.636Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "e156e6de8da6d9484daaf0c144c9a3232b7ab3ff"
-  review_identity_digest: "sha256:68ff78c7a23c3bffc63181d513e196664fb1e070ee6c339328945c7d47fb7d40"
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  evaluated_sha: "f0be471aa0ac62f0595feadb2e19d8620fa1a4d5"
+  review_identity_digest: "sha256:f9075203ce7c96a098912a752e1d1e5281076f1060afc3da472b66012e26159e"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202609210002-0TQ72H/96f57e464477a653e8c728f7077ee08e4cfb5d56cb58f45bf79ecb594ec3cd42/quality-report.json"
+    - ".agentplane/tasks/202609210002-0TQ72H/quality/20260921-012622377-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609210002-0TQ72H/quality/20260921-012622377-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609210002-0TQ72H/quality/objects/sha256/abea2042fe645d97c2c3c2e5a467781dab55fdb9714e835e5884e2472a02b8c1.md"
+    - ".agentplane/tasks/202609210002-0TQ72H/quality/20260921-012622377-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609210002-0TQ72H/quality/20260921-012622377-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609210002-0TQ72H/quality/20260921-012622377-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609210002-0TQ72H/README.md"
+    - ".agentplane/tasks/202609210002-0TQ72H/quality/objects/sha256/1403834264f80c23ba4ce450697a32eca4a1dd9b5dfb231c98d713bf94bbeb55.patch"
+    - ".agentplane/tasks/202609210002-0TQ72H/quality/objects/sha256/53080cf0ba9897572a0bd71064738247d47f57d89a9594d70433f40c3c134936.json"
+    - ".agentplane/tasks/202609210002-0TQ72H/verification/20260921012410834-75f93bd1e396a430.json"
+    - ".agentplane/tasks/202609210002-0TQ72H/quality/objects/sha256/ac07b02bc29de961e9764f46dcb4c3988c04656dc570b05d488e532db2ae53a2.json"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "KernelBackendAdapter remains the accepted transaction and CAS boundary; the focused concurrent proposal test demonstrates one winner, one concurrent_write rejection, and only the creation plus winning transition event and receipt."
-    - "Canonical record reads now compare outer status with projectKernelTask output and fail closed as canonical_projection_mismatch, while compatibility mutation guards preserve the Kernel record and reject contradictory current or next status."
-    - "Operational evidence projection no longer assigns DONE outside the Kernel, and the affected callers and fixtures were updated to preserve evidence without taking lifecycle ownership."
-    - "LifecycleEngine and its export are absent from production code and the ownership inventory, while pure lifecycle assertions, completion evaluation, validation aggregation, and explicit legacy_unmigrated decoding remain."
-    - "The focused regression file contains three non-empty behavioral tests covering the required CAS, read-only projection, accepted mutation, conflict rejection, and legacy compatibility cases."
+    - "The reducer recognizes digest-validated Kernel final-validation evidence before legacy planning checks."
+    - "The focused regression proves a DOING compatibility projection with a stale Plan placeholder requests pr.open authority instead of agent.planning."
 execution_route:
   frozen: true
   reason_codes:

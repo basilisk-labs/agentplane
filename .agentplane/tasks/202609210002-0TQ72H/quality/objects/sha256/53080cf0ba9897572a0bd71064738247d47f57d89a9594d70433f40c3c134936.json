@@ -1,0 +1,304 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "repository_write"
+      ],
+      "external_effects": [],
+      "components": [],
+      "risk": {
+        "requirements_uncertainty": "material",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:repository_write",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "requirements_resolution",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "packages/agentplane",
+        "packages/core",
+        "scripts"
+      ],
+      "changed_files": [
+        "packages/agentplane/src/adapters/task-backend/kernel-record.ts",
+        "packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.test.ts",
+        "packages/agentplane/src/commands/shared/native-task-identity.test.ts",
+        "packages/agentplane/src/commands/shared/roadmap-single-mutation-gateway.test.ts",
+        "packages/agentplane/src/commands/shared/task-mutation.ts",
+        "packages/agentplane/src/commands/shared/workflow-step-reducer.ts",
+        "packages/agentplane/src/commands/task/active.command.unit.test.ts",
+        "packages/agentplane/src/commands/task/kernel-advance.ts",
+        "packages/agentplane/src/commands/task/kernel-operational-projection.test.ts",
+        "packages/agentplane/src/commands/task/kernel-operational-projection.ts",
+        "packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts",
+        "packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts",
+        "packages/agentplane/src/commands/task/show-kernel.test.ts",
+        "packages/core/src/tasks/task-centric/index.ts",
+        "packages/core/src/tasks/task-centric/lifecycle.ts",
+        "scripts/checks/lifecycle-owner-map.json",
+        "scripts/checks/lifecycle-owner-map.test.mjs"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "full_regression",
+      "hosted_integration",
+      "requirements_resolution",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_path:packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/native-task-identity.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/roadmap-single-mutation-gateway.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/task-mutation.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-step-reducer.ts",
+      "central_path:packages/core/src/tasks/task-centric/index.ts",
+      "central_path:packages/core/src/tasks/task-centric/lifecycle.ts",
+      "central_path:scripts/checks/lifecycle-owner-map.json",
+      "central_path:scripts/checks/lifecycle-owner-map.test.mjs",
+      "material_requirements_uncertainty",
+      "unknown_path:scripts/checks/lifecycle-owner-map.json"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": false,
+    "digest": "sha256:91fa558f99eb82e34710c2ee2d7ee5ac84e034c4083d169f77fdf608af29639e"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-09-21T01:24:10.834Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: canonical Task Kernel final checks passed."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202609210002-0TQ72H/verification/20260921012410834-75f93bd1e396a430.json",
+      "sha256": "sha256:652c58a313087eaedce3bb1e54c027029faa77bcb8b1f3bf533f4f7c311367fc"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 11cfc37a0dc0fc1b262e10990ec33ddef68da2d6..e156e6de8da6d9484daaf0c144c9a3232b7ab3ff",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 11cfc37a0dc0fc1b262e10990ec33ddef68da2d6..e156e6de8da6d9484daaf0c144c9a3232b7ab3ff",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "A\t.agentplane/tasks/202609210002-0TQ72H/README.md",
+          "A\t.agentplane/tasks/202609210002-0TQ72H/pr/diffstat.txt",
+          "A\t.agentplane/tasks/202609210002-0TQ72H/pr/github-body.md",
+          "A\t.agentplane/tasks/202609210002-0TQ72H/pr/github-title.txt",
+          "A\t.agentplane/tasks/202609210002-0TQ72H/pr/meta.json",
+          "A\t.agentplane/tasks/202609210002-0TQ72H/pr/review.md",
+          "A\t.agentplane/tasks/202609210002-0TQ72H/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json",
+          "A\t.agentplane/tasks/202609210002-0TQ72H/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+          "M\tpackages/agentplane/src/adapters/task-backend/kernel-record.ts",
+          "M\tpackages/agentplane/src/commands/shared/native-task-identity.test.ts",
+          "A\tpackages/agentplane/src/commands/shared/roadmap-single-mutation-gateway.test.ts",
+          "M\tpackages/agentplane/src/commands/shared/task-mutation.ts",
+          "M\tpackages/agentplane/src/commands/task/active.command.unit.test.ts",
+          "M\tpackages/agentplane/src/commands/task/kernel-advance.ts",
+          "M\tpackages/agentplane/src/commands/task/kernel-operational-projection.test.ts",
+          "M\tpackages/agentplane/src/commands/task/kernel-operational-projection.ts",
+          "M\tpackages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts",
+          "M\tpackages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts",
+          "M\tpackages/agentplane/src/commands/task/show-kernel.test.ts",
+          "M\tpackages/core/src/tasks/task-centric/index.ts",
+          "M\tpackages/core/src/tasks/task-centric/lifecycle.ts",
+          "M\tscripts/checks/lifecycle-owner-map.json",
+          "M\tscripts/checks/lifecycle-owner-map.test.mjs"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "11cfc37a0dc0fc1b262e10990ec33ddef68da2d6",
+    "implementation_commit": "e156e6de8da6d9484daaf0c144c9a3232b7ab3ff",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        " M packages/agentplane/src/adapters/task-backend/kernel-record.ts",
+        " M packages/agentplane/src/commands/shared/native-task-identity.test.ts",
+        " M packages/agentplane/src/commands/shared/task-mutation.ts",
+        " M packages/agentplane/src/commands/task/active.command.unit.test.ts",
+        " M packages/agentplane/src/commands/task/kernel-advance.ts",
+        " M packages/agentplane/src/commands/task/kernel-operational-projection.test.ts",
+        " M packages/agentplane/src/commands/task/kernel-operational-projection.ts",
+        " M packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts",
+        " M packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts",
+        " M packages/agentplane/src/commands/task/show-kernel.test.ts",
+        " M packages/core/src/tasks/task-centric/index.ts",
+        " M packages/core/src/tasks/task-centric/lifecycle.ts",
+        " M scripts/checks/lifecycle-owner-map.json",
+        " M scripts/checks/lifecycle-owner-map.test.mjs",
+        "?? .agentplane/tasks/202609210002-0TQ72H/README.md",
+        "?? .agentplane/tasks/202609210002-0TQ72H/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json",
+        "?? .agentplane/tasks/202609210002-0TQ72H/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "?? packages/agentplane/src/commands/shared/roadmap-single-mutation-gateway.test.ts"
+      ],
+      "classification": [
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/adapters/task-backend/kernel-record.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/shared/native-task-identity.test.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/shared/task-mutation.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/task/active.command.unit.test.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/task/kernel-advance.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/task/kernel-operational-projection.test.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/task/kernel-operational-projection.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/commands/task/show-kernel.test.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/core/src/tasks/task-centric/index.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/core/src/tasks/task-centric/lifecycle.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M scripts/checks/lifecycle-owner-map.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M scripts/checks/lifecycle-owner-map.test.mjs"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202609210002-0TQ72H/README.md"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202609210002-0TQ72H/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202609210002-0TQ72H/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? packages/agentplane/src/commands/shared/roadmap-single-mutation-gateway.test.ts"
+        }
+      ],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [
+        " M packages/agentplane/src/adapters/task-backend/kernel-record.ts",
+        " M packages/agentplane/src/commands/shared/native-task-identity.test.ts",
+        " M packages/agentplane/src/commands/shared/task-mutation.ts",
+        " M packages/agentplane/src/commands/task/active.command.unit.test.ts",
+        " M packages/agentplane/src/commands/task/kernel-advance.ts",
+        " M packages/agentplane/src/commands/task/kernel-operational-projection.test.ts",
+        " M packages/agentplane/src/commands/task/kernel-operational-projection.ts",
+        " M packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts",
+        " M packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts",
+        " M packages/agentplane/src/commands/task/show-kernel.test.ts",
+        " M packages/core/src/tasks/task-centric/index.ts",
+        " M packages/core/src/tasks/task-centric/lifecycle.ts",
+        " M scripts/checks/lifecycle-owner-map.json",
+        " M scripts/checks/lifecycle-owner-map.test.mjs",
+        "?? .agentplane/tasks/202609210002-0TQ72H/README.md",
+        "?? .agentplane/tasks/202609210002-0TQ72H/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json",
+        "?? .agentplane/tasks/202609210002-0TQ72H/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "?? packages/agentplane/src/commands/shared/roadmap-single-mutation-gateway.test.ts"
+      ],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202609210002-0TQ72H",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202609210002-0TQ72H/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
