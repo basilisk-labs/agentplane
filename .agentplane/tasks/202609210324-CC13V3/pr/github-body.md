@@ -27,10 +27,11 @@ Use agentplane-roadmap-r2/tasks/LC-04.md through LC-24.md as the authoritative c
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../adapters/task-backend/kernel-next-action.ts    |  55 ++-
+ .../adapters/task-backend/kernel-next-action.ts    |  55 +-
  .../commands/shared/semantic-result-admission.ts   |  49 ++
+ .../shared/supervisor-execution-episode.ts         |  21 +
  .../src/commands/shared/workflow-step-branch.ts    |  13 +-
- .../src/commands/shared/workflow-step-factory.ts   |  85 +++-
+ .../src/commands/shared/workflow-step-factory.ts   |  85 ++-
  .../src/commands/task/advance-task-step.ts         |   9 +-
  .../task/branch-task-supervisor-operations.ts      |  40 ++
  .../src/commands/task/branch-task-supervisor.ts    |  40 +-
@@ -38,32 +39,34 @@ Use agentplane-roadmap-r2/tasks/LC-04.md through LC-24.md as the authoritative c
  .../task/direct-task-supervisor-closeout.test.ts   |  33 +-
  .../task/direct-task-supervisor-closeout.ts        |  79 +--
  .../task/direct-task-supervisor-operation.test.ts  |  13 +
- .../task/direct-task-supervisor-operation.ts       | 122 ++++-
+ .../task/direct-task-supervisor-operation.ts       | 122 +++-
  .../commands/task/direct-task-supervisor.test.ts   |  26 +-
- .../src/commands/task/direct-task-supervisor.ts    | 113 +----
+ .../src/commands/task/direct-task-supervisor.ts    | 113 +---
  .../src/commands/task/direct-task-verification.ts  |  35 ++
  .../src/commands/task/external-agent-exchange.ts   |  13 +-
- .../src/commands/task/kernel-exchange.ts           | 108 +++--
- .../src/commands/task/kernel-inspection.ts         | 527 +++++++++++++++++----
+ .../src/commands/task/kernel-exchange.ts           | 108 ++--
+ .../src/commands/task/kernel-inspection.ts         | 527 +++++++++++++++---
  .../kernel-provider-effect-coordinator.test.ts     |   1 +
  .../task/kernel-provider-effect-coordinator.ts     |  24 +-
  .../agentplane/src/commands/task/kernel-run.ts     |  12 +-
  .../src/commands/task/kernel-semantic-result.ts    |   4 +-
  .../src/commands/task/kernel-work-order.ts         |   5 +-
- .../src/commands/task/kernel-worktree-routing.ts   |  72 ++-
- .../src/commands/task/migration-preview.ts         | 260 ++++++++++
+ .../src/commands/task/kernel-worktree-routing.ts   |  72 +--
+ .../src/commands/task/migration-apply.ts           | 616 +++++++++++++++++++++
+ .../src/commands/task/migration-preview.ts         | 265 +++++++++
  .../src/commands/task/ordinary-advance-step.ts     |  32 +-
  .../src/commands/task/quality-review-gate.ts       |  11 +-
  .../task/roadmap-branch-publication-parity.test.ts | 126 +++++
  .../task/roadmap-check-review-separation.test.ts   |  93 ++++
- .../commands/task/roadmap-common-recovery.test.ts  | 274 +++++++++++
+ .../commands/task/roadmap-common-recovery.test.ts  | 274 +++++++++
  .../task/roadmap-common-review-application.test.ts | 155 ++++++
- .../commands/task/roadmap-curator-parity.test.ts   | 207 ++++++++
- .../task/roadmap-direct-coordinator-parity.test.ts | 194 ++++++++
- .../task/roadmap-integration-parity.test.ts        | 264 +++++++++++
- .../roadmap-lifecycle-migration-preview.test.ts    | 386 +++++++++++++++
+ .../commands/task/roadmap-curator-parity.test.ts   | 207 +++++++
+ .../task/roadmap-direct-coordinator-parity.test.ts | 194 +++++++
+ .../task/roadmap-integration-parity.test.ts        | 264 +++++++++
+ .../task/roadmap-lifecycle-migration-apply.test.ts | 535 ++++++++++++++++++
+ .../roadmap-lifecycle-migration-preview.test.ts    | 386 +++++++++++++
  .../task/roadmap-semantic-admission.test.ts        | 129 +++++
- .../task/roadmap-workitem-readiness.test.ts        | 150 ++++++
+ .../task/roadmap-workitem-readiness.test.ts        | 150 +++++
  .../src/runner/usecases/agent-work-order-build.ts  |  12 +-
  .../src/runner/usecases/semantic-role.ts           |  10 +
  .../runner/usecases/task-knowledge-request.test.ts |  50 +-
@@ -75,12 +78,12 @@ Use agentplane-roadmap-r2/tasks/LC-04.md through LC-24.md as the authoritative c
  packages/core/src/runner/agent-work-order.ts       |   5 +-
  packages/core/src/tasks/index.ts                   |   4 +
  packages/core/src/tasks/kernel-semantic.ts         |  39 +-
- .../core/src/tasks/task-centric/compatibility.ts   | 364 +++++++++++++-
- packages/core/src/tasks/task-centric/graph.ts      | 117 +++--
+ .../core/src/tasks/task-centric/compatibility.ts   | 364 +++++++++++-
+ packages/core/src/tasks/task-centric/graph.ts      | 117 ++--
  packages/core/src/tasks/task-centric/index.ts      |  10 +
  packages/core/src/tasks/task-centric/lifecycle.ts  |  62 +++
  schemas/agent-semantic-result.schema.json          |   6 +-
- 53 files changed, 4022 insertions(+), 543 deletions(-)
+ 56 files changed, 5199 insertions(+), 543 deletions(-)
 ```
 
 </details>

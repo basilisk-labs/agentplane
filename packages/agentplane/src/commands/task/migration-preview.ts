@@ -107,14 +107,19 @@ function decodeRuntime(extensions: Readonly<Record<string, unknown>>): TaskCentr
   } as TaskCentricMigrationRuntime;
 }
 
-function decodeSource(sourceBytes: Buffer): {
+export type DecodedLifecycleOwnerMigrationSource = Readonly<{
   task_id: string;
   source_revision: number;
   source_class: "legacy" | "parallel";
   source_record: Readonly<{ frontmatter: Record<string, unknown>; body: string }>;
   task: TaskAggregate;
   runtime: TaskCentricMigrationRuntime;
-} {
+}>;
+
+export function decodeLifecycleOwnerMigrationSource(
+  source_bytes: Uint8Array,
+): DecodedLifecycleOwnerMigrationSource {
+  const sourceBytes = Buffer.from(source_bytes);
   const text = new TextDecoder("utf-8", { fatal: true }).decode(sourceBytes);
   const { frontmatter, body } = parseTaskReadme(text);
   if (typeof frontmatter.id !== "string" || !frontmatter.id)
@@ -164,7 +169,7 @@ export function previewLifecycleOwnerMigration(
 ): LifecycleOwnerMigrationPreview {
   const sourceBytes = Buffer.from(source_bytes);
   const sourceDigest = bytesDigest(sourceBytes);
-  const decoded = decodeSource(sourceBytes);
+  const decoded = decodeLifecycleOwnerMigrationSource(sourceBytes);
   const mapping = mapTaskCentricKernelMigration({
     task: decoded.task,
     runtime: decoded.runtime,
