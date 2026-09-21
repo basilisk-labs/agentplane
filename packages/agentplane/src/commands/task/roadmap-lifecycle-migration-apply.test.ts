@@ -3,6 +3,12 @@ import os from "node:os";
 import path from "node:path";
 
 import {
+  AGENT_WORK_ORDER_V2_VALID_FIXTURE,
+  buildAgentSemanticResultV2ValidFixtures,
+  buildStateFingerprint,
+  validateAgentWorkOrderV2,
+} from "@agentplaneorg/core/schemas";
+import {
   parseTaskReadme,
   renderTaskReadme,
   TASK_CENTRIC_EXTENSION_KEY,
@@ -16,17 +22,36 @@ import type { TaskByteSnapshot, TaskByteStore } from "../../ports/task-byte-stor
 import { tryAcquireSupervisorExecutionLease } from "../shared/supervisor-execution-episode.js";
 import {
   applyLifecycleOwnerMigration,
+  LIFECYCLE_OWNER_MIGRATION_QUARANTINE_EXTENSION,
   LIFECYCLE_OWNER_MIGRATION_RECEIPT_EXTENSION,
   type BoundLifecycleOwnerMigrationAssessment,
   type LifecycleOwnerMigrationApplyRequest,
   type LifecycleOwnerMigrationFreshBinding,
 } from "./migration-apply.js";
+import { classifyKernelCutover, requireKernelIssuanceEligibility } from "./kernel-cutover.js";
 import { previewLifecycleOwnerMigration } from "./migration-preview.js";
 
 const identity = k.kernelDigest("repository");
+const assessmentFingerprint = buildStateFingerprint({
+  task_id: "task-1",
+  task_revision: 4,
+  git_head: "a".repeat(40),
+  worktree: "/fixture",
+  components: {
+    task: { state: "present", source: "fixture", value: { revision: 4 } },
+    git: { state: "present", source: "fixture", value: { head: "a".repeat(40) } },
+    backend_projection: { state: "present", source: "fixture", value: { revision: 4 } },
+    plan: { state: "present", source: "fixture", value: { revision: 2 } },
+    policy: { state: "present", source: "fixture", value: { digest: "policy" } },
+    capability: { state: "present", source: "fixture", value: { digest: "capability" } },
+    knowledge: { state: "present", source: "fixture", value: { digest: "knowledge" } },
+    provider: { state: "missing", source: "fixture", reason_code: "not_requested" },
+    authority: { state: "present", source: "fixture", value: { role: "CURATOR" } },
+  },
+});
 const binding: LifecycleOwnerMigrationFreshBinding = {
   repository_identity: identity,
-  state_fingerprint_digest: k.kernelDigest("state"),
+  state_fingerprint_digest: assessmentFingerprint.digest,
   policy_digest: k.kernelDigest("policy"),
   authority_digest: k.kernelDigest("authority"),
 };
@@ -324,32 +349,105 @@ function requestFor(
   };
 }
 
-function resolvedAssessment(bytes: Buffer): BoundLifecycleOwnerMigrationAssessment {
+function resolvedAssessment(
+  bytes: Buffer,
+  freshBinding: LifecycleOwnerMigrationFreshBinding = binding,
+  fingerprint = assessmentFingerprint,
+): BoundLifecycleOwnerMigrationAssessment {
   const preview = previewLifecycleOwnerMigration(bytes);
   const semantic = preview.semantic_assessment;
   if (!semantic) throw new Error("fixture requires semantic assessment");
+  const assessment = {
+    schema_version: 1 as const,
+    kind: "kernel_migration_semantic_assessment_result" as const,
+    task_id: preview.task_id,
+    mapping_version: preview.mapping_version,
+    source_digest: preview.source_digest,
+    mapping_digest: semantic.mapping_digest,
+    status: "resolved" as const,
+    resolutions: semantic.fields.map((field) => ({
+      source_path: field.source_path,
+      target: field.target,
+      decision: "Preserve the exact source field through its bound Kernel contract.",
+      evidence_digest: k.kernelDigest(field),
+    })),
+  };
+  const order = structuredClone(AGENT_WORK_ORDER_V2_VALID_FIXTURE);
+  order.work_order_id = `migration-assessment-${preview.source_digest.slice(7, 19)}`;
+  order.role = "CURATOR";
+  order.prepared_evidence = order.prepared_evidence.map((evidence) => ({
+    ...evidence,
+    role: "CURATOR" as const,
+  }));
+  order.task = {
+    ...order.task,
+    id: preview.task_id,
+    revision: fingerprint.task_revision ?? preview.source_revision,
+    work_item_id: "migration",
+  };
+  order.state_fingerprint = fingerprint;
+  order.canonical_binding = {
+    phase: "implementation",
+    task_id: preview.task_id,
+    repository_identity: freshBinding.repository_identity,
+    repository_fingerprint: k.kernelDigest("repository-state"),
+    plan_revision: 1,
+    plan_digest: k.kernelDigest("migration-plan"),
+    work_item_id: "migration",
+    attempt: 1,
+    claim_id: "migration-assessment",
+    contract_digest: k.kernelDigest("migration-contract"),
+    authority_digest: freshBinding.authority_digest,
+  };
+  order.required_inputs = [
+    {
+      id: "migration-source",
+      kind: "source_artifact",
+      description: "Exact retained lifecycle source.",
+      digest: semantic.source_digest,
+      required: true,
+    },
+    {
+      id: "migration-mapping",
+      kind: "source_artifact",
+      description: "Deterministic lifecycle field mapping.",
+      digest: semantic.mapping_digest,
+      required: true,
+    },
+  ];
+  order.required_outputs = [
+    {
+      id: "migration-assessment",
+      kind: "semantic_result",
+      description: "Bound semantic lifecycle assessment.",
+      required: true,
+    },
+  ];
+  const issued = validateAgentWorkOrderV2(order);
+  const result = {
+    ...buildAgentSemanticResultV2ValidFixtures(issued.work_order_id).completed,
+    canonical_binding: issued.canonical_binding,
+    canonical_outputs: [
+      { id: "migration-assessment", kind: "report" as const, digest: k.kernelDigest(assessment) },
+    ],
+  };
   return {
     binding: {
-      ...binding,
+      ...freshBinding,
       task_id: preview.task_id,
       source_digest: preview.source_digest,
       mapping_version: preview.mapping_version,
       mapping_digest: semantic.mapping_digest,
     },
-    result: {
-      schema_version: 1,
-      kind: "kernel_migration_semantic_assessment_result",
-      task_id: preview.task_id,
-      mapping_version: preview.mapping_version,
-      source_digest: preview.source_digest,
-      mapping_digest: semantic.mapping_digest,
-      status: "resolved",
-      resolutions: semantic.fields.map((field) => ({
-        source_path: field.source_path,
-        target: field.target,
-        decision: "Preserve the exact source field through its bound Kernel contract.",
-        evidence_digest: k.kernelDigest(field),
-      })),
+    assessment,
+    exchange: {
+      owner: {
+        task_id: issued.task.id,
+        work_order_id: issued.work_order_id,
+        role: issued.role,
+      },
+      work_order: issued,
+      result,
     },
   };
 }
@@ -410,8 +508,8 @@ describe("LC-14 lifecycle-owner migration apply", () => {
       kind: "applied",
       receipt: {
         mapping_receipt: previewLifecycleOwnerMigration(bytes).mapping,
-        semantic_assessment_digest: k.kernelDigest(assessment.result),
-        semantic_assessment: assessment.result,
+        semantic_assessment_digest: k.kernelDigest(assessment.assessment),
+        semantic_assessment: assessment.assessment,
       },
     });
     const current = await store.read("task-1");
@@ -432,7 +530,7 @@ describe("LC-14 lifecycle-owner migration apply", () => {
     });
     expect(extensions[LIFECYCLE_OWNER_MIGRATION_RECEIPT_EXTENSION]).toMatchObject({
       source_digest: taskBytesDigest(bytes),
-      semantic_assessment_digest: k.kernelDigest(assessment.result),
+      semantic_assessment_digest: k.kernelDigest(assessment.assessment),
     });
     expect([...store.backups.values()]).toEqual([bytes.toString("utf8")]);
   });
@@ -474,6 +572,7 @@ describe("LC-14 lifecycle-owner migration apply", () => {
     expect(result).toMatchObject({
       kind: "quarantined",
       reason: "semantic_assessment_binding_stale",
+      persisted: true,
       audit: {
         source_digest: taskBytesDigest(bytes),
         source_bytes_base64: bytes.toString("base64"),
@@ -483,8 +582,93 @@ describe("LC-14 lifecycle-owner migration apply", () => {
     expect(result.audit.supported_resolutions.join("\n")).toContain("fresh preview");
     expect(result.audit.supported_resolutions.join("\n")).toContain("semantic assessment");
     expect(result.audit.supported_resolutions.join("\n")).toContain("Export");
-    expect(store.compare_count).toBe(0);
-    expect(store.backups.size).toBe(0);
+    expect(store.compare_count).toBe(1);
+    expect(store.backups.size).toBe(1);
+    const quarantined = await store.read("task-1");
+    const extensions = parseExtensions(quarantined!.text);
+    expect(extensions).toHaveProperty(LIFECYCLE_OWNER_MIGRATION_QUARANTINE_EXTENSION);
+    expect(extensions).not.toHaveProperty(TASK_CENTRIC_EXTENSION_KEY);
+    const projected = {
+      id: "task-1",
+      status: "BLOCKED",
+      extensions,
+    } as Parameters<typeof classifyKernelCutover>[0];
+    expect(classifyKernelCutover(projected)).toEqual({
+      kind: "migration_required",
+      reason: "lifecycle_migration_quarantined",
+    });
+    expect(() => requireKernelIssuanceEligibility(projected)).toThrow(/cannot issue new work/u);
+
+    const currentFingerprint = buildStateFingerprint({
+      task_id: "task-1",
+      task_revision: quarantined!.revision,
+      git_head: "a".repeat(40),
+      worktree: "/fixture",
+      components: {
+        task: {
+          state: "present",
+          source: "fixture",
+          value: { revision: quarantined!.revision },
+        },
+        git: { state: "present", source: "fixture", value: { head: "a".repeat(40) } },
+        backend_projection: {
+          state: "present",
+          source: "fixture",
+          value: { revision: quarantined!.revision },
+        },
+        plan: { state: "present", source: "fixture", value: { revision: 2 } },
+        policy: { state: "present", source: "fixture", value: { digest: "policy" } },
+        capability: {
+          state: "present",
+          source: "fixture",
+          value: { digest: "capability" },
+        },
+        knowledge: { state: "present", source: "fixture", value: { digest: "knowledge" } },
+        provider: { state: "missing", source: "fixture", reason_code: "not_requested" },
+        authority: { state: "present", source: "fixture", value: { role: "CURATOR" } },
+      },
+    });
+    const currentBinding = {
+      ...binding,
+      state_fingerprint_digest: currentFingerprint.digest,
+      authority_digest: k.kernelDigest("fresh-quarantine-authority"),
+    };
+    const resolved = await apply({
+      store,
+      journal: await journalPath(),
+      request: {
+        ...requestFor(bytes, resolvedAssessment(bytes, currentBinding, currentFingerprint)),
+        binding: currentBinding,
+      },
+      observe: () => Promise.resolve(currentBinding),
+    });
+    expect(resolved).toMatchObject({ kind: "applied" });
+    expect(parseExtensions((await store.read("task-1"))!.text)).not.toHaveProperty(
+      LIFECYCLE_OWNER_MIGRATION_QUARANTINE_EXTENSION,
+    );
+  });
+
+  it("rejects an assessment that is not admitted through its issued WorkOrder", async () => {
+    const bytes = parallelBytes(acceptedTask());
+    const store = storeFor(bytes, 4);
+    const assessment = resolvedAssessment(bytes);
+    const result = await apply({
+      store,
+      journal: await journalPath(),
+      request: requestFor(bytes, {
+        ...assessment,
+        exchange: {
+          ...assessment.exchange,
+          owner: { ...assessment.exchange.owner, work_order_id: "unissued-order" },
+        },
+      }),
+    });
+    expect(result).toMatchObject({
+      kind: "quarantined",
+      reason: "semantic_assessment_unadmitted",
+      persisted: true,
+    });
+    expect(store.compare_count).toBe(1);
   });
 
   it("refuses to convert pending work or an unresolved effect", async () => {
