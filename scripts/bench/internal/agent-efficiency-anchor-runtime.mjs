@@ -106,7 +106,8 @@ function projectApprovedWorkspaceReleaseLock(driverLock, subjectLock) {
   }
   for (const key of workspaceKeys) projected.workspaces[key].version = subjectVersion;
   projected.workspaces["packages/agentplane"].dependencies["@agentplaneorg/core"] = subjectVersion;
-  projected.workspaces["packages/agentplane"].dependencies["@agentplaneorg/recipes"] = subjectVersion;
+  projected.workspaces["packages/agentplane"].dependencies["@agentplaneorg/recipes"] =
+    subjectVersion;
   projected.workspaces["packages/testkit"].dependencies["@agentplaneorg/core"] = subjectVersion;
   return projected;
 }
