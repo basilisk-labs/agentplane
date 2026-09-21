@@ -219,7 +219,85 @@ export {
   type TasksLintResult,
 } from "./tasks-lint.js";
 
-export * from "./task-centric/index.js";
+// The public lifecycle reducer is the taskKernel namespace above. Keep the remaining task-centric
+// surface explicit so a future executable owner cannot become public through a wildcard export.
+// These symbols are pure planning/domain helpers or versioned compatibility readers.
+export {
+  createRepositorySnapshot,
+  isGitObjectId,
+  isSha256Digest,
+  taskCentricDigest,
+} from "./task-centric/digest.js";
+export {
+  belongsInLiveTaskIndex,
+  compatibilityRoleToSemanticWorkKind,
+  createLegacyTaskAggregate,
+  legacyStatusToTaskLifecycle,
+  mapTaskCentricKernelMigration,
+  projectTaskLifecycleToLegacyStatus,
+  taskCentricAggregateFromExtensions,
+  taskCentricReplanRequiredFromExtensions,
+  TASK_CENTRIC_EXTENSION_KEY,
+  TASK_KERNEL_LIFECYCLE_MIGRATION_VERSION,
+  TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY,
+  withTaskCentricAggregate,
+  type ArchivedTaskManifest,
+  type LiveTaskIndexEntry,
+  type TaskCentricKernelMigrationMapping,
+  type TaskCentricMigrationFieldMapping,
+  type TaskCentricMigrationRuntime,
+} from "./task-centric/compatibility.js";
+export {
+  approveTaskPlan,
+  computeReadyWorkItems,
+  createTaskPlanRevision,
+  materializeApprovedWorkItems,
+  reconcileReplacementPlanWorkItems,
+  requiredOutputManifestsPresent,
+  requiredOutputsSatisfied,
+  resourceClaimsConflict,
+  selectSchedulableWorkItems,
+  validateTaskPlanProposal,
+  validateWorkItemGraph,
+  WorkItemScheduler,
+  type GraphValidationIssue,
+  type ReplacementPlanWorkItemRecoveryEvidence,
+  type SchedulableWorkItem,
+  type WorkItemReadiness,
+} from "./task-centric/graph.js";
+export {
+  aggregateValidation,
+  assertTaskTransition,
+  assertWorkItemTransition,
+  decideIndependentReviewApplication,
+  evaluateTaskCompletion,
+  incompleteRequiredWorkItems,
+  requiredWorkItemsComplete,
+  type CompletionEvaluation,
+  type IndependentReviewApplication,
+} from "./task-centric/lifecycle.js";
+export {
+  applyPlanRefinement,
+  classifyPlanChange,
+  consumeRetryBudget,
+  createHumanDecisionTicket,
+  decideConfirmation,
+  dispositionForOutcome,
+  recoveryDecisionForFailure,
+  validateHumanDecisionAnswer,
+  type ConfirmationFacts,
+  type PlanChangeClassification,
+  type PlanRefinementApplication,
+  type SupervisionOutcome,
+} from "./task-centric/policy.js";
+export { type TaskRepositoryCapabilities, type TaskRepositoryPort } from "./task-centric/ports.js";
+export {
+  parseTaskPlanProposal,
+  REPOSITORY_SNAPSHOT_ZOD_SCHEMA,
+  TASK_PLAN_PROPOSAL_ZOD_SCHEMA,
+  type ParsedTaskPlanProposal,
+} from "./task-centric/schema.js";
+export type * from "./task-centric/model.js";
 
 export {
   kernelIntentSchema,

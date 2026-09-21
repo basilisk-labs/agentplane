@@ -18,6 +18,24 @@ The supervisor never converts an approval, unresolved question, hosted wait, sta
 effect-in-doubt boundary into success. It returns a typed stop and waits for the appropriate human,
 provider, or recovery action.
 
+## Lifecycle ownership in 0.7.11
+
+All current task entrypoints use one ownership chain. The Task Kernel is the sole pure reducer,
+`KernelBackendAdapter.persist` is the sole canonical writer, and `advanceTaskStep` is the sole
+application coordinator. `task advance` and `task run` are external and managed transports over
+that same coordinator; neither is a second engine. Agents choose neither an engine nor an owner.
+
+The Kernel and coordinator own formal decisions: transition admission, authority checks,
+persistence, effect execution and observation, recovery, verification persistence, integration,
+and closure. Semantic agents own bounded judgment only: PLANNER proposes the plan, EXECUTOR performs
+an authorized work item, and EVALUATOR independently assesses it. AgentPlane 0.7.11 does not make a
+policy-required semantic stage optional.
+
+The current public domain API is the `taskKernel` namespace from `@agentplaneorg/core/tasks`.
+Task-centric graph, policy, model, and compatibility exports are pure or conversion-only helpers;
+they do not provide an executable lifecycle loop. The application coordinator is not a public core
+execution API.
+
 ## External-agent route
 
 Select ready work and request one bounded packet:
@@ -190,6 +208,26 @@ path.
 
 Never execute a raw route string as shell. Use typed action fields and exact argv returned by the
 CLI.
+
+### Historical lifecycle conversion: 0.7.10 and earlier
+
+This procedure applies only to version-labelled 0.7.10-or-earlier task artifacts. It does not offer
+an alternate engine for current work.
+
+```bash
+agentplane task kernel-migrate <task-id>
+agentplane task kernel-migrate <task-id> --apply --source-digest <sha256:digest> --yes
+```
+
+The preview is read-only and binds the proposed field mapping to the exact source digest. Apply only
+the digest returned by that preview. Unknown versions, ambiguous semantic mappings, unsupported
+custom graphs, stale bytes, or unresolved effects stop for manual conversion. The compatibility
+reader preserves historical bytes but has no transition or persistence authority.
+
+The 0.7.11 deletion ledger removes the former task-centric orchestrator module and its production
+execution exports. Pure calculations, current named consumers, safety-test fixtures, and cold
+readers remain only where replacement proof requires them. This is a correctness boundary, not a
+latency or cost claim.
 
 ### Interrupted integration effects
 

@@ -30,6 +30,8 @@ Created: 2026-09-21T03:47:54.341Z
 
 ```text
  artifacts/m03-0.7.10-vs-0.7.11-local-replay.json   |  332 +++++++
+ docs/user/task-lifecycle.mdx                       |   38 +
+ docs/user/workflow.mdx                             |   68 +-
  .../adapters/task-backend/kernel-next-action.ts    |   55 +-
  .../src/cli/run-cli.core.kernel-transport.test.ts  |   23 +-
  ...cli.core.roadmap-external-owner-cutover.test.ts |  105 ++
@@ -103,7 +105,7 @@ Created: 2026-09-21T03:47:54.341Z
  packages/core/src/runner/agent-semantic-result.ts  |    7 +-
  packages/core/src/runner/agent-work-order.test.ts  |    9 +
  packages/core/src/runner/agent-work-order.ts       |    5 +-
- packages/core/src/tasks/index.ts                   |    4 +
+ packages/core/src/tasks/index.ts                   |   84 +-
  packages/core/src/tasks/kernel-semantic.ts         |   39 +-
  .../core/src/tasks/task-centric/compatibility.ts   |  364 ++++++-
  packages/core/src/tasks/task-centric/graph.ts      |  117 ++-
@@ -119,10 +121,10 @@ Created: 2026-09-21T03:47:54.341Z
  scripts/checks/lifecycle-engine-retirement.json    |   46 +
  scripts/checks/lifecycle-owner-map.json            |   92 +-
  scripts/checks/lifecycle-owner-map.test.mjs        |   44 +-
- .../checks/no-secondary-lifecycle-engine.test.mjs  |  110 +++
+ .../checks/no-secondary-lifecycle-engine.test.mjs  |  138 +++
  scripts/checks/single-live-supervisor.test.mjs     |   49 +
  .../release/check-local-tarball-install-smoke.mjs  |   27 +-
- 93 files changed, 7903 insertions(+), 6029 deletions(-)
+ 95 files changed, 8107 insertions(+), 6039 deletions(-)
 ```
 
 </details>

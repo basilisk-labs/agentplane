@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 1f7ef7f3a45c73009417c9357537ad8d1d5e29e5..c8baf368d85335724e0daf171af9aa2b74196adc",
+      "command": "git diff --check c8baf368d85335724e0daf171af9aa2b74196adc..617f73e8b6f91ccb0df9b5835ef6226985591e42",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 1f7ef7f3a45c73009417c9357537ad8d1d5e29e5..c8baf368d85335724e0daf171af9aa2b74196adc",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB c8baf368d85335724e0daf171af9aa2b74196adc..617f73e8b6f91ccb0df9b5835ef6226985591e42",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,12 +24,9 @@
         "M\t.agentplane/tasks/202609210324-CC13V3/pr/review.md",
         "M\t.agentplane/tasks/202609210324-CC13V3/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202609210324-CC13V3/supervision/implementation-evidence.json",
-        "M\tpackages/agentplane/src/commands/release/installed-migration-matrix-script.test.ts",
-        "M\tpackages/agentplane/src/commands/task/direct-task-supervisor-closeout.ts",
-        "M\tpackages/agentplane/src/commands/task/direct-task-supervisor-result.ts",
-        "M\tpackages/agentplane/src/commands/task/run-execution-preview.ts",
-        "M\tpackages/agentplane/src/commands/task/run-render.ts",
-        "M\tscripts/release/check-local-tarball-install-smoke.mjs"
+        "A\tartifacts/m03-0.7.10-vs-0.7.11-local-replay.json",
+        "A\tscripts/bench/paired-m03-local-replay.mjs",
+        "A\tscripts/bench/paired-m03-local-replay.test.mjs"
       ]
     },
     {
@@ -39,8 +36,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "1f7ef7f3a45c73009417c9357537ad8d1d5e29e5",
-  "implementation_commit": "c8baf368d85335724e0daf171af9aa2b74196adc",
+  "execution_base_commit": "c8baf368d85335724e0daf171af9aa2b74196adc",
+  "implementation_commit": "617f73e8b6f91ccb0df9b5835ef6226985591e42",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [

@@ -67,6 +67,34 @@ test("retired lifecycle owners are absent from the production import graph", () 
   assert.doesNotMatch(source("packages/core/src/tasks/task-centric/index.ts"), /orchestrator\.js/u);
 });
 
+test("public task exports cannot acquire a lifecycle engine through a wildcard", () => {
+  const publicTasks = source("packages/core/src/tasks/index.ts");
+  assert.match(publicTasks, /export \* as taskKernel from "\.\/task-kernel\/index\.js"/u);
+  assert.doesNotMatch(publicTasks, /export \* from "\.\/task-centric\/index\.js"/u);
+  for (const retired of retirement.removed_production_exports) {
+    const symbol = retired.split("@")[0];
+    assert.doesNotMatch(publicTasks, new RegExp(`\\b${symbol}\\b`, "u"));
+  }
+});
+
+test("current guides pin one owner and label the historical conversion boundary", () => {
+  const workflow = source("docs/user/workflow.mdx");
+  const lifecycle = source("docs/user/task-lifecycle.mdx");
+  for (const guide of [workflow, lifecycle]) {
+    assert.match(guide, /sole pure (?:domain )?reducer/u);
+    assert.match(guide, /sole\s+application coordinator/u);
+    assert.match(guide, /0\.7\.10(?:-or-earlier| and earlier)/u);
+    assert.match(
+      guide,
+      /0\.7\.11 does not make\s+(?:any of those\s+|a\s+)?policy-required semantic stage/u,
+    );
+  }
+  assert.doesNotMatch(
+    `${workflow}\n${lifecycle}`,
+    /(?:^|\n)(?:Choose|Select|Switch)\b(?:[^.\n]{0,80})(?:lifecycle )?engine/u,
+  );
+});
+
 test("retained lifecycle helpers have named current consumers", () => {
   const consumers = [
     ["applyKernelEffectStep", "packages/agentplane/src/commands/task/advance-task-step.ts"],
