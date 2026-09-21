@@ -27,5 +27,5 @@ it("preserves accepted semantic work across recovery boundaries", { timeout: 60_
     { cwd: process.cwd() },
   );
 
-  expect(stripAnsi(result.stdout)).toMatch(/\bTests\s+6 passed\b/);
+  expect(stripAnsi(result.stdout)).toMatch(/\bTests\s+7 passed\b/);
 });
