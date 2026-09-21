@@ -36,10 +36,7 @@ import {
   recoveryDecisionForFailure,
   validateHumanDecisionAnswer,
 } from "./policy.js";
-import {
-  normalizeCompactTaskPlanProposal,
-  parseTaskPlanProposal,
-} from "./schema.js";
+import { normalizeCompactTaskPlanProposal, parseTaskPlanProposal } from "./schema.js";
 import {
   type OutputManifest,
   type RepositorySnapshot,

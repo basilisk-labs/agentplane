@@ -81,10 +81,10 @@ function revisionObject(repoRoot, revision, relativePath) {
 export function extractWorkflowCommandObligations(source, workflow) {
   const startMarker = `  ${workflow}: {`;
   const start = source.indexOf(startMarker);
-  if (start < 0) throw new Error(`Lifecycle contract is missing ${workflow}.`);
+  if (start === -1) throw new Error(`Lifecycle contract is missing ${workflow}.`);
   const commandStart = source.indexOf("    commandSteps: [", start);
   const commandEnd = source.indexOf("    gatewayCommandOrder:", commandStart);
-  if (commandStart < 0 || commandEnd < 0) {
+  if (commandStart === -1 || commandEnd === -1) {
     throw new Error(`Lifecycle contract has no bounded commandSteps block for ${workflow}.`);
   }
   const block = source.slice(commandStart, commandEnd);
@@ -126,14 +126,12 @@ function changedFiles(repoRoot, previousCommit, candidateCommit) {
 }
 
 function summarizeDeltas(files) {
-  const totals = files.reduce(
-    (summary, file) => ({
-      files: summary.files + 1,
-      insertions: summary.insertions + (file.insertions ?? 0),
-      deletions: summary.deletions + (file.deletions ?? 0),
-    }),
-    { files: 0, insertions: 0, deletions: 0 },
-  );
+  const totals = { files: 0, insertions: 0, deletions: 0 };
+  for (const file of files) {
+    totals.files += 1;
+    totals.insertions += file.insertions ?? 0;
+    totals.deletions += file.deletions ?? 0;
+  }
   const categories = {
     preparation: files.filter((file) =>
       /(?:materializ|readiness|admission|work-order)/u.test(file.path),

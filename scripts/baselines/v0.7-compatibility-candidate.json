@@ -8,14 +8,14 @@
   "candidate": {
     "section_digests": {
       "agent_facing_context_contracts": "7710a5217ea614a3da8b4e99fe61e16fb738179797eba64c75c9537bc33f7785",
-      "cli_topology": "d63f7a0085bb5dcd4eab3451e2782a1cf5f5b52228dc1b2cf7d24522782c362e",
+      "cli_topology": "efbf62f81ebd6f516bf83c0912733e2947a2f905e7d04a9cb8657ccb6eddd7f5",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "package_manifests": "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
       "tarball_policy": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
       "workflow_schema": "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452"
     },
-    "surface_sha256": "173acdfaeb0d53cd3babd270d34d0c82b91d3fd6a43ba17c39c697b2f18438c5"
+    "surface_sha256": "3eb2febe151bdb58e41d92f033ddabc07e67c388d5900aafbb4de47c2b42f35e"
   },
   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
   "contract_artifacts": {
@@ -601,6 +601,11 @@
               { "default": false, "kind": "boolean", "name": "apply", "valueHint": null },
               { "kind": "string", "name": "source-digest", "valueHint": "<sha256:digest>" },
               { "kind": "string", "name": "rollback", "valueHint": "<proof.json>" },
+              {
+                "kind": "string",
+                "name": "assessment",
+                "valueHint": "<migration-assessment.json>"
+              },
               { "default": false, "kind": "boolean", "name": "yes", "valueHint": null }
             ],
             "visibility": "advanced"
@@ -1278,6 +1283,12 @@
             "kind": "boolean",
             "name": "apply",
             "valueHint": null
+          },
+          {
+            "command": "task kernel-migrate",
+            "kind": "string",
+            "name": "assessment",
+            "valueHint": "<migration-assessment.json>"
           },
           {
             "command": "task kernel-migrate",
@@ -2341,6 +2352,12 @@
           {
             "command": "task kernel-migrate",
             "kind": "option",
+            "name": "assessment",
+            "source_task": "202609210324-CC13V3"
+          },
+          {
+            "command": "task kernel-migrate",
+            "kind": "option",
             "name": "rollback",
             "source_task": "202608291006-2A6BJC"
           },
@@ -2619,7 +2636,7 @@
             "identity": "task plan approve --by"
           }
         ],
-        "option_count": { "from": 767, "to": 845 },
+        "option_count": { "from": 767, "to": 846 },
         "positional_count": { "from": 165, "to": 174 },
         "removed_command_descriptors": [
           {
@@ -3132,7 +3149,7 @@
         "202609162254-YE48GC"
       ],
       "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, safe local evidence statistics, compaction, garbage collection, and a state-bound USER-approved blocked-task scope extension; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; canonicalizes setup and execution profile selection to standard while retaining legacy init aliases; and makes auto the task route default while retiring repository as a user-facing route. Adds exact-intent operator reconciliation for interrupted integration workflow effects. Adds an explicit USER-authorized supervisor token budget epoch for telemetry-only stops. Retires the active Blueprint command surface after Task Kernel replacement proof while preserving cold compatibility readers.",
-      "to_sha256": "d63f7a0085bb5dcd4eab3451e2782a1cf5f5b52228dc1b2cf7d24522782c362e"
+      "to_sha256": "efbf62f81ebd6f516bf83c0912733e2947a2f905e7d04a9cb8657ccb6eddd7f5"
     },
     {
       "classification": "intentional_breaking_retirement",
@@ -3322,7 +3339,12 @@
     },
     "from_sha256": "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
     "section": "package_manifests",
-    "source_tasks": ["202608021231-SHYJGK", "202608112259-T3ZDDM", "202608171853-X3FD5M"],
+    "source_tasks": [
+      "202608021231-SHYJGK",
+      "202608112259-T3ZDDM",
+      "202608171853-X3FD5M",
+      "202609211330-5A54M1"
+    ],
     "to_sha256": "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff"
   },
   "release_version_delta": {
@@ -3341,7 +3363,7 @@
     "from_version": "0.6.24",
     "section": "package_manifests",
     "source_task": "202608082119-P6SHBN",
-    "surface_sha256": "8e10725d11a7818856a0b338584b045db5fec297cd9748bd99c2ef2679952fbd",
+    "surface_sha256": "b47708ce864a6c4a40030b5d59d1ab0dc2e359e74e6e319c8ad5a164fab7e046",
     "to_sha256": "ba1dcbafef11ab50d5a8143545c7fc719c22b3c6b76cb06a919892d81b5d8d92",
     "to_version": "0.7.10"
   },
@@ -3404,6 +3426,7 @@
     "202609060720-NZXQ0E",
     "202609071501-VN1FN4",
     "202609130858-RMHWQ5",
-    "202609162254-YE48GC"
+    "202609162254-YE48GC",
+    "202609211330-5A54M1"
   ]
 }

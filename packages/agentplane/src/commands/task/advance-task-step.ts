@@ -371,12 +371,14 @@ async function advanceCanonicalRoute(opts: {
             task_id: opts.task_id,
             verification_evidence_digest: finalValidation.evidence_digest,
           });
-          await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
         }
         const completion = await runtime.input({ kind: "complete_task" }, operationId);
         if (completion.command.expected_task_revision !== record.aggregate.revision)
           throw new Error("Canonical task changed before completion");
         requireKernelCommit(await runtime.lifecycle.apply(completion));
+        if (current.read.task.execution_route?.repository_mode === "branch_pr") {
+          await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
+        }
       } else {
         const checked = await runKernelFinalValidation(opts.command, runtime, record);
         if (checked.stop) return { schema_version: 1, task_id: opts.task_id, action: checked.stop };

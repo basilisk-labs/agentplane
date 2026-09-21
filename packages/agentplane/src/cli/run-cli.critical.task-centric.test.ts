@@ -13,12 +13,13 @@ installRunCliIntegrationHarness();
 
 const execFileAsync = promisify(execFile);
 const DETERMINISTIC_CHECK = "node scripts/check-task-centric.mjs";
+const BRANCH_CHECK = "node scripts/check-branch-task.mjs";
 
 type Packet = {
   task_id: string;
   transition_id: string;
   state_fingerprint: string;
-  action: { kind: string };
+  action: { kind: string; reason?: string; must_run_from?: string };
   authority?: { role?: string };
   exchange?: {
     directory: string;
@@ -163,6 +164,33 @@ function canonicalPlan() {
   };
 }
 
+function branchPlan() {
+  return {
+    work_items: [
+      {
+        id: "branch-change",
+        depends_on: [],
+        required_inputs: [],
+        expected_outputs: ["branch-output"],
+        optional: false,
+        execution_requirements: {
+          scope_roots: ["src/branch.ts"],
+          repository_effects: ["source_code"],
+          external_effects: [],
+          capabilities: ["repository_write"],
+          resources: [],
+        },
+        contract: {
+          role: "EXECUTOR" as const,
+          objective: "Create the scoped branch implementation artifact.",
+          acceptance_criteria: ["The task runs in its admitted branch worktree."],
+          verification_commands: [BRANCH_CHECK],
+        },
+      },
+    ],
+  };
+}
+
 async function resume(root: string, packet: Packet): Promise<Packet> {
   if (!packet.exchange) throw new Error("Expected an external-agent exchange.");
   expect(packet.exchange.resume_argv.at(0)).toBe("agentplane");
@@ -281,20 +309,7 @@ describe("task-centric fresh repository release gate", { timeout: 180_000 }, () 
       summary: "Created the dependent output with a deterministic defect.",
       outputs: ["output-second"],
     });
-    const secondInspection = await resume(checkout, second);
-    const secondInspectionWorkOrder = await readWorkOrder(secondInspection);
-    expect(secondInspectionWorkOrder.task.work_item_id).toBe("second");
-    expect(secondInspection.authority?.role).toBe("EVALUATOR");
-    await writeResult(secondInspection, {
-      summary: "The dependent WorkItem needs its deterministic validation marker.",
-      review: {
-        verdict: "rework",
-        missing_tests: [DETERMINISTIC_CHECK],
-        hidden_assumptions: [],
-        residual_risks: [],
-      },
-    });
-    const repair = await resume(checkout, secondInspection);
+    const repair = await resume(checkout, second);
     const repairWorkOrder = await readWorkOrder(repair);
     expect(repairWorkOrder.task.work_item_id).toBe("second");
     expect(repair.authority?.role).toBe("EXECUTOR");
@@ -340,5 +355,65 @@ describe("task-centric fresh repository release gate", { timeout: 180_000 }, () 
       (entry) => entry.isDirectory() && /^\d{12}-/u.test(entry.name),
     );
     expect(taskDirectories.map((entry) => entry.name)).toEqual([taskId]);
+  });
+
+  it("projects canonical approval and prepares the admitted branch worktree", async () => {
+    const root = await mkTempDir();
+    await runCommand(root, ["init", "--workflow", "branch_pr", "--yes"]);
+    await mkdir(path.join(root, "scripts"), { recursive: true });
+    await writeFile(path.join(root, "scripts", "check-branch-task.mjs"), "process.exit(0);\n");
+    await execFileAsync("git", ["add", "scripts/check-branch-task.mjs"], { cwd: root });
+    await execFileAsync("git", ["commit", "--no-verify", "-m", "test: add branch check"], {
+      cwd: root,
+    });
+    const created = await runJson(root, [
+      "task",
+      "create",
+      "Prepare a title slug branch worktree",
+      "--description",
+      "Prove public canonical approval and branch worktree bootstrap.",
+      "--verify",
+      BRANCH_CHECK,
+      "--json",
+    ]);
+    const taskId = String(created.task_id);
+    const planning = (await runJson(root, ["task", "advance", taskId, "--agent-json"])) as Packet;
+    expect(planning.authority?.role).toBe("PLANNER");
+    await writeResult(planning, {
+      summary: "Create one scoped artifact in the admitted task worktree.",
+      canonical_plan: branchPlan(),
+    });
+    const approval = await resume(root, planning);
+    expect(approval.action.kind).toBe("approval_required");
+    await runCommand(root, ["task", "plan", "approve", taskId, "--by", "USER"]);
+
+    const taskReadme = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    const taskText = await readFile(taskReadme, "utf8");
+    const task = parseTaskReadme(taskText);
+    expect(task.frontmatter.plan_approval).toMatchObject({ state: "approved" });
+    expect(taskText).toContain("1. Execute approved WorkItem branch-change.");
+    await execFileAsync("git", ["add", "-A"], { cwd: root });
+    await execFileAsync("git", ["commit", "--no-verify", "-m", "test: approve branch task"], {
+      cwd: root,
+    });
+
+    const prepared = await requestSemanticPacket(root, taskId);
+    expect(prepared.action).toMatchObject({
+      kind: "external_wait",
+      reason: "canonical_worktree_prepared",
+    });
+    const checkout = prepared.action.must_run_from;
+    expect(checkout).toBeTruthy();
+    const branchResult = await execFileAsync("git", ["branch", "--show-current"], {
+      cwd: checkout,
+    });
+    const branch = branchResult.stdout.trim();
+    expect(branch).toContain(`task/${taskId}/prepare-a-title-slug-branch-worktree`);
+    expect(branch).not.toContain("/canonical-");
+    const preparedReadme = await readFile(
+      path.join(checkout!, ".agentplane", "tasks", taskId, "README.md"),
+      "utf8",
+    );
+    expect(preparedReadme).toContain("1. Execute approved WorkItem branch-change.");
   });
 });

@@ -215,9 +215,7 @@
         "scripts/bench/agent-efficiency-replay-evidence/direct/run-05.json"
       ],
       "id": "direct",
-      "mandatory_episode_obligations": [
-        "CODER"
-      ],
+      "mandatory_episode_obligations": ["CODER"],
       "replay_runs": 5,
       "result": "unchanged",
       "workflow": "direct"
@@ -249,10 +247,7 @@
         "scripts/bench/agent-efficiency-replay-evidence/branch_pr/run-05.json"
       ],
       "id": "branch_pr",
-      "mandatory_episode_obligations": [
-        "CODER",
-        "EVALUATOR"
-      ],
+      "mandatory_episode_obligations": ["CODER", "EVALUATOR"],
       "replay_runs": 5,
       "result": "unchanged",
       "workflow": "branch_pr"
@@ -284,12 +279,7 @@
         "scripts/bench/agent-efficiency-replay-evidence/evaluator_rework/run-05.json"
       ],
       "id": "evaluator_rework",
-      "mandatory_episode_obligations": [
-        "CODER",
-        "EVALUATOR",
-        "CODER",
-        "EVALUATOR"
-      ],
+      "mandatory_episode_obligations": ["CODER", "EVALUATOR", "CODER", "EVALUATOR"],
       "replay_runs": 5,
       "result": "unchanged",
       "workflow": "branch_pr"
@@ -321,9 +311,7 @@
         "scripts/bench/agent-efficiency-replay-evidence/adapter_failure/run-05.json"
       ],
       "id": "adapter_failure",
-      "mandatory_episode_obligations": [
-        "CURRENT_AGENT"
-      ],
+      "mandatory_episode_obligations": ["CURRENT_AGENT"],
       "replay_runs": 5,
       "result": "unchanged",
       "workflow": "shared"

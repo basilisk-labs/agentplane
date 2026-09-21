@@ -24,7 +24,7 @@ export type SemanticResultAdmission = Readonly<{
  */
 export function admitSemanticResult(opts: {
   owner: SemanticResultOwner;
-  work_order: unknown;
+  work_order: AgentWorkOrderV2;
   result: unknown;
   format?: "semantic_payload_v1";
 }): SemanticResultAdmission {

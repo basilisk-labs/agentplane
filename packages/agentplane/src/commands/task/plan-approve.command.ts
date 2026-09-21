@@ -122,6 +122,27 @@ export function makeRunTaskPlanApproveHandler(getCtx: (cmd: string) => Promise<C
       });
       await runtime.checkpoint(await runtime.observe());
       const result = requireKernelCommit(await runtime.authority.approve(p.taskId));
+      const projected = await commandCtx.taskBackend.getTask(p.taskId);
+      if (!projected) throw new Error(`Task not found: ${p.taskId}`);
+      const revision = projected.revision ?? 0;
+      const planText = result.record.aggregate.current_plan?.work_items
+        .map((item, index) => `${index + 1}. Execute approved WorkItem ${item.id}.`)
+        .join("\n");
+      await commandCtx.taskBackend.writeTask(
+        {
+          ...projected,
+          revision: revision + 1,
+          doc: undefined,
+          sections: planText ? { ...projected.sections, Plan: planText } : projected.sections,
+          plan_approval: {
+            state: "approved",
+            updated_at: new Date().toISOString(),
+            updated_by: result.record.aggregate.current_plan?.approval_actor_id ?? p.by ?? "",
+            note: p.note ?? null,
+          },
+        },
+        { expectedRevision: revision },
+      );
       createCliEmitter().json({
         task_id: p.taskId,
         canonical_revision: result.record.aggregate.revision,

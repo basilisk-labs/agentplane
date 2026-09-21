@@ -1,9 +1,4 @@
-import {
-  findWorktreeForBranch,
-  gitCurrentBranch,
-  parseTaskIdFromBranch,
-  taskBranchName,
-} from "@agentplaneorg/core/git";
+import { gitCurrentBranch, listWorktrees, parseTaskIdFromBranch } from "@agentplaneorg/core/git";
 import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
@@ -26,6 +21,26 @@ function action(target: string): WorktreeAction {
   };
 }
 
+async function findTaskWorktree(opts: {
+  root: string;
+  taskPrefix: string;
+  taskId: string;
+}): Promise<string | null> {
+  const worktrees = await listWorktrees(opts.root);
+  const matches = worktrees.filter(
+    (entry) =>
+      entry.branch !== null && parseTaskIdFromBranch(opts.taskPrefix, entry.branch) === opts.taskId,
+  );
+  if (matches.length > 1) {
+    throw new Error(
+      `Multiple worktrees are registered for task ${opts.taskId}: ${matches
+        .map((entry) => entry.path)
+        .join(", ")}`,
+    );
+  }
+  return matches[0]?.path ?? null;
+}
+
 export async function ensureCanonicalTaskWorktree(opts: {
   command: CommandContext;
   task: TaskData;
@@ -42,12 +57,10 @@ export async function ensureCanonicalTaskWorktree(opts: {
 
   const root = opts.command.resolvedProject.gitRoot;
   const taskPrefix = opts.command.config.branch.task_prefix;
-  const slug = `canonical-${opts.taskId.split("-").at(-1)!.toLowerCase()}`;
-  const expectedBranch = taskBranchName({ taskPrefix, taskId: opts.taskId, slug });
   const currentBranch = await gitCurrentBranch(root);
   const alreadyInTaskWorktree = parseTaskIdFromBranch(taskPrefix, currentBranch) === opts.taskId;
   if (!alreadyInTaskWorktree) {
-    const target = await findWorktreeForBranch(root, expectedBranch);
+    const target = await findTaskWorktree({ root, taskPrefix, taskId: opts.taskId });
     if (target) return action(target);
   }
   if (opts.reasonCode === "kernel_work_item_result_required" || alreadyInTaskWorktree) return null;
@@ -87,19 +100,19 @@ export async function ensureCanonicalTaskWorktree(opts: {
         taskId: opts.taskId,
       }),
   });
-  if (
-    !prepared.execution.executable ||
-    prepared.execution.result?.status !== "succeeded" ||
-    prepared.execution.stop_reason !== null ||
-    prepared.execution.refreshed_decision === null
-  ) {
+  if (!prepared.execution.executable || prepared.execution.result?.status !== "succeeded") {
     throw new Error(
       `Canonical worktree preparation failed: ${prepared.execution.stop_reason ?? prepared.execution.result?.detail ?? "route refresh unavailable"}`,
     );
   }
   const refreshed = prepared.execution.refreshed_decision;
   const target =
-    refreshed.workspace.taskWorktreePath ?? (await findWorktreeForBranch(root, expectedBranch));
-  if (!target) throw new Error("Canonical worktree preparation has no task checkout");
+    refreshed?.workspace.taskWorktreePath ??
+    (await findTaskWorktree({ root, taskPrefix, taskId: opts.taskId }));
+  if (!target) {
+    throw new Error(
+      `Canonical worktree preparation has no task checkout: ${prepared.execution.stop_reason ?? "route refresh did not expose a worktree"}`,
+    );
+  }
   return action(target);
 }

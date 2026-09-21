@@ -72,21 +72,156 @@
     }
   },
   "expected_skip_sites": [
-    { "file": "packages/core/src/fs/atomic-write.test.ts", "sites": [{ "pattern": "it\\s*\\.\\s*skipIf\\(process\\.platform", "count": 1, "reason": "POSIX permission semantics are not available on Windows" }] },
-    { "file": "packages/agentplane/src/runner/observation/protected-filesystem.test.ts", "sites": [{ "pattern": "it\\s*\\.\\s*skipIf\\(process\\.platform", "count": 5, "reason": "POSIX symlink and permission semantics are not available on Windows" }] },
-    { "file": "packages/agentplane/src/runner/observation/artifacts.test.ts", "sites": [{ "pattern": "it\\s*\\.\\s*skipIf\\(process\\.platform", "count": 1, "reason": "POSIX symlink semantics are not available on Windows" }] },
-    { "file": "packages/agentplane/src/runner/process-supervision.process-tree.test.ts", "sites": [{ "pattern": "describe\\s*\\.\\s*skipIf\\(process\\.platform", "count": 1, "reason": "POSIX process groups are not available on Windows" }] },
-    { "file": "packages/agentplane/src/runner/result-manifest.test.ts", "sites": [{ "pattern": "it\\s*\\.\\s*skipIf\\(process\\.platform", "count": 1, "reason": "POSIX filesystem semantics are not available on Windows" }] },
-    { "file": "packages/agentplane/src/runner/process-supervision.test.ts", "sites": [{ "pattern": "it\\s*\\.\\s*skipIf\\(process\\.platform", "count": 2, "reason": "POSIX process and signal semantics are not available on Windows" }] },
-    { "file": "packages/agentplane/src/runner/runtime-env.integration.test.ts", "sites": [{ "pattern": "it\\s*\\.\\s*skipIf\\(process\\.platform", "count": 1, "reason": "POSIX executable environment semantics are not available on Windows" }] },
-    { "file": "packages/agentplane/src/runner/process-supervision/process-tree.test.ts", "sites": [{ "pattern": "it\\s*\\.\\s*skipIf\\(process\\.platform", "count": 1, "reason": "POSIX process groups are not available on Windows" }] },
-    { "file": "packages/agentplane/src/runner/process-supervision/signals.test.ts", "sites": [{ "pattern": "it\\s*\\.\\s*skipIf\\(process\\.platform", "count": 1, "reason": "POSIX signals are not available on Windows" }] },
-    { "file": "packages/agentplane/src/cli/local-ci-selection.test.ts", "sites": [{ "pattern": "describe\\s*\\.\\s*skipIf\\(process\\.platform", "count": 1, "reason": "the local CI runtime contract is POSIX-specific" }] },
-    { "file": "packages/agentplane/src/commands/release/generate-bun-cli-assets-script.test.ts", "sites": [{ "pattern": "it\\s*\\.\\s*skipIf\\(process\\.platform", "count": 1, "reason": "the Bun asset shell fixture is POSIX-specific" }] },
-    { "file": "packages/agentplane/src/commands/release/publish-workflow-contract.test.ts", "sites": [{ "pattern": "it\\s*\\.\\s*skipIf\\(process\\.platform", "count": 3, "reason": "the release shell fixture is POSIX-specific" }] },
-    { "file": "packages/agentplane/src/commands/task/finish.state.unit.test.ts", "sites": [{ "pattern": "describe\\s*\\.\\s*skip", "count": 1, "reason": "the fixture exercises Node-only module mocking and is skipped under Bun" }] },
-    { "file": "packages/agentplane/src/commands/task/start.unit.test.ts", "sites": [{ "pattern": "describe\\s*\\.\\s*skip", "count": 1, "reason": "the fixture exercises Node-only module mocking and is skipped under Bun" }] },
-    { "file": "packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts", "sites": [{ "pattern": "it\\s*\\.\\s*skip", "count": 1, "reason": "network packaging is explicit opt-in only" }] }
+    {
+      "file": "packages/core/src/fs/atomic-write.test.ts",
+      "sites": [
+        {
+          "pattern": "it\\s*\\.\\s*skipIf\\(process\\.platform",
+          "count": 1,
+          "reason": "POSIX permission semantics are not available on Windows"
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/observation/protected-filesystem.test.ts",
+      "sites": [
+        {
+          "pattern": "it\\s*\\.\\s*skipIf\\(process\\.platform",
+          "count": 5,
+          "reason": "POSIX symlink and permission semantics are not available on Windows"
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/observation/artifacts.test.ts",
+      "sites": [
+        {
+          "pattern": "it\\s*\\.\\s*skipIf\\(process\\.platform",
+          "count": 1,
+          "reason": "POSIX symlink semantics are not available on Windows"
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/process-supervision.process-tree.test.ts",
+      "sites": [
+        {
+          "pattern": "describe\\s*\\.\\s*skipIf\\(process\\.platform",
+          "count": 1,
+          "reason": "POSIX process groups are not available on Windows"
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/result-manifest.test.ts",
+      "sites": [
+        {
+          "pattern": "it\\s*\\.\\s*skipIf\\(process\\.platform",
+          "count": 1,
+          "reason": "POSIX filesystem semantics are not available on Windows"
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/process-supervision.test.ts",
+      "sites": [
+        {
+          "pattern": "it\\s*\\.\\s*skipIf\\(process\\.platform",
+          "count": 2,
+          "reason": "POSIX process and signal semantics are not available on Windows"
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/runtime-env.integration.test.ts",
+      "sites": [
+        {
+          "pattern": "it\\s*\\.\\s*skipIf\\(process\\.platform",
+          "count": 1,
+          "reason": "POSIX executable environment semantics are not available on Windows"
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/process-supervision/process-tree.test.ts",
+      "sites": [
+        {
+          "pattern": "it\\s*\\.\\s*skipIf\\(process\\.platform",
+          "count": 1,
+          "reason": "POSIX process groups are not available on Windows"
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/process-supervision/signals.test.ts",
+      "sites": [
+        {
+          "pattern": "it\\s*\\.\\s*skipIf\\(process\\.platform",
+          "count": 1,
+          "reason": "POSIX signals are not available on Windows"
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/cli/local-ci-selection.test.ts",
+      "sites": [
+        {
+          "pattern": "describe\\s*\\.\\s*skipIf\\(process\\.platform",
+          "count": 1,
+          "reason": "the local CI runtime contract is POSIX-specific"
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/release/generate-bun-cli-assets-script.test.ts",
+      "sites": [
+        {
+          "pattern": "it\\s*\\.\\s*skipIf\\(process\\.platform",
+          "count": 1,
+          "reason": "the Bun asset shell fixture is POSIX-specific"
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/release/publish-workflow-contract.test.ts",
+      "sites": [
+        {
+          "pattern": "it\\s*\\.\\s*skipIf\\(process\\.platform",
+          "count": 3,
+          "reason": "the release shell fixture is POSIX-specific"
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/task/finish.state.unit.test.ts",
+      "sites": [
+        {
+          "pattern": "describe\\s*\\.\\s*skip",
+          "count": 1,
+          "reason": "the fixture exercises Node-only module mocking and is skipped under Bun"
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/task/start.unit.test.ts",
+      "sites": [
+        {
+          "pattern": "describe\\s*\\.\\s*skip",
+          "count": 1,
+          "reason": "the fixture exercises Node-only module mocking and is skipped under Bun"
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts",
+      "sites": [
+        {
+          "pattern": "it\\s*\\.\\s*skip",
+          "count": 1,
+          "reason": "network packaging is explicit opt-in only"
+        }
+      ]
+    }
   ],
   "measurements": {
     "host": "Darwin 27.0.0 arm64; macOS 27.0; Bun 1.4.2; Node v24.18.0",

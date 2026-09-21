@@ -606,6 +606,10 @@ external effects, requirements uncertainty, implementation uncertainty, reversib
 rationale. Agentplane does not infer these facts from product-language keywords such as
 `production`, `release`, `docs`, `server`, or `deployment`.
 
+This is a repository-routing choice, not an execution-engine choice. Agents never select a
+lifecycle engine, reducer, state writer, or coordinator. Both repository strategies enter the same
+Task Kernel and application coordinator described below.
+
 Agentplane compiles the declaration into one deterministic execution contract:
 
 - `authority` lists writable roots plus allowed and forbidden effects;
@@ -641,9 +645,43 @@ Compared with manually choosing task kind, process profile, mutation class, risk
 the normal path has no manual mode-selection command and no recovery-command sequence. Significant
 work still receives `branch_pr`, hosted-integration evidence, and explicit external authority.
 
-## 0.7.10 compatibility boundary
+## 0.7.11 lifecycle ownership
 
-AgentPlane 0.7.10 keeps the supervised path and retires Blueprint runtime ownership. AgentPlane owns
+AgentPlane 0.7.11 has one lifecycle ownership chain:
+
+1. `taskKernel.reduceTaskCommand` is the sole pure domain reducer.
+2. `KernelBackendAdapter.persist` is the sole canonical task-state writer.
+3. `advanceTaskStep` is the sole application coordinator for `task advance` and `task run`.
+
+The external-agent and managed-runner transports are frontends to that same chain. They do not own
+parallel state machines, and they do not offer an engine selector. Pure graph, completion, and
+validation helpers may calculate values, but they cannot admit a transition or persist state.
+Cold compatibility decoders may inspect exact historical bytes, but they cannot execute a current
+task.
+
+The formal/semantic boundary is explicit. AgentPlane owns transition admission, authority,
+persistence, effects, observation, recovery, verification, review routing, integration, and
+closure. PLANNER, EXECUTOR, and EVALUATOR perform bounded semantic WorkOrders and return typed
+results. AgentPlane 0.7.11 does not make any of those policy-required semantic stages optional;
+planning qualification begins in 0.7.12, and any review-omission qualification belongs to 0.7.14.
+
+The maximum-proven-deletion ledger removes the former task-centric orchestrator module and its
+production execution exports, including `TaskCentricOrchestrator`, `runCanonicalTask`, and
+`coordinateKernelEffect`. It retains only named current consumers, pure helpers, safety-test
+fixtures, and the cold migration readers. The machine-checked owner map and deletion ledger live in
+`scripts/checks/lifecycle-owner-map.json` and `scripts/checks/lifecycle-engine-retirement.json`.
+Deletion count is not a performance claim; the 0.7.11 local replay result records efficiency as
+not established.
+
+At the public package boundary, `@agentplaneorg/core/tasks` exposes the current domain reducer under
+the `taskKernel` namespace. The remaining task-centric exports are planning, graph, policy, model,
+or compatibility primitives. They are not an executable supervisor API. The application
+coordinator remains an AgentPlane application detail.
+
+## Historical compatibility boundary: 0.7.10 and earlier
+
+The following behavior describes AgentPlane 0.7.10 and older task artifacts; it is not an alternate
+0.7.11 engine. AgentPlane 0.7.10 keeps the supervised path and retires Blueprint runtime ownership. AgentPlane owns
 task state, routing, authority, verification, repository operations, and closeout. A semantic agent
 receives one bounded episode at a time. The Task Kernel plan and WorkItems own decomposition; the
 execution contract owns route and authority; native task obligations own policy, evidence,
@@ -656,6 +694,18 @@ readable only through a version-labelled audit decoder and cannot execute or mut
 Existing legacy tasks must pass explicit `task kernel-migrate` preview/apply admission; unknown or
 ambiguous records stop instead of being guessed. See [Blueprint compatibility](../developer/blueprints)
 for the exact migration and cold-reader boundary.
+
+For a historical 0.7.10-or-earlier task, inspect and convert it with an explicit two-step operation:
+
+```bash
+agentplane task kernel-migrate <task-id>
+agentplane task kernel-migrate <task-id> --apply --source-digest <sha256:digest> --yes
+```
+
+The first command is read-only and returns the exact source digest and field mapping. Apply only
+that digest. Unknown versions, ambiguous semantic mappings, unsupported custom graphs, stale source
+bytes, or active effects stop for manual conversion. Migration never selects or reactivates the old
+owner, and the cold decoder cannot mutate current state.
 
 Recipe V1 remains supported for domain guidance and runtime assets. Exact legacy context, output,
 artifact, evidence, check, and risk requirements are rebound to current Recipe or native task
@@ -676,14 +726,14 @@ quality-equivalent verified pair. Agentplane retains both campaigns and makes no
 safety claim from their raw totals. A future measurement must use a new preregistered campaign; it
 must not replace or selectively retry these attempts.
 
-Later releases retain their own boundaries:
+Release boundaries remain separate:
 
-| Release | Deferred task ids       | Boundary                                                                |
-| ------- | ----------------------- | ----------------------------------------------------------------------- |
-| 0.7.11  | `LC-01` through `LC-24` | Converge lifecycle execution on one Kernel-backed coordinator.          |
-| 0.7.12  | `PL-01` through `PL-12` | Qualify optional planning while preserving required planning semantics. |
-| 0.7.13  | `RC-01` through `RC-18` | Introduce and qualify the formal Recipe contract.                       |
-| 0.7.14  | `EV-01` through `EV-13` | Qualify a narrow review-omission rule before activation.                |
+| Release | Deferred task ids       | Boundary                                                                    |
+| ------- | ----------------------- | --------------------------------------------------------------------------- |
+| 0.7.11  | `LC-01` through `LC-24` | One Kernel reducer, writer, and application coordinator; no stage omission. |
+| 0.7.12  | `PL-01` through `PL-12` | Qualify optional planning while preserving required planning semantics.     |
+| 0.7.13  | `RC-01` through `RC-18` | Introduce and qualify the formal Recipe contract.                           |
+| 0.7.14  | `EV-01` through `EV-13` | Qualify a narrow review-omission rule before activation.                    |
 
 Adaptive or shadow review classification is not part of the default 0.7.10 path and is not a
 0.7.10 release dependency. Its first read-only diagnostic is deferred to `EV-04`; independent
@@ -763,6 +813,24 @@ The model owns only the work that needs semantic judgment.
 The supervisor never converts an approval, unresolved question, hosted wait, stale state, or
 effect-in-doubt boundary into success. It returns a typed stop and waits for the appropriate human,
 provider, or recovery action.
+
+## Lifecycle ownership in 0.7.11
+
+All current task entrypoints use one ownership chain. The Task Kernel is the sole pure reducer,
+`KernelBackendAdapter.persist` is the sole canonical writer, and `advanceTaskStep` is the sole
+application coordinator. `task advance` and `task run` are external and managed transports over
+that same coordinator; neither is a second engine. Agents choose neither an engine nor an owner.
+
+The Kernel and coordinator own formal decisions: transition admission, authority checks,
+persistence, effect execution and observation, recovery, verification persistence, integration,
+and closure. Semantic agents own bounded judgment only: PLANNER proposes the plan, EXECUTOR performs
+an authorized work item, and EVALUATOR independently assesses it. AgentPlane 0.7.11 does not make a
+policy-required semantic stage optional.
+
+The current public domain API is the `taskKernel` namespace from `@agentplaneorg/core/tasks`.
+Task-centric graph, policy, model, and compatibility exports are pure or conversion-only helpers;
+they do not provide an executable lifecycle loop. The application coordinator is not a public core
+execution API.
 
 ## External-agent route
 
@@ -936,6 +1004,26 @@ path.
 
 Never execute a raw route string as shell. Use typed action fields and exact argv returned by the
 CLI.
+
+### Historical lifecycle conversion: 0.7.10 and earlier
+
+This procedure applies only to version-labelled 0.7.10-or-earlier task artifacts. It does not offer
+an alternate engine for current work.
+
+```bash
+agentplane task kernel-migrate <task-id>
+agentplane task kernel-migrate <task-id> --apply --source-digest <sha256:digest> --yes
+```
+
+The preview is read-only and binds the proposed field mapping to the exact source digest. Apply only
+the digest returned by that preview. Unknown versions, ambiguous semantic mappings, unsupported
+custom graphs, stale bytes, or unresolved effects stop for manual conversion. The compatibility
+reader preserves historical bytes but has no transition or persistence authority.
+
+The 0.7.11 deletion ledger removes the former task-centric orchestrator module and its production
+execution exports. Pure calculations, current named consumers, safety-test fixtures, and cold
+readers remain only where replacement proof requires them. This is a correctness boundary, not a
+latency or cost claim.
 
 ### Interrupted integration effects
 

@@ -33,7 +33,10 @@ for (const entry of ledger.deleted_cases) {
   assertExistingTest(entry.retained_route, "deleted case retained route");
   assert.ok(entry.removed_behavior.trim().length > 0, `${entry.title}: missing removed behavior`);
   assert.ok(entry.evidence.trim().length > 0, `${entry.title}: missing deletion evidence`);
-  assert.doesNotMatch(source(entry.file), new RegExp(entry.title.replaceAll(/[.*+?^${}()|[\]\\]/gu, "\\$&"), "u"));
+  assert.doesNotMatch(
+    source(entry.file),
+    new RegExp(entry.title.replaceAll(/[.*+?^${}()|[\]\\]/gu, "\\$&"), "u"),
+  );
 }
 
 for (const surface of ledger.removed_test_only_production_surfaces) {
@@ -48,7 +51,8 @@ assert.deepEqual(
 
 const inventory = buildTestInventory();
 const invariantCounts = {};
-const testTitlePattern = /\b(?:it|test)(?:\.(?:each|skipIf|todoIf)\([^)]*\))?\s*\(\s*(["'`])([^\n]*?)\1/gu;
+const testTitlePattern =
+  /\b(?:it|test)(?:\.(?:each|skipIf|todoIf)\([^)]*\))?\s*\(\s*(["'`])([^\n]*?)\1/gu;
 for (const [category, ownership] of Object.entries(ledger.invariant_ownership)) {
   assert.equal(ownership.primary_routes_own_cases, true, `${category}: route ownership disabled`);
   const pattern = new RegExp(ownership.title_pattern, "iu");
@@ -125,7 +129,11 @@ assert.deepEqual(
 );
 const mutationProbe = ledger.expected_skip_sites[0];
 assert.throws(
-  () => validateExpectedSkipSites(`${source(mutationProbe.file)}\nit.skip("unexpected");\n`, mutationProbe),
+  () =>
+    validateExpectedSkipSites(
+      `${source(mutationProbe.file)}\nit.skip("unexpected");\n`,
+      mutationProbe,
+    ),
   /unenumerated or stale skip site/u,
   "an additional skip in an already allowlisted file must fail closed",
 );
