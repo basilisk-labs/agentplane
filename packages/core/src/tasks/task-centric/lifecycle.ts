@@ -69,6 +69,10 @@ export function incompleteRequiredWorkItems(task: TaskAggregate | null): readonl
   );
 }
 
+export function requiredWorkItemsComplete(task: TaskAggregate | null): boolean {
+  return task !== null && incompleteRequiredWorkItems(task).length === 0;
+}
+
 export function evaluateTaskCompletion(opts: {
   task: TaskAggregate;
   repository_digest: Sha256Digest;

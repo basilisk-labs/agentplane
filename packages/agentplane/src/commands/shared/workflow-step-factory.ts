@@ -1,5 +1,6 @@
 import {
-  incompleteRequiredWorkItems,
+  requiredWorkItemsComplete,
+  selectSchedulableWorkItems,
   taskCentricAggregateFromExtensions,
 } from "@agentplaneorg/core/tasks";
 import type { TaskData } from "../../backends/task-backend.js";
@@ -33,6 +34,76 @@ export {
   routeBlockerSnapshot,
   workSlug,
 } from "./workflow-step-common.js";
+
+export type RequiredWorkItemRoute =
+  | Readonly<{ state: "unavailable" | "complete" | "blocked"; work_item_id: null }>
+  | Readonly<{ state: "ready"; work_item_id: string }>;
+
+export function requiredWorkItemRoute(task: TaskData): RequiredWorkItemRoute {
+  const aggregate = taskCentricAggregateFromExtensions(task.extensions);
+  const plan = aggregate?.current_plan;
+  if (
+    !aggregate ||
+    plan?.approval.state !== "approved" ||
+    plan.approval.approved_digest !== plan.digest
+  ) {
+    return { state: "unavailable", work_item_id: null };
+  }
+  if (requiredWorkItemsComplete(aggregate)) return { state: "complete", work_item_id: null };
+  const requiredItems = plan.proposal.work_items.work_items.filter((item) => !item.optional);
+  const activeClaims = plan.proposal.work_items.work_items.flatMap((item) => {
+    const runtime = aggregate.work_items[item.id];
+    return runtime?.claim_id && !["COMPLETED", "CANCELLED"].includes(runtime.state)
+      ? (item.resource_claims ?? [])
+      : [];
+  });
+  const selected = selectSchedulableWorkItems({
+    candidates: requiredItems.map((item) => ({
+      id: item.id,
+      priority: item.priority ?? 0,
+      ready: ["READY", "REWORK_READY"].includes(aggregate.work_items[item.id]?.state ?? ""),
+      resource_claims: item.resource_claims ?? [],
+      value: item,
+    })),
+    open_slots: 1,
+    active_resource_claims: activeClaims,
+  })[0];
+  return selected
+    ? { state: "ready", work_item_id: selected.id }
+    : { state: "blocked", work_item_id: null };
+}
+
+export function workItemReadinessWaitStep(
+  state: WorkflowRouteState,
+  checkout: WorkflowCheckout,
+): WorkflowStep {
+  const summary = "wait until required WorkItem dependencies, outputs, and resources are ready";
+  return {
+    schemaVersion: 1,
+    id: "wait.work_item_readiness",
+    kind: "wait",
+    phase: "work_item_dependencies_wait",
+    authoritativeCheckout: checkout,
+    summary,
+    blockers: routeBlockerSnapshot(state),
+    selectedBlocker: null,
+    compatibility: {
+      code: "wait_work_item_dependencies",
+      command: null,
+      summary,
+      requiresApproval: false,
+    },
+    preconditionFingerprint: state.preconditionFingerprint,
+    condition: { type: "dependencies_ready", taskId: state.task.id },
+    execution: commonExecution({
+      actionKind: "wait",
+      role: "CODER",
+      mustNot: [
+        "do not dispatch semantic work until the pure scheduler reports a ready required WorkItem",
+      ],
+    }),
+  };
+}
 
 export function agentEpisodeStep(opts: {
   state: WorkflowRouteState;
@@ -172,12 +243,12 @@ export function approvalStep(opts: {
 export function directStep(state: WorkflowRouteState): WorkflowStep {
   const id = state.task.id;
   const taskIsDoing = String(state.task.status).toUpperCase() === "DOING";
+  const workItemRoute = requiredWorkItemRoute(state.task);
   if (
     taskIsDoing &&
     state.task.verification?.state === "ok" &&
     !hasUninitializedTaskBaseline(state.task) &&
-    incompleteRequiredWorkItems(taskCentricAggregateFromExtensions(state.task.extensions)).length >
-      0
+    workItemRoute.state === "ready"
   ) {
     return agentEpisodeStep({
       state,
@@ -194,6 +265,14 @@ export function directStep(state: WorkflowRouteState): WorkflowStep {
       returnControlWhen: "after returning the WorkItem result; request a fresh action packet",
       selectedBlocker: null,
     });
+  }
+  if (
+    taskIsDoing &&
+    state.task.verification?.state === "ok" &&
+    !hasUninitializedTaskBaseline(state.task) &&
+    workItemRoute.state === "blocked"
+  ) {
+    return workItemReadinessWaitStep(state, "current_checkout");
   }
   const reviewIsStale = state.blockers.some((blocker) => blocker.code === "quality_review_stale");
   const verificationRequiresRework =

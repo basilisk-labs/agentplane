@@ -27,11 +27,13 @@ export {
   requiredOutputManifestsPresent,
   requiredOutputsSatisfied,
   resourceClaimsConflict,
+  selectSchedulableWorkItems,
   validateTaskPlanProposal,
   validateWorkItemGraph,
   WorkItemScheduler,
   type GraphValidationIssue,
   type ReplacementPlanWorkItemRecoveryEvidence,
+  type SchedulableWorkItem,
   type WorkItemReadiness,
 } from "./graph.js";
 export {
@@ -40,6 +42,7 @@ export {
   assertWorkItemTransition,
   evaluateTaskCompletion,
   incompleteRequiredWorkItems,
+  requiredWorkItemsComplete,
   type CompletionEvaluation,
 } from "./lifecycle.js";
 export {
