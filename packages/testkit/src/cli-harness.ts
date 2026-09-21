@@ -315,7 +315,11 @@ export async function setTaskVerifySteps(root: string, taskId: string): Promise<
 
 export async function recordVerificationOk(root: string, taskId: string): Promise<void> {
   await setTaskVerifySteps(root, taskId);
-  await materializeLegacyDrainIdentityFixture({ root, task_id: taskId });
+  await materializeLegacyDrainIdentityFixture({
+    root,
+    task_id: taskId,
+    work_items_completed: true,
+  });
   const io = captureStdIO();
   let code: number;
   try {
