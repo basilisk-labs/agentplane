@@ -57,6 +57,7 @@ Created: 2026-09-21T03:47:54.341Z
  .../src/commands/task/quality-review-gate.ts       |  11 +-
  .../task/roadmap-branch-publication-parity.test.ts | 126 +++++
  .../task/roadmap-check-review-separation.test.ts   |  93 ++++
+ .../commands/task/roadmap-common-recovery.test.ts  | 274 +++++++++++
  .../task/roadmap-common-review-application.test.ts | 155 ++++++
  .../commands/task/roadmap-curator-parity.test.ts   | 207 ++++++++
  .../task/roadmap-direct-coordinator-parity.test.ts | 194 ++++++++
@@ -77,7 +78,7 @@ Created: 2026-09-21T03:47:54.341Z
  packages/core/src/tasks/task-centric/index.ts      |   5 +
  packages/core/src/tasks/task-centric/lifecycle.ts  |  62 +++
  schemas/agent-semantic-result.schema.json          |   6 +-
- 48 files changed, 2693 insertions(+), 542 deletions(-)
+ 49 files changed, 2967 insertions(+), 542 deletions(-)
 ```
 
 </details>
