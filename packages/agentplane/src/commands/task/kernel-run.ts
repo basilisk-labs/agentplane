@@ -2,7 +2,6 @@ import { buildKernelStateFingerprint } from "./kernel-work-order.js";
 import type { RunnerStateFingerprintRecord, RunnerContextBundle } from "../../runner/types.js";
 import path from "node:path";
 import {
-  AGENT_SEMANTIC_RESULT_ZOD_SCHEMA,
   AGENT_WORK_ORDER_V2_ZOD_SCHEMA,
   advanceSupervisorExecutionEpisodeState,
   completeSupervisorExecutionEpisode,
@@ -30,6 +29,7 @@ import { advanceCanonicalTask } from "./kernel-advance.js";
 import { writeKernelArtifact } from "./kernel-exchange.js";
 import { createKernelRuntime } from "./kernel-runtime-context.js";
 import { createKernelProviderEffectPortResolver } from "./kernel-provider-effect-coordinator.js";
+import { admitSemanticResult } from "../shared/semantic-result-admission.js";
 
 type Packet = Awaited<ReturnType<typeof advanceCanonicalTask>>;
 
@@ -408,7 +408,15 @@ async function executeKernelPacket(
         run_id: runId,
         status: result.status,
       };
-    const semantic = AGENT_SEMANTIC_RESULT_ZOD_SCHEMA.parse(result.semantic_result?.value);
+    const semantic = admitSemanticResult({
+      owner: {
+        task_id: taskId,
+        work_order_id: workOrder.work_order_id,
+        role: workOrder.role,
+      },
+      work_order: workOrder,
+      result: result.semantic_result?.value,
+    }).result;
     await writeKernelArtifact(directory, "result.json", semantic);
     return advanceCanonicalTask({
       command,

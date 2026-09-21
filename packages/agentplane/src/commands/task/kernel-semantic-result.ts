@@ -93,7 +93,7 @@ export async function acceptKernelSemanticResult(
   runtime: Runtime,
   resultPath: string,
 ) {
-  const { directory, workOrder, semantic } = await readKernelOrderResult(
+  const { directory, workOrder, semantic, applicationId } = await readKernelOrderResult(
     command,
     taskId,
     resultPath,
@@ -141,7 +141,7 @@ export async function acceptKernelSemanticResult(
   const binding = workOrder.canonical_binding!;
   if (binding.phase === "inspection")
     return (await acceptKernelInspection(command, runtime, directory, semantic, workOrder)) ?? null;
-  const mutationId = `result:${workOrder.work_order_id}`;
+  const mutationId = applicationId;
   if (saved) await writeKernelArtifact(directory, "received-result.json", semantic);
   if (binding.phase === "planning") {
     if (semantic.canonical_outputs)

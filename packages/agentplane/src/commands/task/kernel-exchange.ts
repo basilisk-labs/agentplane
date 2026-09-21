@@ -15,7 +15,6 @@ import {
   AGENT_WORK_ORDER_V2_ZOD_SCHEMA,
   renderAgentSemanticResultSchemaJson,
   AGENT_SEMANTIC_RESULT_ZOD_SCHEMA,
-  validateAgentSemanticResultForWorkOrder,
   type AgentWorkOrderV2,
 } from "@agentplaneorg/core/schemas";
 import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
@@ -26,6 +25,7 @@ import {
 } from "../../shared/stable-file.js";
 import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-backend.js";
 import { captureKernelRepositoryBaseline } from "./kernel-repository-coordinator.js";
+import { admitSemanticResult } from "../shared/semantic-result-admission.js";
 
 /** Immutable native exchange artifacts are evidence, not a second Task aggregate. */
 export async function kernelExchangeDirectory(
@@ -109,24 +109,26 @@ export async function readKernelOrderResult(
     )
       throw new Error("This canonical exchange does not accept compact results");
   }
-  const semantic = compact
-    ? validateAgentSemanticResultForWorkOrder({
-        work_order: workOrder,
-        semantic_result: raw,
-        format: "semantic_payload_v1",
-      })
-    : AGENT_SEMANTIC_RESULT_ZOD_SCHEMA.parse(raw);
-  if (
-    workOrder.task.id !== taskId ||
-    workOrder.work_order_id !== semantic.work_order_id ||
-    !workOrder.canonical_binding ||
-    k.kernelDigest(workOrder.canonical_binding) !==
-      k.kernelDigest(semantic.canonical_binding ?? null)
-  )
-    throw new Error("Canonical result binding mismatch");
+  const admission = admitSemanticResult({
+    owner: {
+      task_id: taskId,
+      work_order_id: workOrder.work_order_id,
+      role: workOrder.role,
+    },
+    work_order: workOrder,
+    result: raw,
+    ...(compact ? { format: "semantic_payload_v1" as const } : {}),
+  });
+  const semantic = admission.result;
+  if (!workOrder.canonical_binding) throw new Error("Canonical result binding mismatch");
   if (semantic.task_plan_proposal || semantic.task_intent || semantic.plan_refinement)
     throw new Error("Legacy lifecycle payloads cannot mutate a canonical Task");
-  return { directory, workOrder, semantic };
+  return {
+    directory,
+    workOrder: admission.work_order,
+    semantic,
+    applicationId: admission.application_id,
+  };
 }
 
 async function withKernelReworkEvidence(

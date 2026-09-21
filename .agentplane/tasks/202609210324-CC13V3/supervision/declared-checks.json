@@ -1,0 +1,25 @@
+{
+  "checks": [
+    {
+      "check_ids": [],
+      "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-workitem-readiness.test.ts",
+      "duration_ms": 819,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/commands/task/roadmap-workitem-readiness.test.ts\n",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/release-0.7.11-base/.agentplane/worktrees/202609210324-CC13V3-canonical-cc13v3\n\n\n Test Files  1 passed (1)\n      Tests  3 passed (3)\n   Start at  06:49:08\n   Duration  368ms (transform 195ms, setup 0ms, import 303ms, tests 2ms, environment 0ms)\n\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202609210324-CC13V3"
+}

@@ -12,8 +12,8 @@ Created: 2026-09-21T03:47:54.341Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:8c203d031e6958259117341b5b47b0a9d0b775edb1791a11e849c05c249db3aa
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -30,13 +30,19 @@ Created: 2026-09-21T03:47:54.341Z
 
 ```text
  .../adapters/task-backend/kernel-next-action.ts    |  55 ++++++--
+ .../commands/shared/semantic-result-admission.ts   |  49 +++++++
  .../src/commands/shared/workflow-step-branch.ts    |  13 +-
  .../src/commands/shared/workflow-step-factory.ts   |  85 +++++++++++-
+ .../src/commands/task/external-agent-exchange.ts   |  13 +-
+ .../src/commands/task/kernel-exchange.ts           |  36 ++---
+ .../agentplane/src/commands/task/kernel-run.ts     |  12 +-
+ .../src/commands/task/kernel-semantic-result.ts    |   4 +-
+ .../task/roadmap-semantic-admission.test.ts        | 129 ++++++++++++++++++
  .../task/roadmap-workitem-readiness.test.ts        | 150 +++++++++++++++++++++
  packages/core/src/tasks/task-centric/graph.ts      | 117 +++++++++++-----
  packages/core/src/tasks/task-centric/index.ts      |   3 +
  packages/core/src/tasks/task-centric/lifecycle.ts  |   4 +
- 7 files changed, 372 insertions(+), 55 deletions(-)
+ 13 files changed, 590 insertions(+), 80 deletions(-)
 ```
 
 </details>

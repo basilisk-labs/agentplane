@@ -8,7 +8,6 @@ import path from "node:path";
 
 import {
   renderAgentSemanticResultSchemaJson,
-  validateAgentSemanticResultForWorkOrder,
   validateAgentWorkOrderV2,
   type AgentSemanticResult,
   type AgentWorkOrderRole,
@@ -26,6 +25,7 @@ import {
 import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
 
 import { CliError } from "../../shared/errors.js";
+import { admitSemanticResult } from "../shared/semantic-result-admission.js";
 
 export type ExternalAgentResultEnvelope = {
   schema_version: 1;
@@ -437,11 +437,16 @@ export function validateExternalAgentResultEnvelope(opts: {
   }
   let result: AgentSemanticResult;
   try {
-    result = validateAgentSemanticResultForWorkOrder({
+    result = admitSemanticResult({
+      owner: {
+        task_id: opts.exchange.task_id,
+        work_order_id: opts.exchange.work_order_id,
+        role: opts.exchange.role,
+      },
       work_order: opts.work_order,
-      semantic_result: compact ? raw : raw.result,
+      result: compact ? raw : raw.result,
       ...(compact ? { format: "semantic_payload_v1" } : {}),
-    });
+    }).result;
   } catch (error) {
     throw new CliError({
       code: "E_VALIDATION",
