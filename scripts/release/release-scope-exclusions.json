@@ -40,6 +40,12 @@
       "reason": "This duplicate repair projection was superseded by the completed canonical repair task.",
       "git_ref": "a111e45ab09c91e8567ba700430c8a319ec9e556",
       "replacement_task_id": "202609211330-5A54M1"
+    },
+    {
+      "task_id": "202609211544-JKVHYA",
+      "evidence_kind": "merged_commit",
+      "reason": "The release-scope validation repair was integrated by PR 5997; this commit is present on the release ancestry.",
+      "git_ref": "787f96425a4b382a0322fbe2df893871028ccfad"
     }
   ]
 }
