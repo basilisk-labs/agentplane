@@ -293,8 +293,9 @@ export async function approveTaskPlan(root: string, taskId: string): Promise<voi
 }
 
 export async function setTaskVerifySteps(root: string, taskId: string): Promise<void> {
-  expect(
-    await runCliSilent([
+  const io = captureStdIO();
+  try {
+    const code = await runCli([
       "task",
       "doc",
       "set",
@@ -305,8 +306,11 @@ export async function setTaskVerifySteps(root: string, taskId: string): Promise<
       "Run verify for this task. Expected: verification records successfully.",
       "--root",
       root,
-    ]),
-  ).toBe(0);
+    ]);
+    expect(code, io.stderr).toBe(0);
+  } finally {
+    io.restore();
+  }
 }
 
 export async function recordVerificationOk(root: string, taskId: string): Promise<void> {
