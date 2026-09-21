@@ -20,8 +20,10 @@ import { afterEach, describe, expect, it } from "vitest";
 import { taskBytesDigest } from "../../backends/task-backend/local-task-byte-store.js";
 import type { TaskByteSnapshot, TaskByteStore } from "../../ports/task-byte-store.js";
 import { tryAcquireSupervisorExecutionLease } from "../shared/supervisor-execution-episode.js";
+import { completedLifecycleMigrationApplyResult } from "./kernel-migrate.command.js";
 import {
   applyLifecycleOwnerMigration,
+  inspectLifecycleOwnerMigration,
   LIFECYCLE_OWNER_MIGRATION_QUARANTINE_EXTENSION,
   LIFECYCLE_OWNER_MIGRATION_RECEIPT_EXTENSION,
   type BoundLifecycleOwnerMigrationAssessment,
@@ -492,6 +494,26 @@ describe("LC-14 lifecycle-owner migration apply", () => {
     const repeated = await apply({ store, journal, request: requestFor(bytes) });
     expect(repeated).toMatchObject({ kind: "already_applied", receipt: applied.receipt });
     expect(store.compare_count).toBe(1);
+    const inspected = await inspectLifecycleOwnerMigration({
+      store,
+      repository_identity: identity,
+      task_id: "task-1",
+    });
+    if (inspected.kind !== "applied") throw new Error(JSON.stringify(inspected));
+    expect(
+      completedLifecycleMigrationApplyResult({
+        expected_source_digest: k.kernelDigest("different-source"),
+        output_bytes_digest: inspected.current.digest,
+        receipt: inspected.receipt,
+      }),
+    ).toEqual({ kind: "refused", reason: "state_changed_after_migration" });
+    expect(
+      completedLifecycleMigrationApplyResult({
+        expected_source_digest: taskBytesDigest(bytes),
+        output_bytes_digest: inspected.current.digest,
+        receipt: inspected.receipt,
+      }),
+    ).toMatchObject({ kind: "already_applied", receipt: applied.receipt });
   });
 
   it("preserves accepted outputs without replay and records one fresh bound assessment", async () => {

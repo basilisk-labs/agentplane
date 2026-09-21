@@ -40,6 +40,21 @@ type Parsed = {
   assessment?: string;
   yes: boolean;
 };
+
+export function completedLifecycleMigrationApplyResult(opts: {
+  expected_source_digest: taskKernel.Sha256Digest;
+  output_bytes_digest: taskKernel.Sha256Digest;
+  receipt: NonNullable<ReturnType<typeof parseLifecycleOwnerMigrationReceipt>>;
+}) {
+  return opts.receipt.source_digest === opts.expected_source_digest
+    ? {
+        kind: "already_applied" as const,
+        receipt: opts.receipt,
+        output_bytes_digest: opts.output_bytes_digest,
+      }
+    : { kind: "refused" as const, reason: "state_changed_after_migration" };
+}
+
 export const taskKernelMigrateSpec: CommandSpec<Parsed> = {
   id: ["task", "kernel-migrate"],
   group: "Task",
@@ -233,13 +248,13 @@ export async function runKernelMigration(ctx: CommandContext, opts: Parsed): Pro
       task_id: opts.taskId,
     });
     if (inspected.kind === "applied") {
-      const result = {
-        kind: "already_applied" as const,
+      const result = completedLifecycleMigrationApplyResult({
+        expected_source_digest: opts.sourceDigest as taskKernel.Sha256Digest,
         receipt: inspected.receipt,
         output_bytes_digest: inspected.current.digest,
-      };
+      });
       process.stdout.write(`${JSON.stringify(await withHistoricalBlueprint(result), null, 2)}\n`);
-      return 0;
+      return result.kind === "refused" ? 1 : 0;
     }
     if (inspected.kind !== "ready") {
       const result = {
