@@ -77,27 +77,57 @@ for (const [suiteName, files] of Object.entries(listVitestSuiteFiles())) {
   for (const filePath of files) assertExistingTest(filePath, `${suiteName} suite`);
 }
 
-const allowedSkipFiles = new Set();
+const skipPattern = /\b(?:describe|it|test)\s*\.\s*(?:skip|skipIf|todo|todoIf)\b/gu;
+const todoPattern = /\b(?:describe|it|test)\s*\.\s*(?:todo|todoIf)\b/u;
+
+function countMatches(contents, pattern) {
+  return [...contents.matchAll(new RegExp(pattern.source, pattern.flags))].length;
+}
+
+export function validateExpectedSkipSites(contents, entry) {
+  const expectedCount = entry.sites.reduce((total, site) => total + site.count, 0);
+  assert.equal(
+    countMatches(contents, skipPattern),
+    expectedCount,
+    `${entry.file}: unenumerated or stale skip site`,
+  );
+  for (const site of entry.sites) {
+    assert.ok(site.reason.trim().length > 0, `${entry.file}: missing skip reason`);
+    assert.ok(Number.isInteger(site.count) && site.count > 0, `${entry.file}: invalid skip count`);
+    assert.equal(
+      countMatches(contents, new RegExp(site.pattern, "gu")),
+      site.count,
+      `${entry.file}: skip site pattern count changed: ${site.pattern}`,
+    );
+  }
+}
+
+const expectedSkipsByFile = new Map();
 for (const entry of ledger.expected_skip_sites) {
   assertExistingTest(entry.file, "expected skip site");
-  assert.ok(entry.reason.trim().length > 0, `${entry.file}: missing skip reason`);
-  assert.equal(allowedSkipFiles.has(entry.file), false, `${entry.file}: duplicate skip allowlist entry`);
-  allowedSkipFiles.add(entry.file);
+  assert.equal(expectedSkipsByFile.has(entry.file), false, `${entry.file}: duplicate skip entry`);
+  assert.ok(Array.isArray(entry.sites) && entry.sites.length > 0, `${entry.file}: missing sites`);
+  expectedSkipsByFile.set(entry.file, entry);
+  validateExpectedSkipSites(source(entry.file), entry);
 }
-const skipPattern = /\b(?:describe|it|test)\.(?:skip|skipIf|todo|todoIf)\b|\b(?:describe|it|test)\.skip\b/u;
-const todoPattern = /\b(?:describe|it|test)\.(?:todo|todoIf)\b/u;
 const observedSkipFiles = new Set();
 for (const entry of inventory) {
   const contents = source(entry.filePath);
   assert.doesNotMatch(contents, todoPattern, `${entry.filePath}: todo tests are not allowed`);
-  if (!skipPattern.test(contents)) continue;
+  if (countMatches(contents, skipPattern) === 0) continue;
   observedSkipFiles.add(entry.filePath);
-  assert.ok(allowedSkipFiles.has(entry.filePath), `${entry.filePath}: unexpected skip site`);
+  assert.ok(expectedSkipsByFile.has(entry.filePath), `${entry.filePath}: unexpected skip site`);
 }
 assert.deepEqual(
   [...observedSkipFiles].toSorted(),
-  [...allowedSkipFiles].toSorted(),
+  [...expectedSkipsByFile.keys()].toSorted(),
   "skip allowlist contains a stale or unobserved path",
+);
+const mutationProbe = ledger.expected_skip_sites[0];
+assert.throws(
+  () => validateExpectedSkipSites(`${source(mutationProbe.file)}\nit.skip("unexpected");\n`, mutationProbe),
+  /unenumerated or stale skip site/u,
+  "an additional skip in an already allowlisted file must fail closed",
 );
 
 for (const [suiteName, measurement] of Object.entries({

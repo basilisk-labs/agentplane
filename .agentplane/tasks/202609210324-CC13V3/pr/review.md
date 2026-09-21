@@ -123,7 +123,7 @@ Created: 2026-09-21T03:47:54.341Z
  schemas/agent-semantic-result.schema.json          |    6 +-
  scripts/bench/paired-m03-local-replay.mjs          |  307 ++++++
  scripts/bench/paired-m03-local-replay.test.mjs     |   54 ++
- .../check-post-convergence-test-topology.mjs       |  122 +++
+ .../check-post-convergence-test-topology.mjs       |  152 +++
  scripts/checks/lifecycle-engine-retirement.json    |   40 +
  scripts/checks/lifecycle-owner-map.json            |   92 +-
  scripts/checks/lifecycle-owner-map.test.mjs        |   44 +-
@@ -131,7 +131,7 @@ Created: 2026-09-21T03:47:54.341Z
  scripts/checks/post-convergence-test-topology.json |  130 +++
  scripts/checks/single-live-supervisor.test.mjs     |   49 +
  .../release/check-local-tarball-install-smoke.mjs  |   27 +-
- 102 files changed, 8463 insertions(+), 6275 deletions(-)
+ 102 files changed, 8493 insertions(+), 6275 deletions(-)
 ```
 
 </details>

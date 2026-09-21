@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check c8baf368d85335724e0daf171af9aa2b74196adc..617f73e8b6f91ccb0df9b5835ef6226985591e42",
+      "command": "git diff --check d0ab4d0b05818b7eabead8f719e26e8fb6c6d2c8..93ba64a16b22a12c7eb18a2cd081c23d6129fd3a",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB c8baf368d85335724e0daf171af9aa2b74196adc..617f73e8b6f91ccb0df9b5835ef6226985591e42",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB d0ab4d0b05818b7eabead8f719e26e8fb6c6d2c8..93ba64a16b22a12c7eb18a2cd081c23d6129fd3a",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -22,11 +22,24 @@
         "M\t.agentplane/tasks/202609210324-CC13V3/pr/github-body.md",
         "M\t.agentplane/tasks/202609210324-CC13V3/pr/meta.json",
         "M\t.agentplane/tasks/202609210324-CC13V3/pr/review.md",
+        "A\t.agentplane/tasks/202609210324-CC13V3/quality/objects/sha256/4340c69a72ea01faa72dcf87e07dfff35ea84123952ef257b9037259c0405a62.json",
         "M\t.agentplane/tasks/202609210324-CC13V3/supervision/declared-checks.json",
-        "M\t.agentplane/tasks/202609210324-CC13V3/supervision/implementation-evidence.json",
-        "A\tartifacts/m03-0.7.10-vs-0.7.11-local-replay.json",
-        "A\tscripts/bench/paired-m03-local-replay.mjs",
-        "A\tscripts/bench/paired-m03-local-replay.test.mjs"
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-record-invariants.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.roadmap-external-owner-cutover.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-advance.test.ts",
+        "D\tpackages/agentplane/src/commands/task/kernel-advance.ts",
+        "M\tpackages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts",
+        "M\tpackages/agentplane/src/commands/task/task-centric-external-result.test.ts",
+        "M\tpackages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts",
+        "M\tpackages/agentplane/src/runner/usecases/roadmap-scenario-owner-parity.test.ts",
+        "D\tpackages/core/src/tasks/task-centric/index.ts",
+        "M\tpackages/core/src/tasks/task-centric/replacement-plan-recovery.test.ts",
+        "M\tpackages/core/src/tasks/task-centric/task-centric.test.ts",
+        "A\tscripts/checks/check-post-convergence-test-topology.mjs",
+        "M\tscripts/checks/lifecycle-engine-retirement.json",
+        "M\tscripts/checks/no-secondary-lifecycle-engine.test.mjs",
+        "A\tscripts/checks/post-convergence-test-topology.json"
       ]
     },
     {
@@ -36,14 +49,21 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "c8baf368d85335724e0daf171af9aa2b74196adc",
-  "implementation_commit": "617f73e8b6f91ccb0df9b5835ef6226985591e42",
+  "execution_base_commit": "d0ab4d0b05818b7eabead8f719e26e8fb6c6d2c8",
+  "implementation_commit": "93ba64a16b22a12c7eb18a2cd081c23d6129fd3a",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
       " M .agentplane/tasks/202609210324-CC13V3/README.md",
       " M .agentplane/tasks/202609210324-CC13V3/supervision/declared-checks.json",
-      " M .agentplane/tasks/202609210324-CC13V3/supervision/implementation-evidence.json"
+      " M packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts",
+      " M packages/agentplane/src/adapters/task-backend/kernel-record-invariants.ts",
+      " M packages/agentplane/src/cli/run-cli.core.roadmap-external-owner-cutover.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-advance.test.ts",
+      " D packages/agentplane/src/commands/task/kernel-advance.ts",
+      " M packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts",
+      " M packages/agentplane/src/runner/usecases/roadmap-scenario-owner-parity.test.ts",
+      "?? .agentplane/tasks/202609210324-CC13V3/quality/objects/sha256/4340c69a72ea01faa72dcf87e07dfff35ea84123952ef257b9037259c0405a62.json"
     ],
     "classification": [
       {
@@ -56,7 +76,35 @@
       },
       {
         "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202609210324-CC13V3/supervision/implementation-evidence.json"
+        "line": " M packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/adapters/task-backend/kernel-record-invariants.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/run-cli.core.roadmap-external-owner-cutover.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-advance.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " D packages/agentplane/src/commands/task/kernel-advance.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/usecases/roadmap-scenario-owner-parity.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609210324-CC13V3/quality/objects/sha256/4340c69a72ea01faa72dcf87e07dfff35ea84123952ef257b9037259c0405a62.json"
       }
     ],
     "final": [],
@@ -64,7 +112,14 @@
     "removed_after_execution_baseline": [
       " M .agentplane/tasks/202609210324-CC13V3/README.md",
       " M .agentplane/tasks/202609210324-CC13V3/supervision/declared-checks.json",
-      " M .agentplane/tasks/202609210324-CC13V3/supervision/implementation-evidence.json"
+      " M packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts",
+      " M packages/agentplane/src/adapters/task-backend/kernel-record-invariants.ts",
+      " M packages/agentplane/src/cli/run-cli.core.roadmap-external-owner-cutover.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-advance.test.ts",
+      " D packages/agentplane/src/commands/task/kernel-advance.ts",
+      " M packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts",
+      " M packages/agentplane/src/runner/usecases/roadmap-scenario-owner-parity.test.ts",
+      "?? .agentplane/tasks/202609210324-CC13V3/quality/objects/sha256/4340c69a72ea01faa72dcf87e07dfff35ea84123952ef257b9037259c0405a62.json"
     ],
     "unchanged_from_execution_baseline": []
   },
