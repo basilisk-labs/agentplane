@@ -1,10 +1,10 @@
 ---
 id: "202609211051-X92CWM"
 title: "Repair the demonstrated 0.7.11 release blockers without weakening gates: project canonical plan approval for branch-PR routing, fix replay-benchmark lint, prove fail-closed lifecycle repair and fresh branch worktree bootstrap in the release-critical scenario, then pass full CI and LC-24 gates."
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 71
+revision: 72
 origin:
   system: "manual"
 depends_on: []
@@ -1920,6 +1920,15 @@ extensions:
           event_digests:
             - "sha256:cc2aca022491137aaedcc5814494a48e0c810da086ace66e41f6fa5ea5569358"
           mutation_id: "final-validation:sha256:15a7f52c4b4cc6fc45c0fe296b3f978b9e96ea3b2d3e433ad486af87e0d33e92:62"
+        kernel_task_completion_required:sha256:07131e1ac002fb090708a5e800d1fa7924173ab7aadcf84297be25c931d49702:sha256:2cfe0d2d19dbb8f884d2d572637923831c2e3f252f53ca16d303647774912e3a:
+          after_revision: 64
+          aggregate_digest: "sha256:985331721fcc1baddf9a50c22d750bcabc8e3c072cb56b0afa9e7ca3b2b907d2"
+          before_revision: 63
+          command_digest: "sha256:c2f161e09823a10c95efe966a6b6209ea50c39301e64f29acc751c211ad3ab25"
+          effect_ids: []
+          event_digests:
+            - "sha256:b492bc6fe7dfa70d8d9473c37fec60020a9e745a6c38c96548b142ffae9be0df"
+          mutation_id: "kernel_task_completion_required:sha256:07131e1ac002fb090708a5e800d1fa7924173ab7aadcf84297be25c931d49702:sha256:2cfe0d2d19dbb8f884d2d572637923831c2e3f252f53ca16d303647774912e3a"
         kernel_work_item_claim_required:sha256:0e77f44ab3014c0c2ad2680ec3b4f3eee8864dae6c9195e47dcfeca373992d01:sha256:2399e02108a9099fa85713d02150366e5cd19f2968c796a533d48e8580e8ff3c:
           after_revision: 13
           aggregate_digest: "sha256:384b54598d3dd32d76740c7b1148c7cd7f278a89e8fc0b1ad43167585a4a7cab"
@@ -2724,9 +2733,9 @@ extensions:
               id: "release-blocker-repair"
               optional: false
               required_inputs: []
-      revision: 63
+      revision: 64
       schema_version: 1
-      state: "FINAL_VALIDATION"
+      state: "COMPLETED"
       work_items:
         release-blocker-repair:
           attempt: 4
@@ -2831,7 +2840,7 @@ extensions:
               toolchain_digest: "sha256:be5cb70d3cd4075bbda82296e3267bee5f79fff23613c02c8510e010c1394cd8"
             observed_at: "2026-09-21T12:49:36.138Z"
             status: "PASSED"
-    digest: "sha256:07131e1ac002fb090708a5e800d1fa7924173ab7aadcf84297be25c931d49702"
+    digest: "sha256:852bf2edaf017453e55af4a7854a604c09f9a19ab1f1edb3204a882c787645eb"
     documents:
       contracts:
         sha256:3cfe779b74ab5093378dcfc76999549cb623b0de8c209f732cd6f82b31fecb7d:
@@ -3516,6 +3525,15 @@ extensions:
         payload_digest: "sha256:6cc5ee26936b25e9b6052ea5ee3b0c46b9cba0fb1016e7198cc31e59e22fc183"
         task_id: "202609211051-X92CWM"
         task_revision: 63
+      -
+        command_digest: "sha256:c2f161e09823a10c95efe966a6b6209ea50c39301e64f29acc751c211ad3ab25"
+        id: "kernel_task_completion_required:sha256:07131e1ac002fb090708a5e800d1fa7924173ab7aadcf84297be25c931d49702:sha256:2cfe0d2d19dbb8f884d2d572637923831c2e3f252f53ca16d303647774912e3a:task_completed"
+        kind: "task_completed"
+        mutation_id: "kernel_task_completion_required:sha256:07131e1ac002fb090708a5e800d1fa7924173ab7aadcf84297be25c931d49702:sha256:2cfe0d2d19dbb8f884d2d572637923831c2e3f252f53ca16d303647774912e3a"
+        occurred_at: "2026-09-21T13:07:02.600Z"
+        payload_digest: "sha256:4349eb7d701753bfbf8c76d614b702b5e0e6534df4d7dd95a116e3e34086386d"
+        task_id: "202609211051-X92CWM"
+        task_revision: 64
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
