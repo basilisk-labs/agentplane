@@ -35,7 +35,7 @@ vi.mock("../../shared/stable-file.js", () => ({
   readStableRegularTextNoFollow: mocks.readEnvelope,
 }));
 vi.mock("./kernel-operational-projection.js", () => ({
-  ensureKernelOperationalProjectionStatus: mocks.ensureProjection,
+  ensureKernelOperationalProjectionEvidence: mocks.ensureProjection,
 }));
 vi.mock("../shared/task-backend.js", async (importOriginal) => ({
   ...(await importOriginal<typeof TaskBackendModule>()),

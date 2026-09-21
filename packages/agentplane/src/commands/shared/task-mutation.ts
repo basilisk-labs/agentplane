@@ -1,4 +1,8 @@
-import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
+import {
+  TASK_KERNEL_EXTENSION,
+  type KernelRecord,
+} from "../../adapters/task-backend/kernel-record.js";
+import { projectKernelTask } from "../../adapters/task-backend/kernel-projector.js";
 import { projectTaskCentricCompatibilityMutation } from "../../adapters/task-backend/task-centric-backend-adapter.js";
 import {
   projectTaskLifecycleToLegacyStatus,
@@ -37,6 +41,24 @@ function assertCanonicalProjectionPreserved(opts: { current: TaskData; next: Tas
   const next = opts.next.extensions?.[TASK_KERNEL_EXTENSION];
   if (current === undefined || JSON.stringify(current) !== JSON.stringify(next)) {
     throw new Error("Canonical compatibility projection changed the Task Kernel record");
+  }
+  const aggregate = (current as Partial<KernelRecord>).aggregate;
+  if (!aggregate) return;
+  const expectedStatus = projectKernelTask(aggregate).status;
+  if (opts.current.status !== expectedStatus || opts.next.status !== expectedStatus) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message:
+        `Canonical compatibility projection conflicts with accepted Kernel state for ${opts.current.id}: ` +
+        `expected status ${expectedStatus}, observed ${opts.current.status} -> ${opts.next.status}.`,
+      context: {
+        reason_code: "canonical_projection_mismatch",
+        task_id: opts.current.id,
+        expected_status: expectedStatus,
+        current_status: opts.current.status,
+        next_status: opts.next.status,
+      },
+    });
   }
 }
 

@@ -72,9 +72,6 @@ export async function projectKernelOperationalEvidence(opts: {
     {
       ...task,
       revision: revision + 1,
-      // This is the mature branch workflow's pre-merge closure projection. Kernel completion is
-      // still authoritative and happens only after provider and cleanup effects are observed.
-      status: "DONE",
       plan_approval: {
         state: "approved",
         updated_at: opts.projected_at,
@@ -112,8 +109,8 @@ export async function projectKernelOperationalEvidence(opts: {
   );
 }
 
-/** Keep the non-authoritative branch closure projection stable across later Kernel effect writes. */
-export async function ensureKernelOperationalProjectionStatus(opts: {
+/** Keep non-authoritative evidence stable across later Kernel effect writes. */
+export async function ensureKernelOperationalProjectionEvidence(opts: {
   command: CommandContext;
   task_id: string;
   verification_evidence_digest?: k.Sha256Digest;
@@ -141,20 +138,24 @@ export async function ensureKernelOperationalProjectionStatus(opts: {
     ...projectionContents,
     digest: k.kernelDigest(projectionContents),
   };
-  if (task.status === "DONE" && projection.digest === existing.digest) return;
+  const fallbackVerification = projectedVerification(task.verification, {
+    state: "ok",
+    attempts: 1,
+    updated_at: existing.projected_at,
+    updated_by: "SUPERVISOR",
+    note: `Canonical validation ${verificationEvidenceDigest}`,
+  });
+  if (
+    projection.digest === existing.digest &&
+    task.verification?.state === fallbackVerification.state
+  )
+    return;
   const revision = task.revision ?? 0;
   await opts.command.taskBackend.writeTask(
     {
       ...task,
       revision: revision + 1,
-      status: "DONE",
-      verification: projectedVerification(task.verification, {
-        state: "ok",
-        attempts: 1,
-        updated_at: existing.projected_at,
-        updated_by: "SUPERVISOR",
-        note: `Canonical validation ${verificationEvidenceDigest}`,
-      }),
+      verification: fallbackVerification,
       extensions: {
         ...task.extensions,
         [KERNEL_OPERATIONAL_PROJECTION]: projection,

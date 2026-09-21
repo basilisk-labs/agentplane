@@ -1,0 +1,16 @@
+ .../src/adapters/task-backend/kernel-record.ts     |   8 +
+ .../commands/shared/native-task-identity.test.ts   |   1 +
+ .../shared/roadmap-single-mutation-gateway.test.ts | 184 ++++++++++++++++
+ .../src/commands/shared/task-mutation.ts           |  24 ++-
+ .../src/commands/task/active.command.unit.test.ts  |   7 +-
+ .../agentplane/src/commands/task/kernel-advance.ts |   6 +-
+ .../task/kernel-operational-projection.test.ts     |  13 +-
+ .../commands/task/kernel-operational-projection.ts |  29 +--
+ .../kernel-provider-effect-coordinator.test.ts     |   2 +-
+ .../task/kernel-provider-effect-coordinator.ts     |   6 +-
+ .../src/commands/task/show-kernel.test.ts          |  13 +-
+ packages/core/src/tasks/task-centric/index.ts      |   1 -
+ packages/core/src/tasks/task-centric/lifecycle.ts  | 233 +--------------------
+ scripts/checks/lifecycle-owner-map.json            |  12 --
+ scripts/checks/lifecycle-owner-map.test.mjs        |   6 +-
+ 15 files changed, 258 insertions(+), 287 deletions(-)

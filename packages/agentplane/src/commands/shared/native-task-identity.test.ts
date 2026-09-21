@@ -37,6 +37,7 @@ function kernelTask(planState: k.PlanRecord["state"]) {
   const contractDigest = digest("verification-contract");
   const task = {
     id: "T-1",
+    status: "DOING",
     extensions: {
       [TASK_KERNEL_EXTENSION]: makeKernelRecord(repositoryIdentity, aggregate, []),
     },

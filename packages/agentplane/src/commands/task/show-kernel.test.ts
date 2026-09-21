@@ -44,7 +44,7 @@ function capturedTask() {
     migration_receipts: [],
   };
   return makeTaskFixture({
-    status: "DONE",
+    status: "TODO",
     depends_on: ["LEGACY-MISSING"],
     extensions: { [TASK_KERNEL_EXTENSION]: makeKernelRecord(identity, aggregate, []) },
   });
@@ -252,7 +252,7 @@ describe("task show canonical projection", () => {
     mocks.load.mockRejectedValue(new Error("backend inaccessible"));
     await expect(readTaskKernel(ctx, "T-1")).rejects.toThrow("backend inaccessible");
   });
-  it("ignores a contradictory legacy status and rejects corrupted canonical records", async () => {
+  it("rejects contradictory outer status and corrupted canonical records", async () => {
     const identity = taskKernel.kernelDigest("repository");
     const aggregate: taskKernel.TaskAggregate = {
       schema_version: 1,
@@ -281,12 +281,7 @@ describe("task show canonical projection", () => {
     const stdout = vi.spyOn(process.stdout, "write").mockReturnValue(true);
     await expect(
       cmdTaskShow({ ctx, cwd: ctx.resolvedProject.gitRoot, taskId: "T-1" }),
-    ).resolves.toBe(0);
-    expect(JSON.parse(String(stdout.mock.calls[0]?.[0]))).toMatchObject({
-      source: "task_kernel",
-      state: "PLANNING",
-      status: "TODO",
-    });
+    ).rejects.toMatchObject({ code: "E_VALIDATION" });
     mocks.load.mockResolvedValue({
       ...fixture,
       extensions: {
@@ -296,6 +291,6 @@ describe("task show canonical projection", () => {
     await expect(
       cmdTaskShow({ ctx, cwd: ctx.resolvedProject.gitRoot, taskId: "T-1" }),
     ).rejects.toMatchObject({ code: "E_VALIDATION" });
-    expect(stdout).toHaveBeenCalledTimes(1);
+    expect(stdout).not.toHaveBeenCalled();
   });
 });

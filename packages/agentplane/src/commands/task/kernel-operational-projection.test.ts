@@ -4,7 +4,7 @@ import { taskKernel as k } from "@agentplaneorg/core/tasks";
 import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
 import type { TaskWriteOptions } from "../../backends/task-backend.js";
 import {
-  ensureKernelOperationalProjectionStatus,
+  ensureKernelOperationalProjectionEvidence,
   projectKernelOperationalEvidence,
   readKernelOperationalProjection,
 } from "./kernel-operational-projection.js";
@@ -43,6 +43,7 @@ describe("canonical operational evidence projection", () => {
     const task = {
       id: "T-1",
       revision: 7,
+      status: "DOING",
       verification: { state: "pending", attempts: 0 },
       extensions: { [TASK_KERNEL_EXTENSION]: kernel },
     };
@@ -71,7 +72,7 @@ describe("canonical operational evidence projection", () => {
     const [written, options] = writeTask.mock.calls[0]!;
     expect(options).toEqual({ expectedRevision: 7 });
     expect(written.revision).toBe(8);
-    expect(written.status).toBe("DONE");
+    expect(written.status).toBe("DOING");
     expect(written.commit?.hash).toBe("a".repeat(40));
     expect(written.commit?.message).toBeTruthy();
     expect(written.plan_approval).toMatchObject({ state: "approved", updated_by: "USER" });
@@ -130,7 +131,7 @@ describe("canonical operational evidence projection", () => {
     expect(writeTask.mock.calls[0]![0].verification).toEqual(verification);
   });
 
-  it("restores the pre-merge status projection after a Kernel effect write", async () => {
+  it("restores evidence without changing the Kernel-derived status", async () => {
     const writeTask = taskWriter();
     const projectionContents = {
       schema_version: 1 as const,
@@ -152,7 +153,7 @@ describe("canonical operational evidence projection", () => {
       extensions: { "agentplane.kernel_operational_projection": projection },
     };
 
-    await ensureKernelOperationalProjectionStatus({
+    await ensureKernelOperationalProjectionEvidence({
       command: {
         taskBackend: { getTask: vi.fn().mockResolvedValue(task), writeTask },
       } as never,
@@ -162,7 +163,7 @@ describe("canonical operational evidence projection", () => {
     expect(writeTask).toHaveBeenCalledOnce();
     const [written, options] = writeTask.mock.calls[0]!;
     expect(options).toEqual({ expectedRevision: 9 });
-    expect(written).toMatchObject({ ...task, revision: 10, status: "DONE" });
+    expect(written).toMatchObject({ ...task, revision: 10, status: "DOING" });
     expect(written.verification).toMatchObject({
       state: "ok",
       attempts: 1,
@@ -194,7 +195,7 @@ describe("canonical operational evidence projection", () => {
     };
     const finalEvidence = k.kernelDigest("final-validation");
 
-    await ensureKernelOperationalProjectionStatus({
+    await ensureKernelOperationalProjectionEvidence({
       command: {
         taskBackend: { getTask: vi.fn().mockResolvedValue(task), writeTask },
       } as never,
