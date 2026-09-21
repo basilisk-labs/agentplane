@@ -6,6 +6,7 @@ import {
   type SupervisorExecutionEpisodeJournal,
 } from "@agentplaneorg/core/schemas";
 import {
+  type taskKernel,
   taskCentricDigest,
   parseTaskReadme,
   renderTaskReadme,
@@ -51,6 +52,9 @@ import {
   conflictApplicationAuthority,
   conflictRecoveryAuthority,
 } from "../pr/conflict-rework-authority.js";
+import { readKernelRecord } from "../../adapters/task-backend/kernel-record.js";
+import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
+import { createKernelRuntime } from "./kernel-runtime-context.js";
 
 export type ManagedConflictApplicationContext = {
   run_id: string;
@@ -96,6 +100,122 @@ type ManagedConflictTaskApplication = {
   stage: "reconciled" | "applied";
   artifacts_committed: boolean;
 };
+
+type ManagedConflictKernelApplication = {
+  implementation_commit: string;
+};
+
+async function proveManagedConflictKernelApplication(opts: {
+  command: CommandContext;
+  checkout: string;
+  task_id: string;
+  decision: TaskRouteDecision;
+  context: ManagedConflictApplicationContext;
+  executed: ExecutedTaskRunnerExecution;
+}): Promise<ManagedConflictKernelApplication | null> {
+  const task = await opts.command.taskBackend.getTask(opts.task_id);
+  if (!task) throw new Error("Managed canonical conflict Task disappeared.");
+  const repositoryIdentity = await resolveLogicalRepositoryIdentity({
+    git_root: opts.command.resolvedProject.gitRoot,
+    task,
+    create_if_missing: false,
+  });
+  const read = readKernelRecord(task, repositoryIdentity as taskKernel.Sha256Digest);
+  if (read.kind !== "canonical") return null;
+  const order = opts.executed.bundle.work_order;
+  if (!order) throw new Error("Managed canonical conflict proof has no WorkOrder.");
+  const conflict = resolveConflictReworkSemanticInput({
+    task_id: order.task.id,
+    checkout: opts.checkout,
+    head: order.state_fingerprint.git_head,
+    writable_roots: order.authority.writable_roots,
+    required_inputs: order.required_inputs,
+  });
+  if (!conflict) throw new Error("Managed canonical conflict proof has no bound context.");
+  const git = async (args: string[]) =>
+    await runProcess({ command: "git", args, cwd: opts.checkout, env: gitProofEnv() });
+  const head = (await git(["rev-parse", "HEAD"])).stdout.trim();
+  const message = (await git(["show", "-s", "--format=%B", head])).stdout;
+  const expectedMessage = managedConflictEvidenceCommitMessage({
+    context: opts.context,
+    result: opts.executed.result,
+    decision: opts.decision,
+  });
+  if (message.split("\n")[0] !== expectedMessage.split("\n")[0]) return null;
+  const proofTrailers = (text: string) =>
+    text.split("\n").filter((line) => /^AgentPlane-(?:Result|Postcondition):/u.test(line));
+  const parents = (await git(["show", "-s", "--format=%P", head])).stdout.trim().split(" ");
+  if (
+    parents.length !== 1 ||
+    taskCentricDigest(proofTrailers(message)) !== taskCentricDigest(proofTrailers(expectedMessage))
+  ) {
+    throw new Error("Managed canonical conflict evidence differs from its exact result.");
+  }
+  const mergeHead = parents[0]!;
+  const resultDigest = taskCentricDigest({
+    run_id: opts.context.run_id,
+    work_order: order.work_order_id,
+    result: opts.executed.result,
+  });
+  const snapshot = await resolveConflictResolutionSnapshot({
+    cwd: opts.checkout,
+    task_id: opts.task_id,
+    baseline: opts.context.execution_base_commit!,
+    head: mergeHead,
+    base: conflict.local.base_head_sha,
+    result_digest: resultDigest,
+  });
+  const prefix = `${opts.command.config.paths.workflow_dir.replaceAll("\\", "/")}/${opts.task_id}/`;
+  const roots = order.authority.writable_roots.map(
+    (root) => path.relative(opts.checkout, root).replaceAll(path.sep, "/") || ".",
+  );
+  const prepared = await prepareConflictResolutionTree({
+    cwd: opts.checkout,
+    task_head: opts.context.execution_base_commit!,
+    resolution_snapshot: snapshot,
+    base: conflict.local.base_head_sha,
+    merge_base: conflict.local.merge_base_sha,
+    allowed_path: (file) =>
+      file.startsWith(prefix) ||
+      roots.some((root) => root === "." || file === root || file.startsWith(`${root}/`)),
+  });
+  await assertConflictResolutionCommit({
+    cwd: opts.checkout,
+    task_id: opts.task_id,
+    head: mergeHead,
+    resolution_snapshot: snapshot,
+    base: conflict.local.base_head_sha,
+    tree: prepared.tree,
+    semantic_result_digest: resultDigest,
+  });
+  const evidencePaths = (await git(["diff", "--name-only", "-z", mergeHead, head])).stdout
+    .split("\0")
+    .filter(Boolean);
+  if (evidencePaths.length === 0 || evidencePaths.some((file) => !file.startsWith(prefix))) {
+    throw new Error("Managed canonical conflict evidence contains foreign changes.");
+  }
+  if ((await git(["status", "--porcelain", "-z", "--untracked-files=all"])).stdout !== "") {
+    throw new Error("Managed canonical conflict recovery found foreign workspace changes.");
+  }
+  const runtime = await createKernelRuntime({
+    command: opts.command,
+    task_id: opts.task_id,
+    transport: "managed",
+    operation_id: `recover-managed-provider-conflict:${opts.context.result_digest}`,
+  });
+  const kernelContext = await runtime.native.readContext(opts.task_id);
+  const authority = read.record.aggregate.authority_lineage?.at(-1)?.authority;
+  const validation = read.record.aggregate.final_validation;
+  if (
+    !authority ||
+    authority.repository_fingerprint !== kernelContext.repository_fingerprint ||
+    validation?.status !== "PASSED" ||
+    validation.identity.implementation_identity !== kernelContext.repository_fingerprint
+  ) {
+    throw new Error("Managed canonical conflict Kernel evidence is stale.");
+  }
+  return { implementation_commit: mergeHead };
+}
 
 export function managedConflictTaskPostconditions(opts: {
   context: ManagedConflictApplicationContext;
@@ -354,6 +474,7 @@ export async function loadManagedConflictRecovery(opts: {
   applicationContext: ManagedConflictApplicationContext;
   issuedDecision: TaskRouteDecision;
   taskApplication: ManagedConflictTaskApplication | null;
+  kernelApplication: ManagedConflictKernelApplication | null;
 }> {
   const operation = opts.journal.operations.at(-1);
   if (
@@ -485,8 +606,14 @@ export async function loadManagedConflictRecovery(opts: {
     state_after: state.state_after,
     precondition: state.precondition,
   };
-  const taskApplication =
-    normalizedProgress === operation.progress_digest
+  const kernelApplication = await proveManagedConflictKernelApplication({
+    ...opts,
+    context: applicationContext,
+    executed,
+  });
+  const taskApplication = kernelApplication
+    ? null
+    : normalizedProgress === operation.progress_digest
       ? null
       : await proveManagedConflictTaskApplication({
           ...opts,
@@ -498,6 +625,43 @@ export async function loadManagedConflictRecovery(opts: {
     applicationContext,
     executed,
     taskApplication,
+    kernelApplication,
+  };
+}
+
+export async function finishManagedConflictKernelRecovery(opts: {
+  command: CommandContext;
+  task_id: string;
+  journal: SupervisorExecutionEpisodeJournal;
+  store: SupervisorEpisodeStore;
+  executed: ExecutedTaskRunnerExecution;
+  implementation_commit: string;
+  allow_unverified_receipt: boolean;
+  decide: () => Promise<TaskRouteDecision>;
+}): Promise<BranchEpisodeOutcome> {
+  const observed = observeDirectExecutor(
+    projectExecutedTaskRunnerLifecycleResult({
+      task_id: opts.task_id,
+      execution: opts.executed,
+    }),
+    { allow_unverified_receipt: opts.allow_unverified_receipt },
+  );
+  if ("stop" in observed) throw new Error(observed.reason);
+  const decision = await opts.decide();
+  const journal = advanceSupervisorExecutionEpisodeState({
+    journal: opts.journal,
+    state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+    route_observation: { step_id: decision.workflowStep.id },
+  });
+  await opts.store.write(journal);
+  return {
+    status: "completed",
+    decision,
+    journal: journalProjection(journal, opts.store.path),
+    executor: { ...observed.executor, implementation_commit: opts.implementation_commit },
+    provider_episodes: 0,
+    lifecycle_calls: 0,
+    executor_lifecycle_event_delta: 0,
   };
 }
 

@@ -13,6 +13,7 @@ import * as conflictApplication from "../commands/pr/conflict-rework-merge.js";
 import * as taskStatus from "../commands/task/set-status.js";
 import * as taskContract from "../commands/task/task-execution-contract-observation.js";
 import * as artifactCommit from "../commands/task/branch-task-supervisor-artifact-commit.js";
+import { conflictApplicationAuthority } from "../commands/pr/conflict-rework-authority.js";
 
 import type { BranchTaskSupervisorOptions } from "../commands/task/branch-task-supervisor.js";
 import { resolveSupervisorExecutionEpisodePath } from "../commands/shared/supervisor-execution-episode.js";
@@ -69,7 +70,6 @@ export async function exerciseManagedConflict(opts: {
     .spyOn(conflictApplication, "applyConflictResolution")
     .mockImplementationOnce(async (args) => {
       const route = await decide();
-      const fingerprint = route.workflowStep.preconditionFingerprint;
       const journalPath = await resolveSupervisorExecutionEpisodePath({
         git_root: worktree,
         task_id: taskId,
@@ -95,16 +95,7 @@ export async function exerciseManagedConflict(opts: {
       expect(operation.progress_digest).toBe(
         digestSupervisorEpisodeValue({
           implementation,
-          authority: {
-            task_id: fingerprint.task_id,
-            task_revision: fingerprint.task_revision,
-            task: fingerprint.components.task,
-            backend_projection: fingerprint.components.backend_projection,
-            policy: fingerprint.components.policy,
-            blueprint: fingerprint.components.blueprint,
-            knowledge: fingerprint.components.knowledge,
-            provider: route.prFlow?.providerObservation ?? null,
-          },
+          authority: conflictApplicationAuthority(route),
         }),
       );
       if (opts.drift === "policy") {
@@ -303,6 +294,9 @@ export async function exerciseManagedConflict(opts: {
     contractInterruption?.mockRestore();
     evidenceInterruption?.mockRestore();
     runnerCalls?.mockRestore();
+  }
+  if (outcome.status !== "completed") {
+    throw new Error(`Managed conflict stopped before runner evidence: ${JSON.stringify(outcome)}`);
   }
   const run = await loadTaskRunnerInspection({ cwd: worktree, task_id: taskId });
   const receipt = JSON.parse(await readFile(run.paths.receipt_path, "utf8")) as {

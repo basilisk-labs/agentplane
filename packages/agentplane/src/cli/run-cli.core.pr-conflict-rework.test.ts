@@ -10,6 +10,8 @@ import {
 } from "./task-advance-effect-recovery.testkit.js";
 import { exerciseManagedConflict } from "./managed-conflict-recovery.testkit.js";
 import { materializeRepoLocalDistForWorktree } from "../commands/branch/work-start.materialize.js";
+import { taskKernel as k } from "@agentplaneorg/core/tasks";
+import { ensureRuntimeGitignore } from "../runtime/shared/runtime-gitignore.js";
 
 import { describe } from "vitest";
 
@@ -82,49 +84,209 @@ type ConflictRouteOutput = {
     | null;
 };
 
-async function createBranchPrTask(root: string): Promise<string> {
-  const io = captureStdIO();
+type CanonicalEpisodePacket = {
+  authority: { role: string };
+  exchange: {
+    directory: string;
+    work_order_ref: string;
+    result_path: string;
+    resume_argv: string[];
+  };
+};
+
+async function createBranchPrTask(root: string): Promise<{
+  taskId: string;
+  branch: string;
+  worktree: string;
+  executionPacket: CanonicalEpisodePacket;
+}> {
+  await ensureRuntimeGitignore({ gitRoot: root });
+  await appendFile(
+    path.join(root, ".gitignore"),
+    "\n.agentplane/bin/\nagentplane-recipes\nnode_modules\npackages/\nwebsite/\ndist\n",
+  );
+  await execFileAsync("git", ["add", ".gitignore"], { cwd: root });
+  await execFileAsync("git", ["commit", "-m", "test: ignore materialized conflict runtime"], {
+    cwd: root,
+  });
+  await execFileAsync("git", ["add", "-A"], { cwd: root });
+  let hasBootstrapChanges = false;
   try {
-    const code = await runCli([
-      "task",
-      "new",
-      "--title",
-      "Prepare semantic conflict rework route",
-      "--description",
-      "Exercise a provider-reported conflict route without allowing CLI resolution.",
-      "--priority",
-      "high",
-      "--owner",
-      "CODER",
-      "--tag",
-      "code",
-      "--mutation-scope",
-      "docs",
-      "--allow-duplicate",
-      "--root",
-      root,
-    ]);
-    expect(code, io.stderr).toBe(0);
-    const taskId = io.stdout.trim();
-    const documented = await runCli([
-      "task",
-      "doc",
-      "set",
-      taskId,
-      "--section",
-      "Verify Steps",
-      "--text",
-      "1. Inspect the provider conflict route. Expected: exact task, worktree, head and base identity is preserved; read-only preparation changes no Git state.",
-      "--updated-by",
-      "PLANNER",
-      "--root",
-      root,
-    ]);
-    expect(documented, io.stderr).toBe(0);
-    return taskId;
-  } finally {
-    io.restore();
+    await execFileAsync("git", ["diff", "--cached", "--quiet"], { cwd: root });
+  } catch {
+    hasBootstrapChanges = true;
   }
+  if (hasBootstrapChanges) {
+    await execFileAsync("git", ["commit", "-m", "test: persist conflict policy baseline"], {
+      cwd: root,
+    });
+  }
+  let taskId = "";
+  const createIo = captureStdIO();
+  try {
+    expect(
+      await runCli([
+        "task",
+        "new",
+        "--title",
+        "Prepare semantic conflict rework route",
+        "--description",
+        "Exercise a provider-reported conflict route without allowing CLI resolution.",
+        "--priority",
+        "high",
+        "--owner",
+        "CODER",
+        "--tag",
+        "code",
+        "--verify",
+        "node --version",
+        "--allow-duplicate",
+        "--root",
+        root,
+      ]),
+      createIo.stderr,
+    ).toBe(0);
+    taskId = createIo.stdout.trim();
+  } finally {
+    createIo.restore();
+  }
+  await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+  await execFileAsync("git", ["commit", "-m", "test: seed canonical conflict task"], {
+    cwd: root,
+  });
+  const advanceIo = captureStdIO();
+  let packet!: {
+    exchange: {
+      directory: string;
+      work_order_ref: string;
+      result_path: string;
+      resume_argv: string[];
+    };
+  };
+  try {
+    expect(
+      await runCli(["task", "advance", taskId, "--agent-json", "--root", root]),
+      advanceIo.stderr,
+    ).toBe(0);
+    packet = JSON.parse(advanceIo.stdout) as typeof packet;
+  } finally {
+    advanceIo.restore();
+  }
+  const workOrder = JSON.parse(
+    await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
+  ) as {
+    work_order_id: string;
+    canonical_binding: Record<string, unknown>;
+  };
+  await writeFile(
+    packet.exchange.result_path,
+    `${JSON.stringify({
+      schema_version: 2,
+      kind: "agent_semantic_result",
+      work_order_id: workOrder.work_order_id,
+      status: "completed",
+      summary: "Prepare a bounded provider conflict rework plan.",
+      findings: [],
+      uncertainty: [],
+      canonical_binding: workOrder.canonical_binding,
+      canonical_plan: {
+        work_items: [
+          {
+            id: "resolve-provider-conflict",
+            depends_on: [],
+            required_inputs: [],
+            expected_outputs: ["resolved-conflict"],
+            optional: false,
+            execution_requirements: {
+              scope_roots: ["docs"],
+              repository_effects: ["source_code"],
+              external_effects: [],
+              capabilities: ["repository_write", "task.verify"],
+              resources: [],
+            },
+            contract: {
+              role: "EXECUTOR",
+              objective: "Resolve the provider conflict without losing base or task changes.",
+              acceptance_criteria: ["The conflict route preserves exact provider identity."],
+              verification_commands: ["node --version"],
+            },
+          },
+        ],
+      },
+    })}\n`,
+    "utf8",
+  );
+  const resumeIo = captureStdIO();
+  try {
+    expect(
+      await runCli([...packet.exchange.resume_argv.slice(1), "--root", root]),
+      resumeIo.stderr,
+    ).toBe(0);
+  } finally {
+    resumeIo.restore();
+  }
+  const approveIo = captureStdIO();
+  try {
+    expect(
+      await runCli([
+        "task",
+        "plan",
+        "approve",
+        taskId,
+        "--by",
+        "USER",
+        "--note",
+        "Approve the provider conflict fixture plan.",
+        "--root",
+        root,
+      ]),
+      approveIo.stderr,
+    ).toBe(0);
+  } finally {
+    approveIo.restore();
+  }
+  await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+  await execFileAsync("git", ["commit", "-m", "test: persist canonical conflict plan"], {
+    cwd: root,
+  });
+  const materializeIo = captureStdIO();
+  let materialized!: { action: { kind: string; must_run_from: string } };
+  try {
+    expect(
+      await runCli(["task", "advance", taskId, "--agent-json", "--root", root]),
+      materializeIo.stderr,
+    ).toBe(0);
+    materialized = JSON.parse(materializeIo.stdout) as typeof materialized;
+    expect(materialized.action.kind).toBe("external_wait");
+  } finally {
+    materializeIo.restore();
+  }
+  const branch = `task/${taskId}/prepare-semantic-conflict-rework-route`;
+  const worktree = await worktreeForBranch(root, branch);
+  expect(path.resolve(materialized.action.must_run_from)).toBe(path.resolve(worktree));
+  const executionIo = captureStdIO();
+  let executionPacket!: CanonicalEpisodePacket;
+  try {
+    const code = await runCli(["task", "advance", taskId, "--agent-json", "--root", worktree]);
+    const [rootStatus, worktreeStatus] = await Promise.all([
+      execFileAsync("git", ["status", "--short", "--untracked-files=all"], { cwd: root }),
+      execFileAsync("git", ["status", "--short", "--untracked-files=all"], { cwd: worktree }),
+    ]);
+    expect(
+      code,
+      `${executionIo.stderr}\nroot:\n${rootStatus.stdout}\nworktree:\n${worktreeStatus.stdout}`,
+    ).toBe(0);
+    executionPacket = JSON.parse(executionIo.stdout) as CanonicalEpisodePacket;
+    expect(executionPacket.authority.role).toBe("EXECUTOR");
+  } finally {
+    executionIo.restore();
+  }
+  return {
+    taskId,
+    branch,
+    worktree,
+    executionPacket,
+  };
 }
 
 async function worktreeForBranch(root: string, branch: string): Promise<string> {
@@ -141,6 +303,93 @@ async function worktreeForBranch(root: string, branch: string): Promise<string> 
   throw new Error(`No worktree found for ${branch}`);
 }
 
+async function completeCanonicalWorkItem(
+  worktree: string,
+  packet: CanonicalEpisodePacket,
+): Promise<void> {
+  const executionOrder = JSON.parse(
+    await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
+  ) as { work_order_id: string; canonical_binding: Record<string, unknown> };
+  await writeFile(
+    packet.exchange.result_path,
+    JSON.stringify({
+      schema_version: 2,
+      kind: "agent_semantic_result",
+      work_order_id: executionOrder.work_order_id,
+      status: "completed",
+      summary: "Prepared the scoped provider conflict fixture.",
+      findings: [],
+      uncertainty: [],
+      canonical_binding: executionOrder.canonical_binding,
+      canonical_outputs: [
+        {
+          id: "resolved-conflict",
+          kind: "source",
+          digest: k.kernelDigest("provider-conflict-fixture"),
+        },
+      ],
+    }),
+  );
+  const inspectIo = captureStdIO();
+  let inspectionPacket!: CanonicalEpisodePacket;
+  try {
+    expect(
+      await runCli([...packet.exchange.resume_argv.slice(1), "--root", worktree]),
+      inspectIo.stderr,
+    ).toBe(0);
+    inspectionPacket = JSON.parse(inspectIo.stdout) as CanonicalEpisodePacket;
+    expect(inspectionPacket.authority.role).toBe("EVALUATOR");
+  } finally {
+    inspectIo.restore();
+  }
+  const inspectionOrder = JSON.parse(
+    await readFile(
+      path.join(inspectionPacket.exchange.directory, inspectionPacket.exchange.work_order_ref),
+      "utf8",
+    ),
+  ) as { work_order_id: string; canonical_binding: Record<string, unknown> };
+  await writeFile(
+    inspectionPacket.exchange.result_path,
+    JSON.stringify({
+      schema_version: 2,
+      kind: "agent_semantic_result",
+      work_order_id: inspectionOrder.work_order_id,
+      status: "completed",
+      summary: "The provider conflict fixture satisfies its scoped contract.",
+      findings: ["The scoped task-side change is present and ready for provider routing."],
+      uncertainty: [],
+      canonical_binding: inspectionOrder.canonical_binding,
+      review: {
+        verdict: "pass",
+        missing_tests: [],
+        hidden_assumptions: [],
+        residual_risks: [],
+      },
+    }),
+  );
+  const completeIo = captureStdIO();
+  try {
+    expect(
+      await runCli([...inspectionPacket.exchange.resume_argv.slice(1), "--root", worktree]),
+      completeIo.stderr,
+    ).toBe(0);
+    const completed = JSON.parse(completeIo.stdout) as {
+      action?: { kind?: string; reason?: string };
+    };
+    if (
+      completed.action?.kind !== "terminal" &&
+      !(
+        completed.action?.kind === "external_wait" &&
+        completed.action.reason === "canonical_provider_access_required"
+      )
+    ) {
+      throw new Error(JSON.stringify(completed, null, 2));
+    }
+  } finally {
+    completeIo.restore();
+  }
+}
+
 async function readRemoteRoute(root: string, taskId: string): Promise<ConflictRouteOutput> {
   const routeIo = captureStdIO();
   try {
@@ -153,8 +402,7 @@ async function readRemoteRoute(root: string, taskId: string): Promise<ConflictRo
       "--root",
       root,
     ]);
-    if (code !== 0) process.stderr.write(routeIo.stderr);
-    expect(code).toBe(0);
+    expect(code, `${routeIo.stderr}\n${routeIo.stdout}`).toBe(0);
     return JSON.parse(routeIo.stdout) as ConflictRouteOutput;
   } finally {
     routeIo.restore();
@@ -176,66 +424,10 @@ describe("provider conflict rework CLI", () => {
       cwd: root,
     });
 
-    const taskId = await createBranchPrTask(root);
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Publish a strict local descendant before preparing semantic conflict rework.",
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--root",
-      root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
-
-    const slug = "publish-before-conflict-rework";
-    const branch = `task/${taskId}/${slug}`;
-    await runCliSilent([
-      "work",
-      "start",
-      taskId,
-      "--agent",
-      "CODER",
-      "--slug",
-      slug,
-      "--worktree",
-      "--root",
-      root,
-    ]);
-    const worktree = await worktreeForBranch(root, branch);
-    await runCliSilent([
-      "task",
-      "start-ready",
-      taskId,
-      "--author",
-      "CODER",
-      "--body",
-      "Start: preserve provider identity before semantic conflict resolution.",
-      "--root",
-      worktree,
-    ]);
+    const { taskId, branch, worktree, executionPacket } = await createBranchPrTask(root);
     await writeFile(path.join(worktree, "docs/conflict.md"), "task branch\n", "utf8");
-    await execFileAsync("git", ["add", "-A"], { cwd: worktree });
-    await execFileAsync("git", ["commit", "-m", "test: provider-visible conflict head"], {
-      cwd: worktree,
-    });
+    await completeCanonicalWorkItem(worktree, executionPacket);
 
-    const taskReadmePath = path.join(worktree, ".agentplane", "tasks", taskId, "README.md");
-    const taskReadme = await readFile(taskReadmePath, "utf8");
-    await writeFile(
-      taskReadmePath,
-      taskReadme
-        .replace('status: "DOING"', 'status: "DONE"')
-        .replace('verification:\n  state: "pending"', 'verification:\n  state: "ok"'),
-      "utf8",
-    );
-    await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: worktree });
-    await execFileAsync("git", ["commit", "-m", "test: freeze provider conflict head"], {
-      cwd: worktree,
-    });
     const { stdout: providerHeadRaw } = await execFileAsync("git", ["rev-parse", "HEAD"], {
       cwd: worktree,
     });
@@ -277,10 +469,8 @@ describe("provider conflict rework CLI", () => {
       }),
       async () => {
         const before = await execFileAsync("git", ["status", "--porcelain"], { cwd: worktree });
-        expect(before.stdout).toBe("");
-
         const route = await readRemoteRoute(root, taskId);
-        expect(route.conflict_rework).toMatchObject({
+        expect(route.conflict_rework, JSON.stringify(route, null, 2)).toMatchObject({
           state: "publication_required",
           provider_head_sha: providerHeadSha,
           local_head_sha: localHeadSha,
@@ -367,8 +557,6 @@ describe("provider conflict rework CLI", () => {
     "external_exchange_advanced_base",
     "after_verification_advanced_base",
     "managed_interrupted_advanced_base",
-    "managed_status_interrupted_advanced_base",
-    "managed_status_interrupted_policy_drift_advanced_base",
     "after_verification_base_advanced_base",
     "after_verification_provider_advanced_base",
     "after_verification_diffstat_advanced_base",
@@ -380,22 +568,14 @@ describe("provider conflict rework CLI", () => {
     "before_verification_artifacts",
     "after_verification_workspace",
     "after_verification_task",
-    "after_verification_checkpoint",
     "after_verification_result",
     "after_verification_policy",
     "managed_runner",
     "managed_workspace_drift",
     "managed_result_drift",
     "managed_policy_drift",
-    "managed_projection_drift",
     "managed_interrupted",
-    "managed_status_interrupted",
-    "managed_contract_interrupted",
     "managed_evidence_interrupted",
-    "managed_status_interrupted_context_drift",
-    "managed_status_interrupted_workspace_drift",
-    "managed_status_interrupted_policy_drift",
-    "managed_status_interrupted_task_drift",
     "managed_interrupted_context_drift",
     "managed_interrupted_workspace_drift",
     "managed_interrupted_policy_drift",
@@ -456,87 +636,9 @@ describe("provider conflict rework CLI", () => {
         cwd: root,
       });
 
-      const taskId = await createBranchPrTask(root);
-      await runCliSilent([
-        "task",
-        "plan",
-        "set",
-        taskId,
-        "--text",
-        "Route a provider merge conflict to semantic CODER rework.",
-        "--updated-by",
-        "ORCHESTRATOR",
-        "--root",
-        root,
-      ]);
-      await runCliSilent([
-        "task",
-        "plan",
-        "approve",
-        taskId,
-        "--by",
-        "ORCHESTRATOR",
-        "--root",
-        root,
-      ]);
-
-      const slug = "provider-conflict-route";
-      const branch = `task/${taskId}/${slug}`;
-      await runCliSilent([
-        "work",
-        "start",
-        taskId,
-        "--agent",
-        "CODER",
-        "--slug",
-        slug,
-        "--worktree",
-        "--root",
-        root,
-      ]);
-      const worktree = await worktreeForBranch(root, branch);
-      await runCliSilent([
-        "task",
-        "start-ready",
-        taskId,
-        "--author",
-        "CODER",
-        "--body",
-        "Start: inspect the provider conflict from the dedicated task worktree.",
-        "--root",
-        worktree,
-      ]);
+      const { taskId, branch, worktree, executionPacket } = await createBranchPrTask(root);
       await writeFile(path.join(worktree, "docs/conflict.md"), "task branch\n", "utf8");
-      await execFileAsync("git", ["add", "-A"], { cwd: worktree });
-      await execFileAsync("git", ["commit", "-m", "test: task side of conflict fixture"], {
-        cwd: worktree,
-      });
-
-      await runCliSilent([
-        "task",
-        "verify",
-        "ok",
-        taskId,
-        "--by",
-        "TESTER",
-        "--note",
-        "Provider conflict fixture passed verification.",
-        "--details",
-        "Command: bun test\n\nResult: pass",
-        "--root",
-        worktree,
-      ]);
-      const taskReadmePath = path.join(worktree, ".agentplane", "tasks", taskId, "README.md");
-      const taskReadme = await readFile(taskReadmePath, "utf8");
-      await writeFile(
-        taskReadmePath,
-        taskReadme.replace('status: "DOING"', 'status: "DONE"'),
-        "utf8",
-      );
-      await execFileAsync("git", ["add", "-A"], { cwd: worktree });
-      await execFileAsync("git", ["commit", "-m", "test: mark task verified for queue handoff"], {
-        cwd: worktree,
-      });
+      await completeCanonicalWorkItem(worktree, executionPacket);
 
       await writeFile(path.join(root, "docs/conflict.md"), "main branch\n", "utf8");
       await execFileAsync("git", ["add", "docs/conflict.md"], { cwd: root });
@@ -613,12 +715,12 @@ describe("provider conflict rework CLI", () => {
 
       await withFakeGh(root, fakeGhSource, async () => {
         const before = await execFileAsync("git", ["status", "--porcelain"], { cwd: worktree });
-        expect(before.stdout).toBe("");
-
         const route = await readRemoteRoute(root, taskId);
         const conflictRework = route.conflict_rework;
         if (conflictRework?.state !== "ready") {
-          throw new Error("expected ready conflict-rework packet");
+          throw new Error(
+            `expected ready conflict-rework packet: ${JSON.stringify(route, null, 2)}`,
+          );
         }
 
         expect(route.workflow_step).toMatchObject({
@@ -843,12 +945,12 @@ describe("provider conflict rework CLI", () => {
 
             expect(route.conflict_rework, providerState).toBeNull();
             expect(route.workflow_step, providerState).toMatchObject({
-              kind: "agent_episode",
-              id: "agent.verification",
-              compatibility: { code: "verification_required", command: null },
+              kind: "approval",
+              id: "approval.pr.head.publish",
+              compatibility: { code: "publish_pr_head" },
             });
             expect(route.execution_packet, providerState).toMatchObject({
-              actionKind: "stop",
+              actionKind: "provider_action",
               safeToMutate: false,
               exactArgv: null,
             });

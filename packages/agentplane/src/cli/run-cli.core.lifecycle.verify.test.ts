@@ -1,6 +1,8 @@
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { createTask as createLegacyTask } from "@agentplaneorg/core/tasks";
+import { materializeLegacyDrainIdentityFixture } from "../commands/shared/native-task-identity-fixture.js";
 
 import { runCli } from "./run-cli.js";
 import {
@@ -25,6 +27,27 @@ afterEach(() => {
   restoreStdIO = null;
 });
 
+async function createLegacyVerifyTask(
+  root: string,
+  title: string,
+  description: string,
+): Promise<string> {
+  const task = await createLegacyTask({
+    cwd: root,
+    rootOverride: root,
+    title,
+    description,
+    priority: "med",
+    owner: "CODER",
+    tags: ["nodejs"],
+    dependsOn: [],
+    verify: ["bun run test:cli:core"],
+  });
+  await setTaskVerifySteps(root, task.id);
+  await materializeLegacyDrainIdentityFixture({ root, task_id: task.id });
+  return task.id;
+}
+
 describe("runCli", () => {
   it("verify requires a task id", async () => {
     const root = await mkGitRepoRoot();
@@ -47,29 +70,11 @@ describe("runCli", () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
 
-    const ioTask = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Verify args",
-        "--description",
-        "Verify requires ok/rework and by/note",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioTask.stdout.trim();
-      await setTaskVerifySteps(root, taskId);
-    } finally {
-      ioTask.restore();
-    }
+    const taskId = await createLegacyVerifyTask(
+      root,
+      "Verify args",
+      "Verify requires ok/rework and by/note",
+    );
 
     const io = captureStdIO();
     try {
@@ -107,29 +112,7 @@ describe("runCli", () => {
     const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
 
-    const ioTask = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Verify ok",
-        "--description",
-        "Verify records ok result",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioTask.stdout.trim();
-      await setTaskVerifySteps(root, taskId);
-    } finally {
-      ioTask.restore();
-    }
+    const taskId = await createLegacyVerifyTask(root, "Verify ok", "Verify records ok result");
 
     const io = captureStdIO();
     try {
@@ -161,29 +144,11 @@ describe("runCli", () => {
     const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
 
-    const ioTask = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Verify local only",
-        "--description",
-        "Verify accepts a plain local-only flag",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioTask.stdout.trim();
-      await setTaskVerifySteps(root, taskId);
-    } finally {
-      ioTask.restore();
-    }
+    const taskId = await createLegacyVerifyTask(
+      root,
+      "Verify local only",
+      "Verify accepts a plain local-only flag",
+    );
 
     const io = captureStdIO();
     try {
@@ -211,29 +176,11 @@ describe("runCli", () => {
     const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
 
-    const ioTask = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Verify file note",
-        "--description",
-        "Verify records normalized note-file content",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioTask.stdout.trim();
-      await setTaskVerifySteps(root, taskId);
-    } finally {
-      ioTask.restore();
-    }
+    const taskId = await createLegacyVerifyTask(
+      root,
+      "Verify file note",
+      "Verify records normalized note-file content",
+    );
 
     const notePath = path.join(root, "verify-note.txt");
     await writeFile(notePath, "Looks\\n\\n  good   from file\n", "utf8");
@@ -266,29 +213,7 @@ describe("runCli", () => {
     const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
 
-    const ioTask = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Verify quiet",
-        "--description",
-        "Quiet verify output",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioTask.stdout.trim();
-      await setTaskVerifySteps(root, taskId);
-    } finally {
-      ioTask.restore();
-    }
+    const taskId = await createLegacyVerifyTask(root, "Verify quiet", "Quiet verify output");
 
     const io = captureStdIO();
     try {
@@ -315,29 +240,7 @@ describe("runCli", () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
 
-    const ioTask = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Verify flags",
-        "--description",
-        "Unknown verify flag",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioTask.stdout.trim();
-      await setTaskVerifySteps(root, taskId);
-    } finally {
-      ioTask.restore();
-    }
+    const taskId = await createLegacyVerifyTask(root, "Verify flags", "Unknown verify flag");
 
     const io = captureStdIO();
     try {
@@ -368,29 +271,11 @@ describe("runCli", () => {
     const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
 
-    const ioTask = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Task verify",
-        "--description",
-        "Task verify ok writes record",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioTask.stdout.trim();
-      await setTaskVerifySteps(root, taskId);
-    } finally {
-      ioTask.restore();
-    }
+    const taskId = await createLegacyVerifyTask(
+      root,
+      "Task verify",
+      "Task verify ok writes record",
+    );
 
     const io = captureStdIO();
     try {
@@ -418,29 +303,11 @@ describe("runCli", () => {
     const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
 
-    const ioTask = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Task verify file note",
-        "--description",
-        "Task verify ok accepts --note-file",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioTask.stdout.trim();
-      await setTaskVerifySteps(root, taskId);
-    } finally {
-      ioTask.restore();
-    }
+    const taskId = await createLegacyVerifyTask(
+      root,
+      "Task verify file note",
+      "Task verify ok accepts --note-file",
+    );
 
     const notePath = path.join(root, "task-verify-note.txt");
     await writeFile(notePath, "Needs\\n no changes\n", "utf8");

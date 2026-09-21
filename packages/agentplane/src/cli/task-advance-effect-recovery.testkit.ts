@@ -14,15 +14,12 @@ import * as conflictApplication from "../commands/pr/conflict-rework-merge.js";
 
 import * as taskVerification from "../commands/task/direct-task-verification-record.js";
 import * as prSync from "../commands/pr/internal/sync.js";
-import type {
-  ExternalAgentExchange,
-  ExternalAgentResultEnvelope,
-} from "../commands/task/external-agent-exchange.js";
+import * as kernelConflict from "../commands/task/kernel-conflict-rework.js";
+import type { ExternalAgentResultEnvelope } from "../commands/task/external-agent-exchange.js";
 
 export type ConflictVerificationDrift =
   | "workspace"
   | "task"
-  | "checkpoint"
   | "result"
   | "policy"
   | "base"
@@ -172,22 +169,18 @@ export async function exerciseConflictExchange(opts: {
     const previousCwd = process.cwd();
     const applyImplementation = implementationAuthority.applyExternalImplementationResult;
     const applyResult = resultApplication.applyAcceptedExternalAgentResult;
-    const verify = taskVerification.recordDirectTaskVerification;
     const sync = prSync.ensurePrArtifactsSynced;
+    const finalizeKernel = kernelConflict.finalizeKernelConflictRework;
     const interruption = opts.interruptBeforeVerificationArtifacts
       ? vi.spyOn(prSync, "ensurePrArtifactsSynced").mockImplementation(async (args) => {
-          const value = JSON.parse(
-            await readFile(path.join(issued.exchange!.directory, "exchange.json"), "utf8"),
-          ) as ExternalAgentExchange;
-          if (value.verification_checkpoint?.stage === "prepared")
-            throw new Error("interrupted after implementation evidence");
-          return await sync(args);
+          await sync(args);
+          throw new Error("interrupted after implementation evidence");
         })
       : opts.interruptAfterVerification
         ? vi
-            .spyOn(taskVerification, "recordDirectTaskVerification")
+            .spyOn(kernelConflict, "finalizeKernelConflictRework")
             .mockImplementationOnce(async (args) => {
-              await verify(args);
+              await finalizeKernel(args);
               throw new Error("interrupted after implementation evidence");
             })
         : opts.interruptBeforeCheckpoint
@@ -260,14 +253,6 @@ export async function exerciseConflictExchange(opts: {
               await command.taskBackend.writeTask({ ...task, title: "Foreign Task change" });
               break;
             }
-            case "checkpoint": {
-              const file = path.join(issued.exchange.directory, "exchange.json");
-              const value = JSON.parse(await readFile(file, "utf8")) as ExternalAgentExchange;
-              if (!value.verification_checkpoint) throw new Error("Missing checkpoint.");
-              value.verification_checkpoint.task.title = "Forged prepared Task";
-              await writeFile(file, JSON.stringify(value));
-              break;
-            }
             case "result": {
               const value = JSON.parse(
                 await readFile(issued.exchange.result_path, "utf8"),
@@ -285,13 +270,7 @@ export async function exerciseConflictExchange(opts: {
           expect(resumeIo.stderr).toContain(
             mode === "result"
               ? "A different result is already recorded"
-              : mode === "checkpoint"
-                ? "checkpoint identity changed"
-                : mode === "base"
-                  ? "checkpoint branch or base changed"
-                  : mode === "workspace" || mode === "policy"
-                    ? "foreign workspace changes"
-                    : "checkpoint postcondition changed",
+              : "Conflict evidence postcondition changed",
           );
           return;
         }
@@ -321,7 +300,7 @@ export async function exerciseConflictExchange(opts: {
           mergeReplay.mockRestore();
         }
         const recoveredHead = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: worktree });
-        if (opts.interruptAfterVerification || opts.interruptBeforeVerificationArtifacts) {
+        if (opts.interruptBeforeVerificationArtifacts) {
           const parent = await execFileAsync("git", ["show", "-s", "--format=%P", "HEAD"], {
             cwd: worktree,
           });

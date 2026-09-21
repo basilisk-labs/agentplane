@@ -41,6 +41,7 @@ import { resolveTaskExecutionContext } from "../../runtime/task-execution-contex
 import path from "node:path";
 
 import { taskCentricDigest } from "@agentplaneorg/core/tasks";
+import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
 import { captureRunnerStateFingerprint } from "../../runner/state-fingerprint.js";
 import { loadTaskRunnerInspection } from "../../runner/usecases/task-run-inspect.js";
 import { requiresImplementationReworkReopen } from "../shared/task-scope-extension-request.js";
@@ -57,6 +58,7 @@ import {
   managedImplementationStatusNote,
   managedConflictTaskPostconditions,
   finishManagedConflictTaskRecovery,
+  finishManagedConflictKernelRecovery,
   managedConflictEvidenceCommitMessage,
   type ManagedConflictApplicationContext,
 } from "./branch-task-supervisor-conflict-recovery.js";
@@ -66,6 +68,7 @@ import {
 } from "../pr/conflict-rework-authority.js";
 
 import { readCommitInfo } from "./shared.js";
+import { finalizeKernelConflictRework } from "./kernel-conflict-rework.js";
 
 function operationId(decision: TaskRouteDecision): string | null {
   return decision.workflowStep.kind === "cli_operation" ? decision.workflowStep.operation.id : null;
@@ -312,6 +315,44 @@ export async function applyBranchImplementationResult(
     });
   }
   const commit = implementation.evidence.implementation_commit;
+  if (
+    conflict &&
+    applicationContext &&
+    Object.hasOwn(currentTask.extensions ?? {}, TASK_KERNEL_EXTENSION)
+  ) {
+    await finalizeKernelConflictRework({
+      command,
+      task_id: opts.input.task_id,
+      operation_id: `managed-provider-conflict-rework:${applicationContext.result_digest}`,
+      evidence_message: async () =>
+        managedConflictEvidenceCommitMessage({
+          context: applicationContext,
+          result: executed.result,
+          decision: await opts.decide(),
+        }),
+    });
+    const refreshed = await opts.decide();
+    if (journal.status === "running" && journal.cursor.phase === "completed") {
+      journal = advanceSupervisorExecutionEpisodeState({
+        journal,
+        state_fingerprint_digest: refreshed.workflowStep.preconditionFingerprint.digest,
+        route_observation: { step_id: refreshed.workflowStep.id },
+      });
+      await opened.store.write(journal);
+    }
+    return {
+      status: "completed",
+      decision: refreshed,
+      executor: {
+        ...observed.executor,
+        implementation_commit: commit,
+      },
+      journal: journalProjection(journal, opened.journal_path),
+      provider_episodes: context.recovery ? 0 : 1,
+      lifecycle_calls: 1,
+      executor_lifecycle_event_delta: eventDelta,
+    };
+  }
   const taskExecution =
     opts.input.task_execution ??
     (await resolveTaskExecutionContext({
@@ -456,6 +497,18 @@ export async function recoverProductionBranchConflict(opts: {
       decision,
     });
     const input = recovery.applicationContext;
+    if (recovery.kernelApplication)
+      return await finishManagedConflictKernelRecovery({
+        command,
+        task_id: opts.input.task_id,
+        journal,
+        store,
+        executed: recovery.executed,
+        implementation_commit: recovery.kernelApplication.implementation_commit,
+        allow_unverified_receipt:
+          opts.input.danger_authority?.danger_full_access_authorized === true,
+        decide: opts.decide,
+      });
     if (recovery.taskApplication)
       return await finishManagedConflictTaskRecovery({
         command,

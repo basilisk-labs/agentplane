@@ -4,6 +4,7 @@ import { createCliEmitter } from "../../cli/output.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
+import { isRecord } from "../../shared/guards.js";
 import {
   loadBackendTask,
   loadCommandContext,
@@ -73,6 +74,7 @@ export type PrFlowStatusReport = {
     id: string;
     status: string;
     verification: string | null;
+    canonicalProviderReady?: boolean;
   };
   branch: {
     name: string | null;
@@ -93,6 +95,25 @@ export type PrFlowStatusReport = {
 type ReviewThreadsStatus =
   | { checked: true; unresolved: number }
   | { checked: false; reason: string };
+
+function canonicalProviderReady(
+  task: Awaited<ReturnType<typeof loadBackendTask>>["task"],
+): boolean {
+  const record = task.extensions?.task_kernel;
+  if (!isRecord(record) || !isRecord(record.aggregate)) return false;
+  const aggregate = record.aggregate;
+  if (
+    aggregate.state !== "FINAL_VALIDATION" ||
+    !isRecord(aggregate.final_validation) ||
+    aggregate.final_validation.status !== "PASSED" ||
+    !isRecord(aggregate.work_items)
+  ) {
+    return false;
+  }
+  return Object.values(aggregate.work_items).every(
+    (item) => isRecord(item) && item.state === "COMPLETED",
+  );
+}
 
 type QueueStatus =
   | { present: false }
@@ -534,6 +555,7 @@ export async function resolvePrFlowStatus(opts: {
       id: task.id,
       status: task.status,
       verification: task.verification?.state ?? null,
+      canonicalProviderReady: canonicalProviderReady(task),
     },
     branch: {
       name: branch,

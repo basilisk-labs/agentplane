@@ -53,6 +53,7 @@ export { buildRouteSourceConfidence } from "./route-decision-source-confidence.j
 import { hasClosedPreMergeClosureMarker, parsePrMeta } from "./pr-meta.js";
 import { taskCloseAlreadyRecordedOnBase } from "../task/close-tail-state.js";
 import { inspectTaskWorktreeRouteState } from "./task-worktree-foreign-artifact-route.js";
+import { filterTaskWorktreeBlockingPaths } from "./route-decision-worktree-cleanliness.js";
 import { stabilizeWorkflowStepAfterFingerprint } from "./route-decision-fingerprint-stabilization.js";
 import { hydrateTaskSideEffectAuthority } from "./side-effect-authority-store.js";
 import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
@@ -406,13 +407,32 @@ export async function buildTaskRouteDecision(opts: {
           taskWorktree: taskWorktreeCleanliness,
         })
       : { state: "not_requested" as const };
+  const conflictWorktreeCleanliness =
+    taskWorktreeCleanliness.state === "dirty"
+      ? (() => {
+          const changedPaths = filterTaskWorktreeBlockingPaths({
+            changedPaths: taskWorktreeCleanliness.changedPaths,
+            workflowDir: ctx.config.paths.workflow_dir,
+            tasksPath: ctx.config.paths.tasks_path,
+            taskId: task.id,
+          });
+          return changedPaths.length === 0
+            ? {
+                state: "clean" as const,
+                branch: taskWorktreeCleanliness.branch,
+                worktreePath: taskWorktreeCleanliness.worktreePath,
+                changedPaths: [] as [],
+              }
+            : { ...taskWorktreeCleanliness, changedPaths };
+        })()
+      : taskWorktreeCleanliness;
   const conflictRework: ConflictReworkPreparation | null =
     prFlow && needsProviderConflictReworkPreparation(prFlow)
       ? await prepareConflictReworkPacket({
           gitRoot: ctx.resolvedProject.gitRoot,
           taskId: task.id,
           report: prFlow,
-          taskWorktree: taskWorktreeCleanliness,
+          taskWorktree: conflictWorktreeCleanliness,
         })
       : null;
   const cleanupProbe = await resolveDoneCleanupProbe({

@@ -101,6 +101,20 @@ async function executeBranchImplementationEpisode(opts: {
   }
   try {
     let journal = opened.journal;
+    if (journal.status === "running" && journal.cursor.phase === "completed") {
+      const advanced = advanceSupervisorExecutionEpisodeState({
+        journal,
+        state_fingerprint_digest: opts.decision.workflowStep.preconditionFingerprint.digest,
+        route_observation: {
+          step_id: opts.decision.workflowStep.id,
+          transport: "managed",
+        },
+      });
+      if (!(await opened.store.compareAndSwap(journal.digest, advanced))) {
+        throw new Error("Branch supervisor journal changed before route advancement.");
+      }
+      journal = advanced;
+    }
     if (journal.status !== "running" || journal.cursor.phase !== "ready") {
       return stoppedEpisode({
         decision: opts.decision,

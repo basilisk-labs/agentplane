@@ -5,6 +5,8 @@ import { promisify } from "node:util";
 
 import { describe } from "vitest";
 import { setTaskVerifySteps } from "@agentplane/testkit";
+import { createTask as createLegacyTask, setTaskDocSection } from "@agentplaneorg/core/tasks";
+import { materializeLegacyDrainIdentityFixture } from "../commands/shared/native-task-identity-fixture.js";
 
 import {
   captureStdIO,
@@ -37,30 +39,34 @@ type PublicationRouteOutput = {
 };
 
 async function createTask(root: string): Promise<string> {
-  const io = captureStdIO();
-  try {
-    const code = await runCli([
-      "task",
-      "new",
-      "--title",
-      "Publish resolved conflict head",
-      "--description",
-      "Exercise guarded publication after semantic conflict resolution.",
-      "--priority",
-      "high",
-      "--owner",
-      "CODER",
-      "--tag",
-      "code",
-      "--allow-duplicate",
-      "--root",
-      root,
-    ]);
-    expect(code).toBe(0);
-    return io.stdout.trim();
-  } finally {
-    io.restore();
+  const title = "Publish resolved conflict head";
+  const description = "Exercise guarded publication after semantic conflict resolution.";
+  const task = await createLegacyTask({
+    cwd: root,
+    rootOverride: root,
+    title,
+    description,
+    priority: "high",
+    owner: "CODER",
+    tags: ["code"],
+    dependsOn: [],
+    verify: ["bun run test:cli:core"],
+  });
+  for (const [section, text] of [
+    ["Summary", `${title}\n\n${description}`],
+    ["Scope", "- In scope: guarded publication of the resolved conflict head."],
+    ["Rollback Plan", "- Remove the isolated publication fixture worktree."],
+  ] as const) {
+    await setTaskDocSection({
+      cwd: root,
+      rootOverride: root,
+      taskId: task.id,
+      section,
+      text,
+      updatedBy: "PLANNER",
+    });
   }
+  return task.id;
 }
 
 async function worktreeForBranch(root: string, branch: string): Promise<string> {
@@ -173,7 +179,12 @@ describe("resolved provider conflict publication", () => {
       root,
     ]);
     await setTaskVerifySteps(root, taskId);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]);
+    await materializeLegacyDrainIdentityFixture({
+      root,
+      task_id: taskId,
+      work_items_completed: true,
+    });
 
     const slug = "publish-resolved-done-head";
     const branch = `task/${taskId}/${slug}`;

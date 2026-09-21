@@ -17,7 +17,12 @@ import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
 
 import { defaultConfig, extractTaskSuffix, type ResolvedProject } from "./core-imports.js";
-import { readTask, renderTaskReadme } from "@agentplaneorg/core/tasks";
+import {
+  createTask as createLegacyTask,
+  readTask,
+  renderTaskReadme,
+  setTaskDocSection,
+} from "@agentplaneorg/core/tasks";
 
 import { runCli } from "./run-cli.js";
 import {
@@ -55,6 +60,35 @@ import {
 } from "@agentplane/testkit/cli-core-lifecycle";
 
 installRunCliIntegrationHarness();
+
+async function createLegacyStartTask(root: string, description: string): Promise<string> {
+  const task = await createLegacyTask({
+    cwd: root,
+    rootOverride: root,
+    title: "Start task",
+    description,
+    priority: "med",
+    owner: "CODER",
+    tags: ["nodejs"],
+    dependsOn: [],
+    verify: ["bun run test:cli:core"],
+  });
+  for (const [section, text] of [
+    ["Summary", `Start task\n\n${description}`],
+    ["Scope", "- In scope: legacy direct start command behavior."],
+    ["Rollback Plan", "- Restore the task to TODO."],
+  ] as const) {
+    await setTaskDocSection({
+      cwd: root,
+      rootOverride: root,
+      taskId: task.id,
+      section,
+      text,
+      updatedBy: "PLANNER",
+    });
+  }
+  return task.id;
+}
 
 describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
   it("start requires --author and --body", async () => {
@@ -141,30 +175,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
     const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
 
-    const ioNew = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Start task",
-        "--description",
-        "File-backed body",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioNew.stdout.trim();
-    } finally {
-      ioNew.restore();
-    }
+    const taskId = await createLegacyStartTask(root, "File-backed body");
     await approveTaskPlan(root, taskId);
     const bodyPath = path.join(root, "start-body.txt");
     await writeFile(
@@ -195,30 +206,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
     const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
 
-    const ioNew = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Start task",
-        "--description",
-        "Commit require clean flag",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioNew.stdout.trim();
-    } finally {
-      ioNew.restore();
-    }
+    const taskId = await createLegacyStartTask(root, "Commit require clean flag");
     await approveTaskPlan(root, taskId);
 
     const io = captureStdIO();
@@ -271,30 +259,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
     const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
 
-    const ioNew = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Start task",
-        "--description",
-        "Prefix enforcement",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioNew.stdout.trim();
-    } finally {
-      ioNew.restore();
-    }
+    const taskId = await createLegacyStartTask(root, "Prefix enforcement");
     await approveTaskPlan(root, taskId);
 
     const io = captureStdIO();
@@ -323,30 +288,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
     const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
 
-    const ioNew = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Start task",
-        "--description",
-        "Short comment",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioNew.stdout.trim();
-    } finally {
-      ioNew.restore();
-    }
+    const taskId = await createLegacyStartTask(root, "Short comment");
     await approveTaskPlan(root, taskId);
 
     const io = captureStdIO();
