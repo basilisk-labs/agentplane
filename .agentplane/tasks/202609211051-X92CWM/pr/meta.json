@@ -3,7 +3,8 @@
   "branch": "task/202609211051-X92CWM/repair-the-demonstrated-0-7-11-release-blockers",
   "created_at": "2026-09-21T12:18:29.179Z",
   "diffstat_sha256": "sha256:c552c37170d483b2d765104208a915854160123095343ba8550f342fb4a56722",
-  "last_verified_at": null,
+  "last_verified_at": "2026-09-21T13:05:44.690Z",
+  "last_verified_diffstat_sha256": "sha256:c552c37170d483b2d765104208a915854160123095343ba8550f342fb4a56722",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202609211051-X92CWM",
   "updated_at": "2026-09-21T12:18:29.179Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

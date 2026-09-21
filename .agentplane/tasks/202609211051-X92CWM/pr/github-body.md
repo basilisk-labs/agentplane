@@ -15,8 +15,8 @@ Repair the demonstrated 0.7.11 release blockers without weakening gates: project
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>

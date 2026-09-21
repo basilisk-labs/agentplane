@@ -4,7 +4,7 @@ title: "Repair the demonstrated 0.7.11 release blockers without weakening gates:
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 62
+revision: 71
 origin:
   system: "manual"
 depends_on: []
@@ -23,15 +23,31 @@ verify:
   - "node scripts/checks/check-post-convergence-test-topology.mjs"
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-21T11:41:13.314Z"
+  updated_at: "2026-09-21T12:49:36.138Z"
   updated_by: "USER"
-  note: null
+  note: "Projected from the approved canonical Task Kernel plan."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-09-21T13:05:44.690Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: canonical Task Kernel final checks passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-21T12:49:36.138Z"
+  updated_by: "EVALUATOR"
+  note: "Canonical EVALUATOR review passed."
+  evaluated_sha: "3a6c32e19b16587609278620419ea1680e936e65"
+  review_identity_digest: "sha256:79996b8ba4c2d09f78e81cb727dcc5c28dd4a26a110720b0d76c0e71938581b8"
+  evidence_refs:
+    - "../../../.git/agentplane/kernel/exchanges/202609211051-X92CWM/ceaa3ba7cfca376c4044d3d7bdfeccb054d77da9628c0334f5a86e204965c14f/quality-report.json"
+  findings:
+    - "Canonical approval now projects the approved compatibility fields from the committed Kernel record, and branch worktree routing resolves registered checkouts by parsed task identity with an explicit fail-closed ambiguity error."
+    - "The release-critical public CLI test proves approval projection, title-slug branch worktree preparation, deterministic validation rework before evaluation, repaired evaluation, and terminal completion."
+    - "The four targeted runtime modules are 452, 529, 592, and 534 lines; all extracted helpers are also below 600 lines, and the hotspot gate passes without an exception."
+    - "All 14 AgentPlane-observed checks passed at implementation commit 3a6c32e19b16587609278620419ea1680e936e65, including focused tests, test:fast, release-critical, package installation smoke, Knip, and ci:local:full."
+    - "The final rework removes only the unused RequiredWorkItemRoute compatibility re-export; internal return typing and behavior are unchanged, and the CLI Knip budget returns to 0/0."
 execution_route:
   frozen: true
   reason_codes:
@@ -77,12 +93,173 @@ execution_contract:
     schema_version: 2
     scope_roots: []
   observed:
-    authority_violations: []
-    changed_components: []
-    changed_paths: []
+    authority_violations:
+      - "repository_effect:documentation"
+      - "repository_effect:tests"
+    changed_components:
+      - "artifacts"
+      - "docs"
+      - "packages/agentplane"
+      - "packages/core"
+      - "scripts"
+      - "website"
+    changed_paths:
+      - "artifacts/m03-0.7.10-vs-0.7.11-local-replay.json"
+      - "docs/reference/clean-task-core-rebuild-spec.mdx"
+      - "docs/user/cli-reference.generated.mdx"
+      - "packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts"
+      - "packages/agentplane/src/commands/shared/semantic-result-admission.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-factory-branch.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
+      - "packages/agentplane/src/commands/task/direct-task-verification-checks.ts"
+      - "packages/agentplane/src/commands/task/direct-task-verification.ts"
+      - "packages/agentplane/src/commands/task/kernel-inspection-validation.ts"
+      - "packages/agentplane/src/commands/task/kernel-inspection.ts"
+      - "packages/agentplane/src/commands/task/kernel-worktree-routing.ts"
+      - "packages/agentplane/src/commands/task/migration-apply-conversion.ts"
+      - "packages/agentplane/src/commands/task/migration-apply.ts"
+      - "packages/agentplane/src/commands/task/plan-approve.command.ts"
+      - "packages/core/src/tasks/task-centric/task-centric.test.ts"
+      - "scripts/bench/paired-m03-local-replay.mjs"
+      - "scripts/checks/check-post-convergence-test-topology.mjs"
+      - "scripts/checks/post-convergence-test-topology.json"
+      - "website/static/llms-full.txt"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "documentation"
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-13"
+        result: "pass"
+      -
+        id: "recorded-check-14"
+        result: "pass"
+      -
+        id: "recorded-check-15"
+        result: "pass"
+      -
+        id: "recorded-check-16"
+        result: "pass"
+      -
+        id: "recorded-check-17"
+        result: "pass"
+      -
+        id: "recorded-check-18"
+        result: "pass"
+      -
+        id: "recorded-check-19"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-20"
+        result: "pass"
+      -
+        id: "recorded-check-21"
+        result: "pass"
+      -
+        id: "recorded-check-22"
+        result: "pass"
+      -
+        id: "recorded-check-23"
+        result: "pass"
+      -
+        id: "recorded-check-24"
+        result: "pass"
+      -
+        id: "recorded-check-25"
+        result: "pass"
+      -
+        id: "recorded-check-26"
+        result: "pass"
+      -
+        id: "recorded-check-27"
+        result: "pass"
+      -
+        id: "recorded-check-28"
+        result: "pass"
+      -
+        id: "recorded-check-29"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-30"
+        result: "pass"
+      -
+        id: "recorded-check-31"
+        result: "pass"
+      -
+        id: "recorded-check-32"
+        result: "pass"
+      -
+        id: "recorded-check-33"
+        result: "pass"
+      -
+        id: "recorded-check-34"
+        result: "pass"
+      -
+        id: "recorded-check-35"
+        result: "pass"
+      -
+        id: "recorded-check-36"
+        result: "pass"
+      -
+        id: "recorded-check-37"
+        result: "pass"
+      -
+        id: "recorded-check-38"
+        result: "pass"
+      -
+        id: "recorded-check-39"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-40"
+        result: "pass"
+      -
+        id: "recorded-check-41"
+        result: "pass"
+      -
+        id: "recorded-check-42"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
+      -
+        id: "verification-record"
+        result: "pass"
   reason_codes:
     - "repository_branch_pr_floor"
   repository_mode: "branch_pr"
@@ -99,8 +276,10 @@ execution_contract:
         components: []
         evidence_requirements:
           - "hosted_integration"
+          - "repository_effect:documentation"
           - "repository_effect:repository_write"
           - "repository_effect:source_code"
+          - "repository_effect:tests"
           - "task_outcome"
         external_effects: []
         repository_effects:
@@ -110,27 +289,70 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:5cce438a0252ecd96091bc582c42af2d777ee0f2a627b7930089252831afd436"
-      escalation_reasons: []
+      digest: "sha256:09a4bb2c87df74c2f197e191927544b5a09169bb25a9da9b150be4668d9ef4ec"
+      escalation_reasons:
+        - "central_path:packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/semantic-result-admission.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-factory-branch.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-factory.ts"
+        - "central_path:packages/core/src/tasks/task-centric/task-centric.test.ts"
+        - "central_path:scripts/checks/check-post-convergence-test-topology.mjs"
+        - "central_path:scripts/checks/post-convergence-test-topology.json"
+        - "unknown_path:artifacts/m03-0.7.10-vs-0.7.11-local-replay.json"
+        - "unknown_path:scripts/checks/post-convergence-test-topology.json"
       execution_groups:
+        - "docs-schema"
         - "core"
+        - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "artifacts"
+          - "docs"
+          - "packages/agentplane"
+          - "packages/core"
+          - "scripts"
+          - "website"
+        changed_files:
+          - "artifacts/m03-0.7.10-vs-0.7.11-local-replay.json"
+          - "docs/reference/clean-task-core-rebuild-spec.mdx"
+          - "docs/user/cli-reference.generated.mdx"
+          - "packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts"
+          - "packages/agentplane/src/commands/shared/semantic-result-admission.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-factory-branch.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
+          - "packages/agentplane/src/commands/task/direct-task-verification-checks.ts"
+          - "packages/agentplane/src/commands/task/direct-task-verification.ts"
+          - "packages/agentplane/src/commands/task/kernel-inspection-validation.ts"
+          - "packages/agentplane/src/commands/task/kernel-inspection.ts"
+          - "packages/agentplane/src/commands/task/kernel-worktree-routing.ts"
+          - "packages/agentplane/src/commands/task/migration-apply-conversion.ts"
+          - "packages/agentplane/src/commands/task/migration-apply.ts"
+          - "packages/agentplane/src/commands/task/plan-approve.command.ts"
+          - "packages/core/src/tasks/task-centric/task-centric.test.ts"
+          - "scripts/bench/paired-m03-local-replay.mjs"
+          - "scripts/checks/check-post-convergence-test-topology.mjs"
+          - "scripts/checks/post-convergence-test-topology.json"
+          - "website/static/llms-full.txt"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "documentation"
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
         pr_full_regression: true
         unknown_or_central_full_regression: true
-      requires_full_regression: false
+      requires_full_regression: true
       requires_real_e2e: false
       schema_version: 2
       selected_checks:
         - "affected_unit_integration"
         - "critical_paths"
+        - "docs_contract"
+        - "full_regression"
         - "hosted_integration"
         - "task_outcome"
       selector:
@@ -146,15 +368,25 @@ execution_contract:
       source: "execution_contract"
     required_evidence:
       - "hosted_integration"
+      - "repository_effect:documentation"
       - "repository_effect:repository_write"
       - "repository_effect:source_code"
+      - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "3a6c32e19b16587609278620419ea1680e936e65"
+  message: "AgentPlane-owned canonical implementation commit"
 comments: []
-events: []
+events:
+  -
+    type: "verify"
+    at: "2026-09-21T13:05:44.690Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: canonical Task Kernel final checks passed."
 doc_version: 3
-doc_updated_at: "2026-09-21T10:51:31.191Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-21T13:05:46.301Z"
+doc_updated_by: "SUPERVISOR"
 description: "Repair the demonstrated 0.7.11 release blockers without weakening gates: project canonical plan approval for branch-PR routing, fix replay-benchmark lint, prove fail-closed lifecycle repair and fresh branch worktree bootstrap in the release-critical scenario, then pass full CI and LC-24 gates."
 sections:
   Summary: |-
@@ -180,12 +412,311 @@ sections:
     10. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-21T13:05:44.690Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: canonical Task Kernel final checks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c19153f27af77771842332fb914fc0bd1810379451dc94574ced302269c5a225, input_digest=sha256:b9b77f33a39a94907e3a6858327c136592504d6c988e61179795470ce6f3480d
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check affected_unit_integration (1/14)
+
+    Check: affected_unit_integration
+    Command: bun run clone:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check affected_unit_integration (2/14)
+
+    Check: affected_unit_integration
+    Command: bun run knip:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check affected_unit_integration (3/14)
+
+    Check: affected_unit_integration
+    Command: bun run package:install-smoke
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check affected_unit_integration (4/14)
+
+    Check: affected_unit_integration
+    Command: bun run test:fast
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check affected_unit_integration (5/14)
+
+    Check: affected_unit_integration
+    Command: bun run test:release:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check affected_unit_integration (6/14)
+
+    Check: affected_unit_integration
+    Command: bun run vitest:projects:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check affected_unit_integration (7/14)
+
+    Check: affected_unit_integration
+    Command: node scripts/checks/check-post-convergence-test-topology.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check affected_unit_integration (8/14)
+
+    Check: affected_unit_integration
+    Command: bun run hotspots:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check affected_unit_integration (9/14)
+
+    Check: affected_unit_integration
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check affected_unit_integration (10/14)
+
+    Check: affected_unit_integration
+    Command: bun run lint
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check affected_unit_integration (11/14)
+
+    Check: affected_unit_integration
+    Command: bun run format:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-12
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check affected_unit_integration (12/14)
+
+    Check: affected_unit_integration
+    Command: node scripts/checks/check-trust-boundary-ratchet.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-13
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check affected_unit_integration (13/14)
+
+    Check: affected_unit_integration
+    Command: bun x vitest --config vitest.config.ts run packages/agentplane/src/commands/task/roadmap-lifecycle-migration-apply.test.ts packages/agentplane/src/commands/task/kernel-inspection.test.ts packages/agentplane/src/commands/shared/workflow-step.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-14
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check affected_unit_integration (14/14)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check critical_paths (1/14)
+
+    Check: critical_paths
+    Command: bun run clone:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check critical_paths (2/14)
+
+    Check: critical_paths
+    Command: bun run knip:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check critical_paths (3/14)
+
+    Check: critical_paths
+    Command: bun run package:install-smoke
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check critical_paths (4/14)
+
+    Check: critical_paths
+    Command: bun run test:fast
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check critical_paths (5/14)
+
+    Check: critical_paths
+    Command: bun run test:release:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check critical_paths (6/14)
+
+    Check: critical_paths
+    Command: bun run vitest:projects:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check critical_paths (7/14)
+
+    Check: critical_paths
+    Command: node scripts/checks/check-post-convergence-test-topology.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check critical_paths (8/14)
+
+    Check: critical_paths
+    Command: bun run hotspots:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check critical_paths (9/14)
+
+    Check: critical_paths
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check critical_paths (10/14)
+
+    Check: critical_paths
+    Command: bun run lint
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check critical_paths (11/14)
+
+    Check: critical_paths
+    Command: bun run format:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-12
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check critical_paths (12/14)
+
+    Check: critical_paths
+    Command: node scripts/checks/check-trust-boundary-ratchet.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-13
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check critical_paths (13/14)
+
+    Check: critical_paths
+    Command: bun x vitest --config vitest.config.ts run packages/agentplane/src/commands/task/roadmap-lifecycle-migration-apply.test.ts packages/agentplane/src/commands/task/kernel-inspection.test.ts packages/agentplane/src/commands/shared/workflow-step.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-14
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check critical_paths (14/14)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check task_outcome (1/14)
+
+    Check: task_outcome
+    Command: bun run clone:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check task_outcome (2/14)
+
+    Check: task_outcome
+    Command: bun run knip:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check task_outcome (3/14)
+
+    Check: task_outcome
+    Command: bun run package:install-smoke
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check task_outcome (4/14)
+
+    Check: task_outcome
+    Command: bun run test:fast
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check task_outcome (5/14)
+
+    Check: task_outcome
+    Command: bun run test:release:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check task_outcome (6/14)
+
+    Check: task_outcome
+    Command: bun run vitest:projects:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check task_outcome (7/14)
+
+    Check: task_outcome
+    Command: node scripts/checks/check-post-convergence-test-topology.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check task_outcome (8/14)
+
+    Check: task_outcome
+    Command: bun run hotspots:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check task_outcome (9/14)
+
+    Check: task_outcome
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check task_outcome (10/14)
+
+    Check: task_outcome
+    Command: bun run lint
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check task_outcome (11/14)
+
+    Check: task_outcome
+    Command: bun run format:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-12
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check task_outcome (12/14)
+
+    Check: task_outcome
+    Command: node scripts/checks/check-trust-boundary-ratchet.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-13
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check task_outcome (13/14)
+
+    Check: task_outcome
+    Command: bun x vitest --config vitest.config.ts run packages/agentplane/src/commands/task/roadmap-lifecycle-migration-apply.test.ts packages/agentplane/src/commands/task/kernel-inspection.test.ts packages/agentplane/src/commands/shared/workflow-step.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000
+    Result: pass
+    Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-14
+    Scope: branch_pr task 202609211051-X92CWM Verification Contract check task_outcome (14/14)
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:8dc6dddb6cc8a2ed24c14dbba2ebf605686eb51a621e5bf68a811d7f47f319f7
+    - policy_digest: sha256:5969d69ad7383875e82dd5e860b3156e5ba4406cbcd617ffa342e6d388092dd1
+    - capability_digest: sha256:44668150af015035b4f9295eeb1e83a605e3c89b183ce28b4421a381c9bdb75f
+    - checks_digest: sha256:46be63a181b477f7e54d121bc1d553426d324512c08aeefb0501b8cbfeb9d704
+    - identity_digest: sha256:852124ebdfe6a9d59e9b1cfa47a39d4445885b2afac74ea2058ab0e4af24e67a
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.kernel_operational_projection:
+    digest: "sha256:8deed31b7cb7dd0bc6adfb53f4c3dff1e694b0add312b0c2e4a51909b828238b"
+    evidence_refs:
+      - "../../../.git/agentplane/kernel/exchanges/202609211051-X92CWM/ceaa3ba7cfca376c4044d3d7bdfeccb054d77da9628c0334f5a86e204965c14f/quality-report.json"
+    findings:
+      - "Canonical approval now projects the approved compatibility fields from the committed Kernel record, and branch worktree routing resolves registered checkouts by parsed task identity with an explicit fail-closed ambiguity error."
+      - "The release-critical public CLI test proves approval projection, title-slug branch worktree preparation, deterministic validation rework before evaluation, repaired evaluation, and terminal completion."
+      - "The four targeted runtime modules are 452, 529, 592, and 534 lines; all extracted helpers are also below 600 lines, and the hotspot gate passes without an exception."
+      - "All 14 AgentPlane-observed checks passed at implementation commit 3a6c32e19b16587609278620419ea1680e936e65, including focused tests, test:fast, release-critical, package installation smoke, Knip, and ci:local:full."
+      - "The final rework removes only the unused RequiredWorkItemRoute compatibility re-export; internal return typing and behavior are unchanged, and the CLI Knip budget returns to 0/0."
+    implementation_commit: "3a6c32e19b16587609278620419ea1680e936e65"
+    implementation_tree: "8cc1280d4f5e53768b8a790e531f3de04c22b8bc"
+    projected_at: "2026-09-21T12:49:36.138Z"
+    review_identity_digest: "sha256:79996b8ba4c2d09f78e81cb727dcc5c28dd4a26a110720b0d76c0e71938581b8"
+    schema_version: 1
+    source: "task_kernel"
+    verification_evidence_digest: "sha256:15a7f52c4b4cc6fc45c0fe296b3f978b9e96ea3b2d3e433ad486af87e0d33e92"
+    work_order_id: "sha256:d04f951c28987ae2e7fe0c1b6b96e613e4ab4868b48ea07b22e2f7c6285f081c"
   task_execution_context:
     base_ref: "agentplane/release-0.7.11-repair-base"
     base_sha: "727063e8461775bd58b573772d6c9fb717e45a50"
@@ -1199,6 +1730,88 @@ extensions:
             evidence_digest: "sha256:1e811e0e4897cd463ccb0e2e10737e2e4d87a20045b47728bbad9449fe4733db"
             kind: "repository_implementation"
             previous_fingerprint: "sha256:cced7bc338920930e3ea9be82584686e9c507880a5696e0d619e154f0515c367"
+        -
+          approval_mode: null
+          authority:
+            capabilities:
+              - "git_read"
+              - "local_process"
+              - "repository_read"
+              - "repository_write"
+            completion_requirements:
+              - "work_item_validation"
+              - "final_validation"
+            digest: "sha256:5ba0c75b204a737d936e47bb43d7edde58377f167ce2153bf8cb59ff9ba9eb11"
+            expires_at: null
+            external_effects: []
+            plan_digest: "sha256:8dc6dddb6cc8a2ed24c14dbba2ebf605686eb51a621e5bf68a811d7f47f319f7"
+            plan_revision: 7
+            policy_digests:
+              - "sha256:23efb6f9b035236bb2705fb639979d0ed084618d76039e5bd191654bfb479f8b"
+            provenance:
+              actor_id: "agentplane:kernel-controller"
+              evidence_digest: "sha256:6414988666811f8f10afeb52379f5a6c7e6c09b2ae6c5487b56f7a44e2583933"
+              kind: "SYSTEM"
+              parent_authority_digest: "sha256:5e355c83c162f94f844ea82eef31089438913e71e56cf1a001eabfb51af8bcec"
+            repository_effects:
+              - "documentation"
+              - "repository_write"
+              - "source_code"
+              - "tests"
+            repository_fingerprint: "sha256:2cfe0d2d19dbb8f884d2d572637923831c2e3f252f53ca16d303647774912e3a"
+            repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+            resources:
+              - "Bun 1.4.2"
+              - "Node 24"
+              - "existing release verification harnesses"
+            risk:
+              implementation: "bounded"
+              requirements: "bounded"
+              reversibility: "reversible"
+            scope_roots:
+              - "artifacts/m03-0.7.10-vs-0.7.11-local-replay.json"
+              - "docs/reference/clean-task-core-rebuild-spec.mdx"
+              - "docs/user/cli-reference.generated.mdx"
+              - "packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts"
+              - "packages/agentplane/src/commands/shared/semantic-result-admission.ts"
+              - "packages/agentplane/src/commands/shared/workflow-step-factory-branch.ts"
+              - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
+              - "packages/agentplane/src/commands/task/direct-task-verification-checks.ts"
+              - "packages/agentplane/src/commands/task/direct-task-verification.ts"
+              - "packages/agentplane/src/commands/task/kernel-inspection-validation.ts"
+              - "packages/agentplane/src/commands/task/kernel-inspection.ts"
+              - "packages/agentplane/src/commands/task/kernel-worktree-routing.ts"
+              - "packages/agentplane/src/commands/task/migration-apply-conversion.ts"
+              - "packages/agentplane/src/commands/task/migration-apply.ts"
+              - "packages/agentplane/src/commands/task/plan-approve.command.ts"
+              - "packages/core/src/tasks/task-centric/task-centric.test.ts"
+              - "scripts/bench/paired-m03-local-replay.mjs"
+              - "scripts/checks/check-post-convergence-test-topology.mjs"
+              - "scripts/checks/post-convergence-test-topology.json"
+              - "website/static/llms-full.txt"
+            task_id: "202609211051-X92CWM"
+            validation_requirements:
+              - "bun run ci:local:full"
+              - "bun run clone:check"
+              - "bun run docs:cli:check"
+              - "bun run format:check"
+              - "bun run hotspots:check"
+              - "bun run knip:check"
+              - "bun run lint"
+              - "bun run package:install-smoke"
+              - "bun run test:fast"
+              - "bun run test:release:critical"
+              - "bun run vitest:projects:check"
+              - "bun x vitest --config vitest.config.ts run packages/agentplane/src/commands/task/roadmap-lifecycle-migration-apply.test.ts packages/agentplane/src/commands/task/kernel-inspection.test.ts packages/agentplane/src/commands/shared/workflow-step.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000"
+              - "node scripts/checks/check-post-convergence-test-topology.mjs"
+              - "node scripts/checks/check-trust-boundary-ratchet.mjs"
+            work_item_id: null
+          observation:
+            changed_paths:
+              - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
+            evidence_digest: "sha256:2888fe6a3f283e702ee290df301ddb4dc63d99fd7744dc55894c1efa3bcfae81"
+            kind: "repository_implementation"
+            previous_fingerprint: "sha256:02cd51ff5e463049bf81c547a7f0d271252d9477ebaf768ccaaeea15153c1579"
       controller_transfer: null
       current_plan:
         approval_actor_id: "USER"
@@ -1256,7 +1869,17 @@ extensions:
             optional: false
             required_inputs: []
       effects: []
-      final_validation: null
+      final_validation:
+        evidence_digests:
+          - "sha256:15a7f52c4b4cc6fc45c0fe296b3f978b9e96ea3b2d3e433ad486af87e0d33e92"
+        identity:
+          check_id: "canonical-final-contracts"
+          command_digest: "sha256:95a447d4310ed277208da2fef849f63d456b52b652e5eff061c78778cd45be75"
+          environment_digest: "sha256:55617c6eb54c71d58e02822e4e672779857cf747ec7b48271653cc1cb8644165"
+          implementation_identity: "sha256:2cfe0d2d19dbb8f884d2d572637923831c2e3f252f53ca16d303647774912e3a"
+          toolchain_digest: "sha256:bb229ac220bbc13150f17be8c6db51f787de3d0f51de773ccb0d9bff56e5e951"
+        observed_at: "2026-09-21T12:49:46.222Z"
+        status: "PASSED"
       id: "202609211051-X92CWM"
       intent_digest: "sha256:2e798fe6177e7d8f2e1a3165d3de47e36325eea96308143a2103c1eace669318"
       migration_receipts: []
@@ -1288,6 +1911,15 @@ extensions:
           event_digests:
             - "sha256:822d9c2f0df8fce9e99abfb0bbed277b41de38066c5105075ca51b21944142fa"
           mutation_id: "capture:202609211051-X92CWM"
+        final-validation:sha256:15a7f52c4b4cc6fc45c0fe296b3f978b9e96ea3b2d3e433ad486af87e0d33e92:62:
+          after_revision: 63
+          aggregate_digest: "sha256:504cc5cc621d12bfb66429c3c0ad9f74998b0187664fda7db21ec4c62e9f89a0"
+          before_revision: 62
+          command_digest: "sha256:371ab6c21ad6a35d2e87d176f4cc2ec421a4376f540a5650f558a1e2515927b9"
+          effect_ids: []
+          event_digests:
+            - "sha256:cc2aca022491137aaedcc5814494a48e0c810da086ace66e41f6fa5ea5569358"
+          mutation_id: "final-validation:sha256:15a7f52c4b4cc6fc45c0fe296b3f978b9e96ea3b2d3e433ad486af87e0d33e92:62"
         kernel_work_item_claim_required:sha256:0e77f44ab3014c0c2ad2680ec3b4f3eee8864dae6c9195e47dcfeca373992d01:sha256:2399e02108a9099fa85713d02150366e5cd19f2968c796a533d48e8580e8ff3c:
           after_revision: 13
           aggregate_digest: "sha256:384b54598d3dd32d76740c7b1148c7cd7f278a89e8fc0b1ad43167585a4a7cab"
@@ -1423,6 +2055,15 @@ extensions:
           event_digests:
             - "sha256:04325cf6d6c9675d88f957795a4097e30d1f6a8848f4930246c7940680b8f155"
           mutation_id: "kernel_work_item_execution_required:sha256:c535b29ec6b0568661cd9562f13b3882b2f69b9646b978f456f234eae06c5a18:sha256:2399e02108a9099fa85713d02150366e5cd19f2968c796a533d48e8580e8ff3c"
+        kernel_work_item_inspection_required:sha256:297fbadc5048b4822085e4caf98d07667fba988c224da345130e1f7d16208176:sha256:2cfe0d2d19dbb8f884d2d572637923831c2e3f252f53ca16d303647774912e3a:
+          after_revision: 60
+          aggregate_digest: "sha256:15747ac0a2d6046ac5ecdc6d8b255b987a8b948dd6a755b9299373e8550f2b56"
+          before_revision: 59
+          command_digest: "sha256:804b8c70467a01b6a225de981729ac0d0857584c5bbce8797ac76c36933fa121"
+          effect_ids: []
+          event_digests:
+            - "sha256:ea5c6196555bc748111a329aac0b341213d8e0677b57e67a00d07b35a71b0067"
+          mutation_id: "kernel_work_item_inspection_required:sha256:297fbadc5048b4822085e4caf98d07667fba988c224da345130e1f7d16208176:sha256:2cfe0d2d19dbb8f884d2d572637923831c2e3f252f53ca16d303647774912e3a"
         kernel_work_item_inspection_required:sha256:bd1029cf44e6c8f765482b09502c674636628ea2911cec466eee1a05161d0d54:sha256:02cd51ff5e463049bf81c547a7f0d271252d9477ebaf768ccaaeea15153c1579:
           after_revision: 53
           aggregate_digest: "sha256:4e5a8cb77b886f82d6e157604b135a7a803601a266b5233cf1c90ec94b70b850"
@@ -1576,6 +2217,15 @@ extensions:
           event_digests:
             - "sha256:316616d8b500cdf160757588d371badda7630d3c6e2b653f4d8290423dc1d97f"
           mutation_id: "result:sha256:b2e138242d54b1a7bec7eb7cc8476ecfcee397a2dcf9ef9e1d9adf2ffebb5c73"
+        result:sha256:d04f951c28987ae2e7fe0c1b6b96e613e4ab4868b48ea07b22e2f7c6285f081c:
+          after_revision: 59
+          aggregate_digest: "sha256:8c110e8a5bf1fefd6729fccd42469c2ea5eb6c2608a9420cdd0e25202321cbef"
+          before_revision: 58
+          command_digest: "sha256:ff94ed410c7d5d866a5517e9c436f0cf34ab7ae911ef47c9114e90219b142b65"
+          effect_ids: []
+          event_digests:
+            - "sha256:f3162cdab88cca68cb2811b79f638553b7bf1e272ec65585ceabddfea9e1c172"
+          mutation_id: "result:sha256:d04f951c28987ae2e7fe0c1b6b96e613e4ab4868b48ea07b22e2f7c6285f081c"
         semantic-stop:sha256:14ec5642ea59f56badbbc59c712fd8d83c7fd503eaa5c26a8fa295ad3945b952:
           after_revision: 24
           aggregate_digest: "sha256:9adc370125ba845219fec8249cf4b212c02c66db58e84ad077ad15f957d61ff8"
@@ -1630,6 +2280,15 @@ extensions:
           event_digests:
             - "sha256:110a378a6a9ac519becc8e97bb3e9dbbe3d71bb6c9a045befb453ca0f09db69f"
           mutation_id: "semantic-stop:sha256:bf77b5742d3f02afd859214ddefbc05ca5752e539cc7e047b5ff37271bbe4a6d"
+        sha256:253111d51aa3cd25570e98b3dadb4025b15c2351962876228ff3395ec3b02e2c:
+          after_revision: 58
+          aggregate_digest: "sha256:8791fb83d8f474646e990cc0606432a6288951abd721b9a3911c7e172497c722"
+          before_revision: 57
+          command_digest: "sha256:51aef0a1ae8d3478e3469132f0519a96412bed1101198b419245f14f69863cb8"
+          effect_ids: []
+          event_digests:
+            - "sha256:5fb1ef7ae9decdd6b30bd2affb1f56eb5a4893255716815c7d6be5e383e80626"
+          mutation_id: "sha256:253111d51aa3cd25570e98b3dadb4025b15c2351962876228ff3395ec3b02e2c"
         sha256:3a9f5a36924f2121a7580f67c25fcc07849889836e039869e9a9ff786cf26e48:
           after_revision: 39
           aggregate_digest: "sha256:74d727e02377805e32d0b81eee295fa0d5c51b324ab7af8bb5c02e38d05074a6"
@@ -1756,6 +2415,15 @@ extensions:
           event_digests:
             - "sha256:4f323d4747bfa39aa173bab65de30dcb867d4d2f7e414da4f574f114416a3a09"
           mutation_id: "sha256:f9122b2f2e7cd078f90bb77d35cc697de9958fdaa3b5aa6d1f961654362b1579"
+        validation-resolution:sha256:2a4d0f7978490d7d0d689ecc45f9fb8b694d327f3e31aacd812ee53054761fd7:
+          after_revision: 62
+          aggregate_digest: "sha256:9d2c1e52349dd368092ecab5ce6095508e7ac6718b852672e32e3479d012de98"
+          before_revision: 61
+          command_digest: "sha256:00bfccf768bd9807f2e9bd38358c4a733786dc5d746925f11a0096394f34efd4"
+          effect_ids: []
+          event_digests:
+            - "sha256:57e255c04e1434bd7991c980130ab8109b9707bc88d6319f6eeac9e29feaf6ee"
+          mutation_id: "validation-resolution:sha256:2a4d0f7978490d7d0d689ecc45f9fb8b694d327f3e31aacd812ee53054761fd7"
         validation-resolution:sha256:d4e8c95729a65a94104b3bd874cd3e72399361eb7da97bd47d397ee91f1f4a0c:
           after_revision: 55
           aggregate_digest: "sha256:a10427161019be77c37315e2dec0c45ee038a7132d992e2352d42eb8304f9128"
@@ -1774,6 +2442,15 @@ extensions:
           event_digests:
             - "sha256:9e0d7c99ab52c81c4abe99bbc7b0bf4a53a518f743441f5df93746af8112a412"
           mutation_id: "validation:sha256:6a5a9c5914dff3fb7a76f51cc9d610b76ed5cebdaf4ad7e643580044f1a16cbb"
+        validation:sha256:ceaa3ba7cfca376c4044d3d7bdfeccb054d77da9628c0334f5a86e204965c14f:
+          after_revision: 61
+          aggregate_digest: "sha256:4a8fc8b892661a128e9fe0d805b0846503b8ab7c59eff31d7c7d2e67f93b823d"
+          before_revision: 60
+          command_digest: "sha256:4dfcd985a75ea0936ef7ee6897e7e75622db98f76c3c9d266986f9514bc0ca3d"
+          effect_ids: []
+          event_digests:
+            - "sha256:711c59fc0ce89dd48e22f0d621bbc1b42bbd6532d37f3853d1e9ae89842b95ff"
+          mutation_id: "validation:sha256:ceaa3ba7cfca376c4044d3d7bdfeccb054d77da9628c0334f5a86e204965c14f"
       plan_history:
         -
           approval_actor_id: "USER"
@@ -2047,9 +2724,9 @@ extensions:
               id: "release-blocker-repair"
               optional: false
               required_inputs: []
-      revision: 57
+      revision: 63
       schema_version: 1
-      state: "ACTIVE"
+      state: "FINAL_VALIDATION"
       work_items:
         release-blocker-repair:
           attempt: 4
@@ -2102,12 +2779,59 @@ extensions:
             id: "release-blocker-repair"
             optional: false
             required_inputs: []
-          output_manifests: []
-          result_digest: null
-          revision: 19
-          state: "EXECUTING"
-          validation: null
-    digest: "sha256:4c45abe073cf58e700bef37a4fa1cfb6952b034e65b6e95e2f39e047cde24e40"
+          output_manifests:
+            -
+              attempt: 4
+              digest: "sha256:d0577768b9e2b11ea074585760f6b0496ba066cd9721c7787ffc1863cf6e9ca3"
+              id: "kernel-plan-routing-projection"
+              kind: "report"
+              plan_revision: 7
+              repository_fingerprint: "sha256:2cfe0d2d19dbb8f884d2d572637923831c2e3f252f53ca16d303647774912e3a"
+              task_id: "202609211051-X92CWM"
+              work_item_id: "release-blocker-repair"
+            -
+              attempt: 4
+              digest: "sha256:3a65bcb063f026b3b0502e0dcb0efe2b08bcf03291d39e6f23a92a4a62ab3d8d"
+              id: "release-critical-lifecycle-proof"
+              kind: "report"
+              plan_revision: 7
+              repository_fingerprint: "sha256:2cfe0d2d19dbb8f884d2d572637923831c2e3f252f53ca16d303647774912e3a"
+              task_id: "202609211051-X92CWM"
+              work_item_id: "release-blocker-repair"
+            -
+              attempt: 4
+              digest: "sha256:951e072ae247597160bbcdc9882076ac63ae0965e315a2de8955613308360d90"
+              id: "lint-clean-replay-benchmark"
+              kind: "report"
+              plan_revision: 7
+              repository_fingerprint: "sha256:2cfe0d2d19dbb8f884d2d572637923831c2e3f252f53ca16d303647774912e3a"
+              task_id: "202609211051-X92CWM"
+              work_item_id: "release-blocker-repair"
+            -
+              attempt: 4
+              digest: "sha256:447d2becc090660ae28da63e2ba7fdc3725aa61d7519e2259f347cd3fab88510"
+              id: "full-release-validation"
+              kind: "report"
+              plan_revision: 7
+              repository_fingerprint: "sha256:2cfe0d2d19dbb8f884d2d572637923831c2e3f252f53ca16d303647774912e3a"
+              task_id: "202609211051-X92CWM"
+              work_item_id: "release-blocker-repair"
+          result_digest: "sha256:0f46bd1d8f9c1c3d34b512d3087824b923f9710bba191e4a04e252421f86aa25"
+          revision: 23
+          state: "COMPLETED"
+          validation:
+            evidence_digests:
+              - "sha256:1d5fb6bb1488447b1f34c22c22e2ae5871226d8b11583e88fbcddd842cb1c88e"
+              - "sha256:79996b8ba4c2d09f78e81cb727dcc5c28dd4a26a110720b0d76c0e71938581b8"
+            identity:
+              check_id: "canonical-contract-and-inspection"
+              command_digest: "sha256:95a447d4310ed277208da2fef849f63d456b52b652e5eff061c78778cd45be75"
+              environment_digest: "sha256:39bfc6e69b0d5653ede61e79547e51b1b6024299ff9a39b352fc773a2317c195"
+              implementation_identity: "sha256:0f46bd1d8f9c1c3d34b512d3087824b923f9710bba191e4a04e252421f86aa25"
+              toolchain_digest: "sha256:be5cb70d3cd4075bbda82296e3267bee5f79fff23613c02c8510e010c1394cd8"
+            observed_at: "2026-09-21T12:49:36.138Z"
+            status: "PASSED"
+    digest: "sha256:07131e1ac002fb090708a5e800d1fa7924173ab7aadcf84297be25c931d49702"
     documents:
       contracts:
         sha256:3cfe779b74ab5093378dcfc76999549cb623b0de8c209f732cd6f82b31fecb7d:
@@ -2738,6 +3462,60 @@ extensions:
         payload_digest: "sha256:683c413683c848a8f021ba3cad0592d934438debd0bcd6265bfae229b6a2f64a"
         task_id: "202609211051-X92CWM"
         task_revision: 57
+      -
+        command_digest: "sha256:51aef0a1ae8d3478e3469132f0519a96412bed1101198b419245f14f69863cb8"
+        id: "sha256:253111d51aa3cd25570e98b3dadb4025b15c2351962876228ff3395ec3b02e2c:authority_continued"
+        kind: "authority_continued"
+        mutation_id: "sha256:253111d51aa3cd25570e98b3dadb4025b15c2351962876228ff3395ec3b02e2c"
+        occurred_at: "2026-09-21T12:31:01.666Z"
+        payload_digest: "sha256:39d425cf18273386ba7397dc1e9c5041b3c512ad002f60a70b6c06bdd62c9545"
+        task_id: "202609211051-X92CWM"
+        task_revision: 58
+      -
+        command_digest: "sha256:ff94ed410c7d5d866a5517e9c436f0cf34ab7ae911ef47c9114e90219b142b65"
+        id: "result:sha256:d04f951c28987ae2e7fe0c1b6b96e613e4ab4868b48ea07b22e2f7c6285f081c:work_item_result_accepted"
+        kind: "work_item_result_accepted"
+        mutation_id: "result:sha256:d04f951c28987ae2e7fe0c1b6b96e613e4ab4868b48ea07b22e2f7c6285f081c"
+        occurred_at: "2026-09-21T12:31:06.162Z"
+        payload_digest: "sha256:89c5a438f96ea2b80aa2e0f7a1548a9763fd44a92c64a9c53bb85025eca47861"
+        task_id: "202609211051-X92CWM"
+        task_revision: 59
+      -
+        command_digest: "sha256:804b8c70467a01b6a225de981729ac0d0857584c5bbce8797ac76c36933fa121"
+        id: "kernel_work_item_inspection_required:sha256:297fbadc5048b4822085e4caf98d07667fba988c224da345130e1f7d16208176:sha256:2cfe0d2d19dbb8f884d2d572637923831c2e3f252f53ca16d303647774912e3a:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "kernel_work_item_inspection_required:sha256:297fbadc5048b4822085e4caf98d07667fba988c224da345130e1f7d16208176:sha256:2cfe0d2d19dbb8f884d2d572637923831c2e3f252f53ca16d303647774912e3a"
+        occurred_at: "2026-09-21T12:31:09.904Z"
+        payload_digest: "sha256:9f79c6d7022277c85eea828a691b0b9848c36d9e103710ff7ad25cae72beede3"
+        task_id: "202609211051-X92CWM"
+        task_revision: 60
+      -
+        command_digest: "sha256:4dfcd985a75ea0936ef7ee6897e7e75622db98f76c3c9d266986f9514bc0ca3d"
+        id: "validation:sha256:ceaa3ba7cfca376c4044d3d7bdfeccb054d77da9628c0334f5a86e204965c14f:work_item_validation_recorded"
+        kind: "work_item_validation_recorded"
+        mutation_id: "validation:sha256:ceaa3ba7cfca376c4044d3d7bdfeccb054d77da9628c0334f5a86e204965c14f"
+        occurred_at: "2026-09-21T12:49:40.323Z"
+        payload_digest: "sha256:44aed9ff8852ebbc33c5d63e82904c5a8b3b589aa30ffac5a23737b84b3ec954"
+        task_id: "202609211051-X92CWM"
+        task_revision: 61
+      -
+        command_digest: "sha256:00bfccf768bd9807f2e9bd38358c4a733786dc5d746925f11a0096394f34efd4"
+        id: "validation-resolution:sha256:2a4d0f7978490d7d0d689ecc45f9fb8b694d327f3e31aacd812ee53054761fd7:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "validation-resolution:sha256:2a4d0f7978490d7d0d689ecc45f9fb8b694d327f3e31aacd812ee53054761fd7"
+        occurred_at: "2026-09-21T12:49:42.550Z"
+        payload_digest: "sha256:549553d878c18efc3b207a18305754d1e32f11dc76540096754f12817ef67091"
+        task_id: "202609211051-X92CWM"
+        task_revision: 62
+      -
+        command_digest: "sha256:371ab6c21ad6a35d2e87d176f4cc2ec421a4376f540a5650f558a1e2515927b9"
+        id: "final-validation:sha256:15a7f52c4b4cc6fc45c0fe296b3f978b9e96ea3b2d3e433ad486af87e0d33e92:62:final_validation_recorded"
+        kind: "final_validation_recorded"
+        mutation_id: "final-validation:sha256:15a7f52c4b4cc6fc45c0fe296b3f978b9e96ea3b2d3e433ad486af87e0d33e92:62"
+        occurred_at: "2026-09-21T13:05:39.398Z"
+        payload_digest: "sha256:6cc5ee26936b25e9b6052ea5ee3b0c46b9cba0fb1016e7198cc31e59e22fc183"
+        task_id: "202609211051-X92CWM"
+        task_revision: 63
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
@@ -2776,6 +3554,287 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-21T13:05:44.690Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: canonical Task Kernel final checks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c19153f27af77771842332fb914fc0bd1810379451dc94574ced302269c5a225, input_digest=sha256:b9b77f33a39a94907e3a6858327c136592504d6c988e61179795470ce6f3480d
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check affected_unit_integration (1/14)
+
+Check: affected_unit_integration
+Command: bun run clone:check
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check affected_unit_integration (2/14)
+
+Check: affected_unit_integration
+Command: bun run knip:check
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check affected_unit_integration (3/14)
+
+Check: affected_unit_integration
+Command: bun run package:install-smoke
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check affected_unit_integration (4/14)
+
+Check: affected_unit_integration
+Command: bun run test:fast
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check affected_unit_integration (5/14)
+
+Check: affected_unit_integration
+Command: bun run test:release:critical
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check affected_unit_integration (6/14)
+
+Check: affected_unit_integration
+Command: bun run vitest:projects:check
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check affected_unit_integration (7/14)
+
+Check: affected_unit_integration
+Command: node scripts/checks/check-post-convergence-test-topology.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check affected_unit_integration (8/14)
+
+Check: affected_unit_integration
+Command: bun run hotspots:check
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check affected_unit_integration (9/14)
+
+Check: affected_unit_integration
+Command: bun run docs:cli:check
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check affected_unit_integration (10/14)
+
+Check: affected_unit_integration
+Command: bun run lint
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check affected_unit_integration (11/14)
+
+Check: affected_unit_integration
+Command: bun run format:check
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-12
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check affected_unit_integration (12/14)
+
+Check: affected_unit_integration
+Command: node scripts/checks/check-trust-boundary-ratchet.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-13
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check affected_unit_integration (13/14)
+
+Check: affected_unit_integration
+Command: bun x vitest --config vitest.config.ts run packages/agentplane/src/commands/task/roadmap-lifecycle-migration-apply.test.ts packages/agentplane/src/commands/task/kernel-inspection.test.ts packages/agentplane/src/commands/shared/workflow-step.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-14
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check affected_unit_integration (14/14)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check critical_paths (1/14)
+
+Check: critical_paths
+Command: bun run clone:check
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check critical_paths (2/14)
+
+Check: critical_paths
+Command: bun run knip:check
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check critical_paths (3/14)
+
+Check: critical_paths
+Command: bun run package:install-smoke
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check critical_paths (4/14)
+
+Check: critical_paths
+Command: bun run test:fast
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check critical_paths (5/14)
+
+Check: critical_paths
+Command: bun run test:release:critical
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check critical_paths (6/14)
+
+Check: critical_paths
+Command: bun run vitest:projects:check
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check critical_paths (7/14)
+
+Check: critical_paths
+Command: node scripts/checks/check-post-convergence-test-topology.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check critical_paths (8/14)
+
+Check: critical_paths
+Command: bun run hotspots:check
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check critical_paths (9/14)
+
+Check: critical_paths
+Command: bun run docs:cli:check
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check critical_paths (10/14)
+
+Check: critical_paths
+Command: bun run lint
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check critical_paths (11/14)
+
+Check: critical_paths
+Command: bun run format:check
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-12
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check critical_paths (12/14)
+
+Check: critical_paths
+Command: node scripts/checks/check-trust-boundary-ratchet.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-13
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check critical_paths (13/14)
+
+Check: critical_paths
+Command: bun x vitest --config vitest.config.ts run packages/agentplane/src/commands/task/roadmap-lifecycle-migration-apply.test.ts packages/agentplane/src/commands/task/kernel-inspection.test.ts packages/agentplane/src/commands/shared/workflow-step.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-14
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check critical_paths (14/14)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check task_outcome (1/14)
+
+Check: task_outcome
+Command: bun run clone:check
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check task_outcome (2/14)
+
+Check: task_outcome
+Command: bun run knip:check
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check task_outcome (3/14)
+
+Check: task_outcome
+Command: bun run package:install-smoke
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check task_outcome (4/14)
+
+Check: task_outcome
+Command: bun run test:fast
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check task_outcome (5/14)
+
+Check: task_outcome
+Command: bun run test:release:critical
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check task_outcome (6/14)
+
+Check: task_outcome
+Command: bun run vitest:projects:check
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check task_outcome (7/14)
+
+Check: task_outcome
+Command: node scripts/checks/check-post-convergence-test-topology.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check task_outcome (8/14)
+
+Check: task_outcome
+Command: bun run hotspots:check
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check task_outcome (9/14)
+
+Check: task_outcome
+Command: bun run docs:cli:check
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check task_outcome (10/14)
+
+Check: task_outcome
+Command: bun run lint
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check task_outcome (11/14)
+
+Check: task_outcome
+Command: bun run format:check
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-12
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check task_outcome (12/14)
+
+Check: task_outcome
+Command: node scripts/checks/check-trust-boundary-ratchet.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-13
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check task_outcome (13/14)
+
+Check: task_outcome
+Command: bun x vitest --config vitest.config.ts run packages/agentplane/src/commands/task/roadmap-lifecycle-migration-apply.test.ts packages/agentplane/src/commands/task/kernel-inspection.test.ts packages/agentplane/src/commands/shared/workflow-step.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts --pool=forks --maxWorkers=1 --testTimeout=120000 --hookTimeout=120000
+Result: pass
+Evidence: .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json#check-14
+Scope: branch_pr task 202609211051-X92CWM Verification Contract check task_outcome (14/14)
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:8dc6dddb6cc8a2ed24c14dbba2ebf605686eb51a621e5bf68a811d7f47f319f7
+- policy_digest: sha256:5969d69ad7383875e82dd5e860b3156e5ba4406cbcd617ffa342e6d388092dd1
+- capability_digest: sha256:44668150af015035b4f9295eeb1e83a605e3c89b183ce28b4421a381c9bdb75f
+- checks_digest: sha256:46be63a181b477f7e54d121bc1d553426d324512c08aeefb0501b8cbfeb9d704
+- identity_digest: sha256:852124ebdfe6a9d59e9b1cfa47a39d4445885b2afac74ea2058ab0e4af24e67a
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
