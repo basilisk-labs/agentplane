@@ -1,0 +1,205 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 727063e8461775bd58b573772d6c9fb717e45a50..3e872a4036368c94dfeb9cda9d7c1b28dc4e1fab",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 727063e8461775bd58b573772d6c9fb717e45a50..3e872a4036368c94dfeb9cda9d7c1b28dc4e1fab",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202609211051-X92CWM/README.md",
+        "A\t.agentplane/tasks/202609211051-X92CWM/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202609211051-X92CWM/pr/github-body.md",
+        "A\t.agentplane/tasks/202609211051-X92CWM/pr/github-title.txt",
+        "A\t.agentplane/tasks/202609211051-X92CWM/pr/meta.json",
+        "A\t.agentplane/tasks/202609211051-X92CWM/pr/review.md",
+        "A\t.agentplane/tasks/202609211051-X92CWM/quality/objects/sha256/4340c69a72ea01faa72dcf87e07dfff35ea84123952ef257b9037259c0405a62.json",
+        "A\t.agentplane/tasks/202609211051-X92CWM/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "M\tartifacts/m03-0.7.10-vs-0.7.11-local-replay.json",
+        "M\tdocs/reference/clean-task-core-rebuild-spec.mdx",
+        "M\tdocs/user/cli-reference.generated.mdx",
+        "M\tpackages/agentplane/src/cli/run-cli.critical.task-centric.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/semantic-result-admission.ts",
+        "A\tpackages/agentplane/src/commands/shared/workflow-step-factory-branch.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step-factory.ts",
+        "A\tpackages/agentplane/src/commands/task/direct-task-verification-checks.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-inspection-validation.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-inspection.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-worktree-routing.ts",
+        "A\tpackages/agentplane/src/commands/task/migration-apply-conversion.ts",
+        "M\tpackages/agentplane/src/commands/task/migration-apply.ts",
+        "M\tpackages/agentplane/src/commands/task/plan-approve.command.ts",
+        "M\tpackages/core/src/tasks/task-centric/task-centric.test.ts",
+        "M\tscripts/bench/paired-m03-local-replay.mjs",
+        "M\tscripts/checks/check-post-convergence-test-topology.mjs",
+        "M\tscripts/checks/post-convergence-test-topology.json",
+        "M\twebsite/static/llms-full.txt"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "727063e8461775bd58b573772d6c9fb717e45a50",
+  "implementation_commit": "3e872a4036368c94dfeb9cda9d7c1b28dc4e1fab",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M artifacts/m03-0.7.10-vs-0.7.11-local-replay.json",
+      " M docs/reference/clean-task-core-rebuild-spec.mdx",
+      " M docs/user/cli-reference.generated.mdx",
+      " M packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts",
+      " M packages/agentplane/src/commands/shared/semantic-result-admission.ts",
+      " M packages/agentplane/src/commands/shared/workflow-step-factory.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification.ts",
+      " M packages/agentplane/src/commands/task/kernel-inspection.ts",
+      " M packages/agentplane/src/commands/task/kernel-worktree-routing.ts",
+      " M packages/agentplane/src/commands/task/migration-apply.ts",
+      " M packages/agentplane/src/commands/task/plan-approve.command.ts",
+      " M packages/core/src/tasks/task-centric/task-centric.test.ts",
+      " M scripts/bench/paired-m03-local-replay.mjs",
+      " M scripts/checks/check-post-convergence-test-topology.mjs",
+      " M scripts/checks/post-convergence-test-topology.json",
+      "?? .agentplane/tasks/202609211051-X92CWM/README.md",
+      "?? .agentplane/tasks/202609211051-X92CWM/quality/objects/sha256/4340c69a72ea01faa72dcf87e07dfff35ea84123952ef257b9037259c0405a62.json",
+      "?? .agentplane/tasks/202609211051-X92CWM/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+      "?? packages/agentplane/src/commands/shared/workflow-step-factory-branch.ts",
+      "?? packages/agentplane/src/commands/task/direct-task-verification-checks.ts",
+      "?? packages/agentplane/src/commands/task/kernel-inspection-validation.ts",
+      "?? packages/agentplane/src/commands/task/migration-apply-conversion.ts"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M artifacts/m03-0.7.10-vs-0.7.11-local-replay.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M docs/reference/clean-task-core-rebuild-spec.mdx"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M docs/user/cli-reference.generated.mdx"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/semantic-result-admission.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/workflow-step-factory.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/direct-task-verification.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-inspection.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-worktree-routing.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/migration-apply.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/plan-approve.command.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/src/tasks/task-centric/task-centric.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M scripts/bench/paired-m03-local-replay.mjs"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M scripts/checks/check-post-convergence-test-topology.mjs"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M scripts/checks/post-convergence-test-topology.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609211051-X92CWM/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609211051-X92CWM/quality/objects/sha256/4340c69a72ea01faa72dcf87e07dfff35ea84123952ef257b9037259c0405a62.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609211051-X92CWM/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/shared/workflow-step-factory-branch.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/direct-task-verification-checks.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/kernel-inspection-validation.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/migration-apply-conversion.ts"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M artifacts/m03-0.7.10-vs-0.7.11-local-replay.json",
+      " M docs/reference/clean-task-core-rebuild-spec.mdx",
+      " M docs/user/cli-reference.generated.mdx",
+      " M packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts",
+      " M packages/agentplane/src/commands/shared/semantic-result-admission.ts",
+      " M packages/agentplane/src/commands/shared/workflow-step-factory.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification.ts",
+      " M packages/agentplane/src/commands/task/kernel-inspection.ts",
+      " M packages/agentplane/src/commands/task/kernel-worktree-routing.ts",
+      " M packages/agentplane/src/commands/task/migration-apply.ts",
+      " M packages/agentplane/src/commands/task/plan-approve.command.ts",
+      " M packages/core/src/tasks/task-centric/task-centric.test.ts",
+      " M scripts/bench/paired-m03-local-replay.mjs",
+      " M scripts/checks/check-post-convergence-test-topology.mjs",
+      " M scripts/checks/post-convergence-test-topology.json",
+      "?? .agentplane/tasks/202609211051-X92CWM/README.md",
+      "?? .agentplane/tasks/202609211051-X92CWM/quality/objects/sha256/4340c69a72ea01faa72dcf87e07dfff35ea84123952ef257b9037259c0405a62.json",
+      "?? .agentplane/tasks/202609211051-X92CWM/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+      "?? packages/agentplane/src/commands/shared/workflow-step-factory-branch.ts",
+      "?? packages/agentplane/src/commands/task/direct-task-verification-checks.ts",
+      "?? packages/agentplane/src/commands/task/kernel-inspection-validation.ts",
+      "?? packages/agentplane/src/commands/task/migration-apply-conversion.ts"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609211051-X92CWM"
+}

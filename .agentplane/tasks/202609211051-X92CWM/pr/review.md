@@ -35,7 +35,7 @@ Created: 2026-09-21T12:18:29.179Z
  .../src/cli/run-cli.critical.task-centric.test.ts  | 105 +++-
  .../commands/shared/semantic-result-admission.ts   |   2 +-
  .../shared/workflow-step-factory-branch.ts         |  94 ++++
- .../src/commands/shared/workflow-step-factory.ts   |  98 +---
+ .../src/commands/shared/workflow-step-factory.ts   |  97 +---
  .../task/direct-task-verification-checks.ts        | 117 ++++
  .../src/commands/task/direct-task-verification.ts  | 129 +----
  .../commands/task/kernel-inspection-validation.ts  | 360 +++++++++++++
@@ -49,7 +49,7 @@ Created: 2026-09-21T12:18:29.179Z
  .../check-post-convergence-test-topology.mjs       |  14 +-
  scripts/checks/post-convergence-test-topology.json | 165 +++++-
  website/static/llms-full.txt                       | 106 +++-
- 20 files changed, 1630 insertions(+), 1191 deletions(-)
+ 20 files changed, 1629 insertions(+), 1191 deletions(-)
 ```
 
 </details>

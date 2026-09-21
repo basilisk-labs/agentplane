@@ -27,7 +27,6 @@ export {
   requiredWorkItemRoute,
   taskWorktreeBlocker,
   verifiedIncludedClosureCandidate,
-  type RequiredWorkItemRoute,
 } from "./workflow-step-factory-branch.js";
 export {
   commonExecution,

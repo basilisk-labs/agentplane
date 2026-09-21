@@ -2,7 +2,7 @@
   "base": "agentplane/release-0.7.11-repair-base",
   "branch": "task/202609211051-X92CWM/repair-the-demonstrated-0-7-11-release-blockers",
   "created_at": "2026-09-21T12:18:29.179Z",
-  "diffstat_sha256": "sha256:ad7114dc7664d6b2bde9b1ec1d866a07497ed8f38a1676b0a30121c434d5df42",
+  "diffstat_sha256": "sha256:c552c37170d483b2d765104208a915854160123095343ba8550f342fb4a56722",
   "last_verified_at": null,
   "provider": {
     "hostname": "github.com",
