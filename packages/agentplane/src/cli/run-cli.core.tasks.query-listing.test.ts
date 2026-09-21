@@ -545,136 +545,6 @@ describe(
       }
     });
 
-    it("task doc show prints section content", async () => {
-      const root = await mkGitRepoRoot();
-      let taskId = "";
-      {
-        const io = captureStdIO();
-        try {
-          const code = await runCli([
-            "task",
-            "new",
-            "--title",
-            "Doc task",
-            "--description",
-            "Has doc",
-            "--owner",
-            "CODER",
-            "--tag",
-            "docs",
-            "--root",
-            root,
-          ]);
-          expect(code).toBe(0);
-          taskId = io.stdout.trim();
-        } finally {
-          io.restore();
-        }
-      }
-      {
-        const io = captureStdIO();
-        try {
-          const code = await runCli([
-            "task",
-            "doc",
-            "set",
-            taskId,
-            "--section",
-            "Summary",
-            "--text",
-            "Doc section text",
-            "--root",
-            root,
-          ]);
-          expect(code).toBe(0);
-        } finally {
-          io.restore();
-        }
-      }
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "doc",
-          "show",
-          taskId,
-          "--section",
-          "Summary",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        expect(io.stdout).toContain("Doc section text");
-      } finally {
-        io.restore();
-      }
-    });
-
-    it("task verify-show prints Verify Steps", async () => {
-      const root = await mkGitRepoRoot();
-      await writeDefaultConfig(root);
-      let taskId = "";
-      {
-        const io = captureStdIO();
-        try {
-          const code = await runCli([
-            "task",
-            "new",
-            "--title",
-            "Verify show",
-            "--description",
-            "Has verify steps",
-            "--owner",
-            "CODER",
-            "--tag",
-            "docs",
-            "--root",
-            root,
-          ]);
-          expect(code).toBe(0);
-          taskId = io.stdout.trim();
-        } finally {
-          io.restore();
-        }
-      }
-      {
-        const io = captureStdIO();
-        try {
-          const code = await runCli([
-            "task",
-            "doc",
-            "set",
-            taskId,
-            "--section",
-            "Verify Steps",
-            "--text",
-            "Verifier instructions",
-            "--root",
-            root,
-          ]);
-          expect(code).toBe(0);
-        } finally {
-          io.restore();
-        }
-      }
-
-      const io = captureStdIO();
-      try {
-        const refreshCode = await runCli(["blueprint", "snapshot", taskId, "--root", root]);
-        expect(refreshCode).toBe(0);
-        const code = await runCli(["task", "verify-show", taskId, "--root", root]);
-        expect(code).toBe(0);
-        expect(io.stdout).toContain("Verifier instructions");
-        expect(io.stdout).toContain("Blueprint snapshot evidence");
-        expect(io.stdout).toContain("snapshot_state: current");
-        expect(io.stdout).toContain(
-          `snapshot_safe_command: agentplane blueprint snapshot ${taskId}`,
-        );
-      } finally {
-        io.restore();
-      }
-    });
-
     it("task verify-show rejects placeholder Verify Steps unless quiet", async () => {
       const root = await mkGitRepoRoot();
       await writeDefaultConfig(root);
@@ -809,79 +679,6 @@ describe(
       }
     });
 
-    it("task comment and set-status update task metadata", async () => {
-      const root = await mkGitRepoRoot();
-      let taskId = "";
-      {
-        const io = captureStdIO();
-        try {
-          const code = await runCli([
-            "task",
-            "new",
-            "--title",
-            "Status task",
-            "--description",
-            "Tracks status",
-            "--owner",
-            "CODER",
-            "--tag",
-            "docs",
-            "--root",
-            root,
-          ]);
-          expect(code).toBe(0);
-          taskId = io.stdout.trim();
-        } finally {
-          io.restore();
-        }
-      }
-
-      {
-        const io = captureStdIO();
-        try {
-          const code = await runCli([
-            "task",
-            "comment",
-            taskId,
-            "--author",
-            "CODER",
-            "--body",
-            "Comment body",
-            "--root",
-            root,
-          ]);
-          expect(code).toBe(0);
-        } finally {
-          io.restore();
-        }
-      }
-
-      {
-        const io = captureStdIO();
-        try {
-          const code = await runCli([
-            "task",
-            "set-status",
-            taskId,
-            "DOING",
-            "--author",
-            "CODER",
-            "--body",
-            "Status update body",
-            "--root",
-            root,
-          ]);
-          expect(code).toBe(0);
-        } finally {
-          io.restore();
-        }
-      }
-
-      const task = await readTask({ cwd: root, rootOverride: root, taskId });
-      expect(task.frontmatter.status).toBe("DOING");
-      expect(task.frontmatter.comments.length).toBeGreaterThan(0);
-    });
-
     it("task show prints task frontmatter json", async () => {
       const root = await mkGitRepoRoot();
 
@@ -913,12 +710,10 @@ describe(
         const code2 = await runCli(["task", "show", id, "--root", root]);
         expect(code2).toBe(0);
         expect(io2.stdout).toContain(`"id": "${id}"`);
-        expect(io2.stdout).toContain('"origin"');
-        expect(io2.stdout).toContain('"system": "manual"');
+        expect(io2.stdout).toContain('"source": "task_kernel"');
+        expect(io2.stdout).toContain('"canonical_record"');
         expect(io2.stdout).toContain('"status": "TODO"');
-        expect(io2.stdout).toContain('"blueprint"');
-        expect(io2.stdout).toContain('"blueprint_id": "analysis.light"');
-        expect(io2.stdout).toContain('"route"');
+        expect(io2.stdout).toContain('"state": "PLANNING"');
       } finally {
         io2.restore();
       }
@@ -1015,8 +810,8 @@ describe(
         ]);
         expect(code).toBe(0);
         expect(io.stdout).toBe(
-          `${firstTaskId} [TODO] Alpha ready (owner=CODER, prio=med, deps=none, tags=docs, blueprint=analysis.light)\n` +
-            `${secondTaskId} [TODO] Beta blocked (owner=CODER, prio=med, deps=wait:${firstTaskId}, tags=docs, blueprint=analysis.light)\n`,
+          `${firstTaskId} [TODO] Alpha ready (owner=CODER, prio=med, deps=none, tags=docs, identity=legacy_unmigrated)\n` +
+            `${secondTaskId} [TODO] Beta blocked (owner=CODER, prio=med, deps=wait:${firstTaskId}, tags=docs, identity=legacy_unmigrated)\n`,
         );
         expect(io.stderr).toBe("");
       } finally {

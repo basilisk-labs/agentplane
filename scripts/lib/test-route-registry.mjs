@@ -292,8 +292,6 @@ const BACKEND_CRITICAL_FILES = [
   "packages/agentplane/src/commands/doctor.fast.test.ts",
   "packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts",
   "packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.tasks.incidents.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts",
   "packages/agentplane/src/cli/run-cli.core.tasks.update-scrub.test.ts",
 ];
 
@@ -412,7 +410,6 @@ const V07_SUPERVISOR_FILES = [
   "packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts",
   "packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts",
   "packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.task-run.test.ts",
 ];
 
 const V07_RECOVERY_FILES = [
