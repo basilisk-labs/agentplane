@@ -159,7 +159,12 @@ export function checkTaskState(repoRoot, opts = {}) {
   const seen = new Set();
   const failures = [];
   const ignoredReleaseTaskIds = new Set(
-    (Array.isArray(opts.ignoreReleaseTaskIds) ? opts.ignoreReleaseTaskIds : [])
+    [
+      ...(Array.isArray(opts.ignoreReleaseTaskIds) ? opts.ignoreReleaseTaskIds : []),
+      ...(Array.isArray(opts.validatedReleaseScopeTaskIds)
+        ? opts.validatedReleaseScopeTaskIds
+        : []),
+    ]
       .map((entry) => String(entry ?? "").trim())
       .filter(Boolean),
   );
@@ -280,8 +285,20 @@ export function checkTaskState(repoRoot, opts = {}) {
     const closureSummary = releaseClosure.checked
       ? ` release_closure=${releaseClosure.reachableTaskIds.length}`
       : "";
-    process.stdout.write(`task state OK (tasks=${taskIds.length}${closureSummary})\n`);
+    const exclusionSummary = Array.isArray(opts.validatedReleaseScopeTaskIds)
+      ? ` release_scope_exclusions=${opts.validatedReleaseScopeTaskIds.length}`
+      : "";
+    process.stdout.write(
+      `task state OK (tasks=${taskIds.length}${closureSummary}${exclusionSummary})\n`,
+    );
   }
+  return {
+    taskCount: taskIds.length,
+    releaseClosureCount: releaseClosure.checked ? releaseClosure.reachableTaskIds.length : null,
+    validatedReleaseScopeTaskIds: Array.isArray(opts.validatedReleaseScopeTaskIds)
+      ? [...opts.validatedReleaseScopeTaskIds]
+      : [],
+  };
 }
 
 const main = defineScript({

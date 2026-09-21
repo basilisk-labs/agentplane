@@ -4,6 +4,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 
 import { checkTaskState } from "../checks/check-task-state.mjs";
+import { loadValidatedReleaseScopeExclusions } from "../lib/release-scope-exclusions.mjs";
 
 import {
   collectWatchedRuntimeSnapshot,
@@ -736,11 +737,20 @@ async function probeNpmPublished(pkgSpec, repoRoot) {
 
 function checkReleaseTaskRegistry(repoRoot) {
   try {
-    checkTaskState(repoRoot, { releaseReady: true, quiet: true, allowActiveReleaseTask: true });
+    const releaseScope = loadValidatedReleaseScopeExclusions(repoRoot);
+    checkTaskState(repoRoot, {
+      releaseReady: true,
+      quiet: true,
+      allowActiveReleaseTask: true,
+      validatedReleaseScopeTaskIds: releaseScope.taskIds,
+    });
     return {
       ready: true,
       reasonCode: "ready",
       message: "Task registry is release-ready.",
+      ...(releaseScope.exclusions.length > 0
+        ? { acceptedExclusions: releaseScope.exclusions }
+        : {}),
     };
   } catch (error) {
     return {

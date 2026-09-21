@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "exclusions": [
+    {
+      "task_id": "202609200139-9R40KQ",
+      "evidence_kind": "published_tag",
+      "reason": "AgentPlane 0.7.10 is published from this exact tagged commit; the remaining DOING value is a historical projection.",
+      "git_ref": "4470b04c34da735ffb46914ea6e6398a54eb39ac",
+      "tag": "v0.7.10"
+    },
+    {
+      "task_id": "202609210002-0TQ72H",
+      "evidence_kind": "merged_commit",
+      "reason": "LC-02 was integrated by PR 5990; this commit is present on the release ancestry.",
+      "git_ref": "4f28ee5433e7666de75437015b2003a9895073fc"
+    },
+    {
+      "task_id": "202609210154-5R1Q9A",
+      "evidence_kind": "merged_commit",
+      "reason": "LC-03 was integrated by PR 5992; this commit is present on the release ancestry.",
+      "git_ref": "be534096c332e29fe0831974844687961ba9807e"
+    },
+    {
+      "task_id": "202609210324-CC13V3",
+      "evidence_kind": "superseded_by_task",
+      "reason": "The LC-04 through LC-24 implementation was integrated through the completed release-blocker repair task.",
+      "git_ref": "9d108f903c0fe89b80d65bc3a4482463d79be093",
+      "replacement_task_id": "202609211051-X92CWM"
+    },
+    {
+      "task_id": "202609211321-WKCWNP",
+      "evidence_kind": "superseded_by_task",
+      "reason": "This duplicate repair projection was superseded by the completed canonical repair task.",
+      "git_ref": "a111e45ab09c91e8567ba700430c8a319ec9e556",
+      "replacement_task_id": "202609211330-5A54M1"
+    },
+    {
+      "task_id": "202609211325-YFF78T",
+      "evidence_kind": "superseded_by_task",
+      "reason": "This duplicate repair projection was superseded by the completed canonical repair task.",
+      "git_ref": "a111e45ab09c91e8567ba700430c8a319ec9e556",
+      "replacement_task_id": "202609211330-5A54M1"
+    }
+  ]
+}
