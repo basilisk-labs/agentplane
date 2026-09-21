@@ -15,8 +15,8 @@ Dependency evidence: LC-02 merged as PR #5990 at main 4f28ee5433e7666de75437015b
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
