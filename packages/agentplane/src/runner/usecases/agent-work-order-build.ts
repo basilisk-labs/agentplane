@@ -33,6 +33,7 @@ import type { RunnerTaskContextEnvelope } from "../context/task-context.js";
 
 import type { AgentWorkOrderSourceManifest } from "./agent-work-order-projection.js";
 import type { TaskKnowledgeRetrieval } from "./task-knowledge-retrieval.js";
+import { semanticRole } from "./semantic-role.js";
 
 /**
  * A work order carries the resolved prompt, policy, and native obligation manifests as
@@ -109,14 +110,6 @@ function episodeSectionText(opts: {
       (entry) => entry.name.trim().replaceAll(/\s+/gu, " ").toLocaleLowerCase() === wanted,
     )?.text ?? ""
   );
-}
-
-function workOrderRole(owner: string): AgentWorkOrderRole {
-  const normalized = owner.trim().toUpperCase();
-  if (normalized === "PLANNER" || normalized === "CURATOR" || normalized === "EVALUATOR") {
-    return normalized;
-  }
-  return "EXECUTOR";
 }
 
 export function buildAgentWorkOrderSourceManifest(opts: {
@@ -347,7 +340,8 @@ export function buildCanonicalAgentWorkOrder(opts: {
   const task = taskEnvelope.task;
   const role =
     opts.prepared.semantic_role ??
-    workOrderRole(decision.executionPacket.recommendedRole ?? task.metadata.owner ?? "");
+    semanticRole(decision.executionPacket.recommendedRole ?? task.metadata.owner ?? "") ??
+    "EXECUTOR";
   const stateFingerprint = structuredClone(decision.workflowStep.preconditionFingerprint);
   const routeGit = readTaskRouteGitSnapshot(decision);
   const repositorySnapshot = createRepositorySnapshot({

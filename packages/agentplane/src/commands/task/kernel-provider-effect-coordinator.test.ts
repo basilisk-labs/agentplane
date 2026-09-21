@@ -29,6 +29,7 @@ vi.mock("../shared/supervisor-execution-episode.js", () => ({
   createSupervisorEpisodeStore: () => ({ read: mocks.readJournal }),
 }));
 vi.mock("./branch-task-supervisor-operations.js", () => ({
+  executeAdmittedBranchWorkflowOperation: mocks.supervise,
   executeBranchWorkflowOperation: mocks.execute,
 }));
 vi.mock("../../shared/stable-file.js", () => ({

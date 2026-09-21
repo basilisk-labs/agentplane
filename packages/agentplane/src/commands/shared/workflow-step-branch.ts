@@ -1,7 +1,3 @@
-import {
-  incompleteRequiredWorkItems,
-  taskCentricAggregateFromExtensions,
-} from "@agentplaneorg/core/tasks";
 import { hasUninitializedTaskBaseline } from "./workflow-step-policy-scope.js";
 import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
 import { conflictReworkRouteStep } from "./workflow-step-conflict-rework.js";
@@ -29,12 +25,14 @@ import {
   includedBatchStep,
   qualityEvidenceRefreshStep,
   qualityReviewStep,
+  requiredWorkItemRoute,
   routeBlockerFor,
   routeBlockerSnapshot,
   taskWorktreeBlocker,
   terminalStep,
   verificationStep,
   verifiedIncludedClosureCandidate,
+  workItemReadinessWaitStep,
   workSlug,
   worktreeResolutionStep,
 } from "./workflow-step-factory.js";
@@ -487,8 +485,11 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
       selectedBlocker: routeBlockerFor(state, "on_base_checkout"),
     });
   }
-  const taskCentric = taskCentricAggregateFromExtensions(state.task.extensions);
-  if (incompleteRequiredWorkItems(taskCentric).length > 0) return branchImplementationStep(state);
+  const workItemRoute = requiredWorkItemRoute(state.task);
+  if (workItemRoute.state === "ready") return branchImplementationStep(state);
+  if (workItemRoute.state === "blocked") {
+    return workItemReadinessWaitStep(state, "task_worktree");
+  }
   const implementationCommit = state.task.commit?.hash?.trim() ?? "";
   if (!implementationCommit && state.task.verification?.state !== "ok")
     return branchImplementationStep(state);

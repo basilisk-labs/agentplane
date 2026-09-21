@@ -64,7 +64,7 @@ export function kernelRecordIssues(
           ![...(plan ? [plan] : []), ...aggregate.plan_history].some(
             (sourcePlan) =>
               sourcePlan.revision === output.plan_revision &&
-              ["APPROVED", "SUPERSEDED"].includes(sourcePlan.state) &&
+              ["APPROVED", "REJECTED", "SUPERSEDED"].includes(sourcePlan.state) &&
               sourcePlan.approval_actor_id !== null &&
               sourcePlan.approval_evidence_digest !== null &&
               sourcePlan.work_items.some(

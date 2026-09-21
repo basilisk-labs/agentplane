@@ -33,6 +33,8 @@ import {
 } from "./lifecycle-stage-timing.js";
 import { observedRunnerUsage } from "./supervisor-execution-observation.js";
 
+import { tryAcquireSupervisorExecutionLease } from "./supervisor-execution-lease.js";
+
 export { tryAcquireSupervisorExecutionLease } from "./supervisor-execution-lease.js";
 
 const SUPERVISOR_EPISODE_ARTIFACT_DIRECTORY = "agentplane/supervisor/episodes";
@@ -174,6 +176,25 @@ export function createSupervisorEpisodeStore(filePath: string): SupervisorEpisod
       });
     },
   };
+}
+
+/**
+ * Hold the same task-wide execution lease used by managed and external work while a competing
+ * admission path rechecks the durable journal and commits its CAS. A busy lease is a formal loss,
+ * not a reason to continue with a task-record CAS alone.
+ */
+export async function withSupervisorExecutionAdmissionFence<T>(opts: {
+  journal_path: string;
+  run: (journal: unknown) => Promise<T>;
+}): Promise<{ kind: "completed"; result: T } | { kind: "busy" }> {
+  const lease = await tryAcquireSupervisorExecutionLease({ journal_path: opts.journal_path });
+  if (!lease) return { kind: "busy" };
+  try {
+    const journal = await createSupervisorEpisodeStore(opts.journal_path).read();
+    return { kind: "completed", result: await opts.run(journal) };
+  } finally {
+    await lease.release();
+  }
 }
 
 function defaultSupervisorExecutionBudget(): SupervisorExecutionBudget {

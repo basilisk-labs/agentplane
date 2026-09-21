@@ -4,9 +4,12 @@ import path from "node:path";
 import { runProcess } from "@agentplaneorg/core/process";
 
 import type { CommandCtx } from "../../cli/spec/spec.js";
+import { CliError } from "../../shared/errors.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
 import { cmdFinish } from "./finish-command.js";
 import type { CommandContext } from "../shared/task-backend.js";
+import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+import { recordDirectTaskFormalOperation } from "./direct-task-supervisor-formal-operation.js";
 
 export type DirectImplementationCommit =
   | { status: "ready"; commit: string }
@@ -430,5 +433,40 @@ export async function finishDirectTask(opts: {
     statusCommitRequireClean: false,
     confirmStatusCommit: false,
     quiet: true,
+  });
+}
+
+/**
+ * Applies the one replay-protected direct closeout operation to an already
+ * frozen implementation identity. Later service commits must not replace the
+ * implementation commit observed before verification.
+ */
+export async function runDirectTaskFinalizationOperation(opts: {
+  ctx: CommandCtx;
+  command: CommandContext;
+  task_id: string;
+  implementation_commit: string;
+  decision: () => Promise<TaskRouteDecision>;
+}) {
+  return await recordDirectTaskFormalOperation({
+    git_root: opts.command.resolvedProject.gitRoot,
+    task_id: opts.task_id,
+    id: "task_finish",
+    decision: opts.decision,
+    run: async () => {
+      const exitCode = await finishDirectTask({
+        ctx: opts.ctx,
+        command: opts.command,
+        task_id: opts.task_id,
+        implementation_commit: opts.implementation_commit,
+      });
+      if (exitCode !== 0) {
+        throw new CliError({
+          code: "E_RUNTIME",
+          message: `Direct task finalization exited with ${exitCode}.`,
+        });
+      }
+      return { finalized: true, implementation_commit: opts.implementation_commit };
+    },
   });
 }

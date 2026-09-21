@@ -1,10 +1,4 @@
-import {
-  incompleteRequiredWorkItems,
-  taskCentricAggregateFromExtensions,
-} from "@agentplaneorg/core/tasks";
-import type { TaskData } from "../../backends/task-backend.js";
 import { hasUninitializedTaskBaseline } from "./workflow-step-policy-scope.js";
-import { isRecord } from "../../shared/guards.js";
 import type { RouteBlocker } from "./route-oracle.js";
 import {
   qualityReviewRequiresImplementationRework,
@@ -26,13 +20,52 @@ import {
   type WorkflowRouteState,
   type WorkflowStep,
 } from "./workflow-step.js";
+import { requiredWorkItemRoute } from "./workflow-step-factory-branch.js";
 export { cliOperationStep } from "./workflow-step-authority.js";
+export {
+  foreignTaskReadmeReplicaRepairStep,
+  requiredWorkItemRoute,
+  taskWorktreeBlocker,
+  verifiedIncludedClosureCandidate,
+} from "./workflow-step-factory-branch.js";
 export {
   commonExecution,
   routeBlockerFor,
   routeBlockerSnapshot,
   workSlug,
 } from "./workflow-step-common.js";
+
+export function workItemReadinessWaitStep(
+  state: WorkflowRouteState,
+  checkout: WorkflowCheckout,
+): WorkflowStep {
+  const summary = "wait until required WorkItem dependencies, outputs, and resources are ready";
+  return {
+    schemaVersion: 1,
+    id: "wait.work_item_readiness",
+    kind: "wait",
+    phase: "work_item_dependencies_wait",
+    authoritativeCheckout: checkout,
+    summary,
+    blockers: routeBlockerSnapshot(state),
+    selectedBlocker: null,
+    compatibility: {
+      code: "wait_work_item_dependencies",
+      command: null,
+      summary,
+      requiresApproval: false,
+    },
+    preconditionFingerprint: state.preconditionFingerprint,
+    condition: { type: "dependencies_ready", taskId: state.task.id },
+    execution: commonExecution({
+      actionKind: "wait",
+      role: "CODER",
+      mustNot: [
+        "do not dispatch semantic work until the pure scheduler reports a ready required WorkItem",
+      ],
+    }),
+  };
+}
 
 export function agentEpisodeStep(opts: {
   state: WorkflowRouteState;
@@ -172,12 +205,12 @@ export function approvalStep(opts: {
 export function directStep(state: WorkflowRouteState): WorkflowStep {
   const id = state.task.id;
   const taskIsDoing = String(state.task.status).toUpperCase() === "DOING";
+  const workItemRoute = requiredWorkItemRoute(state.task);
   if (
     taskIsDoing &&
     state.task.verification?.state === "ok" &&
     !hasUninitializedTaskBaseline(state.task) &&
-    incompleteRequiredWorkItems(taskCentricAggregateFromExtensions(state.task.extensions)).length >
-      0
+    workItemRoute.state === "ready"
   ) {
     return agentEpisodeStep({
       state,
@@ -194,6 +227,14 @@ export function directStep(state: WorkflowRouteState): WorkflowStep {
       returnControlWhen: "after returning the WorkItem result; request a fresh action packet",
       selectedBlocker: null,
     });
+  }
+  if (
+    taskIsDoing &&
+    state.task.verification?.state === "ok" &&
+    !hasUninitializedTaskBaseline(state.task) &&
+    workItemRoute.state === "blocked"
+  ) {
+    return workItemReadinessWaitStep(state, "current_checkout");
   }
   const reviewIsStale = state.blockers.some((blocker) => blocker.code === "quality_review_stale");
   const verificationRequiresRework =
@@ -356,51 +397,6 @@ export function directStep(state: WorkflowRouteState): WorkflowStep {
     summary:
       "launch the prepared direct-mode EXECUTOR episode through the configured runner adapter",
     selectedBlocker: null,
-  });
-}
-
-export function verifiedIncludedClosureCandidate(task: TaskData): boolean {
-  if (task.verification?.state !== "ok") return false;
-  if (String(task.status).toUpperCase() !== "DOING") return false;
-  if (task.commit?.hash) return false;
-  const batch = isRecord(task.extensions?.branch_pr_batch) ? task.extensions.branch_pr_batch : null;
-  if (batch?.role !== "included") return false;
-  const primaryTaskId =
-    typeof batch.primary_task_id === "string" ? batch.primary_task_id.trim() : "";
-  const branch = typeof batch.branch === "string" ? batch.branch.trim() : "";
-  const base = typeof batch.base === "string" ? batch.base.trim() : "";
-  return Boolean(primaryTaskId && branch && base);
-}
-
-export function taskWorktreeBlocker(state: WorkflowRouteState): RouteBlocker | null {
-  if (state.workflowMode !== "branch_pr") return null;
-  return (
-    state.blockers.find(
-      (blocker) =>
-        blocker.code === "task_worktree_dirty" ||
-        blocker.code === "task_worktree_state_unavailable",
-    ) ?? null
-  );
-}
-
-export function foreignTaskReadmeReplicaRepairStep(
-  state: WorkflowRouteState,
-  blocker: RouteBlocker,
-): WorkflowStep | null {
-  if (
-    blocker.code !== "task_worktree_dirty" ||
-    state.foreignTaskReadmeReplicaRepair?.state !== "eligible"
-  ) {
-    return null;
-  }
-  return cliOperationStep({
-    state,
-    operationId: "flow.repair.foreign_task_readme",
-    params: { taskId: state.task.id },
-    code: "repair_foreign_task_readme_replica",
-    summary:
-      "remove the single proven foreign task README replica through the guarded flow repair command",
-    selectedBlocker: blocker,
   });
 }
 

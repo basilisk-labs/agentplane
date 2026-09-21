@@ -2,7 +2,6 @@ import { buildKernelStateFingerprint } from "./kernel-work-order.js";
 import type { RunnerStateFingerprintRecord, RunnerContextBundle } from "../../runner/types.js";
 import path from "node:path";
 import {
-  AGENT_SEMANTIC_RESULT_ZOD_SCHEMA,
   AGENT_WORK_ORDER_V2_ZOD_SCHEMA,
   advanceSupervisorExecutionEpisodeState,
   completeSupervisorExecutionEpisode,
@@ -26,12 +25,13 @@ import {
   tryAcquireSupervisorExecutionLease,
 } from "../shared/supervisor-execution-episode.js";
 import { buildMonotonicLifecycleTiming } from "../shared/lifecycle-stage-timing.js";
-import { advanceCanonicalTask } from "./kernel-advance.js";
+import { advanceTaskStep } from "./advance-task-step.js";
 import { writeKernelArtifact } from "./kernel-exchange.js";
 import { createKernelRuntime } from "./kernel-runtime-context.js";
 import { createKernelProviderEffectPortResolver } from "./kernel-provider-effect-coordinator.js";
+import { admitSemanticResult } from "../shared/semantic-result-admission.js";
 
-type Packet = Awaited<ReturnType<typeof advanceCanonicalTask>>;
+type Packet = Awaited<ReturnType<typeof advanceTaskStep>>;
 
 async function readManagedProviderAccounting(invocation: {
   adapter_id: string;
@@ -67,7 +67,7 @@ async function readManagedProviderAccounting(invocation: {
   };
 }
 
-async function executeKernelPacket(
+export async function executeKernelPacket(
   command: CommandContext,
   taskId: string,
   packet: Extract<Packet, { exchange: object }>,
@@ -408,9 +408,17 @@ async function executeKernelPacket(
         run_id: runId,
         status: result.status,
       };
-    const semantic = AGENT_SEMANTIC_RESULT_ZOD_SCHEMA.parse(result.semantic_result?.value);
+    const semantic = admitSemanticResult({
+      owner: {
+        task_id: taskId,
+        work_order_id: workOrder.work_order_id,
+        role: workOrder.role,
+      },
+      work_order: workOrder,
+      result: result.semantic_result?.value,
+    }).result;
     await writeKernelArtifact(directory, "result.json", semantic);
-    return advanceCanonicalTask({
+    return advanceTaskStep({
       command,
       task_id: taskId,
       transport: "managed",
@@ -426,47 +434,11 @@ async function executeKernelPacket(
   }
 }
 
-export async function runCanonicalTask(opts: {
-  command: CommandContext;
-  task_id: string;
-  dry_run?: boolean;
-  sandbox?: string;
-  allow_remote?: boolean;
-}) {
-  if (opts.dry_run) {
-    const runtime = await createKernelRuntime({
-      ...opts,
-      transport: "managed",
-      operation_id: "preview",
-    });
-    const context = await runtime.native.readContext(opts.task_id);
-    const current = await runtime.lifecycle.read(opts.task_id, context.repository_fingerprint);
-    return {
-      schema_version: 1,
-      task_id: opts.task_id,
-      action: { kind: "read_only", reason: current.next_action.reason_code },
-    };
-  }
-  let packet: Packet | Awaited<ReturnType<typeof executeKernelPacket>> = await advanceCanonicalTask(
-    {
-      command: opts.command,
-      task_id: opts.task_id,
-      transport: "managed",
-      effect_port_resolver: createKernelProviderEffectPortResolver({
-        command: opts.command,
-        allow_remote: opts.allow_remote === true,
-      }),
-      allow_provider_effects: opts.allow_remote === true,
-    },
-  );
-  for (let episode = 0; episode < 16 && "exchange" in packet; episode++) {
-    packet = await executeKernelPacket(
-      opts.command,
-      opts.task_id,
-      packet,
-      opts.sandbox,
-      opts.allow_remote === true,
-    );
-  }
-  return packet;
+export async function runManagedTransportStep<P extends object, R>(opts: {
+  advance: () => Promise<P>;
+  execute: (packet: Extract<P, { exchange: object }>) => Promise<R>;
+}): Promise<P | R> {
+  const packet = await opts.advance();
+  if (!("exchange" in packet)) return packet;
+  return await opts.execute(packet as Extract<P, { exchange: object }>);
 }

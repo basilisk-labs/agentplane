@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
 
-import { coordinateKernelEffect, type KernelEffectPort } from "./kernel-effect-coordinator.js";
+import { applyKernelEffectStep, type KernelEffectPort } from "./kernel-effect-coordinator.js";
 
 const digest = (value: string) => k.kernelDigest(value);
 
@@ -70,7 +70,7 @@ describe("canonical managed effect recovery", () => {
     };
 
     await expect(
-      coordinateKernelEffect({
+      applyKernelEffectStep({
         runtime: runtime(commands),
         record: record(candidate),
         route: {
@@ -113,7 +113,7 @@ describe("canonical managed effect recovery", () => {
     const port: KernelEffectPort = { dispatch, observe };
 
     await expect(
-      coordinateKernelEffect({
+      applyKernelEffectStep({
         runtime: runtime([]),
         record: record(candidate),
         route: {

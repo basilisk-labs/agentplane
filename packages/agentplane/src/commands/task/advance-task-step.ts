@@ -12,7 +12,7 @@ import { createKernelRuntime, requireKernelCommit } from "./kernel-runtime-conte
 import { buildKernelAgentWorkOrder, resumeKernelWorkOrder } from "./kernel-work-order.js";
 import { issueKernelExchange } from "./kernel-exchange.js";
 import {
-  coordinateKernelEffect,
+  applyKernelEffectStep,
   emptyKernelEffectPortResolver,
   type KernelEffectPortResolver,
 } from "./kernel-effect-coordinator.js";
@@ -25,12 +25,7 @@ import { ensureKernelOperationalProjectionEvidence } from "./kernel-operational-
 import { transferCanonicalControllerToBase } from "./kernel-controller-handoff.js";
 import { acceptKernelSemanticResult } from "./kernel-semantic-result.js";
 import { ensureCanonicalTaskWorktree } from "./kernel-worktree-routing.js";
-import type { CommandCtx } from "../../cli/spec/spec.js";
-import type { TaskAdvanceParsed } from "./advance.spec.js";
-import {
-  advanceOrdinaryRoute,
-  canonicalCompletionPrecedesWorkflow,
-} from "./ordinary-advance-step.js";
+import { canonicalCompletionPrecedesWorkflow } from "./ordinary-advance-step.js";
 
 export { blockKernelSemanticEpisode } from "./kernel-semantic-result.js";
 
@@ -200,6 +195,19 @@ async function advanceCanonicalRoute(opts: {
       route.reason_code === "kernel_task_completed" &&
       current.read.task.execution_route?.repository_mode === "branch_pr"
     ) {
+      const localWorkflow = await decideCanonicalWorkflowEffect(opts.command, opts.task_id, false);
+      const localTerminal =
+        localWorkflow.workflowStep.kind === "terminal" &&
+        ["done", "superseded"].includes(localWorkflow.workflowStep.outcome.type);
+      if (localTerminal) {
+        await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
+        return {
+          schema_version: 1,
+          task_id: opts.task_id,
+          action: { kind: "terminal", reason: route.reason_code },
+          canonical_revision: record.aggregate.revision,
+        };
+      }
       if (!opts.allow_provider_effects) {
         return {
           schema_version: 1,
@@ -207,7 +215,7 @@ async function advanceCanonicalRoute(opts: {
           action: { kind: "external_wait", reason: "canonical_provider_access_required" },
         };
       }
-      const workflow = await decideCanonicalWorkflowEffect(opts.command, opts.task_id);
+      const workflow = await decideCanonicalWorkflowEffect(opts.command, opts.task_id, true);
       const baseCheckout = workflow.workspace.baseCheckoutPath;
       if (
         canonicalCompletionPrecedesWorkflow(workflow.workflowStep) &&
@@ -267,7 +275,7 @@ async function advanceCanonicalRoute(opts: {
       route.reason_code === "kernel_effect_observation_required" ||
       route.reason_code === "kernel_effect_reconciliation_required"
     ) {
-      const coordinated = await coordinateKernelEffect({
+      const coordinated = await applyKernelEffectStep({
         runtime,
         record,
         route,
@@ -363,12 +371,14 @@ async function advanceCanonicalRoute(opts: {
             task_id: opts.task_id,
             verification_evidence_digest: finalValidation.evidence_digest,
           });
-          await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
         }
         const completion = await runtime.input({ kind: "complete_task" }, operationId);
         if (completion.command.expected_task_revision !== record.aggregate.revision)
           throw new Error("Canonical task changed before completion");
         requireKernelCommit(await runtime.lifecycle.apply(completion));
+        if (current.read.task.execution_route?.repository_mode === "branch_pr") {
+          await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
+        }
       } else {
         const checked = await runKernelFinalValidation(opts.command, runtime, record);
         if (checked.stop) return { schema_version: 1, task_id: opts.task_id, action: checked.stop };
@@ -411,7 +421,14 @@ async function advanceCanonicalRoute(opts: {
         );
         continue;
       }
-      return issueKernelInspection(opts.command, runtime, record, route.work_item_id);
+      const inspection = await issueKernelInspection(
+        opts.command,
+        runtime,
+        record,
+        route.work_item_id,
+      );
+      if (inspection === null) continue;
+      return inspection;
     }
     if (route.reason_code === "kernel_work_item_materialization_required" && plan) {
       requireKernelCommit(
@@ -530,23 +547,8 @@ async function advanceCanonicalRoute(opts: {
     action: { kind: "human_required", reason: "canonical_transition_budget_exhausted" },
   };
 }
-export type AdvanceTaskStepOptions =
-  | ({ kind: "canonical" } & Parameters<typeof advanceCanonicalRoute>[0])
-  | {
-      kind: "ordinary";
-      ctx: CommandCtx;
-      parsed: TaskAdvanceParsed;
-      command: CommandContext;
-    };
+export type AdvanceTaskStepOptions = Parameters<typeof advanceCanonicalRoute>[0];
 
 export async function advanceTaskStep(opts: AdvanceTaskStepOptions) {
-  return opts.kind === "canonical"
-    ? await advanceCanonicalRoute(opts)
-    : await advanceOrdinaryRoute(opts);
-}
-
-export async function advanceCanonicalTask(
-  opts: Omit<Extract<AdvanceTaskStepOptions, { kind: "canonical" }>, "kind">,
-) {
-  return await advanceTaskStep({ kind: "canonical", ...opts });
+  return await advanceCanonicalRoute(opts);
 }

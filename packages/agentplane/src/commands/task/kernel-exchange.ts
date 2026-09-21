@@ -15,7 +15,6 @@ import {
   AGENT_WORK_ORDER_V2_ZOD_SCHEMA,
   renderAgentSemanticResultSchemaJson,
   AGENT_SEMANTIC_RESULT_ZOD_SCHEMA,
-  validateAgentSemanticResultForWorkOrder,
   type AgentWorkOrderV2,
 } from "@agentplaneorg/core/schemas";
 import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
@@ -26,6 +25,7 @@ import {
 } from "../../shared/stable-file.js";
 import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-backend.js";
 import { captureKernelRepositoryBaseline } from "./kernel-repository-coordinator.js";
+import { admitSemanticResult } from "../shared/semantic-result-admission.js";
 
 /** Immutable native exchange artifacts are evidence, not a second Task aggregate. */
 export async function kernelExchangeDirectory(
@@ -109,24 +109,26 @@ export async function readKernelOrderResult(
     )
       throw new Error("This canonical exchange does not accept compact results");
   }
-  const semantic = compact
-    ? validateAgentSemanticResultForWorkOrder({
-        work_order: workOrder,
-        semantic_result: raw,
-        format: "semantic_payload_v1",
-      })
-    : AGENT_SEMANTIC_RESULT_ZOD_SCHEMA.parse(raw);
-  if (
-    workOrder.task.id !== taskId ||
-    workOrder.work_order_id !== semantic.work_order_id ||
-    !workOrder.canonical_binding ||
-    k.kernelDigest(workOrder.canonical_binding) !==
-      k.kernelDigest(semantic.canonical_binding ?? null)
-  )
-    throw new Error("Canonical result binding mismatch");
+  const admission = admitSemanticResult({
+    owner: {
+      task_id: taskId,
+      work_order_id: workOrder.work_order_id,
+      role: workOrder.role,
+    },
+    work_order: workOrder,
+    result: raw,
+    ...(compact ? { format: "semantic_payload_v1" as const } : {}),
+  });
+  const semantic = admission.result;
+  if (!workOrder.canonical_binding) throw new Error("Canonical result binding mismatch");
   if (semantic.task_plan_proposal || semantic.task_intent || semantic.plan_refinement)
     throw new Error("Legacy lifecycle payloads cannot mutate a canonical Task");
-  return { directory, workOrder, semantic };
+  return {
+    directory,
+    workOrder: admission.work_order,
+    semantic,
+    applicationId: admission.application_id,
+  };
 }
 
 async function withKernelReworkEvidence(
@@ -142,33 +144,37 @@ async function withKernelReworkEvidence(
     const name = mutationId.slice("validation:sha256:".length);
     const source = path.join(path.dirname(directory), name);
     try {
-      const reviewPath = path.join(source, "inspection-result.json");
-      const review = AGENT_SEMANTIC_RESULT_ZOD_SCHEMA.parse(
-        JSON.parse(await readStableRegularTextNoFollow(reviewPath, "rework review")),
-      );
-      const previous = review.canonical_binding;
-      if (
-        previous?.phase !== "inspection" ||
-        previous.task_id !== binding.task_id ||
-        previous.repository_identity !== binding.repository_identity ||
-        previous.contract_digest !== binding.contract_digest ||
-        previous.work_item_id !== binding.work_item_id ||
-        previous.attempt !== binding.attempt - 1
-      )
-        continue;
       const validationPath = path.join(source, "validation.json");
       const validation = JSON.parse(
         await readStableRegularTextNoFollow(validationPath, "rework validation"),
       ) as KernelValidationEvidence;
       if (
-        validation.repository_fingerprint !== previous.repository_fingerprint ||
-        validation.review_digest !== k.kernelDigest(review) ||
-        validation.result_digest !== previous.result_digest ||
-        validation.checks.status !== "failed"
+        validation.task_id !== binding.task_id ||
+        validation.work_item_id !== binding.work_item_id ||
+        validation.contract_digest !== binding.contract_digest ||
+        validation.attempt !== binding.attempt - 1 ||
+        validation.status !== "FAILED"
       )
         continue;
-      inputs.push(
-        {
+      if (validation.review_digest) {
+        const reviewPath = path.join(source, "inspection-result.json");
+        const review = AGENT_SEMANTIC_RESULT_ZOD_SCHEMA.parse(
+          JSON.parse(await readStableRegularTextNoFollow(reviewPath, "rework review")),
+        );
+        const previous = review.canonical_binding;
+        if (
+          previous?.phase !== "inspection" ||
+          previous.task_id !== binding.task_id ||
+          previous.repository_identity !== binding.repository_identity ||
+          previous.contract_digest !== binding.contract_digest ||
+          previous.work_item_id !== binding.work_item_id ||
+          previous.attempt !== binding.attempt - 1 ||
+          validation.repository_fingerprint !== previous.repository_fingerprint ||
+          validation.review_digest !== k.kernelDigest(review) ||
+          validation.result_digest !== previous.result_digest
+        )
+          continue;
+        inputs.push({
           id: `review:${name}`,
           kind: "source_artifact",
           path: reviewPath,
@@ -176,25 +182,25 @@ async function withKernelReworkEvidence(
           description:
             "Unresolved evaluator findings from the preceding attempt. Digest uses canonical JSON.",
           required: true,
-        },
-        {
-          id: `checks:${name}`,
-          kind: "source_artifact",
-          path: validationPath,
-          digest: k.kernelDigest(validation),
-          description:
-            "Native failed checks from the preceding attempt. Digest uses canonical JSON.",
-          required: true,
-        },
-      );
+        });
+      } else if (validation.checks.status !== "failed") {
+        continue;
+      }
+      inputs.push({
+        id: `checks:${name}`,
+        kind: "source_artifact",
+        path: validationPath,
+        digest: k.kernelDigest(validation),
+        description:
+          "Native check or review failure from the preceding attempt. Digest uses canonical JSON.",
+        required: true,
+      });
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
     }
   }
   if (inputs.length === 0 && !isKernelScopeExpansionRecovery(order, record))
-    throw new Error(
-      "Canonical rework requires retained evaluator findings and failed-check evidence",
-    );
+    throw new Error("Canonical rework requires retained review or failed-check evidence");
   return AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse({
     ...order,
     required_inputs: [...order.required_inputs, ...inputs],

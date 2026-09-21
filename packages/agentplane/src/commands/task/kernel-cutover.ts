@@ -4,20 +4,31 @@ import type { TaskData } from "../../backends/task-backend.js";
 import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
 import { CliError } from "../../shared/errors.js";
 
+import { LIFECYCLE_OWNER_MIGRATION_QUARANTINE_EXTENSION } from "./migration-apply.js";
+
 export type KernelCutoverDisposition =
   | { kind: "canonical" }
   | { kind: "legacy_drain" }
   | {
       kind: "migration_required";
-      reason: "legacy_unknown_active" | "legacy_projection_invalid";
+      reason:
+        | "legacy_unknown_active"
+        | "legacy_projection_invalid"
+        | "lifecycle_migration_quarantined";
     };
 
 export function kernelCutoverActivated(tasks: readonly TaskData[]): boolean {
-  return tasks.some((task) => Object.hasOwn(task.extensions ?? {}, TASK_KERNEL_EXTENSION));
+  return tasks.some(
+    (task) =>
+      Object.hasOwn(task.extensions ?? {}, TASK_KERNEL_EXTENSION) ||
+      Object.hasOwn(task.extensions ?? {}, LIFECYCLE_OWNER_MIGRATION_QUARANTINE_EXTENSION),
+  );
 }
 
 export function classifyKernelCutover(task: TaskData): KernelCutoverDisposition {
   if (Object.hasOwn(task.extensions ?? {}, TASK_KERNEL_EXTENSION)) return { kind: "canonical" };
+  if (Object.hasOwn(task.extensions ?? {}, LIFECYCLE_OWNER_MIGRATION_QUARANTINE_EXTENSION))
+    return { kind: "migration_required", reason: "lifecycle_migration_quarantined" };
   let aggregate;
   try {
     aggregate = taskCentricAggregateFromExtensions(task.extensions);

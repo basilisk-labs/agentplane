@@ -35,6 +35,14 @@ export type WorkItemReadiness = Readonly<{
   reason_codes: readonly string[];
 }>;
 
+export type SchedulableWorkItem<T> = Readonly<{
+  id: string;
+  priority: number;
+  ready: boolean;
+  resource_claims: readonly ResourceClaimSpec[];
+  value: T;
+}>;
+
 export type ReplacementPlanWorkItemRecoveryEvidence = Readonly<{
   aggregate: TaskAggregate;
   receipt: TransitionReceipt;
@@ -437,17 +445,9 @@ export function materializeApprovedWorkItems(opts: {
     ) {
       return opts.task;
     }
-    const outputs = availableOutputIds(opts.task.work_items);
-    const workItems = Object.fromEntries(
-      planned.map((item) => {
-        const runtime = opts.task.work_items[item.id]!;
-        if (runtime.state !== "PLANNED") return [item.id, runtime];
-        const ready =
-          item.depends_on.every(
-            (dependency) => opts.task.work_items[dependency]?.state === "COMPLETED",
-          ) && item.required_inputs.every((input) => outputs.has(input));
-        return [item.id, ready ? Object.freeze({ ...runtime, state: "READY" as const }) : runtime];
-      }),
+    const workItems = refreshReadyWorkItemStates(
+      opts.plan.proposal.work_items,
+      opts.task.work_items,
     );
     return Object.freeze({
       ...opts.task,
@@ -458,13 +458,11 @@ export function materializeApprovedWorkItems(opts: {
       updated_at: opts.now,
     });
   }
-  const workItems: Record<string, WorkItemRuntime> = {};
+  const plannedWorkItems: Record<string, WorkItemRuntime> = {};
   for (const item of opts.plan.proposal.work_items.work_items) {
-    workItems[item.id] = Object.freeze({
-      ...freshWorkItemRuntime(item),
-      state: item.depends_on.length === 0 ? "READY" : "PLANNED",
-    });
+    plannedWorkItems[item.id] = freshWorkItemRuntime(item);
   }
+  const workItems = refreshReadyWorkItemStates(opts.plan.proposal.work_items, plannedWorkItems);
   return Object.freeze({
     ...opts.task,
     revision: opts.task.revision + 1,
@@ -514,6 +512,27 @@ export function computeReadyWorkItems(opts: {
   });
 }
 
+function refreshReadyWorkItemStates(
+  graph: WorkItemGraph,
+  runtime: Readonly<Record<string, WorkItemRuntime>>,
+): Readonly<Record<string, WorkItemRuntime>> {
+  const readyIds = new Set(
+    computeReadyWorkItems({ graph, runtime })
+      .filter((item) => item.ready)
+      .map((item) => item.work_item_id),
+  );
+  return Object.freeze(
+    Object.fromEntries(
+      Object.entries(runtime).map(([id, item]) => [
+        id,
+        item.state === "PLANNED" && readyIds.has(id)
+          ? Object.freeze({ ...item, state: "READY" as const })
+          : item,
+      ]),
+    ),
+  );
+}
+
 function normalizedPath(resource: string): string {
   return resource.replaceAll("\\", "/").replace(/^\.\//u, "").replace(/\/$/u, "");
 }
@@ -538,6 +557,41 @@ export function resourceClaimsConflict(
   );
 }
 
+/**
+ * Pure deterministic selection over already evaluated readiness. Domain reducers retain lifecycle
+ * authority; application coordinators use this helper only to order and resource-filter candidates.
+ */
+export function selectSchedulableWorkItems<T>(opts: {
+  candidates: readonly SchedulableWorkItem<T>[];
+  open_slots: number;
+  active_resource_claims?: readonly ResourceClaimSpec[];
+}): readonly T[] {
+  if (!Number.isInteger(opts.open_slots) || opts.open_slots < 0) {
+    throw new Error("Open scheduler slots must be a non-negative integer.");
+  }
+  if (opts.open_slots === 0) return [];
+  const activeClaims = opts.active_resource_claims ?? [];
+  const selected: SchedulableWorkItem<T>[] = [];
+  const ordered = opts.candidates.toSorted(
+    (left, right) =>
+      right.priority - left.priority || Number(left.id > right.id) - Number(left.id < right.id),
+  );
+  for (const candidate of ordered) {
+    if (!candidate.ready) continue;
+    if (resourceClaimsConflict(candidate.resource_claims, activeClaims)) continue;
+    if (
+      selected.some((other) =>
+        resourceClaimsConflict(candidate.resource_claims, other.resource_claims),
+      )
+    ) {
+      continue;
+    }
+    selected.push(candidate);
+    if (selected.length === opts.open_slots) break;
+  }
+  return selected.map((candidate) => candidate.value);
+}
+
 export class WorkItemScheduler {
   readonly concurrency: number;
 
@@ -554,29 +608,20 @@ export class WorkItemScheduler {
     active_leases: readonly ExecutionLease[];
   }): readonly WorkItem[] {
     const openSlots = Math.max(0, this.concurrency - opts.active_leases.length);
-    if (openSlots === 0) return [];
     const readiness = new Map(
       computeReadyWorkItems(opts).map((item) => [item.work_item_id, item.ready]),
     );
-    const selected: WorkItem[] = [];
-    const activeClaims = opts.active_leases.flatMap((lease) => lease.resource_claims);
-    const ordered = opts.graph.work_items.toSorted(
-      (left, right) => right.priority - left.priority || left.id.localeCompare(right.id),
-    );
-    for (const item of ordered) {
-      if (!readiness.get(item.id)) continue;
-      if (resourceClaimsConflict(item.resource_claims, activeClaims)) continue;
-      if (
-        selected.some((other) =>
-          resourceClaimsConflict(item.resource_claims, other.resource_claims),
-        )
-      ) {
-        continue;
-      }
-      selected.push(item);
-      if (selected.length === openSlots) break;
-    }
-    return selected;
+    return selectSchedulableWorkItems({
+      candidates: opts.graph.work_items.map((item) => ({
+        id: item.id,
+        priority: item.priority,
+        ready: readiness.get(item.id) === true,
+        resource_claims: item.resource_claims,
+        value: item,
+      })),
+      open_slots: openSlots,
+      active_resource_claims: opts.active_leases.flatMap((lease) => lease.resource_claims),
+    });
   }
 }
 

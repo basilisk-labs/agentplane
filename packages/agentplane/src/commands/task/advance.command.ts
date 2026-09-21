@@ -1,6 +1,7 @@
-import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
+import { readKernelRecord } from "../../adapters/task-backend/kernel-record.js";
+import type { taskKernel } from "@agentplaneorg/core/tasks";
 import type { CommandCtx } from "../../cli/spec/spec.js";
-import { createCliEmitter, infoMessage } from "../../cli/output.js";
+import { createCliEmitter } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { resolveTaskOwnerCommandContext } from "../shared/task-backend.js";
@@ -11,52 +12,22 @@ import {
   recoverCanonicalControllerSuspensions,
   resolveCanonicalControllerCommand,
 } from "./kernel-controller-handoff.js";
+import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
+import { classifyKernelCutover } from "./kernel-cutover.js";
 
-function emitOrdinaryPacket(
-  parsed: TaskAdvanceParsed,
-  result: Awaited<ReturnType<typeof advanceTaskStep>>,
-): number {
-  const output = createCliEmitter();
-  if (!("presentation" in result) || result.presentation === "json" || parsed.agentJson) {
-    output.json("packet" in result ? result.packet : result);
-    return 0;
-  }
-  const packet = result.packet;
-  output.report(
-    [
-      { label: "task", value: packet.task_id },
-      { label: "state_fingerprint", value: packet.state_fingerprint },
-      { label: "action", value: packet.action.kind },
-      { label: "instruction", value: packet.action.instruction },
-      { label: "role", value: packet.authority.role },
-      { label: "mutation", value: packet.authority.mutation },
-      { label: "stop", value: packet.stop.reason },
-      ...(packet.exchange
-        ? [
-            { label: "exchange_directory", value: packet.exchange.directory },
-            { label: "work_order_ref", value: packet.exchange.work_order_ref },
-            { label: "result_ref", value: packet.exchange.result_ref },
-            { label: "return_invocation", value: packet.exchange.return_invocation },
-            { label: "result_path", value: packet.exchange.result_path },
-            { label: "resume_argv", value: JSON.stringify(packet.exchange.resume_argv) },
-          ]
-        : []),
-      ...(packet.operator_action
-        ? [
-            { label: "operator_action", value: packet.operator_action.kind },
-            {
-              label: "operator_argv",
-              value: packet.operator_action.argv
-                ? JSON.stringify(packet.operator_action.argv)
-                : "provider action required",
-            },
-          ]
-        : []),
-      ...(packet.recovery ? [{ label: "recovery", value: packet.recovery.reason }] : []),
-    ],
-    { header: infoMessage(`task advance: ${parsed.taskId}`) },
-  );
-  return 0;
+function legacyMigrationRequired(taskId: string, reason: string): CliError {
+  return new CliError({
+    code: "E_PHASE_POLICY",
+    message:
+      `Task ${taskId} is not owned by the Task Kernel. Ordinary advancement is disabled; ` +
+      `migrate the exact record before issuing more work: ` +
+      `agentplane task kernel-migrate ${taskId}`,
+    context: {
+      reason_code: reason,
+      task_id: taskId,
+      next_action: `agentplane task kernel-migrate ${taskId}`,
+    },
+  });
 }
 
 export function makeRunTaskAdvanceHandler(deps: {
@@ -84,43 +55,80 @@ export function makeRunTaskAdvanceHandler(deps: {
       command: initialCommand,
       task_id: parsed.taskId,
     });
-    const localSource = await initialCommand.taskBackend.getTask(parsed.taskId);
-    let command =
-      localSource?.extensions && Object.hasOwn(localSource.extensions, TASK_KERNEL_EXTENSION)
-        ? initialCommand
-        : await resolveTaskOwnerCommandContext({ ctx: initialCommand, taskId: parsed.taskId });
-    if (localSource?.extensions && Object.hasOwn(localSource.extensions, TASK_KERNEL_EXTENSION)) {
-      command = await resolveCanonicalControllerCommand({ command, task_id: parsed.taskId });
-    }
-    const source = await command.taskBackend.getTask(parsed.taskId);
-    if (source?.extensions && Object.hasOwn(source.extensions, TASK_KERNEL_EXTENSION)) {
-      if (parsed.workflowRecovery) {
-        throw new CliError({
-          code: "E_USAGE",
-          message: "Canonical tasks do not use integration supervisor effect recovery.",
-        });
-      }
-      if (parsed.replacement) {
-        throw new Error("Canonical replacement requires an explicit recovery episode");
-      }
-      const packet = await advanceTaskStep({
-        kind: "canonical",
-        command,
-        task_id: parsed.taskId,
-        transport: "host",
-        result_path: parsed.result,
-        effect_port_resolver: createKernelProviderEffectPortResolver({
-          command,
-          allow_remote: parsed.remote,
-        }),
-        allow_provider_effects: parsed.remote,
+    let command = await resolveTaskOwnerCommandContext({
+      ctx: initialCommand,
+      taskId: parsed.taskId,
+    });
+    let source = await command.taskBackend.getTask(parsed.taskId);
+    if (!source)
+      throw new CliError({
+        code: "E_IO",
+        message: `Task ${parsed.taskId} was not found in its authoritative checkout.`,
       });
-      createCliEmitter().json(packet);
+    const repositoryIdentity = (await resolveLogicalRepositoryIdentity({
+      git_root: command.resolvedProject.gitRoot,
+      task: source,
+    })) as taskKernel.Sha256Digest;
+    const read = readKernelRecord(source, repositoryIdentity);
+    if (read.kind === "legacy_unmigrated") {
+      const disposition = classifyKernelCutover(source);
+      throw legacyMigrationRequired(
+        parsed.taskId,
+        disposition.kind === "migration_required"
+          ? disposition.reason
+          : "legacy_migration_required",
+      );
+    }
+    if (read.kind === "malformed")
+      throw new CliError({
+        code: "E_PHASE_POLICY",
+        message:
+          `Task ${parsed.taskId} has an unsupported or malformed Task Kernel record. ` +
+          "No fallback executor was selected.",
+        context: {
+          reason_code: read.reason,
+          task_id: parsed.taskId,
+          fields: read.fields,
+          next_action: `agentplane task show ${parsed.taskId} --kernel`,
+        },
+      });
+    if (read.kind === "archived") {
+      createCliEmitter().json({
+        schema_version: 1,
+        task_id: parsed.taskId,
+        action: { kind: "terminal", reason: "canonical_archive_read_only" },
+      });
       return 0;
     }
-    return emitOrdinaryPacket(
-      parsed,
-      await advanceTaskStep({ kind: "ordinary", ctx, parsed, command }),
-    );
+    if (read.kind !== "canonical") throw new Error(`Unexpected Task Kernel read: ${read.kind}`);
+    command = await resolveCanonicalControllerCommand({ command, task_id: parsed.taskId });
+    source = await command.taskBackend.getTask(parsed.taskId);
+    if (!source)
+      throw new CliError({
+        code: "E_IO",
+        message: `Task ${parsed.taskId} was not found in its canonical controller checkout.`,
+      });
+    if (parsed.workflowRecovery) {
+      throw new CliError({
+        code: "E_USAGE",
+        message: "Canonical tasks do not use integration supervisor effect recovery.",
+      });
+    }
+    if (parsed.replacement) {
+      throw new Error("Canonical replacement requires an explicit recovery episode");
+    }
+    const packet = await advanceTaskStep({
+      command,
+      task_id: parsed.taskId,
+      transport: "host",
+      result_path: parsed.result,
+      effect_port_resolver: createKernelProviderEffectPortResolver({
+        command,
+        allow_remote: parsed.remote,
+      }),
+      allow_provider_effects: parsed.remote,
+    });
+    createCliEmitter().json(packet);
+    return 0;
   };
 }

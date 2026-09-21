@@ -147,6 +147,7 @@ export async function buildKernelAgentWorkOrder(opts: {
     authority_digest: authority?.digest ?? null,
   });
   const objective = implementation?.contract.objective ?? record.documents.intent.objective;
+  const role = implementation?.contract.role ?? "PLANNER";
   const criteria = implementation?.contract.acceptance_criteria ?? [
     "Return a bounded canonical plan with contracts, dependencies, output IDs, scope and verification commands.",
   ];
@@ -159,7 +160,7 @@ export async function buildKernelAgentWorkOrder(opts: {
       record: record.digest,
       state_fingerprint: fingerprint.digest,
     }),
-    role: implementation?.contract.role ?? "PLANNER",
+    role,
     task: {
       id: aggregate.id,
       revision: aggregate.revision,
@@ -176,7 +177,7 @@ export async function buildKernelAgentWorkOrder(opts: {
     state_fingerprint: fingerprint,
     state_fingerprint_policy: policy,
     authority: {
-      mutation_scope: authority ? "code" : "none",
+      mutation_scope: role === "CURATOR" ? "context" : authority ? "code" : "none",
       writable_roots:
         authority?.scope_roots.map((root) =>
           path.resolve(opts.command.resolvedProject.gitRoot, root),

@@ -5,103 +5,40 @@ import {
   type AgentSemanticResult,
   type AgentWorkOrderV2,
 } from "@agentplaneorg/core/schemas";
-import { taskKernel as k, type KernelEpisodeBinding } from "@agentplaneorg/core/tasks";
-import type { KernelCommandInput } from "../../adapters/task-backend/kernel-backend-adapter.js";
+import { decideIndependentReviewApplication, taskKernel as k } from "@agentplaneorg/core/tasks";
 import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
 import type { createKernelRuntime } from "./kernel-runtime-context.js";
-import { requireKernelCommit } from "./kernel-runtime-context.js";
 import { buildKernelStateFingerprint } from "./kernel-work-order.js";
 import {
   issueKernelExchange,
   writeKernelArtifact,
   kernelExchangeDirectory,
 } from "./kernel-exchange.js";
-import { runDirectTaskVerification } from "./direct-task-verification.js";
 import { readDirectTaskHead } from "./direct-task-finalization.js";
-import {
-  readKernelRepositoryEvidence,
-  type KernelRepositoryEvidence,
-} from "./kernel-repository-coordinator.js";
+import { readKernelRepositoryEvidence } from "./kernel-repository-coordinator.js";
 import { projectKernelOperationalEvidence } from "./kernel-operational-projection.js";
+import {
+  kernelCheckReviewDisposition,
+  nativeValidationInput,
+  recordKernelValidation,
+  requireNativeValidationEvidence,
+  resolveInspectionRepositoryEvidence,
+  resolveRecordedNativeValidation,
+  runKernelNativeValidation,
+  validationRecord,
+  type InspectionBinding,
+  type KernelNativeValidationEvidence,
+  type KernelValidationEvidence,
+} from "./kernel-inspection-validation.js";
+
+export {
+  kernelCheckReviewDisposition,
+  type KernelValidationEvidence,
+} from "./kernel-inspection-validation.js";
 
 type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
-export type KernelValidationEvidence = {
-  repository_fingerprint: string;
-  result_digest: string;
-  review_digest: string;
-  checks: Awaited<ReturnType<typeof runDirectTaskVerification>>;
-  repository_evidence: KernelRepositoryEvidence | null;
-};
-
-type InspectionBinding = Extract<KernelEpisodeBinding, { phase: "inspection" }>;
-
-type ResolvedRepositoryEvidence = Readonly<{
-  directory: string;
-  evidence: KernelRepositoryEvidence;
-}>;
-
-async function resolveInspectionRepositoryEvidence(
-  command: CommandContext,
-  record: KernelRecord,
-  workItemId: string,
-  resultDirectory: string,
-): Promise<ResolvedRepositoryEvidence | null> {
-  const head = await readDirectTaskHead(command.resolvedProject.gitRoot);
-  const currentOrderId = `sha256:${path.basename(resultDirectory)}`;
-  let current: KernelRepositoryEvidence | null = null;
-  try {
-    current = await readKernelRepositoryEvidence(resultDirectory);
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
-  }
-  if (current) {
-    if (
-      current.task_id !== record.aggregate.id ||
-      current.work_item_id !== workItemId ||
-      current.work_order_id !== currentOrderId ||
-      path.resolve(current.checkout) !== path.resolve(command.resolvedProject.gitRoot) ||
-      current.evaluator_target !== current.implementation_commit ||
-      head !== current.implementation_commit
-    ) {
-      throw new Error("Canonical evaluator target differs from repository evidence");
-    }
-    return { directory: resultDirectory, evidence: current };
-  }
-
-  for (const mutationId of Object.keys(record.aggregate.mutation_receipts)
-    .filter((id) => /^result:sha256:[a-f0-9]{64}$/u.test(id))
-    .toReversed()) {
-    const directory = await kernelExchangeDirectory(
-      command,
-      record.aggregate.id,
-      mutationId.slice("result:".length),
-    );
-    if (directory === resultDirectory) continue;
-    let candidate: KernelRepositoryEvidence;
-    try {
-      candidate = await readKernelRepositoryEvidence(directory);
-    } catch (error) {
-      if ((error as NodeJS.ErrnoException).code === "ENOENT") continue;
-      throw error;
-    }
-    if (candidate.task_id !== record.aggregate.id || candidate.work_item_id !== workItemId)
-      continue;
-    if (
-      candidate.work_order_id !== `sha256:${path.basename(directory)}` ||
-      candidate.task_revision > record.aggregate.revision ||
-      path.resolve(candidate.checkout) !== path.resolve(command.resolvedProject.gitRoot) ||
-      candidate.evaluator_target !== candidate.implementation_commit
-    ) {
-      throw new Error("Canonical evaluator target differs from retained repository evidence");
-    }
-    if (candidate.implementation_commit === head) {
-      return { directory, evidence: candidate };
-    }
-  }
-  return null;
-}
 
 export async function issueKernelInspection(
   command: CommandContext,
@@ -163,6 +100,66 @@ export async function issueKernelInspection(
     resultDirectory!,
   );
   const repositoryEvidence = resolvedRepositoryEvidence?.evidence ?? null;
+  const native = await runKernelNativeValidation({
+    command,
+    runtime,
+    binding,
+    commands: contract.verification_commands,
+    directory: resultDirectory!,
+    repositoryEvidence,
+  });
+  if (native.kind === "retry") {
+    return {
+      schema_version: 1,
+      task_id: binding.task_id,
+      action: {
+        kind: "external_wait" as const,
+        reason: "canonical_validation_infrastructure_retry",
+        summary: native.reason,
+      },
+    };
+  }
+  const nativeDisposition = kernelCheckReviewDisposition(native.evidence.checks);
+  if (nativeDisposition !== "review") {
+    const status = nativeDisposition === "rework" ? "FAILED" : "BLOCKED";
+    const validation = validationRecord({
+      binding,
+      contractCommands: contract.verification_commands,
+      native: native.evidence,
+      reviewDigest: null,
+      status,
+      observedAt: context.occurred_at,
+    });
+    const evidence: KernelValidationEvidence = {
+      task_id: binding.task_id,
+      work_item_id: binding.work_item_id,
+      attempt: binding.attempt,
+      contract_digest: binding.contract_digest,
+      repository_fingerprint: binding.repository_fingerprint,
+      result_digest: binding.result_digest,
+      review_digest: null,
+      native_evidence_digest: k.kernelDigest(native.evidence),
+      status,
+      checks: native.evidence.checks,
+      repository_evidence: repositoryEvidence,
+    };
+    await recordKernelValidation({
+      runtime,
+      directory: resultDirectory!,
+      binding,
+      evidence,
+      validation,
+      mutationId: `validation:sha256:${path.basename(resultDirectory!)}`,
+    });
+    const stop = await resolveRecordedNativeValidation(runtime, binding, validation);
+    if (stop)
+      return {
+        schema_version: 1,
+        task_id: binding.task_id,
+        action: { ...stop, summary: native.evidence.checks.reason },
+      };
+    return null;
+  }
   const order = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse({
     schema_version: 2,
     kind: "agent_work_order",
@@ -241,6 +238,15 @@ export async function issueKernelInspection(
             },
           ]
         : []),
+      {
+        id: "native-validation",
+        kind: "source_artifact" as const,
+        path: native.path,
+        digest: k.kernelDigest(native.evidence),
+        description:
+          "AgentPlane-observed native checks bound to the implementation, command, toolchain, and environment inputs.",
+        required: true,
+      },
       ...item.output_manifests.map((manifest) => ({
         id: manifest.id,
         kind: "source_artifact",
@@ -313,12 +319,19 @@ export async function acceptKernelInspection(
     throw new Error("Canonical inspection authority changed");
   await writeKernelArtifact(directory, "inspection-result.json", semantic);
   if (item.state === "COMPLETED" || item.state === "REWORK_READY") return;
-  if (semantic.review.verdict === "blocked" || semantic.review.verdict === "human_review")
+  const reviewDecision = decideIndependentReviewApplication({
+    verdict: semantic.review.verdict,
+    provenance_accepted: true,
+    evidence_current: true,
+  });
+  if (reviewDecision.action === "attention")
     return {
       kind: "human_required",
       reason: "canonical_inspection_requires_attention",
       summary: semantic.summary,
     };
+  if (reviewDecision.action === "reject")
+    throw new Error(`Canonical inspection rejected: ${reviewDecision.reason_code}`);
   const contract = read.record.documents!.contracts[String(binding.contract_digest)]!;
   const repositoryEvidenceInput = workOrder?.required_inputs.find(
     (input) => input.id === "repository-evidence",
@@ -335,6 +348,35 @@ export async function acceptKernelInspection(
   ) {
     throw new Error("Canonical inspection commit identity changed");
   }
+  const nativeEvidenceInput = workOrder?.required_inputs.find(
+    (input) => input.id === "native-validation",
+  );
+  if (!nativeEvidenceInput?.path)
+    throw new Error("Canonical inspection requires native validation evidence");
+  const expectedNative = nativeValidationInput({
+    command,
+    binding,
+    commands: contract.verification_commands,
+    repositoryEvidence,
+  });
+  const nativeEvidence = requireNativeValidationEvidence({
+    evidence: JSON.parse(
+      await readStableRegularTextNoFollow(
+        nativeEvidenceInput.path,
+        "canonical native validation evidence",
+      ),
+    ) as KernelNativeValidationEvidence,
+    input: expectedNative.input,
+    digest: expectedNative.digest,
+  });
+  if (
+    nativeEvidenceInput.digest !== k.kernelDigest(nativeEvidence) ||
+    nativeEvidence.checks.status !== "passed"
+  )
+    throw new Error("Canonical inspection native validation is not reusable");
+  const observed = await runtime.observe();
+  if (observed.fingerprint !== binding.repository_fingerprint)
+    throw new Error("Canonical repository changed after native validation");
   const evidencePath = path.join(directory, "validation.json");
   let evidence: KernelValidationEvidence;
   try {
@@ -343,35 +385,20 @@ export async function acceptKernelInspection(
     ) as KernelValidationEvidence;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
-    const checks =
-      semantic.review.verdict === "pass"
-        ? await runDirectTaskVerification({
-            command,
-            task: { verify: [] },
-            task_id: binding.task_id,
-            cwd: command.resolvedProject.gitRoot,
-            additional_only: true,
-            additional_commands: contract.verification_commands.map((check) => ({
-              command: check,
-            })),
-            allow_empty: true,
-          })
-        : {
-            status: "failed" as const,
-            artifact_path: "",
-            checks: [],
-            reason: "Independent inspection requires rework",
-          };
+    const status = reviewDecision.action === "complete" ? "PASSED" : "FAILED";
     evidence = {
+      task_id: binding.task_id,
+      work_item_id: binding.work_item_id,
+      attempt: binding.attempt,
+      contract_digest: binding.contract_digest,
       repository_fingerprint: binding.repository_fingerprint,
       result_digest: binding.result_digest,
       review_digest: k.kernelDigest(semantic),
-      checks,
+      native_evidence_digest: k.kernelDigest(nativeEvidence),
+      status,
+      checks: nativeEvidence.checks,
       repository_evidence: repositoryEvidence,
     };
-    const observed = await runtime.observe();
-    if (observed.fingerprint !== binding.repository_fingerprint)
-      throw new Error("Canonical repository changed during validation");
     if (
       repositoryEvidence &&
       (await readDirectTaskHead(command.resolvedProject.gitRoot)) !==
@@ -381,70 +408,33 @@ export async function acceptKernelInspection(
     await writeKernelArtifact(directory, "validation.json", evidence);
   }
   if (
+    evidence.task_id !== binding.task_id ||
+    evidence.work_item_id !== binding.work_item_id ||
+    evidence.attempt !== binding.attempt ||
+    evidence.contract_digest !== binding.contract_digest ||
     evidence.repository_fingerprint !== binding.repository_fingerprint ||
     evidence.result_digest !== binding.result_digest ||
-    evidence.review_digest !== k.kernelDigest(semantic)
+    evidence.review_digest !== k.kernelDigest(semantic) ||
+    evidence.native_evidence_digest !== k.kernelDigest(nativeEvidence)
   )
     throw new Error("Canonical validation evidence binding mismatch");
-  const validation: k.ValidationRecord = {
-    status:
-      evidence.checks.status === "passed"
-        ? "PASSED"
-        : evidence.checks.status === "unsupported"
-          ? "BLOCKED"
-          : "FAILED",
-    identity: {
-      implementation_identity: binding.result_digest,
-      check_id: "canonical-contract-and-inspection",
-      command_digest: k.kernelDigest(contract.verification_commands),
-      toolchain_digest: k.kernelDigest(
-        evidence.checks.checks.map((check) => check.runtime ?? null),
-      ),
-      environment_digest: k.kernelDigest({
-        repository: binding.repository_fingerprint,
-        platform: process.platform,
-        arch: process.arch,
-        node: process.version,
-      }),
-    },
-    evidence_digests: [k.kernelDigest(evidence), k.kernelDigest(semantic)],
-    observed_at: context.occurred_at,
-  };
-  // Save the native command input before CAS. A restart replays the same observation timestamp.
-  const inputPath = path.join(directory, "validation-command.json");
-  let input: KernelCommandInput;
-  try {
-    input = JSON.parse(
-      await readStableRegularTextNoFollow(inputPath, "canonical validation command"),
-    ) as KernelCommandInput;
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
-    input = await runtime.input(
-      { kind: "record_work_item_validation", work_item_id: binding.work_item_id, validation },
-      `validation:${semantic.work_order_id}`,
-    );
-    await writeKernelArtifact(directory, "validation-command.json", input);
-  }
-  requireKernelCommit(await runtime.lifecycle.apply(input));
-  if (validation.status === "BLOCKED")
-    return {
-      kind: "human_required",
-      reason: "canonical_validation_infrastructure",
-      summary: evidence.checks.reason,
-    };
-  requireKernelCommit(
-    await runtime.lifecycle.apply(
-      await runtime.input(
-        {
-          kind: "transition_work_item",
-          action: validation.status === "PASSED" ? "complete" : "rework",
-          work_item_id: binding.work_item_id,
-          claim_id: binding.claim_id,
-        },
-        `validation-resolution:${semantic.work_order_id}`,
-      ),
-    ),
-  );
+  const validation = validationRecord({
+    binding,
+    contractCommands: contract.verification_commands,
+    native: nativeEvidence,
+    reviewDigest: k.kernelDigest(semantic),
+    status: evidence.status,
+    observedAt: context.occurred_at,
+  });
+  await recordKernelValidation({
+    runtime,
+    directory,
+    binding,
+    evidence,
+    validation,
+    mutationId: `validation:${semantic.work_order_id}`,
+  });
+  await resolveRecordedNativeValidation(runtime, binding, validation);
   if (validation.status === "PASSED" && repositoryEvidence) {
     const reportPath = path.join(directory, "quality-report.json");
     const findings = semantic.findings.length > 0 ? semantic.findings : [semantic.summary];
@@ -481,6 +471,33 @@ export async function resumeKernelInspection(
   workItemId: string,
 ) {
   const item = record.aggregate.work_items[workItemId];
+  if (item?.validation?.identity.check_id === "canonical-native-checks") {
+    if (!item.claim_id || !item.result_digest)
+      throw new Error("Canonical native validation lost its WorkItem binding");
+    const plan = record.aggregate.current_plan;
+    const context = await runtime.native.readContext(record.aggregate.id);
+    const authority = await runtime.authority.resolve(record.aggregate.id, workItemId);
+    if (!plan || !item.definition.contract_digest)
+      throw new Error("Canonical native validation lost its Plan binding");
+    return resolveRecordedNativeValidation(
+      runtime,
+      {
+        phase: "inspection",
+        task_id: record.aggregate.id,
+        repository_identity: context.repository_identity,
+        repository_fingerprint: context.repository_fingerprint,
+        plan_revision: plan.revision,
+        plan_digest: plan.digest,
+        work_item_id: workItemId,
+        attempt: item.attempt,
+        claim_id: item.claim_id,
+        contract_digest: item.definition.contract_digest,
+        authority_digest: authority.authority.digest,
+        result_digest: item.result_digest,
+      },
+      item.validation,
+    );
+  }
   if (item?.validation?.identity.check_id !== "canonical-contract-and-inspection")
     return { kind: "human_required", reason: "canonical_native_validation_evidence_required" };
   for (const mutationId of Object.keys(record.aggregate.mutation_receipts)

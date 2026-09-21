@@ -3,6 +3,8 @@ import { setMarkdownSection } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
+import { resolveLogicalRepositoryIdentity } from "../../commands/task/execution-authority-context.js";
+import { createCanonicalTask } from "../../commands/task/kernel-create.js";
 import {
   TASK_DOC_VERSION_V3,
   buildDefaultVerifyStepsSection,
@@ -254,10 +256,14 @@ export async function materializeRecipeScenarioTask(opts: {
   });
   const task = materialization.tasks[0]?.task;
   if (!task) throw new Error("Task intake materialization unexpectedly produced no tasks.");
-  await executionContext.backend.task_backend.writeTask(task);
+  await resolveLogicalRepositoryIdentity({
+    git_root: command.resolvedProject.gitRoot,
+    task,
+  });
+  const created = await createCanonicalTask(command, task);
 
   return {
-    task,
+    task: created.task,
     task_id,
     run_id,
     readme_path: path.join(

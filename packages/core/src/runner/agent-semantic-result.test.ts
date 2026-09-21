@@ -246,6 +246,7 @@ describe("agent semantic result contract", () => {
 
   it.each([
     { role: "PLANNER" },
+    { role: "CURATOR" },
     { role: "EXECUTOR" },
     { role: "EVALUATOR" },
     { role: "PLANNER", phase: "planning" },

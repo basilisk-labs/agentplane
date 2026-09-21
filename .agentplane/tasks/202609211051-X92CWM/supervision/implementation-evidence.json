@@ -1,0 +1,71 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 3e872a4036368c94dfeb9cda9d7c1b28dc4e1fab..3a6c32e19b16587609278620419ea1680e936e65",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 3e872a4036368c94dfeb9cda9d7c1b28dc4e1fab..3a6c32e19b16587609278620419ea1680e936e65",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202609211051-X92CWM/README.md",
+        "M\t.agentplane/tasks/202609211051-X92CWM/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609211051-X92CWM/pr/github-body.md",
+        "M\t.agentplane/tasks/202609211051-X92CWM/pr/meta.json",
+        "M\t.agentplane/tasks/202609211051-X92CWM/pr/review.md",
+        "A\t.agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json",
+        "A\t.agentplane/tasks/202609211051-X92CWM/supervision/implementation-evidence.json",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step-factory.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "3e872a4036368c94dfeb9cda9d7c1b28dc4e1fab",
+  "implementation_commit": "3a6c32e19b16587609278620419ea1680e936e65",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M .agentplane/tasks/202609211051-X92CWM/README.md",
+      "?? .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json",
+      "?? .agentplane/tasks/202609211051-X92CWM/supervision/implementation-evidence.json"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609211051-X92CWM/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609211051-X92CWM/supervision/implementation-evidence.json"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M .agentplane/tasks/202609211051-X92CWM/README.md",
+      "?? .agentplane/tasks/202609211051-X92CWM/supervision/declared-checks.json",
+      "?? .agentplane/tasks/202609211051-X92CWM/supervision/implementation-evidence.json"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609211051-X92CWM"
+}

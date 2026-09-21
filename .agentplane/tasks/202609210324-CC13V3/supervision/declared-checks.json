@@ -1,0 +1,121 @@
+{
+  "checks": [
+    {
+      "check_ids": [],
+      "command": "node scripts/checks/check-post-convergence-test-topology.mjs",
+      "duration_ms": 372,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
+        "executable_digest": "sha256:ee6fb0e015284d83a91e8ec5213f43a157f8a392b58555301682892ba928c04a",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "post-convergence test topology OK (829 files; invariant owners {\"negative\":2073,\"recovery\":233,\"migration\":264,\"authority\":345,\"concurrency\":523})\n"
+    },
+    {
+      "check_ids": [],
+      "command": "bun run test:fast",
+      "duration_ms": 295449,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "test:fast",
+      "stderr_tail": "mmary\n{\"ts\":\"2026-09-21T09:58:17.146Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-ZXjcDr/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-ZXjcDr/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-21T09:58:17.157Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-NJBUDB/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-NJBUDB/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-21T09:58:17.161Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-NJBUDB/.agentplane/WORKFLOW.md\",\"from\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-NJBUDB/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-21T09:58:17.165Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-SRKM0p/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-SRKM0p/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-21T09:58:17.167Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_failed\",\"code\":\"WF_UNSUPPORTED_VERSION\",\"details\":{\"reason\":\"Unsupported WORKFLOW version 3; supported versions: 1, 2.\"}}\n{\"ts\":\"2026-09-21T09:58:21.895Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-21T09:58:21.908Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":1}}\n{\"ts\":\"2026-09-21T09:58:21.908Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-21T09:58:21.910Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":2}}\n{\"ts\":\"2026-09-21T09:58:21.911Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-21T09:58:21.913Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\nwarning: skipped 2 invalid task READMEs; local task state may be incomplete\n- 202601010000-000000: Task README is missing YAML frontmatter\n- BROKEN: Task README is missing YAML frontmatter\nwarning: skipped 1 invalid task README; local task state may be incomplete\n- MALFORMED: task README frontmatter schema validation failed: Invalid input: expected string, received number at \"title\"; task README frontmatter schema validation failed: Invalid input: expected object, received string at \"comments[1]\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"doc_updated_at\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"doc_updated_by\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"description\"\nwarning: skipped 1 invalid task README; local task state may be incomplete\n- 202601010101-ABCDE: task README frontmatter schema validation failed: Invalid input: expected string, received number at \"title\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"tags[1]\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"verify[1]\"; task README frontmatter schema validation failed: Too small: expected string to have >=1 characters at \"commit.hash\"; task README frontmatter schema validation failed: Too small: expected string to have >=1 characters at \"commit.message\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"description\"\n",
+      "stdout_tail": "venance_edges.jsonl\ncontext graph valid\ncontext wiki lint: ok (5 page(s))\nUpgrade source: explicit upgrade bundle\nUpgrade version: v0.7.10\nUpgrade mode: plan\nUpgrade plan written: .agentplane/.upgrade/agent/2026-09-21T09-58-13-336Z\nUpgrade source: explicit upgrade bundle\nUpgrade version: v0.7.10\nUpgrade mode: plan\nUpgrade plan: no managed changes detected\n✅ commented T-1\n/repo/.agentplane/tasks/T-1/README.md\n/repo/.agentplane/tasks/T-1/README.md\n/repo/.agentplane/tasks/T-1/README.md\n/repo/.agentplane/tasks/T-1/README.md\n✅ blocked T-1 (commit=new-hash)\n✅ updated T-1\n✅ updated T-1\n✅ status T-1 (next=DOING)\n✅ status T-1 (next=DOING)\n/repo/.agentplane/tasks/T-1/README.md\ncontext verify-task 202605191451-CTXGLO: ok (CURATOR / DOING)\ncontext wiki new: context/wiki/modules/meridian-relay.md\ncontext wiki new: context/wiki/decisions/meridian-relay-pull-sync.md\ncontext wiki new: context/wiki/modules/meridian-relay.md\ncontext wiki index: updated 1 index page(s)\n- context/wiki/modules/index.md\ncontext wiki lint: ok (2 page(s))\ncontext wiki new: context/wiki/modules/meridian-relay.md\ncontext wiki index: updated 2 index page(s)\n- context/wiki/index.md\n- context/wiki/modules/index.md\ncontext wiki lint: ok (3 page(s))\ncontext wiki index: updated 0 index page(s)\nevidence bundle: .agentplane/tasks/202605031625-886KZ6/evidence/manifest.json\nmanifest_digest: sha256:9bb585aa0a0ebc2933767a95380c05c656cad141e2eb642f7b1c892a6f2a4b03\nfiles: 3\nevidence verify .agentplane/tasks/202605031625-886KZ6/evidence/manifest.json: ok (3 files)\nevidence bundle: .agentplane/tasks/202605031625-886KZ6/evidence/manifest.json\nmanifest_digest: sha256:9bb585aa0a0ebc2933767a95380c05c656cad141e2eb642f7b1c892a6f2a4b03\nfiles: 3\nevidence bundle: .custom-agentplane/tasks/202605031625-886KZ6/evidence/manifest.json\nmanifest_digest: sha256:a975107a2a1c632473e756b08ce1d44dbceec715c3c56ce96ed5d2f85f80c895\nfiles: 1\nevidence verify .custom-agentplane/tasks/202605031625-886KZ6/evidence/manifest.json: ok (1 files)\nℹ️ reindex prepared at /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-context-fts5-2AY9bi/.agentplane/cache.sqlite\nℹ️ reindex_receipt strategy=full-rebuild reason=missing-index added=3 changed=0 removed=0 unchanged=0\nℹ️ rows=6 files=3\nℹ️ projection_metrics source_bytes=54 search_text_bytes=108 preview_text_bytes=108 elapsed_ms=2\ncontext wiki new: context/wiki/decisions/context-claims.md\ncontext wiki new: context/wiki/modules/payment-api.md\ncontext wiki new: context/wiki/workflows/context-writer.md\ncontext wiki lint: ok (1 page(s))\nℹ️ reindex prepared at /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-context-raw-deletion-kaJUmL/.agentplane/cache.sqlite\nℹ️ reindex_receipt strategy=full-rebuild reason=reset-requested added=3 changed=0 removed=0 unchanged=0\nℹ️ rows=5 files=3\nℹ️ projection_metrics source_bytes=227 search_text_bytes=307 preview_text_bytes=307 elapsed_ms=3\nℹ️ reindex prepared at /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-context-raw-deletion-kaJUmL/.agentplane/cache.sqlite\nℹ️ reindex_receipt strategy=full-rebuild reason=reset-requested added=2 changed=0 removed=0 unchanged=0\nℹ️ rows=3 files=2\nℹ️ projection_metrics source_bytes=204 search_text_bytes=261 preview_text_bytes=261 elapsed_ms=1\n{\n  \"summary\": {\n    \"tasks\": 1,\n    \"observations\": 0,\n    \"open\": 0,\n    \"invalid\": 1,\n    \"blocking\": 0,\n    \"byAction\": {}\n  },\n  \"tasks\": [\n    {\n      \"task_id\": \"202605191736-EQBZ4M\",\n      \"title\": \"Observation task\",\n      \"path\": \".agentplane/tasks/202605191736-EQBZ4M/observations.jsonl\",\n      \"observations\": [],\n      \"errors\": [\n        {\n          \"line\": 1,\n          \"message\": \"Expected property name or '}' in JSON at position 1 (line 1 column 2)\",\n          \"raw\": \"{not-json}\"\n        }\n      ],\n      \"blocking\": []\n    }\n  ]\n}\n\n Test Files  676 passed (676)\n      Tests  5800 passed | 1 skipped (5801)\n   Start at  12:53:45\n   Duration  295.03s (transform 17.38s, setup 0ms, import 119.85s, tests 1012.30s, environment 28ms)\n\n"
+    },
+    {
+      "check_ids": [],
+      "command": "bun run test:release:critical",
+      "duration_ms": 12960,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "test:release:critical",
+      "stderr_tail": "$ node scripts/checks/run-vitest-suite.mjs release-critical\n",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/release-0.7.11-base/.agentplane/worktrees/202609210324-CC13V3-canonical-cc13v3\n\n\n Test Files  3 passed (3)\n      Tests  15 passed (15)\n   Start at  12:58:41\n   Duration  12.46s (transform 5.95s, setup 0ms, import 4.16s, tests 17.17s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [],
+      "command": "bun run package:install-smoke",
+      "duration_ms": 50350,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "package:install-smoke",
+      "stderr_tail": "$ node scripts/release/check-local-tarball-install-smoke.mjs\n",
+      "stdout_tail": "installed migration matrix OK (scenarios=8)\nlocal tarball install smoke OK (202609170001-TRB1)\n"
+    },
+    {
+      "check_ids": [],
+      "command": "bun run vitest:projects:check",
+      "duration_ms": 410,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "vitest:projects:check",
+      "stderr_tail": "$ node scripts/checks/check-vitest-projects.mjs\n",
+      "stdout_tail": "vitest workspace projects OK\ntest routing OK (829 tests, 10 primary routes)\n"
+    },
+    {
+      "check_ids": [],
+      "command": "bun run clone:check",
+      "duration_ms": 346,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "clone:check",
+      "stderr_tail": "$ node scripts/checks/check-clone-baseline.mjs\n",
+      "stdout_tail": "Clone baseline OK (sources=1584, clones=94, duplicatedLines=1471, duplicatedTokens=10286, percentage=0.46960047247362285; baseline sources=1592, clones=95, duplicatedLines=1488, duplicatedTokens=10362, percentage=0.47487441997025653)\n"
+    },
+    {
+      "check_ids": [],
+      "command": "bun run knip:check",
+      "duration_ms": 1538,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "knip:check",
+      "stderr_tail": "$ node scripts/checks/check-knip-baseline.mjs\n",
+      "stdout_tail": "Knip unused-code baseline OK (files=0/0, exports=18/18, types=3/3, enumMembers=0/0, namespaceMembers=0/0, total=21/21; agentplane CLI: files=0/0 total=0/0, core compatibility: files=0/0 total=21/21)\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202609210324-CC13V3"
+}

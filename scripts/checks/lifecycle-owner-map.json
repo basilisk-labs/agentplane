@@ -28,20 +28,15 @@
     {
       "id": "task-application-coordinator",
       "role": "application_coordinator",
-      "ownership_state": "target_after_convergence",
-      "path": "packages/agentplane/src/commands/shared/workflow-supervisor.ts",
-      "symbol": "superviseWorkflowStep"
+      "ownership_state": "observed_current",
+      "path": "packages/agentplane/src/commands/task/advance-task-step.ts",
+      "symbol": "advanceTaskStep"
     }
   ],
   "convergence_state": {
-    "status": "mapped_not_converged",
-    "target_application_coordinator": "packages/agentplane/src/commands/shared/workflow-supervisor.ts#superviseWorkflowStep",
-    "current_parallel_owners": [
-      "packages/core/src/tasks/task-centric/orchestrator.ts#TaskCentricOrchestrator",
-      "packages/agentplane/src/commands/task/kernel-advance.ts#advanceCanonicalTask",
-      "packages/agentplane/src/commands/task/kernel-run.ts#runCanonicalTask",
-      "packages/agentplane/src/commands/task/kernel-effect-coordinator.ts#coordinateKernelEffect"
-    ]
+    "status": "converged",
+    "target_application_coordinator": "packages/agentplane/src/commands/task/advance-task-step.ts#advanceTaskStep",
+    "current_parallel_owners": []
   },
   "responsibilities": [
     {
@@ -83,26 +78,26 @@
     {
       "id": "effect_operation_admission",
       "owner_id": "task-application-coordinator",
-      "operation_path": "packages/agentplane/src/commands/shared/workflow-supervisor.ts",
-      "operation_symbol": "stopReason"
+      "operation_path": "packages/agentplane/src/commands/task/advance-task-step.ts",
+      "operation_symbol": "advanceCanonicalRoute"
     },
     {
       "id": "effect_dispatch",
       "owner_id": "task-application-coordinator",
-      "operation_path": "packages/agentplane/src/commands/shared/workflow-supervisor.ts",
-      "operation_symbol": "superviseWorkflowStep"
+      "operation_path": "packages/agentplane/src/commands/task/kernel-effect-coordinator.ts",
+      "operation_symbol": "applyKernelEffectStep"
     },
     {
       "id": "effect_observation",
       "owner_id": "task-application-coordinator",
-      "operation_path": "packages/agentplane/src/commands/shared/workflow-supervisor.ts",
-      "operation_symbol": "refreshAfterOperation"
+      "operation_path": "packages/agentplane/src/commands/task/kernel-effect-coordinator.ts",
+      "operation_symbol": "applyKernelEffectStep"
     },
     {
       "id": "effect_reconciliation",
       "owner_id": "task-application-coordinator",
-      "operation_path": "packages/agentplane/src/commands/shared/route-decision.ts",
-      "operation_symbol": "buildTaskRouteDecision"
+      "operation_path": "packages/agentplane/src/commands/task/kernel-effect-coordinator.ts",
+      "operation_symbol": "applyKernelEffectStep"
     },
     {
       "id": "hosted_state_observation",
@@ -163,34 +158,22 @@
   ],
   "symbol_classifications": [
     {
-      "path": "packages/core/src/tasks/task-centric/orchestrator.ts",
-      "symbol": "TaskCentricOrchestrator",
-      "classification": "later_deletion_candidate",
-      "reason": "Competing task outer loop; the application coordinator must replace it."
-    },
-    {
-      "path": "packages/agentplane/src/commands/task/kernel-advance.ts",
-      "symbol": "advanceCanonicalTask",
-      "classification": "later_deletion_candidate",
-      "reason": "Kernel-specific outer loop must converge into the application coordinator."
-    },
-    {
-      "path": "packages/agentplane/src/commands/task/kernel-run.ts",
-      "symbol": "runCanonicalTask",
-      "classification": "later_deletion_candidate",
-      "reason": "Kernel-specific managed loop must converge into the application coordinator."
-    },
-    {
       "path": "packages/agentplane/src/commands/task/kernel-effect-coordinator.ts",
-      "symbol": "coordinateKernelEffect",
-      "classification": "later_deletion_candidate",
-      "reason": "Effect coordination must use the single application coordinator boundary."
+      "symbol": "applyKernelEffectStep",
+      "classification": "coordinator_capability",
+      "reason": "Applies one Kernel-admitted effect step for the sole application coordinator."
     },
     {
       "path": "packages/agentplane/src/adapters/task-backend/kernel-effect-dispatch.ts",
       "symbol": "dispatchKernelEffect",
-      "classification": "later_deletion_candidate",
-      "reason": "The staged dispatch boundary must not become a second application coordinator."
+      "classification": "retained_safety_helper",
+      "reason": "Retained only for replay and fault-injection safety tests; production imports are forbidden."
+    },
+    {
+      "path": "packages/agentplane/src/commands/shared/workflow-supervisor.ts",
+      "symbol": "superviseWorkflowStep",
+      "classification": "coordinator_capability",
+      "reason": "Inspects or executes one typed legacy workflow operation and has no lifecycle loop."
     },
     {
       "path": "packages/agentplane/src/commands/shared/task-mutation.ts",
@@ -267,12 +250,7 @@
     {
       "path": "packages/agentplane/src/commands/shared/workflow-supervisor.ts",
       "symbol": "superviseWorkflowStep",
-      "classification": "canonical_owner"
-    },
-    {
-      "path": "packages/core/src/tasks/task-centric/orchestrator.ts",
-      "symbol": "TaskCentricOrchestrator",
-      "classification": "later_deletion_candidate"
+      "classification": "coordinator_capability"
     },
     {
       "path": "packages/core/src/tasks/task-centric/graph.ts",
@@ -280,24 +258,14 @@
       "classification": "retained_pure_helper"
     },
     {
-      "path": "packages/agentplane/src/commands/task/kernel-advance.ts",
-      "symbol": "advanceCanonicalTask",
-      "classification": "later_deletion_candidate"
-    },
-    {
-      "path": "packages/agentplane/src/commands/task/kernel-run.ts",
-      "symbol": "runCanonicalTask",
-      "classification": "later_deletion_candidate"
-    },
-    {
-      "path": "packages/agentplane/src/commands/task/kernel-effect-coordinator.ts",
-      "symbol": "coordinateKernelEffect",
-      "classification": "later_deletion_candidate"
+      "path": "packages/agentplane/src/commands/task/advance-task-step.ts",
+      "symbol": "advanceTaskStep",
+      "classification": "canonical_owner"
     },
     {
       "path": "packages/agentplane/src/adapters/task-backend/kernel-effect-dispatch.ts",
       "symbol": "dispatchKernelEffect",
-      "classification": "later_deletion_candidate"
+      "classification": "retained_safety_helper"
     },
     {
       "path": "packages/agentplane/src/commands/shared/task-mutation.ts",

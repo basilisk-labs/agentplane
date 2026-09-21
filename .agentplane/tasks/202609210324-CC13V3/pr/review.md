@@ -1,0 +1,138 @@
+# PR Review
+
+Created: 2026-09-21T03:47:54.341Z
+
+## Task
+
+- Task: `202609210324-CC13V3`
+- Title: Implement AgentPlane 0.7.11 roadmap WorkItems LC-04 through LC-24 sequentially and prepare the release candidate
+- Status: DOING
+- Branch: `task/202609210324-CC13V3/canonical-cc13v3`
+- Canonical task record: `.agentplane/tasks/202609210324-CC13V3/README.md`
+
+## Verification
+
+- State: ok
+- Note: Canonical validation sha256:8c203d031e6958259117341b5b47b0a9d0b775edb1791a11e849c05c249db3aa
+- Canonical workflow state lives in the task README.
+
+## Handoff Notes
+
+- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
+
+<!-- BEGIN AUTO SUMMARY -->
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-09-21T03:47:54.341Z
+- Branch: task/202609210324-CC13V3/canonical-cc13v3
+- Head: computed live by `agentplane pr check` / `agentplane integrate`
+
+```text
+ artifacts/m03-0.7.10-vs-0.7.11-local-replay.json   |  332 +++++++
+ docs/user/task-lifecycle.mdx                       |   38 +
+ docs/user/workflow.mdx                             |   68 +-
+ .../task-backend/kernel-backend-adapter.test.ts    |   76 ++
+ .../adapters/task-backend/kernel-next-action.ts    |   55 +-
+ .../task-backend/kernel-record-invariants.ts       |    2 +-
+ .../src/cli/run-cli.core.kernel-transport.test.ts  |   23 +-
+ ...cli.core.roadmap-external-owner-cutover.test.ts |  104 ++
+ ...-cli.core.roadmap-managed-owner-cutover.test.ts |  226 +++++
+ .../installed-migration-matrix-script.test.ts      |    2 +
+ .../commands/shared/semantic-result-admission.ts   |   49 +
+ .../shared/supervisor-execution-episode.ts         |   21 +
+ .../src/commands/shared/workflow-step-branch.ts    |   13 +-
+ .../src/commands/shared/workflow-step-factory.ts   |   85 +-
+ .../src/commands/task/advance-task-step.ts         |   54 +-
+ .../src/commands/task/advance.command.ts           |  168 ++--
+ .../task/branch-task-supervisor-operations.ts      |   40 +
+ .../task/branch-task-supervisor.autonomy.test.ts   |  638 -------------
+ .../commands/task/branch-task-supervisor.test.ts   |  862 +----------------
+ .../src/commands/task/branch-task-supervisor.ts    |  435 +--------
+ .../src/commands/task/direct-task-finalization.ts  |   38 +
+ .../task/direct-task-supervisor-closeout.test.ts   |   33 +-
+ .../task/direct-task-supervisor-closeout.ts        |   83 +-
+ .../task/direct-task-supervisor-operation.test.ts  |   13 +
+ .../task/direct-task-supervisor-operation.ts       |  122 ++-
+ .../commands/task/direct-task-supervisor-result.ts |  127 ---
+ .../commands/task/direct-task-supervisor.test.ts   | 1003 +-------------------
+ .../src/commands/task/direct-task-supervisor.ts    |  564 -----------
+ .../src/commands/task/direct-task-verification.ts  |   35 +
+ .../src/commands/task/external-agent-exchange.ts   |   13 +-
+ .../src/commands/task/kernel-advance.test.ts       |   14 +-
+ .../agentplane/src/commands/task/kernel-advance.ts |    9 -
+ .../agentplane/src/commands/task/kernel-cutover.ts |   15 +-
+ .../src/commands/task/kernel-effect-coordinator.ts |    4 +-
+ .../src/commands/task/kernel-exchange.ts           |  108 ++-
+ .../src/commands/task/kernel-inspection.ts         |  527 ++++++++--
+ .../src/commands/task/kernel-migrate.command.ts    |  229 ++++-
+ .../kernel-provider-effect-coordinator.test.ts     |    1 +
+ .../task/kernel-provider-effect-coordinator.ts     |   34 +-
+ .../src/commands/task/kernel-run.test.ts           |    6 +-
+ .../agentplane/src/commands/task/kernel-run.ts     |   70 +-
+ .../src/commands/task/kernel-semantic-result.ts    |    4 +-
+ .../src/commands/task/kernel-work-order.ts         |    5 +-
+ .../src/commands/task/kernel-worktree-routing.ts   |   72 +-
+ .../src/commands/task/migration-apply.ts           |  942 ++++++++++++++++++
+ .../src/commands/task/migration-preview.ts         |  265 ++++++
+ .../src/commands/task/ordinary-advance-step.ts     |   32 +-
+ .../src/commands/task/quality-review-gate.ts       |   11 +-
+ .../commands/task/roadmap-advance-one-step.test.ts |   10 +-
+ .../task/roadmap-branch-publication-parity.test.ts |  126 +++
+ .../task/roadmap-check-review-separation.test.ts   |   93 ++
+ .../commands/task/roadmap-common-recovery.test.ts  |  274 ++++++
+ .../task/roadmap-common-review-application.test.ts |  155 +++
+ .../commands/task/roadmap-curator-parity.test.ts   |  207 ++++
+ .../task/roadmap-direct-coordinator-parity.test.ts |  194 ++++
+ .../task/roadmap-integration-parity.test.ts        |  264 ++++++
+ .../task/roadmap-lifecycle-migration-apply.test.ts |  741 +++++++++++++++
+ .../roadmap-lifecycle-migration-preview.test.ts    |  386 ++++++++
+ .../task/roadmap-semantic-admission.test.ts        |  129 +++
+ .../commands/task/roadmap-terminal-noop.test.ts    |  206 ++++
+ .../task/roadmap-workitem-readiness.test.ts        |  150 +++
+ .../src/commands/task/run-execution-preview.ts     |   54 --
+ .../agentplane/src/commands/task/run-render.ts     |   44 -
+ .../agentplane/src/commands/task/run.command.ts    |  318 +++----
+ packages/agentplane/src/commands/task/run.spec.ts  |   10 +-
+ .../task/supervision-outcome-disposition.test.ts   |  123 ---
+ .../task/supervision-outcome-disposition.ts        |  130 ---
+ .../task/task-centric-external-result.test.ts      |    2 +-
+ .../src/runner/usecases/agent-work-order-build.ts  |   12 +-
+ .../usecases/agent-work-order.integration.test.ts  |  132 +--
+ .../usecases/roadmap-scenario-owner-parity.test.ts |  139 +++
+ .../runner/usecases/scenario-materialize-task.ts   |   10 +-
+ .../src/runner/usecases/semantic-role.ts           |   10 +
+ .../runner/usecases/task-knowledge-request.test.ts |   50 +-
+ .../src/runner/usecases/task-knowledge-request.ts  |   62 +-
+ .../runner/usecases/task-run-semantic-prompt.ts    |   10 +-
+ .../core/src/runner/agent-semantic-result.test.ts  |    1 +
+ packages/core/src/runner/agent-semantic-result.ts  |    7 +-
+ packages/core/src/runner/agent-work-order.test.ts  |    9 +
+ packages/core/src/runner/agent-work-order.ts       |    5 +-
+ packages/core/src/tasks/index.ts                   |   84 +-
+ packages/core/src/tasks/kernel-semantic.ts         |   39 +-
+ .../core/src/tasks/task-centric/compatibility.ts   |  364 ++++++-
+ packages/core/src/tasks/task-centric/graph.ts      |  117 ++-
+ packages/core/src/tasks/task-centric/index.ts      |   87 --
+ packages/core/src/tasks/task-centric/lifecycle.ts  |   62 ++
+ .../src/tasks/task-centric/orchestrator.test.ts    |  540 -----------
+ .../core/src/tasks/task-centric/orchestrator.ts    |  474 ---------
+ packages/core/src/tasks/task-centric/ports.ts      |  141 ---
+ .../task-centric/replacement-plan-recovery.test.ts |   13 +-
+ .../src/tasks/task-centric/task-centric.test.ts    |   73 +-
+ schemas/agent-semantic-result.schema.json          |    6 +-
+ scripts/bench/paired-m03-local-replay.mjs          |  307 ++++++
+ scripts/bench/paired-m03-local-replay.test.mjs     |   54 ++
+ .../check-post-convergence-test-topology.mjs       |  152 +++
+ scripts/checks/lifecycle-engine-retirement.json    |   40 +
+ scripts/checks/lifecycle-owner-map.json            |   92 +-
+ scripts/checks/lifecycle-owner-map.test.mjs        |   44 +-
+ .../checks/no-secondary-lifecycle-engine.test.mjs  |  140 +++
+ scripts/checks/post-convergence-test-topology.json |  130 +++
+ scripts/checks/single-live-supervisor.test.mjs     |   49 +
+ .../release/check-local-tarball-install-smoke.mjs  |   27 +-
+ 102 files changed, 8493 insertions(+), 6275 deletions(-)
+```
+
+</details>
+<!-- END AUTO SUMMARY -->

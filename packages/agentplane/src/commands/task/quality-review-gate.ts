@@ -1,5 +1,6 @@
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import type { TaskData } from "../../backends/task-backend.js";
+import { decideIndependentReviewApplication } from "@agentplaneorg/core/tasks";
 import { CliError } from "../../shared/errors.js";
 
 export function hasAcceptedQualityReviewProvenance(review: TaskData["quality_review"]): boolean {
@@ -35,7 +36,15 @@ export function assertEvaluatorQualityReviewPassed(opts: {
     });
   }
 
-  if (review.state !== "pass" || !hasAcceptedQualityReviewProvenance(review)) {
+  const reviewDecision =
+    review.state === "pending"
+      ? null
+      : decideIndependentReviewApplication({
+          verdict: review.state,
+          provenance_accepted: hasAcceptedQualityReviewProvenance(review),
+          evidence_current: true,
+        });
+  if (reviewDecision?.action !== "complete") {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",

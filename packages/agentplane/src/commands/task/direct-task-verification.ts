@@ -5,11 +5,8 @@ import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
-import {
-  parseDeclaredTaskCheck,
-  parseDeclaredTaskCheckSequence,
-} from "../shared/declared-check.js";
-import { localRuntimeEvidence, type LocalRuntimeEvidence } from "../../shared/runtime-env.js";
+import { parseDeclaredTaskCheckSequence } from "../shared/declared-check.js";
+import { localRuntimeEvidence } from "../../shared/runtime-env.js";
 import { verificationChildEnv } from "../shared/pr-meta/verify-log.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
@@ -17,6 +14,20 @@ import {
   isInfrastructureVerification,
   isVerificationInfrastructureError,
 } from "./verification-infrastructure.js";
+import {
+  parseDirectTaskCheck,
+  type DirectTaskCheck,
+  type DirectTaskVerificationResult,
+  type ParsedDirectTaskCheck,
+} from "./direct-task-verification-checks.js";
+
+export {
+  directTaskVerificationInputIdentity,
+  parseDirectTaskCheck,
+  renderDirectTaskVerificationDetails,
+  type DirectTaskVerificationInputIdentity,
+  type DirectTaskVerificationResult,
+} from "./direct-task-verification-checks.js";
 
 const DEFAULT_CHECK_TIMEOUT_MS = 30 * 60_000;
 const CHECK_TIMEOUT_MS_BY_SCRIPT: Readonly<Record<string, number>> = Object.freeze({
@@ -100,32 +111,6 @@ async function verificationCheckout(
   }
 }
 
-type DirectTaskCheck = {
-  runtime?: LocalRuntimeEvidence;
-  failure_kind?: "infrastructure";
-  command: string;
-  declared_command?: string;
-  script: string | null;
-  check_ids: string[];
-  exit_code: number | null;
-  duration_ms: number;
-  stdout_tail: string;
-  stderr_tail: string;
-};
-
-type ParsedDirectTaskCheck = {
-  executable: string;
-  args: string[];
-  script: string | null;
-};
-
-export type DirectTaskVerificationResult = {
-  status: "passed" | "failed" | "unsupported";
-  artifact_path: string;
-  checks: DirectTaskCheck[];
-  reason: string | null;
-};
-
 type AdditionalDirectTaskCommand = Readonly<{
   command: string;
   timeout_ms?: number;
@@ -171,59 +156,12 @@ export function isTaskLevelVerificationReworkState(opts: {
   );
 }
 
-export function renderDirectTaskVerificationDetails(opts: {
-  task: Pick<TaskData, "execution_contract">;
-  taskId: string;
-  workflow: "direct" | "branch_pr";
-  result: DirectTaskVerificationResult;
-}): string {
-  const checks = opts.result.checks;
-  const selectedChecks = (
-    opts.task.execution_contract?.verification.contract?.selected_checks ?? []
-  ).filter((checkId) => checkId !== "hosted_integration");
-  if (opts.result.status === "passed" && selectedChecks.length > 0) {
-    const contractDetails = selectedChecks
-      .map((checkId) => {
-        const matching = checks.filter((check) => check.check_ids.includes(checkId));
-        if (matching.length === 0) return null;
-        return matching
-          .map((check, index) =>
-            [
-              `Check: ${checkId}`,
-              `Command: ${check.command}`,
-              "Result: pass",
-              `Evidence: ${opts.result.artifact_path}#check-${String(checks.indexOf(check) + 1)}`,
-              `Scope: ${opts.workflow} task ${opts.taskId} Verification Contract check ${checkId}${matching.length > 1 ? ` (${String(index + 1)}/${String(matching.length)})` : ""}`,
-            ].join("\n"),
-          )
-          .join("\n\n");
-      })
-      .filter((details): details is string => details !== null)
-      .join("\n\n");
-    if (contractDetails) return contractDetails;
-  }
-  return checks
-    .map((check, index) =>
-      [
-        `Command: ${check.command}`,
-        `Result: ${check.exit_code === 0 ? "pass" : "fail"}`,
-        `Evidence: ${opts.result.artifact_path}#check-${String(index + 1)}`,
-        `Scope: ${opts.workflow} task ${opts.taskId} declared verification`,
-      ].join("\n"),
-    )
-    .join("\n\n");
-}
-
 function tail(value: string): string {
   return value.length <= CHECK_OUTPUT_LIMIT ? value : value.slice(-CHECK_OUTPUT_LIMIT);
 }
 
 function mergedOutput(values: readonly string[]): string {
   return tail(values.filter(Boolean).join("\n"));
-}
-
-export function parseDirectTaskCheck(command: string): ParsedDirectTaskCheck | null {
-  return parseDeclaredTaskCheck(command);
 }
 
 function directTaskCheckTimeoutMs(script: string | null): number {
