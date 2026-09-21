@@ -3,7 +3,8 @@
   "branch": "task/202609210002-0TQ72H/canonical-0tq72h",
   "created_at": "2026-09-21T00:49:32.433Z",
   "diffstat_sha256": "sha256:b151997cd487cfb35430e79a25c964c80203dfff5978486cf947dd535f75407b",
-  "last_verified_at": null,
+  "last_verified_at": "2026-09-21T01:06:50.283Z",
+  "last_verified_diffstat_sha256": "sha256:b151997cd487cfb35430e79a25c964c80203dfff5978486cf947dd535f75407b",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202609210002-0TQ72H",
   "updated_at": "2026-09-21T00:49:32.433Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
