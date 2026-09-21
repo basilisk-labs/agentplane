@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 66e8c05aad2e4bb59c65add6609b133b2d38e8c4..662f62977d9f5a0d8c34b716a4a38c143a5dc799",
+      "command": "git diff --check 662f62977d9f5a0d8c34b716a4a38c143a5dc799..f8c0f5429b6867dc957b8dc51421359620618473",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 66e8c05aad2e4bb59c65add6609b133b2d38e8c4..662f62977d9f5a0d8c34b716a4a38c143a5dc799",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 662f62977d9f5a0d8c34b716a4a38c143a5dc799..f8c0f5429b6867dc957b8dc51421359620618473",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,11 +24,8 @@
         "M\t.agentplane/tasks/202609210324-CC13V3/pr/review.md",
         "M\t.agentplane/tasks/202609210324-CC13V3/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202609210324-CC13V3/supervision/implementation-evidence.json",
-        "M\tpackages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts",
-        "A\tpackages/agentplane/src/cli/run-cli.core.roadmap-managed-owner-cutover.test.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-run.ts",
-        "M\tpackages/agentplane/src/commands/task/run.command.ts",
-        "M\tpackages/agentplane/src/commands/task/run.spec.ts"
+        "A\tpackages/agentplane/src/runner/usecases/roadmap-scenario-owner-parity.test.ts",
+        "M\tpackages/agentplane/src/runner/usecases/scenario-materialize-task.ts"
       ]
     },
     {
@@ -38,8 +35,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "66e8c05aad2e4bb59c65add6609b133b2d38e8c4",
-  "implementation_commit": "662f62977d9f5a0d8c34b716a4a38c143a5dc799",
+  "execution_base_commit": "662f62977d9f5a0d8c34b716a4a38c143a5dc799",
+  "implementation_commit": "f8c0f5429b6867dc957b8dc51421359620618473",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
