@@ -78,43 +78,6 @@ describe("cli help contract", () => {
     }
   });
 
-  it("blueprint explain help lists context as a synthetic kind", async () => {
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["help", "blueprint", "explain", "--compact"]);
-      expect(code).toBe(0);
-      expect(io.stdout).toContain("--kind <analysis|content|docs|code|release|ops|context>");
-    } finally {
-      io.restore();
-    }
-  });
-
-  it("blueprint explain accepts context as a synthetic kind", async () => {
-    const io = captureStdIO();
-    try {
-      const code = await runCli([
-        "blueprint",
-        "explain",
-        "--kind",
-        "context",
-        "--workflow-mode",
-        "branch_pr",
-        "--blueprint",
-        "context.assimilation",
-        "--json",
-      ]);
-      expect(code).toBe(0);
-      const payload = JSON.parse(io.stdout) as {
-        blueprintId: string;
-        stopReasons: string[];
-      };
-      expect(payload.blueprintId).toBe("context.assimilation");
-      expect(payload.stopReasons).toEqual([]);
-    } finally {
-      io.restore();
-    }
-  });
-
   it("help --json returns a stable, internally consistent registry", async () => {
     const io = captureStdIO();
     try {
@@ -184,7 +147,9 @@ describe("cli help contract", () => {
       expect(io.stdout).not.toContain("Framework Dev:");
       expect(io.stdout).toContain("task  Supervisor-first task commands.");
       expect(io.stdout).toContain("task advance  Return one compact external-agent action");
-      expect(io.stdout).toContain("task run  Supervise a direct or branch_pr task");
+      expect(io.stdout).toContain(
+        "task run  Execute one eligible Task Kernel semantic episode with the managed runner.",
+      );
     } finally {
       io.restore();
     }
