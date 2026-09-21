@@ -1,13 +1,24 @@
 import { gitRevParse } from "@agentplaneorg/core/git";
-import { setMarkdownSection } from "@agentplaneorg/core/tasks";
+import { setMarkdownSection, taskKernel as k } from "@agentplaneorg/core/tasks";
 import path from "node:path";
 
 import { writeAcrFile } from "../../../../commands/acr/acr.command.js";
 import { generateAcr } from "../../../../commands/acr/generate.js";
 import type { TaskData } from "../../../../backends/task-backend.js";
 import type { CommandContext } from "../../../../commands/shared/task-backend.js";
+import { createCanonicalTask } from "../../../../commands/task/kernel-create.js";
+import { setCanonicalPlan } from "../../../../commands/task/kernel-plan.js";
+import {
+  createKernelRuntime,
+  type KernelCommandPayload,
+  requireKernelCommit,
+} from "../../../../commands/task/kernel-runtime-context.js";
 import { TASK_DOC_VERSION_V3, defaultTaskDocV3 } from "../../../../commands/task/doc-template.js";
 import { nowIso } from "../../../../commands/task/shared.js";
+import {
+  resolveTaskExecutionContract,
+  resolveTaskExecutionRoute,
+} from "../../../../runtime/task-routing/index.js";
 import { createCliEmitter } from "../../../output.js";
 import type { CommandCtx, CommandHandler, CommandSpec } from "../../../spec/spec.js";
 
@@ -107,6 +118,208 @@ function buildDemoDoc(title: string, description: string): string {
   return doc;
 }
 
+async function completeCanonicalDemoTask(ctx: CommandContext, task: TaskData): Promise<void> {
+  await createCanonicalTask(ctx, task);
+  const taskId = task.id;
+  await setCanonicalPlan(ctx, taskId, {
+    work_items: [
+      {
+        id: "demo-audit-trail",
+        depends_on: [],
+        required_inputs: [],
+        expected_outputs: ["demo-audit-trail"],
+        execution_requirements: {
+          scope_roots: [ctx.config.paths.workflow_dir],
+          repository_effects: ["agentplane_task_artifacts"],
+          external_effects: [],
+          capabilities: ["repository_write"],
+          resources: [`task:${taskId}`],
+        },
+        optional: false,
+        contract: {
+          objective: "Create the inspectable Agentplane demo audit trail.",
+          acceptance_criteria: [
+            "The task README records plan and verification evidence.",
+            "The task-local ACR references the canonical demo task.",
+          ],
+          verification_commands: [`agentplane acr validate ${taskId} --mode local`],
+          role: "EXECUTOR",
+        },
+      },
+    ],
+  });
+
+  const runtime = await createKernelRuntime({
+    command: ctx,
+    task_id: taskId,
+    transport: "manual",
+    operation_id: `demo:${taskId}`,
+    approval: {
+      kind: "manual_operator",
+      actor_id: "USER:DEMO",
+      invocation_id: `agentplane-demo:${taskId}`,
+    },
+  });
+  await runtime.checkpoint(await runtime.observe());
+  const approved = requireKernelCommit(await runtime.authority.approve(taskId));
+  const plan = approved.record.aggregate.current_plan;
+  if (!plan || plan.state !== "APPROVED") {
+    throw new Error("Demo canonical plan approval was not persisted.");
+  }
+
+  const refreshAuthority = async (): Promise<void> => {
+    for (let attempt = 0; attempt < 4; attempt += 1) {
+      const [read, context] = await Promise.all([
+        runtime.adapter.read(taskId),
+        runtime.native.readContext(taskId),
+      ]);
+      if (read.kind !== "canonical") throw new Error("Demo canonical task readback unavailable.");
+      const authority = read.record.aggregate.authority_lineage?.at(-1)?.authority;
+      if (authority?.repository_fingerprint === context.repository_fingerprint) return;
+      requireKernelCommit(await runtime.authority.continue(taskId));
+    }
+    throw new Error("Demo canonical authority did not converge on the current repository state.");
+  };
+  const input = async (payload: KernelCommandPayload, mutationId: string) => {
+    await refreshAuthority();
+    await runtime.checkpoint(await runtime.observe());
+    return await runtime.input(payload, mutationId);
+  };
+  const apply = async (payload: KernelCommandPayload, mutationId: string) =>
+    requireKernelCommit(await runtime.lifecycle.apply(await input(payload, mutationId)));
+
+  await apply(
+    {
+      kind: "materialize_work_items",
+      plan_revision: plan.revision,
+      plan_digest: plan.digest,
+    },
+    `demo:${taskId}:materialize`,
+  );
+  const claimId = k.kernelDigest({ task_id: taskId, work_item_id: "demo-audit-trail" });
+  await apply(
+    {
+      kind: "transition_work_item",
+      action: "claim",
+      work_item_id: "demo-audit-trail",
+      claim_id: claimId,
+    },
+    `demo:${taskId}:claim`,
+  );
+  const begun = await runtime.lifecycle.begin(
+    await input(
+      {
+        kind: "transition_work_item",
+        action: "begin",
+        work_item_id: "demo-audit-trail",
+        claim_id: claimId,
+      },
+      `demo:${taskId}:begin`,
+    ),
+  );
+  requireKernelCommit(begun.result);
+  if (!begun.work_order) throw new Error("Demo canonical WorkOrder was not created.");
+
+  const resultDigest = k.kernelDigest({ task_id: taskId, result: "demo-audit-trail" });
+  await refreshAuthority();
+  await runtime.checkpoint(await runtime.observe());
+  const resultContext = await runtime.native.readContext(taskId);
+  const resultInput = await runtime.input(
+    {
+      kind: "accept_work_item_result",
+      plan_revision: plan.revision,
+      plan_digest: plan.digest,
+      work_item_id: "demo-audit-trail",
+      result_digest: resultDigest,
+      output_manifests: [
+        {
+          id: "demo-audit-trail",
+          kind: "agentplane.demo.audit",
+          digest: resultDigest,
+          task_id: taskId,
+          plan_revision: plan.revision,
+          work_item_id: "demo-audit-trail",
+          attempt: begun.work_order.binding.attempt,
+          repository_fingerprint: resultContext.repository_fingerprint,
+        },
+      ],
+    },
+    `demo:${taskId}:result`,
+  );
+  requireKernelCommit(await runtime.lifecycle.receiveResult(resultInput, begun.work_order.binding));
+  await apply(
+    {
+      kind: "transition_work_item",
+      action: "inspect",
+      work_item_id: "demo-audit-trail",
+      claim_id: claimId,
+    },
+    `demo:${taskId}:inspect`,
+  );
+  const observedAt = new Date().toISOString();
+  await apply(
+    {
+      kind: "record_work_item_validation",
+      work_item_id: "demo-audit-trail",
+      validation: {
+        status: "PASSED",
+        identity: {
+          implementation_identity: resultDigest,
+          check_id: "agentplane-demo",
+          command_digest: k.kernelDigest(`agentplane acr validate ${taskId} --mode local`),
+          toolchain_digest: k.kernelDigest("agentplane-demo"),
+          environment_digest: resultContext.repository_fingerprint,
+        },
+        evidence_digests: [resultDigest],
+        observed_at: observedAt,
+      },
+    },
+    `demo:${taskId}:validate`,
+  );
+  await apply(
+    {
+      kind: "transition_work_item",
+      action: "complete",
+      work_item_id: "demo-audit-trail",
+      claim_id: claimId,
+    },
+    `demo:${taskId}:complete-work-item`,
+  );
+
+  await refreshAuthority();
+  await runtime.checkpoint(await runtime.observe());
+  const finalContext = await runtime.native.readContext(taskId);
+  const finalEvidence = k.kernelDigest({ task_id: taskId, result_digest: resultDigest });
+  requireKernelCommit(
+    await runtime.lifecycle.apply(
+      await runtime.input(
+        {
+          kind: "record_final_validation",
+          validation: {
+            status: "PASSED",
+            identity: {
+              implementation_identity: finalContext.repository_fingerprint,
+              check_id: "agentplane-demo-final",
+              command_digest: k.kernelDigest(`agentplane acr validate ${taskId} --mode local`),
+              toolchain_digest: k.kernelDigest("agentplane-demo"),
+              environment_digest: finalContext.repository_fingerprint,
+            },
+            evidence_digests: [finalEvidence],
+            observed_at: observedAt,
+          },
+        },
+        `demo:${taskId}:final-validation`,
+      ),
+    ),
+  );
+  await apply({ kind: "complete_task" }, `demo:${taskId}:complete-task`);
+
+  const completed = await runtime.adapter.read(taskId);
+  if (completed.kind !== "canonical" || completed.record.aggregate.state !== "COMPLETED") {
+    throw new Error("Demo canonical task completion was not persisted.");
+  }
+}
+
 async function createDemoTask(ctx: CommandContext): Promise<DemoResult> {
   await ctx.taskBackend.assertLocalMutationReady?.();
   if (!ctx.taskBackend.generateTaskId) {
@@ -119,6 +332,16 @@ async function createDemoTask(ctx: CommandContext): Promise<DemoResult> {
   const description = demoDescription();
   const head = await gitRevParse(ctx.resolvedProject.gitRoot, ["HEAD"]).catch(() => "HEAD");
   const doc = buildDemoDoc(title, description);
+  const routeTask = {
+    task_kind: "docs" as const,
+    mutation_scope: "docs" as const,
+    risk_flags: [],
+  };
+  const executionContract = resolveTaskExecutionContract({
+    config: ctx.config,
+    requestedMode: "direct",
+    task: routeTask,
+  });
   const task: TaskData = {
     id: taskId,
     title,
@@ -133,6 +356,12 @@ async function createDemoTask(ctx: CommandContext): Promise<DemoResult> {
     tags: ["demo", "docs"],
     task_kind: "docs",
     mutation_scope: "docs",
+    execution_route: resolveTaskExecutionRoute({
+      config: ctx.config,
+      requestedMode: "direct",
+      task: routeTask,
+    }),
+    execution_contract: executionContract,
     verify: ["agentplane acr validate <task-id> --mode local"],
     plan_approval: {
       state: "approved",
@@ -190,7 +419,7 @@ async function createDemoTask(ctx: CommandContext): Promise<DemoResult> {
     id_source: "generated",
   };
 
-  await ctx.taskBackend.writeTask(task);
+  await completeCanonicalDemoTask(ctx, task);
   const { record, acrPath } = await generateAcr({
     ctx,
     cwd: ctx.resolvedProject.gitRoot,

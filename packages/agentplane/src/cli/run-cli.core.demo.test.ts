@@ -43,11 +43,15 @@ describe("runCli demo", () => {
       const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
       const acrPath = path.join(root, ".agentplane", "tasks", taskId, "acr.json");
       const readme = await readFile(readmePath, "utf8");
-      const acr = JSON.parse(await readFile(acrPath, "utf8")) as { task?: { task_id?: string } };
+      const acr = JSON.parse(await readFile(acrPath, "utf8")) as {
+        task?: { task_id?: string };
+        extensions?: Record<string, unknown>;
+      };
 
       expect(readme).toContain("Agentplane demo: first traceable task");
       expect(readme).toContain("DEMO - VERIFY - ok");
       expect(acr.task?.task_id).toBe(taskId);
+      expect(acr.extensions?.["agentplane.native-identity"]).toBeDefined();
       expect(await readFile(path.join(root, "parser.js"), "utf8")).toBe(
         "export const parser = true;\n",
       );
