@@ -40,10 +40,12 @@ export {
   aggregateValidation,
   assertTaskTransition,
   assertWorkItemTransition,
+  decideIndependentReviewApplication,
   evaluateTaskCompletion,
   incompleteRequiredWorkItems,
   requiredWorkItemsComplete,
   type CompletionEvaluation,
+  type IndependentReviewApplication,
 } from "./lifecycle.js";
 export {
   applyPlanRefinement,

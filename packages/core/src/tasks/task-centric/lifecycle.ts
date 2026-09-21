@@ -61,6 +61,64 @@ export type CompletionEvaluation = Readonly<{
   reason_codes: readonly string[];
 }>;
 
+export type IndependentReviewApplication = Readonly<{
+  action: "complete" | "rework" | "attention" | "reject";
+  completion_satisfied: boolean;
+  semantic_work_required: boolean;
+  reason_code:
+    | "review_passed"
+    | "review_rework_required"
+    | "review_attention_required"
+    | "review_provenance_rejected"
+    | "review_evidence_stale";
+}>;
+
+/** Pure review policy shared by canonical completion and compatibility gates. */
+export function decideIndependentReviewApplication(opts: {
+  verdict: "pass" | "rework" | "blocked" | "human_review";
+  provenance_accepted: boolean;
+  evidence_current: boolean;
+}): IndependentReviewApplication {
+  if (!opts.provenance_accepted) {
+    return {
+      action: "reject",
+      completion_satisfied: false,
+      semantic_work_required: false,
+      reason_code: "review_provenance_rejected",
+    };
+  }
+  if (!opts.evidence_current) {
+    return {
+      action: "reject",
+      completion_satisfied: false,
+      semantic_work_required: false,
+      reason_code: "review_evidence_stale",
+    };
+  }
+  if (opts.verdict === "pass") {
+    return {
+      action: "complete",
+      completion_satisfied: true,
+      semantic_work_required: false,
+      reason_code: "review_passed",
+    };
+  }
+  if (opts.verdict === "rework") {
+    return {
+      action: "rework",
+      completion_satisfied: false,
+      semantic_work_required: true,
+      reason_code: "review_rework_required",
+    };
+  }
+  return {
+    action: "attention",
+    completion_satisfied: false,
+    semantic_work_required: false,
+    reason_code: "review_attention_required",
+  };
+}
+
 export function incompleteRequiredWorkItems(task: TaskAggregate | null): readonly WorkItem[] {
   return (
     task?.current_plan?.proposal.work_items.work_items.filter(

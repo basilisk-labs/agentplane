@@ -5,7 +5,11 @@ import {
   type AgentSemanticResult,
   type AgentWorkOrderV2,
 } from "@agentplaneorg/core/schemas";
-import { taskKernel as k, type KernelEpisodeBinding } from "@agentplaneorg/core/tasks";
+import {
+  decideIndependentReviewApplication,
+  taskKernel as k,
+  type KernelEpisodeBinding,
+} from "@agentplaneorg/core/tasks";
 import type { KernelCommandInput } from "../../adapters/task-backend/kernel-backend-adapter.js";
 import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
 import type { CommandContext } from "../shared/task-backend.js";
@@ -649,12 +653,19 @@ export async function acceptKernelInspection(
     throw new Error("Canonical inspection authority changed");
   await writeKernelArtifact(directory, "inspection-result.json", semantic);
   if (item.state === "COMPLETED" || item.state === "REWORK_READY") return;
-  if (semantic.review.verdict === "blocked" || semantic.review.verdict === "human_review")
+  const reviewDecision = decideIndependentReviewApplication({
+    verdict: semantic.review.verdict,
+    provenance_accepted: true,
+    evidence_current: true,
+  });
+  if (reviewDecision.action === "attention")
     return {
       kind: "human_required",
       reason: "canonical_inspection_requires_attention",
       summary: semantic.summary,
     };
+  if (reviewDecision.action === "reject")
+    throw new Error(`Canonical inspection rejected: ${reviewDecision.reason_code}`);
   const contract = read.record.documents!.contracts[String(binding.contract_digest)]!;
   const repositoryEvidenceInput = workOrder?.required_inputs.find(
     (input) => input.id === "repository-evidence",
@@ -708,7 +719,7 @@ export async function acceptKernelInspection(
     ) as KernelValidationEvidence;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
-    const status = semantic.review.verdict === "pass" ? "PASSED" : "FAILED";
+    const status = reviewDecision.action === "complete" ? "PASSED" : "FAILED";
     evidence = {
       task_id: binding.task_id,
       work_item_id: binding.work_item_id,

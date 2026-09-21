@@ -6,13 +6,15 @@
  .../src/commands/task/direct-task-verification.ts  |  35 ++
  .../src/commands/task/external-agent-exchange.ts   |  13 +-
  .../src/commands/task/kernel-exchange.ts           | 108 +++--
- .../src/commands/task/kernel-inspection.ts         | 512 +++++++++++++++++----
+ .../src/commands/task/kernel-inspection.ts         | 527 +++++++++++++++++----
  .../agentplane/src/commands/task/kernel-run.ts     |  12 +-
  .../src/commands/task/kernel-semantic-result.ts    |   4 +-
  .../src/commands/task/kernel-work-order.ts         |   5 +-
+ .../src/commands/task/quality-review-gate.ts       |  11 +-
  .../task/roadmap-check-review-separation.test.ts   |  93 ++++
- .../commands/task/roadmap-curator-parity.test.ts   | 207 +++++++++
- .../task/roadmap-semantic-admission.test.ts        | 129 ++++++
+ .../task/roadmap-common-review-application.test.ts | 155 ++++++
+ .../commands/task/roadmap-curator-parity.test.ts   | 207 ++++++++
+ .../task/roadmap-semantic-admission.test.ts        | 129 +++++
  .../task/roadmap-workitem-readiness.test.ts        | 150 ++++++
  .../src/runner/usecases/agent-work-order-build.ts  |  12 +-
  .../src/runner/usecases/semantic-role.ts           |  10 +
@@ -25,7 +27,7 @@
  packages/core/src/runner/agent-work-order.ts       |   5 +-
  packages/core/src/tasks/kernel-semantic.ts         |   2 +-
  packages/core/src/tasks/task-centric/graph.ts      | 117 +++--
- packages/core/src/tasks/task-centric/index.ts      |   3 +
- packages/core/src/tasks/task-centric/lifecycle.ts  |   4 +
+ packages/core/src/tasks/task-centric/index.ts      |   5 +
+ packages/core/src/tasks/task-centric/lifecycle.ts  |  62 +++
  schemas/agent-semantic-result.schema.json          |   6 +-
- 30 files changed, 1519 insertions(+), 258 deletions(-)
+ 32 files changed, 1757 insertions(+), 261 deletions(-)
