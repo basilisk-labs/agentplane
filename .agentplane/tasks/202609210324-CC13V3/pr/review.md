@@ -29,6 +29,7 @@ Created: 2026-09-21T03:47:54.341Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ artifacts/m03-0.7.10-vs-0.7.11-local-replay.json   |  332 +++++++
  .../adapters/task-backend/kernel-next-action.ts    |   55 +-
  .../src/cli/run-cli.core.kernel-transport.test.ts  |   23 +-
  ...cli.core.roadmap-external-owner-cutover.test.ts |  105 ++
@@ -113,13 +114,15 @@ Created: 2026-09-21T03:47:54.341Z
  packages/core/src/tasks/task-centric/ports.ts      |  141 ---
  .../src/tasks/task-centric/task-centric.test.ts    |   22 -
  schemas/agent-semantic-result.schema.json          |    6 +-
+ scripts/bench/paired-m03-local-replay.mjs          |  307 ++++++
+ scripts/bench/paired-m03-local-replay.test.mjs     |   54 ++
  scripts/checks/lifecycle-engine-retirement.json    |   46 +
  scripts/checks/lifecycle-owner-map.json            |   92 +-
  scripts/checks/lifecycle-owner-map.test.mjs        |   44 +-
  .../checks/no-secondary-lifecycle-engine.test.mjs  |  110 +++
  scripts/checks/single-live-supervisor.test.mjs     |   49 +
  .../release/check-local-tarball-install-smoke.mjs  |   27 +-
- 90 files changed, 7210 insertions(+), 6029 deletions(-)
+ 93 files changed, 7903 insertions(+), 6029 deletions(-)
 ```
 
 </details>

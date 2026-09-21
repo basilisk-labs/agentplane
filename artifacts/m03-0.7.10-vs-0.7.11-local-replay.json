@@ -1,0 +1,332 @@
+{
+  "comparison": {
+    "candidate": {
+      "commit": "c8baf368d85335724e0daf171af9aa2b74196adc",
+      "version": "0.7.11-unreleased"
+    },
+    "mode": "offline_local_replay",
+    "network": "deny",
+    "previous_release": {
+      "commit": "4470b04c34da735ffb46914ea6e6398a54eb39ac",
+      "version": "0.7.10"
+    },
+    "provider_calls": 0
+  },
+  "digest": "sha256:6cb866f2e061b71ddba136d4fae03ca57406faabebd1b7dc87292155b07d9a81",
+  "disposition": {
+    "efficiency": "not_established",
+    "performance_claim": null,
+    "reasons": [
+      "No paid provider campaign was authorized by this work order.",
+      "Local replay has no current provider token or monetary cost telemetry.",
+      "Architectural deletion and source deltas are not evidence of cost reduction."
+    ],
+    "release_gate": "measurement_debt_requires_release_owner_acceptance",
+    "safety": "pass"
+  },
+  "experiment": "M03",
+  "failed_attempt_accounting": {
+    "all_assigned_attempts_retained": true,
+    "contract": "scripts/bench/paired-result-report.mjs",
+    "failed_attempts_remain_in_cost_numerator": true,
+    "limitation": "Frozen replay validates accounting and safety structure, not current provider cost.",
+    "zero_success_has_finite_efficiency_score": false
+  },
+  "frozen_contracts": {
+    "packages/agentplane/src/workflow-lifecycle/contract.ts": {
+      "equal": true,
+      "git_object": "ba83e2d97158b26b43a4289fe4c4946de4a3719b"
+    },
+    "scripts/baselines/agent-efficiency-pre-v0.7-replay.json": {
+      "equal": true,
+      "git_object": "ac7ddd0ab7c72120134bb3d1becfaf8df5902cf0"
+    },
+    "scripts/bench/agent-efficiency-fixtures.json": {
+      "equal": true,
+      "git_object": "79aa099505303ad4b8e57025fae62a8536bda323"
+    },
+    "scripts/bench/agent-efficiency-replay-envelopes": {
+      "equal": true,
+      "git_object": "ced236892a203286df1f1ff3901d3c987534c75a"
+    },
+    "scripts/bench/agent-efficiency-replay-evidence": {
+      "equal": true,
+      "git_object": "769745943a478df939d54d2e1000a641f1936c63"
+    },
+    "scripts/bench/paired-production-driver.mjs": {
+      "equal": true,
+      "git_object": "37db4f9335273c92320f498b8db43bad256cb3fa"
+    },
+    "scripts/bench/paired-result-report.mjs": {
+      "equal": true,
+      "git_object": "7196202758f4b00110b4f5ea99009d4b709a35df"
+    }
+  },
+  "kind": "agentplane.m03_local_replay_disposition",
+  "lifecycle_delta": {
+    "categories": {
+      "observation": {
+        "files": 0,
+        "paths": []
+      },
+      "preparation": {
+        "files": 5,
+        "paths": [
+          "packages/agentplane/src/commands/task/kernel-work-order.ts",
+          "packages/agentplane/src/commands/task/roadmap-semantic-admission.test.ts",
+          "packages/agentplane/src/commands/task/roadmap-workitem-readiness.test.ts",
+          "packages/agentplane/src/runner/usecases/agent-work-order-build.ts",
+          "packages/agentplane/src/runner/usecases/scenario-materialize-task.ts"
+        ]
+      },
+      "recovery": {
+        "files": 5,
+        "paths": [
+          "packages/agentplane/src/commands/task/migration-apply.ts",
+          "packages/agentplane/src/commands/task/migration-preview.ts",
+          "packages/agentplane/src/commands/task/roadmap-common-recovery.test.ts",
+          "packages/agentplane/src/commands/task/roadmap-lifecycle-migration-apply.test.ts",
+          "packages/agentplane/src/commands/task/roadmap-lifecycle-migration-preview.test.ts"
+        ]
+      }
+    },
+    "deletions": 5651,
+    "files": 69,
+    "insertions": 7021
+  },
+  "mandatory_role_obligations": {
+    "branch_pr": {
+      "equal": true,
+      "obligations": [
+        {
+          "role": "ORCHESTRATOR",
+          "step": "work_start"
+        },
+        {
+          "role": "CODER",
+          "step": "start_ready"
+        },
+        {
+          "role": "CODER",
+          "step": "implementation_commit"
+        },
+        {
+          "role": "CODER",
+          "step": "verify_show"
+        },
+        {
+          "role": "CODER",
+          "step": "pr_open"
+        },
+        {
+          "role": "CODER",
+          "step": "pr_update"
+        },
+        {
+          "role": "CODER",
+          "step": "verify"
+        },
+        {
+          "role": "EVALUATOR",
+          "step": "quality_gate"
+        },
+        {
+          "role": "CODER",
+          "step": "hosted_checks"
+        },
+        {
+          "role": "INTEGRATOR",
+          "step": "integrate"
+        },
+        {
+          "role": "INTEGRATOR",
+          "step": "finish"
+        }
+      ]
+    },
+    "direct": {
+      "equal": true,
+      "obligations": [
+        {
+          "role": "ORCHESTRATOR",
+          "step": "task_new"
+        },
+        {
+          "role": "PLANNER",
+          "step": "plan_set"
+        },
+        {
+          "role": "ORCHESTRATOR",
+          "step": "plan_approve"
+        },
+        {
+          "role": "CODER",
+          "step": "start_ready"
+        },
+        {
+          "role": "CODER",
+          "step": "verify_show"
+        },
+        {
+          "role": "CODER",
+          "step": "verify"
+        },
+        {
+          "role": "EVALUATOR",
+          "step": "quality_gate"
+        },
+        {
+          "role": "CODER",
+          "step": "finish"
+        }
+      ]
+    }
+  },
+  "required_checks": [
+    "bun run bench:agent-efficiency:check",
+    "bun run bench:agent-efficiency:replay:check"
+  ],
+  "schema_version": 1,
+  "workflow_results": [
+    {
+      "class": "normal",
+      "expected_outcomes": {
+        "adapter_failure": true,
+        "approval_respected": true,
+        "blocked": false,
+        "context_gap": false,
+        "outcome": "verified_after_rework",
+        "rework_required": true,
+        "scope_violation": false,
+        "verified_success": true
+      },
+      "frozen_envelopes": [
+        "scripts/bench/agent-efficiency-replay-envelopes/direct/run-01.json",
+        "scripts/bench/agent-efficiency-replay-envelopes/direct/run-02.json",
+        "scripts/bench/agent-efficiency-replay-envelopes/direct/run-03.json",
+        "scripts/bench/agent-efficiency-replay-envelopes/direct/run-04.json",
+        "scripts/bench/agent-efficiency-replay-envelopes/direct/run-05.json"
+      ],
+      "frozen_evidence": [
+        "scripts/bench/agent-efficiency-replay-evidence/direct/run-01.json",
+        "scripts/bench/agent-efficiency-replay-evidence/direct/run-02.json",
+        "scripts/bench/agent-efficiency-replay-evidence/direct/run-03.json",
+        "scripts/bench/agent-efficiency-replay-evidence/direct/run-04.json",
+        "scripts/bench/agent-efficiency-replay-evidence/direct/run-05.json"
+      ],
+      "id": "direct",
+      "mandatory_episode_obligations": [
+        "CODER"
+      ],
+      "replay_runs": 5,
+      "result": "unchanged",
+      "workflow": "direct"
+    },
+    {
+      "class": "normal",
+      "expected_outcomes": {
+        "adapter_failure": false,
+        "approval_respected": true,
+        "blocked": false,
+        "context_gap": false,
+        "outcome": "verified_success",
+        "rework_required": false,
+        "scope_violation": false,
+        "verified_success": true
+      },
+      "frozen_envelopes": [
+        "scripts/bench/agent-efficiency-replay-envelopes/branch_pr/run-01.json",
+        "scripts/bench/agent-efficiency-replay-envelopes/branch_pr/run-02.json",
+        "scripts/bench/agent-efficiency-replay-envelopes/branch_pr/run-03.json",
+        "scripts/bench/agent-efficiency-replay-envelopes/branch_pr/run-04.json",
+        "scripts/bench/agent-efficiency-replay-envelopes/branch_pr/run-05.json"
+      ],
+      "frozen_evidence": [
+        "scripts/bench/agent-efficiency-replay-evidence/branch_pr/run-01.json",
+        "scripts/bench/agent-efficiency-replay-evidence/branch_pr/run-02.json",
+        "scripts/bench/agent-efficiency-replay-evidence/branch_pr/run-03.json",
+        "scripts/bench/agent-efficiency-replay-evidence/branch_pr/run-04.json",
+        "scripts/bench/agent-efficiency-replay-evidence/branch_pr/run-05.json"
+      ],
+      "id": "branch_pr",
+      "mandatory_episode_obligations": [
+        "CODER",
+        "EVALUATOR"
+      ],
+      "replay_runs": 5,
+      "result": "unchanged",
+      "workflow": "branch_pr"
+    },
+    {
+      "class": "recovery",
+      "expected_outcomes": {
+        "adapter_failure": false,
+        "approval_respected": true,
+        "blocked": false,
+        "context_gap": false,
+        "outcome": "verified_after_rework",
+        "rework_required": true,
+        "scope_violation": false,
+        "verified_success": true
+      },
+      "frozen_envelopes": [
+        "scripts/bench/agent-efficiency-replay-envelopes/evaluator_rework/run-01.json",
+        "scripts/bench/agent-efficiency-replay-envelopes/evaluator_rework/run-02.json",
+        "scripts/bench/agent-efficiency-replay-envelopes/evaluator_rework/run-03.json",
+        "scripts/bench/agent-efficiency-replay-envelopes/evaluator_rework/run-04.json",
+        "scripts/bench/agent-efficiency-replay-envelopes/evaluator_rework/run-05.json"
+      ],
+      "frozen_evidence": [
+        "scripts/bench/agent-efficiency-replay-evidence/evaluator_rework/run-01.json",
+        "scripts/bench/agent-efficiency-replay-evidence/evaluator_rework/run-02.json",
+        "scripts/bench/agent-efficiency-replay-evidence/evaluator_rework/run-03.json",
+        "scripts/bench/agent-efficiency-replay-evidence/evaluator_rework/run-04.json",
+        "scripts/bench/agent-efficiency-replay-evidence/evaluator_rework/run-05.json"
+      ],
+      "id": "evaluator_rework",
+      "mandatory_episode_obligations": [
+        "CODER",
+        "EVALUATOR",
+        "CODER",
+        "EVALUATOR"
+      ],
+      "replay_runs": 5,
+      "result": "unchanged",
+      "workflow": "branch_pr"
+    },
+    {
+      "class": "negative",
+      "expected_outcomes": {
+        "adapter_failure": true,
+        "approval_respected": true,
+        "blocked": true,
+        "context_gap": false,
+        "outcome": "adapter_crash",
+        "rework_required": true,
+        "scope_violation": false,
+        "verified_success": false
+      },
+      "frozen_envelopes": [
+        "scripts/bench/agent-efficiency-replay-envelopes/adapter_failure/run-01.json",
+        "scripts/bench/agent-efficiency-replay-envelopes/adapter_failure/run-02.json",
+        "scripts/bench/agent-efficiency-replay-envelopes/adapter_failure/run-03.json",
+        "scripts/bench/agent-efficiency-replay-envelopes/adapter_failure/run-04.json",
+        "scripts/bench/agent-efficiency-replay-envelopes/adapter_failure/run-05.json"
+      ],
+      "frozen_evidence": [
+        "scripts/bench/agent-efficiency-replay-evidence/adapter_failure/run-01.json",
+        "scripts/bench/agent-efficiency-replay-evidence/adapter_failure/run-02.json",
+        "scripts/bench/agent-efficiency-replay-evidence/adapter_failure/run-03.json",
+        "scripts/bench/agent-efficiency-replay-evidence/adapter_failure/run-04.json",
+        "scripts/bench/agent-efficiency-replay-evidence/adapter_failure/run-05.json"
+      ],
+      "id": "adapter_failure",
+      "mandatory_episode_obligations": [
+        "CURRENT_AGENT"
+      ],
+      "replay_runs": 5,
+      "result": "unchanged",
+      "workflow": "shared"
+    }
+  ]
+}
