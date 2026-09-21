@@ -130,6 +130,8 @@ async function createTask(binPath: string, root: string, title: string): Promise
       "CODER",
       "--tag",
       "code",
+      "--verify",
+      "node --version",
       "--root",
       root,
     ],
@@ -138,42 +140,39 @@ async function createTask(binPath: string, root: string, title: string): Promise
   return result.stdout.trim();
 }
 
-async function approvePlan(binPath: string, root: string, taskId: string): Promise<void> {
+async function approveCanonicalPlan(binPath: string, root: string, taskId: string): Promise<void> {
+  const plan = {
+    work_items: [
+      {
+        id: "installed-runtime-smoke",
+        depends_on: [],
+        required_inputs: [],
+        expected_outputs: ["installed-runtime-smoke"],
+        execution_requirements: {
+          scope_roots: ["."],
+          repository_effects: ["source_code"],
+          external_effects: [],
+          capabilities: ["repository_write"],
+          resources: [taskId],
+        },
+        optional: false,
+        contract: {
+          objective: "Run the installed AgentPlane runtime smoke scenario.",
+          acceptance_criteria: ["The generated project remains usable."],
+          verification_commands: ["node --version"],
+          role: "EXECUTOR",
+        },
+      },
+    ],
+  };
   await expectInstalledOk(
     binPath,
-    [
-      "task",
-      "doc",
-      "set",
-      taskId,
-      "--section",
-      "Verify Steps",
-      "--text",
-      "Run the installed runtime smoke scenario. Expected: the generated project remains usable.",
-      "--root",
-      root,
-    ],
+    ["task", "plan", "set", taskId, "--text", JSON.stringify(plan), "--root", root],
     root,
   );
   await expectInstalledOk(
     binPath,
-    [
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "1. Run the installed runtime smoke scenario\n2. Verify the generated project remains usable",
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--root",
-      root,
-    ],
-    root,
-  );
-  await expectInstalledOk(
-    binPath,
-    ["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root],
+    ["task", "plan", "approve", taskId, "--by", "USER", "--root", root],
     root,
   );
 }
@@ -237,37 +236,17 @@ describe("installed AgentPlane smoke", { timeout: INSTALLED_SMOKE_TIMEOUT_MS }, 
     ).resolves.toBeDefined();
 
     const taskId = await createTask(binPath, root, "Installed direct smoke");
-    await approvePlan(binPath, root, taskId);
-    await expectInstalledOk(
+    await approveCanonicalPlan(binPath, root, taskId);
+    const packet = await expectInstalledOk(
       binPath,
-      [
-        "task",
-        "start-ready",
-        taskId,
-        "--author",
-        "CODER",
-        "--body",
-        "Start: installed runtime smoke is ready for verification.",
-        "--root",
-        root,
-      ],
+      ["task", "advance", taskId, "--agent-json", "--root", root],
       root,
     );
-    await expectInstalledOk(
-      binPath,
-      [
-        "verify",
-        taskId,
-        "--ok",
-        "--by",
-        "CODER",
-        "--note",
-        "Installed smoke passed.",
-        "--root",
-        root,
-      ],
-      root,
-    );
+    expect(JSON.parse(packet.stdout)).toMatchObject({
+      task_id: taskId,
+      action: { kind: "agent_episode" },
+      authority: { role: "EXECUTOR" },
+    });
   });
 
   it("initializes a branch_pr project and seeds worktree hook shims from the installed binary", async () => {
@@ -295,7 +274,7 @@ describe("installed AgentPlane smoke", { timeout: INSTALLED_SMOKE_TIMEOUT_MS }, 
     await expectInstalledOk(binPath, ["branch", "base", "set", "main", "--root", root], root);
 
     const taskId = await createTask(binPath, root, "Installed branch_pr smoke");
-    await approvePlan(binPath, root, taskId);
+    await approveCanonicalPlan(binPath, root, taskId);
     await expectInstalledOk(
       binPath,
       [
