@@ -21,7 +21,7 @@ import {
   decideCanonicalWorkflowEffect,
   prepareCanonicalWorkflowEffect,
 } from "./kernel-provider-effect-coordinator.js";
-import { ensureKernelOperationalProjectionStatus } from "./kernel-operational-projection.js";
+import { ensureKernelOperationalProjectionEvidence } from "./kernel-operational-projection.js";
 import { transferCanonicalControllerToBase } from "./kernel-controller-handoff.js";
 import { acceptKernelSemanticResult } from "./kernel-semantic-result.js";
 import { ensureCanonicalTaskWorktree } from "./kernel-worktree-routing.js";
@@ -175,7 +175,7 @@ export async function advanceCanonicalTask(opts: {
           workflow.workflowStep.operation.id,
         );
       if (postMergeBaseOperation || terminalOnBase) {
-        await ensureKernelOperationalProjectionStatus({
+        await ensureKernelOperationalProjectionEvidence({
           command: opts.command,
           task_id: opts.task_id,
           verification_evidence_digest: persistedValidationEvidence,
@@ -337,7 +337,7 @@ export async function advanceCanonicalTask(opts: {
               },
             };
           }
-          await ensureKernelOperationalProjectionStatus({
+          await ensureKernelOperationalProjectionEvidence({
             command: opts.command,
             task_id: opts.task_id,
             verification_evidence_digest: finalValidation.evidence_digest,

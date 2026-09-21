@@ -33,7 +33,7 @@ describe("task active route evaluation", () => {
     vi.restoreAllMocks();
   });
 
-  it("selects canonical work despite a contradictory legacy DONE status", async () => {
+  it("diagnoses a contradictory outer status instead of selecting canonical work", async () => {
     const identity = taskKernel.kernelDigest("repo");
     const aggregate: taskKernel.TaskAggregate = {
       schema_version: 1,
@@ -71,9 +71,8 @@ describe("task active route evaluation", () => {
     });
     expect(result.items).toHaveLength(1);
     expect(result.items[0]).toMatchObject({
-      task: { id: "T-1", status: "PLANNING" },
-      next_action: { code: "kernel_plan_required", command: null },
-      dependency_readiness: { state: "kernel_work_items", depends_on: [] },
+      task: { id: "T-1", status: "malformed" },
+      next_action: { code: "kernel_record_invalid", command: null },
       kernel: { source: "task_kernel", authority: { grants_authority: false } },
     });
     expect(route).not.toHaveBeenCalled();

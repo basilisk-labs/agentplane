@@ -40,7 +40,6 @@ export {
   assertWorkItemTransition,
   evaluateTaskCompletion,
   incompleteRequiredWorkItems,
-  LifecycleEngine,
   type CompletionEvaluation,
 } from "./lifecycle.js";
 export {

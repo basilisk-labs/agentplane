@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The reducer recognizes digest-validated Kernel final-validation evidence before legacy planning checks.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609210002-0TQ72H/quality/objects/sha256/1403834264f80c23ba4ce450697a32eca4a1dd9b5dfb231c98d713bf94bbeb55.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "The focused regression proves a DOING compatibility projection with a stale Plan placeholder requests pr.open authority instead of agent.planning.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609210002-0TQ72H/quality/objects/sha256/1403834264f80c23ba4ce450697a32eca4a1dd9b5dfb231c98d713bf94bbeb55.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Canonical branch closeout depends on hasCanonicalPreMergeEvidence remaining fail-closed over both Kernel and operational projection digests."
+  ]
+}

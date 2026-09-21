@@ -29,7 +29,7 @@ import {
   recoverCanonicalControllerSuspension,
   withCanonicalControllerSuspendedForOperation,
 } from "./kernel-controller-handoff.js";
-import { ensureKernelOperationalProjectionStatus } from "./kernel-operational-projection.js";
+import { ensureKernelOperationalProjectionEvidence } from "./kernel-operational-projection.js";
 
 type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
 
@@ -293,7 +293,7 @@ export function createKernelProviderEffectPortResolver(opts: {
     if (!opts.allow_remote || !expectedOperationId) return null;
     const port: KernelEffectPort = {
       async dispatch(input) {
-        await ensureKernelOperationalProjectionStatus({
+        await ensureKernelOperationalProjectionEvidence({
           command: opts.command,
           task_id: input.task_id,
         });
@@ -391,7 +391,7 @@ export function createKernelProviderEffectPortResolver(opts: {
         };
       },
       async observe(input) {
-        await ensureKernelOperationalProjectionStatus({
+        await ensureKernelOperationalProjectionEvidence({
           command: opts.command,
           task_id: input.task_id,
         });

@@ -156,7 +156,6 @@ test("classifies competing owners and every retained helper individually", () =>
     assertSymbolExists(row.path, row.symbol);
   }
   for (const symbol of [
-    "LifecycleEngine",
     "TaskCentricOrchestrator",
     "advanceCanonicalTask",
     "runCanonicalTask",
@@ -169,6 +168,11 @@ test("classifies competing owners and every retained helper individually", () =>
       `${symbol}: competing owner retained`,
     );
   }
+  assert.doesNotMatch(
+    sourceFor("packages/core/src/tasks/task-centric/lifecycle.ts"),
+    /\bclass\s+LifecycleEngine\b/u,
+    "the parallel task-centric lifecycle reducer must be deleted",
+  );
   for (const symbol of [
     "WorkItemScheduler",
     "incompleteRequiredWorkItems",

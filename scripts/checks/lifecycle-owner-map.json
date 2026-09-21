@@ -37,7 +37,6 @@
     "status": "mapped_not_converged",
     "target_application_coordinator": "packages/agentplane/src/commands/shared/workflow-supervisor.ts#superviseWorkflowStep",
     "current_parallel_owners": [
-      "packages/core/src/tasks/task-centric/lifecycle.ts#LifecycleEngine",
       "packages/core/src/tasks/task-centric/orchestrator.ts#TaskCentricOrchestrator",
       "packages/agentplane/src/commands/task/kernel-advance.ts#advanceCanonicalTask",
       "packages/agentplane/src/commands/task/kernel-run.ts#runCanonicalTask",
@@ -164,12 +163,6 @@
   ],
   "symbol_classifications": [
     {
-      "path": "packages/core/src/tasks/task-centric/lifecycle.ts",
-      "symbol": "LifecycleEngine",
-      "classification": "later_deletion_candidate",
-      "reason": "Competing lifecycle decision engine; Task Kernel owns domain transitions."
-    },
-    {
       "path": "packages/core/src/tasks/task-centric/orchestrator.ts",
       "symbol": "TaskCentricOrchestrator",
       "classification": "later_deletion_candidate",
@@ -275,11 +268,6 @@
       "path": "packages/agentplane/src/commands/shared/workflow-supervisor.ts",
       "symbol": "superviseWorkflowStep",
       "classification": "canonical_owner"
-    },
-    {
-      "path": "packages/core/src/tasks/task-centric/lifecycle.ts",
-      "symbol": "LifecycleEngine",
-      "classification": "later_deletion_candidate"
     },
     {
       "path": "packages/core/src/tasks/task-centric/orchestrator.ts",

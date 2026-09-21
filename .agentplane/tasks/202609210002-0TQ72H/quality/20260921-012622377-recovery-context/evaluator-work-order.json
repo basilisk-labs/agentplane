@@ -1,0 +1,113 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609210002-0TQ72H-b1cd1818e1783937880e2596",
+  "prepared_at": "2026-09-21T01:26:22.377Z",
+  "task": {
+    "id": "202609210002-0TQ72H",
+    "revision": 21,
+    "objective": "LC-02: route all supported Plan and WorkItem lifecycle writes through the backend transaction and Task Kernel command/event gateway; keep compatibility status and README state as read-only Kernel projections; remove the unused parallel LifecycleEngine; diagnose projection conflicts; preserve legacy historical evidence; verify CAS, read-only rendering, one accepted mutation, and conflict rejection.\n\nLC-02: route all supported Plan and WorkItem lifecycle writes through the backend transaction and Task Kernel command/event gateway; keep compatibility status and README state as read-only Kernel projections; remove the unused parallel LifecycleEngine; diagnose projection conflicts; preserve legacy historical evidence; verify CAS, read-only rendering, one accepted mutation, and conflict rejection.",
+    "acceptance_criteria": [
+      "- In scope: LC-02: route all supported Plan and WorkItem lifecycle writes through the backend transaction and Task Kernel command/event gateway; keep compatibility status and README state as read-only Kernel projections; remove the unused parallel LifecycleEngine; diagnose projection conflicts; preserve legacy historical evidence; verify CAS, read-only rendering, one accepted mutation, and conflict rejection.\n- Out of scope: unrelated refactors not required for \"LC-02: route all supported Plan and WorkItem lifecycle writes through the backend transaction and Task Kernel command/event gateway; keep compatibility status and README state as read-only Kernel projections; remove the unused parallel LifecycleEngine; diagnose projection conflicts; preserve legacy historical evidence; verify CAS, read-only rendering, one accepted mutation, and conflict rejection.\".",
+      "PLANNER semantic plan required. Replace this placeholder with a task-specific implementation plan before approval.",
+      "PLANNER fallback scaffold for \"LC-02: route all supported Plan and WorkItem lifecycle writes through the backend transaction and Task Kernel command/event gateway; keep compatibility status and README state as read-only Kernel projections; remove the unused parallel LifecycleEngine; diagnose projection conflicts; preserve legacy historical evidence; verify CAS, read-only rendering, one accepted mutation, and conflict rejection.\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"LC-02: route all supported Plan and WorkItem lifecycle writes through the backend transaction and Task Kernel command/event gateway; keep compatibility status and README state as read-only Kernel projections; remove the unused parallel LifecycleEngine; diagnose projection conflicts; preserve legacy historical evidence; verify CAS, read-only rendering, one accepted mutation, and conflict rejection.\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "f0be471aa0ac62f0595feadb2e19d8620fa1a4d5",
+  "diff_base_sha": "11cfc37a0dc0fc1b262e10990ec33ddef68da2d6",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609210002-0TQ72H/quality/20260921-012622377-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:bf53b32b47c27106d735939f1aeee499eefa26209efb4c44b7547e38a550cfd7",
+    "prompt_path": ".agentplane/tasks/202609210002-0TQ72H/quality/objects/sha256/abea2042fe645d97c2c3c2e5a467781dab55fdb9714e835e5884e2472a02b8c1.md",
+    "result_schema_path": ".agentplane/tasks/202609210002-0TQ72H/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202609210002-0TQ72H",
+    "plan_digest": "sha256:28ea15a5eb86f1d5152f8bcd042efcebd9f2d5ae052f4a699d8530832841c659",
+    "policy_digest": "sha256:87d09196184c21e62b2c8c073848fa5e8e3dce39f17021ee2fe9a064c8580605",
+    "capability_digest": "sha256:fcb911ac3a0c617a7c93391d07b16316ed0c47a3b5a4ec0fbfd80936758a8859",
+    "checks_digest": "sha256:1d5d1adf4b9b3651a8318ba0f04c195df4dd3ff0edd92ada1ad3f9114dfba351",
+    "verification_input_digest": "sha256:6704243b207a93baf2e0fedcc2dee7c4976028616b174025a33eac29712fa768",
+    "acceptance_digest": "sha256:663f16804e5b99bffcde8ce97c5b048e65da50f089ac05f854eea5ea8b8509d1",
+    "implementation_sha": "f0be471aa0ac62f0595feadb2e19d8620fa1a4d5",
+    "digest": "sha256:f9075203ce7c96a098912a752e1d1e5281076f1060afc3da472b66012e26159e"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609210002-0TQ72H/README.md",
+      "sha256": "sha256:0c5fb184741f423620121a8a3968c6fde249b2576319d2148b7b1375aa5f4093",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609210002-0TQ72H/quality/objects/sha256/1403834264f80c23ba4ce450697a32eca4a1dd9b5dfb231c98d713bf94bbeb55.patch",
+      "sha256": "sha256:1403834264f80c23ba4ce450697a32eca4a1dd9b5dfb231c98d713bf94bbeb55",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609210002-0TQ72H/quality/objects/sha256/53080cf0ba9897572a0bd71064738247d47f57d89a9594d70433f40c3c134936.json",
+      "sha256": "sha256:53080cf0ba9897572a0bd71064738247d47f57d89a9594d70433f40c3c134936",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609210002-0TQ72H/verification/20260921012410834-75f93bd1e396a430.json",
+      "sha256": "sha256:652c58a313087eaedce3bb1e54c027029faa77bcb8b1f3bf533f4f7c311367fc",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202609210002-0TQ72H/quality/objects/sha256/ac07b02bc29de961e9764f46dcb4c3988c04656dc570b05d488e532db2ae53a2.json",
+      "sha256": "sha256:ac07b02bc29de961e9764f46dcb4c3988c04656dc570b05d488e532db2ae53a2",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
