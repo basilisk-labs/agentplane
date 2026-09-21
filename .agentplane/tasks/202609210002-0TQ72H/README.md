@@ -4,7 +4,7 @@ title: "LC-02: route all supported Plan and WorkItem lifecycle writes through th
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -628,6 +628,68 @@ extensions:
             evidence_digest: "sha256:09f01498eaac8e01912c003556674f01c61accbe3875032e9b69d72935c460ce"
             kind: "repository_implementation"
             previous_fingerprint: "sha256:06841aaf4739105e5b2e6c7094cdd0fc521ead28e766fd2299ce4a26a12ad396"
+        -
+          approval_mode: null
+          authority:
+            capabilities:
+              - "git_read"
+              - "local_process"
+              - "repository_read"
+              - "repository_write"
+            completion_requirements:
+              - "work_item_validation"
+              - "final_validation"
+            digest: "sha256:bdea5d4fb49b97d6431bf2d532d190dab898e96d988003006219609daa07d100"
+            expires_at: null
+            external_effects: []
+            plan_digest: "sha256:28ea15a5eb86f1d5152f8bcd042efcebd9f2d5ae052f4a699d8530832841c659"
+            plan_revision: 1
+            policy_digests:
+              - "sha256:23efb6f9b035236bb2705fb639979d0ed084618d76039e5bd191654bfb479f8b"
+            provenance:
+              actor_id: "agentplane:kernel-controller"
+              evidence_digest: "sha256:a1002de7d1c4a4d334154f7601dcc58418fa66b1eb3338d9b5422a34c38a519f"
+              kind: "SYSTEM"
+              parent_authority_digest: "sha256:e71879ce57849587dd5400e96635d132827c95b3e4953e4f1a71d96c01f54640"
+            repository_effects:
+              - "repository_write"
+              - "source_code"
+              - "tests"
+            repository_fingerprint: "sha256:1e32f0959106574388ec3428b476f504d2b1b180ccc450b75877c2211e1f022d"
+            repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+            resources:
+              - "Bun 1.4.2"
+              - "Node 24"
+              - "existing Task Kernel and backend fixtures"
+            risk:
+              implementation: "bounded"
+              requirements: "bounded"
+              reversibility: "reversible"
+            scope_roots:
+              - "agentplane-recipes"
+              - "packages/agentplane/src/adapters/task-backend"
+              - "packages/agentplane/src/commands/shared"
+              - "packages/agentplane/src/commands/task"
+              - "packages/core/src/tasks/task-centric"
+              - "packages/core/src/tasks/task-kernel"
+              - "scripts/checks/lifecycle-owner-map.json"
+              - "scripts/checks/lifecycle-owner-map.test.mjs"
+            task_id: "202609210002-0TQ72H"
+            validation_requirements:
+              - "bun run ci:local:full"
+              - "bun run lint"
+              - "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-single-mutation-gateway.test.ts"
+              - "bun run test:project core --maxWorkers=1 packages/core/src/tasks/task-kernel"
+              - "bun run typecheck"
+              - "node scripts/checks/lifecycle-owner-map.test.mjs"
+            work_item_id: null
+          observation:
+            changed_paths:
+              - "packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.test.ts"
+              - "packages/agentplane/src/commands/shared/workflow-step-reducer.ts"
+            evidence_digest: "sha256:88864d55e75d769dd5bfac136d64537d205cd824f859404595680ac0b9f9a8df"
+            kind: "repository_implementation"
+            previous_fingerprint: "sha256:510fc8e91fa5e16e7fefb480163a2c7dec082e361044e5a21e2411781c4d9c4d"
       controller_transfer: null
       current_plan:
         approval_actor_id: "USER"
@@ -767,6 +829,15 @@ extensions:
           event_digests:
             - "sha256:0009f4156ebecf8c10d2a8884f4b7e9abb7dd4c9eb8d517efcc4378937f593e7"
           mutation_id: "sha256:7a693c8035af07b8c7a058af855c0d084198b6be286ac120d439e1ff72bd1c03"
+        sha256:a37a8c70d3feac6edcfb11e29b4e793ec8acf1cb024432321eb81b67cd062b74:
+          after_revision: 14
+          aggregate_digest: "sha256:a2d4c063ab69a8dec25ca0abe85c916d8345be5ef04886616461a8f1f63a86b6"
+          before_revision: 13
+          command_digest: "sha256:7bead3f3a5003cef21433f7145e18d725f04f9174403c522ae6029435888f25b"
+          effect_ids: []
+          event_digests:
+            - "sha256:80b3356a0238304304c8d6e2ca3061b5d02338fa4123a455f7a2b7e2f451dc12"
+          mutation_id: "sha256:a37a8c70d3feac6edcfb11e29b4e793ec8acf1cb024432321eb81b67cd062b74"
         sha256:c39df40ce9c77202cdb2923b6da381480bdcbcc924fe966b5de343d5089bbb12:
           after_revision: 8
           aggregate_digest: "sha256:fb52e836475f4aae9c31c2162e3795c87ff2c3c1ae5ec3105db60d87d6c7fa00"
@@ -804,7 +875,7 @@ extensions:
             - "sha256:5ed1efbd2e113d6a267446f20a106f33b886392ed1a45f2dcff93590cad5d821"
           mutation_id: "validation:sha256:96f57e464477a653e8c728f7077ee08e4cfb5d56cb58f45bf79ecb594ec3cd42"
       plan_history: []
-      revision: 13
+      revision: 14
       schema_version: 1
       state: "FINAL_VALIDATION"
       work_items:
@@ -897,7 +968,7 @@ extensions:
               toolchain_digest: "sha256:f47d283c6652fd3fa389a68030d7c45886bc663454194acd54ad033d920a6065"
             observed_at: "2026-09-21T00:50:24.547Z"
             status: "PASSED"
-    digest: "sha256:b0fb8dc53c620044e89ecfdc0316a98794699fe143e6eb76d223f553fa5b977c"
+    digest: "sha256:5a3102aad9629b16ec6e80c38c64b238b37a2f3281633460a4d90caba5c2b29a"
     documents:
       contracts:
         sha256:01cd26cfc04b269b36c40a32f0a283fe67f6024a46cf8376d73a06850012abce:
@@ -1036,6 +1107,15 @@ extensions:
         payload_digest: "sha256:c4638fb792606faa5c5415baa5a7d87aa3eb27ff86f5452698e903e04dcd9c4f"
         task_id: "202609210002-0TQ72H"
         task_revision: 13
+      -
+        command_digest: "sha256:7bead3f3a5003cef21433f7145e18d725f04f9174403c522ae6029435888f25b"
+        id: "sha256:a37a8c70d3feac6edcfb11e29b4e793ec8acf1cb024432321eb81b67cd062b74:authority_continued"
+        kind: "authority_continued"
+        mutation_id: "sha256:a37a8c70d3feac6edcfb11e29b4e793ec8acf1cb024432321eb81b67cd062b74"
+        occurred_at: "2026-09-21T01:12:10.538Z"
+        payload_digest: "sha256:91d31435977dccde4e061711edafb9c99bc82cc29cc18915cc534a1da75c016b"
+        task_id: "202609210002-0TQ72H"
+        task_revision: 14
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1

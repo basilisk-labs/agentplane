@@ -28,9 +28,11 @@ LC-02: route all supported Plan and WorkItem lifecycle writes through the backen
 
 ```text
  .../src/adapters/task-backend/kernel-record.ts     |   8 +
+ .../shared/canonical-pre-merge-evidence.test.ts    | 101 ++++++++-
  .../commands/shared/native-task-identity.test.ts   |   1 +
  .../shared/roadmap-single-mutation-gateway.test.ts | 184 ++++++++++++++++
  .../src/commands/shared/task-mutation.ts           |  24 ++-
+ .../src/commands/shared/workflow-step-reducer.ts   |   5 +-
  .../src/commands/task/active.command.unit.test.ts  |   7 +-
  .../agentplane/src/commands/task/kernel-advance.ts |   6 +-
  .../task/kernel-operational-projection.test.ts     |  13 +-
@@ -42,7 +44,7 @@ LC-02: route all supported Plan and WorkItem lifecycle writes through the backen
  packages/core/src/tasks/task-centric/lifecycle.ts  | 233 +--------------------
  scripts/checks/lifecycle-owner-map.json            |  12 --
  scripts/checks/lifecycle-owner-map.test.mjs        |   6 +-
- 15 files changed, 258 insertions(+), 287 deletions(-)
+ 17 files changed, 361 insertions(+), 290 deletions(-)
 ```
 
 </details>
