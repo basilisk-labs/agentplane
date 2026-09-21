@@ -30,7 +30,7 @@ describe("retired branch task outer supervisor", () => {
   it("maps late checks through the canonical workflow effect coordinator", async () => {
     const { advance } = await sources();
     expect(advance).toContain("prepareCanonicalWorkflowEffect");
-    expect(advance).toContain("coordinateKernelEffect");
+    expect(advance).toContain("applyKernelEffectStep");
   });
 
   it("does not replay a completed hosted-close side effect on supervisor restart", async () => {

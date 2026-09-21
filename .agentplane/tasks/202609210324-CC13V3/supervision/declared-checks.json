@@ -2,19 +2,19 @@
   "checks": [
     {
       "check_ids": [],
-      "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/usecases/roadmap-scenario-owner-parity.test.ts",
-      "duration_ms": 3293,
+      "command": "node --test scripts/checks/single-live-supervisor.test.mjs",
+      "duration_ms": 205,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
-        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "executable_digest": "sha256:ee6fb0e015284d83a91e8ec5213f43a157f8a392b58555301682892ba928c04a",
         "kind": "local_runtime_resolution",
         "status": "resolved",
         "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
       },
-      "script": "test:project",
-      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/runner/usecases/roadmap-scenario-owner-parity.test.ts\n⚠️ task requires Verify Steps by primary tag; seeded a PLANNER fallback ## Verify Steps scaffold in README (replace with task-specific acceptance coverage when available)\n",
-      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/release-0.7.11-base/.agentplane/worktrees/202609210324-CC13V3-canonical-cc13v3\n\n\n Test Files  1 passed (1)\n      Tests  1 passed (1)\n   Start at  10:24:38\n   Duration  2.94s (transform 1.78s, setup 0ms, import 1.81s, tests 1.07s, environment 0ms)\n\n"
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "✔ new-task entrypoints have one live Kernel supervisor (1.789958ms)\n✔ retired outer owners contribute no production runtime imports (1.002584ms)\n✔ retained branch episode adapter has an explicit production consumer (0.670667ms)\nℹ tests 3\nℹ suites 0\nℹ pass 3\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 34.751334\n"
     }
   ],
   "kind": "direct_task_declared_checks",

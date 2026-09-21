@@ -66,28 +66,7 @@ export {
   type PlanRefinementApplication,
   type SupervisionOutcome,
 } from "./policy.js";
-export {
-  TaskCentricOrchestrator,
-  type TaskCentricOrchestratorPorts,
-  type TaskLoopOutcome,
-} from "./orchestrator.js";
-export {
-  assertAutonomousRepositoryCapabilities,
-  type ArtifactPort,
-  type ContentActorPort,
-  type ContextPort,
-  type GitEffectResult,
-  type GitObservation,
-  type GitPort,
-  type ProviderEffectResult,
-  type ProviderObservation,
-  type ProviderPort,
-  type TaskRepositoryCapabilities,
-  type TaskRepositoryPort,
-  type ValidationPort,
-  type WorkspaceObservation,
-  type WorkspacePort,
-} from "./ports.js";
+export { type TaskRepositoryCapabilities, type TaskRepositoryPort } from "./ports.js";
 export {
   parseTaskPlanProposal,
   REPOSITORY_SNAPSHOT_ZOD_SCHEMA,

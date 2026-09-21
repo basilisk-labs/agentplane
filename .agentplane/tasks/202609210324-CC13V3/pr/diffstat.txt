@@ -6,7 +6,7 @@
  .../shared/supervisor-execution-episode.ts         |   21 +
  .../src/commands/shared/workflow-step-branch.ts    |   13 +-
  .../src/commands/shared/workflow-step-factory.ts   |   85 +-
- .../src/commands/task/advance-task-step.ts         |   35 +-
+ .../src/commands/task/advance-task-step.ts         |   39 +-
  .../src/commands/task/advance.command.ts           |  168 ++--
  .../task/branch-task-supervisor-operations.ts      |   40 +
  .../task/branch-task-supervisor.autonomy.test.ts   |  638 -------------
@@ -21,13 +21,17 @@
  .../src/commands/task/direct-task-supervisor.ts    |  564 -----------
  .../src/commands/task/direct-task-verification.ts  |   35 +
  .../src/commands/task/external-agent-exchange.ts   |   13 +-
+ .../src/commands/task/kernel-advance.test.ts       |    8 +-
+ .../agentplane/src/commands/task/kernel-advance.ts |    7 +-
  .../agentplane/src/commands/task/kernel-cutover.ts |   15 +-
+ .../src/commands/task/kernel-effect-coordinator.ts |    4 +-
  .../src/commands/task/kernel-exchange.ts           |  108 ++-
  .../src/commands/task/kernel-inspection.ts         |  527 ++++++++--
  .../src/commands/task/kernel-migrate.command.ts    |  229 ++++-
  .../kernel-provider-effect-coordinator.test.ts     |    1 +
  .../task/kernel-provider-effect-coordinator.ts     |   24 +-
- .../agentplane/src/commands/task/kernel-run.ts     |   60 +-
+ .../src/commands/task/kernel-run.test.ts           |    6 +-
+ .../agentplane/src/commands/task/kernel-run.ts     |   70 +-
  .../src/commands/task/kernel-semantic-result.ts    |    4 +-
  .../src/commands/task/kernel-work-order.ts         |    5 +-
  .../src/commands/task/kernel-worktree-routing.ts   |   72 +-
@@ -47,7 +51,7 @@
  .../roadmap-lifecycle-migration-preview.test.ts    |  386 ++++++++
  .../task/roadmap-semantic-admission.test.ts        |  129 +++
  .../task/roadmap-workitem-readiness.test.ts        |  150 +++
- .../agentplane/src/commands/task/run.command.ts    |  268 ++----
+ .../agentplane/src/commands/task/run.command.ts    |  318 +++----
  packages/agentplane/src/commands/task/run.spec.ts  |   10 +-
  .../task/supervision-outcome-disposition.test.ts   |  123 ---
  .../task/supervision-outcome-disposition.ts        |  130 ---
@@ -66,8 +70,16 @@
  packages/core/src/tasks/kernel-semantic.ts         |   39 +-
  .../core/src/tasks/task-centric/compatibility.ts   |  364 ++++++-
  packages/core/src/tasks/task-centric/graph.ts      |  117 ++-
- packages/core/src/tasks/task-centric/index.ts      |   10 +
+ packages/core/src/tasks/task-centric/index.ts      |   33 +-
  packages/core/src/tasks/task-centric/lifecycle.ts  |   62 ++
+ .../src/tasks/task-centric/orchestrator.test.ts    |  540 -----------
+ .../core/src/tasks/task-centric/orchestrator.ts    |  474 ---------
+ packages/core/src/tasks/task-centric/ports.ts      |  141 ---
+ .../src/tasks/task-centric/task-centric.test.ts    |   22 -
  schemas/agent-semantic-result.schema.json          |    6 +-
- scripts/checks/single-live-supervisor.test.mjs     |   48 +
- 72 files changed, 6695 insertions(+), 4473 deletions(-)
+ scripts/checks/lifecycle-engine-retirement.json    |   46 +
+ scripts/checks/lifecycle-owner-map.json            |   92 +-
+ scripts/checks/lifecycle-owner-map.test.mjs        |   44 +-
+ .../checks/no-secondary-lifecycle-engine.test.mjs  |  110 +++
+ scripts/checks/single-live-supervisor.test.mjs     |   49 +
+ 84 files changed, 6951 insertions(+), 5799 deletions(-)

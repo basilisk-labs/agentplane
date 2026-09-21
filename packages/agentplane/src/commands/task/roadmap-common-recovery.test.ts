@@ -14,7 +14,7 @@ import {
 import { describe, expect, it, vi } from "vitest";
 
 import { readKernelNextAction } from "../../adapters/task-backend/kernel-next-action.js";
-import { coordinateKernelEffect, type KernelEffectPort } from "./kernel-effect-coordinator.js";
+import { applyKernelEffectStep, type KernelEffectPort } from "./kernel-effect-coordinator.js";
 
 const fingerprint = (value: string) => k.kernelDigest(value);
 
@@ -218,7 +218,7 @@ describe("LC-12 common recovery admission", () => {
     } as never;
 
     await expect(
-      coordinateKernelEffect({
+      applyKernelEffectStep({
         runtime,
         record: read.record as never,
         route: readKernelNextAction(read as never, fingerprint("state")),

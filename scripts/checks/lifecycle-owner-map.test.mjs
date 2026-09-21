@@ -31,6 +31,7 @@ const allowedClassifications = new Set([
   "coordinator_capability",
   "later_deletion_candidate",
   "retained_pure_helper",
+  "retained_safety_helper",
 ]);
 
 function escapeRegex(value) {
@@ -82,7 +83,7 @@ function walkTypeScriptFiles(relativeRoot) {
 
 function ownershipCandidates() {
   const declarationPattern =
-    /export\s+(?:async\s+)?(?:class\s+(KernelBackendAdapter|[A-Za-z0-9]*(?:Engine|Orchestrator|Scheduler|Coordinator))|function\s+((?:reduce[A-Za-z0-9]*Command|(?:advance|run)[A-Za-z0-9]*Task|(?:coordinate|dispatch)[A-Za-z0-9]*Effect|supervise[A-Za-z0-9]*Step|(?:apply|write)[A-Za-z0-9]*Mutation)))\b/gu;
+    /export\s+(?:async\s+)?(?:class\s+(KernelBackendAdapter|[A-Za-z0-9]*(?:Engine|Orchestrator|Scheduler|Coordinator))|function\s+((?:reduce[A-Za-z0-9]*Command|advanceTaskStep|(?:advance|run)[A-Za-z0-9]*Task|(?:coordinate|dispatch)[A-Za-z0-9]*Effect|supervise[A-Za-z0-9]*Step|(?:apply|write)[A-Za-z0-9]*Mutation)))\b/gu;
   return map.inventory.roots
     .flatMap((root) => walkTypeScriptFiles(root))
     .flatMap((relativePath) => {
@@ -104,17 +105,18 @@ test("pins one reducer, writer, and application coordinator", () => {
       .filter(({ ownership_state }) => ownership_state === "observed_current")
       .map(({ role }) => role)
       .toSorted(),
-    ["domain_reducer", "state_writer"],
+    expectedOwnerRoles,
   );
   assert.equal(
     map.canonical_owners.find(({ role }) => role === "application_coordinator")?.ownership_state,
-    "target_after_convergence",
+    "observed_current",
   );
-  assert.equal(map.convergence_state.status, "mapped_not_converged");
+  assert.equal(map.convergence_state.status, "converged");
   assert.equal(
     map.convergence_state.target_application_coordinator,
-    "packages/agentplane/src/commands/shared/workflow-supervisor.ts#superviseWorkflowStep",
+    "packages/agentplane/src/commands/task/advance-task-step.ts#advanceTaskStep",
   );
+  assert.deepEqual(map.convergence_state.current_parallel_owners, []);
 });
 
 test("maps every lifecycle responsibility to exactly one canonical owner", () => {
@@ -144,7 +146,7 @@ test("maps every production task advance and run entrypoint", () => {
   }
 });
 
-test("classifies competing owners and every retained helper individually", () => {
+test("records deleted competing owners and classifies every retained helper", () => {
   const keys = map.symbol_classifications.map((row) => key(row));
   assert.equal(new Set(keys).size, keys.length, "a symbol has more than one classification");
   for (const row of map.symbol_classifications) {
@@ -155,17 +157,22 @@ test("classifies competing owners and every retained helper individually", () =>
     assert.ok(row.reason, `${key(row)}: missing classification reason`);
     assertSymbolExists(row.path, row.symbol);
   }
-  for (const symbol of [
+  for (const retiredPath of ["packages/core/src/tasks/task-centric/orchestrator.ts"]) {
+    assert.equal(
+      existsSync(path.join(ROOT, retiredPath)),
+      false,
+      `${retiredPath}: retired owner exists`,
+    );
+  }
+  for (const retiredSymbol of [
     "TaskCentricOrchestrator",
-    "advanceCanonicalTask",
     "runCanonicalTask",
     "coordinateKernelEffect",
   ]) {
-    const row = map.symbol_classifications.find((candidate) => candidate.symbol === symbol);
     assert.equal(
-      row?.classification,
-      "later_deletion_candidate",
-      `${symbol}: competing owner retained`,
+      map.symbol_classifications.some(({ symbol }) => symbol === retiredSymbol),
+      false,
+      `${retiredSymbol}: retired owner remains classified as live`,
     );
   }
   assert.doesNotMatch(
@@ -204,12 +211,11 @@ test("rejects an unmapped reducer, outer loop, scheduler, or coordinator", () =>
     );
     assertSymbolExists(row.path, row.symbol);
   }
-  const deletionCandidates = new Set(
-    map.symbol_classifications
-      .filter(({ classification }) => classification === "later_deletion_candidate")
-      .map((row) => key(row)),
+  assert.equal(
+    map.symbol_classifications.some(
+      ({ classification }) => classification === "later_deletion_candidate",
+    ),
+    false,
+    "a mapped secondary lifecycle owner remains",
   );
-  for (const currentOwner of map.convergence_state.current_parallel_owners) {
-    assert.ok(deletionCandidates.has(currentOwner), `${currentOwner}: parallel owner not retired`);
-  }
 });

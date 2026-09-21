@@ -23,7 +23,7 @@ vi.mock("./kernel-final-validation.js", () => ({
   runKernelFinalValidation: vi.fn(),
 }));
 import {
-  coordinateKernelEffect,
+  applyKernelEffectStep,
   type KernelEffectDispatch,
   type KernelEffectPort,
 } from "./kernel-effect-coordinator.js";
@@ -112,7 +112,7 @@ describe("canonical effect coordinator", () => {
     };
 
     await expect(
-      coordinateKernelEffect({
+      applyKernelEffectStep({
         runtime: runtime(events),
         record: record(candidate),
         route: {
@@ -146,7 +146,7 @@ describe("canonical effect coordinator", () => {
     };
 
     await expect(
-      coordinateKernelEffect({
+      applyKernelEffectStep({
         runtime: runtime(events),
         record: record(candidate),
         route: {
@@ -178,7 +178,7 @@ describe("canonical effect coordinator", () => {
     };
 
     await expect(
-      coordinateKernelEffect({
+      applyKernelEffectStep({
         runtime: runtime(events),
         record: record(candidate),
         route: {

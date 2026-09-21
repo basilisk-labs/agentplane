@@ -21,7 +21,8 @@ test("new-task entrypoints have one live Kernel supervisor", async () => {
   const entrypoints = `${advanceCommand}\n${runCommand}`;
 
   assert.match(advanceCommand, /advanceTaskStep/u);
-  assert.match(runCommand, /runCanonicalTask/u);
+  assert.match(runCommand, /advanceTaskStep/u);
+  assert.doesNotMatch(runCommand, /runCanonicalTask/u);
   assert.doesNotMatch(entrypoints, /(?:direct|branch)-task-supervisor/u);
   assert.doesNotMatch(advanceCoordinator, /supervise(?:Direct|Branch)TaskRun/u);
   assert.doesNotMatch(runCoordinator, /supervise(?:Direct|Branch)TaskRun/u);

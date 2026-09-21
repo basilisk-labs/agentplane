@@ -28,7 +28,7 @@ export type KernelEffectPortResolver = (
   effect: k.ExternalEffect,
 ) => KernelEffectPort | null | Promise<KernelEffectPort | null>;
 
-export type KernelEffectCoordination =
+type KernelEffectCoordination =
   | Readonly<{ kind: "advanced" }>
   | Readonly<{
       kind: "stop";
@@ -145,7 +145,7 @@ async function acceptObservation(
  * Application boundary for canonical effects. The Kernel persists dispatch intent before the
  * adapter runs. A replay of PENDING observes the provider and never dispatches the effect again.
  */
-export async function coordinateKernelEffect(opts: {
+export async function applyKernelEffectStep(opts: {
   runtime: Runtime;
   record: KernelRecord;
   route: KernelNextAction;

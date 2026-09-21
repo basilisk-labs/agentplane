@@ -1,6 +1,9 @@
 import { readKernelRecord } from "../../adapters/task-backend/kernel-record.js";
 import type { taskKernel } from "@agentplaneorg/core/tasks";
-import { runCanonicalTask } from "./kernel-run.js";
+import { advanceTaskStep } from "./advance-task-step.js";
+import { executeKernelPacket, runManagedTransportStep } from "./kernel-run.js";
+import { createKernelProviderEffectPortResolver } from "./kernel-provider-effect-coordinator.js";
+import { createKernelRuntime } from "./kernel-runtime-context.js";
 import type { CommandCtx } from "../../cli/spec/spec.js";
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
@@ -65,6 +68,51 @@ type TaskRunContextDependencies = {
     options: { includeRemote: boolean },
   ) => Promise<CommandContext>;
 };
+
+async function canonicalManagedOutput(opts: {
+  command: CommandContext;
+  task_id: string;
+  dry_run: boolean;
+  sandbox?: string;
+  allow_remote: boolean;
+}) {
+  if (opts.dry_run) {
+    const runtime = await createKernelRuntime({
+      command: opts.command,
+      task_id: opts.task_id,
+      transport: "managed",
+      operation_id: "preview",
+    });
+    const context = await runtime.native.readContext(opts.task_id);
+    const current = await runtime.lifecycle.read(opts.task_id, context.repository_fingerprint);
+    return {
+      schema_version: 1,
+      task_id: opts.task_id,
+      action: { kind: "read_only", reason: current.next_action.reason_code },
+    };
+  }
+  return await runManagedTransportStep({
+    advance: async () =>
+      await advanceTaskStep({
+        command: opts.command,
+        task_id: opts.task_id,
+        transport: "managed",
+        effect_port_resolver: createKernelProviderEffectPortResolver({
+          command: opts.command,
+          allow_remote: opts.allow_remote,
+        }),
+        allow_provider_effects: opts.allow_remote,
+      }),
+    execute: async (packet) =>
+      await executeKernelPacket(
+        opts.command,
+        opts.task_id,
+        packet,
+        opts.sandbox,
+        opts.allow_remote,
+      ),
+  });
+}
 
 export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
   return async (_ctx: CommandCtx, parsed: TaskRunParsed): Promise<number> => {
@@ -141,12 +189,12 @@ export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
       });
     }
     output.json(
-      await runCanonicalTask({
+      await canonicalManagedOutput({
         command,
         task_id: parsed.taskId,
-        dry_run: parsed.dryRun,
+        dry_run: parsed.dryRun === true,
         sandbox: parsed.sandbox,
-        allow_remote: parsed.remote,
+        allow_remote: parsed.remote === true,
       }),
     );
     return 0;

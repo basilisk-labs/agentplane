@@ -5,7 +5,6 @@ import {
   aggregateValidation,
   applyPlanRefinement,
   approveTaskPlan,
-  assertAutonomousRepositoryCapabilities,
   assertTaskTransition,
   assertWorkItemTransition,
   belongsInLiveTaskIndex,
@@ -967,26 +966,5 @@ describe("task-centric domain", () => {
         "2026-01-01T00:00:00.000Z",
       ),
     ).toBe(false);
-  });
-
-  it("fails closed when repository capabilities cannot support autonomous execution", () => {
-    expect(() =>
-      assertAutonomousRepositoryCapabilities({
-        compare_and_swap: true,
-        atomic_transition_event: true,
-        atomic_plan_materialization: true,
-        idempotency_keys: true,
-        serialized: false,
-      }),
-    ).not.toThrow();
-    expect(() =>
-      assertAutonomousRepositoryCapabilities({
-        compare_and_swap: false,
-        atomic_transition_event: true,
-        atomic_plan_materialization: true,
-        idempotency_keys: true,
-        serialized: false,
-      }),
-    ).toThrow(/requires CAS/u);
   });
 });

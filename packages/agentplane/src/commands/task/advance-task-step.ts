@@ -12,7 +12,7 @@ import { createKernelRuntime, requireKernelCommit } from "./kernel-runtime-conte
 import { buildKernelAgentWorkOrder, resumeKernelWorkOrder } from "./kernel-work-order.js";
 import { issueKernelExchange } from "./kernel-exchange.js";
 import {
-  coordinateKernelEffect,
+  applyKernelEffectStep,
   emptyKernelEffectPortResolver,
   type KernelEffectPortResolver,
 } from "./kernel-effect-coordinator.js";
@@ -262,7 +262,7 @@ async function advanceCanonicalRoute(opts: {
       route.reason_code === "kernel_effect_observation_required" ||
       route.reason_code === "kernel_effect_reconciliation_required"
     ) {
-      const coordinated = await coordinateKernelEffect({
+      const coordinated = await applyKernelEffectStep({
         runtime,
         record,
         route,
@@ -536,8 +536,4 @@ export type AdvanceTaskStepOptions = Parameters<typeof advanceCanonicalRoute>[0]
 
 export async function advanceTaskStep(opts: AdvanceTaskStepOptions) {
   return await advanceCanonicalRoute(opts);
-}
-
-export async function advanceCanonicalTask(opts: AdvanceTaskStepOptions) {
-  return await advanceTaskStep(opts);
 }

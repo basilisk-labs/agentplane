@@ -65,7 +65,7 @@ type KernelNativeValidationInput = Readonly<{
   verification: DirectTaskVerificationInputIdentity;
 }>;
 
-export type KernelNativeValidationEvidence = Readonly<{
+type KernelNativeValidationEvidence = Readonly<{
   schema_version: 1;
   kind: "kernel_native_validation";
   input_digest: k.Sha256Digest;

@@ -1,9 +1,6 @@
-/**
- * Compatibility export for internal callers while lifecycle advancement converges on
- * the common application coordinator.
- */
+// Test-only compatibility surface. Production entrypoints import advanceTaskStep directly.
 export {
-  advanceCanonicalTask,
+  advanceTaskStep as advanceCanonicalTask,
   blockKernelSemanticEpisode,
   kernelPlanApprovalOperatorAction,
 } from "./advance-task-step.js";

@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 662f62977d9f5a0d8c34b716a4a38c143a5dc799..f8c0f5429b6867dc957b8dc51421359620618473",
+      "command": "git diff --check f8c0f5429b6867dc957b8dc51421359620618473..3e8783c9bee0762b51fbefcba3c1f97150423837",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 662f62977d9f5a0d8c34b716a4a38c143a5dc799..f8c0f5429b6867dc957b8dc51421359620618473",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB f8c0f5429b6867dc957b8dc51421359620618473..3e8783c9bee0762b51fbefcba3c1f97150423837",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,8 +24,14 @@
         "M\t.agentplane/tasks/202609210324-CC13V3/pr/review.md",
         "M\t.agentplane/tasks/202609210324-CC13V3/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202609210324-CC13V3/supervision/implementation-evidence.json",
-        "A\tpackages/agentplane/src/runner/usecases/roadmap-scenario-owner-parity.test.ts",
-        "M\tpackages/agentplane/src/runner/usecases/scenario-materialize-task.ts"
+        "D\tpackages/agentplane/src/commands/task/branch-task-supervisor.autonomy.test.ts",
+        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor.test.ts",
+        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-supervisor.test.ts",
+        "D\tpackages/agentplane/src/commands/task/direct-task-supervisor.ts",
+        "D\tpackages/agentplane/src/commands/task/supervision-outcome-disposition.test.ts",
+        "D\tpackages/agentplane/src/commands/task/supervision-outcome-disposition.ts",
+        "A\tscripts/checks/single-live-supervisor.test.mjs"
       ]
     },
     {
@@ -35,8 +41,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "662f62977d9f5a0d8c34b716a4a38c143a5dc799",
-  "implementation_commit": "f8c0f5429b6867dc957b8dc51421359620618473",
+  "execution_base_commit": "f8c0f5429b6867dc957b8dc51421359620618473",
+  "implementation_commit": "3e8783c9bee0762b51fbefcba3c1f97150423837",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
