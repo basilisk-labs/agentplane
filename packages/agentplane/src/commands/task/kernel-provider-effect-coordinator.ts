@@ -494,6 +494,14 @@ export async function prepareCanonicalWorkflowEffect(opts: {
 export async function decideCanonicalWorkflowEffect(
   command: CommandContext,
   taskId: string,
+  includeRemote = true,
 ): Promise<TaskRouteDecision> {
-  return await decide(command, taskId);
+  return await buildTaskRouteDecision({
+    ctx: command,
+    cwd: command.resolvedProject.gitRoot,
+    rootOverride: null,
+    includeRemote,
+    freshHead: true,
+    taskId,
+  });
 }

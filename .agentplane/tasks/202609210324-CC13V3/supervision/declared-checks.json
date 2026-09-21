@@ -2,8 +2,8 @@
   "checks": [
     {
       "check_ids": [],
-      "command": "node --test scripts/checks/single-live-supervisor.test.mjs",
-      "duration_ms": 205,
+      "command": "node --test scripts/checks/no-secondary-lifecycle-engine.test.mjs",
+      "duration_ms": 748,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
@@ -14,7 +14,7 @@
       },
       "script": null,
       "stderr_tail": "",
-      "stdout_tail": "✔ new-task entrypoints have one live Kernel supervisor (1.789958ms)\n✔ retired outer owners contribute no production runtime imports (1.002584ms)\n✔ retained branch episode adapter has an explicit production consumer (0.670667ms)\nℹ tests 3\nℹ suites 0\nℹ pass 3\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 34.751334\n"
+      "stdout_tail": "✔ one observed Kernel reducer, writer, and application coordinator remain (0.542375ms)\n✔ retired lifecycle owners are absent from the production import graph (40.224042ms)\n✔ retained lifecycle helpers have named current consumers (0.34675ms)\n✔ cold migration still decodes exact historical bytes (508.551125ms)\n✔ retirement ledger records boundary deltas without a performance claim (0.135958ms)\nℹ tests 5\nℹ suites 0\nℹ pass 5\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 581.129709\n"
     }
   ],
   "kind": "direct_task_declared_checks",

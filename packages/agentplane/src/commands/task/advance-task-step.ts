@@ -195,6 +195,19 @@ async function advanceCanonicalRoute(opts: {
       route.reason_code === "kernel_task_completed" &&
       current.read.task.execution_route?.repository_mode === "branch_pr"
     ) {
+      const localWorkflow = await decideCanonicalWorkflowEffect(opts.command, opts.task_id, false);
+      const localTerminal =
+        localWorkflow.workflowStep.kind === "terminal" &&
+        ["done", "superseded"].includes(localWorkflow.workflowStep.outcome.type);
+      if (localTerminal) {
+        await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
+        return {
+          schema_version: 1,
+          task_id: opts.task_id,
+          action: { kind: "terminal", reason: route.reason_code },
+          canonical_revision: record.aggregate.revision,
+        };
+      }
       if (!opts.allow_provider_effects) {
         return {
           schema_version: 1,
@@ -202,7 +215,7 @@ async function advanceCanonicalRoute(opts: {
           action: { kind: "external_wait", reason: "canonical_provider_access_required" },
         };
       }
-      const workflow = await decideCanonicalWorkflowEffect(opts.command, opts.task_id);
+      const workflow = await decideCanonicalWorkflowEffect(opts.command, opts.task_id, true);
       const baseCheckout = workflow.workspace.baseCheckoutPath;
       if (
         canonicalCompletionPrecedesWorkflow(workflow.workflowStep) &&

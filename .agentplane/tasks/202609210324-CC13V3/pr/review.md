@@ -37,7 +37,7 @@ Created: 2026-09-21T03:47:54.341Z
  .../shared/supervisor-execution-episode.ts         |   21 +
  .../src/commands/shared/workflow-step-branch.ts    |   13 +-
  .../src/commands/shared/workflow-step-factory.ts   |   85 +-
- .../src/commands/task/advance-task-step.ts         |   39 +-
+ .../src/commands/task/advance-task-step.ts         |   54 +-
  .../src/commands/task/advance.command.ts           |  168 ++--
  .../task/branch-task-supervisor-operations.ts      |   40 +
  .../task/branch-task-supervisor.autonomy.test.ts   |  638 -------------
@@ -60,7 +60,7 @@ Created: 2026-09-21T03:47:54.341Z
  .../src/commands/task/kernel-inspection.ts         |  527 ++++++++--
  .../src/commands/task/kernel-migrate.command.ts    |  229 ++++-
  .../kernel-provider-effect-coordinator.test.ts     |    1 +
- .../task/kernel-provider-effect-coordinator.ts     |   24 +-
+ .../task/kernel-provider-effect-coordinator.ts     |   34 +-
  .../src/commands/task/kernel-run.test.ts           |    6 +-
  .../agentplane/src/commands/task/kernel-run.ts     |   70 +-
  .../src/commands/task/kernel-semantic-result.ts    |    4 +-
@@ -81,6 +81,7 @@ Created: 2026-09-21T03:47:54.341Z
  .../task/roadmap-lifecycle-migration-apply.test.ts |  741 +++++++++++++++
  .../roadmap-lifecycle-migration-preview.test.ts    |  386 ++++++++
  .../task/roadmap-semantic-admission.test.ts        |  129 +++
+ .../commands/task/roadmap-terminal-noop.test.ts    |  206 ++++
  .../task/roadmap-workitem-readiness.test.ts        |  150 +++
  .../agentplane/src/commands/task/run.command.ts    |  318 +++----
  packages/agentplane/src/commands/task/run.spec.ts  |   10 +-
@@ -113,7 +114,7 @@ Created: 2026-09-21T03:47:54.341Z
  scripts/checks/lifecycle-owner-map.test.mjs        |   44 +-
  .../checks/no-secondary-lifecycle-engine.test.mjs  |  110 +++
  scripts/checks/single-live-supervisor.test.mjs     |   49 +
- 84 files changed, 6951 insertions(+), 5799 deletions(-)
+ 85 files changed, 7180 insertions(+), 5801 deletions(-)
 ```
 
 </details>
