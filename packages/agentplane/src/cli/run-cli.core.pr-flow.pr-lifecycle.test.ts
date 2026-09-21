@@ -58,6 +58,7 @@ import {
   installFakeGhPrLookup,
   type ResolvedProject,
 } from "@agentplane/testkit/cli-core-pr-flow";
+import { materializeLegacyDrainIdentityFixture } from "../commands/shared/native-task-identity-fixture.js";
 
 describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEOUT_MS }, () => {
   it("task start-ready auto-creates PR artifacts in branch_pr mode", async () => {
@@ -96,6 +97,13 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
     } finally {
       ioTask.restore();
     }
+
+    await materializeLegacyDrainIdentityFixture({
+      root,
+      task_id: taskId,
+      adopt_canonical_as_legacy: true,
+      ownership_only: true,
+    });
 
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     await execFileAsync("git", ["checkout", "-b", `task/${taskId}/start-ready-auto`], {
@@ -175,6 +183,13 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
     } finally {
       ioTask.restore();
     }
+
+    await materializeLegacyDrainIdentityFixture({
+      root,
+      task_id: taskId,
+      adopt_canonical_as_legacy: true,
+      ownership_only: true,
+    });
 
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     await execFileAsync("git", ["checkout", "-b", `task/${taskId}/status-sync`], { cwd: root });
