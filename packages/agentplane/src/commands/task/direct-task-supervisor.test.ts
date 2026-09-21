@@ -6,6 +6,7 @@ import type { TaskExecutionContext } from "../../runtime/task-execution-context/
 
 const mocks = vi.hoisted(() => ({
   advance: vi.fn(),
+  applyImplementation: vi.fn(),
   applyEvaluator: vi.fn(),
   buildDecision: vi.fn(),
   complete: vi.fn(),
@@ -53,6 +54,7 @@ vi.mock("../shared/task-backend.js", () => ({
   loadTaskFromContext: mocks.loadTask,
 }));
 vi.mock("./direct-task-supervisor-operation.js", () => ({
+  applyDirectImplementationOperation: mocks.applyImplementation,
   executeDirectOperation: mocks.executeOperation,
 }));
 vi.mock("./direct-task-finalization.js", () => ({
@@ -193,6 +195,22 @@ describe("direct task supervisor", () => {
       changed_paths: [],
     });
     mocks.resolveCommit.mockResolvedValue({ status: "ready", commit: "def456" });
+    mocks.applyImplementation.mockImplementation(async (opts: { command: unknown }) => {
+      const task = (await mocks.loadTask({
+        ctx: opts.command,
+        taskId: TASK_ID,
+      })) as TaskData;
+      return {
+        status: "ready",
+        task,
+        evidence: {
+          artifact_path: `.agentplane/tasks/${TASK_ID}/supervision/implementation-evidence.json`,
+          implementation_commit: "def456",
+          changed_paths: [],
+        },
+        executor_lifecycle_event_delta: 0,
+      };
+    });
     mocks.recordGoldenMetrics.mockResolvedValue({
       artifact_path: `.agentplane/tasks/${TASK_ID}/supervision/golden-metrics.json`,
       comparison: { passed: true },
@@ -672,21 +690,21 @@ describe("direct task supervisor", () => {
         task: verifiedTask,
       }),
     );
-    expect(mocks.resolveCommit).toHaveBeenCalledWith(
+    expect(mocks.applyImplementation).toHaveBeenCalledWith(
       expect.objectContaining({
         command: workspaceCommand,
         cwd: "/repo/.agentplane/workspaces/task",
+        execution_base_commit: "abc123",
       }),
     );
-    expect(mocks.resolveCommit.mock.invocationCallOrder[0]).toBeLessThan(
+    expect(mocks.applyImplementation.mock.invocationCallOrder[0]).toBeLessThan(
       mocks.executeEvaluator.mock.invocationCallOrder[0] ?? Number.POSITIVE_INFINITY,
     );
     expect(mocks.finalizeDirect).toHaveBeenCalledWith(
       expect.objectContaining({
         ctx: { cwd: "/repo/.agentplane/workspaces/task" },
         command: workspaceCommand,
-        execution_base_commit: "abc123",
-        allowed_paths: ["packages/agentplane/src/commands/task"],
+        implementation_commit: "def456",
         declared_checks: 1,
       }),
     );

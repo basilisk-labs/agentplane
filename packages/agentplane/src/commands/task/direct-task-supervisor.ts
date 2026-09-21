@@ -5,7 +5,6 @@ import {
 
 import type { CommandCtx } from "../../cli/spec/spec.js";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
-import { resolveTaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import { CliError } from "../../shared/errors.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
 import { supervisePersistedWorkflowEpisode } from "../shared/supervisor-execution-episode.js";
@@ -13,7 +12,6 @@ import { loadTaskFromContext, type CommandContext } from "../shared/task-backend
 import { finalizeDirectTask, verifyDirectTask } from "./direct-task-supervisor-closeout.js";
 import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
 import { runAndApplyDirectTaskEvaluator } from "./direct-task-supervisor-evaluator.js";
-import { prepareDirectImplementationEvidence } from "./direct-task-supervisor-implementation.js";
 import { observeDirectExecutor } from "./direct-task-supervisor-observation.js";
 import {
   assertedDirect,
@@ -32,10 +30,7 @@ import {
 } from "./direct-task-supervision-measurement.js";
 import { recordDirectTaskSupervisionGoldenMetrics } from "./direct-task-supervision-golden-metrics.js";
 import {
-  observedExternalEffectsFromRunnerResult,
-  recordObservedTaskExecutionContract,
-} from "./task-execution-contract-observation.js";
-import {
+  applyDirectImplementationOperation,
   executeDirectOperation,
   type RetainedDirectWorkspace,
 } from "./direct-task-supervisor-operation.js";
@@ -57,12 +52,6 @@ export type DirectTaskSupervisorOptions = {
     source: string;
   } | null;
 };
-
-function taskEventCount(
-  task: Pick<Awaited<ReturnType<typeof loadTaskFromContext>>, "events">,
-): number {
-  return task.events?.length ?? 0;
-}
 
 function evaluatorAdapterFailureClass(error: unknown): string {
   if (error instanceof CliError) return error.code;
@@ -256,49 +245,24 @@ async function superviseDirectTaskRunWithWorkspace(
     if (operation.id === "runner.follow" && !retainedWorkspace.current) {
       executionBaseCommit = await readDirectTaskHead(activeCtx.cwd);
       executionBaselineStatus = await readDirectRepositoryStatus(activeCtx.cwd);
-      executorEventsBefore = taskEventCount(
-        await loadTaskFromContext({ ctx: activeCommand, taskId: input.task_id }),
-      );
-    }
-    const task = await loadTaskFromContext({ ctx: activeCommand, taskId: input.task_id });
-    executorLifecycleEventDelta =
-      taskEventCount(task) - (executorEventsBefore ?? taskEventCount(task));
-    if (executorLifecycleEventDelta !== 0) {
-      return stoppedResult({
-        decision: current,
-        journal,
-        executor: observed.executor,
-        metrics: directTaskSupervisorMetrics({
-          provider_episodes: providerEpisodes,
-          executor_lifecycle_event_delta: executorLifecycleEventDelta,
-          declared_checks: declaredChecks,
-          lifecycle_calls: lifecycleCalls,
-          tool_calls: toolCalls,
-          duplicate_executor_context_bytes: duplicateExecutorContextBytes,
-        }),
-        stop: {
-          code: "executor_lifecycle_mutation",
-          reason:
-            "The EXECUTOR changed persisted task lifecycle events; direct lifecycle ownership belongs to the CLI.",
-          route_step_id: current.workflowStep.id,
-          operation_id: operation.id,
-        },
+      const taskBeforeImplementation = await loadTaskFromContext({
+        ctx: activeCommand,
+        taskId: input.task_id,
       });
+      executorEventsBefore = taskBeforeImplementation.events?.length ?? 0;
     }
-
-    const implementation = await prepareDirectImplementationEvidence({
+    const implementation = await applyDirectImplementationOperation({
       command: activeCommand,
       cwd: activeCtx.cwd,
       task_id: input.task_id,
+      task_execution: input.task_execution,
+      lifecycle,
       execution_base_commit: executionBaseCommit,
       execution_baseline_status: executionBaselineStatus,
-      allowed_paths: lifecycle.lifecycle?.work_order_authority?.writable_roots ?? [],
-      observed_changed_paths:
-        lifecycle.result?.evidence?.provenance === "supervisor_observed"
-          ? (lifecycle.result.evidence.changed_paths ?? [])
-          : null,
+      executor_events_before: executorEventsBefore,
     });
-    if (implementation.status !== "ready") {
+    executorLifecycleEventDelta = implementation.executor_lifecycle_event_delta;
+    if (implementation.status === "stopped") {
       return stoppedResult({
         decision: current,
         journal,
@@ -312,52 +276,10 @@ async function superviseDirectTaskRunWithWorkspace(
           duplicate_executor_context_bytes: duplicateExecutorContextBytes,
         }),
         stop: {
-          code:
-            implementation.status === "scope_violation"
-              ? "implementation_scope_violation"
-              : "implementation_commit_missing",
+          code: implementation.code,
           reason: implementation.reason,
           route_step_id: current.workflowStep.id,
-          operation_id: null,
-        },
-      });
-    }
-    const reconciliation = await recordObservedTaskExecutionContract({
-      command: activeCommand,
-      execution:
-        input.task_execution ??
-        (await resolveTaskExecutionContext({
-          ctx: activeCommand,
-          tasks: [task],
-          primaryTaskId: task.id,
-        })),
-      task,
-      changed_paths: implementation.evidence.changed_paths,
-      observed_external_effects: observedExternalEffectsFromRunnerResult(lifecycle.result),
-      preserved_commit: implementation.evidence.implementation_commit,
-    });
-    if (
-      reconciliation.escalated ||
-      reconciliation.task.execution_contract?.observed.authority_violations.length
-    ) {
-      return stoppedResult({
-        decision: current,
-        journal,
-        executor: observed.executor,
-        metrics: directTaskSupervisorMetrics({
-          provider_episodes: providerEpisodes,
-          executor_lifecycle_event_delta: executorLifecycleEventDelta,
-          declared_checks: declaredChecks,
-          lifecycle_calls: lifecycleCalls,
-          tool_calls: toolCalls,
-          duplicate_executor_context_bytes: duplicateExecutorContextBytes,
-        }),
-        stop: {
-          code: "execution_contract_escalated",
-          reason:
-            "Supervisor-observed effects exceed the execution contract authority and require branch_pr plus explicit side-effect authority. The execution contract preserved the implementation commit and changed paths; recompute task next-action for the single deterministic handoff.",
-          route_step_id: current.workflowStep.id,
-          operation_id: null,
+          operation_id: implementation.code === "executor_lifecycle_mutation" ? operation.id : null,
         },
       });
     }
@@ -365,7 +287,7 @@ async function superviseDirectTaskRunWithWorkspace(
       ctx: activeCtx,
       command: activeCommand,
       task_id: input.task_id,
-      task: reconciliation.task,
+      task: implementation.task,
       implementation_evidence: implementation.evidence,
       decision,
       on_lifecycle_operation: () => {
@@ -479,12 +401,7 @@ async function superviseDirectTaskRunWithWorkspace(
       command: activeCommand,
       task_id: input.task_id,
       decision,
-      execution_base_commit: executionBaseCommit,
-      allowed_paths: lifecycle.lifecycle?.work_order_authority?.writable_roots ?? [],
-      observed_changed_paths:
-        lifecycle.result?.evidence?.provenance === "supervisor_observed"
-          ? (lifecycle.result.evidence.changed_paths ?? [])
-          : null,
+      implementation_commit: implementation.evidence.implementation_commit,
       on_lifecycle_operation: () => {
         lifecycleCalls += 1;
         toolCalls += 1;

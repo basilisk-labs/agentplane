@@ -24,8 +24,7 @@ import {
 import type { TaskAdvanceParsed } from "./advance.spec.js";
 import { executeBranchWorkflowOperation } from "./branch-task-supervisor-operations.js";
 import { activeExecutionGrantForTask, resolveConfiguredAuthority } from "./configured-authority.js";
-import { finishDirectTask } from "./direct-task-finalization.js";
-import { recordDirectTaskFormalOperation } from "./direct-task-supervisor-formal-operation.js";
+import { runDirectTaskFinalizationOperation } from "./direct-task-finalization.js";
 import {
   acceptExternalAgentResult,
   issueExternalAgentExchange,
@@ -219,21 +218,12 @@ export async function advanceOrdinaryRoute(opts: {
           freshHead: true,
           taskId: parsed.taskId,
         });
-      const finalized = await recordDirectTaskFormalOperation({
-        git_root: closeoutCommand.resolvedProject.gitRoot,
+      const finalized = await runDirectTaskFinalizationOperation({
+        ctx: { cwd: checkout },
+        command: closeoutCommand,
         task_id: parsed.taskId,
-        id: "task_finish",
         decision: closeoutDecision,
-        run: async () => {
-          const exitCode = await finishDirectTask({
-            ctx: { cwd: checkout },
-            command: closeoutCommand,
-            task_id: parsed.taskId,
-            implementation_commit: current.task.commit!,
-          });
-          if (exitCode !== 0) throw new Error(`Direct closeout exited with ${exitCode}.`);
-          return { implementation_commit: current.task.commit };
-        },
+        implementation_commit: current.task.commit,
       });
       current = finalized.decision;
       continue;
