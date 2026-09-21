@@ -1,8 +1,8 @@
- .../release/task-registry-ready-script.test.ts     | 177 ++++++++++++++++++++
- .../write-release-ready-manifest-script.test.ts    |  80 ++++++++-
- scripts/checks/check-task-state.mjs                |  21 ++-
- scripts/lib/release-scope-exclusions.mjs           | 184 +++++++++++++++++++++
- scripts/release/check-task-registry-ready.mjs      |  10 ++
+ .../release/task-registry-ready-script.test.ts     | 254 +++++++++++++++++++++
+ .../write-release-ready-manifest-script.test.ts    |  80 ++++++-
+ scripts/checks/check-task-state.mjs                | 124 +++++++++-
+ scripts/lib/release-scope-exclusions.mjs           | 184 +++++++++++++++
+ scripts/release/check-task-registry-ready.mjs      |  10 +
  scripts/release/manifest.mjs                       |  12 +-
- scripts/release/release-scope-exclusions.json      |  45 +++++
- 7 files changed, 525 insertions(+), 4 deletions(-)
+ scripts/release/release-scope-exclusions.json      |  45 ++++
+ 7 files changed, 704 insertions(+), 5 deletions(-)

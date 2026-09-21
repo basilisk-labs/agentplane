@@ -131,6 +131,36 @@ async function initializeGitRepository(root: string) {
   return String(result.stdout).trim();
 }
 
+async function writeCurrentImplementationEvidence(root: string, taskId: string, commit: string) {
+  const evidenceDir = path.join(root, ".agentplane", "tasks", taskId, "supervision");
+  await mkdir(evidenceDir, { recursive: true });
+  await writeFile(
+    path.join(evidenceDir, "implementation-evidence.json"),
+    `${JSON.stringify(
+      {
+        schema_version: 1,
+        kind: "direct_task_implementation_evidence",
+        task_id: taskId,
+        execution_base_commit: commit,
+        implementation_commit: commit,
+        checks: [
+          { id: "committed-diff-check", result: "pass", stdout: [] },
+          { id: "staged-diff-check", result: "pass", stdout: [] },
+          {
+            id: "commit-paths",
+            result: "pass",
+            stdout: ["M\\tscripts/release/check-task-registry-ready.mjs"],
+          },
+          { id: "final-repository-status", result: "pass", stdout: [] },
+        ],
+      },
+      null,
+      2,
+    )}\n`,
+    "utf8",
+  );
+}
+
 async function writeReleaseScopeManifest(root: string, exclusions: Record<string, unknown>[]) {
   const manifestDir = path.join(root, "scripts", "release");
   await mkdir(manifestDir, { recursive: true });
@@ -268,6 +298,53 @@ describe("check-task-registry-ready script", () => {
 
     expect(result.ok).toBe(false);
     expect(result.stderr).toContain("DOING task blocks release readiness");
+  });
+
+  it("allows only the current Git-proven release-readiness implementation task", async () => {
+    const taskId = "202605190001-SELF01";
+    const root = await makeRepo([
+      {
+        id: taskId,
+        status: "DOING",
+        taskKind: "code",
+        tags: ["release-readiness"],
+      },
+    ]);
+    const commit = await initializeGitRepository(root);
+    await execFileAsync("git", ["branch", "-m", `task/${taskId}/release-readiness`], { cwd: root });
+    await writeCurrentImplementationEvidence(root, taskId, commit);
+
+    await expect(
+      execFileAsync("node", [SCRIPT_PATH, "--allow-active-release-task"], { cwd: root }),
+    ).resolves.toBeDefined();
+    const withoutExplicitAllowance = await runRegistryCheck(root);
+    expect(withoutExplicitAllowance.ok).toBe(false);
+    expect(withoutExplicitAllowance.stderr).toContain("DOING task blocks release readiness");
+  });
+
+  it("rejects stale implementation evidence for the current release-readiness task", async () => {
+    const taskId = "202605190001-SELF02";
+    const root = await makeRepo([
+      {
+        id: taskId,
+        status: "DOING",
+        taskKind: "code",
+        tags: ["release-readiness"],
+      },
+    ]);
+    const commit = await initializeGitRepository(root);
+    await execFileAsync("git", ["branch", "-m", `task/${taskId}/release-readiness`], { cwd: root });
+    await writeCurrentImplementationEvidence(
+      root,
+      taskId,
+      "ffffffffffffffffffffffffffffffffffffffff",
+    );
+
+    const result = await runRegistryCheck(root, ["--allow-active-release-task"]);
+
+    expect(result.ok).toBe(false);
+    expect(result.stderr).toContain("DOING task blocks release readiness");
+    expect(commit).toMatch(/^[0-9a-f]{40}$/u);
   });
 
   it("still blocks open release observations on the allowed active release task", async () => {

@@ -12,8 +12,8 @@ Created: 2026-09-21T16:13:15.390Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,14 +29,14 @@ Created: 2026-09-21T16:13:15.390Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../release/task-registry-ready-script.test.ts     | 177 ++++++++++++++++++++
- .../write-release-ready-manifest-script.test.ts    |  80 ++++++++-
- scripts/checks/check-task-state.mjs                |  21 ++-
- scripts/lib/release-scope-exclusions.mjs           | 184 +++++++++++++++++++++
- scripts/release/check-task-registry-ready.mjs      |  10 ++
+ .../release/task-registry-ready-script.test.ts     | 254 +++++++++++++++++++++
+ .../write-release-ready-manifest-script.test.ts    |  80 ++++++-
+ scripts/checks/check-task-state.mjs                | 124 +++++++++-
+ scripts/lib/release-scope-exclusions.mjs           | 184 +++++++++++++++
+ scripts/release/check-task-registry-ready.mjs      |  10 +
  scripts/release/manifest.mjs                       |  12 +-
- scripts/release/release-scope-exclusions.json      |  45 +++++
- 7 files changed, 525 insertions(+), 4 deletions(-)
+ scripts/release/release-scope-exclusions.json      |  45 ++++
+ 7 files changed, 704 insertions(+), 5 deletions(-)
 ```
 
 </details>
