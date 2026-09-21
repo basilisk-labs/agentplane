@@ -1,0 +1,6 @@
+ .../src/commands/task/advance-task-step.ts         | 599 +++++++++++++++++++++
+ .../src/commands/task/advance.command.ts           | 485 +++--------------
+ .../agentplane/src/commands/task/kernel-advance.ts | 580 +-------------------
+ .../src/commands/task/ordinary-advance-step.ts     | 382 +++++++++++++
+ .../commands/task/roadmap-advance-one-step.test.ts |  61 +++
+ 5 files changed, 1111 insertions(+), 996 deletions(-)

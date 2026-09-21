@@ -1,0 +1,61 @@
+import { readFile } from "node:fs/promises";
+import { describe, expect, it } from "vitest";
+
+import { canonicalCompletionPrecedesWorkflow } from "./advance-task-step.js";
+
+const fingerprint = { digest: "sha256:route" } as never;
+
+function operationStep(id: string) {
+  return {
+    kind: "cli_operation",
+    operation: { id },
+    preconditionFingerprint: fingerprint,
+  } as never;
+}
+
+describe("LC-03 common advance-one-step coordinator", () => {
+  it("completes canonical lifecycle before post-merge close and cleanup effects", () => {
+    expect(canonicalCompletionPrecedesWorkflow(operationStep("task.hosted_close.finalize"))).toBe(
+      true,
+    );
+    expect(canonicalCompletionPrecedesWorkflow(operationStep("task.worktree.cleanup"))).toBe(true);
+    expect(canonicalCompletionPrecedesWorkflow(operationStep("integration.run_next"))).toBe(false);
+    expect(
+      canonicalCompletionPrecedesWorkflow({
+        kind: "terminal",
+        authoritativeCheckout: "base_checkout",
+      } as never),
+    ).toBe(true);
+  });
+
+  it("keeps public entrypoints as wrappers around the sole coordinator", async () => {
+    const [command, compatibility, coordinator] = await Promise.all([
+      readFile(new URL("advance.command.ts", import.meta.url), "utf8"),
+      readFile(new URL("kernel-advance.ts", import.meta.url), "utf8"),
+      readFile(new URL("advance-task-step.ts", import.meta.url), "utf8"),
+    ]);
+
+    expect(command).toContain("advanceTaskStep");
+    expect(command).not.toMatch(/for\s*\(/u);
+    expect(command).not.toContain("supervisePersistedWorkflowEpisode");
+    expect(compatibility).toContain('from "./advance-task-step.js"');
+    expect(compatibility).not.toMatch(/for\s*\(/u);
+    expect(coordinator).toContain("export async function advanceTaskStep");
+  });
+
+  it("preserves exchange and fail-closed recovery contracts in the coordinator", async () => {
+    const [coordinator, ordinary, supervisor] = await Promise.all([
+      readFile(new URL("advance-task-step.ts", import.meta.url), "utf8"),
+      readFile(new URL("ordinary-advance-step.ts", import.meta.url), "utf8"),
+      readFile(new URL("../shared/workflow-supervisor.ts", import.meta.url), "utf8"),
+    ]);
+
+    expect(coordinator).toContain("advanceOrdinaryRoute");
+    expect(ordinary).toContain("result_schema_ref");
+    expect(ordinary).toContain("resume_argv");
+    expect(ordinary).toContain("effect_in_doubt");
+    expect(coordinator).toContain("canonical_workflow_effect_no_progress");
+    expect(supervisor).toContain("stale precondition fingerprint");
+    expect(supervisor).toContain("repeated idempotency key");
+  });
+});
