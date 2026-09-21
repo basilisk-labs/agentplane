@@ -1,0 +1,100 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 4f28ee5433e7666de75437015b2003a9895073fc..eba44c81d1e77d9b116cb8893902b24ac912f1eb",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 4f28ee5433e7666de75437015b2003a9895073fc..eba44c81d1e77d9b116cb8893902b24ac912f1eb",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202609210154-5R1Q9A/README.md",
+        "A\t.agentplane/tasks/202609210154-5R1Q9A/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202609210154-5R1Q9A/pr/github-body.md",
+        "A\t.agentplane/tasks/202609210154-5R1Q9A/pr/github-title.txt",
+        "A\t.agentplane/tasks/202609210154-5R1Q9A/pr/meta.json",
+        "A\t.agentplane/tasks/202609210154-5R1Q9A/pr/review.md",
+        "A\t.agentplane/tasks/202609210154-5R1Q9A/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json",
+        "A\t.agentplane/tasks/202609210154-5R1Q9A/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "A\tpackages/agentplane/src/commands/task/advance-task-step.ts",
+        "M\tpackages/agentplane/src/commands/task/advance.command.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-advance.ts",
+        "A\tpackages/agentplane/src/commands/task/ordinary-advance-step.ts",
+        "A\tpackages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "4f28ee5433e7666de75437015b2003a9895073fc",
+  "implementation_commit": "eba44c81d1e77d9b116cb8893902b24ac912f1eb",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M packages/agentplane/src/commands/task/advance.command.ts",
+      " M packages/agentplane/src/commands/task/kernel-advance.ts",
+      "?? .agentplane/tasks/202609210154-5R1Q9A/README.md",
+      "?? .agentplane/tasks/202609210154-5R1Q9A/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json",
+      "?? .agentplane/tasks/202609210154-5R1Q9A/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+      "?? packages/agentplane/src/commands/task/advance-task-step.ts",
+      "?? packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/advance.command.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-advance.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609210154-5R1Q9A/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609210154-5R1Q9A/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609210154-5R1Q9A/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/advance-task-step.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M packages/agentplane/src/commands/task/advance.command.ts",
+      " M packages/agentplane/src/commands/task/kernel-advance.ts",
+      "?? .agentplane/tasks/202609210154-5R1Q9A/README.md",
+      "?? .agentplane/tasks/202609210154-5R1Q9A/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json",
+      "?? .agentplane/tasks/202609210154-5R1Q9A/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+      "?? packages/agentplane/src/commands/task/advance-task-step.ts",
+      "?? packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609210154-5R1Q9A"
+}
