@@ -30,8 +30,9 @@ Created: 2026-09-21T03:47:54.341Z
 
 ```text
  .../adapters/task-backend/kernel-next-action.ts    |  55 +-
- .../src/cli/run-cli.core.kernel-transport.test.ts  |  15 +-
+ .../src/cli/run-cli.core.kernel-transport.test.ts  |  23 +-
  ...cli.core.roadmap-external-owner-cutover.test.ts | 105 +++
+ ...-cli.core.roadmap-managed-owner-cutover.test.ts | 226 +++++
  .../commands/shared/semantic-result-admission.ts   |  49 ++
  .../shared/supervisor-execution-episode.ts         |  21 +
  .../src/commands/shared/workflow-step-branch.ts    |  13 +-
@@ -55,7 +56,7 @@ Created: 2026-09-21T03:47:54.341Z
  .../src/commands/task/kernel-migrate.command.ts    | 229 ++++-
  .../kernel-provider-effect-coordinator.test.ts     |   1 +
  .../task/kernel-provider-effect-coordinator.ts     |  24 +-
- .../agentplane/src/commands/task/kernel-run.ts     |  12 +-
+ .../agentplane/src/commands/task/kernel-run.ts     |  60 +-
  .../src/commands/task/kernel-semantic-result.ts    |   4 +-
  .../src/commands/task/kernel-work-order.ts         |   5 +-
  .../src/commands/task/kernel-worktree-routing.ts   |  72 +-
@@ -75,6 +76,8 @@ Created: 2026-09-21T03:47:54.341Z
  .../roadmap-lifecycle-migration-preview.test.ts    | 386 +++++++++
  .../task/roadmap-semantic-admission.test.ts        | 129 +++
  .../task/roadmap-workitem-readiness.test.ts        | 150 ++++
+ .../agentplane/src/commands/task/run.command.ts    | 268 ++----
+ packages/agentplane/src/commands/task/run.spec.ts  |  10 +-
  .../src/runner/usecases/agent-work-order-build.ts  |  12 +-
  .../src/runner/usecases/semantic-role.ts           |  10 +
  .../runner/usecases/task-knowledge-request.test.ts |  50 +-
@@ -91,7 +94,7 @@ Created: 2026-09-21T03:47:54.341Z
  packages/core/src/tasks/task-centric/index.ts      |  10 +
  packages/core/src/tasks/task-centric/lifecycle.ts  |  62 ++
  schemas/agent-semantic-result.schema.json          |   6 +-
- 62 files changed, 6172 insertions(+), 663 deletions(-)
+ 65 files changed, 6523 insertions(+), 872 deletions(-)
 ```
 
 </details>

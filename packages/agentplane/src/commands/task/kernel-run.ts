@@ -434,6 +434,15 @@ async function executeKernelPacket(
   }
 }
 
+export async function runManagedTransportStep<P extends object, R>(opts: {
+  advance: () => Promise<P>;
+  execute: (packet: Extract<P, { exchange: object }>) => Promise<R>;
+}): Promise<P | R> {
+  const packet = await opts.advance();
+  if (!("exchange" in packet)) return packet;
+  return await opts.execute(packet as Extract<P, { exchange: object }>);
+}
+
 export async function runCanonicalTask(opts: {
   command: CommandContext;
   task_id: string;
@@ -455,26 +464,25 @@ export async function runCanonicalTask(opts: {
       action: { kind: "read_only", reason: current.next_action.reason_code },
     };
   }
-  let packet: Packet | Awaited<ReturnType<typeof executeKernelPacket>> = await advanceCanonicalTask(
-    {
-      command: opts.command,
-      task_id: opts.task_id,
-      transport: "managed",
-      effect_port_resolver: createKernelProviderEffectPortResolver({
+  return await runManagedTransportStep({
+    advance: async () =>
+      await advanceCanonicalTask({
         command: opts.command,
-        allow_remote: opts.allow_remote === true,
+        task_id: opts.task_id,
+        transport: "managed",
+        effect_port_resolver: createKernelProviderEffectPortResolver({
+          command: opts.command,
+          allow_remote: opts.allow_remote === true,
+        }),
+        allow_provider_effects: opts.allow_remote === true,
       }),
-      allow_provider_effects: opts.allow_remote === true,
-    },
-  );
-  for (let episode = 0; episode < 16 && "exchange" in packet; episode++) {
-    packet = await executeKernelPacket(
-      opts.command,
-      opts.task_id,
-      packet,
-      opts.sandbox,
-      opts.allow_remote === true,
-    );
-  }
-  return packet;
+    execute: async (packet) =>
+      await executeKernelPacket(
+        opts.command,
+        opts.task_id,
+        packet,
+        opts.sandbox,
+        opts.allow_remote === true,
+      ),
+  });
 }

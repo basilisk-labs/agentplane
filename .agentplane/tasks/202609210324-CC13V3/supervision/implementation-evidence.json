@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check ffe2f74e99cc3caf8c10aa1c7f358ceaee0db88a..d47e4b20b84ac0575ff5e0e1b6a84beebffeee22",
+      "command": "git diff --check d47e4b20b84ac0575ff5e0e1b6a84beebffeee22..66e8c05aad2e4bb59c65add6609b133b2d38e8c4",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB ffe2f74e99cc3caf8c10aa1c7f358ceaee0db88a..d47e4b20b84ac0575ff5e0e1b6a84beebffeee22",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB d47e4b20b84ac0575ff5e0e1b6a84beebffeee22..66e8c05aad2e4bb59c65add6609b133b2d38e8c4",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,8 +24,11 @@
         "M\t.agentplane/tasks/202609210324-CC13V3/pr/review.md",
         "M\t.agentplane/tasks/202609210324-CC13V3/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202609210324-CC13V3/supervision/implementation-evidence.json",
-        "M\tpackages/agentplane/src/commands/task/kernel-migrate.command.ts",
-        "M\tpackages/agentplane/src/commands/task/roadmap-lifecycle-migration-apply.test.ts"
+        "M\tpackages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts",
+        "A\tpackages/agentplane/src/cli/run-cli.core.roadmap-external-owner-cutover.test.ts",
+        "M\tpackages/agentplane/src/commands/task/advance-task-step.ts",
+        "M\tpackages/agentplane/src/commands/task/advance.command.ts",
+        "M\tpackages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts"
       ]
     },
     {
@@ -35,8 +38,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "ffe2f74e99cc3caf8c10aa1c7f358ceaee0db88a",
-  "implementation_commit": "d47e4b20b84ac0575ff5e0e1b6a84beebffeee22",
+  "execution_base_commit": "d47e4b20b84ac0575ff5e0e1b6a84beebffeee22",
+  "implementation_commit": "66e8c05aad2e4bb59c65add6609b133b2d38e8c4",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [

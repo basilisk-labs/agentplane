@@ -1,10 +1,11 @@
-import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
+import { readKernelRecord } from "../../adapters/task-backend/kernel-record.js";
+import type { taskKernel } from "@agentplaneorg/core/tasks";
 import { runCanonicalTask } from "./kernel-run.js";
 import type { CommandCtx } from "../../cli/spec/spec.js";
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
+import { CliError } from "../../shared/errors.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import { prepareTaskRunnerExecution } from "../../runner/usecases/task-run.js";
-import { projectPreparedTaskRunnerLifecycleResult } from "../../runner/usecases/task-run-lifecycle-result.js";
+import { resolveTaskOwnerCommandContext } from "../shared/task-backend.js";
 import {
   loadTaskRunnerDiagnosticInspection,
   loadTaskRunnerInspection,
@@ -24,60 +25,33 @@ import {
   renderRunnerDiagnosticStatusPayload,
   renderRunnerStatusPayload,
   runnerReconciliationWarning,
-  renderTaskRunnerLifecyclePayload,
-  reportPreparedTaskRun,
   tailText,
 } from "./run-render.js";
-import { buildTaskRunExecutionPreview } from "./run-execution-preview.js";
 import { followRunnerLogs } from "./run-logs-follow.js";
-import { superviseBranchTaskRun } from "./branch-task-supervisor.js";
-import { superviseDirectTaskRun } from "./direct-task-supervisor.js";
-import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
-import {
-  branchTaskSupervisionDisposition,
-  directTaskSupervisionDisposition,
-} from "./supervision-outcome-disposition.js";
-import { requireKernelIssuanceEligibility } from "./kernel-cutover.js";
+import { classifyKernelCutover } from "./kernel-cutover.js";
 import {
   recoverCanonicalControllerSuspensions,
   resolveCanonicalControllerCommand,
 } from "./kernel-controller-handoff.js";
+import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
 
 export {
   makeRunTaskRunResolveEffectHandler,
   makeRunTaskRunResumeEffectHandler,
 } from "./task-run-effect-resolution.command.js";
 
-function reportTaskSupervision(opts: {
-  output: ReturnType<typeof createCliEmitter>;
-  mode: "direct" | "branch_pr";
-  taskId: string;
-  result: {
-    task_id: string;
-    status: string;
-    phase: string;
-    route: { step_id: string };
-    executor: { run_id: string } | null;
-    evaluator: { evaluator_id: string; verdict: string } | null;
-    stop: { code: string } | null;
-    journal: { path: string } | null;
-  };
-  operations?: number;
-}): void {
-  const rows = [
-    { label: "task", value: opts.result.task_id },
-    { label: "status", value: opts.result.status },
-    { label: "phase", value: opts.result.phase },
-    { label: "route", value: opts.result.route.step_id },
-    { label: "executor_run", value: opts.result.executor?.run_id ?? null },
-    { label: "evaluator", value: opts.result.evaluator?.evaluator_id ?? null },
-    { label: "evaluator_verdict", value: opts.result.evaluator?.verdict ?? null },
-    ...(opts.operations === undefined ? [] : [{ label: "operations", value: opts.operations }]),
-    { label: "stop", value: opts.result.stop?.code ?? null },
-    { label: "journal", value: opts.result.journal?.path ?? null },
-  ];
-  opts.output.report(rows, {
-    header: infoMessage(`${opts.mode} task supervision: ${opts.taskId}`),
+function legacyMigrationRequired(taskId: string, reason: string): CliError {
+  return new CliError({
+    code: "E_PHASE_POLICY",
+    message:
+      `Task ${taskId} is not owned by the Task Kernel. Managed legacy execution is disabled; ` +
+      `migrate the exact record before issuing more work: ` +
+      `agentplane task kernel-migrate ${taskId}`,
+    context: {
+      reason_code: reason,
+      task_id: taskId,
+      next_action: `agentplane task kernel-migrate ${taskId}`,
+    },
   });
 }
 
@@ -93,163 +67,89 @@ type TaskRunContextDependencies = {
 };
 
 export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
-  return async (ctx: CommandCtx, parsed: TaskRunParsed): Promise<number> => {
+  return async (_ctx: CommandCtx, parsed: TaskRunParsed): Promise<number> => {
     const output = createCliEmitter();
-    const dangerAuthority = parsed.allowDangerFullAccess
-      ? {
-          danger_full_access_authorized: true as const,
-          provenance: "explicit_operator" as const,
-          source: "task run --allow-danger-full-access",
-        }
-      : null;
-    if (parsed.dryRun) {
-      if (!deps.getPreparationContext) {
-        throw new Error("task run dry-run was loaded without preparation capabilities");
-      }
-      const initialCommandCtx = await deps.getPreparationContext("task run", {
-        includeRemote: parsed.remote,
-      });
-      await recoverCanonicalControllerSuspensions({
-        command: initialCommandCtx,
-        task_id: parsed.taskId,
-      });
-      const canonicalSource = await initialCommandCtx.taskBackend.getTask(parsed.taskId);
-      if (
-        canonicalSource?.extensions &&
-        Object.hasOwn(canonicalSource.extensions, TASK_KERNEL_EXTENSION)
-      ) {
-        const command = await resolveCanonicalControllerCommand({
-          command: initialCommandCtx,
-          task_id: parsed.taskId,
-        });
-        output.json(
-          await runCanonicalTask({
-            command,
-            task_id: parsed.taskId,
-            dry_run: true,
-            sandbox: parsed.sandbox,
-            allow_remote: parsed.remote,
-          }),
-        );
-        return 0;
-      }
-      if (canonicalSource) requireKernelIssuanceEligibility(canonicalSource);
-      const taskCommand = await loadTaskCommandContext({
-        ctx: initialCommandCtx,
-        taskIds: [parsed.taskId],
-      });
-      const commandCtx = taskCommand.command;
-      const prepared = await prepareTaskRunnerExecution({
-        ctx: commandCtx,
-        cwd: commandCtx.resolvedProject.gitRoot,
-        rootOverride: null,
-        task_id: parsed.taskId,
-        mode: "dry_run",
-        ...(parsed.remote ? { include_remote: true } : {}),
-        danger_authority: dangerAuthority,
-        sandbox_override: parsed.sandbox,
-        task_execution: taskCommand.execution,
-      });
-      const lifecycle = projectPreparedTaskRunnerLifecycleResult({
-        task_id: parsed.taskId,
-        execution: prepared,
-      });
-      const payload = renderTaskRunnerLifecyclePayload(
-        lifecycle,
-        buildTaskRunExecutionPreview(prepared.bundle),
+    const getContext = parsed.dryRun ? deps.getPreparationContext : deps.getExecutionContext;
+    if (!getContext) {
+      throw new Error(
+        parsed.dryRun
+          ? "task run dry-run was loaded without preparation capabilities"
+          : "task run execution was loaded without execution capabilities",
       );
-      if (parsed.json) {
-        output.json(payload);
-      } else {
-        reportPreparedTaskRun(payload, parsed.taskId);
-      }
-      return 0;
     }
-
-    if (!deps.getExecutionContext) {
-      throw new Error("task run execution was loaded without execution capabilities");
-    }
-    const initialCommandCtx = await deps.getExecutionContext("task run", {
+    const initialCommandCtx = await getContext("task run", {
       includeRemote: parsed.remote,
     });
     await recoverCanonicalControllerSuspensions({
       command: initialCommandCtx,
       task_id: parsed.taskId,
     });
-    const canonicalSource = await initialCommandCtx.taskBackend.getTask(parsed.taskId);
-    if (
-      canonicalSource?.extensions &&
-      Object.hasOwn(canonicalSource.extensions, TASK_KERNEL_EXTENSION)
-    ) {
-      const command = await resolveCanonicalControllerCommand({
-        command: initialCommandCtx,
-        task_id: parsed.taskId,
+    let command = await resolveTaskOwnerCommandContext({
+      ctx: initialCommandCtx,
+      taskId: parsed.taskId,
+    });
+    let source = await command.taskBackend.getTask(parsed.taskId);
+    if (!source) {
+      throw new CliError({
+        code: "E_IO",
+        message: `Task ${parsed.taskId} was not found in its authoritative checkout.`,
       });
-      output.json(
-        await runCanonicalTask({
-          command,
-          task_id: parsed.taskId,
-          sandbox: parsed.sandbox,
-          allow_remote: parsed.remote,
-        }),
+    }
+    const repositoryIdentity = (await resolveLogicalRepositoryIdentity({
+      git_root: command.resolvedProject.gitRoot,
+      task: source,
+    })) as taskKernel.Sha256Digest;
+    const read = readKernelRecord(source, repositoryIdentity);
+    if (read.kind === "legacy_unmigrated") {
+      const disposition = classifyKernelCutover(source);
+      throw legacyMigrationRequired(
+        parsed.taskId,
+        disposition.kind === "migration_required"
+          ? disposition.reason
+          : "legacy_migration_required",
       );
+    }
+    if (read.kind === "malformed") {
+      throw new CliError({
+        code: "E_PHASE_POLICY",
+        message:
+          `Task ${parsed.taskId} has an unsupported or malformed Task Kernel record. ` +
+          "No fallback runner was selected.",
+        context: {
+          reason_code: read.reason,
+          task_id: parsed.taskId,
+          fields: read.fields,
+          next_action: `agentplane task show ${parsed.taskId} --kernel`,
+        },
+      });
+    }
+    if (read.kind === "archived") {
+      output.json({
+        schema_version: 1,
+        task_id: parsed.taskId,
+        action: { kind: "terminal", reason: "canonical_archive_read_only" },
+      });
       return 0;
     }
-    if (canonicalSource) requireKernelIssuanceEligibility(canonicalSource);
-    const taskCommand = await loadTaskCommandContext({
-      ctx: initialCommandCtx,
-      taskIds: [parsed.taskId],
-    });
-    const commandCtx = taskCommand.command;
-
-    if (taskCommand.execution.selected_mode === "direct") {
-      const supervised = await superviseDirectTaskRun({
-        ctx,
-        command: commandCtx,
-        task_id: parsed.taskId,
-        include_remote: parsed.remote,
-        ...(parsed.sandbox ? { sandbox_override: parsed.sandbox } : {}),
-        ...(dangerAuthority ? { danger_authority: dangerAuthority } : {}),
-        task_execution: taskCommand.execution,
+    if (read.kind !== "canonical") throw new Error(`Unexpected Task Kernel read: ${read.kind}`);
+    command = await resolveCanonicalControllerCommand({ command, task_id: parsed.taskId });
+    source = await command.taskBackend.getTask(parsed.taskId);
+    if (!source) {
+      throw new CliError({
+        code: "E_IO",
+        message: `Task ${parsed.taskId} was not found in its canonical controller checkout.`,
       });
-      if (parsed.json) {
-        output.json(supervised);
-      } else {
-        reportTaskSupervision({
-          output,
-          mode: "direct",
-          taskId: parsed.taskId,
-          result: supervised,
-        });
-      }
-      return directTaskSupervisionDisposition(supervised).exit_code;
     }
-
-    if (taskCommand.execution.selected_mode === "branch_pr") {
-      const supervised = await superviseBranchTaskRun({
-        ctx,
-        command: commandCtx,
+    output.json(
+      await runCanonicalTask({
+        command,
         task_id: parsed.taskId,
-        ...(parsed.sandbox ? { sandbox_override: parsed.sandbox } : {}),
-        ...(dangerAuthority ? { danger_authority: dangerAuthority } : {}),
-        task_execution: taskCommand.execution,
-      });
-      if (parsed.json) {
-        output.json(supervised);
-      } else {
-        reportTaskSupervision({
-          output,
-          mode: "branch_pr",
-          taskId: parsed.taskId,
-          result: supervised,
-          operations: supervised.operation_receipts.length,
-        });
-      }
-      return branchTaskSupervisionDisposition(supervised).exit_code;
-    }
-
-    const unsupportedMode: never = taskCommand.execution.selected_mode;
-    throw new Error(`Unsupported task execution mode: ${String(unsupportedMode)}.`);
+        dry_run: parsed.dryRun,
+        sandbox: parsed.sandbox,
+        allow_remote: parsed.remote,
+      }),
+    );
+    return 0;
   };
 }
 

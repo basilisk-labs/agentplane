@@ -699,6 +699,8 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
             return result;
           });
         try {
+          const evaluator = await runJson(root, ["task", "run", taskId, "--json"]);
+          expect(evaluator.authority).toMatchObject({ role: "EVALUATOR" });
           await refused(root, ["task", "run", taskId, "--json"], "inputs changed during checks");
         } finally {
           drift.mockRestore();
@@ -717,6 +719,12 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
             return result;
           });
         try {
+          const firstEvaluator = await runJson(root, ["task", "run", taskId, "--json"]);
+          expect(firstEvaluator.authority).toMatchObject({ role: "EVALUATOR" });
+          const rework = await runJson(root, ["task", "run", taskId, "--json"]);
+          expect(rework.authority).toMatchObject({ role: "EXECUTOR" });
+          const secondEvaluator = await runJson(root, ["task", "run", taskId, "--json"]);
+          expect(secondEvaluator.authority).toMatchObject({ role: "EVALUATOR" });
           await refused(root, ["task", "run", taskId, "--json"], "crash after final validation");
         } finally {
           crash.mockRestore();
