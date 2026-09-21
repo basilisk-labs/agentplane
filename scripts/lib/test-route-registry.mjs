@@ -376,7 +376,6 @@ const V07_LIFECYCLE_FILES = [
   "packages/agentplane/src/commands/task/direct-task-supervisor-closeout.test.ts",
   "packages/agentplane/src/commands/task/branch-task-supervisor.test.ts",
   "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.task-guided.test.ts",
   "packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts",
   "packages/agentplane/src/cli/run-cli.core.lifecycle.block-finish.test.ts",
   "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts",
