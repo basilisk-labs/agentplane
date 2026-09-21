@@ -1,5 +1,3 @@
-import { type AgentWorkOrderRole } from "@agentplaneorg/core/schemas";
-
 import { CliError } from "../../shared/errors.js";
 import {
   assertSemanticProviderPromptHasNoProcessChoreography,
@@ -8,13 +6,7 @@ import {
 import type { RunnerContextBundle, RunnerInvocation } from "../types.js";
 import { renderTaskRunnerBootstrap } from "./task-run-bootstrap.js";
 
-export function semanticRole(value: string | undefined): AgentWorkOrderRole | undefined {
-  const normalized = value?.trim().toUpperCase();
-  if (normalized === "PLANNER" || normalized === "CURATOR" || normalized === "EVALUATOR") {
-    return normalized;
-  }
-  return normalized ? "EXECUTOR" : undefined;
-}
+export { semanticRole } from "./semantic-role.js";
 
 export function renderSemanticBootstrap(
   bundle: RunnerContextBundle,

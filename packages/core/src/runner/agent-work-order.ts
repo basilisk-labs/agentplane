@@ -558,17 +558,18 @@ export function validateAgentSemanticResultForWorkOrder(opts: {
       "Agent semantic result canonical_binding must match the prepared AgentWorkOrder.",
     );
   if (workOrder.role === "EVALUATOR") {
-    if (!semanticResult.review) {
+    if (semanticResult.status === "completed" && !semanticResult.review) {
       throw new Error("EVALUATOR semantic results require a typed review verdict.");
     }
     if (
+      semanticResult.review &&
       (semanticResult.review.verdict === "pass" || semanticResult.review.verdict === "rework") &&
       semanticResult.findings.length === 0
     ) {
       throw new Error(`EVALUATOR ${semanticResult.review.verdict} requires at least one finding.`);
     }
     if (
-      semanticResult.review.verdict === "human_review" &&
+      semanticResult.review?.verdict === "human_review" &&
       !semanticResult.review.recovery_context
     ) {
       throw new Error("EVALUATOR human_review requires a bounded recovery_context question.");

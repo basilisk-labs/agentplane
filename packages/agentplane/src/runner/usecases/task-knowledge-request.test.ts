@@ -8,7 +8,8 @@ import {
 } from "@agentplaneorg/core/schemas";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { cmdContextReindex } from "../../context/reindex.js";
+import { materializeKnowledgeRef, prepareKnowledgeExcerpt } from "../../context/knowledge-ref.js";
+import { cmdContextReindex, readContextProjection } from "../../context/reindex.js";
 import {
   loadTaskKnowledgeRequestAudits,
   persistTaskKnowledgeRequestAudit,
@@ -18,7 +19,6 @@ import {
   type TaskKnowledgeRequestAudit,
 } from "./task-knowledge-request.js";
 import { digestJson } from "./task-knowledge-request-codec.js";
-import { materializeKnowledgeRef } from "../../context/knowledge-ref.js";
 
 let tempRoots: string[] = [];
 
@@ -53,12 +53,18 @@ function input(
   opts: {
     semantic_result?: unknown;
     prior_audits?: readonly TaskKnowledgeRequestAudit[];
-    role?: "EXECUTOR" | "EVALUATOR";
+    role?: "CURATOR" | "EXECUTOR" | "EVALUATOR";
     knowledge_ref?: string;
   } = {},
 ) {
   const workOrder = buildAgentWorkOrderV2ValidFixture();
-  if (opts.role) workOrder.role = opts.role;
+  if (opts.role) {
+    workOrder.role = opts.role;
+    workOrder.prepared_evidence = workOrder.prepared_evidence.map((prepared) => ({
+      ...prepared,
+      role: opts.role!,
+    }));
+  }
   if (opts.knowledge_ref) {
     workOrder.knowledge_refs = workOrder.knowledge_refs.map((knowledge) => ({
       ...knowledge,
@@ -91,7 +97,7 @@ async function inputWithVerifiedKnowledgeRefs(
   opts: Parameters<typeof input>[0] & { refs: readonly string[] },
 ) {
   const request = input(opts);
-  request.work_order.knowledge_refs = await Promise.all(
+  const knowledgeRefs = await Promise.all(
     opts.refs.map(
       async (ref) =>
         await materializeKnowledgeRef({
@@ -103,6 +109,22 @@ async function inputWithVerifiedKnowledgeRefs(
           required: false,
         }),
     ),
+  );
+  const projection = await readContextProjection(root);
+  if (!projection) throw new Error("Knowledge request fixture requires a context projection");
+  request.work_order.knowledge_refs = knowledgeRefs;
+  request.work_order.context_intent.required_knowledge_ref_digests = [];
+  request.work_order.prepared_evidence = await Promise.all(
+    knowledgeRefs.map(async (knowledgeRef) => ({
+      role: request.work_order.role,
+      excerpt: await prepareKnowledgeExcerpt({
+        repository_root: root,
+        knowledge_ref: knowledgeRef,
+        index_snapshot: projection,
+        max_bytes: 4096,
+        max_lines: 64,
+      }),
+    })),
   );
   return request;
 }
@@ -373,6 +395,24 @@ describe("bounded task knowledge requests", () => {
     expect(response.omissions).toEqual([
       expect.objectContaining({ code: "projection_unavailable" }),
     ]);
+  });
+
+  it("admits a CURATOR request only when the issued WorkOrder grants it", async () => {
+    const root = await tempRoot();
+    const request = input({ role: "CURATOR" });
+    request.work_order.authority.allowed_tool_classes = [
+      ...new Set([
+        ...request.work_order.authority.allowed_tool_classes,
+        "knowledge_request" as const,
+      ]),
+    ];
+    const response = await serveTaskKnowledgeRequest({ repository_root: root, ...request });
+
+    expect(response).toMatchObject({
+      outcome: "unresolved",
+      run: { role: "CURATOR" },
+      omissions: [expect.objectContaining({ code: "projection_unavailable" })],
+    });
   });
 
   it("denies a result that is not bound to the current work order", async () => {

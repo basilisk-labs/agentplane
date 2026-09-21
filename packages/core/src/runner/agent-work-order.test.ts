@@ -347,6 +347,15 @@ describe("AgentWorkOrder v2 contract", () => {
         semantic_result: semanticResult,
       }),
     ).toThrow(/typed review verdict/u);
+    const needsContext = buildAgentSemanticResultV2ValidFixtures(
+      evaluatorWorkOrder.work_order_id,
+    ).needs_context;
+    expect(
+      validateAgentSemanticResultForWorkOrder({
+        work_order: evaluatorWorkOrder,
+        semantic_result: needsContext,
+      }),
+    ).toEqual(needsContext);
     const reviewed = {
       ...semanticResult,
       review: {

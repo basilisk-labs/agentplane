@@ -457,7 +457,8 @@ export function buildAgentSemanticPayloadSchema(context: SemanticPayloadContext)
       .optional();
   } else if (!context.phase && context.role === "EXECUTOR")
     fields.plan_refinement = AGENT_SEMANTIC_RESULT_BASE_SHAPE.plan_refinement;
-  if (context.role === "EVALUATOR") fields.review = AGENT_SEMANTIC_RESULT_REVIEW_ZOD_SCHEMA;
+  if (context.role === "EVALUATOR")
+    fields.review = AGENT_SEMANTIC_RESULT_REVIEW_ZOD_SCHEMA.optional();
   return z.strictObject(fields);
 }
 
@@ -488,6 +489,10 @@ export function renderAgentSemanticResultSchemaJson(context?: SemanticPayloadCon
     },
     ...(context.role === "EVALUATOR"
       ? [
+          {
+            if: { properties: { status: { const: "completed" } } },
+            then: { required: ["review"] },
+          },
           {
             if: {
               properties: { review: { properties: { verdict: { enum: ["pass", "rework"] } } } },
