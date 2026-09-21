@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { spawnSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -150,6 +151,95 @@ function parseMinorPatch(version) {
   return match ? Number.parseInt(match[1], 10) : null;
 }
 
+function readVerifiedCurrentReleaseReadinessTaskId(repoRoot) {
+  const branchResult = spawnSync("git", ["branch", "--show-current"], {
+    cwd: repoRoot,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "ignore"],
+  });
+  if (branchResult.status !== 0) return null;
+  const branch = String(branchResult.stdout ?? "").trim();
+  const branchMatch = /^task\/([0-9]{12}-[A-Z0-9]{6})\//u.exec(branch);
+  if (!branchMatch) return null;
+  const taskId = branchMatch[1];
+  const evidencePath = path.join(
+    repoRoot,
+    ".agentplane",
+    "tasks",
+    taskId,
+    "supervision",
+    "implementation-evidence.json",
+  );
+  if (!existsSync(evidencePath)) return null;
+
+  let evidence;
+  try {
+    evidence = readJson(evidencePath);
+  } catch {
+    return null;
+  }
+  if (
+    evidence?.schema_version !== 1 ||
+    evidence?.kind !== "direct_task_implementation_evidence" ||
+    evidence?.task_id !== taskId ||
+    !/^[0-9a-f]{40}$/u.test(String(evidence?.implementation_commit ?? "")) ||
+    !/^[0-9a-f]{40}$/u.test(String(evidence?.execution_base_commit ?? ""))
+  ) {
+    return null;
+  }
+
+  const headResult = spawnSync("git", ["rev-parse", "HEAD"], {
+    cwd: repoRoot,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "ignore"],
+  });
+  if (
+    headResult.status !== 0 ||
+    String(headResult.stdout ?? "").trim() !== evidence.implementation_commit
+  ) {
+    return null;
+  }
+  const baseResult = spawnSync(
+    "git",
+    ["merge-base", "--is-ancestor", evidence.execution_base_commit, "HEAD"],
+    { cwd: repoRoot, encoding: "utf8", stdio: "ignore" },
+  );
+  if (baseResult.status !== 0) return null;
+
+  const requiredChecks = new Set([
+    "committed-diff-check",
+    "staged-diff-check",
+    "commit-paths",
+    "final-repository-status",
+  ]);
+  let hasSourceChange = false;
+  for (const check of Array.isArray(evidence.checks) ? evidence.checks : []) {
+    if (!check || typeof check !== "object" || check.result !== "pass") continue;
+    requiredChecks.delete(String(check.id ?? ""));
+    if (check.id !== "commit-paths" || !Array.isArray(check.stdout)) continue;
+    hasSourceChange = check.stdout.some((line) => {
+      const changedPath = String(line ?? "").replace(/^[A-Z]+\s+/u, "");
+      return changedPath && !changedPath.startsWith(`.agentplane/tasks/${taskId}/`);
+    });
+  }
+  if (requiredChecks.size > 0 || !hasSourceChange) return null;
+
+  const dirtySourceResult = spawnSync(
+    "git",
+    [
+      "status",
+      "--porcelain=v1",
+      "--untracked-files=all",
+      "--",
+      ".",
+      `:(exclude).agentplane/tasks/${taskId}`,
+    ],
+    { cwd: repoRoot, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] },
+  );
+  if (dirtySourceResult.status !== 0 || String(dirtySourceResult.stdout ?? "").trim()) return null;
+  return taskId;
+}
+
 export function checkTaskState(repoRoot, opts = {}) {
   const packageJson = readJson(path.join(repoRoot, "packages", "agentplane", "package.json"));
   const packageVersion = String(packageJson.version ?? "").trim();
@@ -159,10 +249,19 @@ export function checkTaskState(repoRoot, opts = {}) {
   const seen = new Set();
   const failures = [];
   const ignoredReleaseTaskIds = new Set(
-    (Array.isArray(opts.ignoreReleaseTaskIds) ? opts.ignoreReleaseTaskIds : [])
+    [
+      ...(Array.isArray(opts.ignoreReleaseTaskIds) ? opts.ignoreReleaseTaskIds : []),
+      ...(Array.isArray(opts.validatedReleaseScopeTaskIds)
+        ? opts.validatedReleaseScopeTaskIds
+        : []),
+    ]
       .map((entry) => String(entry ?? "").trim())
       .filter(Boolean),
   );
+  const verifiedCurrentReleaseReadinessTaskId =
+    opts.releaseReady === true && opts.allowActiveReleaseTask === true
+      ? readVerifiedCurrentReleaseReadinessTaskId(repoRoot)
+      : null;
 
   for (const taskId of taskIds) {
     if (seen.has(taskId)) {
@@ -207,9 +306,16 @@ export function checkTaskState(repoRoot, opts = {}) {
       tags.has("release") &&
       (title === `Release AgentPlane v${packageVersion}` ||
         (taskKind === "release" && tags.has(`v${packageVersion}`)));
+    const activeReleaseReadinessImplementationAllowed =
+      status === "DOING" &&
+      taskId === verifiedCurrentReleaseReadinessTaskId &&
+      taskKind === "code" &&
+      tags.has("release-readiness");
     const doingAllowedForRelease =
       opts.releaseReady === true &&
-      (ignoredReleaseTaskIds.has(taskId) || activeReleaseTaskDoingAllowed);
+      (ignoredReleaseTaskIds.has(taskId) ||
+        activeReleaseTaskDoingAllowed ||
+        activeReleaseReadinessImplementationAllowed);
     if (opts.releaseReady === true && mergedPendingClose) {
       failures.push(
         `${relReadmePath}: MERGED_PENDING_CLOSE task blocks release readiness; wait for hosted close to record DONE before candidate/publish. PR${mergedPendingClose.prNumber ? ` #${mergedPendingClose.prNumber}` : ""} merged at ${mergedPendingClose.mergeCommit.slice(0, 12)}.`,
@@ -280,8 +386,20 @@ export function checkTaskState(repoRoot, opts = {}) {
     const closureSummary = releaseClosure.checked
       ? ` release_closure=${releaseClosure.reachableTaskIds.length}`
       : "";
-    process.stdout.write(`task state OK (tasks=${taskIds.length}${closureSummary})\n`);
+    const exclusionSummary = Array.isArray(opts.validatedReleaseScopeTaskIds)
+      ? ` release_scope_exclusions=${opts.validatedReleaseScopeTaskIds.length}`
+      : "";
+    process.stdout.write(
+      `task state OK (tasks=${taskIds.length}${closureSummary}${exclusionSummary})\n`,
+    );
   }
+  return {
+    taskCount: taskIds.length,
+    releaseClosureCount: releaseClosure.checked ? releaseClosure.reachableTaskIds.length : null,
+    validatedReleaseScopeTaskIds: Array.isArray(opts.validatedReleaseScopeTaskIds)
+      ? [...opts.validatedReleaseScopeTaskIds]
+      : [],
+  };
 }
 
 const main = defineScript({

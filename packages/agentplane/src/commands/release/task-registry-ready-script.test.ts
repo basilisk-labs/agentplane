@@ -121,6 +121,56 @@ async function runRegistryCheck(root: string, args: string[] = []) {
   );
 }
 
+async function initializeGitRepository(root: string) {
+  await execFileAsync("git", ["init", "-b", "main"], { cwd: root });
+  await execFileAsync("git", ["config", "user.name", "AgentPlane Tests"], { cwd: root });
+  await execFileAsync("git", ["config", "user.email", "tests@agentplane.invalid"], { cwd: root });
+  await execFileAsync("git", ["add", "."], { cwd: root });
+  await execFileAsync("git", ["commit", "-m", "test fixture"], { cwd: root });
+  const result = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+  return String(result.stdout).trim();
+}
+
+async function writeCurrentImplementationEvidence(root: string, taskId: string, commit: string) {
+  const evidenceDir = path.join(root, ".agentplane", "tasks", taskId, "supervision");
+  await mkdir(evidenceDir, { recursive: true });
+  await writeFile(
+    path.join(evidenceDir, "implementation-evidence.json"),
+    `${JSON.stringify(
+      {
+        schema_version: 1,
+        kind: "direct_task_implementation_evidence",
+        task_id: taskId,
+        execution_base_commit: commit,
+        implementation_commit: commit,
+        checks: [
+          { id: "committed-diff-check", result: "pass", stdout: [] },
+          { id: "staged-diff-check", result: "pass", stdout: [] },
+          {
+            id: "commit-paths",
+            result: "pass",
+            stdout: ["M\\tscripts/release/check-task-registry-ready.mjs"],
+          },
+          { id: "final-repository-status", result: "pass", stdout: [] },
+        ],
+      },
+      null,
+      2,
+    )}\n`,
+    "utf8",
+  );
+}
+
+async function writeReleaseScopeManifest(root: string, exclusions: Record<string, unknown>[]) {
+  const manifestDir = path.join(root, "scripts", "release");
+  await mkdir(manifestDir, { recursive: true });
+  await writeFile(
+    path.join(manifestDir, "release-scope-exclusions.json"),
+    `${JSON.stringify({ schema_version: 1, exclusions }, null, 2)}\n`,
+    "utf8",
+  );
+}
+
 afterEach(async () => {
   while (temps.length > 0) {
     const dir = temps.pop();
@@ -248,6 +298,53 @@ describe("check-task-registry-ready script", () => {
 
     expect(result.ok).toBe(false);
     expect(result.stderr).toContain("DOING task blocks release readiness");
+  });
+
+  it("allows only the current Git-proven release-readiness implementation task", async () => {
+    const taskId = "202605190001-SELF01";
+    const root = await makeRepo([
+      {
+        id: taskId,
+        status: "DOING",
+        taskKind: "code",
+        tags: ["release-readiness"],
+      },
+    ]);
+    const commit = await initializeGitRepository(root);
+    await execFileAsync("git", ["branch", "-m", `task/${taskId}/release-readiness`], { cwd: root });
+    await writeCurrentImplementationEvidence(root, taskId, commit);
+
+    await expect(
+      execFileAsync("node", [SCRIPT_PATH, "--allow-active-release-task"], { cwd: root }),
+    ).resolves.toBeDefined();
+    const withoutExplicitAllowance = await runRegistryCheck(root);
+    expect(withoutExplicitAllowance.ok).toBe(false);
+    expect(withoutExplicitAllowance.stderr).toContain("DOING task blocks release readiness");
+  });
+
+  it("rejects stale implementation evidence for the current release-readiness task", async () => {
+    const taskId = "202605190001-SELF02";
+    const root = await makeRepo([
+      {
+        id: taskId,
+        status: "DOING",
+        taskKind: "code",
+        tags: ["release-readiness"],
+      },
+    ]);
+    const commit = await initializeGitRepository(root);
+    await execFileAsync("git", ["branch", "-m", `task/${taskId}/release-readiness`], { cwd: root });
+    await writeCurrentImplementationEvidence(
+      root,
+      taskId,
+      "ffffffffffffffffffffffffffffffffffffffff",
+    );
+
+    const result = await runRegistryCheck(root, ["--allow-active-release-task"]);
+
+    expect(result.ok).toBe(false);
+    expect(result.stderr).toContain("DOING task blocks release readiness");
+    expect(commit).toMatch(/^[0-9a-f]{40}$/u);
   });
 
   it("still blocks open release observations on the allowed active release task", async () => {
@@ -385,6 +482,163 @@ describe("check-task-registry-ready script", () => {
     );
 
     await expect(execFileAsync("node", [SCRIPT_PATH], { cwd: root })).resolves.toBeDefined();
+  });
+
+  it("accepts and reports Git-proven published, merged, and superseded projections", async () => {
+    const publishedTaskId = "202605190001-PUB001";
+    const mergedTaskId = "202605190002-MRG001";
+    const supersededTaskId = "202605190003-OLD001";
+    const replacementTaskId = "202605190004-NEW001";
+    const root = await makeRepo([
+      {
+        id: publishedTaskId,
+        status: "DOING",
+        taskKind: "release",
+        tags: ["release", "v0.6.2"],
+      },
+      { id: mergedTaskId, status: "DOING" },
+      { id: supersededTaskId, status: "DOING" },
+      { id: replacementTaskId, status: "DONE" },
+    ]);
+    const commit = await initializeGitRepository(root);
+    await execFileAsync("git", ["tag", "v0.6.2", commit], { cwd: root });
+    await writeReleaseScopeManifest(root, [
+      {
+        task_id: publishedTaskId,
+        evidence_kind: "published_tag",
+        reason: "The historical release is published from the tagged commit.",
+        git_ref: commit,
+        tag: "v0.6.2",
+      },
+      {
+        task_id: mergedTaskId,
+        evidence_kind: "merged_commit",
+        reason: "The implementation is present on the release ancestry.",
+        git_ref: commit,
+      },
+      {
+        task_id: supersededTaskId,
+        evidence_kind: "superseded_by_task",
+        reason: "The completed replacement contains the canonical implementation.",
+        git_ref: commit,
+        replacement_task_id: replacementTaskId,
+      },
+    ]);
+
+    const result = await execFileAsync("node", [SCRIPT_PATH], { cwd: root });
+
+    expect(result.stdout).toContain("release_scope_exclusions=3");
+    expect(result.stdout).toContain(`${publishedTaskId} (published_tag at ${commit})`);
+    expect(result.stdout).toContain(`${mergedTaskId} (merged_commit at ${commit})`);
+    expect(result.stdout).toContain(`${supersededTaskId} (superseded_by_task at ${commit})`);
+  });
+
+  it("fails closed for malformed exclusion fields", async () => {
+    const taskId = "202605190001-BAD001";
+    const root = await makeRepo([{ id: taskId, status: "DOING" }]);
+    const commit = await initializeGitRepository(root);
+    await writeReleaseScopeManifest(root, [
+      {
+        task_id: taskId,
+        evidence_kind: "merged_commit",
+        reason: "Malformed evidence must not be accepted.",
+        git_ref: commit,
+        bypass: true,
+      },
+    ]);
+
+    const result = await runRegistryCheck(root);
+
+    expect(result.ok).toBe(false);
+    expect(result.stderr).toContain("has unknown fields: bypass");
+  });
+
+  it("fails closed for missing Git evidence", async () => {
+    const taskId = "202605190001-MISS01";
+    const root = await makeRepo([{ id: taskId, status: "DOING" }]);
+    await initializeGitRepository(root);
+    await writeReleaseScopeManifest(root, [
+      {
+        task_id: taskId,
+        evidence_kind: "merged_commit",
+        reason: "Missing evidence must not be accepted.",
+        git_ref: "ffffffffffffffffffffffffffffffffffffffff",
+      },
+    ]);
+
+    const result = await runRegistryCheck(root);
+
+    expect(result.ok).toBe(false);
+    expect(result.stderr).toContain("git_ref does not resolve");
+  });
+
+  it("fails closed for a commit outside the release ancestry", async () => {
+    const taskId = "202605190001-SIDE01";
+    const root = await makeRepo([{ id: taskId, status: "DOING" }]);
+    await initializeGitRepository(root);
+    const treeResult = await execFileAsync("git", ["rev-parse", "HEAD^{tree}"], { cwd: root });
+    const tree = String(treeResult.stdout).trim();
+    const unrelatedCommitResult = await execFileAsync(
+      "git",
+      ["commit-tree", tree, "-m", "unrelated evidence"],
+      { cwd: root },
+    );
+    const unrelatedCommit = String(unrelatedCommitResult.stdout).trim();
+    await writeReleaseScopeManifest(root, [
+      {
+        task_id: taskId,
+        evidence_kind: "merged_commit",
+        reason: "Unrelated evidence must not be accepted.",
+        git_ref: unrelatedCommit,
+      },
+    ]);
+
+    const result = await runRegistryCheck(root);
+
+    expect(result.ok).toBe(false);
+    expect(result.stderr).toContain("is not an ancestor of HEAD");
+  });
+
+  it("fails closed for an unknown excluded task", async () => {
+    const root = await makeRepo([{ id: "202605190001-KNOWN1", status: "DONE" }]);
+    const commit = await initializeGitRepository(root);
+    await writeReleaseScopeManifest(root, [
+      {
+        task_id: "202605190002-UNKN01",
+        evidence_kind: "merged_commit",
+        reason: "Unknown task evidence must not be accepted.",
+        git_ref: commit,
+      },
+    ]);
+
+    const result = await runRegistryCheck(root);
+
+    expect(result.ok).toBe(false);
+    expect(result.stderr).toContain("references unknown task 202605190002-UNKN01");
+  });
+
+  it("fails closed when a superseding task is not DONE", async () => {
+    const taskId = "202605190001-OLD001";
+    const replacementTaskId = "202605190002-NEW001";
+    const root = await makeRepo([
+      { id: taskId, status: "DOING" },
+      { id: replacementTaskId, status: "DOING" },
+    ]);
+    const commit = await initializeGitRepository(root);
+    await writeReleaseScopeManifest(root, [
+      {
+        task_id: taskId,
+        evidence_kind: "superseded_by_task",
+        reason: "An incomplete replacement must not be accepted.",
+        git_ref: commit,
+        replacement_task_id: replacementTaskId,
+      },
+    ]);
+
+    const result = await runRegistryCheck(root);
+
+    expect(result.ok).toBe(false);
+    expect(result.stderr).toContain(`replacement task ${replacementTaskId} is not DONE at HEAD`);
   });
 
   it("accepts a fully classified release closure and a disconnected declared optional task", async () => {

@@ -1,4 +1,4 @@
-import { rm } from "node:fs/promises";
+import { mkdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
@@ -16,6 +16,16 @@ const roots: string[] = [];
 async function writeNpmStub(root: string, scriptContent: string) {
   await writeExecutableFile(root, path.join("bin", "npm"), scriptContent);
   return path.join(root, "bin");
+}
+
+async function initializeGitRepository(root: string) {
+  await execFileAsync("git", ["init", "-b", "main"], { cwd: root });
+  await execFileAsync("git", ["config", "user.name", "AgentPlane Tests"], { cwd: root });
+  await execFileAsync("git", ["config", "user.email", "tests@agentplane.invalid"], { cwd: root });
+  await execFileAsync("git", ["add", "."], { cwd: root });
+  await execFileAsync("git", ["commit", "-m", "test fixture"], { cwd: root });
+  const result = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+  return String(result.stdout).trim();
 }
 
 afterEach(async () => {
@@ -149,5 +159,73 @@ describe("manifest script release-ready command", () => {
     expect(payload.message).toContain("core=1.2.3");
     expect(payload.message).toContain("recipes=1.2.3");
     expect(payload.message).toContain("agentplane=1.2.4");
+  });
+
+  it("reports the same validated release-scope exclusions in the ready manifest", async () => {
+    const taskId = "202605190001-MRG001";
+    const root = await initReleaseWorkspace({
+      prefix: "agentplane-release-ready-",
+      writeNotes: true,
+    });
+    roots.push(root);
+    const taskDir = path.join(root, ".agentplane", "tasks", taskId);
+    await mkdir(taskDir, { recursive: true });
+    await writeFile(
+      path.join(taskDir, "README.md"),
+      [
+        "---",
+        `id: ${taskId}`,
+        "title: Historical merged task",
+        "status: DOING",
+        "depends_on: []",
+        "tags:",
+        '  - "code"',
+        "---",
+        "",
+      ].join("\n"),
+      "utf8",
+    );
+    const commit = await initializeGitRepository(root);
+    const manifestDir = path.join(root, "scripts", "release");
+    await mkdir(manifestDir, { recursive: true });
+    await writeFile(
+      path.join(manifestDir, "release-scope-exclusions.json"),
+      `${JSON.stringify(
+        {
+          schema_version: 1,
+          exclusions: [
+            {
+              task_id: taskId,
+              evidence_kind: "merged_commit",
+              reason: "The implementation is present on the release ancestry.",
+              git_ref: commit,
+            },
+          ],
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+
+    const result = await execFileAsync("node", [SCRIPT_PATH, "release-ready", "--json"], {
+      cwd: root,
+    });
+    const payload = JSON.parse(String(result.stdout ?? "")) as {
+      ready: boolean;
+      taskRegistry: {
+        acceptedExclusions: { taskId: string; evidenceKind: string; gitRef: string }[];
+      };
+    };
+
+    expect(payload.ready).toBe(true);
+    expect(payload.taskRegistry.acceptedExclusions).toEqual([
+      {
+        taskId,
+        evidenceKind: "merged_commit",
+        reason: "The implementation is present on the release ancestry.",
+        gitRef: commit,
+      },
+    ]);
   });
 });
