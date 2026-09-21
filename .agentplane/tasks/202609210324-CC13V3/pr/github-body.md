@@ -31,6 +31,7 @@ Use agentplane-roadmap-r2/tasks/LC-04.md through LC-24.md as the authoritative c
  .../src/cli/run-cli.core.kernel-transport.test.ts  |   23 +-
  ...cli.core.roadmap-external-owner-cutover.test.ts |  105 ++
  ...-cli.core.roadmap-managed-owner-cutover.test.ts |  226 +++++
+ .../installed-migration-matrix-script.test.ts      |    2 +
  .../commands/shared/semantic-result-admission.ts   |   49 +
  .../shared/supervisor-execution-episode.ts         |   21 +
  .../src/commands/shared/workflow-step-branch.ts    |   13 +-
@@ -43,9 +44,10 @@ Use agentplane-roadmap-r2/tasks/LC-04.md through LC-24.md as the authoritative c
  .../src/commands/task/branch-task-supervisor.ts    |  435 +--------
  .../src/commands/task/direct-task-finalization.ts  |   38 +
  .../task/direct-task-supervisor-closeout.test.ts   |   33 +-
- .../task/direct-task-supervisor-closeout.ts        |   79 +-
+ .../task/direct-task-supervisor-closeout.ts        |   83 +-
  .../task/direct-task-supervisor-operation.test.ts  |   13 +
  .../task/direct-task-supervisor-operation.ts       |  122 ++-
+ .../commands/task/direct-task-supervisor-result.ts |  127 ---
  .../commands/task/direct-task-supervisor.test.ts   | 1003 +-------------------
  .../src/commands/task/direct-task-supervisor.ts    |  564 -----------
  .../src/commands/task/direct-task-verification.ts  |   35 +
@@ -81,6 +83,8 @@ Use agentplane-roadmap-r2/tasks/LC-04.md through LC-24.md as the authoritative c
  .../task/roadmap-semantic-admission.test.ts        |  129 +++
  .../commands/task/roadmap-terminal-noop.test.ts    |  206 ++++
  .../task/roadmap-workitem-readiness.test.ts        |  150 +++
+ .../src/commands/task/run-execution-preview.ts     |   54 --
+ .../agentplane/src/commands/task/run-render.ts     |   44 -
  .../agentplane/src/commands/task/run.command.ts    |  318 +++----
  packages/agentplane/src/commands/task/run.spec.ts  |   10 +-
  .../task/supervision-outcome-disposition.test.ts   |  123 ---
@@ -112,7 +116,8 @@ Use agentplane-roadmap-r2/tasks/LC-04.md through LC-24.md as the authoritative c
  scripts/checks/lifecycle-owner-map.test.mjs        |   44 +-
  .../checks/no-secondary-lifecycle-engine.test.mjs  |  110 +++
  scripts/checks/single-live-supervisor.test.mjs     |   49 +
- 85 files changed, 7180 insertions(+), 5801 deletions(-)
+ .../release/check-local-tarball-install-smoke.mjs  |   27 +-
+ 90 files changed, 7210 insertions(+), 6029 deletions(-)
 ```
 
 </details>

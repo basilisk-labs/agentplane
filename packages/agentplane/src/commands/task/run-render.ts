@@ -483,50 +483,6 @@ function taskRunIdentityRows(
   ];
 }
 
-export function reportPreparedTaskRun(payload: TaskRunRendererPayload, taskId: string): void {
-  const preview = "execution_preview" in payload ? payload.execution_preview : null;
-  createCliEmitter().report(
-    [
-      ...taskRunIdentityRows(payload, { includeEffectResolution: false }),
-      ...(preview
-        ? [
-            {
-              label: "route",
-              value:
-                `requested=${preview.route.requested_mode} ` +
-                `selected=${preview.route.selected_mode}`,
-            },
-            { label: "route_reasons", value: preview.route.reason_codes.join(", ") },
-            { label: "task_profile", value: preview.context.task_profile },
-            {
-              label: "context",
-              value:
-                `task_bytes=${preview.context.task_context_bytes} ` +
-                `sections=${preview.context.task_sections} ` +
-                `prompt_blocks=${preview.context.prompt_blocks} ` +
-                `policy_modules=${preview.context.policy_modules} ` +
-                `knowledge_refs=${preview.context.knowledge_refs}`,
-            },
-            {
-              label: "approvals",
-              value:
-                `plan=${String(preview.approvals.plan)} ` +
-                `verify=${String(preview.approvals.verify)} ` +
-                `network=${String(preview.approvals.network)} ` +
-                `force=${String(preview.approvals.force)}`,
-            },
-            { label: "checks", value: preview.checks.join("; ") || "none" },
-            { label: "token_budget", value: preview.budgets.token.state },
-          ]
-        : []),
-      { label: "bundle", value: payload.bundle_path },
-      { label: "bootstrap", value: payload.bootstrap_path },
-      { label: "result", value: payload.result_path },
-    ],
-    { header: infoMessage(`task run prepared: ${taskId}`) },
-  );
-}
-
 export function reportExecutedTaskRun(payload: TaskRunRendererPayload, taskId: string): void {
   createCliEmitter().report(
     [

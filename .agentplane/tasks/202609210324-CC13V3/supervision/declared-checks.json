@@ -2,19 +2,19 @@
   "checks": [
     {
       "check_ids": [],
-      "command": "node --test scripts/checks/no-secondary-lifecycle-engine.test.mjs",
-      "duration_ms": 748,
+      "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts",
+      "duration_ms": 2115,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
-        "executable_digest": "sha256:ee6fb0e015284d83a91e8ec5213f43a157f8a392b58555301682892ba928c04a",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
         "kind": "local_runtime_resolution",
         "status": "resolved",
         "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
       },
-      "script": null,
-      "stderr_tail": "",
-      "stdout_tail": "✔ one observed Kernel reducer, writer, and application coordinator remain (0.542375ms)\n✔ retired lifecycle owners are absent from the production import graph (40.224042ms)\n✔ retained lifecycle helpers have named current consumers (0.34675ms)\n✔ cold migration still decodes exact historical bytes (508.551125ms)\n✔ retirement ledger records boundary deltas without a performance claim (0.135958ms)\nℹ tests 5\nℹ suites 0\nℹ pass 5\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 581.129709\n"
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts\n",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/release-0.7.11-base/.agentplane/worktrees/202609210324-CC13V3-canonical-cc13v3\n\n\n Test Files  1 passed (1)\n      Tests  2 passed (2)\n   Start at  10:56:47\n   Duration  1.77s (transform 1.29s, setup 0ms, import 1.65s, tests 61ms, environment 0ms)\n\n"
     }
   ],
   "kind": "direct_task_declared_checks",

@@ -8,6 +8,7 @@ import { defineScript, runScriptMain } from "../lib/script-runtime.mjs";
 import { runInstalledMigrationMatrix } from "../lib/installed-migration-matrix.mjs";
 
 const PACKAGES = ["core", "recipes", "agentplane"];
+const V0_6_26_ASSIMILATION_COMMIT = "13af54063ead7d2bba75b577ff93f7bf1ef76f63";
 
 function run(command, args, opts = {}) {
   return execFileSync(command, args, {
@@ -40,6 +41,29 @@ function runFailure(command, args, opts = {}) {
     stdout: result.stdout ?? "",
     stderr: result.stderr ?? "",
   };
+}
+
+function prepareMigrationSourceRepository(repoRoot, tempRoot) {
+  const sourceRoot = path.join(tempRoot, "migration-source");
+  run("git", ["clone", "--quiet", "--no-hardlinks", repoRoot, sourceRoot]);
+  const tag = spawnSync("git", ["rev-parse", "--verify", "refs/tags/v0.6.26^{commit}"], {
+    cwd: sourceRoot,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  if (tag.error) throw tag.error;
+  if (tag.status === 0) return sourceRoot;
+
+  const subject = run("git", ["show", "-s", "--format=%s", V0_6_26_ASSIMILATION_COMMIT], {
+    cwd: sourceRoot,
+  }).trim();
+  assert.equal(
+    subject,
+    "🧩 1JRXBT release: assimilate 0.6.26 fixes",
+    "the pinned 0.6.26 source assimilation identity changed",
+  );
+  run("git", ["tag", "v0.6.26", V0_6_26_ASSIMILATION_COMMIT], { cwd: sourceRoot });
+  return sourceRoot;
 }
 
 function assertOnlyContractFields(value, contract, label) {
@@ -407,9 +431,10 @@ const main = defineScript({
         installedJsonErrorContract,
       );
 
+      const migrationSourceRoot = prepareMigrationSourceRepository(process.cwd(), tempRoot);
       const migrationMatrix = runInstalledMigrationMatrix({
         agentplane,
-        repoRoot: process.cwd(),
+        repoRoot: migrationSourceRoot,
         tempRoot: path.join(tempRoot, "migration-matrix"),
       });
       process.stdout.write(

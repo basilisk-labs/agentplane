@@ -16,7 +16,7 @@ import {
 } from "./direct-task-verification.js";
 import { cmdVerifyParsed } from "./verify-record.js";
 
-export type DirectTaskCloseoutStopCode =
+type DirectTaskCloseoutStopCode =
   | "verification_check_unsupported"
   | "verification_check_failed"
   | "stale_route"
@@ -303,7 +303,7 @@ export async function verifyDirectTask(opts: {
 }
 
 /** Finishes a direct task only after its verified evidence has passed EVALUATOR review. */
-export async function finalizeDirectTask(opts: {
+async function finalizeDirectTask(opts: {
   ctx: CommandCtx;
   command: CommandContext;
   task_id: string;

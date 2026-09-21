@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 3e8783c9bee0762b51fbefcba3c1f97150423837..fb421a305b706d1755299c885aa617316aa3343e",
+      "command": "git diff --check fb421a305b706d1755299c885aa617316aa3343e..1f7ef7f3a45c73009417c9357537ad8d1d5e29e5",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 3e8783c9bee0762b51fbefcba3c1f97150423837..fb421a305b706d1755299c885aa617316aa3343e",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB fb421a305b706d1755299c885aa617316aa3343e..1f7ef7f3a45c73009417c9357537ad8d1d5e29e5",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -25,25 +25,8 @@
         "M\t.agentplane/tasks/202609210324-CC13V3/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202609210324-CC13V3/supervision/implementation-evidence.json",
         "M\tpackages/agentplane/src/commands/task/advance-task-step.ts",
-        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor.test.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-advance.test.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-advance.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-effect-coordinator.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-inspection.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-run.test.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-run.ts",
-        "M\tpackages/agentplane/src/commands/task/roadmap-common-recovery.test.ts",
-        "M\tpackages/agentplane/src/commands/task/run.command.ts",
-        "M\tpackages/core/src/tasks/task-centric/index.ts",
-        "D\tpackages/core/src/tasks/task-centric/orchestrator.test.ts",
-        "D\tpackages/core/src/tasks/task-centric/orchestrator.ts",
-        "M\tpackages/core/src/tasks/task-centric/ports.ts",
-        "M\tpackages/core/src/tasks/task-centric/task-centric.test.ts",
-        "A\tscripts/checks/lifecycle-engine-retirement.json",
-        "M\tscripts/checks/lifecycle-owner-map.json",
-        "M\tscripts/checks/lifecycle-owner-map.test.mjs",
-        "A\tscripts/checks/no-secondary-lifecycle-engine.test.mjs",
-        "M\tscripts/checks/single-live-supervisor.test.mjs"
+        "M\tpackages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts",
+        "A\tpackages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts"
       ]
     },
     {
@@ -53,8 +36,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "3e8783c9bee0762b51fbefcba3c1f97150423837",
-  "implementation_commit": "fb421a305b706d1755299c885aa617316aa3343e",
+  "execution_base_commit": "fb421a305b706d1755299c885aa617316aa3343e",
+  "implementation_commit": "1f7ef7f3a45c73009417c9357537ad8d1d5e29e5",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
