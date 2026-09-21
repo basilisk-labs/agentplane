@@ -10,11 +10,13 @@ import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import {
   createSupervisorEpisodeStore,
   resolveSupervisorExecutionEpisodePath,
-  supervisePersistedWorkflowEpisode,
 } from "../shared/supervisor-execution-episode.js";
 import type { WorkflowOperation } from "../shared/workflow-step.js";
 import { CANONICAL_EFFECT_KIND_BY_OPERATION } from "../shared/side-effect-authority.js";
-import { executeBranchWorkflowOperation } from "./branch-task-supervisor-operations.js";
+import {
+  executeAdmittedBranchWorkflowOperation,
+  executeBranchWorkflowOperation,
+} from "./branch-task-supervisor-operations.js";
 import type {
   KernelEffectDispatch,
   KernelEffectObservation,
@@ -321,11 +323,10 @@ export function createKernelProviderEffectPortResolver(opts: {
             }),
           };
         }
-        const persisted = await supervisePersistedWorkflowEpisode({
+        const persisted = await executeAdmittedBranchWorkflowOperation({
           decision: before,
           git_root: opts.command.resolvedProject.gitRoot,
-          task_revision: null,
-          execute: async ({ operation: invoked }) => {
+          execute: async (invoked) => {
             const run = () =>
               executeBranchWorkflowOperation({ decision: before, operation: invoked });
             const controllerCheckout =

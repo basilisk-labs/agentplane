@@ -4,13 +4,16 @@ import type { TaskRunnerLifecycleResult } from "../../runner/usecases/task-run-l
 import { CliError } from "../../shared/errors.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
-import { supervisePersistedWorkflowEpisode } from "../shared/supervisor-execution-episode.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import type { WorkflowSupervisorOperationResult } from "../shared/workflow-supervisor.js";
 import type { WorkflowOperation } from "../shared/workflow-step.js";
 import { executeProductionBranchEpisode } from "./branch-task-supervisor-episodes.js";
 import { recoverProductionBranchConflict } from "./branch-task-supervisor-implementation.js";
-import { executeBranchWorkflowOperation } from "./branch-task-supervisor-operations.js";
+import {
+  branchAuthorityCheckout,
+  executeAdmittedBranchWorkflowOperation,
+  executeBranchWorkflowOperation,
+} from "./branch-task-supervisor-operations.js";
 import {
   resolveConfiguredAuthority,
   type ConfiguredAuthorityResolution,
@@ -325,13 +328,12 @@ async function executeOperation(opts: {
     throw new Error("executeOperation requires a cli_operation route.");
   }
   const before = opts.current;
-  let persisted: Awaited<ReturnType<typeof supervisePersistedWorkflowEpisode>>;
+  let persisted: Awaited<ReturnType<typeof executeAdmittedBranchWorkflowOperation>>;
   try {
-    persisted = await supervisePersistedWorkflowEpisode({
+    persisted = await executeAdmittedBranchWorkflowOperation({
       decision: before,
       git_root: opts.ports.git_root,
-      task_revision: null,
-      execute: async ({ operation }) =>
+      execute: async (operation) =>
         await opts.ports.execute_operation({ decision: before, operation }),
       refresh: opts.ports.decide,
     });
@@ -503,11 +505,27 @@ export async function superviseBranchTaskRun(
         });
       },
       resolve_authority: async (decision) => {
-        const routeCommand = await loadCommandContext({ cwd: routeCwd, rootOverride: null });
-        return await resolveConfiguredAuthority({
-          command: routeCommand,
-          decision,
-        });
+        if (decision.workflowStep.kind !== "approval") {
+          return {
+            state: "policy_transition",
+            reason: "current route is not an approval boundary",
+          };
+        }
+        if (decision.workflowStep.request.type !== "side_effect") {
+          return { state: "user_required", reason: "semantic approvals remain operator-owned" };
+        }
+        try {
+          const authorityCommand = await loadCommandContext({
+            cwd: branchAuthorityCheckout(decision),
+            rootOverride: null,
+          });
+          return await resolveConfiguredAuthority({ command: authorityCommand, decision });
+        } catch (error) {
+          return {
+            state: "external_blocked",
+            reason: error instanceof Error ? error.message : "authoritative checkout unavailable",
+          };
+        }
       },
     });
 

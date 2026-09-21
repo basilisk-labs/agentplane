@@ -34,6 +34,8 @@ Created: 2026-09-21T03:47:54.341Z
  .../src/commands/shared/workflow-step-branch.ts    |  13 +-
  .../src/commands/shared/workflow-step-factory.ts   |  85 +++-
  .../src/commands/task/advance-task-step.ts         |   9 +-
+ .../task/branch-task-supervisor-operations.ts      |  40 ++
+ .../src/commands/task/branch-task-supervisor.ts    |  40 +-
  .../src/commands/task/direct-task-finalization.ts  |  38 ++
  .../task/direct-task-supervisor-closeout.test.ts   |  33 +-
  .../task/direct-task-supervisor-closeout.ts        |  79 +--
@@ -45,11 +47,15 @@ Created: 2026-09-21T03:47:54.341Z
  .../src/commands/task/external-agent-exchange.ts   |  13 +-
  .../src/commands/task/kernel-exchange.ts           | 108 +++--
  .../src/commands/task/kernel-inspection.ts         | 527 +++++++++++++++++----
+ .../kernel-provider-effect-coordinator.test.ts     |   1 +
+ .../task/kernel-provider-effect-coordinator.ts     |  11 +-
  .../agentplane/src/commands/task/kernel-run.ts     |  12 +-
  .../src/commands/task/kernel-semantic-result.ts    |   4 +-
  .../src/commands/task/kernel-work-order.ts         |   5 +-
- .../src/commands/task/ordinary-advance-step.ts     |  20 +-
+ .../src/commands/task/kernel-worktree-routing.ts   |  72 ++-
+ .../src/commands/task/ordinary-advance-step.ts     |  32 +-
  .../src/commands/task/quality-review-gate.ts       |  11 +-
+ .../task/roadmap-branch-publication-parity.test.ts | 126 +++++
  .../task/roadmap-check-review-separation.test.ts   |  93 ++++
  .../task/roadmap-common-review-application.test.ts | 155 ++++++
  .../commands/task/roadmap-curator-parity.test.ts   | 207 ++++++++
@@ -70,7 +76,7 @@ Created: 2026-09-21T03:47:54.341Z
  packages/core/src/tasks/task-centric/index.ts      |   5 +
  packages/core/src/tasks/task-centric/lifecycle.ts  |  62 +++
  schemas/agent-semantic-result.schema.json          |   6 +-
- 41 files changed, 2185 insertions(+), 471 deletions(-)
+ 47 files changed, 2418 insertions(+), 540 deletions(-)
 ```
 
 </details>

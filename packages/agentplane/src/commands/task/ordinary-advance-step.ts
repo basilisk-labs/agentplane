@@ -8,10 +8,7 @@ import {
 import { CliError } from "../../shared/errors.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
-import {
-  preparePersistedSupervisorReplacementAfterFailure,
-  supervisePersistedWorkflowEpisode,
-} from "../shared/supervisor-execution-episode.js";
+import { preparePersistedSupervisorReplacementAfterFailure } from "../shared/supervisor-execution-episode.js";
 import {
   loadCommandContext,
   loadTaskFromContext,
@@ -22,7 +19,7 @@ import {
   buildAgentActionPacket,
 } from "./agent-action-packet.js";
 import type { TaskAdvanceParsed } from "./advance.spec.js";
-import { executeBranchWorkflowOperation } from "./branch-task-supervisor-operations.js";
+import { executeAdmittedBranchWorkflowOperation } from "./branch-task-supervisor-operations.js";
 import { activeExecutionGrantForTask, resolveConfiguredAuthority } from "./configured-authority.js";
 import { runDirectTaskFinalizationOperation } from "./direct-task-finalization.js";
 import {
@@ -231,12 +228,9 @@ export async function advanceOrdinaryRoute(opts: {
     if (step.kind !== "cli_operation") break;
     if (step.operation.id === "runner.follow" && step.operation.params.mode === "run") break;
     if (!current.executionPacket.safeToMutate) break;
-    const persisted = await supervisePersistedWorkflowEpisode({
+    const persisted = await executeAdmittedBranchWorkflowOperation({
       decision: current,
       git_root: command.resolvedProject.gitRoot,
-      task_revision: null,
-      execute: async ({ operation }) =>
-        await executeBranchWorkflowOperation({ decision: current, operation }),
       refresh: async () => await decide(true),
     });
     const execution = persisted.execution;

@@ -2,8 +2,8 @@
   "checks": [
     {
       "check_ids": [],
-      "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-common-review-application.test.ts",
-      "duration_ms": 1543,
+      "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-direct-coordinator-parity.test.ts",
+      "duration_ms": 1894,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
@@ -13,8 +13,8 @@
         "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
       },
       "script": "test:project",
-      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/commands/task/roadmap-common-review-application.test.ts\n",
-      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/release-0.7.11-base/.agentplane/worktrees/202609210324-CC13V3-canonical-cc13v3\n\n\n Test Files  1 passed (1)\n      Tests  3 passed (3)\n   Start at  07:37:37\n   Duration  1.17s (transform 831ms, setup 0ms, import 1.10s, tests 13ms, environment 0ms)\n\n"
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/commands/task/roadmap-direct-coordinator-parity.test.ts\n",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/release-0.7.11-base/.agentplane/worktrees/202609210324-CC13V3-canonical-cc13v3\n\n\n Test Files  1 passed (1)\n      Tests  4 passed (4)\n   Start at  08:03:07\n   Duration  1.42s (transform 1.01s, setup 0ms, import 1.35s, tests 3ms, environment 0ms)\n\n"
     }
   ],
   "kind": "direct_task_declared_checks",
