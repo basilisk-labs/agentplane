@@ -24,7 +24,7 @@ Created: 2026-09-22T10:15:30.580Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-22T10:15:30.580Z
+- Updated: 2026-09-22T10:30:44.750Z
 - Branch: task/202609220826-DS03Q6/allow-canonical-completed-tasks-to-record-branch
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
