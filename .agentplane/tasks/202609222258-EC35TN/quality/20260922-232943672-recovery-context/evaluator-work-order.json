@@ -1,0 +1,114 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609222258-EC35TN-7026df2340149768e4e949aa",
+  "prepared_at": "2026-09-22T23:29:43.672Z",
+  "task": {
+    "id": "202609222258-EC35TN",
+    "revision": 18,
+    "objective": "Execute completed-task integration effects from the base checkout without a Kernel controller transition\n\nFix the broken supervisor transition discovered while validating the 0.7.11 lifecycle feedback. integration.enqueue and integration.run_next must execute from the base checkout without sending record_controller_transfer to an already COMPLETED Task Kernel aggregate.",
+    "acceptance_criteria": [
+      "bunx vitest run packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts",
+      "- In scope: Fix the broken supervisor transition discovered while validating the 0.7.11 lifecycle feedback. integration.enqueue and integration.run_next must execute from the base checkout without sending record_controller_transfer to an already COMPLETED Task Kernel aggregate.\n- Out of scope: unrelated refactors not required for \"Execute completed-task integration effects from the base checkout without a Kernel controller transition\".",
+      "1. Execute approved WorkItem WI-1.",
+      "PLANNER fallback scaffold for \"Execute completed-task integration effects from the base checkout without a Kernel controller transition\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Execute completed-task integration effects from the base checkout without a Kernel controller transition\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "4c520fdf778ca1771d8d062f1495217cd98fe608",
+  "diff_base_sha": "77dba67215c2c7f23ef15c3e617d6ea319f38003",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609222258-EC35TN/quality/20260922-232943672-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:2874f858251d88fe423984f0ba8e42e8b2884d7a5639873b605602d451969bd6",
+    "prompt_path": ".agentplane/tasks/202609222258-EC35TN/quality/objects/sha256/5852037bdb2525591a448c7af849ed140fa3f8ad671aeffcf9189bb7adfebfae.md",
+    "result_schema_path": ".agentplane/tasks/202609222258-EC35TN/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202609222258-EC35TN",
+    "plan_digest": "sha256:a17df72ff0887e595edf6c7f087b595ac9172b919b67a680ae981f146224b5c9",
+    "policy_digest": "sha256:9b668d089af056af9741759543ed685caaa27c913a3aa16d382cfde5faf1adc7",
+    "capability_digest": "sha256:4fad168dcc6ce614e806e5ee61bfa5b2309a2f4596fd91f7b675e8f86b7f6ad8",
+    "checks_digest": "sha256:b221c938b5276643fe13c4eacc0d951316a790b1a2bb591617f9079e0b651b8d",
+    "verification_input_digest": "sha256:d5e38c44447a4888e0920486026740dc4e55adbd6f33bc3ff590cc6aae228a5a",
+    "acceptance_digest": "sha256:00c647dd7c7494608cb4d50cc17e601817622bf356200ce141334a045bdecfb5",
+    "implementation_sha": "4c520fdf778ca1771d8d062f1495217cd98fe608",
+    "digest": "sha256:e15e4192b5f82716fe6299c76df3b580484e0d613a6c96fb79a303442e32b4e9"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609222258-EC35TN/README.md",
+      "sha256": "sha256:b4f592e8c916f96768dd994ac35f50a8f07263a15bb9799fd1103ef999607faa",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609222258-EC35TN/quality/objects/sha256/0a59b05b5fb3aad19ed94b974347192b394efe83351b5d0549fec88623a5c560.patch",
+      "sha256": "sha256:0a59b05b5fb3aad19ed94b974347192b394efe83351b5d0549fec88623a5c560",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609222258-EC35TN/quality/objects/sha256/c5ef8bbb81a6f583eed54de452e0935a4623ea2e681820c686276c4ae7a95dd6.json",
+      "sha256": "sha256:c5ef8bbb81a6f583eed54de452e0935a4623ea2e681820c686276c4ae7a95dd6",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202609222258-EC35TN/quality/objects/sha256/8f64c494ab81ad4ebc40d7dd369982cbbe3b3facbf693ae9fad246212bbb9a07.json",
+      "sha256": "sha256:8f64c494ab81ad4ebc40d7dd369982cbbe3b3facbf693ae9fad246212bbb9a07",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

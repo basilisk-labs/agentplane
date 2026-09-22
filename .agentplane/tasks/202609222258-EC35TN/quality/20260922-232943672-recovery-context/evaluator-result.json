@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "pass-supervisor-integration-checkout",
+      "severity": "low",
+      "summary": "PASS: completed-task integration operations execute from the frozen base checkout without a terminal Kernel controller transition, while hosted-close and cleanup transfer behavior remains unchanged.",
+      "broken_invariant": "No invariant is broken; the evaluated implementation satisfies the approved lifecycle contract.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609222258-EC35TN/quality/objects/sha256/0a59b05b5fb3aad19ed94b974347192b394efe83351b5d0549fec88623a5c560.patch",
+          "sha256": "sha256:0a59b05b5fb3aad19ed94b974347192b394efe83351b5d0549fec88623a5c560",
+          "section": "actual-diff"
+        },
+        {
+          "path": ".agentplane/tasks/202609222258-EC35TN/quality/objects/sha256/c5ef8bbb81a6f583eed54de452e0935a4623ea2e681820c686276c4ae7a95dd6.json",
+          "sha256": "sha256:c5ef8bbb81a6f583eed54de452e0935a4623ea2e681820c686276c4ae7a95dd6",
+          "section": "observed-checks"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

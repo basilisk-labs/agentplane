@@ -4,7 +4,7 @@ title: "Execute completed-task integration effects from the base checkout withou
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -30,17 +30,28 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-22T23:08:28.928Z"
+  updated_at: "2026-09-22T23:31:37.740Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "bf74d494f068db3cfa36c347cff216adbf1fb0d4"
-  review_identity_digest: "sha256:c3e0f8dbbc2e3c61a6582bc243e9e0aa537bcb2233c52449da9fc83aa2b5a294"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "4c520fdf778ca1771d8d062f1495217cd98fe608"
+  review_identity_digest: "sha256:e15e4192b5f82716fe6299c76df3b580484e0d613a6c96fb79a303442e32b4e9"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202609222258-EC35TN/aefb12f0f048baa9d0bf36821703af1b907d456720f656f813cfb406c6dffe5b/quality-report.json"
+    - ".agentplane/tasks/202609222258-EC35TN/quality/20260922-232943672-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609222258-EC35TN/quality/20260922-232943672-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609222258-EC35TN/quality/objects/sha256/5852037bdb2525591a448c7af849ed140fa3f8ad671aeffcf9189bb7adfebfae.md"
+    - ".agentplane/tasks/202609222258-EC35TN/quality/20260922-232943672-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609222258-EC35TN/quality/20260922-232943672-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609222258-EC35TN/quality/20260922-232943672-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609222258-EC35TN/README.md"
+    - ".agentplane/tasks/202609222258-EC35TN/quality/objects/sha256/0a59b05b5fb3aad19ed94b974347192b394efe83351b5d0549fec88623a5c560.patch"
+    - ".agentplane/tasks/202609222258-EC35TN/quality/objects/sha256/c5ef8bbb81a6f583eed54de452e0935a4623ea2e681820c686276c4ae7a95dd6.json"
+    - ".agentplane/tasks/202609222258-EC35TN/quality/objects/sha256/8f64c494ab81ad4ebc40d7dd369982cbbe3b3facbf693ae9fad246212bbb9a07.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Pass: integration.enqueue and integration.run_next are no longer classified as operations that require a post-completion Kernel controller transfer."
-    - "Pass: the shared integration execution branch replaces mustRunFrom, authoritativeCheckoutPath, mutationPathHint, and authoritativeCheckout with the frozen base checkout for both integration operations."
-    - "Pass: hosted-close and cleanup remain in the controller-transfer predicate, and AgentPlane independently observed 13 focused tests passing at implementation commit bf74d494f068db3cfa36c347cff216adbf1fb0d4."
+    - "PASS: completed-task integration operations execute from the frozen base checkout without a terminal Kernel controller transition, while hosted-close and cleanup transfer behavior remains unchanged."
 execution_route:
   frozen: true
   reason_codes:
