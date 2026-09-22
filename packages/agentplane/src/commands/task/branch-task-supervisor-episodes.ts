@@ -427,6 +427,8 @@ async function executeBranchVerificationEpisode(opts: {
           incidentTags: [],
           incidentMatch: [],
           quiet: true,
+          allowCanonicalProjection:
+            taskCentricAggregateFromExtensions(task.extensions)?.lifecycle === "COMPLETED",
         });
         if (exitCode !== 0) throw new Error(`Verification record exited with ${exitCode}.`);
         const coalesce =

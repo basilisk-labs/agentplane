@@ -14,9 +14,13 @@ import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 
 const taskId = "202607310001-BRANCH";
 
-it.each([false, true])(
-  "freezes branch verification and preserves its planned commands (%s)",
-  async (planned) => {
+it.each([
+  { planned: false, status: "DOING", allowCanonicalProjection: false },
+  { planned: true, status: "DOING", allowCanonicalProjection: false },
+  { planned: true, status: "DONE", allowCanonicalProjection: true },
+] as const)(
+  "freezes branch verification and preserves its planned commands ($status, planned=$planned)",
+  async ({ planned, status, allowCanonicalProjection }) => {
     const decision = {
       task: { id: taskId },
       executionPacket: { mustRunFrom: "/repo/task" },
@@ -39,7 +43,7 @@ it.each([false, true])(
       revision: 2,
       title: "Branch fixture",
       description: "",
-      status: "DOING",
+      status,
       acceptance_criteria: [],
       captured_at: "2026-09-07T00:00:00Z",
       updated_at: "2026-09-07T00:00:00Z",
@@ -151,6 +155,7 @@ it.each([false, true])(
       expect(verificationRecord.cmdVerifyParsed).toHaveBeenCalledWith(
         expect.objectContaining({
           verificationSnapshot: snapshot,
+          allowCanonicalProjection,
         }),
       );
       expect(vi.mocked(verificationRecord.cmdVerifyParsed).mock.calls[0]?.[0].details).toContain(

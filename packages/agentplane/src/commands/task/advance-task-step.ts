@@ -27,6 +27,8 @@ import { transferCanonicalControllerToBase } from "./kernel-controller-handoff.j
 import { acceptKernelSemanticResult } from "./kernel-semantic-result.js";
 import { ensureCanonicalTaskWorktree } from "./kernel-worktree-routing.js";
 import { canonicalCompletionPrecedesWorkflow } from "./ordinary-advance-step.js";
+import { executeProductionBranchEpisode } from "./branch-task-supervisor-episodes.js";
+import { loadCommandContext } from "../shared/task-backend.js";
 
 export { blockKernelSemanticEpisode } from "./kernel-semantic-result.js";
 
@@ -208,6 +210,38 @@ async function advanceCanonicalRoute(opts: {
           action: { kind: "terminal", reason: route.reason_code },
           canonical_revision: record.aggregate.revision,
         };
+      }
+      if (
+        localWorkflow.workflowStep.kind === "agent_episode" &&
+        localWorkflow.workflowStep.episode.purpose === "verification"
+      ) {
+        const checkout = localWorkflow.executionPacket.mustRunFrom ?? localWorkflow.workspace.root;
+        const workflowCommand =
+          path.resolve(checkout) === path.resolve(opts.command.resolvedProject.gitRoot)
+            ? opts.command
+            : await loadCommandContext({ cwd: checkout, rootOverride: null });
+        const outcome = await executeProductionBranchEpisode({
+          input: {
+            ctx: { cwd: checkout },
+            command: workflowCommand,
+            task_id: opts.task_id,
+          },
+          decision: localWorkflow,
+          decide: async () =>
+            await decideCanonicalWorkflowEffect(workflowCommand, opts.task_id, false),
+        });
+        if (outcome.status === "stopped") {
+          return {
+            schema_version: 1,
+            task_id: opts.task_id,
+            action: {
+              kind: "human_required",
+              reason: outcome.stop.code,
+              workflow_step: localWorkflow.workflowStep.id,
+            },
+          };
+        }
+        continue;
       }
       if (!opts.allow_provider_effects) {
         return {
