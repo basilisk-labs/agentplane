@@ -1,6 +1,6 @@
  docs/developer/recipes-development.mdx             | 19 +++++++
- docs/recipes-inventory.json                        |  8 +--
+ docs/recipes-inventory.json                        | 45 +--------------
  .../cli/generate-recipes-inventory-script.test.ts  | 63 +++++++++++----------
  scripts/checks/check-recipes-inventory-fresh.mjs   | 64 ++++++++++++++++++----
  scripts/generate/generate-recipes-inventory.mjs    | 54 ++++++++++++------
- 5 files changed, 145 insertions(+), 63 deletions(-)
+ 5 files changed, 144 insertions(+), 101 deletions(-)
