@@ -103,7 +103,7 @@ async function createBranchPrTask(root: string): Promise<{
   await ensureRuntimeGitignore({ gitRoot: root });
   await appendFile(
     path.join(root, ".gitignore"),
-    "\n.agentplane/bin/\nagentplane-recipes\nnode_modules\npackages/\nwebsite/\ndist\n",
+    "\n.agentplane/bin/\nnode_modules\npackages/\nwebsite/\ndist\n",
   );
   await execFileAsync("git", ["add", ".gitignore"], { cwd: root });
   await execFileAsync("git", ["commit", "-m", "test: ignore materialized conflict runtime"], {

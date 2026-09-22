@@ -266,7 +266,7 @@ export async function materializeRepoLocalInstallLayoutForWorktree(opts: {
   worktreePath: string;
 }): Promise<void> {
   const sourceRoots = resolveRuntimeSourceRoots(opts.repoRoot);
-  const linkTargets = ["node_modules", path.join("website", "node_modules"), "agentplane-recipes"];
+  const linkTargets = ["node_modules", path.join("website", "node_modules")];
   for (const relativePath of linkTargets) {
     await linkDirectoryIntoWorktree({
       repoRoot: opts.repoRoot,

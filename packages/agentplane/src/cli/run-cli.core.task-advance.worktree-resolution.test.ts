@@ -73,7 +73,6 @@ async function writeHarnessGitignore(root: string): Promise<void> {
       existingGitignore.trimEnd(),
       ".agentplane/bin",
       ".agentplane/cache.sqlite*",
-      "agentplane-recipes",
       "node_modules",
       "packages/agentplane/bin",
       "packages/agentplane/dist",
@@ -400,7 +399,7 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
       await writeFile(
         path.join(root, ".gitignore"),
-        ".agentplane/bin/\n.agentplane/cache.sqlite-*\nnode_modules\npackages/\nwebsite/\nagentplane-recipes\n",
+        ".agentplane/bin/\n.agentplane/cache.sqlite-*\nnode_modules\npackages/\nwebsite/\n",
       );
       await execFileAsync("git", ["add", ".agentplane", ".gitignore"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "test: initial workflow"], { cwd: root });

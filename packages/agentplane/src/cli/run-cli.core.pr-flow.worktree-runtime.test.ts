@@ -274,12 +274,6 @@ describe(
         await seedRepoLocalNodeModules(root);
         await seedRepoLocalWebsiteNodeModules(root);
         await seedRepoLocalCorePackage(root);
-        await mkdir(path.join(root, "agentplane-recipes"), { recursive: true });
-        await writeFile(
-          path.join(root, "agentplane-recipes", "index.json"),
-          '{"schema_version":1,"recipes":[]}\n',
-          "utf8",
-        );
         await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
         const execFileAsync = promisify(execFile);
         await execFileAsync("git", ["add", "."], { cwd: root });
@@ -350,9 +344,6 @@ describe(
           ),
         ).toBe(await realpath(path.join(worktreePath, "packages", "core")));
         expect(await pathExists(path.join(worktreePath, "website", "node_modules"))).toBe(true);
-        expect(await pathExists(path.join(worktreePath, "agentplane-recipes", "index.json"))).toBe(
-          true,
-        );
         expect(await pathExists(path.join(worktreePath, ".agentplane", "bin", "agentplane"))).toBe(
           true,
         );

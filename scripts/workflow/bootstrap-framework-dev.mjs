@@ -12,7 +12,6 @@ import {
   FRAMEWORK_DEV_REINSTALL_SCRIPT,
   FRAMEWORK_DEV_REPO_LOCAL_VERIFY_COMMAND,
 } from "../../packages/agentplane/bin/framework-dev-contract.js";
-import { resolveCommonRepoRoot } from "../generate/generate-recipes-inventory.mjs";
 import { withFrameworkBuildLock } from "../lib/framework-build-lock.mjs";
 
 function printUsage() {
@@ -22,7 +21,6 @@ function printUsage() {
       "",
       "Prepare a fresh framework checkout for repo-local development:",
       "- install workspace dependencies when node_modules is missing",
-      "- initialize the agentplane-recipes submodule when it is empty",
       "- build @agentplaneorg/core, agentplane, and @agentplane/testkit",
       "- verify the repo-local runtime",
       "",
@@ -145,10 +143,6 @@ function hasBootstrapBuildInstallLayout(repoRoot) {
     ) &&
     pathResolvesWithinRepo(repoRoot, path.join(repoRoot, "website", "node_modules"))
   );
-}
-
-function hasRecipesIndex(repoRoot) {
-  return fs.existsSync(path.join(repoRoot, "agentplane-recipes", "index.json"));
 }
 
 function resolveGitHooksDir(repoRoot) {
@@ -342,12 +336,6 @@ function reconcileManagedHooks(repoRoot) {
   return updatedHooks;
 }
 
-function linkBootstrapBuildInstallLayoutFromCommonRoot(repoRoot, commonRepoRoot) {
-  void repoRoot;
-  void commonRepoRoot;
-  return [];
-}
-
 function printFooter() {
   process.stdout.write(
     [
@@ -361,62 +349,18 @@ function printFooter() {
   );
 }
 
-function defaultResolveCommonRepoRoot(repoRoot) {
-  try {
-    return resolveCommonRepoRoot(repoRoot);
-  } catch {
-    return repoRoot;
-  }
-}
-
-export function runFrameworkDevBootstrap(cwd = process.cwd(), exec = defaultExec, options = {}) {
+export function runFrameworkDevBootstrap(cwd = process.cwd(), exec = defaultExec) {
   const repoRoot = resolveRepoRoot(cwd);
-  const commonRepoRoot = (options.resolveCommonRepoRoot ?? defaultResolveCommonRepoRoot)(repoRoot);
 
   process.stdout.write(`==> Framework repo: ${repoRoot}\n`);
 
   removeForeignInstallLayouts(repoRoot);
-
-  const linkedInstallLayout = linkBootstrapBuildInstallLayoutFromCommonRoot(
-    repoRoot,
-    commonRepoRoot,
-  );
-  if (linkedInstallLayout.includes("node_modules")) {
-    process.stdout.write(
-      `==> Reusing workspace dependencies from common repo root: ${commonRepoRoot}\n`,
-    );
-  }
-  if (linkedInstallLayout.some((relativePath) => relativePath !== "node_modules")) {
-    process.stdout.write(
-      `==> Reusing package-local install layout from common repo root: ${commonRepoRoot}\n`,
-    );
-  }
 
   if (hasBootstrapBuildInstallLayout(repoRoot)) {
     process.stdout.write("==> Bootstrap install layout already present; skipping bun install\n");
   } else {
     process.stdout.write("==> Installing workspace dependencies\n");
     exec(repoRoot, "bun", ["install", "--ignore-scripts"]);
-  }
-
-  if (hasRecipesIndex(repoRoot)) {
-    process.stdout.write(
-      "==> Recipes submodule already initialized; skipping git submodule update\n",
-    );
-  } else if (commonRepoRoot !== repoRoot && hasRecipesIndex(commonRepoRoot)) {
-    process.stdout.write(
-      `==> Recipes submodule already available in common repo root; skipping local git submodule update: ${commonRepoRoot}\n`,
-    );
-  } else {
-    process.stdout.write("==> Initializing agentplane-recipes submodule\n");
-    try {
-      exec(repoRoot, "git", ["submodule", "update", "--init", "--recursive", "agentplane-recipes"]);
-    } catch (error) {
-      throw new Error(
-        "Failed to initialize agentplane-recipes. The superproject may pin a submodule commit that is not available on the remote yet.",
-        { cause: error },
-      );
-    }
   }
 
   withFrameworkBuildLock(repoRoot, "framework-dev-bootstrap", () => {

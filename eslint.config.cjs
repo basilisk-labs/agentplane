@@ -277,7 +277,6 @@ module.exports = [
       "**/dist/**",
       "**/coverage/**",
       ".agentplane/**",
-      "agentplane-recipes/**",
       "website/.docusaurus/**",
       "website/build/**",
       "website/static/presentation/aimindset20260325/**",
