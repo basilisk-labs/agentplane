@@ -6,14 +6,14 @@ Created: 2026-09-22T04:01:31.671Z
 
 - Task: `202609220351-3KNJQZ`
 - Title: Remove marketing and recipes Git submodules
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609220351-3KNJQZ/remove-marketing-and-recipes-git-submodules`
 - Canonical task record: `.agentplane/tasks/202609220351-3KNJQZ/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:d8428d26dc4fb4ab379526ebef96e0450f811b589a32ac72a5d8edea7013647f
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

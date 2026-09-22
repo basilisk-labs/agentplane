@@ -1,10 +1,10 @@
 ---
 id: "202609220351-3KNJQZ"
 title: "Remove marketing and recipes Git submodules"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 62
+revision: 73
 origin:
   system: "manual"
 depends_on: []
@@ -22,31 +22,30 @@ verify:
   - "bun run ci:local:fast"
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-22T05:06:14.301Z"
+  updated_at: "2026-09-22T05:50:10.398Z"
   updated_by: "USER"
   note: "Projected from the approved canonical Task Kernel plan."
 verification:
   state: "ok"
-  updated_at: "2026-09-22T04:10:21.350Z"
+  updated_at: "2026-09-22T06:25:18.265Z"
   updated_by: "SUPERVISOR"
-  note: "Canonical validation sha256:d8428d26dc4fb4ab379526ebef96e0450f811b589a32ac72a5d8edea7013647f"
-  attempts: 1
+  note: "Verified: canonical Task Kernel final checks passed."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-22T05:06:14.301Z"
+  updated_at: "2026-09-22T05:50:10.398Z"
   updated_by: "EVALUATOR"
   note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "3887e57a49c2b906e5986cd280232f51459f468f"
-  review_identity_digest: "sha256:ba6002269cae4d582deb449ccb7cf6ec7dcd76176db17b08742916f01aa9486f"
+  evaluated_sha: "397a3abae637e8a38cc2265f8462948e36935ced"
+  review_identity_digest: "sha256:dfe0b74952a000de073ca4da75254b7873cde3ac7f4addc3617f90ee47889525"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202609220351-3KNJQZ/c71635ea45f41a351bccb53217516d1d4f4ef12e470a8b917f64bb5f3edfe3e7/quality-report.json"
+    - "../../../.git/agentplane/kernel/exchanges/202609220351-3KNJQZ/d1c6fa43ce6670f7ebcfcae429ddf23605e969b03be77396d7a7a44b0cf7c0cf/quality-report.json"
   findings:
-    - "The committed index contains no mode 160000 entries, .gitmodules is deleted, and both former gitlinks are absent."
-    - "Bootstrap and worktree materialization no longer initialize, require, copy, or symlink agentplane-recipes."
-    - "CI and publish workflows no longer request submodule checkout or execute recipes initialization and marketing deinitialization workarounds."
-    - "Current documentation and ignore configuration describe recipes and marketing as independent repositories rather than submodules."
-    - "The adjacent publish workflow contract now asserts the absence of submodule configuration and initialization; AgentPlane-observed native checks passed against implementation commit 3887e57a49c2b906e5986cd280232f51459f468f."
+    - "HEAD 397a3abae contains no mode 160000 index entries and neither agentplane-recipes nor marketing is present in the HEAD tree."
+    - "Active source, workflows, and user/developer documentation no longer initialize or deinitialize either removed submodule; remaining matching text is historical task evidence or intentional negative test coverage."
+    - "AgentPlane-observed verification passed: ci:local:fast completed 669 test files and 5781 tests with one skip, ci:contract passed, git diff --check passed, and the target-path tree check returned empty output."
+    - "The diff deletes only the two former gitlink entries, not files from either external repository; no release-document history was changed."
 execution_route:
   frozen: true
   reason_codes:
@@ -94,15 +93,198 @@ execution_contract:
     schema_version: 2
     scope_roots: []
   observed:
-    authority_violations: []
-    changed_components: []
-    changed_paths: []
+    authority_violations:
+      - "repository_effect:ci"
+      - "repository_effect:documentation"
+      - "repository_effect:tests"
+    changed_components:
+      - ".github"
+      - ".gitmodules"
+      - ".prettierignore"
+      - "agentplane-recipes"
+      - "docs"
+      - "eslint.config.cjs"
+      - "marketing"
+      - "packages/agentplane"
+      - "scripts"
+    changed_paths:
+      - ".github/workflows/ci.yml"
+      - ".github/workflows/publish-distribution-module.yml"
+      - ".github/workflows/publish.yml"
+      - ".gitmodules"
+      - ".prettierignore"
+      - "agentplane-recipes"
+      - "docs/README.md"
+      - "docs/developer/project-layout.mdx"
+      - "docs/developer/recipes-development.mdx"
+      - "docs/developer/testing-and-quality.mdx"
+      - "docs/help/troubleshooting.mdx"
+      - "docs/recipes-inventory.json"
+      - "eslint.config.cjs"
+      - "marketing"
+      - "packages/agentplane/bin/framework-dev-contract.js"
+      - "packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts"
+      - "packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
+      - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
+      - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
+      - "packages/agentplane/src/commands/release/publish-workflow-contract.test.ts"
+      - "scripts/checks/check-recipes-inventory-fresh.mjs"
+      - "scripts/generate/generate-recipes-inventory.mjs"
+      - "scripts/lib/github-ci-capabilities.mjs"
+      - "scripts/workflow/bootstrap-framework-dev.mjs"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "ci"
+      - "documentation"
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-13"
+        result: "pass"
+      -
+        id: "recorded-check-14"
+        result: "pass"
+      -
+        id: "recorded-check-15"
+        result: "pass"
+      -
+        id: "recorded-check-16"
+        result: "pass"
+      -
+        id: "recorded-check-17"
+        result: "pass"
+      -
+        id: "recorded-check-18"
+        result: "pass"
+      -
+        id: "recorded-check-19"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-20"
+        result: "pass"
+      -
+        id: "recorded-check-21"
+        result: "pass"
+      -
+        id: "recorded-check-22"
+        result: "pass"
+      -
+        id: "recorded-check-23"
+        result: "pass"
+      -
+        id: "recorded-check-24"
+        result: "pass"
+      -
+        id: "recorded-check-25"
+        result: "pass"
+      -
+        id: "recorded-check-26"
+        result: "pass"
+      -
+        id: "recorded-check-27"
+        result: "pass"
+      -
+        id: "recorded-check-28"
+        result: "pass"
+      -
+        id: "recorded-check-29"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-30"
+        result: "pass"
+      -
+        id: "recorded-check-31"
+        result: "pass"
+      -
+        id: "recorded-check-32"
+        result: "pass"
+      -
+        id: "recorded-check-33"
+        result: "pass"
+      -
+        id: "recorded-check-34"
+        result: "pass"
+      -
+        id: "recorded-check-35"
+        result: "pass"
+      -
+        id: "recorded-check-36"
+        result: "pass"
+      -
+        id: "recorded-check-37"
+        result: "pass"
+      -
+        id: "recorded-check-38"
+        result: "pass"
+      -
+        id: "recorded-check-39"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-40"
+        result: "pass"
+      -
+        id: "recorded-check-41"
+        result: "pass"
+      -
+        id: "recorded-check-42"
+        result: "pass"
+      -
+        id: "recorded-check-43"
+        result: "pass"
+      -
+        id: "recorded-check-44"
+        result: "pass"
+      -
+        id: "recorded-check-45"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
+      -
+        id: "verification-record"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_external_write"
+    - "observed_effect_ci"
     - "repository_branch_pr_floor"
     - "reversibility_recovery_required"
   repository_mode: "branch_pr"
@@ -122,8 +304,11 @@ execution_contract:
           - "external_effect:external_write"
           - "external_effect:network_read"
           - "hosted_integration"
+          - "repository_effect:ci"
+          - "repository_effect:documentation"
           - "repository_effect:repository_write"
           - "repository_effect:source_code"
+          - "repository_effect:tests"
           - "task_outcome"
         external_effects:
           - "external_write"
@@ -135,20 +320,77 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:5f13b419848d3a6d8b1f0301e15b922c4537bc3c735c32ce87bf818a4ef23787"
+      digest: "sha256:b26632c32f384b1d8c291db3abbe0c70c7cf84b640b0e7b84d55fc8ff0a23300"
       escalation_reasons:
+        - "central_path:.github/workflows/ci.yml"
+        - "central_path:.github/workflows/publish-distribution-module.yml"
+        - "central_path:.github/workflows/publish.yml"
+        - "central_path:packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts"
+        - "central_path:packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
+        - "central_path:scripts/checks/check-recipes-inventory-fresh.mjs"
+        - "central_path:scripts/lib/github-ci-capabilities.mjs"
+        - "central_path:scripts/workflow/bootstrap-framework-dev.mjs"
+        - "effect_ci"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
+        - "unknown_path:.gitmodules"
+        - "unknown_path:.prettierignore"
+        - "unknown_path:agentplane-recipes"
+        - "unknown_path:marketing"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - ".github"
+          - ".gitmodules"
+          - ".prettierignore"
+          - "agentplane-recipes"
+          - "docs"
+          - "eslint.config.cjs"
+          - "marketing"
+          - "packages/agentplane"
+          - "scripts"
+        changed_files:
+          - ".github/workflows/ci.yml"
+          - ".github/workflows/publish-distribution-module.yml"
+          - ".github/workflows/publish.yml"
+          - ".gitmodules"
+          - ".prettierignore"
+          - "agentplane-recipes"
+          - "docs/README.md"
+          - "docs/developer/project-layout.mdx"
+          - "docs/developer/recipes-development.mdx"
+          - "docs/developer/testing-and-quality.mdx"
+          - "docs/help/troubleshooting.mdx"
+          - "docs/recipes-inventory.json"
+          - "eslint.config.cjs"
+          - "marketing"
+          - "packages/agentplane/bin/framework-dev-contract.js"
+          - "packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts"
+          - "packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
+          - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
+          - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
+          - "packages/agentplane/src/commands/release/publish-workflow-contract.test.ts"
+          - "scripts/checks/check-recipes-inventory-fresh.mjs"
+          - "scripts/generate/generate-recipes-inventory.mjs"
+          - "scripts/lib/github-ci-capabilities.mjs"
+          - "scripts/workflow/bootstrap-framework-dev.mjs"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "ci"
+          - "documentation"
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -160,6 +402,7 @@ execution_contract:
       selected_checks:
         - "affected_unit_integration"
         - "critical_paths"
+        - "docs_contract"
         - "full_regression"
         - "hosted_integration"
         - "real_e2e"
@@ -179,17 +422,26 @@ execution_contract:
       - "external_effect:external_write"
       - "external_effect:network_read"
       - "hosted_integration"
+      - "repository_effect:ci"
+      - "repository_effect:documentation"
       - "repository_effect:repository_write"
       - "repository_effect:source_code"
+      - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "3887e57a49c2b906e5986cd280232f51459f468f"
+  hash: "397a3abae637e8a38cc2265f8462948e36935ced"
   message: "AgentPlane-owned canonical implementation commit"
 comments: []
-events: []
+events:
+  -
+    type: "verify"
+    at: "2026-09-22T06:25:18.265Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: canonical Task Kernel final checks passed."
 doc_version: 3
-doc_updated_at: "2026-09-22T03:51:28.004Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-22T06:25:19.358Z"
+doc_updated_by: "SUPERVISOR"
 description: "Remove the marketing and agentplane-recipes gitlinks from the AgentPlane superproject. Keep both external repositories independent. Replace recipe submodule assumptions in CI, publish, developer bootstrap, documentation inventory generation, tests, and docs with explicit on-demand remote access or repository-neutral behavior. Preserve runtime recipe installation from the signed public catalog."
 sections:
   Summary: |-
@@ -211,6 +463,305 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-22T06:25:18.265Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: canonical Task Kernel final checks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e6c612a8e8863030f68f862c93f6c10fca6c7a32ff059a445d66419814bc8c94, input_digest=sha256:74ec130b3b9209cfe9426f06f20383682616c6ae90c48c4af7f2e084d1c51bac
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check affected_unit_integration (1/11)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:fast
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check affected_unit_integration (2/11)
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check affected_unit_integration (3/11)
+
+    Check: affected_unit_integration
+    Command: bun run docs:recipes:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check affected_unit_integration (4/11)
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check affected_unit_integration (5/11)
+
+    Check: affected_unit_integration
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check affected_unit_integration (6/11)
+
+    Check: affected_unit_integration
+    Command: git grep -n -I -E 'git submodule|Recipes submodule|marketing/.*submodule|agentplane-recipes.*submodule' -- ':!docs/releases/**' ':!.agentplane/tasks/**' ':!.agentplane/tmp/**'
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check affected_unit_integration (7/11)
+
+    Check: affected_unit_integration
+    Command: git ls-tree HEAD agentplane-recipes marketing
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check affected_unit_integration (8/11)
+
+    Check: affected_unit_integration
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check affected_unit_integration (9/11)
+
+    Check: affected_unit_integration
+    Command: git status --short --untracked-files=all
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check affected_unit_integration (10/11)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check affected_unit_integration (11/11)
+
+    Check: critical_paths
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check critical_paths (1/11)
+
+    Check: critical_paths
+    Command: bun run ci:local:fast
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check critical_paths (2/11)
+
+    Check: critical_paths
+    Command: bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check critical_paths (3/11)
+
+    Check: critical_paths
+    Command: bun run docs:recipes:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check critical_paths (4/11)
+
+    Check: critical_paths
+    Command: bunx vitest run packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check critical_paths (5/11)
+
+    Check: critical_paths
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check critical_paths (6/11)
+
+    Check: critical_paths
+    Command: git grep -n -I -E 'git submodule|Recipes submodule|marketing/.*submodule|agentplane-recipes.*submodule' -- ':!docs/releases/**' ':!.agentplane/tasks/**' ':!.agentplane/tmp/**'
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check critical_paths (7/11)
+
+    Check: critical_paths
+    Command: git ls-tree HEAD agentplane-recipes marketing
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check critical_paths (8/11)
+
+    Check: critical_paths
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check critical_paths (9/11)
+
+    Check: critical_paths
+    Command: git status --short --untracked-files=all
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check critical_paths (10/11)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check critical_paths (11/11)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check real_e2e (1/11)
+
+    Check: real_e2e
+    Command: bun run ci:local:fast
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check real_e2e (2/11)
+
+    Check: real_e2e
+    Command: bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check real_e2e (3/11)
+
+    Check: real_e2e
+    Command: bun run docs:recipes:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check real_e2e (4/11)
+
+    Check: real_e2e
+    Command: bunx vitest run packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check real_e2e (5/11)
+
+    Check: real_e2e
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check real_e2e (6/11)
+
+    Check: real_e2e
+    Command: git grep -n -I -E 'git submodule|Recipes submodule|marketing/.*submodule|agentplane-recipes.*submodule' -- ':!docs/releases/**' ':!.agentplane/tasks/**' ':!.agentplane/tmp/**'
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check real_e2e (7/11)
+
+    Check: real_e2e
+    Command: git ls-tree HEAD agentplane-recipes marketing
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check real_e2e (8/11)
+
+    Check: real_e2e
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check real_e2e (9/11)
+
+    Check: real_e2e
+    Command: git status --short --untracked-files=all
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check real_e2e (10/11)
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check real_e2e (11/11)
+
+    Check: task_outcome
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check task_outcome (1/11)
+
+    Check: task_outcome
+    Command: bun run ci:local:fast
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check task_outcome (2/11)
+
+    Check: task_outcome
+    Command: bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check task_outcome (3/11)
+
+    Check: task_outcome
+    Command: bun run docs:recipes:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check task_outcome (4/11)
+
+    Check: task_outcome
+    Command: bunx vitest run packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check task_outcome (5/11)
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check task_outcome (6/11)
+
+    Check: task_outcome
+    Command: git grep -n -I -E 'git submodule|Recipes submodule|marketing/.*submodule|agentplane-recipes.*submodule' -- ':!docs/releases/**' ':!.agentplane/tasks/**' ':!.agentplane/tmp/**'
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check task_outcome (7/11)
+
+    Check: task_outcome
+    Command: git ls-tree HEAD agentplane-recipes marketing
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check task_outcome (8/11)
+
+    Check: task_outcome
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check task_outcome (9/11)
+
+    Check: task_outcome
+    Command: git status --short --untracked-files=all
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check task_outcome (10/11)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check task_outcome (11/11)
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:fd498935e6c56185ce0c24b77d58ac59ef84854cc812b7432faec68def3be7d6
+    - policy_digest: sha256:5c6334745d754efd91884099d829b1034f03a1e440378b149a5f5f7d101c4163
+    - capability_digest: sha256:aeaf2f7d86b2f7492e081b8b78110c1e2c5e94c3635f797b45f901201097cfaf
+    - checks_digest: sha256:7f111828bb5d6b46f40b3284a586456b304edfae5fd98418ea281b2ea2b4594f
+    - identity_digest: sha256:d6cddcec33776ed0c2a41b8171a2a714278c5ee1f2fd03c08cf7e3c114f303c1
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -218,23 +769,22 @@ sections:
   Findings: ""
 extensions:
   agentplane.kernel_operational_projection:
-    digest: "sha256:722a3f0a09c21c00d3ba715fe78399b18d66fd7d4f106851f05e124e2584d7fd"
+    digest: "sha256:4df4abb3b6fd8f88fefabe497622b55aaa43569d4a10b6a37ef10901b1437a01"
     evidence_refs:
-      - "../../../.git/agentplane/kernel/exchanges/202609220351-3KNJQZ/c71635ea45f41a351bccb53217516d1d4f4ef12e470a8b917f64bb5f3edfe3e7/quality-report.json"
+      - "../../../.git/agentplane/kernel/exchanges/202609220351-3KNJQZ/d1c6fa43ce6670f7ebcfcae429ddf23605e969b03be77396d7a7a44b0cf7c0cf/quality-report.json"
     findings:
-      - "The committed index contains no mode 160000 entries, .gitmodules is deleted, and both former gitlinks are absent."
-      - "Bootstrap and worktree materialization no longer initialize, require, copy, or symlink agentplane-recipes."
-      - "CI and publish workflows no longer request submodule checkout or execute recipes initialization and marketing deinitialization workarounds."
-      - "Current documentation and ignore configuration describe recipes and marketing as independent repositories rather than submodules."
-      - "The adjacent publish workflow contract now asserts the absence of submodule configuration and initialization; AgentPlane-observed native checks passed against implementation commit 3887e57a49c2b906e5986cd280232f51459f468f."
-    implementation_commit: "3887e57a49c2b906e5986cd280232f51459f468f"
-    implementation_tree: "e07176a994fbabc9a383a8ddbc7e8ecfe84b8a11"
-    projected_at: "2026-09-22T05:06:14.301Z"
-    review_identity_digest: "sha256:ba6002269cae4d582deb449ccb7cf6ec7dcd76176db17b08742916f01aa9486f"
+      - "HEAD 397a3abae contains no mode 160000 index entries and neither agentplane-recipes nor marketing is present in the HEAD tree."
+      - "Active source, workflows, and user/developer documentation no longer initialize or deinitialize either removed submodule; remaining matching text is historical task evidence or intentional negative test coverage."
+      - "AgentPlane-observed verification passed: ci:local:fast completed 669 test files and 5781 tests with one skip, ci:contract passed, git diff --check passed, and the target-path tree check returned empty output."
+      - "The diff deletes only the two former gitlink entries, not files from either external repository; no release-document history was changed."
+    implementation_commit: "397a3abae637e8a38cc2265f8462948e36935ced"
+    implementation_tree: "a3bd7d644485cf48c033f3fea362a479fdb02fe0"
+    projected_at: "2026-09-22T05:50:10.398Z"
+    review_identity_digest: "sha256:dfe0b74952a000de073ca4da75254b7873cde3ac7f4addc3617f90ee47889525"
     schema_version: 1
     source: "task_kernel"
-    verification_evidence_digest: "sha256:749d4086b4abbfdbb5ec8ff6b0b4ef26a61dbedc359c5b4b69880357ab71ef26"
-    work_order_id: "sha256:81323b1f3ebc20faca022837a5d9b895c450aa4bed4fed5fcde075fbfcccb942"
+    verification_evidence_digest: "sha256:e51a322d606354812009c8c5e428c9b456055ad9debea667c9a636531cbc6231"
+    work_order_id: "sha256:066a734e2421ae0fc1e70c6865794a532267716638044a10b377bc7537945e8f"
   task_execution_context:
     base_ref: "main"
     base_sha: "1d6f6cabf7325beec6422f7a69841009b1915475"
@@ -1405,6 +1955,87 @@ extensions:
             evidence_digest: "sha256:dde24c568e7ff1509af992dc5279e59a4d43246bac2b4685181aacbd5f09dec2"
             kind: "repository_implementation"
             previous_fingerprint: "sha256:ca2bb452b0f9be92cf18e460eb740e2634ac1656901e953e80353b87abdfe975"
+        -
+          approval_mode: null
+          authority:
+            capabilities:
+              - "git_read"
+              - "network_read"
+              - "repository_read"
+              - "repository_write"
+              - "test_execution"
+            completion_requirements:
+              - "work_item_validation"
+              - "final_validation"
+            digest: "sha256:52910289f3c72584d1527fdd2645d151c27ab110251b38522579fa75e30e7cb1"
+            expires_at: null
+            external_effects: []
+            plan_digest: "sha256:fd498935e6c56185ce0c24b77d58ac59ef84854cc812b7432faec68def3be7d6"
+            plan_revision: 2
+            policy_digests:
+              - "sha256:4d715b617cb49d4304a46cbd010ff04038119a5412bfcf5889d6d1ce83807648"
+            provenance:
+              actor_id: "agentplane:kernel-controller"
+              evidence_digest: "sha256:85fd5956165ab263141804d75197aab590571854ef2d21b0bcca3f7de84055d3"
+              kind: "SYSTEM"
+              parent_authority_digest: "sha256:056cbc7000f8ee6458d98ebaaf944f7039320a9103e15f18f2c1af18476e9104"
+            repository_effects:
+              - "ci"
+              - "documentation"
+              - "repository_write"
+              - "source_code"
+              - "tests"
+            repository_fingerprint: "sha256:08247094cef311214d4b924b51e0e98802c558a8468ec3f57f672332d26c9a09"
+            repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+            resources:
+              - "Changed-file diff"
+              - "Current AgentPlane main checkout"
+              - "Existing framework bootstrap and branch worktree tests"
+              - "Repository test and contract suites"
+              - "https://github.com/basilisk-labs/agentplane-recipes"
+              - "https://raw.githubusercontent.com/basilisk-labs/agentplane-recipes/main/index.json"
+            risk:
+              implementation: "bounded"
+              requirements: "bounded"
+              reversibility: "reversible"
+            scope_roots:
+              - "."
+              - ".github/workflows"
+              - ".gitmodules"
+              - ".prettierignore"
+              - "agentplane-recipes"
+              - "docs"
+              - "docs/developer"
+              - "docs/recipes-inventory.json"
+              - "eslint.config.cjs"
+              - "marketing"
+              - "packages/agentplane/bin"
+              - "packages/agentplane/src/cli"
+              - "packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts"
+              - "packages/agentplane/src/commands/branch"
+              - "scripts/checks"
+              - "scripts/generate"
+              - "scripts/lib"
+              - "scripts/workflow"
+            task_id: "202609220351-3KNJQZ"
+            validation_requirements:
+              - "bun run ci:contract"
+              - "bun run ci:local:fast"
+              - "bun run docs:recipes:check"
+              - "bunx vitest run packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+              - "bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts"
+              - "git diff --check"
+              - "git grep -n -I -E 'git submodule|Recipes submodule|marketing/.*submodule|agentplane-recipes.*submodule' -- ':!docs/releases/**' ':!.agentplane/tasks/**' ':!.agentplane/tmp/**'"
+              - "git ls-files --stage | awk '$1 == 160000 { print }'"
+              - "git status --short --untracked-files=all"
+              - "node .agentplane/policy/check-routing.mjs"
+            work_item_id: null
+          observation:
+            changed_paths:
+              - "scripts/generate/generate-recipes-inventory.mjs"
+            evidence_digest: "sha256:51ba002eda692c4a70aa0b6691bec4c45230dc930c5d571360e654e3d18c1c40"
+            kind: "repository_implementation"
+            previous_fingerprint: "sha256:edffcf66afb0a192c4756bbcc7616f90acc58a4396638837f12276d7aa5ff00d"
       controller_transfer: null
       current_plan:
         approval_actor_id: "USER"
@@ -1517,7 +2148,17 @@ extensions:
               - "recipe-source-tests"
               - "recipe-source-docs"
       effects: []
-      final_validation: null
+      final_validation:
+        evidence_digests:
+          - "sha256:e51a322d606354812009c8c5e428c9b456055ad9debea667c9a636531cbc6231"
+        identity:
+          check_id: "canonical-final-contracts"
+          command_digest: "sha256:e9f6bf1886a3e66de8edc73da2d086e8a48de7eb0f3f745b07f61d2fb1a08a68"
+          environment_digest: "sha256:27dab3a5409a27d426bfb8b2ea4a9c0f4a9f264ff22dad2137ba3373b215b5a1"
+          implementation_identity: "sha256:08247094cef311214d4b924b51e0e98802c558a8468ec3f57f672332d26c9a09"
+          toolchain_digest: "sha256:82167cb340b300b5b45e4473689690c6b67285ca3ed677ce6d1ad796cf5af929"
+        observed_at: "2026-09-22T06:08:25.366Z"
+        status: "PASSED"
       id: "202609220351-3KNJQZ"
       intent_digest: "sha256:ba84851b6cf62c0a0a4c2f69dac0413e389fff813316a3c629b4ac51406fa767"
       migration_receipts: []
@@ -1540,6 +2181,24 @@ extensions:
           event_digests:
             - "sha256:0efdc66d8ca4d132a92b688238fc8ba90729a78e6d5d8c00d77856aac3276afa"
           mutation_id: "capture:202609220351-3KNJQZ"
+        final-validation:sha256:e51a322d606354812009c8c5e428c9b456055ad9debea667c9a636531cbc6231:65:
+          after_revision: 66
+          aggregate_digest: "sha256:50499acfe2144ae55c365415509e287d03b614b5457464f96506b451a83b007d"
+          before_revision: 65
+          command_digest: "sha256:7150520d49719ea5aee75647c5cb2a18aeae520466905667f7621c7456a29106"
+          effect_ids: []
+          event_digests:
+            - "sha256:aa01b98a9d80686133f28f696624337108aabeb2138b8ca3ef116abe9c6f4cb4"
+          mutation_id: "final-validation:sha256:e51a322d606354812009c8c5e428c9b456055ad9debea667c9a636531cbc6231:65"
+        kernel_task_completion_required:sha256:a35062f24e1805fa2661b332bf5df9d54a08740de20e64b6447e61994be9844c:sha256:08247094cef311214d4b924b51e0e98802c558a8468ec3f57f672332d26c9a09:
+          after_revision: 67
+          aggregate_digest: "sha256:275f48cd5ebba049240648c98be9c87df0ecd53561ccc309d8b572b01177b8ef"
+          before_revision: 66
+          command_digest: "sha256:4b676dea242e9cfae63140fbe80de9ebb23eed964a4bbdf21ce7db6c5df3a1a2"
+          effect_ids: []
+          event_digests:
+            - "sha256:4e3bc6e5e1348fa4065036b63798de6ecb391b99fdd71e072d2a457009ada2e1"
+          mutation_id: "kernel_task_completion_required:sha256:a35062f24e1805fa2661b332bf5df9d54a08740de20e64b6447e61994be9844c:sha256:08247094cef311214d4b924b51e0e98802c558a8468ec3f57f672332d26c9a09"
         kernel_work_item_claim_required:sha256:09de754feaf0d30eda005bf6bb51eb8d2698e5b9efca3efad1861cefacce8230:sha256:b8025a2744e39d5ed620ce3a179de23ad9cfcad2a20f1b3507de9c8bd7f1364e:
           after_revision: 26
           aggregate_digest: "sha256:97cbd5b1382877d61eea850791c6cc5918b732204558e0ae311fdb66fb1c256b"
@@ -1666,6 +2325,15 @@ extensions:
           event_digests:
             - "sha256:de4f2015a8a843c5b155601756318d3bec461cfaa22f20b2fb123866250f31af"
           mutation_id: "kernel_work_item_inspection_required:sha256:a5d726410d7c8d69f21e7d71e0bd6e215afbe596794c6fae480b61a1654bf751:sha256:6e986214387ad2a641b8d92fad096efeb95119704f310c0d1f6f3e26bed666a5"
+        kernel_work_item_inspection_required:sha256:b7e376845d108e84b43eeab17a82517be4d4ec23a4efce59eb6c1c7f18495b0e:sha256:08247094cef311214d4b924b51e0e98802c558a8468ec3f57f672332d26c9a09:
+          after_revision: 62
+          aggregate_digest: "sha256:8894b93901e2439f8f1237c1a7af7bd05fc5f20feccd4f945d4173e822174827"
+          before_revision: 61
+          command_digest: "sha256:8dbc234a3b595eaa3a85626c475bc31707487eb863bc19ce4c6b38e3e1b2558b"
+          effect_ids: []
+          event_digests:
+            - "sha256:95c8b6b03281d87f48cdf1468b73bf6973a6b6b6712cf97583ab515a1570100d"
+          mutation_id: "kernel_work_item_inspection_required:sha256:b7e376845d108e84b43eeab17a82517be4d4ec23a4efce59eb6c1c7f18495b0e:sha256:08247094cef311214d4b924b51e0e98802c558a8468ec3f57f672332d26c9a09"
         kernel_work_item_inspection_required:sha256:da3f002199d91ed609d3d330796e151697e4dcdae7f593c48f5bae51fe60dfae:sha256:b8025a2744e39d5ed620ce3a179de23ad9cfcad2a20f1b3507de9c8bd7f1364e:
           after_revision: 23
           aggregate_digest: "sha256:51ef6fda9d34e2443af78568fc38c174d23bb7d08ede4de95310197379ca4713"
@@ -1747,6 +2415,15 @@ extensions:
           event_digests:
             - "sha256:320340d184361ad3ef925c9b1d74ea8892f004355c446ce4349ec7a0668d6a09"
           mutation_id: "kernel_work_item_rework_claim_required:sha256:e41570f1a1bd8185e4b0ae981fd1e791e3ae73aaf4875d4c52801d4da08a7dd5:sha256:ca2bb452b0f9be92cf18e460eb740e2634ac1656901e953e80353b87abdfe975"
+        result:sha256:066a734e2421ae0fc1e70c6865794a532267716638044a10b377bc7537945e8f:
+          after_revision: 61
+          aggregate_digest: "sha256:2fa9212a8cbbd1b3210ddf107d2695f3898743cb271df54ac077f1cff6984090"
+          before_revision: 60
+          command_digest: "sha256:597b05d537cfd866273fc1a2425e329044c188db1c8ccb0c6345994b510f1cd4"
+          effect_ids: []
+          event_digests:
+            - "sha256:66b4dee3cac7810ad269b62eea25a4582a2647996a4321f3b94c7ff8af49f444"
+          mutation_id: "result:sha256:066a734e2421ae0fc1e70c6865794a532267716638044a10b377bc7537945e8f"
         result:sha256:31594f45bfc0b1fe3426dd1b6b19e2cdc4cc277f8b63eb1ddf4e7e3772a95060:
           after_revision: 22
           aggregate_digest: "sha256:64691bba4346c6adb41310b1515eafcebe4a081b0860c04d44ef09448ceab3d9"
@@ -1927,6 +2604,15 @@ extensions:
           event_digests:
             - "sha256:2162df843aa52b6655b6fff5e4faa6703a7f66aa18c9df9c731f92958a55be10"
           mutation_id: "sha256:b123eba0b9801f481863e2a7bb2b18db40e3f3b9d1c0605930122f583f3fa11e"
+        sha256:c428a008f6228208014da88d824d3720749ade6d0fa9126c1b4fd3502f500cda:
+          after_revision: 60
+          aggregate_digest: "sha256:eb858dcd2a3e62af81e91fae662ee53f541d48759f14bea903f7a7e328c2221a"
+          before_revision: 59
+          command_digest: "sha256:e809c974d1fc80ea5bef83a1fd22ef814219a81a7409021509849efca93cb961"
+          effect_ids: []
+          event_digests:
+            - "sha256:f9c57553177a67489a7c3388db469d258afbad8be33b9723acdf569f3c6e2015"
+          mutation_id: "sha256:c428a008f6228208014da88d824d3720749ade6d0fa9126c1b4fd3502f500cda"
         sha256:f0fbfed935c4412735f237a220c55167dfab9a6767138496483d7f598e75430f:
           after_revision: 34
           aggregate_digest: "sha256:e89871d78176443bff1fe27ac064f896be587788a6c923c7d0cb5e0d2a0489e8"
@@ -1945,6 +2631,15 @@ extensions:
           event_digests:
             - "sha256:b22e7f85b819187e9df8eac5dbf71f4ab1d03f316c3cbc062f025f6610ab70c2"
           mutation_id: "sha256:fc438a60d3332ccc385221290505c550f580efd36105060533271e7bc18bb028"
+        validation-resolution:sha256:138828420c71cd711bb6b3007a52ebbbbf0a3fb56536245b5451efc897130e06:
+          after_revision: 65
+          aggregate_digest: "sha256:075746036957ec4c9118532c41cbd6712e4f6740b89b60b07b53524bcdaf5af8"
+          before_revision: 64
+          command_digest: "sha256:c77f12d906b93a3927f2fe8dcfbb5da89819ac999309b8bc681c2ccdcc44f19c"
+          effect_ids: []
+          event_digests:
+            - "sha256:f64bce6d38609c26beb10000245542d19768fe84a9f199f20db39606c770fb1a"
+          mutation_id: "validation-resolution:sha256:138828420c71cd711bb6b3007a52ebbbbf0a3fb56536245b5451efc897130e06"
         validation-resolution:sha256:1b4fea9ea2810ecc8629a8b4a1c863885b777606eb30ab02d627f453a41f81f5:
           after_revision: 45
           aggregate_digest: "sha256:dbcc077a3e3ebae0c1c2a0ae842a9d2d21e77dadaf5e49b1444dd14033081b61"
@@ -1999,6 +2694,15 @@ extensions:
           event_digests:
             - "sha256:382c4e06d37a344860ae431f1aa46aa0a7071d3b54c43e9dbb53cc87d16ee783"
           mutation_id: "validation-resolution:sha256:f7521b0d7d5d464ba57ac333b7516abd23bc4c16439400e97243fdbbfe88a606"
+        validation:sha256:066a734e2421ae0fc1e70c6865794a532267716638044a10b377bc7537945e8f:
+          after_revision: 63
+          aggregate_digest: "sha256:adab8624622154a18e24e59ff6944f80f3322c7f8d77b683766654828e1cf346"
+          before_revision: 62
+          command_digest: "sha256:4e7b25917daba04b48b2acc328f6b43377915dda9d711be35c0825eb192148df"
+          effect_ids: []
+          event_digests:
+            - "sha256:9cbeb7f8756986eed6680420717c544573b84f77e8a741da800c7e8bcb62312a"
+          mutation_id: "validation:sha256:066a734e2421ae0fc1e70c6865794a532267716638044a10b377bc7537945e8f"
         validation:sha256:806ab33467cb0ef41acf35edf5301084d96326cb7c4cd05232aec9647379a0c5:
           after_revision: 24
           aggregate_digest: "sha256:97677fe1e662d62eb52bfb07996a22c15f3f4b42abbf18d76324f9aae6cfc561"
@@ -2035,6 +2739,15 @@ extensions:
           event_digests:
             - "sha256:bb49a79dfe5c00f5fa258b11060e0b55b1e56bc7295d47307ba135cbd59e6244"
           mutation_id: "validation:sha256:ce30a2ab9d093a4ff9f28f6c9bde9de69f5b701cac8d34a6aec45cbd194f1c21"
+        validation:sha256:d1c6fa43ce6670f7ebcfcae429ddf23605e969b03be77396d7a7a44b0cf7c0cf:
+          after_revision: 64
+          aggregate_digest: "sha256:333ece31178b37ef7da140ff642ab4d076b29e786011097c13d273e8c0e2bf4e"
+          before_revision: 63
+          command_digest: "sha256:54f372e04dedeb809c380700461e896e4f3050a793ae8ff312ec04ce052b7729"
+          effect_ids: []
+          event_digests:
+            - "sha256:1485e69d157bef6aa25100e57f31322c6580c220d8f3b9dfa14b188b650474e9"
+          mutation_id: "validation:sha256:d1c6fa43ce6670f7ebcfcae429ddf23605e969b03be77396d7a7a44b0cf7c0cf"
         validation:sha256:d5ee6ec10dc57baecee646fb5ed0dbb53be22a46739fd04e9907c877876e26f7:
           after_revision: 17
           aggregate_digest: "sha256:417ece9fb995589338f571947b215c657204c1efbb51bedb72add193c73b9a6d"
@@ -2163,9 +2876,9 @@ extensions:
                 - "updated-repository-documentation"
                 - "recipe-source-tests"
                 - "recipe-source-docs"
-      revision: 59
+      revision: 67
       schema_version: 1
-      state: "ACTIVE"
+      state: "COMPLETED"
       work_items:
         detach-superproject-submodules:
           attempt: 4
@@ -2374,12 +3087,41 @@ extensions:
               - "updated-repository-documentation"
               - "recipe-source-tests"
               - "recipe-source-docs"
-          output_manifests: []
-          result_digest: null
-          revision: 4
-          state: "EXECUTING"
-          validation: null
-    digest: "sha256:5653119a9a7075fd3d87c7755b922e55bdd63784cae9fae509750381c640230b"
+          output_manifests:
+            -
+              attempt: 1
+              digest: "sha256:b3ccb541c2e89c2320a3246c6f54242d4c587297cfbc811c896ec706e620ada3"
+              id: "submodule-removal-verification"
+              kind: "report"
+              plan_revision: 2
+              repository_fingerprint: "sha256:08247094cef311214d4b924b51e0e98802c558a8468ec3f57f672332d26c9a09"
+              task_id: "202609220351-3KNJQZ"
+              work_item_id: "verify-submodule-free-repository"
+            -
+              attempt: 1
+              digest: "sha256:a6f89b749d5a5d284be995d7de345521cab2cf45977cef9e9de8e94bae69e2b2"
+              id: "final-scope-audit"
+              kind: "report"
+              plan_revision: 2
+              repository_fingerprint: "sha256:08247094cef311214d4b924b51e0e98802c558a8468ec3f57f672332d26c9a09"
+              task_id: "202609220351-3KNJQZ"
+              work_item_id: "verify-submodule-free-repository"
+          result_digest: "sha256:8bab219106db53e61251899168f16c3385c86dd2e3c59b95e66b6b4bd028380d"
+          revision: 9
+          state: "COMPLETED"
+          validation:
+            evidence_digests:
+              - "sha256:ce41db761459533311fca6573017a6aab9ce9916b576db8da1ba1d244051b064"
+              - "sha256:dfe0b74952a000de073ca4da75254b7873cde3ac7f4addc3617f90ee47889525"
+            identity:
+              check_id: "canonical-contract-and-inspection"
+              command_digest: "sha256:36677eb699e37c4c46e8620e5340392e3242d6e3bdc7cf64f197a4a234fc9527"
+              environment_digest: "sha256:d8ce8c68d2eb98d5bcff62846f6f46d9db4d16d059458d8683913adab7dae748"
+              implementation_identity: "sha256:8bab219106db53e61251899168f16c3385c86dd2e3c59b95e66b6b4bd028380d"
+              toolchain_digest: "sha256:2ed0aa02d9a22d48eeb418f30f139ab31dd44db476e35a34e1aee6839e3530c2"
+            observed_at: "2026-09-22T05:50:10.398Z"
+            status: "PASSED"
+    digest: "sha256:baa693c29ce8548affcff630ffe1ca8b2905efb746cd1530e09e2fff22654741"
     documents:
       contracts:
         sha256:2d105029d1fb9f67a819fdf382bff5c62f62ac17c1289bf804c36d472ca3a57a:
@@ -2955,6 +3697,78 @@ extensions:
         payload_digest: "sha256:d5b7e61f92a6ab990035c37b1be8a81831983e46adeaeb195ef1dc1e0df6f932"
         task_id: "202609220351-3KNJQZ"
         task_revision: 59
+      -
+        command_digest: "sha256:e809c974d1fc80ea5bef83a1fd22ef814219a81a7409021509849efca93cb961"
+        id: "sha256:c428a008f6228208014da88d824d3720749ade6d0fa9126c1b4fd3502f500cda:authority_continued"
+        kind: "authority_continued"
+        mutation_id: "sha256:c428a008f6228208014da88d824d3720749ade6d0fa9126c1b4fd3502f500cda"
+        occurred_at: "2026-09-22T05:27:10.638Z"
+        payload_digest: "sha256:d6a1f5d1474c388f981bf150f20df6ad83e607c1ed833910965aba1c05a55eb4"
+        task_id: "202609220351-3KNJQZ"
+        task_revision: 60
+      -
+        command_digest: "sha256:597b05d537cfd866273fc1a2425e329044c188db1c8ccb0c6345994b510f1cd4"
+        id: "result:sha256:066a734e2421ae0fc1e70c6865794a532267716638044a10b377bc7537945e8f:work_item_result_accepted"
+        kind: "work_item_result_accepted"
+        mutation_id: "result:sha256:066a734e2421ae0fc1e70c6865794a532267716638044a10b377bc7537945e8f"
+        occurred_at: "2026-09-22T05:27:14.392Z"
+        payload_digest: "sha256:8f866e9c051c51d3deaa55448f1e4f6be9853503f83a5e54e3aac98329f353c7"
+        task_id: "202609220351-3KNJQZ"
+        task_revision: 61
+      -
+        command_digest: "sha256:8dbc234a3b595eaa3a85626c475bc31707487eb863bc19ce4c6b38e3e1b2558b"
+        id: "kernel_work_item_inspection_required:sha256:b7e376845d108e84b43eeab17a82517be4d4ec23a4efce59eb6c1c7f18495b0e:sha256:08247094cef311214d4b924b51e0e98802c558a8468ec3f57f672332d26c9a09:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "kernel_work_item_inspection_required:sha256:b7e376845d108e84b43eeab17a82517be4d4ec23a4efce59eb6c1c7f18495b0e:sha256:08247094cef311214d4b924b51e0e98802c558a8468ec3f57f672332d26c9a09"
+        occurred_at: "2026-09-22T05:27:17.487Z"
+        payload_digest: "sha256:549553d878c18efc3b207a18305754d1e32f11dc76540096754f12817ef67091"
+        task_id: "202609220351-3KNJQZ"
+        task_revision: 62
+      -
+        command_digest: "sha256:4e7b25917daba04b48b2acc328f6b43377915dda9d711be35c0825eb192148df"
+        id: "validation:sha256:066a734e2421ae0fc1e70c6865794a532267716638044a10b377bc7537945e8f:work_item_validation_recorded"
+        kind: "work_item_validation_recorded"
+        mutation_id: "validation:sha256:066a734e2421ae0fc1e70c6865794a532267716638044a10b377bc7537945e8f"
+        occurred_at: "2026-09-22T05:27:22.638Z"
+        payload_digest: "sha256:31b042f2eb2fcc155817d2959d4a47a700ff300b1442401c0341a72643b2fa8f"
+        task_id: "202609220351-3KNJQZ"
+        task_revision: 63
+      -
+        command_digest: "sha256:54f372e04dedeb809c380700461e896e4f3050a793ae8ff312ec04ce052b7729"
+        id: "validation:sha256:d1c6fa43ce6670f7ebcfcae429ddf23605e969b03be77396d7a7a44b0cf7c0cf:work_item_validation_recorded"
+        kind: "work_item_validation_recorded"
+        mutation_id: "validation:sha256:d1c6fa43ce6670f7ebcfcae429ddf23605e969b03be77396d7a7a44b0cf7c0cf"
+        occurred_at: "2026-09-22T05:50:13.607Z"
+        payload_digest: "sha256:c1ea34c4e91897205975cfc3aa2aad7a46105584c0390e7ad593920b9c413484"
+        task_id: "202609220351-3KNJQZ"
+        task_revision: 64
+      -
+        command_digest: "sha256:c77f12d906b93a3927f2fe8dcfbb5da89819ac999309b8bc681c2ccdcc44f19c"
+        id: "validation-resolution:sha256:138828420c71cd711bb6b3007a52ebbbbf0a3fb56536245b5451efc897130e06:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "validation-resolution:sha256:138828420c71cd711bb6b3007a52ebbbbf0a3fb56536245b5451efc897130e06"
+        occurred_at: "2026-09-22T05:50:15.799Z"
+        payload_digest: "sha256:ffa5cac49ed6070664a5e179f0ae02788dc6624ad5b8d5908d6386617af8d0e6"
+        task_id: "202609220351-3KNJQZ"
+        task_revision: 65
+      -
+        command_digest: "sha256:7150520d49719ea5aee75647c5cb2a18aeae520466905667f7621c7456a29106"
+        id: "final-validation:sha256:e51a322d606354812009c8c5e428c9b456055ad9debea667c9a636531cbc6231:65:final_validation_recorded"
+        kind: "final_validation_recorded"
+        mutation_id: "final-validation:sha256:e51a322d606354812009c8c5e428c9b456055ad9debea667c9a636531cbc6231:65"
+        occurred_at: "2026-09-22T06:25:13.002Z"
+        payload_digest: "sha256:72c79838fb28e58a8f8817848f851a6c5167bdb6dbbb1c45e4bd041e5ac93520"
+        task_id: "202609220351-3KNJQZ"
+        task_revision: 66
+      -
+        command_digest: "sha256:4b676dea242e9cfae63140fbe80de9ebb23eed964a4bbdf21ce7db6c5df3a1a2"
+        id: "kernel_task_completion_required:sha256:a35062f24e1805fa2661b332bf5df9d54a08740de20e64b6447e61994be9844c:sha256:08247094cef311214d4b924b51e0e98802c558a8468ec3f57f672332d26c9a09:task_completed"
+        kind: "task_completed"
+        mutation_id: "kernel_task_completion_required:sha256:a35062f24e1805fa2661b332bf5df9d54a08740de20e64b6447e61994be9844c:sha256:08247094cef311214d4b924b51e0e98802c558a8468ec3f57f672332d26c9a09"
+        occurred_at: "2026-09-22T06:25:53.180Z"
+        payload_digest: "sha256:953bcf5573c6ae8338d4899e16807cdfb706cf86d0f8636288c5a790146c61e1"
+        task_id: "202609220351-3KNJQZ"
+        task_revision: 67
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
@@ -2988,6 +3802,305 @@ PLANNER fallback scaffold for "Remove marketing and recipes Git submodules". Rep
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-22T06:25:18.265Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: canonical Task Kernel final checks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e6c612a8e8863030f68f862c93f6c10fca6c7a32ff059a445d66419814bc8c94, input_digest=sha256:74ec130b3b9209cfe9426f06f20383682616c6ae90c48c4af7f2e084d1c51bac
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:contract
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check affected_unit_integration (1/11)
+
+Check: affected_unit_integration
+Command: bun run ci:local:fast
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check affected_unit_integration (2/11)
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check affected_unit_integration (3/11)
+
+Check: affected_unit_integration
+Command: bun run docs:recipes:check
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check affected_unit_integration (4/11)
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check affected_unit_integration (5/11)
+
+Check: affected_unit_integration
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check affected_unit_integration (6/11)
+
+Check: affected_unit_integration
+Command: git grep -n -I -E 'git submodule|Recipes submodule|marketing/.*submodule|agentplane-recipes.*submodule' -- ':!docs/releases/**' ':!.agentplane/tasks/**' ':!.agentplane/tmp/**'
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check affected_unit_integration (7/11)
+
+Check: affected_unit_integration
+Command: git ls-tree HEAD agentplane-recipes marketing
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check affected_unit_integration (8/11)
+
+Check: affected_unit_integration
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check affected_unit_integration (9/11)
+
+Check: affected_unit_integration
+Command: git status --short --untracked-files=all
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check affected_unit_integration (10/11)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check affected_unit_integration (11/11)
+
+Check: critical_paths
+Command: bun run ci:contract
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check critical_paths (1/11)
+
+Check: critical_paths
+Command: bun run ci:local:fast
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check critical_paths (2/11)
+
+Check: critical_paths
+Command: bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check critical_paths (3/11)
+
+Check: critical_paths
+Command: bun run docs:recipes:check
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check critical_paths (4/11)
+
+Check: critical_paths
+Command: bunx vitest run packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check critical_paths (5/11)
+
+Check: critical_paths
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check critical_paths (6/11)
+
+Check: critical_paths
+Command: git grep -n -I -E 'git submodule|Recipes submodule|marketing/.*submodule|agentplane-recipes.*submodule' -- ':!docs/releases/**' ':!.agentplane/tasks/**' ':!.agentplane/tmp/**'
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check critical_paths (7/11)
+
+Check: critical_paths
+Command: git ls-tree HEAD agentplane-recipes marketing
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check critical_paths (8/11)
+
+Check: critical_paths
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check critical_paths (9/11)
+
+Check: critical_paths
+Command: git status --short --untracked-files=all
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check critical_paths (10/11)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check critical_paths (11/11)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check full_regression
+
+Check: real_e2e
+Command: bun run ci:contract
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check real_e2e (1/11)
+
+Check: real_e2e
+Command: bun run ci:local:fast
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check real_e2e (2/11)
+
+Check: real_e2e
+Command: bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check real_e2e (3/11)
+
+Check: real_e2e
+Command: bun run docs:recipes:check
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check real_e2e (4/11)
+
+Check: real_e2e
+Command: bunx vitest run packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check real_e2e (5/11)
+
+Check: real_e2e
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check real_e2e (6/11)
+
+Check: real_e2e
+Command: git grep -n -I -E 'git submodule|Recipes submodule|marketing/.*submodule|agentplane-recipes.*submodule' -- ':!docs/releases/**' ':!.agentplane/tasks/**' ':!.agentplane/tmp/**'
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check real_e2e (7/11)
+
+Check: real_e2e
+Command: git ls-tree HEAD agentplane-recipes marketing
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check real_e2e (8/11)
+
+Check: real_e2e
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check real_e2e (9/11)
+
+Check: real_e2e
+Command: git status --short --untracked-files=all
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check real_e2e (10/11)
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check real_e2e (11/11)
+
+Check: task_outcome
+Command: bun run ci:contract
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check task_outcome (1/11)
+
+Check: task_outcome
+Command: bun run ci:local:fast
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check task_outcome (2/11)
+
+Check: task_outcome
+Command: bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check task_outcome (3/11)
+
+Check: task_outcome
+Command: bun run docs:recipes:check
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check task_outcome (4/11)
+
+Check: task_outcome
+Command: bunx vitest run packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check task_outcome (5/11)
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check task_outcome (6/11)
+
+Check: task_outcome
+Command: git grep -n -I -E 'git submodule|Recipes submodule|marketing/.*submodule|agentplane-recipes.*submodule' -- ':!docs/releases/**' ':!.agentplane/tasks/**' ':!.agentplane/tmp/**'
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check task_outcome (7/11)
+
+Check: task_outcome
+Command: git ls-tree HEAD agentplane-recipes marketing
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check task_outcome (8/11)
+
+Check: task_outcome
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check task_outcome (9/11)
+
+Check: task_outcome
+Command: git status --short --untracked-files=all
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check task_outcome (10/11)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202609220351-3KNJQZ Verification Contract check task_outcome (11/11)
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:fd498935e6c56185ce0c24b77d58ac59ef84854cc812b7432faec68def3be7d6
+- policy_digest: sha256:5c6334745d754efd91884099d829b1034f03a1e440378b149a5f5f7d101c4163
+- capability_digest: sha256:aeaf2f7d86b2f7492e081b8b78110c1e2c5e94c3635f797b45f901201097cfaf
+- checks_digest: sha256:7f111828bb5d6b46f40b3284a586456b304edfae5fd98418ea281b2ea2b4594f
+- identity_digest: sha256:d6cddcec33776ed0c2a41b8171a2a714278c5ee1f2fd03c08cf7e3c114f303c1
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

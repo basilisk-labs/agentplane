@@ -16,7 +16,7 @@ Remove the marketing and agentplane-recipes gitlinks from the AgentPlane superpr
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:d8428d26dc4fb4ab379526ebef96e0450f811b589a32ac72a5d8edea7013647f
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
