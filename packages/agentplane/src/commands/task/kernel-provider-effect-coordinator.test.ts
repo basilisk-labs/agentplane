@@ -49,9 +49,7 @@ import {
   executeCanonicalAdmittedWorkflowOperation,
 } from "./kernel-provider-effect-coordinator.js";
 
-function operation(
-  id: "pr.open" | "integration.enqueue" | "integration.run_next" = "pr.open",
-) {
+function operation(id: "pr.open" | "integration.enqueue" | "integration.run_next" = "pr.open") {
   return {
     id,
     type: "pr_sync",
@@ -370,49 +368,51 @@ describe("canonical provider effect coordinator", () => {
     );
   });
 
-  it(
-    "executes post-completion integration from the base checkout without a Kernel controller transition",
-    async () => {
-      const operationId = "integration.enqueue" as const;
-      const candidate = operation(operationId);
-      const before = decision(candidate);
-      const after = terminalDecision();
-      mocks.supervise.mockImplementationOnce(async (input) => {
-        await input.execute(candidate);
-        return {
-          journal: { digest: k.kernelDigest("post-completion-integration") },
-          execution: {
-            executable: true,
-            result: { status: "succeeded", observed_postconditions: [], detail: "ok" },
-            stop_reason: null,
-            refreshed_decision: after,
-          },
-        };
-      });
-      mocks.execute.mockResolvedValueOnce({
-        status: "succeeded",
-        observed_postconditions: [],
-        detail: "ok",
-      });
+  it("executes post-completion integration from the base checkout without a Kernel controller transition", async () => {
+    const operationId = "integration.enqueue" as const;
+    const candidate = operation(operationId);
+    const before = decision(candidate);
+    const after = terminalDecision();
+    mocks.supervise.mockImplementationOnce(async (input) => {
+      const execute = (
+        input as unknown as {
+          execute: (invoked: typeof candidate) => Promise<unknown>;
+        }
+      ).execute;
+      await execute(candidate);
+      return {
+        journal: { digest: k.kernelDigest("post-completion-integration") },
+        execution: {
+          executable: true,
+          result: { status: "succeeded", observed_postconditions: [], detail: "ok" },
+          stop_reason: null,
+          refreshed_decision: after,
+        },
+      };
+    });
+    mocks.execute.mockResolvedValueOnce({
+      status: "succeeded",
+      observed_postconditions: [],
+      detail: "ok",
+    });
 
-      await executeCanonicalAdmittedWorkflowOperation({
-        command: { resolvedProject: { gitRoot: "/repo/task" } } as never,
-        decision: before,
-        task_id: "T-1",
-        request_digest: k.kernelDigest(`post-completion-${operationId}`),
-      });
+    await executeCanonicalAdmittedWorkflowOperation({
+      command: { resolvedProject: { gitRoot: "/repo/task" } } as never,
+      decision: before,
+      task_id: "T-1",
+      request_digest: k.kernelDigest(`post-completion-${operationId}`),
+    });
 
-      expect(mocks.execute).toHaveBeenCalledWith({
-        decision: expect.objectContaining({
-          executionPacket: expect.objectContaining({
-            authoritativeCheckout: "base_checkout",
-            authoritativeCheckoutPath: "/repo",
-            mutationPathHint: "/repo",
-            mustRunFrom: "/repo",
-          }),
-        }),
-        operation: candidate,
-      });
-    },
-  );
+    const executionCall = mocks.execute.mock.calls.at(-1)?.[0] as unknown as {
+      decision: TaskRouteDecision;
+      operation: typeof candidate;
+    };
+    expect(executionCall.decision.executionPacket).toMatchObject({
+      authoritativeCheckout: "base_checkout",
+      authoritativeCheckoutPath: "/repo",
+      mutationPathHint: "/repo",
+      mustRunFrom: "/repo",
+    });
+    expect(executionCall.operation).toEqual(candidate);
+  });
 });
