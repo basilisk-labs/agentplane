@@ -314,7 +314,23 @@ export async function executeCanonicalAdmittedWorkflowOperation(opts: {
     decision: before,
     git_root: opts.command.resolvedProject.gitRoot,
     execute: async (invoked) => {
-      const run = () => executeBranchWorkflowOperation({ decision: before, operation: invoked });
+      const baseCheckout = before.workspace.baseCheckoutPath;
+      const executeFromBase = ["integration.enqueue", "integration.run_next"].includes(invoked.id);
+      const executionDecision =
+        executeFromBase && baseCheckout
+          ? {
+              ...before,
+              executionPacket: {
+                ...before.executionPacket,
+                authoritativeCheckout: "base_checkout" as const,
+                authoritativeCheckoutPath: baseCheckout,
+                mutationPathHint: baseCheckout,
+                mustRunFrom: baseCheckout,
+              },
+            }
+          : before;
+      const run = () =>
+        executeBranchWorkflowOperation({ decision: executionDecision, operation: invoked });
       const controllerCheckout =
         invoked.id === "integration.run_next"
           ? before.workspace.taskWorktreePath

@@ -49,14 +49,18 @@ import {
   executeCanonicalAdmittedWorkflowOperation,
 } from "./kernel-provider-effect-coordinator.js";
 
-function operation(id: "pr.open" | "integration.enqueue" = "pr.open") {
+function operation(
+  id: "pr.open" | "integration.enqueue" | "integration.run_next" = "pr.open",
+) {
   return {
     id,
     type: "pr_sync",
     params:
       id === "pr.open"
         ? { taskId: "T-1", author: "CODER", includeTaskIds: [] }
-        : { taskId: "T-1", branch: "task/T-1/work" },
+        : id === "integration.enqueue"
+          ? { taskId: "T-1", branch: "task/T-1/work" }
+          : { taskId: "T-1" },
     preconditionFingerprint: { digest: routeBeforeDigest },
     authorityRef: "authority:route-before",
     idempotencyKey: `${id}:T-1:${routeBeforeDigest}:payload`,
@@ -73,7 +77,10 @@ function decision(candidate = operation()): TaskRouteDecision {
       baseBranch: "main",
       headSha: "a".repeat(40),
       prBranch: "task/T-1/work",
+      baseCheckoutPath: "/repo",
+      taskWorktreePath: "/repo/task",
     },
+    executionPacket: { mustRunFrom: "/repo/task" },
     prFlow: null,
     cleanupProbe: { state: "not_requested" },
     workflowStep: {
@@ -362,4 +369,50 @@ describe("canonical provider effect coordinator", () => {
       expect.objectContaining({ decision: before, git_root: "/repo" }),
     );
   });
+
+  it(
+    "executes post-completion integration from the base checkout without a Kernel controller transition",
+    async () => {
+      const operationId = "integration.enqueue" as const;
+      const candidate = operation(operationId);
+      const before = decision(candidate);
+      const after = terminalDecision();
+      mocks.supervise.mockImplementationOnce(async (input) => {
+        await input.execute(candidate);
+        return {
+          journal: { digest: k.kernelDigest("post-completion-integration") },
+          execution: {
+            executable: true,
+            result: { status: "succeeded", observed_postconditions: [], detail: "ok" },
+            stop_reason: null,
+            refreshed_decision: after,
+          },
+        };
+      });
+      mocks.execute.mockResolvedValueOnce({
+        status: "succeeded",
+        observed_postconditions: [],
+        detail: "ok",
+      });
+
+      await executeCanonicalAdmittedWorkflowOperation({
+        command: { resolvedProject: { gitRoot: "/repo/task" } } as never,
+        decision: before,
+        task_id: "T-1",
+        request_digest: k.kernelDigest(`post-completion-${operationId}`),
+      });
+
+      expect(mocks.execute).toHaveBeenCalledWith({
+        decision: expect.objectContaining({
+          executionPacket: expect.objectContaining({
+            authoritativeCheckout: "base_checkout",
+            authoritativeCheckoutPath: "/repo",
+            mutationPathHint: "/repo",
+            mustRunFrom: "/repo",
+          }),
+        }),
+        operation: candidate,
+      });
+    },
+  );
 });
