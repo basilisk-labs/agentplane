@@ -37,7 +37,12 @@ export function canonicalCompletionPrecedesWorkflow(
   return (
     (step.kind === "terminal" && step.authoritativeCheckout === "base_checkout") ||
     (step.kind === "cli_operation" &&
-      ["task.hosted_close.finalize", "task.worktree.cleanup"].includes(step.operation.id))
+      [
+        "integration.enqueue",
+        "integration.run_next",
+        "task.hosted_close.finalize",
+        "task.worktree.cleanup",
+      ].includes(step.operation.id))
   );
 }
 
