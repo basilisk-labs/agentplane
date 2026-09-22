@@ -1,0 +1,453 @@
+{
+  "original_groups": {
+    "0.7.9-01": {
+      "tasks": ["ST-01"],
+      "disposition": "Preserved, decomposed into the linked scoped tasks, and assigned to its delivery release."
+    },
+    "0.7.9-02": {
+      "tasks": ["ST-02", "ST-03", "ST-04", "ST-05", "ST-21"],
+      "disposition": "Preserved, decomposed into the linked scoped tasks, and assigned to its delivery release."
+    },
+    "0.7.9-03": {
+      "tasks": ["ST-06", "ST-07"],
+      "disposition": "Preserved, decomposed into the linked scoped tasks, and assigned to its delivery release."
+    },
+    "0.7.9-04": {
+      "tasks": ["ST-08", "ST-09", "ST-10", "ST-11", "ST-12", "ST-13", "ST-14", "ST-15", "ST-17"],
+      "disposition": "Preserved, decomposed into the linked scoped tasks, and assigned to its delivery release."
+    },
+    "0.7.9-05": {
+      "tasks": ["LC-07"],
+      "disposition": "Deferred to LC-07: separate native/review in the selected common path; do not refactor the kernel-specific inspection shell before .11 convergence solely for a stabilization milestone."
+    },
+    "0.7.9-06": {
+      "tasks": ["ST-20", "PL-01", "EV-04"],
+      "disposition": "Removed as a .9 runtime/release dependency. Pure planning resolution appears only when needed in PL-01; explicit diagnostic review qualification is EV-04."
+    },
+    "0.7.9-07": {
+      "tasks": ["ST-15", "ST-16", "ST-18", "ST-19", "ST-20"],
+      "disposition": "Preserved, decomposed into the linked scoped tasks, and assigned to its delivery release."
+    },
+    "0.7.10-01": {
+      "tasks": ["LC-01", "LC-02", "LC-04", "LC-06", "LC-19"],
+      "disposition": "Task Kernel remains the sole domain reducer; one coordinator reuses mature ordinary route/effect operations. No parallel reducer, kernel-specific outer loop or third engine. .11 contains convergence and maximum proven deletion."
+    },
+    "0.7.10-02": {
+      "tasks": ["PL-01", "EV-01"],
+      "disposition": "Replaced by pure existing-policy obligation projection; no persisted ProcessDecision aggregate."
+    },
+    "0.7.10-03": {
+      "tasks": ["PL-02"],
+      "disposition": "Reuse the already implemented compact TaskPlanProposal V2 input; no parallel inline schema."
+    },
+    "0.7.10-04": {
+      "tasks": ["PL-03", "PL-04"],
+      "disposition": "Preserved, decomposed into the linked scoped tasks, and assigned to its delivery release."
+    },
+    "0.7.10-05": {
+      "tasks": ["LC-07", "PL-01", "PL-07", "EV-01", "EV-10"],
+      "disposition": "Split obligation from attempt/outcome/freshness. No generic waived state/API."
+    },
+    "0.7.10-06": {
+      "tasks": [
+        "PL-05",
+        "PL-09",
+        "EV-02",
+        "EV-03",
+        "EV-04",
+        "EV-05",
+        "EV-06",
+        "EV-07",
+        "EV-09",
+        "EV-13"
+      ],
+      "disposition": "Planning and review are separate releases. No-review rules activate only after independent qualification and benefit."
+    },
+    "0.7.10-07": {
+      "tasks": ["PL-05", "PL-09", "EV-08", "EV-09", "EV-13"],
+      "disposition": "Preserved, decomposed into the linked scoped tasks, and assigned to its delivery release."
+    },
+    "0.7.10-08": {
+      "tasks": ["PL-06", "PL-07", "PL-08", "EV-08", "EV-10", "EV-13"],
+      "disposition": "Preserved, decomposed into the linked scoped tasks, and assigned to its delivery release."
+    },
+    "0.7.10-09": {
+      "tasks": ["RC-01"],
+      "disposition": "Preserved, decomposed into the linked scoped tasks, and assigned to its delivery release."
+    },
+    "0.7.10-10": {
+      "tasks": ["RC-02", "RC-03"],
+      "disposition": "Preserved, decomposed into the linked scoped tasks, and assigned to its delivery release."
+    },
+    "0.7.10-11": {
+      "tasks": ["RC-04"],
+      "disposition": "Unknown excluded predicates block deterministic instantiation as well as unknown required predicates."
+    },
+    "0.7.10-12": {
+      "tasks": ["RC-05", "RC-06", "RC-07", "RC-10"],
+      "disposition": "Pin the full declared pre-execution transitive closure, including specialization additions; retain recoverable bytes."
+    },
+    "0.7.10-13": {
+      "tasks": ["RC-08"],
+      "disposition": "Preserved, decomposed into the linked scoped tasks, and assigned to its delivery release."
+    },
+    "0.7.10-14": {
+      "tasks": ["RC-09", "RC-10"],
+      "disposition": "Reuse common Plan refinement, not a second Recipe delta protocol."
+    },
+    "0.7.10-15": {
+      "tasks": ["RC-11", "RC-12", "RC-13"],
+      "disposition": "No-match returns to ordinary obligation resolution and never forces a selector or PLANNER."
+    },
+    "0.7.10-16": {
+      "tasks": ["BP-09", "BP-10", "BP-11", "BP-19", "RC-14"],
+      "disposition": "Split V1 Blueprint-extension retirement in .10 from procedural Scenario V1->V2 audit in .13."
+    },
+    "0.7.10-17": {
+      "tasks": ["BP-01", "BP-02", "BP-09", "BP-10", "BP-11"],
+      "disposition": "Native policy and existing V1 conversions unblock Blueprint removal before adaptive or Scenario V2 work."
+    },
+    "0.7.10-18": {
+      "tasks": ["BP-01", "BP-03", "BP-04", "BP-05", "BP-14", "BP-23"],
+      "disposition": "Preserved, decomposed into the linked scoped tasks, and assigned to its delivery release."
+    },
+    "0.7.10-19": {
+      "tasks": ["BP-01", "BP-06", "BP-07"],
+      "disposition": "Preserved, decomposed into the linked scoped tasks, and assigned to its delivery release."
+    },
+    "0.7.10-20": {
+      "tasks": ["BP-01", "BP-08"],
+      "disposition": "Preserved, decomposed into the linked scoped tasks, and assigned to its delivery release."
+    },
+    "0.7.10-21": {
+      "tasks": ["BP-12", "BP-13", "BP-14"],
+      "disposition": "Extend existing task_verification_input v4 family, not a new VerificationBinding V2. Separate concurrency and checked-input identity."
+    },
+    "0.7.10-22": {
+      "tasks": ["BP-15", "BP-16", "RC-10"],
+      "disposition": "Preserved, decomposed into the linked scoped tasks, and assigned to its delivery release."
+    },
+    "0.7.10-23": {
+      "tasks": ["BP-17", "BP-18", "LC-08", "EV-10"],
+      "disposition": "Preserved, decomposed into the linked scoped tasks, and assigned to its delivery release."
+    },
+    "0.7.10-24": {
+      "tasks": [
+        "ST-21",
+        "BP-22",
+        "LC-02",
+        "LC-03",
+        "LC-04",
+        "LC-05",
+        "LC-08",
+        "LC-09",
+        "LC-10",
+        "LC-11",
+        "LC-12",
+        "LC-15"
+      ],
+      "disposition": "Full owner cutover is .11; .10 only switches Blueprint-free bindings/issuance while conserving lifecycle requirements."
+    },
+    "0.7.10-25": {
+      "tasks": ["LC-05", "LC-12", "LC-16", "LC-17", "RC-15"],
+      "disposition": "Existing V1 entrypoint convergence is .11; new V2 uses that owner in .13."
+    },
+    "0.7.10-26": {
+      "tasks": ["BP-19", "LC-13"],
+      "disposition": "Preview before each respective cutover; read-only local Git permitted."
+    },
+    "0.7.10-27": {
+      "tasks": ["BP-20", "BP-21", "LC-14"],
+      "disposition": "Use one admission fence including outstanding external work, provider integration and native result application."
+    },
+    "0.7.10-28": {
+      "tasks": ["BP-22", "BP-23", "BP-24", "BP-29", "LC-20"],
+      "disposition": "Stop Blueprint writers in .10; canonical terminal no-op is also checked in .11. Operational diagnostics may be noncanonical."
+    },
+    "0.7.10-29": {
+      "tasks": ["BP-25", "BP-26", "BP-27", "BP-28", "BP-29", "LC-18", "LC-19"],
+      "disposition": "Blueprint removal in .10, superseded executable lifecycle deletion in .11; cold audit codecs only."
+    },
+    "0.7.10-30": {
+      "tasks": [
+        "ST-16",
+        "BP-27",
+        "BP-29",
+        "BP-30",
+        "BP-31",
+        "LC-21",
+        "LC-22",
+        "LC-23",
+        "LC-24",
+        "PL-10",
+        "PL-11",
+        "PL-12",
+        "RC-16",
+        "RC-17",
+        "RC-18",
+        "EV-06",
+        "EV-07",
+        "EV-11",
+        "EV-12",
+        "EV-13"
+      ],
+      "disposition": "Separate per-release Q00, per-rule Q01 and measured Q02; no general efficiency or optional-review claim from code completion."
+    }
+  },
+  "audit_findings": {
+    "F01": {
+      "issue": "ProcessDecision duplication/circularity and mixed stage-state axes",
+      "tasks": ["BP-01", "LC-01", "PL-01", "PL-07", "EV-01", "EV-10"],
+      "resolution": "Pure existing policy projection; separate obligation, outcome and freshness; no new aggregate or cursor."
+    },
+    "F02": {
+      "issue": "Verification invalidates itself on service-only Task revision",
+      "tasks": ["BP-12", "BP-13", "BP-15", "LC-20"],
+      "resolution": "Reuse existing verification-input family; separate exact admission from material check identity and current obligation coverage."
+    },
+    "F03": {
+      "issue": "Independent evaluator disabled before actual quality qualification",
+      "tasks": ["EV-02", "EV-03", "EV-05", "EV-06", "EV-07", "EV-08", "EV-12", "EV-13"],
+      "resolution": "No default activation before independent Q01 and economic Q02; code path alone is insufficient."
+    },
+    "F04": {
+      "issue": "Migration CAS races with dispatch/result/provider effects",
+      "tasks": ["BP-19", "BP-20", "BP-21", "LC-13", "LC-14"],
+      "resolution": "Preview before cutover; common admission fence covers managed, external, native validation and integration."
+    },
+    "F05": {
+      "issue": "Unknown exclusion can be treated as safe applicability",
+      "tasks": ["RC-04"],
+      "resolution": "All required true AND all excluded false; unknown blocks deterministic instantiation."
+    },
+    "F06": {
+      "issue": "Closure is post-hoc, incomplete or invalidated by unrelated catalogue changes",
+      "tasks": ["RC-05", "RC-06", "RC-07", "RC-10"],
+      "resolution": "Pre-execution transitive closure; retain bytes; repin specialization before approval; separate catalogue update, tamper and revocation."
+    },
+    "F07": {
+      "issue": "No-Recipe fallback restarts unnecessary PLANNER",
+      "tasks": ["PL-01", "PL-05", "RC-12"],
+      "resolution": "Return to ordinary obligation resolution; no selector-only episode."
+    },
+    "F08": {
+      "issue": "Incomplete telemetry and proxy benchmarks treated as release proof",
+      "tasks": [
+        "ST-08",
+        "ST-09",
+        "ST-10",
+        "ST-11",
+        "ST-12",
+        "ST-13",
+        "ST-14",
+        "ST-15",
+        "ST-16",
+        "ST-19"
+      ],
+      "resolution": "Durable provider-bound all-attempt usage; A/B/C production driver; explicit separate safety/activation/claim gates."
+    },
+    "F09": {
+      "issue": "Too much functionality and unnecessary critical-path coupling",
+      "tasks": ["ST-20", "BP-31", "LC-23", "LC-24", "PL-12", "RC-18", "EV-13"],
+      "resolution": "Six release barriers; architecture, owner convergence, post-convergence test cleanup, planning, recipes and evaluation activation are distinct."
+    },
+    "N01": {
+      "issue": "Roadmap proposes another inline input schema despite existing compact Plan input",
+      "tasks": ["ST-07", "PL-02", "PL-03", "RC-03", "RC-08"],
+      "resolution": "Reuse task-centric compact proposal input V2 and its normalizer; no second InlineTaskContract."
+    },
+    "N02": {
+      "issue": "Generic VerificationBinding V2 duplicates current task_verification_input v4",
+      "tasks": ["BP-12", "BP-13", "BP-15"],
+      "resolution": "Version the existing family only when necessary; no parallel evidence identity."
+    },
+    "N03": {
+      "issue": "Newer kernel chosen as canonical without hosted/context/recovery parity",
+      "tasks": ["LC-01", "LC-06", "LC-10", "LC-11", "LC-13", "LC-19"],
+      "resolution": "Keep Task Kernel as the canonical reducer; extract the coordinator from the mature ordinary route/effect path, map every guarantee, then retire duplicate executors."
+    },
+    "N04": {
+      "issue": "Blueprint removal implicitly depends on future Recipe V2",
+      "tasks": ["BP-09", "BP-10", "BP-11", "RC-14"],
+      "resolution": "Use bounded V1 guidance/validator conversions in .10; formal procedural V2 conversion is .13."
+    },
+    "N05": {
+      "issue": "External outstanding WorkOrders are invisible to PID-only quiescence",
+      "tasks": ["ST-05", "BP-19", "BP-20", "LC-13"],
+      "resolution": "Include pending external work in fencing and migration blockers, even without a managed process."
+    },
+    "N06": {
+      "issue": "State-fingerprint components still refer to removed Blueprint",
+      "tasks": ["BP-14", "BP-17", "BP-22"],
+      "resolution": "Explicit versioned fingerprint/WorkOrder transition preserves all material constraints."
+    },
+    "N07": {
+      "issue": "Local receipt digests cannot reconstruct evidence after fresh clone/pruning",
+      "tasks": ["BP-28", "RC-06"],
+      "resolution": "Portable retained-byte/reachable-object contract; missing payload is not regenerated or guessed."
+    },
+    "N08": {
+      "issue": "Provider-only accounting hides host Plan construction cost",
+      "tasks": ["ST-11", "ST-12", "PL-11", "RC-17"],
+      "resolution": "Whole intent-to-result accounting including host work; unallocatable shared turns are explicit."
+    },
+    "N09": {
+      "issue": "Every atomic checklist item becomes another heavyweight task lifecycle",
+      "tasks": ["ST-01", "LC-01"],
+      "resolution": "Atomic diff/acceptance unit is not a requirement for one PR or paid episode; use scoped WorkItems and existing evidence."
+    },
+    "N10": {
+      "issue": "Backend serialization, platform or adapter differences weaken guarantees during cutover",
+      "tasks": ["ST-21", "BP-04", "BP-14", "LC-21", "RC-03"],
+      "resolution": "Supported-port round trips, capability preflight, platform path tests and exact format errors; no silent fallback."
+    },
+    "N11": {
+      "issue": "Completed prior fixes are repeated as new feature work",
+      "tasks": ["ST-04", "ST-07", "ST-08", "BP-12"],
+      "resolution": "Current source lock and already_satisfied verification; preserve NGDG6V/P1MJV7 improvements and reuse existing parsers."
+    },
+    "N12": {
+      "issue": "Current rules or generated views reopen terminal work and produce churn",
+      "tasks": ["BP-18", "BP-24", "LC-20", "PL-07", "EV-10"],
+      "resolution": "Terminal replay is a canonical/effect no-op; historical policy audit does not silently schedule new work."
+    },
+    "N13": {
+      "issue": "Live quality study scheduled before the candidate path exists, or public callers retired after their imported engine",
+      "tasks": ["BP-27", "BP-28", "BP-25", "BP-26", "EV-08", "EV-11", "EV-07", "EV-13"],
+      "resolution": "Move cold decoders and public callers first; test an inactive implementation before independent study, then activate only after qualification."
+    },
+    "N14": {
+      "issue": "New fencing is incorrectly assumed to restrain an already-running pre-fence binary",
+      "tasks": ["BP-19", "BP-20", "BP-21", "LC-14"],
+      "resolution": "Require demonstrated old-worker quiescence/reconciliation; refuse unknown status. Do not claim a new epoch retroactively controls a nonparticipating process."
+    },
+    "N15": {
+      "issue": "A global active JEV switch silently activates unqualified semantic decisions",
+      "tasks": ["EV-14", "EV-15", "EV-19", "EV-20", "EV-26"],
+      "resolution": "Expand presets into purpose policy; bind every active purpose to exact Q03 evidence and fail closed independently."
+    },
+    "N16": {
+      "issue": "Evaluator pass or small zero-error samples are treated as proof that review added no value",
+      "tasks": ["EV-21", "EV-22", "EV-23", "EV-24", "EV-25", "EV-26"],
+      "resolution": "Use material-value and ambiguous labels, adversarial strata and a preregistered one-sided false-skip bound before activation."
+    }
+  },
+  "negative_scenarios": [
+    {
+      "case": "Forbidden source/critical one-line mutation",
+      "tasks": ["ST-04", "BP-04", "EV-02", "EV-05"]
+    },
+    {
+      "case": "Forged USER authority or task-worktree policy self-approval",
+      "tasks": ["ST-05", "BP-03", "PL-04", "EV-05"]
+    },
+    {
+      "case": "Cross-task/role/attempt or stale result",
+      "tasks": ["ST-07", "BP-14", "LC-05", "PL-09"]
+    },
+    {
+      "case": "Native check passed but current review failed/rework/stale",
+      "tasks": ["BP-17", "LC-08", "EV-01"]
+    },
+    {
+      "case": "Receipt write or timestamp change self-invalidates a check",
+      "tasks": ["BP-12", "BP-13", "BP-15", "LC-20"]
+    },
+    {
+      "case": "Environment/toolchain/command/relevant input changed",
+      "tasks": ["BP-12", "BP-15", "LC-07", "EV-03"]
+    },
+    {
+      "case": "Crash after provider completion before semantic parse or journal application",
+      "tasks": ["ST-08", "ST-09", "ST-10", "ST-05", "LC-12"]
+    },
+    {
+      "case": "Crash after native validation or persisted verdict",
+      "tasks": ["ST-05", "LC-07", "LC-08", "LC-12"]
+    },
+    {
+      "case": "Provider merge result lost / effect-in-doubt",
+      "tasks": ["ST-03", "BP-20", "LC-11", "LC-12"]
+    },
+    {
+      "case": "Migration races with dispatch, external return, validation or integration",
+      "tasks": ["BP-20", "BP-21", "LC-14"]
+    },
+    {
+      "case": "Unmappable custom Blueprint or missing legacy bytes",
+      "tasks": ["BP-11", "BP-19", "BP-28"]
+    },
+    {
+      "case": "Unknown format, backend field loss or stale replica",
+      "tasks": ["ST-21", "BP-22", "LC-15"]
+    },
+    {
+      "case": "No-Recipe sufficient contract unexpectedly runs PLANNER",
+      "tasks": ["PL-05", "RC-12"]
+    },
+    {
+      "case": "Unknown required or excluded Recipe predicate",
+      "tasks": ["RC-04"]
+    },
+    {
+      "case": "Parameter injection / traversal / Windows absolute-UNC alias / symlink escape",
+      "tasks": ["RC-02", "RC-03", "RC-05"]
+    },
+    {
+      "case": "Recipe transitive asset changed, removed or unavailable offline",
+      "tasks": ["RC-05", "RC-06", "RC-10"]
+    },
+    {
+      "case": "Unrelated catalogue update invalidates approved pinned Plan",
+      "tasks": ["RC-10"]
+    },
+    {
+      "case": "Arbitrary V1 prose interpreted as executable shell",
+      "tasks": ["BP-11", "RC-14"]
+    },
+    {
+      "case": "Unqualified rule or irrelevant passing check bypasses EVALUATOR",
+      "tasks": ["EV-02", "EV-05", "EV-07", "EV-08", "EV-13"]
+    },
+    {
+      "case": "Rule/verifier/trust or implementation changes after initial eligibility",
+      "tasks": ["EV-03", "EV-09", "EV-13"]
+    },
+    {
+      "case": "Downgrade after incompatible write",
+      "tasks": ["BP-22", "LC-14", "LC-15"]
+    },
+    {
+      "case": "Terminal replay emits canonical artifacts, checks, provider calls or commits",
+      "tasks": ["ST-02", "BP-24", "LC-20"]
+    },
+    {
+      "case": "Missing usage or cached/reasoning subset treated as zero/additive",
+      "tasks": ["ST-08", "ST-09", "ST-12", "ST-16"]
+    },
+    {
+      "case": "Mismatched oracle/model/effort/target SHA or cherry-picked attempts",
+      "tasks": ["ST-15", "ST-16", "PL-11", "RC-17", "EV-12"]
+    },
+    {
+      "case": "OpenRouter key is written to a tracked or non-ignored file, rendered, or silently overwritten",
+      "tasks": ["EV-14"]
+    },
+    {
+      "case": "JEV output selects an unbound reference, disallowed model, higher authority or arbitrary lifecycle action",
+      "tasks": ["EV-15", "EV-16", "EV-17"]
+    },
+    {
+      "case": "One qualified JEV purpose implicitly activates another",
+      "tasks": ["EV-19", "EV-20", "EV-26"]
+    },
+    {
+      "case": "Provider failure, uncertainty, drift or missing qualification suppresses the existing agent path",
+      "tasks": ["EV-15", "EV-16", "EV-17", "EV-18", "EV-23", "EV-26"]
+    },
+    {
+      "case": "Evaluator pass or underpowered zero-error sample is labelled no-review-needed",
+      "tasks": ["EV-21", "EV-22", "EV-24"]
+    }
+  ]
+}
