@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check a440a933956e7b2cb31e0150c0c2579f5cfca697..60f246fe5b3bed9cfa33c308ecfe5358b8a92dac",
+      "command": "git diff --check 60f246fe5b3bed9cfa33c308ecfe5358b8a92dac..7b3ffdb83961e2346016fe264bb99208d390bff6",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB a440a933956e7b2cb31e0150c0c2579f5cfca697..60f246fe5b3bed9cfa33c308ecfe5358b8a92dac",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 60f246fe5b3bed9cfa33c308ecfe5358b8a92dac..7b3ffdb83961e2346016fe264bb99208d390bff6",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -22,9 +22,30 @@
         "M\t.agentplane/tasks/202609220351-3KNJQZ/pr/github-body.md",
         "M\t.agentplane/tasks/202609220351-3KNJQZ/pr/meta.json",
         "M\t.agentplane/tasks/202609220351-3KNJQZ/pr/review.md",
+        "A\t.agentplane/tasks/202609220351-3KNJQZ/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json",
         "M\t.agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202609220351-3KNJQZ/supervision/implementation-evidence.json",
-        "M\tdocs/recipes-inventory.json"
+        "M\t.github/workflows/ci.yml",
+        "M\t.github/workflows/publish-distribution-module.yml",
+        "M\t.github/workflows/publish.yml",
+        "D\t.gitmodules",
+        "M\t.prettierignore",
+        "D\tagentplane-recipes",
+        "M\tdocs/README.md",
+        "M\tdocs/developer/project-layout.mdx",
+        "M\tdocs/developer/testing-and-quality.mdx",
+        "M\tdocs/help/troubleshooting.mdx",
+        "M\teslint.config.cjs",
+        "D\tmarketing",
+        "M\tpackages/agentplane/bin/framework-dev-contract.js",
+        "M\tpackages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts",
+        "M\tpackages/agentplane/src/commands/branch/work-start.materialize.test.ts",
+        "M\tpackages/agentplane/src/commands/branch/work-start.materialize.ts",
+        "M\tscripts/lib/github-ci-capabilities.mjs",
+        "M\tscripts/workflow/bootstrap-framework-dev.mjs"
       ]
     },
     {
@@ -34,35 +55,167 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "a440a933956e7b2cb31e0150c0c2579f5cfca697",
-  "implementation_commit": "60f246fe5b3bed9cfa33c308ecfe5358b8a92dac",
+  "execution_base_commit": "60f246fe5b3bed9cfa33c308ecfe5358b8a92dac",
+  "implementation_commit": "7b3ffdb83961e2346016fe264bb99208d390bff6",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
-      " M .agentplane/tasks/202609220351-3KNJQZ/README.md",
-      " M .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json",
-      " M .agentplane/tasks/202609220351-3KNJQZ/supervision/implementation-evidence.json"
+      "MM .agentplane/tasks/202609220351-3KNJQZ/README.md",
+      "A  .agentplane/tasks/202609220351-3KNJQZ/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json",
+      "M  .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json",
+      "M  .agentplane/tasks/202609220351-3KNJQZ/supervision/implementation-evidence.json",
+      "M  .github/workflows/ci.yml",
+      "M  .github/workflows/publish-distribution-module.yml",
+      "M  .github/workflows/publish.yml",
+      " D .gitmodules",
+      "M  .prettierignore",
+      " D agentplane-recipes",
+      "M  docs/README.md",
+      "M  docs/developer/project-layout.mdx",
+      "M  docs/developer/testing-and-quality.mdx",
+      "M  docs/help/troubleshooting.mdx",
+      "M  eslint.config.cjs",
+      " D marketing",
+      "M  packages/agentplane/bin/framework-dev-contract.js",
+      "M  packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts",
+      "M  packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts",
+      "M  packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts",
+      "M  packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts",
+      "M  packages/agentplane/src/commands/branch/work-start.materialize.test.ts",
+      "M  packages/agentplane/src/commands/branch/work-start.materialize.ts",
+      "M  scripts/lib/github-ci-capabilities.mjs",
+      "M  scripts/workflow/bootstrap-framework-dev.mjs"
     ],
     "classification": [
       {
         "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202609220351-3KNJQZ/README.md"
+        "line": "MM .agentplane/tasks/202609220351-3KNJQZ/README.md"
       },
       {
         "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json"
+        "line": "A  .agentplane/tasks/202609220351-3KNJQZ/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json"
       },
       {
         "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202609220351-3KNJQZ/supervision/implementation-evidence.json"
+        "line": "M  .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  .agentplane/tasks/202609220351-3KNJQZ/supervision/implementation-evidence.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  .github/workflows/ci.yml"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  .github/workflows/publish-distribution-module.yml"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  .github/workflows/publish.yml"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " D .gitmodules"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  .prettierignore"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " D agentplane-recipes"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  docs/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  docs/developer/project-layout.mdx"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  docs/developer/testing-and-quality.mdx"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  docs/help/troubleshooting.mdx"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  eslint.config.cjs"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " D marketing"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/bin/framework-dev-contract.js"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/branch/work-start.materialize.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  scripts/lib/github-ci-capabilities.mjs"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  scripts/workflow/bootstrap-framework-dev.mjs"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
-      " M .agentplane/tasks/202609220351-3KNJQZ/README.md",
-      " M .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json",
-      " M .agentplane/tasks/202609220351-3KNJQZ/supervision/implementation-evidence.json"
+      "MM .agentplane/tasks/202609220351-3KNJQZ/README.md",
+      "A  .agentplane/tasks/202609220351-3KNJQZ/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json",
+      "M  .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json",
+      "M  .agentplane/tasks/202609220351-3KNJQZ/supervision/implementation-evidence.json",
+      "M  .github/workflows/ci.yml",
+      "M  .github/workflows/publish-distribution-module.yml",
+      "M  .github/workflows/publish.yml",
+      " D .gitmodules",
+      "M  .prettierignore",
+      " D agentplane-recipes",
+      "M  docs/README.md",
+      "M  docs/developer/project-layout.mdx",
+      "M  docs/developer/testing-and-quality.mdx",
+      "M  docs/help/troubleshooting.mdx",
+      "M  eslint.config.cjs",
+      " D marketing",
+      "M  packages/agentplane/bin/framework-dev-contract.js",
+      "M  packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts",
+      "M  packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts",
+      "M  packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts",
+      "M  packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts",
+      "M  packages/agentplane/src/commands/branch/work-start.materialize.test.ts",
+      "M  packages/agentplane/src/commands/branch/work-start.materialize.ts",
+      "M  scripts/lib/github-ci-capabilities.mjs",
+      "M  scripts/workflow/bootstrap-framework-dev.mjs"
     ],
     "unchanged_from_execution_baseline": []
   },

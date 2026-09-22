@@ -2,8 +2,8 @@
   "checks": [
     {
       "check_ids": [],
-      "command": "bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts",
-      "duration_ms": 531,
+      "command": "bunx vitest run packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts",
+      "duration_ms": 8326,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
@@ -14,28 +14,44 @@
       },
       "script": null,
       "stderr_tail": "",
-      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/remove-submodules-base/.agentplane/worktrees/202609220351-3KNJQZ-remove-marketing-and-recipes-git-submodules\n\n\n Test Files  1 passed (1)\n      Tests  4 passed (4)\n   Start at  07:09:04\n   Duration  94ms (transform 20ms, setup 0ms, import 18ms, tests 13ms, environment 0ms)\n\n"
+      "stdout_tail": "NTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n==> Framework repo: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-7bAR2a\n==> Installing workspace dependencies\n==> Building @agentplaneorg/core\n==> Building agentplane\n==> Building @agentplane/testkit\n==> Verifying repo-local runtime\n\nFramework dev runtime is ready.\nRepo-local verify: node packages/agentplane/bin/agentplane.js runtime explain\nGlobal verify: agentplane runtime explain\nIf PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh\nOptional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n==> Framework repo: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-7bAR2a\n==> Bootstrap install layout already present; skipping bun install\n==> Building @agentplaneorg/core\n==> Building agentplane\n==> Building @agentplane/testkit\n==> Verifying repo-local runtime\n\nFramework dev runtime is ready.\nRepo-local verify: node packages/agentplane/bin/agentplane.js runtime explain\nGlobal verify: agentplane runtime explain\nIf PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh\nOptional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n==> Framework repo: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-74Y2qH\n==> Installing workspace dependencies\n==> Building @agentplaneorg/core\n==> Building agentplane\n==> Building @agentplane/testkit\n==> Verifying repo-local runtime\n\nFramework dev runtime is ready.\nRepo-local verify: node packages/agentplane/bin/agentplane.js runtime explain\nGlobal verify: agentplane runtime explain\nIf PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh\nOptional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n==> Framework repo: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-cRreuk\n==> Bootstrap install layout already present; skipping bun install\n==> Building @agentplaneorg/core\n==> Building agentplane\n==> Building @agentplane/testkit\n==> Reconciling managed git hooks: commit-msg, pre-commit, pre-push, post-merge\n==> Verifying repo-local runtime\n\nFramework dev runtime is ready.\nRepo-local verify: node packages/agentplane/bin/agentplane.js runtime explain\nGlobal verify: agentplane runtime explain\nIf PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh\nOptional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n==> Framework repo: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-dzmElM\n==> Installing workspace dependencies\n==> Building @agentplaneorg/core\n==> Building agentplane\n==> Building @agentplane/testkit\n==> Verifying repo-local runtime\n\nFramework dev runtime is ready.\nRepo-local verify: node packages/agentplane/bin/agentplane.js runtime explain\nGlobal verify: agentplane runtime explain\nIf PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh\nOptional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n==> Framework repo: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-2ArhtN\n==> Bootstrap install layout already present; skipping bun install\n==> Building @agentplaneorg/core\n==> Building agentplane\n==> Building @agentplane/testkit\n==> Reconciling managed git hooks: commit-msg, pre-commit, pre-push, post-merge\n==> Verifying repo-local runtime\n\nFramework dev runtime is ready.\nRepo-local verify: node packages/agentplane/bin/agentplane.js runtime explain\nGlobal verify: agentplane runtime explain\nIf PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh\nOptional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n\n Test Files  3 passed (3)\n      Tests  23 passed (23)\n   Start at  07:46:21\n   Duration  7.88s (transform 1.95s, setup 0ms, import 2.00s, tests 6.82s, environment 0ms)\n\n"
     },
     {
       "check_ids": [],
-      "command": "bun run docs:recipes:check",
-      "duration_ms": 1217,
+      "command": "node .agentplane/policy/check-routing.mjs",
+      "duration_ms": 181,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
-        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "executable_digest": "sha256:ee6fb0e015284d83a91e8ec5213f43a157f8a392b58555301682892ba928c04a",
         "kind": "local_runtime_resolution",
         "status": "resolved",
         "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
       },
-      "script": "docs:recipes:check",
-      "stderr_tail": "$ node scripts/checks/check-recipes-inventory-fresh.mjs\n",
-      "stdout_tail": "../../../../../../../../../var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-recipes-inventory-2SDxVI/recipes-inventory.json 12ms\ngenerated ../../../../../../../../../var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-recipes-inventory-2SDxVI/recipes-inventory.json\nok: docs/recipes-inventory.json is up to date\n"
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "policy routing OK\n"
+    },
+    {
+      "check_ids": [],
+      "command": "git grep -n -I -E 'git submodule|Recipes submodule|marketing/.*submodule|agentplane-recipes.*submodule' -- ':!docs/releases/**' ':!.agentplane/tasks/**' ':!.agentplane/tmp/**'",
+      "duration_ms": 798,
+      "exit_code": 1,
+      "runtime": {
+        "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
+        "executable_digest": "sha256:9b19807c702934b8c51fd2da8c2d38053bd7328536546e5a47eb3914dcc7bcde",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": ""
     }
   ],
   "kind": "direct_task_declared_checks",
-  "reason": null,
+  "reason": "Declared check failed: git grep -n -I -E 'git submodule|Recipes submodule|marketing/.*submodule|agentplane-recipes.*submodule' -- ':!docs/releases/**' ':!.agentplane/tasks/**' ':!.agentplane/tmp/**'",
   "schema_version": 1,
-  "status": "passed",
+  "status": "failed",
   "task_id": "202609220351-3KNJQZ"
 }
