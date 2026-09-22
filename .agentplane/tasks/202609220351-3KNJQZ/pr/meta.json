@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202609220351-3KNJQZ/remove-marketing-and-recipes-git-submodules",
   "created_at": "2026-09-22T04:01:31.671Z",
-  "diffstat_sha256": "sha256:46575f9c7a6996b675b2242d1f64ed9e35a545334b88c3b7821aa91a9f5b7190",
+  "diffstat_sha256": "sha256:61807c437f64ae6b7ee19d44273c8d659bb421e49b299f2d7e018c6ae0402a61",
   "last_verified_at": null,
   "provider": {
     "hostname": "github.com",

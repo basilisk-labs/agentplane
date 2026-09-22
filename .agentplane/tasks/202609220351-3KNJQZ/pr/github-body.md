@@ -42,7 +42,7 @@ Remove the marketing and agentplane-recipes gitlinks from the AgentPlane superpr
  eslint.config.cjs                                  |   1 -
  marketing                                          |   1 -
  packages/agentplane/bin/framework-dev-contract.js  |   1 -
- .../src/cli/bootstrap-framework-dev-script.test.ts | 143 +++------------------
+ .../src/cli/bootstrap-framework-dev-script.test.ts | 144 +++------------------
  .../cli/generate-recipes-inventory-script.test.ts  |  63 ++++-----
  .../cli/run-cli.core.pr-conflict-rework.test.ts    |   2 +-
  .../run-cli.core.pr-flow.worktree-runtime.test.ts  |   9 --
@@ -53,7 +53,7 @@ Remove the marketing and agentplane-recipes gitlinks from the AgentPlane superpr
  scripts/generate/generate-recipes-inventory.mjs    |  54 +++++---
  scripts/lib/github-ci-capabilities.mjs             |   7 +-
  scripts/workflow/bootstrap-framework-dev.mjs       |  58 +--------
- 26 files changed, 172 insertions(+), 360 deletions(-)
+ 26 files changed, 173 insertions(+), 360 deletions(-)
 ```
 
 </details>

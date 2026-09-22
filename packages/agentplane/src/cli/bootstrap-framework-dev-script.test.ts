@@ -97,6 +97,7 @@ describe("bootstrap-framework-dev script", () => {
       "bun run --filter=@agentplane/testkit build",
       "node packages/agentplane/bin/agentplane.js runtime explain",
     ]);
+    expect(calls.some((call) => call.startsWith("git submodule"))).toBe(false);
   });
 
   it("holds the framework build lock while running build and verify steps", async () => {
