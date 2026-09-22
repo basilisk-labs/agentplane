@@ -29,12 +29,12 @@ Created: 2026-09-22T04:01:31.671Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/developer/recipes-development.mdx             | 17 ++++++
+ docs/developer/recipes-development.mdx             | 19 +++++++
  docs/recipes-inventory.json                        |  8 +--
- .../cli/generate-recipes-inventory-script.test.ts  | 63 +++++++++++-----------
- scripts/checks/check-recipes-inventory-fresh.mjs   |  4 +-
- scripts/generate/generate-recipes-inventory.mjs    | 51 ++++++++++++------
- 5 files changed, 90 insertions(+), 53 deletions(-)
+ .../cli/generate-recipes-inventory-script.test.ts  | 63 +++++++++++----------
+ scripts/checks/check-recipes-inventory-fresh.mjs   | 64 ++++++++++++++++++----
+ scripts/generate/generate-recipes-inventory.mjs    | 54 ++++++++++++------
+ 5 files changed, 145 insertions(+), 63 deletions(-)
 ```
 
 </details>
