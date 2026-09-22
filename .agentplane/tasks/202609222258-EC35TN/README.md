@@ -257,11 +257,11 @@ sections:
     - Out of scope: unrelated refactors not required for "Execute completed-task integration effects from the base checkout without a Kernel controller transition".
   Plan: "1. Execute approved WorkItem WI-1."
   Verify Steps: |-
-    PLANNER fallback scaffold for "Execute completed-task integration effects from the base checkout without a Kernel controller transition". Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Review the requested outcome for "Execute completed-task integration effects from the base checkout without a Kernel controller transition". Expected: the visible result matches ## Summary and stays inside approved scope.
-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+    1. Run the focused task supervisor and provider lifecycle Vitest files. Expected: all focused regression tests pass.
+    2. Run the packages/agentplane TypeScript check without emitting files. Expected: type checking exits with code 0.
+    3. Run ESLint for the changed task command files and tests. Expected: lint exits with code 0.
+    4. Run the full local CI before PR publication. Expected: build, docs-schema, core, runtime, and CLI groups pass.
+    5. Before merge, require an independent quality review bound to the exact implementation head and require hosted GitHub checks to pass.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-09-22T23:22:55.247Z — VERIFY — ok
@@ -962,11 +962,11 @@ Fix the broken supervisor transition discovered while validating the 0.7.11 life
 
 ## Verify Steps
 
-PLANNER fallback scaffold for "Execute completed-task integration effects from the base checkout without a Kernel controller transition". Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Review the requested outcome for "Execute completed-task integration effects from the base checkout without a Kernel controller transition". Expected: the visible result matches ## Summary and stays inside approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+1. Run the focused task supervisor and provider lifecycle Vitest files. Expected: all focused regression tests pass.
+2. Run the packages/agentplane TypeScript check without emitting files. Expected: type checking exits with code 0.
+3. Run ESLint for the changed task command files and tests. Expected: lint exits with code 0.
+4. Run the full local CI before PR publication. Expected: build, docs-schema, core, runtime, and CLI groups pass.
+5. Before merge, require an independent quality review bound to the exact implementation head and require hosted GitHub checks to pass.
 
 ## Verification
 

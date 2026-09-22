@@ -133,6 +133,11 @@ async function recordVerificationResult(opts: {
   });
   const ctx = taskCommand.command;
   const workflowMode = taskCommand.execution.selected_mode;
+  const allowCanonicalProjection =
+    opts.allowCanonicalProjection ??
+    (opts.state === "ok" &&
+      taskCentricAggregateFromExtensions(taskCommand.primary_task.extensions)?.lifecycle ===
+        "COMPLETED");
   await ensureReconciledBeforeMutation({ ctx, command: "verify", taskIds: [opts.taskId] });
   const backend = ctx.taskBackend;
   const config = ctx.config;
@@ -148,7 +153,7 @@ async function recordVerificationResult(opts: {
       policyAction: "task_verify",
       phase: "verify",
       beforePersist: opts.beforePersist,
-      allowCanonicalProjection: opts.allowCanonicalProjection,
+      allowCanonicalProjection,
       build: async (current) => {
         const baseExecutionContract =
           opts.verificationSnapshot?.execution_contract ??
