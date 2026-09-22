@@ -28,6 +28,23 @@ description: "Practical workflow for authoring and validating recipes."
 7. Confirm no additional runtime assumptions leaked into docs or tests.
 8. Update the relevant recipe docs when public behavior changes.
 
+## Updating the AgentPlane inventory
+
+The recipe catalog is maintained in the independent
+[`basilisk-labs/agentplane-recipes`](https://github.com/basilisk-labs/agentplane-recipes)
+repository. AgentPlane does not require it as a Git submodule. Use an explicit checkout when you
+regenerate or verify the documentation inventory:
+
+```bash
+git clone https://github.com/basilisk-labs/agentplane-recipes.git ../agentplane-recipes
+AGENTPLANE_RECIPES_SOURCE=../agentplane-recipes bun run docs:recipes:generate
+AGENTPLANE_RECIPES_SOURCE=../agentplane-recipes bun run docs:recipes:check
+```
+
+`--recipes-source <path>` is also accepted by the generator. The configured directory must contain
+the catalog `index.json` and `recipes/` directory. Runtime recipe installation remains independent:
+it reads the signed public catalog and verifies published recipe archives.
+
 ## Designing scenarios
 
 - Keep the manifest-level descriptor self-sufficient for selection.

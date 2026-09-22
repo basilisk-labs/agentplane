@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202609220351-3KNJQZ/remove-marketing-and-recipes-git-submodules",
+  "created_at": "2026-09-22T04:01:31.671Z",
+  "diffstat_sha256": "sha256:62c18c19e53af9b0875cc9c86b7f3395b9a108dfbccc3e5ad2a38805f39aa02e",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202609220351-3KNJQZ",
+  "updated_at": "2026-09-22T04:01:31.671Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
