@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202609220826-DS03Q6/allow-canonical-completed-tasks-to-record-branch",
+  "created_at": "2026-09-22T10:15:30.580Z",
+  "diffstat_sha256": "sha256:49f3fa5cf06d2b3d49067b0c732e17448cad95004323d1e4315e8d7f01524eaf",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202609220826-DS03Q6",
+  "updated_at": "2026-09-22T10:15:30.580Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

@@ -33,6 +33,25 @@ import {
   openFinishCloseoutJournal,
 } from "./finish-closeout-journal.js";
 
+export function shouldPreserveCompletedCanonicalTaskState(opts: {
+  plan: FinishExecutionPlan;
+  loadedTasks: readonly LoadedFinishTask[];
+}): boolean {
+  if (!opts.plan.preMergeClosure || opts.loadedTasks.length === 0) return false;
+  return opts.loadedTasks.every(({ task }) => {
+    const record = task.extensions?.task_kernel;
+    if (!record || typeof record !== "object" || Array.isArray(record)) return false;
+    const aggregate = (record as { aggregate?: unknown }).aggregate;
+    return (
+      aggregate !== null &&
+      typeof aggregate === "object" &&
+      !Array.isArray(aggregate) &&
+      (aggregate as { state?: unknown }).state === "COMPLETED" &&
+      hasCanonicalPreMergeEvidence(task)
+    );
+  });
+}
+
 export async function executeFinishPlan(opts: {
   ctx: CommandContext;
   options: FinishOptions;
@@ -54,6 +73,10 @@ export async function executeFinishPlan(opts: {
     }
 
     const loadedState = await loadFinishTasks({ ctx, options, plan });
+    const preserveCompletedCanonicalTaskState = shouldPreserveCompletedCanonicalTaskState({
+      plan,
+      loadedTasks: loadedState.loadedTasks,
+    });
     if (!taskStateAlreadyWritten) {
       assertFinishPhasePolicy({ ctx, loadedTasks: loadedState.loadedTasks, plan });
       assertNativeTaskIdentityBeforeFinish({ ctx, loadedTasks: loadedState.loadedTasks });
@@ -123,23 +146,25 @@ export async function executeFinishPlan(opts: {
     }
 
     if (!taskStateAlreadyWritten) {
-      await writeFinishedTasks({
-        ctx,
-        loadedTasks: loadedState.loadedTasks,
-        metaTaskId: plan.metaTaskId,
-        author: options.author,
-        body: options.body,
-        force: options.force,
-        resultProvided: plan.resultProvided,
-        resultSummary: plan.resultSummary,
-        riskLevel: plan.riskLevel,
-        breaking: plan.breaking,
-        taskCommitInfo,
-        implementationCommitInfo,
-        allowCanonicalProjection:
-          plan.preMergeClosure &&
-          loadedState.loadedTasks.every(({ task }) => hasCanonicalPreMergeEvidence(task)),
-      });
+      if (!preserveCompletedCanonicalTaskState) {
+        await writeFinishedTasks({
+          ctx,
+          loadedTasks: loadedState.loadedTasks,
+          metaTaskId: plan.metaTaskId,
+          author: options.author,
+          body: options.body,
+          force: options.force,
+          resultProvided: plan.resultProvided,
+          resultSummary: plan.resultSummary,
+          riskLevel: plan.riskLevel,
+          breaking: plan.breaking,
+          taskCommitInfo,
+          implementationCommitInfo,
+          allowCanonicalProjection:
+            plan.preMergeClosure &&
+            loadedState.loadedTasks.every(({ task }) => hasCanonicalPreMergeEvidence(task)),
+        });
+      }
       closeoutJournal = await advanceFinishCloseoutJournal({
         path: closeout.path,
         journal: closeoutJournal,
