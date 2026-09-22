@@ -72,6 +72,10 @@ describe("Core CI workflow contract", () => {
 
   it("keeps exact-SHA release evidence and release-ready dependencies current", async () => {
     const workflow = await readFile(CI_WORKFLOW_PATH, "utf8");
+    const releaseReadyJob = workflow.slice(
+      workflow.indexOf("  release-ready:"),
+      workflow.indexOf("  pr-verification:"),
+    );
 
     expect(workflow).toContain(
       'description: "Exact Git commit SHA to validate for release recovery (preferred over ref)"',
@@ -88,6 +92,7 @@ describe("Core CI workflow contract", () => {
     expect(workflow).toContain("node scripts/manifest.mjs release-ready");
     expect(workflow).toContain('--sha "${{ steps.target.outputs.sha }}"');
     expect(workflow).toContain("name: release-ready-${{ steps.target.outputs.sha }}");
+    expect(releaseReadyJob).toContain("fetch-depth: 0");
   });
 
   it("removes duplicate PR workflows while retaining canonical post-merge and manual surfaces", async () => {
