@@ -22,7 +22,7 @@ Apply the reviewed and locally verified fix from commit 09c553088 onto current m
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-22T08:00:58.998Z
+- Updated: 2026-09-22T08:04:18.814Z
 - Branch: task/202609220752-4MGBBP/fix-issue-5991-by-cleaning-owned-vitest-temporar
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
