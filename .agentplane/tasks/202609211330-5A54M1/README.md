@@ -285,7 +285,7 @@ events:
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
 doc_version: 3
-doc_updated_at: "2026-09-22T02:51:44.168Z"
+doc_updated_at: "2026-09-22T03:39:50.614Z"
 doc_updated_by: "DEUS"
 description: "Fix the demonstrated branch_pr completion ordering so the canonical COMPLETED projection is included in the terminal task-artifact commit and does not leave the task README dirty. Add a public-route regression test. Regenerate the v0.7 compatibility candidate for the exact cumulative 0.7.11 surface with this task as provenance; keep the immutable compatibility baseline unchanged."
 sections:
@@ -476,10 +476,10 @@ sections:
       - github_release: created
       - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.7.11
       - ghcr: published
-      - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/35680680841
-      - external_homebrew: published | basilisk-labs/homebrew-tap | 43cdb3a55bed0b13e9c55e2b658985e0efe639d2 | https://github.com/basilisk-labs/homebrew-tap/pull/52
-      - external_scoop: published | basilisk-labs/scoop-bucket | 5689308d159b7f46e2aa41152a08932ceba12aaf | https://github.com/basilisk-labs/scoop-bucket/pull/51
-      - external_setup-agentplane: published | basilisk-labs/setup-agentplane | d2655ee4bb2b130fb0d43e477491f7415443b4b8 | https://github.com/basilisk-labs/setup-agentplane/pull/51
+      - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/35683626303
+      - external_homebrew: published | basilisk-labs/homebrew-tap | 893c44e05b5e20756ef7cb394a75b2a1e690cb0d | https://github.com/basilisk-labs/homebrew-tap/pull/54
+      - external_scoop: published | basilisk-labs/scoop-bucket | c1b6b92cde5496aec8f09f2bf1ef066f319fa016 | https://github.com/basilisk-labs/scoop-bucket/pull/53
+      - external_setup-agentplane: published | basilisk-labs/setup-agentplane | 2bc45e06fca19d1a416beae826425c154c9a5b7b | https://github.com/basilisk-labs/setup-agentplane/pull/53
     <!-- END HOSTED PUBLISH EVIDENCE -->
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -1433,10 +1433,10 @@ DecisionContextRef:
   - github_release: created
   - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.7.11
   - ghcr: published
-  - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/35680680841
-  - external_homebrew: published | basilisk-labs/homebrew-tap | 43cdb3a55bed0b13e9c55e2b658985e0efe639d2 | https://github.com/basilisk-labs/homebrew-tap/pull/52
-  - external_scoop: published | basilisk-labs/scoop-bucket | 5689308d159b7f46e2aa41152a08932ceba12aaf | https://github.com/basilisk-labs/scoop-bucket/pull/51
-  - external_setup-agentplane: published | basilisk-labs/setup-agentplane | d2655ee4bb2b130fb0d43e477491f7415443b4b8 | https://github.com/basilisk-labs/setup-agentplane/pull/51
+  - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/35683626303
+  - external_homebrew: published | basilisk-labs/homebrew-tap | 893c44e05b5e20756ef7cb394a75b2a1e690cb0d | https://github.com/basilisk-labs/homebrew-tap/pull/54
+  - external_scoop: published | basilisk-labs/scoop-bucket | c1b6b92cde5496aec8f09f2bf1ef066f319fa016 | https://github.com/basilisk-labs/scoop-bucket/pull/53
+  - external_setup-agentplane: published | basilisk-labs/setup-agentplane | 2bc45e06fca19d1a416beae826425c154c9a5b7b | https://github.com/basilisk-labs/setup-agentplane/pull/53
 <!-- END HOSTED PUBLISH EVIDENCE -->
 <!-- END VERIFICATION RESULTS -->
 
