@@ -436,6 +436,19 @@ export async function finishManagedConflictKernelRecovery(opts: {
   allow_unverified_receipt: boolean;
   decide: () => Promise<TaskRouteDecision>;
 }): Promise<BranchEpisodeOutcome> {
+  return await completeManagedConflictRecovery({ ...opts, lifecycle_calls: 0 });
+}
+
+async function completeManagedConflictRecovery(opts: {
+  task_id: string;
+  journal: SupervisorExecutionEpisodeJournal;
+  store: SupervisorEpisodeStore;
+  executed: ExecutedTaskRunnerExecution;
+  implementation_commit: string;
+  allow_unverified_receipt: boolean;
+  decide: () => Promise<TaskRouteDecision>;
+  lifecycle_calls: number;
+}): Promise<BranchEpisodeOutcome> {
   const observed = observeDirectExecutor(
     projectExecutedTaskRunnerLifecycleResult({
       task_id: opts.task_id,
@@ -457,7 +470,7 @@ export async function finishManagedConflictKernelRecovery(opts: {
     journal: journalProjection(journal, opts.store.path),
     executor: { ...observed.executor, implementation_commit: opts.implementation_commit },
     provider_episodes: 0,
-    lifecycle_calls: 0,
+    lifecycle_calls: opts.lifecycle_calls,
     executor_lifecycle_event_delta: 0,
   };
 }
@@ -475,14 +488,6 @@ export async function finishManagedConflictTaskRecovery(opts: {
   allow_unverified_receipt: boolean;
   decide: () => Promise<TaskRouteDecision>;
 }): Promise<BranchEpisodeOutcome> {
-  const observed = observeDirectExecutor(
-    projectExecutedTaskRunnerLifecycleResult({
-      task_id: opts.task_id,
-      execution: opts.executed,
-    }),
-    { allow_unverified_receipt: opts.allow_unverified_receipt },
-  );
-  if ("stop" in observed) throw new Error(observed.reason);
   const prove = async () =>
     await proveManagedConflictTaskApplication({
       ...opts,
@@ -538,20 +543,8 @@ export async function finishManagedConflictTaskRecovery(opts: {
   }
   if (!application.artifacts_committed || application.stage !== "applied")
     throw new Error("Managed conflict artifact finalization has no exact completion proof.");
-  const decision = await opts.decide();
-  const journal = advanceSupervisorExecutionEpisodeState({
-    journal: opts.journal,
-    state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
-    route_observation: { step_id: decision.workflowStep.id },
-  });
-  await opts.store.write(journal);
-  return {
-    status: "completed",
-    decision,
-    journal: journalProjection(journal, opts.store.path),
-    executor: { ...observed.executor, implementation_commit: opts.implementation_commit },
-    provider_episodes: 0,
+  return await completeManagedConflictRecovery({
+    ...opts,
     lifecycle_calls: alreadyCommitted ? 0 : 1,
-    executor_lifecycle_event_delta: 0,
-  };
+  });
 }
