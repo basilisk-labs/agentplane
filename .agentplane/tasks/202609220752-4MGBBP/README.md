@@ -1,10 +1,11 @@
 ---
 id: "202609220752-4MGBBP"
 title: "Fix issue #5991 by cleaning owned Vitest temporary roots"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -46,6 +47,22 @@ quality_review:
     - "close-message fixtures now use mkGitRepoRoot instead of unmanaged mkdtemp roots."
     - "AgentPlane native validation passed the focused 18-test suite, typecheck, policy routing, and diff check against implementation commit efb434d54ee5ae468699556c1ad46d61f1eb8888."
     - "The implementation changed no package manifest or lockfile."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:2831efd9131173c1b7879ac06ef9d8a1ad428cb80b255b2bbb5310e6059f1649"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-09-22T08:06:19.875Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -229,9 +246,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "efb434d54ee5ae468699556c1ad46d61f1eb8888"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "d0bd121a2035b91769b817dbe039e0e75eb39923"
+  message: "✅ 4MGBBP task: fix issue #5991 by cleaning owned Vitest temporary roots"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -239,9 +259,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-09-22T08:06:19.875Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "d0bd121a2035b91769b817dbe039e0e75eb39923"
 doc_version: 3
-doc_updated_at: "2026-09-22T08:03:00.182Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-22T08:06:19.875Z"
+doc_updated_by: "CODER"
 description: "Apply the reviewed and locally verified fix from commit 09c553088 onto current main. Own one marked temporary parent per Vitest worker, recover only safe stale roots, migrate close-message fixtures, and verify cleanup on success and failure. Dependency installation is environment setup, not a declared verification check."
 sections:
   Summary: |-
@@ -385,6 +413,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:ec2e4bd10a8ea2e5b093cf18ff8814ac9374de18d83ad57b79ca3abc4f358e48"
     work_order_id: "sha256:793d5e3ca9d63769f7c71110a239069d8af280a4ec01947b77a90d6e186fa2cd"
+  implementation_commit:
+    hash: "efb434d54ee5ae468699556c1ad46d61f1eb8888"
+    message: "🚧 4MGBBP task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "a2104636fe2522ebdcd79ce32e5ba59f23241a6f"
@@ -1040,3 +1071,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:2831efd9131173c1b7879ac06ef9d8a1ad428cb80b255b2bbb5310e6059f1649`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-09-22T08:06:19.875Z`
