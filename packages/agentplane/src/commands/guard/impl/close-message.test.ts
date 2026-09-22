@@ -1,9 +1,10 @@
 import { execFile } from "node:child_process";
-import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
-import os from "node:os";
+import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
+
+import { mkGitRepoRoot } from "@agentplane/testkit";
 
 import type { TaskData } from "../../../backends/task-backend.js";
 import { nowIso } from "../../task/shared.js";
@@ -18,10 +19,7 @@ async function git(root: string, args: string[]): Promise<string> {
 }
 
 async function mkRepoWithImplCommit(): Promise<{ root: string; implHash: string }> {
-  const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-close-msg-"));
-  await execFileAsync("git", ["init", "-q"], { cwd: root });
-  await execFileAsync("git", ["config", "user.email", "test@example.com"], { cwd: root });
-  await execFileAsync("git", ["config", "user.name", "Test User"], { cwd: root });
+  const root = await mkGitRepoRoot();
 
   await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
   await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
@@ -105,10 +103,7 @@ describe("buildCloseCommitMessage", { timeout: 60_000 }, () => {
   });
 
   it("uses a commit-policy-safe scope when implementation key files are tests", async () => {
-    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-close-msg-tests-"));
-    await execFileAsync("git", ["init", "-q"], { cwd: root });
-    await execFileAsync("git", ["config", "user.email", "test@example.com"], { cwd: root });
-    await execFileAsync("git", ["config", "user.name", "Test User"], { cwd: root });
+    const root = await mkGitRepoRoot();
     await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
     await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
