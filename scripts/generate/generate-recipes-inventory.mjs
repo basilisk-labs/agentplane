@@ -12,6 +12,8 @@ import {
 } from "../lib/script-runtime.mjs";
 
 const ROOT = process.cwd();
+const RECIPES_SOURCE_ENV = "AGENTPLANE_RECIPES_SOURCE";
+const RECIPES_REPOSITORY_URL = "https://github.com/basilisk-labs/agentplane-recipes";
 const SUPPORTED_RUN_PROFILE_FIELDS = [
   "mode",
   "sandbox",
@@ -48,21 +50,25 @@ export function resolveCommonRepoRoot(cwd = ROOT, resolveGit = gitRevParse) {
 }
 
 export function resolveRecipesSourceRoot(cwd = ROOT, options = {}) {
-  const worktreeRoot = path.resolve(cwd);
-  const localIndexPath = path.join(worktreeRoot, "agentplane-recipes", "index.json");
-  if (fs.existsSync(localIndexPath)) {
-    return worktreeRoot;
+  const configuredSource = String(
+    options.recipesSource ?? options.env?.[RECIPES_SOURCE_ENV] ?? process.env[RECIPES_SOURCE_ENV] ?? "",
+  ).trim();
+  if (!configuredSource) {
+    throw new Error(
+      `recipes source is required; pass --recipes-source <path> or set ${RECIPES_SOURCE_ENV} to a checkout of ${RECIPES_REPOSITORY_URL}`,
+    );
   }
 
-  const commonRepoRoot = resolveCommonRepoRoot(worktreeRoot, options.resolveGit ?? gitRevParse);
-  const commonIndexPath = path.join(commonRepoRoot, "agentplane-recipes", "index.json");
-  if (fs.existsSync(commonIndexPath)) {
-    return commonRepoRoot;
-  }
-
-  throw new Error(
-    "agentplane-recipes/index.json not found in the current worktree or the common repo root. Fix: git submodule update --init --recursive agentplane-recipes",
+  const sourceRoot = path.resolve(cwd, configuredSource);
+  const missing = ["index.json", "recipes"].filter(
+    (relativePath) => !fs.existsSync(path.join(sourceRoot, relativePath)),
   );
+  if (missing.length > 0) {
+    throw new Error(
+      `invalid recipes source ${JSON.stringify(sourceRoot)}: missing ${missing.join(", ")}`,
+    );
+  }
+  return sourceRoot;
 }
 
 export function resolveInventoryPaths(cwd = ROOT, options = {}) {
@@ -71,10 +77,20 @@ export function resolveInventoryPaths(cwd = ROOT, options = {}) {
   return {
     worktreeRoot,
     sourceRoot,
-    indexPath: path.join(sourceRoot, "agentplane-recipes", "index.json"),
-    recipesRoot: path.join(sourceRoot, "agentplane-recipes", "recipes"),
+    indexPath: path.join(sourceRoot, "index.json"),
+    recipesRoot: path.join(sourceRoot, "recipes"),
     outputPath: path.join(worktreeRoot, "docs", "recipes-inventory.json"),
   };
+}
+
+function resolveRecipesSourceArg(argv) {
+  const sourceIndex = argv.indexOf("--recipes-source");
+  if (sourceIndex === -1) return undefined;
+  const value = argv[sourceIndex + 1];
+  if (!value || value.startsWith("-")) {
+    throw new Error("Missing value for --recipes-source");
+  }
+  return value;
 }
 
 function normalizeStringList(value) {
@@ -124,7 +140,7 @@ async function buildInventory(cwd = ROOT, options = {}) {
       name: String(manifest.name ?? recipeId),
       version: String(manifest.version ?? ""),
       summary: String(manifest.summary ?? ""),
-      source: `agentplane-recipes/recipes/${recipeId}`,
+      source: `${RECIPES_REPOSITORY_URL}/tree/main/recipes/${recipeId}`,
       self_contained: true,
       scenarios: scenarios
         .map((scenario) => ({
@@ -152,9 +168,10 @@ async function buildInventory(cwd = ROOT, options = {}) {
 const main = defineScript({
   name: "generate-recipes-inventory",
   async run({ argv, cwd = ROOT }) {
-    const { outputPath: defaultOutputPath } = resolveInventoryPaths(cwd);
+    const recipesSource = resolveRecipesSourceArg(argv);
+    const { outputPath: defaultOutputPath } = resolveInventoryPaths(cwd, { recipesSource });
     const outputPath = resolveOutPathArg(argv, cwd, defaultOutputPath);
-    const payload = await buildInventory(cwd);
+    const payload = await buildInventory(cwd, { recipesSource });
     await writeFile(outputPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
     await runBunx(
       ["prettier", "--config", path.join(cwd, ".prettierrc.json"), "--write", outputPath],

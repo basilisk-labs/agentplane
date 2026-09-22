@@ -13,9 +13,9 @@ const main = defineScript({
     generate: (generatedPath) =>
       runNode(["scripts/generate-recipes-inventory.mjs", "--out", generatedPath]),
     missingMessage:
-      "docs/recipes-inventory.json is missing. Regenerate with: node scripts/generate-recipes-inventory.mjs",
+      "docs/recipes-inventory.json is missing. Regenerate with an external recipes checkout: AGENTPLANE_RECIPES_SOURCE=/path/to/agentplane-recipes node scripts/generate-recipes-inventory.mjs",
     staleMessage:
-      "Recipes inventory is stale. Regenerate with: node scripts/generate-recipes-inventory.mjs",
+      "Recipes inventory is stale. Regenerate with the same external source: AGENTPLANE_RECIPES_SOURCE=/path/to/agentplane-recipes node scripts/generate-recipes-inventory.mjs",
     successMessage: "ok: docs/recipes-inventory.json is up to date",
   }),
 });

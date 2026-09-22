@@ -16,7 +16,7 @@
       "name": "Code Map",
       "version": "0.1.1",
       "summary": "Adds a lightweight code-map discipline to agent development work.",
-      "source": "agentplane-recipes/recipes/code-map",
+      "source": "https://github.com/basilisk-labs/agentplane-recipes/tree/main/recipes/code-map",
       "self_contained": true,
       "scenarios": [
         {
@@ -45,7 +45,7 @@
       "name": "Hermes Agentplane",
       "version": "0.1.0",
       "summary": "Adds prompt policy for Agentplane-owned Hermes Kanban worker lanes.",
-      "source": "agentplane-recipes/recipes/hermes-agentplane",
+      "source": "https://github.com/basilisk-labs/agentplane-recipes/tree/main/recipes/hermes-agentplane",
       "self_contained": true,
       "scenarios": [
         {
@@ -84,7 +84,7 @@
       "name": "LLM Wiki",
       "version": "0.1.0",
       "summary": "Adds an agent-maintained project wiki with raw-source ingestion, query routing, and stale-input guardrails.",
-      "source": "agentplane-recipes/recipes/llm-wiki",
+      "source": "https://github.com/basilisk-labs/agentplane-recipes/tree/main/recipes/llm-wiki",
       "self_contained": true,
       "scenarios": [
         {
@@ -113,7 +113,7 @@
       "name": "Parallel Codex Runners",
       "version": "0.1.0",
       "summary": "Plan and supervise independent Codex task runners with AgentPlane run observability.",
-      "source": "agentplane-recipes/recipes/parallel-codex",
+      "source": "https://github.com/basilisk-labs/agentplane-recipes/tree/main/recipes/parallel-codex",
       "self_contained": true,
       "scenarios": [
         {
