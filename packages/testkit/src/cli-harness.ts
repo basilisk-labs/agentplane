@@ -261,6 +261,12 @@ export async function writeAndConfigureRoot(): Promise<string> {
 }
 
 export async function approveTaskPlan(root: string, taskId: string): Promise<void> {
+  await materializeLegacyDrainIdentityFixture({
+    root,
+    task_id: taskId,
+    adopt_canonical_as_legacy: true,
+    ownership_only: true,
+  });
   await setTaskVerifySteps(root, taskId);
   expect(
     await runCliSilent([
@@ -276,8 +282,9 @@ export async function approveTaskPlan(root: string, taskId: string): Promise<voi
       root,
     ]),
   ).toBe(0);
-  expect(
-    await runCliSilent([
+  const approvalIo = captureStdIO();
+  try {
+    const code = await runCli([
       "task",
       "plan",
       "approve",
@@ -288,13 +295,23 @@ export async function approveTaskPlan(root: string, taskId: string): Promise<voi
       "OK",
       "--root",
       root,
-    ]),
-  ).toBe(0);
+    ]);
+    expect(code, approvalIo.stderr).toBe(0);
+  } finally {
+    approvalIo.restore();
+  }
 }
 
 export async function setTaskVerifySteps(root: string, taskId: string): Promise<void> {
-  expect(
-    await runCliSilent([
+  await materializeLegacyDrainIdentityFixture({
+    root,
+    task_id: taskId,
+    adopt_canonical_as_legacy: true,
+    ownership_only: true,
+  });
+  const io = captureStdIO();
+  try {
+    const code = await runCli([
       "task",
       "doc",
       "set",
@@ -305,13 +322,20 @@ export async function setTaskVerifySteps(root: string, taskId: string): Promise<
       "Run verify for this task. Expected: verification records successfully.",
       "--root",
       root,
-    ]),
-  ).toBe(0);
+    ]);
+    expect(code, io.stderr).toBe(0);
+  } finally {
+    io.restore();
+  }
 }
 
 export async function recordVerificationOk(root: string, taskId: string): Promise<void> {
   await setTaskVerifySteps(root, taskId);
-  await materializeLegacyDrainIdentityFixture({ root, task_id: taskId });
+  await materializeLegacyDrainIdentityFixture({
+    root,
+    task_id: taskId,
+    work_items_completed: true,
+  });
   const io = captureStdIO();
   let code: number;
   try {

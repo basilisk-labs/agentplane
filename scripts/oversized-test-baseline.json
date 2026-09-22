@@ -2,29 +2,25 @@
   "schema_version": 2,
   "threshold_lines": 1000,
   "budgets": {
-    "max_entries": 10,
-    "max_total_lines": 11424,
+    "max_entries": 9,
+    "max_total_lines": 9883,
     "max_file_lines": 1300
   },
   "entries": [
     {
-      "file": "packages/agentplane/src/cli/run-cli.core.incidents.test.ts",
-      "lines": 1152
+      "file": "packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts",
+      "lines": 1098
+    },
+    {
+      "file": "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts",
+      "lines": 1008
     },
     {
       "file": "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts",
       "lines": 1102
     },
     {
-      "file": "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts",
-      "lines": 1171
-    },
-    {
       "file": "packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts",
-      "lines": 1206
-    },
-    {
-      "file": "packages/agentplane/src/cli/run-cli.core.tasks.query-listing.test.ts",
       "lines": 1193
     },
     {
@@ -33,19 +29,19 @@
     },
     {
       "file": "packages/agentplane/src/commands/doctor.command.open-pr.test.ts",
-      "lines": 1176
+      "lines": 1124
     },
     {
       "file": "packages/agentplane/src/commands/doctor.command.runtime.test.ts",
-      "lines": 1040
+      "lines": 1037
     },
     {
       "file": "packages/agentplane/src/commands/shared/task-store.test.ts",
-      "lines": 1116
+      "lines": 1115
     },
     {
       "file": "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
-      "lines": 1282
+      "lines": 1160
     }
   ]
 }

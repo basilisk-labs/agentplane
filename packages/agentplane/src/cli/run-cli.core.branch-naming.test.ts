@@ -7,7 +7,6 @@ import { defaultConfig } from "@agentplaneorg/core/config";
 
 import { runCli } from "./run-cli.js";
 import {
-  approveTaskPlan,
   captureStdIO,
   commitAll,
   configureGitUser,
@@ -30,6 +29,7 @@ describe("runCli branch naming", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEO
       const config = defaultConfig();
       config.workflow_mode = "branch_pr";
       config.branch.task_prefix = "agents/task";
+      config.agents.approvals.require_plan = false;
       await writeConfig(root, config);
       await configureGitUser(root);
 
@@ -61,8 +61,6 @@ describe("runCli branch naming", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEO
       } finally {
         ioTask.restore();
       }
-      await approveTaskPlan(root, taskId);
-
       const code = await runCli([
         "work",
         "start",

@@ -58,6 +58,7 @@ import {
   installFakeGhPrLookup,
   type ResolvedProject,
 } from "@agentplane/testkit/cli-core-pr-flow";
+import { materializeLegacyDrainIdentityFixture } from "../commands/shared/native-task-identity-fixture.js";
 
 async function seedGitBase(root: string): Promise<void> {
   await configureGitUser(root);
@@ -369,6 +370,12 @@ describe("runCli PR notes and verify flow", { timeout: PR_FLOW_LONG_TIMEOUT_MS }
         ioTask.restore();
       }
 
+      await materializeLegacyDrainIdentityFixture({
+        root,
+        task_id: taskId,
+        adopt_canonical_as_legacy: true,
+        ownership_only: true,
+      });
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
       const execFileAsync = promisify(execFile);
       await execFileAsync("git", ["checkout", "-b", `task/${taskId}/verify-auto-sync`], {
@@ -387,6 +394,7 @@ describe("runCli PR notes and verify flow", { timeout: PR_FLOW_LONG_TIMEOUT_MS }
         root,
       ]);
       await setConcreteVerifySteps(root, taskId);
+      await materializeLegacyDrainIdentityFixture({ root, task_id: taskId });
 
       const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
       await rm(path.join(prDir, "review.md"));
@@ -473,6 +481,12 @@ describe("runCli PR notes and verify flow", { timeout: PR_FLOW_LONG_TIMEOUT_MS }
       ioTask.restore();
     }
 
+    await materializeLegacyDrainIdentityFixture({
+      root,
+      task_id: taskId,
+      adopt_canonical_as_legacy: true,
+      ownership_only: true,
+    });
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     const execFileAsync = promisify(execFile);
     await execFileAsync("git", ["checkout", "-b", `task/${taskId}/verify-incidents`], {
@@ -491,6 +505,7 @@ describe("runCli PR notes and verify flow", { timeout: PR_FLOW_LONG_TIMEOUT_MS }
       root,
     ]);
     await setConcreteVerifySteps(root, taskId);
+    await materializeLegacyDrainIdentityFixture({ root, task_id: taskId });
 
     const incidentsBefore = await readFile(incidentsPath, "utf8");
 
@@ -571,6 +586,12 @@ describe("runCli PR notes and verify flow", { timeout: PR_FLOW_LONG_TIMEOUT_MS }
       ioTask.restore();
     }
 
+    await materializeLegacyDrainIdentityFixture({
+      root,
+      task_id: taskId,
+      adopt_canonical_as_legacy: true,
+      ownership_only: true,
+    });
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     const execFileAsync = promisify(execFile);
     await execFileAsync("git", ["checkout", "-b", `task/${taskId}/verify-incident-locality`], {
@@ -589,6 +610,7 @@ describe("runCli PR notes and verify flow", { timeout: PR_FLOW_LONG_TIMEOUT_MS }
       root,
     ]);
     await setConcreteVerifySteps(root, taskId);
+    await materializeLegacyDrainIdentityFixture({ root, task_id: taskId });
 
     const incidentsBefore = await readFile(incidentsPath, "utf8");
 
@@ -666,6 +688,12 @@ describe("runCli PR notes and verify flow", { timeout: PR_FLOW_LONG_TIMEOUT_MS }
         ioTask.restore();
       }
 
+      await materializeLegacyDrainIdentityFixture({
+        root,
+        task_id: taskId,
+        adopt_canonical_as_legacy: true,
+        ownership_only: true,
+      });
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
       await execFileAsync("git", ["checkout", "-b", `task/${taskId}/stale-review`], { cwd: root });
       await runCliSilent([
@@ -738,6 +766,12 @@ describe("runCli PR notes and verify flow", { timeout: PR_FLOW_LONG_TIMEOUT_MS }
         ioTask.restore();
       }
 
+      await materializeLegacyDrainIdentityFixture({
+        root,
+        task_id: taskId,
+        adopt_canonical_as_legacy: true,
+        ownership_only: true,
+      });
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
       await execFileAsync("git", ["checkout", "-b", `task/${taskId}/stale-verify`], { cwd: root });
       await runCliSilent([
@@ -752,6 +786,7 @@ describe("runCli PR notes and verify flow", { timeout: PR_FLOW_LONG_TIMEOUT_MS }
         root,
       ]);
       await setConcreteVerifySteps(root, taskId);
+      await materializeLegacyDrainIdentityFixture({ root, task_id: taskId });
 
       await writeFile(path.join(root, "feature-1.txt"), "feature-1", "utf8");
       await execFileAsync("git", ["add", "feature-1.txt"], { cwd: root });
@@ -836,6 +871,12 @@ describe("runCli PR notes and verify flow", { timeout: PR_FLOW_LONG_TIMEOUT_MS }
         ioTask.restore();
       }
 
+      await materializeLegacyDrainIdentityFixture({
+        root,
+        task_id: taskId,
+        adopt_canonical_as_legacy: true,
+        ownership_only: true,
+      });
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
       await execFileAsync("git", ["checkout", "-b", `task/${taskId}/verify-log-fallback`], {
         cwd: root,
@@ -852,6 +893,7 @@ describe("runCli PR notes and verify flow", { timeout: PR_FLOW_LONG_TIMEOUT_MS }
         root,
       ]);
       await setConcreteVerifySteps(root, taskId);
+      await materializeLegacyDrainIdentityFixture({ root, task_id: taskId });
 
       await writeFile(path.join(root, "feature.txt"), "feature", "utf8");
       await execFileAsync("git", ["add", "feature.txt"], { cwd: root });

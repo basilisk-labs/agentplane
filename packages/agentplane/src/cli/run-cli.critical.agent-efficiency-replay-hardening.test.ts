@@ -720,7 +720,7 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
     ).toThrow("does not link");
   });
 
-  it("accepts only the frozen TypeScript 7 additive anchor lock delta", async () => {
+  it("accepts only the frozen TypeScript 7 and coherent workspace release lock deltas", async () => {
     const replay = await importModule<{
       REPLAY_ANCHOR_COMMIT: string;
     }>("scripts/lib/agent-efficiency-replay.mjs");
@@ -745,6 +745,15 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
         ),
     );
     expect(() => anchorRuntime.assertAnchorLockCompatible(subjectLock, tampered)).toThrow(
+      "ANCHOR_LOCK_MISMATCH",
+    );
+
+    const incoherentRelease = Buffer.from(
+      driverLock
+        .toString("utf8")
+        .replace('"@agentplaneorg/core": "0.7.11"', '"@agentplaneorg/core": "0.7.10"'),
+    );
+    expect(() => anchorRuntime.assertAnchorLockCompatible(subjectLock, incoherentRelease)).toThrow(
       "ANCHOR_LOCK_MISMATCH",
     );
   });

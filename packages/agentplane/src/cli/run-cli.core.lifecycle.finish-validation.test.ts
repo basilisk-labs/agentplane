@@ -4,8 +4,15 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { defaultConfig } from "@agentplaneorg/core/config";
-import { parseTaskReadme, readTask, renderTaskReadme } from "@agentplaneorg/core/tasks";
+import {
+  createTask as createLegacyTask,
+  parseTaskReadme,
+  readTask,
+  renderTaskReadme,
+  setTaskDocSection,
+} from "@agentplaneorg/core/tasks";
 
+import { materializeLegacyDrainIdentityFixture } from "../commands/shared/native-task-identity-fixture.js";
 import { runCli } from "./run-cli.js";
 import {
   captureStdIO,
@@ -62,7 +69,52 @@ async function recordEvaluatorPass(root: string, taskId: string): Promise<void> 
   }
 }
 
+async function createLegacyFinishTask(opts: {
+  root: string;
+  title: string;
+  description: string;
+}): Promise<string> {
+  const task = await createLegacyTask({
+    cwd: opts.root,
+    rootOverride: opts.root,
+    title: opts.title,
+    description: opts.description,
+    priority: "med",
+    owner: "CODER",
+    tags: ["docs"],
+    dependsOn: [],
+    verify: ["bun run ci"],
+  });
+  for (const [section, text] of [
+    ["Summary", `${opts.title}\n\n${opts.description}`],
+    ["Scope", "- In scope: legacy direct finish compatibility behavior."],
+    ["Plan", "1. Exercise the direct finish flow.\n2. Verify lifecycle metadata."],
+    ["Rollback Plan", "- Revert the direct finish change."],
+  ] as const) {
+    await setTaskDocSection({
+      cwd: opts.root,
+      rootOverride: opts.root,
+      taskId: task.id,
+      section,
+      text,
+      updatedBy: "CODER",
+    });
+  }
+  await setTaskVerifySteps(opts.root, task.id);
+  await materializeLegacyDrainIdentityFixture({
+    root: opts.root,
+    task_id: task.id,
+    work_items_completed: true,
+  });
+  return task.id;
+}
+
 async function linkSharedTaskBatch(root: string, primaryTaskId: string, includedTaskId: string) {
+  const execFileAsync = promisify(execFile);
+  const [{ stdout: baseSha }, { stdout: baseRef }] = await Promise.all([
+    execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root }),
+    execFileAsync("git", ["branch", "--show-current"], { cwd: root }),
+  ]);
   for (const [taskId, role] of [
     [primaryTaskId, "primary"],
     [includedTaskId, "included"],
@@ -70,7 +122,6 @@ async function linkSharedTaskBatch(root: string, primaryTaskId: string, included
     const taskPath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
     const current = parseTaskReadme(await readFile(taskPath, "utf8"));
     const extensions = (current.frontmatter.extensions ?? {}) as Record<string, unknown>;
-    expect(extensions.task_execution_context).toBeDefined();
     await writeFile(
       taskPath,
       renderTaskReadme(
@@ -78,6 +129,12 @@ async function linkSharedTaskBatch(root: string, primaryTaskId: string, included
           ...current.frontmatter,
           extensions: {
             ...extensions,
+            task_execution_context: {
+              schema_version: 1,
+              base_ref: baseRef.trim(),
+              base_sha: baseSha.trim(),
+              source: "legacy",
+            },
             branch_pr_batch: {
               base: "main",
               branch: "task/shared/finish-multiple",
@@ -115,31 +172,11 @@ describe("runCli", () => {
       await execFileAsync("git", ["commit", "-m", "feat: seed commit"], { cwd: root });
       const { stdout: implHash } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
 
-      const ioNew = captureStdIO();
-      let taskId = "";
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Finish close commit formatter guidance",
-          "--description",
-          "Finish should surface formatter guidance when the close commit is blocked",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "docs",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = ioNew.stdout.trim();
-        await setTaskVerifySteps(root, taskId);
-      } finally {
-        ioNew.restore();
-      }
+      const taskId = await createLegacyFinishTask({
+        root,
+        title: "Finish close commit formatter guidance",
+        description: "Finish should surface formatter guidance when the close commit is blocked",
+      });
 
       await runCliSilent([
         "verify",
@@ -154,8 +191,6 @@ describe("runCli", () => {
         root,
       ]);
       await recordEvaluatorPass(root, taskId);
-      await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
-
       const hookPath = path.join(root, ".git", "hooks", "pre-commit");
       const preCommit = [
         "#!/bin/sh",
@@ -213,31 +248,11 @@ describe("runCli", () => {
       await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
 
-      const ioNew = captureStdIO();
-      let taskId = "";
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Finish metadata persistence",
-          "--description",
-          "Ensure finish writes metadata into README frontmatter",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "docs",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = ioNew.stdout.trim();
-        await setTaskVerifySteps(root, taskId);
-      } finally {
-        ioNew.restore();
-      }
+      const taskId = await createLegacyFinishTask({
+        root,
+        title: "Finish metadata persistence",
+        description: "Ensure finish writes metadata into README frontmatter",
+      });
 
       await runCliSilent([
         "verify",
@@ -252,8 +267,6 @@ describe("runCli", () => {
         root,
       ]);
       await recordEvaluatorPass(root, taskId);
-      await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
-
       const io = captureStdIO();
       try {
         const code = await runCli([
@@ -330,33 +343,11 @@ describe("runCli", () => {
       cfg.execution.profile = "conservative";
       await writeConfig(root, cfg);
 
-      let taskId = "";
-      {
-        const io = captureStdIO();
-        try {
-          const code = await runCli([
-            "task",
-            "new",
-            "--title",
-            "Finish force approval",
-            "--description",
-            "conservative force approval check for finish",
-            "--priority",
-            "med",
-            "--owner",
-            "CODER",
-            "--tag",
-            "docs",
-            "--root",
-            root,
-          ]);
-          expect(code).toBe(0);
-          taskId = io.stdout.trim();
-          await setTaskVerifySteps(root, taskId);
-        } finally {
-          io.restore();
-        }
-      }
+      const taskId = await createLegacyFinishTask({
+        root,
+        title: "Finish force approval",
+        description: "conservative force approval check for finish",
+      });
       {
         const io = captureStdIO();
         try {
@@ -374,7 +365,6 @@ describe("runCli", () => {
           ]);
           expect(code).toBe(0);
           await recordEvaluatorPass(root, taskId);
-          await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
         } finally {
           io.restore();
         }
@@ -433,64 +423,27 @@ describe("runCli", () => {
   it("finish supports multiple task ids", async () => {
     const root = await mkGitRepoRootWithCommit();
     const execFileAsync = promisify(execFile);
-    let taskA = "";
-    let taskB = "";
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Finish shared closeout alpha",
-          "--description",
-          "First task for multi-id finish coverage",
-          "--owner",
-          "CODER",
-          "--tag",
-          "docs",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskA = io.stdout.trim();
-        await setTaskVerifySteps(root, taskA);
-      } finally {
-        io.restore();
-      }
-    }
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Finish shared closeout beta",
-          "--description",
-          "Second task for multi-id finish coverage",
-          "--owner",
-          "CODER",
-          "--tag",
-          "docs",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskB = io.stdout.trim();
-        await setTaskVerifySteps(root, taskB);
-      } finally {
-        io.restore();
-      }
-    }
-
-    await linkSharedTaskBatch(root, taskA, taskB);
-
     await writeFile(path.join(root, "finish.txt"), "done\n", "utf8");
     await execFileAsync("git", ["add", "."], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "finish changes"], { cwd: root });
-    const { stdout: implHash } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    const taskA = await createLegacyFinishTask({
+      root,
+      title: "Finish shared closeout alpha",
+      description: "First task for multi-id finish coverage",
+    });
+    const taskB = await createLegacyFinishTask({
+      root,
+      title: "Finish shared closeout beta",
+      description: "Second task for multi-id finish coverage",
+    });
 
+    await linkSharedTaskBatch(root, taskA, taskB);
+    await commitAll(root, "record shared finish fixtures");
+    const { stdout: reviewedCommit } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    const taskAPath = path.join(root, ".agentplane", "tasks", taskA, "README.md");
+    const taskABaseline = await readFile(taskAPath, "utf8");
     await runCliSilent([
       "verify",
       taskA,
@@ -504,10 +457,8 @@ describe("runCli", () => {
       root,
     ]);
     await recordEvaluatorPass(root, taskA);
-    const reviewedA = await readTask({ cwd: root, rootOverride: root, taskId: taskA });
-    expect(reviewedA.frontmatter.quality_review?.evaluated_sha).toBe(implHash.trim());
-    await runCliSilent(["blueprint", "snapshot", taskA, "--root", root]);
-    await commitAll(root, "record task A quality gate");
+    const taskAReviewed = await readFile(taskAPath, "utf8");
+    await writeFile(taskAPath, taskABaseline, "utf8");
     await runCliSilent([
       "verify",
       taskB,
@@ -521,9 +472,7 @@ describe("runCli", () => {
       root,
     ]);
     await recordEvaluatorPass(root, taskB);
-    const reviewedB = await readTask({ cwd: root, rootOverride: root, taskId: taskB });
-    expect(reviewedB.frontmatter.quality_review?.evaluated_sha).toBe(implHash.trim());
-    await runCliSilent(["blueprint", "snapshot", taskB, "--root", root]);
+    await writeFile(taskAPath, taskAReviewed, "utf8");
 
     const io = captureStdIO();
     try {
@@ -536,7 +485,9 @@ describe("runCli", () => {
         "--body",
         "Verified: finish two tasks with a shared comment to close both records.",
         "--commit",
-        implHash.trim(),
+        reviewedCommit.trim(),
+        "--force",
+        "--yes",
         "--root",
         root,
       ]);

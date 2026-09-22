@@ -301,7 +301,7 @@ describe("local CI fast selection", () => {
     expect(plan.bucket).toBe("route-oracle");
     expect(plan.reason).toBe("route_oracle_paths_only");
     expect(plan.testFiles).toContain(
-      "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts",
+      "packages/agentplane/src/commands/task/agent-action-packet.test.ts",
     );
   });
 
@@ -666,7 +666,7 @@ describe("local CI fast selection", () => {
       "packages/agentplane/src/cli/run-cli.core.tasks.query-listing.test.ts",
     );
     expect(plan.testFiles).toContain(
-      "packages/agentplane/src/cli/run-cli.core.tasks.doc-write.test.ts",
+      "packages/agentplane/src/cli/run-cli.core.tasks.doc-write.validation.test.ts",
     );
     expect(plan.testFiles).toContain(
       "packages/agentplane/src/cli/run-cli.core.tasks.scaffold-derive.test.ts",

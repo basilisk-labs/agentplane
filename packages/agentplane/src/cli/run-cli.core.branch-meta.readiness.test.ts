@@ -27,6 +27,7 @@ import {
 } from "../agents/agents-template.js";
 import * as taskBackend from "../backends/task-backend.js";
 import { cloudProjectionIdentitySha256 } from "../backends/task-backend/cloud-projection-identity.js";
+import { materializeLegacyDrainIdentityFixture } from "../commands/shared/native-task-identity-fixture.js";
 import {
   captureStdIO,
   setTaskVerifySteps,
@@ -160,7 +161,11 @@ describe("runCli", () => {
     await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
     await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
-    await runCliSilent(["blueprint", "snapshot", depId, "--root", root]);
+    await materializeLegacyDrainIdentityFixture({
+      root,
+      task_id: depId,
+      work_items_completed: true,
+    });
     await recordVerificationOk(root, depId);
     const finishIo = captureStdIO();
     try {
@@ -652,7 +657,7 @@ describe("runCli", () => {
     }
   });
 
-  it("preflight --json classifies blueprint artifacts as task evidence", async () => {
+  it("preflight --json classifies retired blueprint artifacts as unknown drift", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const taskId = "202604100023-BLUEPT";
@@ -698,7 +703,7 @@ describe("runCli", () => {
       const payload = JSON.parse(io.stdout) as {
         task_artifact_drift?: {
           actionable?: boolean;
-          counts?: { task_blueprint_evidence?: number; unknown_task_artifact?: number };
+          counts?: { unknown_task_artifact?: number };
           items?: {
             path?: string;
             artifact_kind?: string;
@@ -710,21 +715,20 @@ describe("runCli", () => {
         };
       };
       expect(payload.task_artifact_drift?.actionable).toBe(true);
-      expect(payload.task_artifact_drift?.counts?.task_blueprint_evidence).toBe(1);
-      expect(payload.task_artifact_drift?.counts?.unknown_task_artifact).toBe(0);
+      expect(payload.task_artifact_drift?.counts?.unknown_task_artifact).toBe(1);
       expect(payload.task_artifact_drift?.items).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
             path: `.agentplane/tasks/${taskId}/blueprint/resolved-snapshot.json`,
-            artifact_kind: "blueprint",
-            classification: "task_blueprint_evidence",
-            action: "commit_with_task_evidence",
+            artifact_kind: "unknown",
+            classification: "unknown_task_artifact",
+            action: "inspect",
             status: "DOING",
           }),
         ]),
       );
       expect(payload.task_artifact_drift?.items?.[0]?.reason).toContain(
-        "task-local verification evidence",
+        "ownership could not be classified",
       );
     } finally {
       io.restore();
@@ -811,7 +815,7 @@ describe("runCli", () => {
       const code = await runCli(["preflight", "--root", root]);
       expect(code).toBe(0);
       expect(io.stdout).toContain(
-        "- task artifact drift: tasks=202604100023-OTHER; active_parallel=0; stale_done_handoff=0; blueprint_evidence=0; unknown=1; actionable=yes",
+        "- task artifact drift: tasks=202604100023-OTHER; active_parallel=0; stale_done_handoff=0; unknown=1; actionable=yes",
       );
       expect(io.stdout).toContain(
         "- git status --short --untracked-files=all -- .agentplane/tasks: actionable task artifact drift detected for 202604100023-OTHER",

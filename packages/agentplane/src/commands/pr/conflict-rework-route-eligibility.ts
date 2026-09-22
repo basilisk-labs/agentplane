@@ -236,6 +236,7 @@ export function resolveConflictRouteEligibility(opts: {
   now: Date;
 }): ConflictRouteEligibility {
   const taskStatus = opts.report.task.status.trim().toUpperCase();
+  const providerReady = opts.report.task.canonicalProviderReady === true;
   if (opts.report.task.verification !== "ok") {
     return {
       state: "ineligible",
@@ -253,7 +254,7 @@ export function resolveConflictRouteEligibility(opts: {
         },
       };
     }
-    if (taskStatus === "DOING") {
+    if (taskStatus === "DOING" && !providerReady) {
       return {
         state: "ineligible",
         reason:
@@ -261,7 +262,7 @@ export function resolveConflictRouteEligibility(opts: {
       };
     }
   }
-  if (taskStatus !== "DONE") {
+  if (taskStatus !== "DONE" && !providerReady) {
     return {
       state: "ineligible",
       reason: "semantic conflict rework requires a verified DOING or DONE task",

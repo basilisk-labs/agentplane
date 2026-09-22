@@ -14,7 +14,7 @@ Commands:
     task advance  Return one compact external-agent action from the shared task supervisor state.
     task brief  Print an agent-ready task brief without remote lookups by default.
     task create  Create a task from an outcome and explicit semantic intent.
-    task run  Supervise a direct or branch_pr task through its typed lifecycle.
+    task run  Execute one eligible Task Kernel semantic episode with the managed runner.
   Setup:
     init  Initialize agentplane project files under .agentplane/.
   Quality:
@@ -92,20 +92,17 @@ Usage:
   agentplane task new --title <text> --description <text> --owner <id> [options]
 
 Options:
-  --canonical  Create an atomic canonical Task during staged controller cutover.
   --title <text>  Task title. (required)
   --description <text>  Task description. (required)
   --owner <id>  Owner id (e.g. CODER). (required)
   --priority <low|normal|med|high>  Task priority (default: med). (choices=low|normal|med|high, default=med)
   --tag <tag>  Repeatable. Adds a tag (must provide at least one). (repeatable, min=1)
-  --task-kind <analysis|content|docs|code|release|ops|context>  Structured blueprint task-kind intent. Tags/title remain fallback hints. (choices=analysis|content|docs|code|release|ops|context)
-  --mutation-scope <none|docs|code|release|ops|context|unknown>  Structured mutation scope used by blueprint resolution. (choices=none|docs|code|release|ops|context|unknown)
-  --risk <risk>  Structured risk flag used by blueprint resolution. Repeatable. (repeatable, choices=network|credentials|deploy|publish|merge|security|external_system)
-  --blueprint-request <id>  Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|context.assimilation|context.maximum_assimilation|post_run.improvement_review|release.strict|ops.approval)
+  --task-kind <analysis|content|docs|code|release|ops|context>  Structured task-kind intent. Tags/title remain fallback hints. (choices=analysis|content|docs|code|release|ops|context)
+  --mutation-scope <none|docs|code|release|ops|context|unknown>  Structured task mutation scope. (choices=none|docs|code|release|ops|context|unknown)
+  --risk <risk>  Structured task risk flag. Repeatable. (repeatable, choices=network|credentials|deploy|publish|merge|security|external_system)
   --route <auto|direct|branch_pr>  Task execution route. auto selects direct unless repository policy or isolation risk requires branch_pr. (choices=auto|direct|branch_pr, default=auto)
   --depends-on <task-id>  Repeatable. Adds a dependency. Special-case: '[]' is treated as empty. (repeatable)
   --verify <command>  Repeatable. Verification commands/checks to run for this task. (repeatable)
-  --show-blueprint  Print a resolved blueprint route preview to stderr after creation without changing stdout. (default=false)
   --allow-duplicate  Allow creating a task even when an open task with a highly similar title already exists. (default=false)
 "
 `;

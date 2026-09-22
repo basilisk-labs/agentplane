@@ -498,8 +498,15 @@ export async function prepareConflictReworkPacket(opts: {
       `candidate conflict paths cannot be derived without mutation: ${err instanceof Error ? err.message : String(err)}`,
     );
   }
-  const basePaths = [...new Set(baseChanged)].toSorted((left, right) => left.localeCompare(right));
-  const headPaths = [...new Set(headChanged)].toSorted((left, right) => left.localeCompare(right));
+  const taskArtifactPrefix = `.agentplane/tasks/${opts.taskId}/`;
+  const isTaskArtifact = (candidate: string) =>
+    candidate === `.agentplane/tasks/${opts.taskId}` || candidate.startsWith(taskArtifactPrefix);
+  const basePaths = [...new Set(baseChanged)]
+    .filter((candidate) => !isTaskArtifact(candidate))
+    .toSorted((left, right) => left.localeCompare(right));
+  const headPaths = [...new Set(headChanged)]
+    .filter((candidate) => !isTaskArtifact(candidate))
+    .toSorted((left, right) => left.localeCompare(right));
   const basePathSet = new Set(basePaths);
   const candidatePaths = headPaths.filter((candidate) => basePathSet.has(candidate));
   const checks = normalizeConflictReworkChecks(opts.report);

@@ -17,7 +17,12 @@ import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
 
 import { defaultConfig, extractTaskSuffix, type ResolvedProject } from "./core-imports.js";
-import { readTask, renderTaskReadme } from "@agentplaneorg/core/tasks";
+import {
+  createTask as createLegacyTask,
+  readTask,
+  renderTaskReadme,
+  setTaskDocSection,
+} from "@agentplaneorg/core/tasks";
 
 import { runCli } from "./run-cli.js";
 import {
@@ -56,6 +61,40 @@ import {
 
 installRunCliIntegrationHarness();
 
+async function createLegacyPolicyTask(opts: {
+  root: string;
+  title: string;
+  description: string;
+  tag?: string;
+}): Promise<string> {
+  const task = await createLegacyTask({
+    cwd: opts.root,
+    rootOverride: opts.root,
+    title: opts.title,
+    description: opts.description,
+    priority: "med",
+    owner: "CODER",
+    tags: [opts.tag ?? "nodejs"],
+    dependsOn: [],
+    verify: ["bun run test:cli:core"],
+  });
+  for (const [section, text] of [
+    ["Summary", `${opts.title}\n\n${opts.description}`],
+    ["Scope", "- In scope: legacy status commit policy behavior."],
+    ["Rollback Plan", "- Revert the generated status commit."],
+  ] as const) {
+    await setTaskDocSection({
+      cwd: opts.root,
+      rootOverride: opts.root,
+      taskId: task.id,
+      section,
+      text,
+      updatedBy: "PLANNER",
+    });
+  }
+  return task.id;
+}
+
 describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
   it("start blocks comment-driven commits when status_commit_policy=confirm", async () => {
     const root = await mkGitRepoRootWithCommit();
@@ -63,30 +102,11 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
     cfg.status_commit_policy = "confirm";
     await writeConfig(root, cfg);
 
-    const ioNew = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Start task",
-        "--description",
-        "Confirm policy",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioNew.stdout.trim();
-    } finally {
-      ioNew.restore();
-    }
+    const taskId = await createLegacyPolicyTask({
+      root,
+      title: "Start task",
+      description: "Confirm policy",
+    });
     await approveTaskPlan(root, taskId);
 
     const io = captureStdIO();
@@ -115,30 +135,12 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root, { status_commit_policy: "warn" });
 
-    const ioNew = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Transition task",
-        "--description",
-        "non-major transition check",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "docs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioNew.stdout.trim();
-    } finally {
-      ioNew.restore();
-    }
+    const taskId = await createLegacyPolicyTask({
+      root,
+      title: "Transition task",
+      description: "non-major transition check",
+      tag: "docs",
+    });
 
     const io = captureStdIO();
     try {
@@ -173,30 +175,11 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
       await configureGitUser(root);
       await commitAll(root, "seed");
 
-      const ioNew = captureStdIO();
-      let taskId = "";
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Start task",
-          "--description",
-          "Warn policy",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "nodejs",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = ioNew.stdout.trim();
-      } finally {
-        ioNew.restore();
-      }
+      const taskId = await createLegacyPolicyTask({
+        root,
+        title: "Start task",
+        description: "Warn policy",
+      });
       await approveTaskPlan(root, taskId);
 
       const io = captureStdIO();
@@ -229,30 +212,11 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
     await configureGitUser(root);
     await commitAll(root, "seed");
 
-    const ioNew = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Start task",
-        "--description",
-        "Auto allow",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioNew.stdout.trim();
-    } finally {
-      ioNew.restore();
-    }
+    const taskId = await createLegacyPolicyTask({
+      root,
+      title: "Start task",
+      description: "Auto allow",
+    });
     await approveTaskPlan(root, taskId);
     const io = captureStdIO();
     try {
@@ -285,30 +249,11 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
       await configureGitUser(root);
       await commitAll(root, "seed");
 
-      const ioNew = captureStdIO();
-      let taskId = "";
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Start task",
-          "--description",
-          "Confirm acknowledged",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "nodejs",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = ioNew.stdout.trim();
-      } finally {
-        ioNew.restore();
-      }
+      const taskId = await createLegacyPolicyTask({
+        root,
+        title: "Start task",
+        description: "Confirm acknowledged",
+      });
       await approveTaskPlan(root, taskId);
       await stageGitignoreIfPresent(root);
       await commitAll(root, "fixture: approve task");

@@ -83,6 +83,35 @@ function projectApprovedTypeScript7Lock(lock) {
   return projected;
 }
 
+function projectApprovedWorkspaceReleaseLock(driverLock, subjectLock) {
+  const projected = structuredClone(driverLock);
+  const workspaceKeys = ["packages/agentplane", "packages/core", "packages/recipes"];
+  const driverVersions = workspaceKeys.map((key) => projected.workspaces?.[key]?.version);
+  const subjectVersions = workspaceKeys.map((key) => subjectLock.workspaces?.[key]?.version);
+  const driverVersion = driverVersions[0];
+  const subjectVersion = subjectVersions[0];
+  if (
+    typeof driverVersion !== "string" ||
+    typeof subjectVersion !== "string" ||
+    !driverVersions.every((version) => version === driverVersion) ||
+    !subjectVersions.every((version) => version === subjectVersion) ||
+    projected.workspaces?.["packages/agentplane"]?.dependencies?.["@agentplaneorg/core"] !==
+      driverVersion ||
+    projected.workspaces?.["packages/agentplane"]?.dependencies?.["@agentplaneorg/recipes"] !==
+      driverVersion ||
+    projected.workspaces?.["packages/testkit"]?.dependencies?.["@agentplaneorg/core"] !==
+      driverVersion
+  ) {
+    return null;
+  }
+  for (const key of workspaceKeys) projected.workspaces[key].version = subjectVersion;
+  projected.workspaces["packages/agentplane"].dependencies["@agentplaneorg/core"] = subjectVersion;
+  projected.workspaces["packages/agentplane"].dependencies["@agentplaneorg/recipes"] =
+    subjectVersion;
+  projected.workspaces["packages/testkit"].dependencies["@agentplaneorg/core"] = subjectVersion;
+  return projected;
+}
+
 export function assertAnchorLockCompatible(subjectLockBytes, driverLockBytes) {
   if (sha256(subjectLockBytes) === sha256(driverLockBytes)) return;
   let subjectLock;
@@ -93,7 +122,11 @@ export function assertAnchorLockCompatible(subjectLockBytes, driverLockBytes) {
   } catch {
     fail("ANCHOR_LOCK_MISMATCH");
   }
-  const projected = projectApprovedTypeScript7Lock(driverLock);
+  const typescriptProjected = projectApprovedTypeScript7Lock(driverLock);
+  const projected =
+    typescriptProjected === null
+      ? null
+      : projectApprovedWorkspaceReleaseLock(typescriptProjected, subjectLock);
   if (projected === null || stableJson(projected) !== stableJson(subjectLock)) {
     fail("ANCHOR_LOCK_MISMATCH");
   }

@@ -19,10 +19,8 @@ import {
   applyExternalEvaluatorResult,
   isExternalEvaluatorResultApplied,
 } from "./external-agent-evaluator.js";
-import {
-  applyExternalImplementationResult,
-  applyExternalReadOnlyWorktreeObservation,
-} from "./external-agent-implementation-authority.js";
+import { applyExternalImplementationResult } from "./external-agent-implementation-authority.js";
+import { applyExternalReadOnlyWorktreeObservation } from "./external-agent-read-only-observation.js";
 import {
   applyExternalPlanningResult,
   isExternalPlanningResultApplied,

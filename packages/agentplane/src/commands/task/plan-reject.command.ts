@@ -111,6 +111,7 @@ export function makeRunTaskPlanRejectHandler(getCtx: (cmd: string) => Promise<Co
           rejection_evidence_digest: rejectionEvidence,
         },
         `reject:${rejectionEvidence}`,
+        true,
       );
       const result = requireKernelCommit(
         await runtime.lifecycle.apply({

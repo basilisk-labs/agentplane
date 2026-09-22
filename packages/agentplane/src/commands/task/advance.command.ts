@@ -7,13 +7,17 @@ import type { CommandContext } from "../shared/task-backend.js";
 import { resolveTaskOwnerCommandContext } from "../shared/task-backend.js";
 import type { TaskAdvanceParsed } from "./advance.spec.js";
 import { advanceTaskStep } from "./advance-task-step.js";
-import { createKernelProviderEffectPortResolver } from "./kernel-provider-effect-coordinator.js";
+import {
+  createKernelProviderEffectPortResolver,
+  decideCanonicalWorkflowEffect,
+} from "./kernel-provider-effect-coordinator.js";
 import {
   recoverCanonicalControllerSuspensions,
   resolveCanonicalControllerCommand,
 } from "./kernel-controller-handoff.js";
 import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
 import { classifyKernelCutover } from "./kernel-cutover.js";
+import { advanceOrdinaryRoute } from "./ordinary-advance-step.js";
 
 function legacyMigrationRequired(taskId: string, reason: string): CliError {
   return new CliError({
@@ -116,6 +120,17 @@ export function makeRunTaskAdvanceHandler(deps: {
     }
     if (parsed.replacement) {
       throw new Error("Canonical replacement requires an explicit recovery episode");
+    }
+    const externalConflictResult =
+      parsed.result?.replaceAll("\\", "/").includes("/agentplane/external-agent/") === true;
+    const workflow =
+      parsed.remote && !parsed.result
+        ? await decideCanonicalWorkflowEffect(command, parsed.taskId, true)
+        : null;
+    if (externalConflictResult || workflow?.workflowStep.id === "agent.provider_conflict_rework") {
+      const compatibility = await advanceOrdinaryRoute({ ctx, parsed, command });
+      createCliEmitter().json(compatibility.packet);
+      return 0;
     }
     const packet = await advanceTaskStep({
       command,

@@ -119,7 +119,7 @@ describe("runCli CommandSession", () => {
     }
   });
 
-  it("keeps local task routes lazy and does not resolve provider capabilities", async () => {
+  it("keeps native local task reads lazy and does not resolve provider capabilities", async () => {
     const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "direct";
@@ -158,18 +158,16 @@ describe("runCli CommandSession", () => {
       expect(io.stderr).toContain('"capability":"route.local"');
       expect(io.stderr).not.toContain('"capability":"route.remote"');
       expect(io.stderr).not.toContain('"capability":"provider"');
-      expect(io.stderr).toContain('"component":"preparation-graph"');
-      expect(io.stderr).toContain('"node":"task_backend_read"');
-      expect(io.stderr).toContain('"node":"policy_authority_decision"');
-      expect(io.stderr).toContain('"cacheability":"none"');
+      expect(io.stderr).toContain('"component":"command-session"');
+      expect(io.stderr).toContain('"node":"command_context"');
+      expect(io.stderr).toContain('"event":"task_loaded"');
+      expect(io.stderr).not.toContain('"component":"preparation-graph"');
 
       const nextCode = await runCli(["task", "next-action", taskId, "--explain", "--root", root]);
       expect(nextCode).toBe(0);
-      expect(io.stderr).toContain('"node":"task_context_assembly"');
-      expect(io.stderr).toContain('"node":"prompt_compilation"');
-      expect(io.stderr).toContain('"node":"blueprint_resolution"');
-      expect(io.stderr).toContain('"node":"knowledge_retrieval"');
-      expect(io.stderr).toContain('"node":"rendering"');
+      expect(io.stdout).toContain("kernel_plan_required");
+      expect(io.stderr).not.toContain('"capability":"route.remote"');
+      expect(io.stderr).not.toContain('"capability":"provider"');
     } finally {
       if (previousTrace === undefined) {
         delete process.env.AGENTPLANE_TRACE;
@@ -181,7 +179,7 @@ describe("runCli CommandSession", () => {
     }
   });
 
-  it("traces the branch_pr preparation graph without implicit provider access", async () => {
+  it("keeps branch_pr planning reads provider-free", async () => {
     const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -217,10 +215,13 @@ describe("runCli CommandSession", () => {
     try {
       const code = await runCli(["task", "status", taskId, "--route", "--root", root]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("branch_pr");
-      expect(io.stderr).toContain('"node":"task_backend_read"');
-      expect(io.stderr).toContain('"node":"policy_authority_decision"');
+      expect(io.stdout).toContain("source:    task_kernel");
+      expect(io.stdout).toContain("state:     PLANNING");
+      expect(io.stdout).toContain("authority: read_only");
+      expect(io.stderr).toContain('"capability":"route.local"');
+      expect(io.stderr).toContain('"event":"task_loaded"');
       expect(io.stderr).not.toContain('"node":"remote_provider_state"');
+      expect(io.stderr).not.toContain('"capability":"provider"');
     } finally {
       if (previousTrace === undefined) {
         delete process.env.AGENTPLANE_TRACE;

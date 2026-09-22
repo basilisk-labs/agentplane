@@ -185,7 +185,11 @@ export async function createKernelRuntime(opts: {
     const context = await native.readContext(opts.task_id);
     let grant: k.ExecutionAuthority;
     if (planning) {
-      if (payload.kind !== "capture_intent" && payload.kind !== "propose_plan")
+      if (
+        payload.kind !== "capture_intent" &&
+        payload.kind !== "propose_plan" &&
+        payload.kind !== "reject_plan"
+      )
         throw new Error("Planning authority cannot execute implementation commands");
       const read = await adapter.read(opts.task_id);
       if (

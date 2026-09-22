@@ -9,12 +9,14 @@ import {
 } from "./external-agent-implementation-finalization.js";
 import {
   authorityPath,
+  conflictEvidenceAuthority,
   pathAllowed,
   recoverExternalConflictEvidence,
   applyExternalConflictResolution,
 } from "./external-agent-conflict-application.js";
 import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
+import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
 import { CliError } from "../../shared/errors.js";
 import { CI_PATH_PREFIXES } from "../../shared/protected-paths.js";
 import { cmdCommit } from "../guard/impl/commit.js";
@@ -49,6 +51,8 @@ import {
   recoverExternalVerificationCheckpoint,
 } from "./external-agent-implementation-checkpoint.js";
 import { resolveTaskExecutionContext } from "../../runtime/task-execution-context/index.js";
+import { refreshExternalAgentRoute } from "./external-agent-result-routing.js";
+import { finalizeKernelConflictRework } from "./kernel-conflict-rework.js";
 export function assertExternalImplementationReturnState(opts: {
   exchange: ExternalAgent.ExternalAgentExchange;
   work_order: AgentWorkOrderV2;
@@ -122,46 +126,7 @@ export function assertExternalImplementationReturnState(opts: {
   return changed;
 }
 
-export async function applyExternalReadOnlyWorktreeObservation(opts: {
-  command: CommandContext;
-  exchange: ExternalAgent.ExternalAgentExchange;
-  envelope: ExternalAgent.ExternalAgentResultEnvelope;
-}): Promise<void> {
-  await cmdTaskComment({
-    ctx: opts.command,
-    cwd: opts.exchange.checkout,
-    taskId: opts.exchange.task_id,
-    author: "SUPERVISOR",
-    body:
-      `Read-only worktree observation (${opts.envelope.result.status}): ` +
-      opts.envelope.result.summary,
-    quiet: true,
-  });
-  const status = await readDirectRepositoryStatus(opts.exchange.checkout);
-  if (!hasChangedTaskArtifacts(status?.lines ?? [], opts.exchange.task_id)) return;
-  const exitCode = await cmdCommit({
-    ctx: opts.command,
-    cwd: opts.exchange.checkout,
-    taskId: opts.exchange.task_id,
-    message: `🚧 ${opts.exchange.task_id.split("-").at(-1)} task: record worktree observation`,
-    close: false,
-    allow: [],
-    autoAllow: false,
-    allowTasks: true,
-    allowBase: false,
-    allowPolicy: false,
-    allowConfig: false,
-    allowHooks: false,
-    allowCI: false,
-    requireClean: false,
-    quiet: true,
-    closeUnstageOthers: false,
-    closeCheckOnly: false,
-  });
-  if (exitCode !== 0) throw new Error(`External worktree observation commit exited ${exitCode}.`);
-}
-
-export const blockingImplementationAuthorityViolations = (items: readonly string[]): string[] =>
+const blockingImplementationAuthorityViolations = (items: readonly string[]): string[] =>
   items.filter((violation) => !violation.startsWith("verification:"));
 
 function assertScopeExtensionBlockerPreservedBaseline(opts: {
@@ -492,6 +457,28 @@ export async function applyExternalImplementationResult(opts: {
       });
   if (implementation.status !== "ready") {
     throw new CliError({ code: "E_VALIDATION", message: implementation.reason });
+  }
+  if (conflictContext && Object.hasOwn(taskAtReturn.extensions ?? {}, TASK_KERNEL_EXTENSION)) {
+    await finalizeKernelConflictRework({
+      command: opts.command,
+      task_id: opts.exchange.task_id,
+      operation_id: `provider-conflict-rework:${opts.exchange.result_digest ?? "missing"}`,
+      evidence_message: async () => {
+        const evidenceAuthority = conflictEvidenceAuthority(
+          await refreshExternalAgentRoute({
+            cwd: opts.exchange.checkout,
+            task_id: opts.exchange.task_id,
+            include_remote: true,
+          }),
+        );
+        return (
+          `🚧 ${opts.exchange.task_id.split("-").at(-1)} task: record external implementation evidence` +
+          `\n\nAgentPlane-Result: ${opts.exchange.result_digest}` +
+          `\nAgentPlane-Postcondition: ${evidenceAuthority}`
+        );
+      },
+    });
+    return;
   }
   const workItemId = opts.work_order.task.work_item_id ?? null;
   const taskCentric = taskCentricAggregateFromExtensions(taskAtReturn.extensions);

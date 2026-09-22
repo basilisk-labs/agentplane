@@ -22,7 +22,7 @@ import { cmdPrCheck } from "./check.js";
 import { cmdPrConflictRework } from "./conflict-rework.command.js";
 import { cmdPrCloseSuperseded } from "./close-superseded.js";
 import { cmdPrClose } from "./close.js";
-import { cmdPrFlowStatus } from "./flow-status.js";
+import { cmdPrFlowStatus } from "./flow-status.command.js";
 import { cmdPrNote } from "./note.js";
 import { cmdPrOpen } from "./open.js";
 import { cmdPrUpdate } from "./update.js";

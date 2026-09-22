@@ -18,6 +18,7 @@ import {
   writeConfig,
   writeFile,
 } from "@agentplane/testkit/cli-core-pr-flow";
+import { materializeLegacyDrainIdentityFixture } from "../commands/shared/native-task-identity-fixture.js";
 
 describe("runCli PR feedback regressions", { timeout: PR_FLOW_LONG_TIMEOUT_MS }, () => {
   it(
@@ -63,6 +64,13 @@ describe("runCli PR feedback regressions", { timeout: PR_FLOW_LONG_TIMEOUT_MS },
         ioTask.restore();
       }
 
+      await materializeLegacyDrainIdentityFixture({
+        root,
+        task_id: taskId,
+        adopt_canonical_as_legacy: true,
+        ownership_only: true,
+      });
+
       await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
@@ -97,6 +105,7 @@ describe("runCli PR feedback regressions", { timeout: PR_FLOW_LONG_TIMEOUT_MS },
         "--root",
         root,
       ]);
+      await materializeLegacyDrainIdentityFixture({ root, task_id: taskId });
       await runCliSilent([
         "verify",
         taskId,
@@ -117,7 +126,7 @@ describe("runCli PR feedback regressions", { timeout: PR_FLOW_LONG_TIMEOUT_MS },
       const io = captureStdIO();
       try {
         const code = await runCli(["pr", "check", taskId, "--root", root]);
-        expect(code).toBe(0);
+        expect(code, io.stderr).toBe(0);
         expect(io.stdout).toContain("✅ pr check");
         expect(io.stderr).not.toContain("Verify state stale");
       } finally {

@@ -5,8 +5,13 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { defaultConfig } from "@agentplaneorg/core/config";
-import { readTask } from "@agentplaneorg/core/tasks";
+import {
+  createTask as createLegacyTask,
+  readTask,
+  setTaskDocSection,
+} from "@agentplaneorg/core/tasks";
 
+import { materializeLegacyDrainIdentityFixture } from "../commands/shared/native-task-identity-fixture.js";
 import { runCli } from "./run-cli.js";
 import {
   captureStdIO,
@@ -73,6 +78,47 @@ async function recordEvaluatorReview(root: string, taskId: string, note: string)
   }
 }
 
+async function createLegacyFinishTask(opts: {
+  root: string;
+  title: string;
+  description: string;
+  tag?: string;
+}): Promise<string> {
+  const task = await createLegacyTask({
+    cwd: opts.root,
+    rootOverride: opts.root,
+    title: opts.title,
+    description: opts.description,
+    priority: "med",
+    owner: "CODER",
+    tags: [opts.tag ?? "nodejs"],
+    dependsOn: [],
+    verify: ["bun run ci"],
+  });
+  for (const [section, text] of [
+    ["Summary", `${opts.title}\n\n${opts.description}`],
+    ["Scope", "- In scope: legacy direct close compatibility behavior."],
+    ["Plan", "1. Exercise the direct close flow.\n2. Verify close artifacts and state."],
+    ["Rollback Plan", "- Revert the deterministic close commit."],
+  ] as const) {
+    await setTaskDocSection({
+      cwd: opts.root,
+      rootOverride: opts.root,
+      taskId: task.id,
+      section,
+      text,
+      updatedBy: "CODER",
+    });
+  }
+  await setTaskVerifySteps(opts.root, task.id);
+  await materializeLegacyDrainIdentityFixture({
+    root: opts.root,
+    task_id: task.id,
+    work_items_completed: true,
+  });
+  return task.id;
+}
+
 describe("runCli", () => {
   const BLOCK_FINISH_TIMEOUT_MS = 60_000;
   const BLOCK_FINISH_LONG_TIMEOUT_MS = 180_000;
@@ -92,33 +138,11 @@ describe("runCli", () => {
         cwd: root,
       });
 
-      const ioNew = captureStdIO();
-      let taskId = "";
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Finish task",
-          "--description",
-          "Finish command updates commit metadata",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "nodejs",
-          "--verify",
-          "bun run ci",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = ioNew.stdout.trim();
-        await setTaskVerifySteps(root, taskId);
-      } finally {
-        ioNew.restore();
-      }
+      const taskId = await createLegacyFinishTask({
+        root,
+        title: "Finish task",
+        description: "Finish command updates commit metadata",
+      });
 
       await runCliSilent([
         "verify",
@@ -133,8 +157,6 @@ describe("runCli", () => {
         root,
       ]);
       await recordEvaluatorReview(root, taskId, "EVALUATOR quality gate passed for finish smoke.");
-      await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
-
       await runCliSilent([
         "verify",
         taskId,
@@ -200,33 +222,12 @@ describe("runCli", () => {
       await execFileAsync("git", ["commit", "-m", "feat: seed commit"], { cwd: root });
       const { stdout: implHash } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
 
-      const ioNew = captureStdIO();
-      let taskId = "";
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Finish close commit",
-          "--description",
-          "Finish should optionally create close commit in one command",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "code",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = ioNew.stdout.trim();
-        await setTaskVerifySteps(root, taskId);
-      } finally {
-        ioNew.restore();
-      }
-
-      await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
+      const taskId = await createLegacyFinishTask({
+        root,
+        title: "Finish close commit",
+        description: "Finish should optionally create close commit in one command",
+        tag: "code",
+      });
       await runCliSilent([
         "verify",
         taskId,
@@ -291,67 +292,13 @@ describe("runCli", () => {
       await execFileAsync("git", ["add", "file.txt"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "feat: seed commit"], { cwd: root });
 
-      const ioNew = captureStdIO();
-      let taskId = "";
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Finish commit-from-comment close commit",
-          "--description",
+      const taskId = await createLegacyFinishTask({
+        root,
+        title: "Finish commit-from-comment close commit",
+        description:
           "Finish should keep implementation commit provenance while recording tracked task docs separately",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "docs",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = ioNew.stdout.trim();
-        await setTaskVerifySteps(root, taskId);
-      } finally {
-        ioNew.restore();
-      }
-
-      await runCliSilent([
-        "task",
-        "plan",
-        "set",
-        taskId,
-        "--text",
-        "1. Exercise the commit-from-comment closeout path.\n2. Confirm a generated implementation commit invalidates the earlier quality review.",
-        "--updated-by",
-        "PLANNER",
-        "--root",
-        root,
-      ]);
-      await runCliSilent([
-        "task",
-        "plan",
-        "approve",
-        taskId,
-        "--by",
-        "ORCHESTRATOR",
-        "--root",
-        root,
-      ]);
-
-      await runCliSilent([
-        "task",
-        "start-ready",
-        taskId,
-        "--author",
-        "CODER",
-        "--body",
-        "Start: prepare commit-from-comment finish smoke path.",
-        "--root",
-        root,
-      ]);
-      await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
+        tag: "docs",
+      });
       await runCliSilent([
         "verify",
         taskId,
@@ -425,33 +372,13 @@ describe("runCli", () => {
       await execFileAsync("git", ["commit", "-m", "feat: seed commit"], { cwd: root });
       const { stdout: implHash } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
 
-      const ioNew = captureStdIO();
-      let taskId = "";
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Finish close commit failure",
-          "--description",
+      const taskId = await createLegacyFinishTask({
+        root,
+        title: "Finish close commit failure",
+        description:
           "Finish should report close-commit hook failures with the correct lifecycle phase",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "docs",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = ioNew.stdout.trim();
-        await setTaskVerifySteps(root, taskId);
-      } finally {
-        ioNew.restore();
-      }
-
-      await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
+        tag: "docs",
+      });
       await runCliSilent([
         "verify",
         taskId,
@@ -525,33 +452,13 @@ describe("runCli", () => {
         cwd: root,
       });
 
-      const ioNew = captureStdIO();
-      let taskId = "";
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Finish dirty direct close preflight",
-          "--description",
+      const taskId = await createLegacyFinishTask({
+        root,
+        title: "Finish dirty direct close preflight",
+        description:
           "Finish should not mark DONE before direct close commit preflight rejects unrelated dirt",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "docs",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = ioNew.stdout.trim();
-        await setTaskVerifySteps(root, taskId);
-      } finally {
-        ioNew.restore();
-      }
-
-      await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
+        tag: "docs",
+      });
       await runCliSilent([
         "verify",
         taskId,

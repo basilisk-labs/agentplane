@@ -4,18 +4,20 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { defaultConfig } from "@agentplaneorg/core/config";
+import { createTask } from "@agentplaneorg/core/tasks";
 
+import { materializeLegacyDrainIdentityFixture } from "../commands/shared/native-task-identity-fixture.js";
 import { createIncidentRegistrySkeleton } from "../runtime/incidents/index.js";
 import { runCli } from "./run-cli.js";
 import {
   captureStdIO,
   runCliSilent,
-  setTaskVerifySteps,
   commitAll,
   configureGitUser,
   installRunCliIntegrationHarness,
   mkGitRepoRoot,
   mkGitRepoRootWithCommit,
+  setTaskVerifySteps,
   writeConfig,
 } from "@agentplane/testkit";
 
@@ -32,6 +34,28 @@ function makeCompactOpenEntry(index: number): string {
   return `- id: INC-20260407-${seq} | date: 2026-04-07 | scope: incident budget entry ${index} | tags: workflow, incidents, budget | match: incidents, budget, entry-${index} | failure: incident budget entry ${index} consumed registry space | advice: compact incident budget entry ${index} before promoting more incidents | rule: Incident budget entry ${index} MUST stay compact enough for the policy budget. | evidence: task TASK-${index} | enforcement: manual | fixability: external | state: open`;
 }
 
+async function createLegacyIncidentTask(opts: {
+  root: string;
+  title: string;
+  description: string;
+  tag: string;
+}): Promise<string> {
+  const task = await createTask({
+    cwd: opts.root,
+    rootOverride: opts.root,
+    title: opts.title,
+    description: opts.description,
+    priority: "med",
+    owner: "CODER",
+    tags: [opts.tag],
+    dependsOn: [],
+    verify: [],
+  });
+  await setTaskVerifySteps(opts.root, task.id);
+  await materializeLegacyDrainIdentityFixture({ root: opts.root, task_id: task.id });
+  return task.id;
+}
+
 describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
   it("incidents collect validates structured external candidates and emits json", async () => {
     const root = await mkGitRepoRootWithCommit();
@@ -45,33 +69,12 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
       createIncidentRegistrySkeleton(),
       "utf8",
     );
-    let taskId = "";
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Capture external registry advice",
-          "--description",
-          "Prepare incident-candidate data",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "release",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = io.stdout.trim();
-        await setTaskVerifySteps(root, taskId);
-      } finally {
-        io.restore();
-      }
-    }
+    const taskId = await createLegacyIncidentTask({
+      root,
+      title: "Capture external registry advice",
+      description: "Prepare incident-candidate data",
+      tag: "release",
+    });
 
     expect(
       await runCliSilent([
@@ -93,19 +96,25 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
       ]),
     ).toBe(0);
 
-    expect(
-      await runCliSilent([
-        "verify",
-        taskId,
-        "--ok",
-        "--by",
-        "CODER",
-        "--note",
-        "Verified: finish-time incident promotion path is ready for closeout.",
-        "--root",
-        root,
-      ]),
-    ).toBe(0);
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "verify",
+          taskId,
+          "--ok",
+          "--by",
+          "CODER",
+          "--note",
+          "Verified: finish-time incident promotion path is ready for closeout.",
+          "--root",
+          root,
+        ]);
+        expect(code, `${io.stdout}\n${io.stderr}`).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
 
     {
       const io = captureStdIO();
@@ -188,33 +197,12 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
       "utf8",
     );
 
-    let promotableTaskId = "";
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Verify appends promotable finding",
-          "--description",
-          "Exercise verify to incidents collect flow",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "workflow",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        promotableTaskId = io.stdout.trim();
-        await setTaskVerifySteps(root, promotableTaskId);
-      } finally {
-        io.restore();
-      }
-    }
+    const promotableTaskId = await createLegacyIncidentTask({
+      root,
+      title: "Verify appends promotable finding",
+      description: "Exercise verify to incidents collect flow",
+      tag: "workflow",
+    });
 
     {
       const io = captureStdIO();
@@ -273,33 +261,12 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
       }
     }
 
-    let localOnlyTaskId = "";
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Verify appends local-only finding",
-          "--description",
-          "Keep finding task-local",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "workflow",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        localOnlyTaskId = io.stdout.trim();
-        await setTaskVerifySteps(root, localOnlyTaskId);
-      } finally {
-        io.restore();
-      }
-    }
+    const localOnlyTaskId = await createLegacyIncidentTask({
+      root,
+      title: "Verify appends local-only finding",
+      description: "Keep finding task-local",
+      tag: "workflow",
+    });
 
     {
       const io = captureStdIO();
@@ -370,33 +337,12 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
       "utf8",
     );
 
-    let taskId = "";
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Verify appends repo-fixable finding",
-          "--description",
-          "Exercise verify to incidents collect flow for repo-fixable findings",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "workflow",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = io.stdout.trim();
-        await setTaskVerifySteps(root, taskId);
-      } finally {
-        io.restore();
-      }
-    }
+    const taskId = await createLegacyIncidentTask({
+      root,
+      title: "Verify appends repo-fixable finding",
+      description: "Exercise verify to incidents collect flow for repo-fixable findings",
+      tag: "workflow",
+    });
 
     {
       const io = captureStdIO();
@@ -463,33 +409,12 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
       "utf8",
     );
 
-    let defaultTaskId = "";
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Default verify stays record only",
-          "--description",
-          "Verify without collect-incidents must not touch incidents registry",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "workflow",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        defaultTaskId = io.stdout.trim();
-        await setTaskVerifySteps(root, defaultTaskId);
-      } finally {
-        io.restore();
-      }
-    }
+    const defaultTaskId = await createLegacyIncidentTask({
+      root,
+      title: "Default verify stays record only",
+      description: "Verify without collect-incidents must not touch incidents registry",
+      tag: "workflow",
+    });
 
     {
       const io = captureStdIO();
@@ -546,33 +471,12 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
       }
     }
 
-    let collectTaskId = "";
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Verify can collect incidents explicitly",
-          "--description",
-          "Verify with collect-incidents should update incidents.md immediately",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "workflow",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        collectTaskId = io.stdout.trim();
-        await setTaskVerifySteps(root, collectTaskId);
-      } finally {
-        io.restore();
-      }
-    }
+    const collectTaskId = await createLegacyIncidentTask({
+      root,
+      title: "Verify can collect incidents explicitly",
+      description: "Verify with collect-incidents should update incidents.md immediately",
+      tag: "workflow",
+    });
 
     {
       const io = captureStdIO();
@@ -628,33 +532,12 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
       "utf8",
     );
 
-    let taskId = "";
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Collect incidents reports exact write targets",
-          "--description",
-          "Collect should name the promoted ids and registry files.",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "workflow",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = io.stdout.trim();
-        await setTaskVerifySteps(root, taskId);
-      } finally {
-        io.restore();
-      }
-    }
+    const taskId = await createLegacyIncidentTask({
+      root,
+      title: "Collect incidents reports exact write targets",
+      description: "Collect should name the promoted ids and registry files.",
+      tag: "workflow",
+    });
 
     {
       const io = captureStdIO();
@@ -767,33 +650,12 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
       "utf8",
     );
 
-    let taskId = "";
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Report skipped structured findings",
-          "--description",
-          "Differentiate skipped findings from empty incident input",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "workflow",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = io.stdout.trim();
-        await setTaskVerifySteps(root, taskId);
-      } finally {
-        io.restore();
-      }
-    }
+    const taskId = await createLegacyIncidentTask({
+      root,
+      title: "Report skipped structured findings",
+      description: "Differentiate skipped findings from empty incident input",
+      tag: "workflow",
+    });
 
     {
       const io = captureStdIO();
@@ -863,33 +725,12 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
       "utf8",
     );
 
-    let taskId = "";
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Explain plain findings incident no-op",
-          "--description",
-          "Differentiate plain Findings text from structured incident blocks",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "workflow",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = io.stdout.trim();
-        await setTaskVerifySteps(root, taskId);
-      } finally {
-        io.restore();
-      }
-    }
+    const taskId = await createLegacyIncidentTask({
+      root,
+      title: "Explain plain findings incident no-op",
+      description: "Differentiate plain Findings text from structured incident blocks",
+      tag: "workflow",
+    });
 
     {
       const io = captureStdIO();
@@ -924,7 +765,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
     }
   });
 
-  it("finish does not promote explicit incidents before blueprint evidence is valid", async () => {
+  it("finish does not promote explicit incidents before Task Kernel work is complete", async () => {
     const root = await mkGitRepoRoot();
     await configureGitUser(root);
     const config = defaultConfig();
@@ -953,33 +794,12 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
       }
     }
 
-    let taskId = "";
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Promote finish-time incident finding",
-          "--description",
-          "Capture a reusable workflow finding during finish",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "workflow",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = io.stdout.trim();
-        await setTaskVerifySteps(root, taskId);
-      } finally {
-        io.restore();
-      }
-    }
+    const taskId = await createLegacyIncidentTask({
+      root,
+      title: "Promote finish-time incident finding",
+      description: "Capture a reusable workflow finding during finish",
+      tag: "workflow",
+    });
 
     {
       const io = captureStdIO();
@@ -1052,7 +872,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
         root,
       ]);
       expect(code, `${io.stdout}\n${io.stderr}`).toBe(3);
-      expect(io.stderr).toContain("finish requires recorded blueprint verification evidence");
+      expect(io.stderr).toContain("required_work_item_incomplete:legacy-drain");
     } finally {
       io.restore();
     }
@@ -1080,33 +900,12 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
       "utf8",
     );
 
-    let taskId = "";
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Reject over-budget incident promotion",
-          "--description",
-          "Validate that incidents collect fails before writing an oversized registry",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "workflow",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = io.stdout.trim();
-        await setTaskVerifySteps(root, taskId);
-      } finally {
-        io.restore();
-      }
-    }
+    const taskId = await createLegacyIncidentTask({
+      root,
+      title: "Reject over-budget incident promotion",
+      description: "Validate that incidents collect fails before writing an oversized registry",
+      tag: "workflow",
+    });
 
     {
       const io = captureStdIO();
