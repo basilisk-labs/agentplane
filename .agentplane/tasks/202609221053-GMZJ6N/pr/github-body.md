@@ -22,7 +22,7 @@ Fix the branch_pr lifecycle boundary exposed by PR #6005: a canonical Task with 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-22T22:01:46.997Z
+- Updated: 2026-09-22T22:15:40.506Z
 - Branch: task/202609221053-GMZJ6N/canonical-provider-lifecycle
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
