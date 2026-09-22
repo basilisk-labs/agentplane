@@ -22,7 +22,7 @@ Fix the supervisor handoff exposed after PR publication: integration.enqueue and
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-22T22:31:00.808Z
+- Updated: 2026-09-22T22:43:36.507Z
 - Branch: task/202609222222-GGCDPS/canonical-integration-base-checkout
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
