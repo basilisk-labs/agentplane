@@ -446,19 +446,36 @@ describe("canonical task kernel invariants", () => {
         },
       ]),
     ).toEqual([]);
+    for (const externalEffect of [
+      "external_write",
+      "pull_request",
+      "integration",
+      "hosted_ci",
+      "pr.open",
+      "integration.enqueue",
+    ]) {
+      expect(
+        validateWorkItemDefinitions([
+          semantic,
+          {
+            ...verification,
+            id: "publish-and-merge",
+            execution_requirements: {
+              ...requirements,
+              external_effects: [externalEffect],
+            },
+          },
+        ]),
+      ).toContain(`supervisor_owned_lifecycle:publish-and-merge:${externalEffect}`);
+    }
     expect(
       validateWorkItemDefinitions([
-        semantic,
         {
-          ...verification,
-          id: "publish-and-merge",
-          execution_requirements: {
-            ...requirements,
-            external_effects: ["pr.open", "integration.enqueue"],
-          },
+          ...semantic,
+          execution_requirements: { ...requirements, external_effects: ["network_read"] },
         },
       ]),
-    ).toEqual(expect.arrayContaining(["supervisor_owned_lifecycle:publish-and-merge:pr.open"]));
+    ).toEqual([]);
   });
 
   it("blocks unrelated mutations while a non-idempotent effect is uncertain", () => {

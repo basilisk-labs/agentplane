@@ -15,8 +15,8 @@ Implement the confirmed code and test fixes from the 0.7.11 feedback. Reject sup
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,23 +27,23 @@ Implement the confirmed code and test fixes from the 0.7.11 feedback. Reject sup
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../commands/shared/merged-branch-cleanup.test.ts  |  34 ++++-
+ .../commands/shared/merged-branch-cleanup.test.ts  |  34 +++-
  .../src/commands/shared/merged-branch-cleanup.ts   |   8 +-
- .../shared/supervisor-execution-episode.test.ts    |  63 +++++++++
- .../shared/supervisor-execution-episode.ts         |  35 +++++
+ .../shared/supervisor-execution-episode.test.ts    |  63 ++++++++
+ .../shared/supervisor-execution-episode.ts         |  35 ++++
  .../src/commands/task/agent-action-packet.test.ts  |   1 +
  .../src/commands/task/agent-action-packet.ts       |   8 +-
  .../src/commands/task/doc-set.command.ts           |  15 +-
  .../agentplane/src/commands/task/doc.unit.test.ts  |  11 ++
- .../task/external-agent-supervisor.test.ts         | 152 +++++++++++++++++++++
- .../src/commands/task/plan-set.command.ts          |  24 ++--
+ .../task/external-agent-supervisor.test.ts         | 180 +++++++++++++++++++++
+ .../src/commands/task/plan-set.command.ts          |  24 +--
  .../agentplane/src/commands/task/plan.unit.test.ts |  11 ++
  packages/core/src/tasks/index.ts                   |   1 +
  .../core/src/tasks/plan-execution-grant.test.ts    |  20 ++-
- packages/core/src/tasks/plan-execution-grant.ts    |  52 ++++---
- .../core/src/tasks/task-kernel/invariants.test.ts  |  42 ++++++
+ packages/core/src/tasks/plan-execution-grant.ts    |  52 +++---
+ .../core/src/tasks/task-kernel/invariants.test.ts  |  59 +++++++
  packages/core/src/tasks/task-kernel/invariants.ts  |  11 ++
- 16 files changed, 440 insertions(+), 48 deletions(-)
+ 16 files changed, 485 insertions(+), 48 deletions(-)
 ```
 
 </details>

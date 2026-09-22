@@ -16,12 +16,40 @@ import {
   finalizeCompletedExternalAgentExchange,
   type assertExternalAgentSupervisorIntent,
 } from "./external-agent-exchange-authority.js";
+import { assertExternalImplementationReturnState } from "./external-agent-implementation-authority.js";
 import type {
   ExternalAgentExchange,
   ExternalAgentExchangePaths,
 } from "./external-agent-exchange.js";
 
 describe("external agent supervisor replay", () => {
+  it("rejects an implementation result whose task revision no longer matches its work order", () => {
+    const expected = {
+      task_id: "T-REVISION",
+      task_revision: 3,
+      worktree: "/repo/worktree",
+      components: {
+        task: { digest: `sha256:${"a".repeat(64)}` },
+        backend_projection: { digest: `sha256:${"b".repeat(64)}` },
+        provider: { digest: `sha256:${"c".repeat(64)}` },
+      },
+    };
+    expect(() =>
+      assertExternalImplementationReturnState({
+        exchange: { baseline: { head: "head", changed_paths: [] } } as ExternalAgentExchange,
+        work_order: { state_fingerprint: expected } as never,
+        current: {
+          workflowStep: {
+            preconditionFingerprint: { ...expected, task_revision: 4 },
+          },
+        } as never,
+        current_head: "head",
+        current_status_lines: [],
+        require_changes: false,
+      }),
+    ).toThrow("External-agent implementation result is stale against current task authority.");
+  });
+
   it("consumes an accepted result after task application completed but exchange persistence did not", async () => {
     const root = await mkGitRepoRoot();
     const taskId = "202609220001-REPLAY";
