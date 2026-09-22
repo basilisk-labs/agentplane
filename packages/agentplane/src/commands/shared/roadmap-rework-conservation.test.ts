@@ -25,5 +25,5 @@ it("conserves implementation work across verification retries", { timeout: 60_00
     { cwd: process.cwd() },
   );
 
-  expect(stripAnsi(result.stdout)).toMatch(/\bTests\s+12 passed\b/);
+  expect(stripAnsi(result.stdout)).toMatch(/\bTests\s+13 passed\b/);
 });
