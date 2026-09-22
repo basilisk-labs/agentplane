@@ -46,6 +46,7 @@ vi.mock("../shared/task-backend.js", async (importOriginal) => ({
 import {
   canonicalWorkflowEffectForDecision,
   createKernelProviderEffectPortResolver,
+  executeCanonicalAdmittedWorkflowOperation,
 } from "./kernel-provider-effect-coordinator.js";
 
 function operation(id: "pr.open" | "integration.enqueue" = "pr.open") {
@@ -334,5 +335,31 @@ describe("canonical provider effect coordinator", () => {
     await expect(
       port!.observe({ task_id: "T-1", effect, idempotency_key: effect.idempotency_key }),
     ).resolves.toMatchObject({ state: "IN_DOUBT" });
+  });
+
+  it("runs post-completion provider lifecycle through the admitted supervisor", async () => {
+    const before = decision();
+    const after = terminalDecision();
+    mocks.supervise.mockResolvedValueOnce({
+      journal: { digest: k.kernelDigest("post-completion") },
+      execution: {
+        executable: true,
+        result: { status: "succeeded", observed_postconditions: [], detail: "ok" },
+        stop_reason: null,
+        refreshed_decision: after,
+      },
+    });
+
+    await expect(
+      executeCanonicalAdmittedWorkflowOperation({
+        command: { resolvedProject: { gitRoot: "/repo" } } as never,
+        decision: before,
+        task_id: "T-1",
+        request_digest: k.kernelDigest("post-completion-request"),
+      }),
+    ).resolves.toMatchObject({ execution: { refreshed_decision: after } });
+    expect(mocks.supervise).toHaveBeenCalledWith(
+      expect.objectContaining({ decision: before, git_root: "/repo" }),
+    );
   });
 });
