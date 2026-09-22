@@ -1,10 +1,10 @@
 ---
 id: "202609220752-4MGBBP"
 title: "Fix issue #5991 by cleaning owned Vitest temporary roots"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -21,15 +21,31 @@ verify:
   - "node .agentplane/policy/check-routing.mjs"
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-22T07:53:23.530Z"
+  updated_at: "2026-09-22T08:02:46.282Z"
   updated_by: "USER"
-  note: null
+  note: "Projected from the approved canonical Task Kernel plan."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-09-22T08:02:59.419Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: canonical Task Kernel final checks passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-22T08:02:46.282Z"
+  updated_by: "EVALUATOR"
+  note: "Canonical EVALUATOR review passed."
+  evaluated_sha: "efb434d54ee5ae468699556c1ad46d61f1eb8888"
+  review_identity_digest: "sha256:ece056ab9f9968174105d765ec02b337cbe1127e5a552807e44f537964ca6b3f"
+  evidence_refs:
+    - "../../../.git/agentplane/kernel/exchanges/202609220752-4MGBBP/7fec093309ea35b4e8693566f84537776d1cfa790e101e4992ece00bcf673453/quality-report.json"
+  findings:
+    - "The setup installs one marked temporary root per Vitest worker, redirects TMPDIR, TMP, and TEMP, restores the environment, and removes the owned root in afterAll."
+    - "Recovery requires the controlled prefix, a regular directory, a valid matching marker, a dead owner, and both marker age and directory mtime beyond the stale threshold; symlinked, malformed, unmarked, live, and recent entries are preserved."
+    - "close-message fixtures now use mkGitRepoRoot instead of unmanaged mkdtemp roots."
+    - "AgentPlane native validation passed the focused 18-test suite, typecheck, policy routing, and diff check against implementation commit efb434d54ee5ae468699556c1ad46d61f1eb8888."
+    - "The implementation changed no package manifest or lockfile."
 execution_route:
   frozen: true
   reason_codes:
@@ -75,12 +91,63 @@ execution_contract:
     schema_version: 2
     scope_roots: []
   observed:
-    authority_violations: []
-    changed_components: []
-    changed_paths: []
+    authority_violations:
+      - "repository_effect:tests"
+    changed_components:
+      - "packages/agentplane"
+      - "packages/testkit"
+      - "vitest.config.ts"
+    changed_paths:
+      - "packages/agentplane/src/commands/guard/impl/close-message.test.ts"
+      - "packages/testkit/src/cli-harness/temp-root-cleanup.test.ts"
+      - "packages/testkit/src/cli-harness/temp-root-cleanup.ts"
+      - "packages/testkit/src/vitest-temp-root.setup.ts"
+      - "vitest.config.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
+      -
+        id: "verification-record"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -100,6 +167,7 @@ execution_contract:
           - "hosted_integration"
           - "repository_effect:repository_write"
           - "repository_effect:source_code"
+          - "repository_effect:tests"
           - "task_outcome"
         external_effects: []
         repository_effects:
@@ -109,16 +177,27 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:5cce438a0252ecd96091bc582c42af2d777ee0f2a627b7930089252831afd436"
+      digest: "sha256:cc4d1ac3ef8947f3e1adf0092ec6afa1bacea448586c14049208e59631959dab"
       escalation_reasons: []
       execution_groups:
         - "core"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+          - "packages/testkit"
+          - "vitest.config.ts"
+        changed_files:
+          - "packages/agentplane/src/commands/guard/impl/close-message.test.ts"
+          - "packages/testkit/src/cli-harness/temp-root-cleanup.test.ts"
+          - "packages/testkit/src/cli-harness/temp-root-cleanup.ts"
+          - "packages/testkit/src/vitest-temp-root.setup.ts"
+          - "vitest.config.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -147,13 +226,22 @@ execution_contract:
       - "hosted_integration"
       - "repository_effect:repository_write"
       - "repository_effect:source_code"
+      - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "efb434d54ee5ae468699556c1ad46d61f1eb8888"
+  message: "AgentPlane-owned canonical implementation commit"
 comments: []
-events: []
+events:
+  -
+    type: "verify"
+    at: "2026-09-22T08:02:59.419Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: canonical Task Kernel final checks passed."
 doc_version: 3
-doc_updated_at: "2026-09-22T07:52:12.741Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-22T08:03:00.182Z"
+doc_updated_by: "SUPERVISOR"
 description: "Apply the reviewed and locally verified fix from commit 09c553088 onto current main. Own one marked temporary parent per Vitest worker, recover only safe stale roots, migrate close-message fixtures, and verify cleanup on success and failure. Dependency installation is environment setup, not a declared verification check."
 sections:
   Summary: |-
@@ -172,12 +260,131 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-22T08:02:59.419Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: canonical Task Kernel final checks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:4a1e5f79af95fa5f0271307e2ce857a75ea6581bbc56d102ef8cabe43d46112f, input_digest=sha256:1c9ae11af0b4aed505d47f659f47041579c285901c6fa61d214039c8195b2f5f
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609220752-4MGBBP/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609220752-4MGBBP Verification Contract check affected_unit_integration (1/4)
+
+    Check: affected_unit_integration
+    Command: bunx --no-install vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/guard/impl/close-message.test.ts packages/testkit/src/index.test.ts packages/testkit/src/cli-harness/temp-root-cleanup.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609220752-4MGBBP/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609220752-4MGBBP Verification Contract check affected_unit_integration (2/4)
+
+    Check: affected_unit_integration
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202609220752-4MGBBP/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609220752-4MGBBP Verification Contract check affected_unit_integration (3/4)
+
+    Check: affected_unit_integration
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609220752-4MGBBP/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609220752-4MGBBP Verification Contract check affected_unit_integration (4/4)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609220752-4MGBBP/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609220752-4MGBBP Verification Contract check critical_paths (1/4)
+
+    Check: critical_paths
+    Command: bunx --no-install vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/guard/impl/close-message.test.ts packages/testkit/src/index.test.ts packages/testkit/src/cli-harness/temp-root-cleanup.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609220752-4MGBBP/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609220752-4MGBBP Verification Contract check critical_paths (2/4)
+
+    Check: critical_paths
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202609220752-4MGBBP/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609220752-4MGBBP Verification Contract check critical_paths (3/4)
+
+    Check: critical_paths
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609220752-4MGBBP/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609220752-4MGBBP Verification Contract check critical_paths (4/4)
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609220752-4MGBBP/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609220752-4MGBBP Verification Contract check task_outcome (1/4)
+
+    Check: task_outcome
+    Command: bunx --no-install vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/guard/impl/close-message.test.ts packages/testkit/src/index.test.ts packages/testkit/src/cli-harness/temp-root-cleanup.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609220752-4MGBBP/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609220752-4MGBBP Verification Contract check task_outcome (2/4)
+
+    Check: task_outcome
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202609220752-4MGBBP/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609220752-4MGBBP Verification Contract check task_outcome (3/4)
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609220752-4MGBBP/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609220752-4MGBBP Verification Contract check task_outcome (4/4)
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:c711f3ffec46af58a41f709962d1330ea77f4e5cb7c8d2dbf8848367f27d0f33
+    - policy_digest: sha256:1508520334b86880f4c7ebdff3696edff99bcc2f3bd0e31747a3b7da58bf1dd6
+    - capability_digest: sha256:44668150af015035b4f9295eeb1e83a605e3c89b183ce28b4421a381c9bdb75f
+    - checks_digest: sha256:46be63a181b477f7e54d121bc1d553426d324512c08aeefb0501b8cbfeb9d704
+    - identity_digest: sha256:82d042233d68cbc27bc92a2af650713ec17dc2cf8019444296df7bb3459be73a
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.kernel_operational_projection:
+    digest: "sha256:770884d27eb28575f58a62a1e52007abac60e2d52d27fa1709c274dc3cdc9edf"
+    evidence_refs:
+      - "../../../.git/agentplane/kernel/exchanges/202609220752-4MGBBP/7fec093309ea35b4e8693566f84537776d1cfa790e101e4992ece00bcf673453/quality-report.json"
+    findings:
+      - "The setup installs one marked temporary root per Vitest worker, redirects TMPDIR, TMP, and TEMP, restores the environment, and removes the owned root in afterAll."
+      - "Recovery requires the controlled prefix, a regular directory, a valid matching marker, a dead owner, and both marker age and directory mtime beyond the stale threshold; symlinked, malformed, unmarked, live, and recent entries are preserved."
+      - "close-message fixtures now use mkGitRepoRoot instead of unmanaged mkdtemp roots."
+      - "AgentPlane native validation passed the focused 18-test suite, typecheck, policy routing, and diff check against implementation commit efb434d54ee5ae468699556c1ad46d61f1eb8888."
+      - "The implementation changed no package manifest or lockfile."
+    implementation_commit: "efb434d54ee5ae468699556c1ad46d61f1eb8888"
+    implementation_tree: "f4ab6128ded0b1780bf6bd13c8944994cf42b9b1"
+    projected_at: "2026-09-22T08:02:46.282Z"
+    review_identity_digest: "sha256:ece056ab9f9968174105d765ec02b337cbe1127e5a552807e44f537964ca6b3f"
+    schema_version: 1
+    source: "task_kernel"
+    verification_evidence_digest: "sha256:ec2e4bd10a8ea2e5b093cf18ff8814ac9374de18d83ad57b79ca3abc4f358e48"
+    work_order_id: "sha256:793d5e3ca9d63769f7c71110a239069d8af280a4ec01947b77a90d6e186fa2cd"
   task_execution_context:
     base_ref: "main"
     base_sha: "a2104636fe2522ebdcd79ce32e5ba59f23241a6f"
@@ -236,6 +443,64 @@ extensions:
               - "node .agentplane/policy/check-routing.mjs"
             work_item_id: null
           observation: null
+        -
+          approval_mode: null
+          authority:
+            capabilities:
+              - "task.verify"
+            completion_requirements:
+              - "work_item_validation"
+              - "final_validation"
+            digest: "sha256:7c6eafb4b758fdeadc8e8a550200274797bd5921985e44bf5abe3484de065636"
+            expires_at: null
+            external_effects: []
+            plan_digest: "sha256:c711f3ffec46af58a41f709962d1330ea77f4e5cb7c8d2dbf8848367f27d0f33"
+            plan_revision: 1
+            policy_digests:
+              - "sha256:4d715b617cb49d4304a46cbd010ff04038119a5412bfcf5889d6d1ce83807648"
+            provenance:
+              actor_id: "agentplane:kernel-controller"
+              evidence_digest: "sha256:c30720da278a9f07919da7a0aa71fa1653cec04630f9ef22960f2d164afb151f"
+              kind: "SYSTEM"
+              parent_authority_digest: "sha256:67fe13f92ed2b67d202fa32020056a0bf985e361ad95772308ce27bd7e18ba96"
+            repository_effects:
+              - "dependencies"
+              - "repository_write"
+              - "source_code"
+              - "tests"
+            repository_fingerprint: "sha256:84d59b3bcc5b2cd40f5981849fa1290a403f7ef239b5e0d8a661f5576196981f"
+            repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+            resources:
+              - "node_modules"
+              - "packages/agentplane/src/commands/guard/impl/close-message.test.ts"
+              - "packages/testkit/src"
+              - "vitest.config.ts"
+            risk:
+              implementation: "bounded"
+              requirements: "bounded"
+              reversibility: "reversible"
+            scope_roots:
+              - "node_modules"
+              - "packages/agentplane/src/commands/guard/impl/close-message.test.ts"
+              - "packages/testkit/src"
+              - "vitest.config.ts"
+            task_id: "202609220752-4MGBBP"
+            validation_requirements:
+              - "bun run typecheck"
+              - "bunx --no-install vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/guard/impl/close-message.test.ts packages/testkit/src/index.test.ts packages/testkit/src/cli-harness/temp-root-cleanup.test.ts"
+              - "git diff --check"
+              - "node .agentplane/policy/check-routing.mjs"
+            work_item_id: null
+          observation:
+            changed_paths:
+              - "packages/agentplane/src/commands/guard/impl/close-message.test.ts"
+              - "packages/testkit/src/cli-harness/temp-root-cleanup.test.ts"
+              - "packages/testkit/src/cli-harness/temp-root-cleanup.ts"
+              - "packages/testkit/src/vitest-temp-root.setup.ts"
+              - "vitest.config.ts"
+            evidence_digest: "sha256:39036387fe0b0c52877d8f0d9a9de8aa6987a9c2dfd1669cae25a8458a7e39a8"
+            kind: "repository_implementation"
+            previous_fingerprint: "sha256:08247094cef311214d4b924b51e0e98802c558a8468ec3f57f672332d26c9a09"
       controller_transfer: null
       current_plan:
         approval_actor_id: "USER"
@@ -275,7 +540,17 @@ extensions:
             optional: false
             required_inputs: []
       effects: []
-      final_validation: null
+      final_validation:
+        evidence_digests:
+          - "sha256:ec2e4bd10a8ea2e5b093cf18ff8814ac9374de18d83ad57b79ca3abc4f358e48"
+        identity:
+          check_id: "canonical-final-contracts"
+          command_digest: "sha256:28a2e1293f0276bc65b1b33d37eea0aeae12ba778d76a445314c0323d4949fbe"
+          environment_digest: "sha256:1ae09d38d4b1b708916bd6207d6c0c28a4ed3637a1590248b54649ef682f355d"
+          implementation_identity: "sha256:84d59b3bcc5b2cd40f5981849fa1290a403f7ef239b5e0d8a661f5576196981f"
+          toolchain_digest: "sha256:09fc511b39f19d89838553e5fa2180f800b35640270790635985c88c68ba5946"
+        observed_at: "2026-09-22T08:02:52.612Z"
+        status: "PASSED"
       id: "202609220752-4MGBBP"
       intent_digest: "sha256:967b97f7c6f65a337ebe5849e54dc9271e7c01782baff7c107c7d9d30b8a6df8"
       migration_receipts: []
@@ -289,6 +564,24 @@ extensions:
           event_digests:
             - "sha256:00648a7ec3965bb51af90cb94efc64ff10e55ca4a665fc0edbfc93872da7fc1b"
           mutation_id: "capture:202609220752-4MGBBP"
+        final-validation:sha256:ec2e4bd10a8ea2e5b093cf18ff8814ac9374de18d83ad57b79ca3abc4f358e48:11:
+          after_revision: 12
+          aggregate_digest: "sha256:7be798758dae934e3a7adf4d94642dcfdd8ffd86551e47bd7551cd772d5cb79b"
+          before_revision: 11
+          command_digest: "sha256:10734c26ed6e4d2dd03e09c58ae3456ce8b20aff389aaeb2fb4b0582ad73c7ff"
+          effect_ids: []
+          event_digests:
+            - "sha256:77e77f38e3f9c02439b7e89ba04987fb22c534e2a6985d14cd4b222a82631d6a"
+          mutation_id: "final-validation:sha256:ec2e4bd10a8ea2e5b093cf18ff8814ac9374de18d83ad57b79ca3abc4f358e48:11"
+        kernel_task_completion_required:sha256:f82f61c68c6b09cb632213a4ca3ac0857d412d0155c7c7c07603f47fed8f8b67:sha256:84d59b3bcc5b2cd40f5981849fa1290a403f7ef239b5e0d8a661f5576196981f:
+          after_revision: 13
+          aggregate_digest: "sha256:90680ca1a2bcbbb00a1e09971d3a1bea5ba0436a96b3ad903393bc41ad0ce2b2"
+          before_revision: 12
+          command_digest: "sha256:21b50d913f94222a6fb4df21423ae4cd4ff01e6828abb46575d6b8c5bc4bed62"
+          effect_ids: []
+          event_digests:
+            - "sha256:09ea41b405cb201bbc38cd2d7ffcf977f6458a3bc12f2a382f37b055144db6d1"
+          mutation_id: "kernel_task_completion_required:sha256:f82f61c68c6b09cb632213a4ca3ac0857d412d0155c7c7c07603f47fed8f8b67:sha256:84d59b3bcc5b2cd40f5981849fa1290a403f7ef239b5e0d8a661f5576196981f"
         kernel_work_item_claim_required:sha256:4376fd6d235c36cc71754ced8aa6fa9c5e0627cd2220f15745df81b287e6d830:sha256:08247094cef311214d4b924b51e0e98802c558a8468ec3f57f672332d26c9a09:
           after_revision: 5
           aggregate_digest: "sha256:a148e9181eaf4b9cf962e6fae74467cf144ef7e784717f388388467004675090"
@@ -307,6 +600,15 @@ extensions:
           event_digests:
             - "sha256:ff2b7aee8f37443245fd42a071ab236a0af2ef8d3e74c4111697eadaf9428d03"
           mutation_id: "kernel_work_item_execution_required:sha256:7fc049557b09535e8205b8e5ac6c7aae575ef29a5eb8069561e3f47a56e89f2c:sha256:08247094cef311214d4b924b51e0e98802c558a8468ec3f57f672332d26c9a09"
+        kernel_work_item_inspection_required:sha256:f3fb8e26d47519094214f6ebd1b045b08e34e881e31982252783611438126c39:sha256:84d59b3bcc5b2cd40f5981849fa1290a403f7ef239b5e0d8a661f5576196981f:
+          after_revision: 9
+          aggregate_digest: "sha256:adbf542ddb1bb13b90392dfe57cd85bd46e80559dd9cc72075fcecc05d9e9007"
+          before_revision: 8
+          command_digest: "sha256:9d2e9dcf031e8ddfbe7cec0500d2e4712c96540c7c95409d72ed657bc2f401f9"
+          effect_ids: []
+          event_digests:
+            - "sha256:646c12ee7a01245d92c51e484c5b7426cd517e2ed53c46ec84a431f50b251627"
+          mutation_id: "kernel_work_item_inspection_required:sha256:f3fb8e26d47519094214f6ebd1b045b08e34e881e31982252783611438126c39:sha256:84d59b3bcc5b2cd40f5981849fa1290a403f7ef239b5e0d8a661f5576196981f"
         kernel_work_item_materialization_required:sha256:08263e487333ee3bf3a52ab3c474283f0c6f5af1d873056aa821f44d264797fb:sha256:08247094cef311214d4b924b51e0e98802c558a8468ec3f57f672332d26c9a09:
           after_revision: 4
           aggregate_digest: "sha256:882d2a2e25a2992b274fbca27e4c702c3acd78d4845b8e406b3a3f72e3550c48"
@@ -325,6 +627,15 @@ extensions:
           event_digests:
             - "sha256:d880629816e31870ab53e9d6064afd1364104d62761f67e3f7743a6037f2f7cb"
           mutation_id: "result:sha256:2fb117f0b1047ef9f2d21958793d4c9798c2e1a7100a77ca1502328396867d5d"
+        result:sha256:793d5e3ca9d63769f7c71110a239069d8af280a4ec01947b77a90d6e186fa2cd:
+          after_revision: 8
+          aggregate_digest: "sha256:61dc98e246735c0acf39afb5674deb7209799794ab067ba6604971d7c3240320"
+          before_revision: 7
+          command_digest: "sha256:1c210d215913a3e43de67251e7865eba2259d4832144f396cdc6fcd82fcb2311"
+          effect_ids: []
+          event_digests:
+            - "sha256:0129cb20dcb35198ebd4dd52f9264e078b24d8a10e6a69e1b29f3a6d271a3d2c"
+          mutation_id: "result:sha256:793d5e3ca9d63769f7c71110a239069d8af280a4ec01947b77a90d6e186fa2cd"
         sha256:7cdce7c54e294e15091b291cae9fa0a035755acc72e9de386494b9f694d7b7d0:
           after_revision: 3
           aggregate_digest: "sha256:a27b09cb21318cd8ede2cdb064cf0c22301889409ed9dd17925cb43cf6bdf7f5"
@@ -334,10 +645,37 @@ extensions:
           event_digests:
             - "sha256:137b2f041407abb3a121f52e7d757b0dbc38577b2e3360636ae676e39dfffbcd"
           mutation_id: "sha256:7cdce7c54e294e15091b291cae9fa0a035755acc72e9de386494b9f694d7b7d0"
+        sha256:ff0f2b8579de794e52098c0b2a54bf360c83dfc9918d4efbb62cbd93c86cf2b0:
+          after_revision: 7
+          aggregate_digest: "sha256:25b878c2ba86b74fce7abc381bf075f916971fe3e8b13398e91dbddb4b6c65ce"
+          before_revision: 6
+          command_digest: "sha256:822d1931bb7aa905ad2deb5abf8af95c107cd04c0b6c0d2802d0dc72cfae9d3a"
+          effect_ids: []
+          event_digests:
+            - "sha256:d32cddd66eb8c84d07be291d4364322aca2e9dbd532829f64d7e67583f12defd"
+          mutation_id: "sha256:ff0f2b8579de794e52098c0b2a54bf360c83dfc9918d4efbb62cbd93c86cf2b0"
+        validation-resolution:sha256:a62b3e01b3f7e335613f4184f64247014c1670630809ff976b763732b8c5bd87:
+          after_revision: 11
+          aggregate_digest: "sha256:453806b2d2c17b23d17228fc40329d4ae1c0156b787cd66ca4f15bc5f202035a"
+          before_revision: 10
+          command_digest: "sha256:325237ba68d0d6d0796e49352b81da98807d11774b23d08713f510fccac88536"
+          effect_ids: []
+          event_digests:
+            - "sha256:b87cac0f67a20d3198ac30eaacdfe822ccfa3bec00e7285e5020ab5cf1fed49f"
+          mutation_id: "validation-resolution:sha256:a62b3e01b3f7e335613f4184f64247014c1670630809ff976b763732b8c5bd87"
+        validation:sha256:7fec093309ea35b4e8693566f84537776d1cfa790e101e4992ece00bcf673453:
+          after_revision: 10
+          aggregate_digest: "sha256:255bc548e3f2e67a030bba23c46c7159b92d1bc30e64abad77765122da083eea"
+          before_revision: 9
+          command_digest: "sha256:9b87ed418eaccf74b8d1ed4549d28a5520c580e1333ac3e8f02a12dc0c01b370"
+          effect_ids: []
+          event_digests:
+            - "sha256:c5c1208a837fcb933ce95b77ef1d7e6c97995db4c15fdb4128f30ff62b79f90d"
+          mutation_id: "validation:sha256:7fec093309ea35b4e8693566f84537776d1cfa790e101e4992ece00bcf673453"
       plan_history: []
-      revision: 6
+      revision: 13
       schema_version: 1
-      state: "ACTIVE"
+      state: "COMPLETED"
       work_items:
         owned-vitest-temp-lifecycle:
           attempt: 1
@@ -372,12 +710,59 @@ extensions:
             id: "owned-vitest-temp-lifecycle"
             optional: false
             required_inputs: []
-          output_manifests: []
-          result_digest: null
-          revision: 3
-          state: "EXECUTING"
-          validation: null
-    digest: "sha256:8b1f242511e9c0a9de48813e476cb9b8f8a53603cd5a4707dd5772bffc4de188"
+          output_manifests:
+            -
+              attempt: 1
+              digest: "sha256:fcbdc2af4f6d3862d5cac6ce1cfb72eb60659fbf8d962723220e22943c36e33a"
+              id: "owned-test-run-temp-root"
+              kind: "report"
+              plan_revision: 1
+              repository_fingerprint: "sha256:84d59b3bcc5b2cd40f5981849fa1290a403f7ef239b5e0d8a661f5576196981f"
+              task_id: "202609220752-4MGBBP"
+              work_item_id: "owned-vitest-temp-lifecycle"
+            -
+              attempt: 1
+              digest: "sha256:8e1a6760b22f732138ab582a692208d00fbe4240fdf6cdc85c638b8121614bcb"
+              id: "safe-stale-root-recovery"
+              kind: "report"
+              plan_revision: 1
+              repository_fingerprint: "sha256:84d59b3bcc5b2cd40f5981849fa1290a403f7ef239b5e0d8a661f5576196981f"
+              task_id: "202609220752-4MGBBP"
+              work_item_id: "owned-vitest-temp-lifecycle"
+            -
+              attempt: 1
+              digest: "sha256:97038e17f22a944acce82d2ef10892f99ed87671c08eba107096852b7c014401"
+              id: "migrated-close-message-fixtures"
+              kind: "report"
+              plan_revision: 1
+              repository_fingerprint: "sha256:84d59b3bcc5b2cd40f5981849fa1290a403f7ef239b5e0d8a661f5576196981f"
+              task_id: "202609220752-4MGBBP"
+              work_item_id: "owned-vitest-temp-lifecycle"
+            -
+              attempt: 1
+              digest: "sha256:49087c91eca2a6599f09c190c8cb7a740fe06ccb6137d28959697419e32c9693"
+              id: "verification-evidence"
+              kind: "report"
+              plan_revision: 1
+              repository_fingerprint: "sha256:84d59b3bcc5b2cd40f5981849fa1290a403f7ef239b5e0d8a661f5576196981f"
+              task_id: "202609220752-4MGBBP"
+              work_item_id: "owned-vitest-temp-lifecycle"
+          result_digest: "sha256:0fee470d57228fe80680bd658e7894e225e15c235f3b951e6d49db111467e368"
+          revision: 7
+          state: "COMPLETED"
+          validation:
+            evidence_digests:
+              - "sha256:ea6143d089ec672b5a3c1ca07213ca548438a489888236fdf4bda2f36ee7220b"
+              - "sha256:ece056ab9f9968174105d765ec02b337cbe1127e5a552807e44f537964ca6b3f"
+            identity:
+              check_id: "canonical-contract-and-inspection"
+              command_digest: "sha256:28a2e1293f0276bc65b1b33d37eea0aeae12ba778d76a445314c0323d4949fbe"
+              environment_digest: "sha256:8b486cc14571005a6ae868734373cda7dfd6acf053600465ac142998fa1ad391"
+              implementation_identity: "sha256:0fee470d57228fe80680bd658e7894e225e15c235f3b951e6d49db111467e368"
+              toolchain_digest: "sha256:2ed0aa02d9a22d48eeb418f30f139ab31dd44db476e35a34e1aee6839e3530c2"
+            observed_at: "2026-09-22T08:02:46.282Z"
+            status: "PASSED"
+    digest: "sha256:ea9f1d983c95638aa1c4d52c91775074f8b6b7fd27674ac9490dd8d03362fc16"
     documents:
       contracts:
         sha256:a7cb15aae11460095a9b75cb3cdac9b2a14075d8ff556d84f9b4ad59987fde93:
@@ -452,6 +837,69 @@ extensions:
         payload_digest: "sha256:132bb5e03b9f4837e802aa9da83aa6998677794bad2eb82007248a052e674692"
         task_id: "202609220752-4MGBBP"
         task_revision: 6
+      -
+        command_digest: "sha256:822d1931bb7aa905ad2deb5abf8af95c107cd04c0b6c0d2802d0dc72cfae9d3a"
+        id: "sha256:ff0f2b8579de794e52098c0b2a54bf360c83dfc9918d4efbb62cbd93c86cf2b0:authority_continued"
+        kind: "authority_continued"
+        mutation_id: "sha256:ff0f2b8579de794e52098c0b2a54bf360c83dfc9918d4efbb62cbd93c86cf2b0"
+        occurred_at: "2026-09-22T08:01:02.934Z"
+        payload_digest: "sha256:c97e0b7c28b597183c806dd3531d44e9e175cf1adbd5b10e93bc8f226ad56d16"
+        task_id: "202609220752-4MGBBP"
+        task_revision: 7
+      -
+        command_digest: "sha256:1c210d215913a3e43de67251e7865eba2259d4832144f396cdc6fcd82fcb2311"
+        id: "result:sha256:793d5e3ca9d63769f7c71110a239069d8af280a4ec01947b77a90d6e186fa2cd:work_item_result_accepted"
+        kind: "work_item_result_accepted"
+        mutation_id: "result:sha256:793d5e3ca9d63769f7c71110a239069d8af280a4ec01947b77a90d6e186fa2cd"
+        occurred_at: "2026-09-22T08:01:05.960Z"
+        payload_digest: "sha256:4c26a445bef46f8f221664c4f97ee6127afd08fc580d40a050e7abd9ccc1d245"
+        task_id: "202609220752-4MGBBP"
+        task_revision: 8
+      -
+        command_digest: "sha256:9d2e9dcf031e8ddfbe7cec0500d2e4712c96540c7c95409d72ed657bc2f401f9"
+        id: "kernel_work_item_inspection_required:sha256:f3fb8e26d47519094214f6ebd1b045b08e34e881e31982252783611438126c39:sha256:84d59b3bcc5b2cd40f5981849fa1290a403f7ef239b5e0d8a661f5576196981f:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "kernel_work_item_inspection_required:sha256:f3fb8e26d47519094214f6ebd1b045b08e34e881e31982252783611438126c39:sha256:84d59b3bcc5b2cd40f5981849fa1290a403f7ef239b5e0d8a661f5576196981f"
+        occurred_at: "2026-09-22T08:01:08.356Z"
+        payload_digest: "sha256:59d31e7a530016d47e26d59ed832348e670cdbe3df0d93543d52eecd6bbec917"
+        task_id: "202609220752-4MGBBP"
+        task_revision: 9
+      -
+        command_digest: "sha256:9b87ed418eaccf74b8d1ed4549d28a5520c580e1333ac3e8f02a12dc0c01b370"
+        id: "validation:sha256:7fec093309ea35b4e8693566f84537776d1cfa790e101e4992ece00bcf673453:work_item_validation_recorded"
+        kind: "work_item_validation_recorded"
+        mutation_id: "validation:sha256:7fec093309ea35b4e8693566f84537776d1cfa790e101e4992ece00bcf673453"
+        occurred_at: "2026-09-22T08:02:48.903Z"
+        payload_digest: "sha256:e6db219cb18f877993172d24a5574a76f60763c83bcec2ed327be5afbd1d1262"
+        task_id: "202609220752-4MGBBP"
+        task_revision: 10
+      -
+        command_digest: "sha256:325237ba68d0d6d0796e49352b81da98807d11774b23d08713f510fccac88536"
+        id: "validation-resolution:sha256:a62b3e01b3f7e335613f4184f64247014c1670630809ff976b763732b8c5bd87:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "validation-resolution:sha256:a62b3e01b3f7e335613f4184f64247014c1670630809ff976b763732b8c5bd87"
+        occurred_at: "2026-09-22T08:02:50.340Z"
+        payload_digest: "sha256:93f873b9d59c2f84a775335c1e6ddaded56a75244f1d33960e8b54cd1eefa169"
+        task_id: "202609220752-4MGBBP"
+        task_revision: 11
+      -
+        command_digest: "sha256:10734c26ed6e4d2dd03e09c58ae3456ce8b20aff389aaeb2fb4b0582ad73c7ff"
+        id: "final-validation:sha256:ec2e4bd10a8ea2e5b093cf18ff8814ac9374de18d83ad57b79ca3abc4f358e48:11:final_validation_recorded"
+        kind: "final_validation_recorded"
+        mutation_id: "final-validation:sha256:ec2e4bd10a8ea2e5b093cf18ff8814ac9374de18d83ad57b79ca3abc4f358e48:11"
+        occurred_at: "2026-09-22T08:02:58.277Z"
+        payload_digest: "sha256:9e549d5b36bd56fef56919030b686bf2c89c370449146299ed7a802bfe2aff52"
+        task_id: "202609220752-4MGBBP"
+        task_revision: 12
+      -
+        command_digest: "sha256:21b50d913f94222a6fb4df21423ae4cd4ff01e6828abb46575d6b8c5bc4bed62"
+        id: "kernel_task_completion_required:sha256:f82f61c68c6b09cb632213a4ca3ac0857d412d0155c7c7c07603f47fed8f8b67:sha256:84d59b3bcc5b2cd40f5981849fa1290a403f7ef239b5e0d8a661f5576196981f:task_completed"
+        kind: "task_completed"
+        mutation_id: "kernel_task_completion_required:sha256:f82f61c68c6b09cb632213a4ca3ac0857d412d0155c7c7c07603f47fed8f8b67:sha256:84d59b3bcc5b2cd40f5981849fa1290a403f7ef239b5e0d8a661f5576196981f"
+        occurred_at: "2026-09-22T08:03:14.208Z"
+        payload_digest: "sha256:ae743eab051bd6a1e4873e5dd9f9c4f11e55aba5a3ec2b0a285930130dc72fbd"
+        task_id: "202609220752-4MGBBP"
+        task_revision: 13
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
@@ -483,6 +931,107 @@ PLANNER fallback scaffold for "Fix issue #5991 by cleaning owned Vitest temporar
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-22T08:02:59.419Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: canonical Task Kernel final checks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:4a1e5f79af95fa5f0271307e2ce857a75ea6581bbc56d102ef8cabe43d46112f, input_digest=sha256:1c9ae11af0b4aed505d47f659f47041579c285901c6fa61d214039c8195b2f5f
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609220752-4MGBBP/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609220752-4MGBBP Verification Contract check affected_unit_integration (1/4)
+
+Check: affected_unit_integration
+Command: bunx --no-install vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/guard/impl/close-message.test.ts packages/testkit/src/index.test.ts packages/testkit/src/cli-harness/temp-root-cleanup.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609220752-4MGBBP/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609220752-4MGBBP Verification Contract check affected_unit_integration (2/4)
+
+Check: affected_unit_integration
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202609220752-4MGBBP/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609220752-4MGBBP Verification Contract check affected_unit_integration (3/4)
+
+Check: affected_unit_integration
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609220752-4MGBBP/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609220752-4MGBBP Verification Contract check affected_unit_integration (4/4)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609220752-4MGBBP/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609220752-4MGBBP Verification Contract check critical_paths (1/4)
+
+Check: critical_paths
+Command: bunx --no-install vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/guard/impl/close-message.test.ts packages/testkit/src/index.test.ts packages/testkit/src/cli-harness/temp-root-cleanup.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609220752-4MGBBP/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609220752-4MGBBP Verification Contract check critical_paths (2/4)
+
+Check: critical_paths
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202609220752-4MGBBP/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609220752-4MGBBP Verification Contract check critical_paths (3/4)
+
+Check: critical_paths
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609220752-4MGBBP/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609220752-4MGBBP Verification Contract check critical_paths (4/4)
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609220752-4MGBBP/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609220752-4MGBBP Verification Contract check task_outcome (1/4)
+
+Check: task_outcome
+Command: bunx --no-install vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/guard/impl/close-message.test.ts packages/testkit/src/index.test.ts packages/testkit/src/cli-harness/temp-root-cleanup.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609220752-4MGBBP/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609220752-4MGBBP Verification Contract check task_outcome (2/4)
+
+Check: task_outcome
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202609220752-4MGBBP/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609220752-4MGBBP Verification Contract check task_outcome (3/4)
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609220752-4MGBBP/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609220752-4MGBBP Verification Contract check task_outcome (4/4)
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:c711f3ffec46af58a41f709962d1330ea77f4e5cb7c8d2dbf8848367f27d0f33
+- policy_digest: sha256:1508520334b86880f4c7ebdff3696edff99bcc2f3bd0e31747a3b7da58bf1dd6
+- capability_digest: sha256:44668150af015035b4f9295eeb1e83a605e3c89b183ce28b4421a381c9bdb75f
+- checks_digest: sha256:46be63a181b477f7e54d121bc1d553426d324512c08aeefb0501b8cbfeb9d704
+- identity_digest: sha256:82d042233d68cbc27bc92a2af650713ec17dc2cf8019444296df7bb3459be73a
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
