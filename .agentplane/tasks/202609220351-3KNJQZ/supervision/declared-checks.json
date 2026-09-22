@@ -1,9 +1,56 @@
 {
   "checks": [
     {
-      "check_ids": [],
-      "command": "bunx vitest run packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts",
-      "duration_ms": 8323,
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run ci:contract",
+      "duration_ms": 136281,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "ci:contract",
+      "stderr_tail": "$ bun run format:check && bun run schemas:check && bun run spec:examples:check && bun run release:acr-example:check && bun run agents:check && bun run policy:routing:check && bun run release:parity && bun run docs:bootstrap:check && bun run docs:onboarding:check && bun run docs:ia:check && bun run docs:scripts:check && bun run bench:compatibility:candidate:check && bun run bench:compatibility:check && bun run bench:agent-efficiency:check && bun run bench:agent-efficiency:replay:check && bun run hotspots:check && bun run lifecycle:invariants && bun run check:types-files && bun run typescript:toolchain:check && bun run vitest:projects:check && bun run guards:check && bun run lint:core && bun run logging:check && bun run arch:check && bun run clone:check && bun run knip:check\n$ prettier . --check\n$ bun scripts/generate/sync-schemas.mjs check\n$ node scripts/checks/check-spec-examples.mjs\n$ node scripts/checks/check-acr-example-version.mjs\n$ node scripts/generate/sync-agent-templates.mjs check\n$ node scripts/checks/check-policy-routing.mjs\n$ node scripts/release/check-release-parity.mjs\n$ node scripts/checks/check-agent-bootstrap-fresh.mjs\n$ node scripts/checks/check-agent-onboarding-scenario.mjs\n$ node scripts/checks/check-docs-ia.mjs\n$ node scripts/generate/generate-scripts-readme.mjs --check\n$ node scripts/bench/capture-compatibility-candidate.mjs --check\n$ node scripts/checks/check-compatibility-contract-baseline.mjs\n$ node scripts/checks/check-agent-efficiency-baseline.mjs\n$ node scripts/checks/check-agent-efficiency-replay.mjs\n$ node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 && node scripts/checks/check-oversized-test-baseline.mjs --threshold-lines 1000\n$ node scripts/checks/check-lifecycle-invariants.mjs\n$ node scripts/checks/check-types-files.mjs\n$ node scripts/checks/check-typescript-toolchain.mjs\n$ node scripts/checks/check-vitest-projects.mjs\n$ node scripts/checks/check-shared-guards.mjs && bun run trust:ratchet:check\n$ node scripts/checks/check-trust-boundary-ratchet.mjs\n$ eslint packages scripts eslint.config.cjs vitest.config.ts\n$ node scripts/checks/check-no-console.mjs\n$ bun run arch:baseline && bun run arch:deps\n$ node scripts/checks/check-depcruise-known-violations.mjs\n$ node scripts/checks/run-depcruise-arch.mjs depcruise.config.cjs\n$ node scripts/checks/check-clone-baseline.mjs\n$ node scripts/checks/check-knip-baseline.mjs\n",
+      "stdout_tail": "er: packages/agentplane/src/commands/blueprint\n\n✔ no dependency violations found (4 modules, 3 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/branch\n\n✔ no dependency violations found (484 modules, 1261 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/cleanup\n\n✔ no dependency violations found (277 modules, 768 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/codex\n\n✔ no dependency violations found (8 modules, 8 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/context\n\n✔ no dependency violations found (736 modules, 2168 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/docs\n\n✔ no dependency violations found (11 modules, 14 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/doctor\n\n✔ no dependency violations found (259 modules, 594 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/evaluator\n\n✔ no dependency violations found (575 modules, 1736 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/evidence\n\n✔ no dependency violations found (81 modules, 179 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/flow\n\n✔ no dependency violations found (402 modules, 1016 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/guard\n\n✔ no dependency violations found (200 modules, 520 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/hermes\n\n✔ no dependency violations found (588 modules, 1582 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/hooks\n\n✔ no dependency violations found (295 modules, 815 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/incidents\n\n✔ no dependency violations found (173 modules, 428 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/insights\n\n✔ no dependency violations found (84 modules, 184 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/intake\n\n✔ no dependency violations found (67 modules, 154 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/pr\n\n✔ no dependency violations found (463 modules, 1228 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/recipes\n\n✔ no dependency violations found (167 modules, 401 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/release\n\n✔ no dependency violations found (258 modules, 551 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/scenario\n\n✔ no dependency violations found (80 modules, 175 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/shared\n\n✔ no dependency violations found (1099 modules, 3657 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/task\n\n✔ no dependency violations found (1001 modules, 3293 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/upgrade\n\n✔ no dependency violations found (29 modules, 44 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/*.ts\n\n✔ no dependency violations found (726 modules, 2158 dependencies cruised)\n\ndependency-cruiser: packages/core/src\n\n✔ no dependency violations found (124 modules, 265 dependencies cruised)\n\ndependency-cruiser: packages/recipes/src\n\n✔ no dependency violations found (17 modules, 17 dependencies cruised)\n\ndependency-cruiser: packages/testkit/src\n\n✔ no dependency violations found (642 modules, 1751 dependencies cruised)\n\nClone baseline OK (sources=1591, clones=94, duplicatedLines=1474, duplicatedTokens=10323, percentage=0.4710965939780177; baseline sources=1592, clones=95, duplicatedLines=1488, duplicatedTokens=10362, percentage=0.47487441997025653)\nKnip unused-code baseline OK (files=0/0, exports=18/18, types=3/3, enumMembers=0/0, namespaceMembers=0/0, total=21/21; agentplane CLI: files=0/0 total=0/0, core compatibility: files=0/0 total=21/21)\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run ci:local:fast",
+      "duration_ms": 419312,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "ci:local:fast",
+      "stderr_tail": "d object, received string at \"comments[1]\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"doc_updated_at\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"doc_updated_by\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"description\"\nwarning: skipped 1 invalid task README; local task state may be incomplete\n- 202601010101-ABCDE: task README frontmatter schema validation failed: Invalid input: expected string, received number at \"title\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"tags[1]\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"verify[1]\"; task README frontmatter schema validation failed: Too small: expected string to have >=1 characters at \"commit.hash\"; task README frontmatter schema validation failed: Too small: expected string to have >=1 characters at \"commit.message\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"description\"\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=full-doc-updated section=Summary\n{\"ts\":\"2026-09-22T06:16:42.996Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-jtKiR0/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-jtKiR0/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-22T06:16:43.012Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-1kaABh/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-1kaABh/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-22T06:16:43.018Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-1kaABh/.agentplane/WORKFLOW.md\",\"from\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-1kaABh/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-22T06:16:43.023Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-uDuwHi/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-uDuwHi/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-22T06:16:43.026Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_failed\",\"code\":\"WF_UNSUPPORTED_VERSION\",\"details\":{\"reason\":\"Unsupported WORKFLOW version 3; supported versions: 1, 2.\"}}\n{\"ts\":\"2026-09-22T06:16:46.711Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-22T06:16:46.727Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":1}}\n{\"ts\":\"2026-09-22T06:16:46.727Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-22T06:16:46.730Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":2}}\n{\"ts\":\"2026-09-22T06:16:46.731Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-22T06:16:46.733Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic --timeout-ms 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n",
+      "stdout_tail": "s=5 files=3\nℹ️ projection_metrics source_bytes=227 search_text_bytes=307 preview_text_bytes=307 elapsed_ms=3\nℹ️ reindex prepared at /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-context-raw-deletion-B7qxSt/.agentplane/cache.sqlite\nℹ️ reindex_receipt strategy=full-rebuild reason=reset-requested added=2 changed=0 removed=0 unchanged=0\nℹ️ rows=3 files=2\nℹ️ projection_metrics source_bytes=204 search_text_bytes=261 preview_text_bytes=261 elapsed_ms=1\n{\n  \"summary\": {\n    \"tasks\": 1,\n    \"observations\": 0,\n    \"open\": 0,\n    \"invalid\": 1,\n    \"blocking\": 0,\n    \"byAction\": {}\n  },\n  \"tasks\": [\n    {\n      \"task_id\": \"202605191736-EQBZ4M\",\n      \"title\": \"Observation task\",\n      \"path\": \".agentplane/tasks/202605191736-EQBZ4M/observations.jsonl\",\n      \"observations\": [],\n      \"errors\": [\n        {\n          \"line\": 1,\n          \"message\": \"Expected property name or '}' in JSON at position 1 (line 1 column 2)\",\n          \"raw\": \"{not-json}\"\n        }\n      ],\n      \"blocking\": []\n    }\n  ]\n}\n\n Test Files  669 passed (669)\n      Tests  5781 passed | 1 skipped (5782)\n   Start at  09:12:24\n   Duration  275.23s (transform 25.18s, setup 0ms, import 144.89s, tests 1454.61s, environment 32ms)\n\n\n== cli (42247ms) ==\nCLI cold-start baseline OK using fixture local-basic (quickstart median=198.789ms (threshold=5000ms, p95=198.789ms); task_list median=228.142ms (threshold=10000ms, p95=228.142ms); task_search median=215.019ms (threshold=6000ms, p95=215.019ms); task_next median=210.85ms (threshold=8000ms, p95=210.85ms); preflight_quick median=231.54ms (threshold=6000ms, p95=231.54ms))\nVitest suite critical-cli: chunk 1/5 (2 files): packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts, packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts\nVitest suite critical-cli: chunk 1/5 passed in 6562ms (Test Files  2 passed (2); Tests  3 passed (3); Duration  6.38s (transform 3.28s, setup 0ms, import 2.71s, tests 5.97s, environment 0ms))\nVitest suite critical-cli: chunk 2/5 (2 files): packages/agentplane/src/cli/run-cli.critical.git-edge.test.ts, packages/agentplane/src/cli/run-cli.critical.protected-paths.test.ts\nVitest suite critical-cli: chunk 2/5 passed in 2945ms (Test Files  2 passed (2); Tests  5 passed (5); Duration  2.78s (transform 2.22s, setup 0ms, import 2.89s, tests 2.26s, environment 0ms))\nVitest suite critical-cli: chunk 3/5 (2 files): packages/agentplane/src/cli/run-cli.critical.scope-leak.test.ts, packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts\nVitest suite critical-cli: chunk 3/5 passed in 3091ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  2.92s (transform 2.20s, setup 0ms, import 2.88s, tests 2.38s, environment 0ms))\nVitest suite critical-cli: chunk 4/5 (2 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts, packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 4/5 passed in 22833ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  22.65s (transform 3.18s, setup 0ms, import 2.72s, tests 21.47s, environment 0ms))\nVitest suite critical-cli: chunk 5/5 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 5/5 passed in 5082ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  4.92s (transform 1.15s, setup 0ms, import 1.38s, tests 3.48s, environment 0ms))\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":true,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":24456},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":17162},{\"id\":\"core\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":330563},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":42247}]}\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":419049,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":1,\"build_invocations\":1,\"ok\":true}\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts",
+      "duration_ms": 432,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
@@ -14,12 +61,59 @@
       },
       "script": null,
       "stderr_tail": "",
-      "stdout_tail": "NTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n==> Framework repo: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-H95spq\n==> Installing workspace dependencies\n==> Building @agentplaneorg/core\n==> Building agentplane\n==> Building @agentplane/testkit\n==> Verifying repo-local runtime\n\nFramework dev runtime is ready.\nRepo-local verify: node packages/agentplane/bin/agentplane.js runtime explain\nGlobal verify: agentplane runtime explain\nIf PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh\nOptional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n==> Framework repo: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-H95spq\n==> Bootstrap install layout already present; skipping bun install\n==> Building @agentplaneorg/core\n==> Building agentplane\n==> Building @agentplane/testkit\n==> Verifying repo-local runtime\n\nFramework dev runtime is ready.\nRepo-local verify: node packages/agentplane/bin/agentplane.js runtime explain\nGlobal verify: agentplane runtime explain\nIf PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh\nOptional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n==> Framework repo: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-sBCD13\n==> Installing workspace dependencies\n==> Building @agentplaneorg/core\n==> Building agentplane\n==> Building @agentplane/testkit\n==> Verifying repo-local runtime\n\nFramework dev runtime is ready.\nRepo-local verify: node packages/agentplane/bin/agentplane.js runtime explain\nGlobal verify: agentplane runtime explain\nIf PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh\nOptional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n==> Framework repo: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-1WvOuu\n==> Bootstrap install layout already present; skipping bun install\n==> Building @agentplaneorg/core\n==> Building agentplane\n==> Building @agentplane/testkit\n==> Reconciling managed git hooks: commit-msg, pre-commit, pre-push, post-merge\n==> Verifying repo-local runtime\n\nFramework dev runtime is ready.\nRepo-local verify: node packages/agentplane/bin/agentplane.js runtime explain\nGlobal verify: agentplane runtime explain\nIf PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh\nOptional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n==> Framework repo: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-XXuCvt\n==> Installing workspace dependencies\n==> Building @agentplaneorg/core\n==> Building agentplane\n==> Building @agentplane/testkit\n==> Verifying repo-local runtime\n\nFramework dev runtime is ready.\nRepo-local verify: node packages/agentplane/bin/agentplane.js runtime explain\nGlobal verify: agentplane runtime explain\nIf PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh\nOptional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n==> Framework repo: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-n9w9b1\n==> Bootstrap install layout already present; skipping bun install\n==> Building @agentplaneorg/core\n==> Building agentplane\n==> Building @agentplane/testkit\n==> Reconciling managed git hooks: commit-msg, pre-commit, pre-push, post-merge\n==> Verifying repo-local runtime\n\nFramework dev runtime is ready.\nRepo-local verify: node packages/agentplane/bin/agentplane.js runtime explain\nGlobal verify: agentplane runtime explain\nIf PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh\nOptional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n\n Test Files  3 passed (3)\n      Tests  23 passed (23)\n   Start at  08:04:07\n   Duration  7.87s (transform 2.03s, setup 0ms, import 2.10s, tests 6.79s, environment 0ms)\n\n"
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/remove-submodules-base/.agentplane/worktrees/202609220351-3KNJQZ-remove-marketing-and-recipes-git-submodules\n\n\n Test Files  1 passed (1)\n      Tests  4 passed (4)\n   Start at  09:17:42\n   Duration  87ms (transform 16ms, setup 0ms, import 14ms, tests 13ms, environment 0ms)\n\n"
     },
     {
-      "check_ids": [],
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run docs:recipes:check",
+      "duration_ms": 1257,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "docs:recipes:check",
+      "stderr_tail": "$ node scripts/checks/check-recipes-inventory-fresh.mjs\n",
+      "stdout_tail": "../../../../../../../../../var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-recipes-inventory-CnDNhY/recipes-inventory.json 12ms\ngenerated ../../../../../../../../../var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-recipes-inventory-CnDNhY/recipes-inventory.json\nok: docs/recipes-inventory.json is up to date\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bunx vitest run packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts",
+      "duration_ms": 7560,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "NTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n==> Framework repo: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-Wn29OF\n==> Installing workspace dependencies\n==> Building @agentplaneorg/core\n==> Building agentplane\n==> Building @agentplane/testkit\n==> Verifying repo-local runtime\n\nFramework dev runtime is ready.\nRepo-local verify: node packages/agentplane/bin/agentplane.js runtime explain\nGlobal verify: agentplane runtime explain\nIf PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh\nOptional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n==> Framework repo: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-Wn29OF\n==> Bootstrap install layout already present; skipping bun install\n==> Building @agentplaneorg/core\n==> Building agentplane\n==> Building @agentplane/testkit\n==> Verifying repo-local runtime\n\nFramework dev runtime is ready.\nRepo-local verify: node packages/agentplane/bin/agentplane.js runtime explain\nGlobal verify: agentplane runtime explain\nIf PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh\nOptional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n==> Framework repo: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-gukYSf\n==> Installing workspace dependencies\n==> Building @agentplaneorg/core\n==> Building agentplane\n==> Building @agentplane/testkit\n==> Verifying repo-local runtime\n\nFramework dev runtime is ready.\nRepo-local verify: node packages/agentplane/bin/agentplane.js runtime explain\nGlobal verify: agentplane runtime explain\nIf PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh\nOptional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n==> Framework repo: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-9IMLLU\n==> Bootstrap install layout already present; skipping bun install\n==> Building @agentplaneorg/core\n==> Building agentplane\n==> Building @agentplane/testkit\n==> Reconciling managed git hooks: commit-msg, pre-commit, pre-push, post-merge\n==> Verifying repo-local runtime\n\nFramework dev runtime is ready.\nRepo-local verify: node packages/agentplane/bin/agentplane.js runtime explain\nGlobal verify: agentplane runtime explain\nIf PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh\nOptional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n==> Framework repo: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-sGwRkQ\n==> Installing workspace dependencies\n==> Building @agentplaneorg/core\n==> Building agentplane\n==> Building @agentplane/testkit\n==> Verifying repo-local runtime\n\nFramework dev runtime is ready.\nRepo-local verify: node packages/agentplane/bin/agentplane.js runtime explain\nGlobal verify: agentplane runtime explain\nIf PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh\nOptional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n==> Framework repo: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-fJzjAH\n==> Bootstrap install layout already present; skipping bun install\n==> Building @agentplaneorg/core\n==> Building agentplane\n==> Building @agentplane/testkit\n==> Reconciling managed git hooks: commit-msg, pre-commit, pre-push, post-merge\n==> Verifying repo-local runtime\n\nFramework dev runtime is ready.\nRepo-local verify: node packages/agentplane/bin/agentplane.js runtime explain\nGlobal verify: agentplane runtime explain\nIf PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh\nOptional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n\n Test Files  3 passed (3)\n      Tests  23 passed (23)\n   Start at  09:17:43\n   Duration  7.24s (transform 1.89s, setup 0ms, import 1.87s, tests 6.25s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
       "command": "node .agentplane/policy/check-routing.mjs",
-      "duration_ms": 193,
+      "duration_ms": 180,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
@@ -33,9 +127,14 @@
       "stdout_tail": "policy routing OK\n"
     },
     {
-      "check_ids": [],
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
       "command": "git grep -n -I -E 'git submodule|Recipes submodule|marketing/.*submodule|agentplane-recipes.*submodule' -- ':!docs/releases/**' ':!.agentplane/tasks/**' ':!.agentplane/tmp/**'",
-      "duration_ms": 813,
+      "duration_ms": 881,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
@@ -47,6 +146,91 @@
       "script": null,
       "stderr_tail": "",
       "stdout_tail": "packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts:100:    expect(calls.some((call) => call.startsWith(\"git submodule\"))).toBe(false);\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "git ls-tree HEAD agentplane-recipes marketing",
+      "duration_ms": 156,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
+        "executable_digest": "sha256:9b19807c702934b8c51fd2da8c2d38053bd7328536546e5a47eb3914dcc7bcde",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "git diff --check",
+      "duration_ms": 183,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
+        "executable_digest": "sha256:9b19807c702934b8c51fd2da8c2d38053bd7328536546e5a47eb3914dcc7bcde",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "git status --short --untracked-files=all",
+      "duration_ms": 384,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
+        "executable_digest": "sha256:9b19807c702934b8c51fd2da8c2d38053bd7328536546e5a47eb3914dcc7bcde",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": " M .agentplane/tasks/202609220351-3KNJQZ/README.md\n M .agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json\n M .agentplane/tasks/202609220351-3KNJQZ/supervision/implementation-evidence.json\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run ci:local:full",
+      "duration_ms": 437931,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "ci:local:full",
+      "stderr_tail": "tring, received number at \"tags[1]\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"verify[1]\"; task README frontmatter schema validation failed: Too small: expected string to have >=1 characters at \"commit.hash\"; task README frontmatter schema validation failed: Too small: expected string to have >=1 characters at \"commit.message\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"description\"\n{\"ts\":\"2026-09-22T06:23:30.437Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-2hkxIf/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-2hkxIf/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-22T06:23:30.451Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-FYSSKs/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-FYSSKs/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-22T06:23:30.457Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-FYSSKs/.agentplane/WORKFLOW.md\",\"from\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-FYSSKs/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-22T06:23:30.462Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-Qneb6p/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-Qneb6p/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-22T06:23:30.465Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_failed\",\"code\":\"WF_UNSUPPORTED_VERSION\",\"details\":{\"reason\":\"Unsupported WORKFLOW version 3; supported versions: 1, 2.\"}}\n{\"ts\":\"2026-09-22T06:23:34.727Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-22T06:23:34.743Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":1}}\n{\"ts\":\"2026-09-22T06:23:34.744Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-22T06:23:34.748Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":2}}\n{\"ts\":\"2026-09-22T06:23:34.748Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-22T06:23:34.751Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic --timeout-ms 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n$ bun run docs:ia:check && bun run docs:site:generate:check && bun run docs:site:typecheck && bun run docs:site:build:check && bun run docs:site:check:design\n$ node scripts/checks/check-docs-ia.mjs\n$ node scripts/generate/generate-website-docs.mjs --check && node scripts/generate/generate-llms-full.mjs --check\n$ bun run --cwd website typecheck\n$ node ../scripts/checks/run-typescript-build.mjs -p tsconfig.json --noEmit\n$ bun run --cwd website build:check\n$ bun run check-content && docusaurus build\n$ node scripts/check-site-content.mjs\n$ node scripts/checks/check-design-language.mjs\n$ node scripts/workflow/run-workflows-lint.mjs && node scripts/checks/check-workflow-command-contract.mjs && bun scripts/checks/check-lifecycle-parity.ts && node scripts/checks/check-critical-test-route.mjs\n$ node scripts/checks/run-vitest-suite.mjs platform-critical\n$ node scripts/checks/check-significant-coverage.mjs\n",
+      "stdout_tail": "c/cli/run-cli.critical.symlink-root.test.ts\nVitest suite critical-cli: chunk 3/5 passed in 3110ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  2.94s (transform 2.24s, setup 0ms, import 2.90s, tests 2.40s, environment 0ms))\nVitest suite critical-cli: chunk 4/5 (2 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts, packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 4/5 passed in 23005ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  22.82s (transform 3.45s, setup 0ms, import 2.92s, tests 21.54s, environment 0ms))\nVitest suite critical-cli: chunk 5/5 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 5/5 passed in 4992ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  4.83s (transform 1.14s, setup 0ms, import 1.36s, tests 3.40s, environment 0ms))\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":true,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":24288},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":16980},{\"id\":\"core\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":308724},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":42338}]}\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":396957,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":1,\"build_invocations\":1,\"ok\":true}\n\n== Docs site pipeline (generate + typecheck + build + design) ==\nok: docs IA, sidebar coverage, and current path references are aligned\nok: docs/reference/generated-reference.mdx is fresh\nok: website/static/llms-full.txt is fresh\n[site-content] ok\n\n ------------------------------------------------------------------------------                                                                                                         Update available 3.10.1 → 3.10.2                                                                                                                To upgrade Docusaurus packages with the latest version, run the                                       following command:                                           `npm i @docusaurus/core@latest @docusaurus/faster@latest                    @docusaurus/preset-classic@latest @docusaurus/theme-common@latest            @docusaurus/theme-mermaid@latest @docusaurus/module-type-aliases@latest                  @docusaurus/tsconfig@latest @docusaurus/types@latest`                                                                                               ------------------------------------------------------------------------------ \n\n[INFO] [en] Creating an optimized production build...\n[navigation-check] ok: checked 6 docs targets from website/build\n[SUCCESS] Generated static files in \"build\".\n[INFO] Use `npm run serve` command to test your build locally.\nDESIGN.md compliance check passed\n\n== Workflows lint (actionlint) ==\nworkflow and command guidance contract OK\nworkflow lifecycle parity OK\ncritical Vitest route OK\n\n== Windows platform-critical tests ==\n\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/remove-submodules-base/.agentplane/worktrees/202609220351-3KNJQZ-remove-marketing-and-recipes-git-submodules\n\n\n Test Files  7 passed (7)\n      Tests  98 passed (98)\n   Start at  09:24:40\n   Duration  26.75s (transform 10.70s, setup 0ms, import 8.95s, tests 80.06s, environment 0ms)\n\n\n== Significant file coverage (guard) ==\n\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/remove-submodules-base/.agentplane/worktrees/202609220351-3KNJQZ-remove-marketing-and-recipes-git-submodules\n      Coverage enabled with v8\n\n\n Test Files  8 passed (8)\n      Tests  101 passed (101)\n   Start at  09:25:07\n   Duration  3.21s (transform 4.12s, setup 0ms, import 4.62s, tests 3.13s, environment 0ms)\n\n\n== Coverage threshold (significant) ==\nSignificant suite contract OK (17 source targets).\n"
     }
   ],
   "kind": "direct_task_declared_checks",
