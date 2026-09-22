@@ -285,8 +285,8 @@ events:
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
 doc_version: 3
-doc_updated_at: "2026-09-21T14:34:31.178Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-22T02:51:44.168Z"
+doc_updated_by: "DEUS"
 description: "Fix the demonstrated branch_pr completion ordering so the canonical COMPLETED projection is included in the terminal task-artifact commit and does not leave the task README dirty. Add a public-route regression test. Regenerate the v0.7 compatibility candidate for the exact cumulative 0.7.11 surface with this task as provenance; keep the immutable compatibility baseline unchanged."
 sections:
   Summary: |-
@@ -460,6 +460,27 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    <!-- BEGIN HOSTED PUBLISH EVIDENCE -->
+    ### Hosted publish
+
+    - State: ok
+    - Note: Hosted publish confirmed for v0.7.11.
+    - Details:
+      - release_sha: 65b1c24e83576b7daca306e6dc6b7085c522cf58
+      - version: 0.7.11
+      - tag: v0.7.11
+      - @agentplaneorg/core: preexisting
+      - @agentplaneorg/recipes: preexisting
+      - agentplane: preexisting
+      - npm_smoke: pass
+      - github_release: created
+      - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.7.11
+      - ghcr: published
+      - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/35680680841
+      - external_homebrew: published | basilisk-labs/homebrew-tap | 43cdb3a55bed0b13e9c55e2b658985e0efe639d2 | https://github.com/basilisk-labs/homebrew-tap/pull/52
+      - external_scoop: published | basilisk-labs/scoop-bucket | 5689308d159b7f46e2aa41152a08932ceba12aaf | https://github.com/basilisk-labs/scoop-bucket/pull/51
+      - external_setup-agentplane: published | basilisk-labs/setup-agentplane | d2655ee4bb2b130fb0d43e477491f7415443b4b8 | https://github.com/basilisk-labs/setup-agentplane/pull/51
+    <!-- END HOSTED PUBLISH EVIDENCE -->
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -1396,6 +1417,27 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+<!-- BEGIN HOSTED PUBLISH EVIDENCE -->
+### Hosted publish
+
+- State: ok
+- Note: Hosted publish confirmed for v0.7.11.
+- Details:
+  - release_sha: 65b1c24e83576b7daca306e6dc6b7085c522cf58
+  - version: 0.7.11
+  - tag: v0.7.11
+  - @agentplaneorg/core: preexisting
+  - @agentplaneorg/recipes: preexisting
+  - agentplane: preexisting
+  - npm_smoke: pass
+  - github_release: created
+  - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.7.11
+  - ghcr: published
+  - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/35680680841
+  - external_homebrew: published | basilisk-labs/homebrew-tap | 43cdb3a55bed0b13e9c55e2b658985e0efe639d2 | https://github.com/basilisk-labs/homebrew-tap/pull/52
+  - external_scoop: published | basilisk-labs/scoop-bucket | 5689308d159b7f46e2aa41152a08932ceba12aaf | https://github.com/basilisk-labs/scoop-bucket/pull/51
+  - external_setup-agentplane: published | basilisk-labs/setup-agentplane | d2655ee4bb2b130fb0d43e477491f7415443b4b8 | https://github.com/basilisk-labs/setup-agentplane/pull/51
+<!-- END HOSTED PUBLISH EVIDENCE -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
