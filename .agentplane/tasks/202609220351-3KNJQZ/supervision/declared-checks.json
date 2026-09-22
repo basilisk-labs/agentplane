@@ -1,0 +1,41 @@
+{
+  "checks": [
+    {
+      "check_ids": [],
+      "command": "bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts",
+      "duration_ms": 532,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/remove-submodules-base/.agentplane/worktrees/202609220351-3KNJQZ-remove-marketing-and-recipes-git-submodules\n\n\n Test Files  1 passed (1)\n      Tests  4 passed (4)\n   Start at  07:01:45\n   Duration  91ms (transform 19ms, setup 0ms, import 16ms, tests 14ms, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [],
+      "command": "bun run docs:recipes:check",
+      "duration_ms": 222,
+      "exit_code": 1,
+      "runtime": {
+        "environment_digest": "sha256:65fabd35ebbc05b807102fb642cb4eac276d9e08293290611547f70c99855c2d",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "docs:recipes:check",
+      "stderr_tail": "$ node scripts/checks/check-recipes-inventory-fresh.mjs\nerror: recipes source is required; pass --recipes-source <path> or set AGENTPLANE_RECIPES_SOURCE to a checkout of https://github.com/basilisk-labs/agentplane-recipes\nerror: node scripts/generate-recipes-inventory.mjs --out /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-recipes-inventory-1Es3hB/recipes-inventory.json failed with exit code 1\nerror: script \"docs:recipes:check\" exited with code 1\n",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": "Declared check failed: bun run docs:recipes:check",
+  "schema_version": 1,
+  "status": "failed",
+  "task_id": "202609220351-3KNJQZ"
+}

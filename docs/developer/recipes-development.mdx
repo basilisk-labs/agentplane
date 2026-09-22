@@ -42,8 +42,10 @@ AGENTPLANE_RECIPES_SOURCE=../agentplane-recipes bun run docs:recipes:check
 ```
 
 `--recipes-source <path>` is also accepted by the generator. The configured directory must contain
-the catalog `index.json` and `recipes/` directory. Runtime recipe installation remains independent:
-it reads the signed public catalog and verifies published recipe archives.
+the catalog `index.json` and `recipes/` directory. When the check command has no configured source,
+it creates a temporary read-only shallow clone and removes it after comparison. Runtime recipe
+installation remains independent: it reads the signed public catalog and verifies published recipe
+archives.
 
 ## Designing scenarios
 

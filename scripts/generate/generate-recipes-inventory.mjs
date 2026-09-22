@@ -51,7 +51,10 @@ export function resolveCommonRepoRoot(cwd = ROOT, resolveGit = gitRevParse) {
 
 export function resolveRecipesSourceRoot(cwd = ROOT, options = {}) {
   const configuredSource = String(
-    options.recipesSource ?? options.env?.[RECIPES_SOURCE_ENV] ?? process.env[RECIPES_SOURCE_ENV] ?? "",
+    options.recipesSource ??
+      options.env?.[RECIPES_SOURCE_ENV] ??
+      process.env[RECIPES_SOURCE_ENV] ??
+      "",
   ).trim();
   if (!configuredSource) {
     throw new Error(
