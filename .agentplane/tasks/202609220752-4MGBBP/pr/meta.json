@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:dd3cc8ec1394ab995b0e1501ed3eb2b96bc414ebea21f541b7796f0c85dd0a8f",
   "pr_number": 6003,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6003",
+  "pre_merge_closure": {
+    "basis_commit": "d0bd121a2035b91769b817dbe039e0e75eb39923",
+    "branch": "task/202609220752-4MGBBP/fix-issue-5991-by-cleaning-owned-vitest-temporar",
+    "pr_number": 6003,
+    "recorded_at": "2026-09-22T08:06:19.931Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
