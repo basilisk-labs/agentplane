@@ -22,7 +22,7 @@ Remove the marketing and agentplane-recipes gitlinks from the AgentPlane superpr
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-22T04:01:31.671Z
+- Updated: 2026-09-22T06:26:43.870Z
 - Branch: task/202609220351-3KNJQZ/remove-marketing-and-recipes-git-submodules
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
