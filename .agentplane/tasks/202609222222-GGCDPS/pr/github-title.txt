@@ -1,0 +1,1 @@
+✅ GGCDPS task: Run canonical post-completion integration operations from the authoritative base checkout [202609222222-GGCDPS]

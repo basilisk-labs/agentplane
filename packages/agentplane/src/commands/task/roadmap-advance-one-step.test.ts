@@ -19,7 +19,9 @@ describe("LC-03 common advance-one-step coordinator", () => {
       true,
     );
     expect(canonicalCompletionPrecedesWorkflow(operationStep("task.worktree.cleanup"))).toBe(true);
-    expect(canonicalCompletionPrecedesWorkflow(operationStep("integration.run_next"))).toBe(false);
+    expect(canonicalCompletionPrecedesWorkflow(operationStep("integration.enqueue"))).toBe(true);
+    expect(canonicalCompletionPrecedesWorkflow(operationStep("integration.run_next"))).toBe(true);
+    expect(canonicalCompletionPrecedesWorkflow(operationStep("pr.open"))).toBe(false);
     expect(
       canonicalCompletionPrecedesWorkflow({
         kind: "terminal",
