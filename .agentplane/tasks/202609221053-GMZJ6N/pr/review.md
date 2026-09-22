@@ -6,14 +6,14 @@ Created: 2026-09-22T22:01:46.997Z
 
 - Task: `202609221053-GMZJ6N`
 - Title: Allow canonical provider lifecycle effects to consume the separately granted state-bound side-effect authority after ...
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609221053-GMZJ6N/canonical-provider-lifecycle`
 - Canonical task record: `.agentplane/tasks/202609221053-GMZJ6N/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
