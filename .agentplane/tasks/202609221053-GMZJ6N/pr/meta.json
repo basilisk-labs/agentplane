@@ -1,0 +1,21 @@
+{
+  "base": "task/202609220826-DS03Q6/allow-canonical-completed-tasks-to-record-branch",
+  "branch": "task/202609221053-GMZJ6N/canonical-provider-lifecycle",
+  "created_at": "2026-09-22T22:01:46.997Z",
+  "diffstat_sha256": "sha256:6e8b937bed5d662cfa0cd08f2f010099d70c2d7ff4114d1b647780cfc9f79c91",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202609221053-GMZJ6N",
+  "updated_at": "2026-09-22T22:01:46.997Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

@@ -19,7 +19,8 @@ import {
 import { commitCanonicalTerminalTaskArtifacts } from "./kernel-repository-coordinator.js";
 import {
   decideCanonicalWorkflowEffect,
-  prepareCanonicalWorkflowEffect,
+  canonicalWorkflowRequestDigest,
+  executeCanonicalAdmittedWorkflowOperation,
 } from "./kernel-provider-effect-coordinator.js";
 import { ensureKernelOperationalProjectionEvidence } from "./kernel-operational-projection.js";
 import { transferCanonicalControllerToBase } from "./kernel-controller-handoff.js";
@@ -250,22 +251,46 @@ async function advanceCanonicalRoute(opts: {
           canonical_revision: record.aggregate.revision,
         };
       }
-      const prepared = await prepareCanonicalWorkflowEffect({
-        command: opts.command,
-        runtime,
-        record,
-        decision: workflow,
-      });
-      if (prepared === "prepared") continue;
+      if (workflow.workflowStep.kind === "cli_operation") {
+        const persisted = await executeCanonicalAdmittedWorkflowOperation({
+          command: opts.command,
+          decision: workflow,
+          task_id: opts.task_id,
+          request_digest: canonicalWorkflowRequestDigest(
+            opts.task_id,
+            workflow,
+            workflow.workflowStep.operation,
+          ),
+        });
+        const execution = persisted.execution;
+        if (
+          execution.executable &&
+          execution.stop_reason === null &&
+          execution.result?.status === "succeeded" &&
+          execution.refreshed_decision !== null
+        ) {
+          continue;
+        }
+        return {
+          schema_version: 1,
+          task_id: opts.task_id,
+          action: {
+            kind: "human_required",
+            reason:
+              persisted.journal.stop?.reason === "effect_in_doubt"
+                ? "effect_in_doubt"
+                : "canonical_workflow_effect_unavailable",
+            workflow_step: workflow.workflowStep.id,
+            evidence_digest: persisted.journal.digest,
+          },
+        };
+      }
       return {
         schema_version: 1,
         task_id: opts.task_id,
         action: {
           kind: workflow.workflowStep.kind === "wait" ? "external_wait" : "human_required",
-          reason:
-            prepared === "already_observed"
-              ? "canonical_workflow_effect_no_progress"
-              : "canonical_workflow_effect_unavailable",
+          reason: "canonical_workflow_effect_unavailable",
           workflow_step: workflow.workflowStep.id,
         },
       };
