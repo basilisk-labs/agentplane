@@ -1,10 +1,11 @@
 ---
 id: "202609220351-3KNJQZ"
 title: "Remove marketing and recipes Git submodules"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 73
+revision: 74
 origin:
   system: "manual"
 depends_on: []
@@ -46,6 +47,22 @@ quality_review:
     - "Active source, workflows, and user/developer documentation no longer initialize or deinitialize either removed submodule; remaining matching text is historical task evidence or intentional negative test coverage."
     - "AgentPlane-observed verification passed: ci:local:fast completed 669 test files and 5781 tests with one skip, ci:contract passed, git diff --check passed, and the target-path tree check returned empty output."
     - "The diff deletes only the two former gitlink entries, not files from either external repository; no release-document history was changed."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:266f3fee172d324b286fd3baea1f45d818ac4f0ad43d4f40724898415afdd4f5"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-09-22T07:03:59.507Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -429,9 +446,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "397a3abae637e8a38cc2265f8462948e36935ced"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "ddfadc4c55b4c58da21efa339297d56a16c12969"
+  message: "📝 3KNJQZ task: record GitHub PR metadata"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -439,9 +459,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-09-22T07:03:59.507Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "ddfadc4c55b4c58da21efa339297d56a16c12969"
 doc_version: 3
-doc_updated_at: "2026-09-22T06:25:19.358Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-22T07:03:59.507Z"
+doc_updated_by: "CODER"
 description: "Remove the marketing and agentplane-recipes gitlinks from the AgentPlane superproject. Keep both external repositories independent. Replace recipe submodule assumptions in CI, publish, developer bootstrap, documentation inventory generation, tests, and docs with explicit on-demand remote access or repository-neutral behavior. Preserve runtime recipe installation from the signed public catalog."
 sections:
   Summary: |-
@@ -785,6 +813,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:e51a322d606354812009c8c5e428c9b456055ad9debea667c9a636531cbc6231"
     work_order_id: "sha256:066a734e2421ae0fc1e70c6865794a532267716638044a10b377bc7537945e8f"
+  implementation_commit:
+    hash: "397a3abae637e8a38cc2265f8462948e36935ced"
+    message: "🚧 3KNJQZ task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "1d6f6cabf7325beec6422f7a69841009b1915475"
@@ -4109,3 +4140,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:266f3fee172d324b286fd3baea1f45d818ac4f0ad43d4f40724898415afdd4f5`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-09-22T07:03:59.507Z`
