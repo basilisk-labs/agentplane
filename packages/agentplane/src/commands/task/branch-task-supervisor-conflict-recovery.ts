@@ -6,7 +6,6 @@ import {
   type SupervisorExecutionEpisodeJournal,
 } from "@agentplaneorg/core/schemas";
 import {
-  type taskKernel,
   taskCentricDigest,
   parseTaskReadme,
   renderTaskReadme,
@@ -20,16 +19,9 @@ import type { ExecutedTaskRunnerExecution } from "../../runner/usecases/task-run
 import { resolveSupervisorTaskRunnerPaths } from "../../runner/task-run-paths.js";
 import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-backend.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
-import type { DirectRepositoryStatus } from "./direct-task-finalization.js";
-import { taskRecordToData, type TaskData } from "../../backends/task-backend.js";
+import type { TaskData } from "../../backends/task-backend.js";
 import { taskDataToFrontmatter } from "../shared/task-backend.js";
-import { projectTaskCentricCompatibilityMutation } from "../../adapters/task-backend/task-centric-backend-adapter.js";
-import {
-  projectObservedTaskExecutionContract,
-  observedExternalEffectsFromRunnerResult,
-} from "./task-execution-contract-observation.js";
-import { buildTaskStatusTransition } from "./shared/workflow-transition-service.js";
-import type { TaskExternalEffect } from "@agentplaneorg/core/tasks";
+import { observedExternalEffectsFromRunnerResult } from "./task-execution-contract-observation.js";
 import { workflowTaskFingerprintComponent } from "../shared/workflow-step-fingerprint.js";
 import { resolveConflictReworkSemanticInput } from "../pr/conflict-rework-semantic-input.js";
 import {
@@ -52,217 +44,22 @@ import {
   conflictApplicationAuthority,
   conflictRecoveryAuthority,
 } from "../pr/conflict-rework-authority.js";
-import { readKernelRecord } from "../../adapters/task-backend/kernel-record.js";
-import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
-import { createKernelRuntime } from "./kernel-runtime-context.js";
-
-export type ManagedConflictApplicationContext = {
-  run_id: string;
-  work_order_id: string;
-  result_digest: string;
-  execution_base_commit: string | null;
-  execution_baseline_status: DirectRepositoryStatus | null;
-  execution_lifecycle_event_count: number;
-  accepted_task: TaskData;
-  accepted_authority: ReturnType<typeof conflictApplicationAuthority>;
-  status_at: string;
-};
-
-export function managedImplementationStatusNote(commit: string): string {
-  return (
-    `Implementation committed: ${commit.slice(0, 12)}. ` +
-    "CLI recorded the observed branch EXECUTOR receipt and committed work-unit identity."
-  );
-}
-
-export function managedConflictEvidenceCommitMessage(opts: {
-  context: ManagedConflictApplicationContext;
-  result: ExecutedTaskRunnerExecution["result"];
-  decision: TaskRouteDecision;
-}): string {
-  const resultDigest = taskCentricDigest({
-    run_id: opts.context.run_id,
-    work_order: opts.context.work_order_id,
-    result: opts.result,
-  });
-  const postcondition = digestSupervisorEpisodeValue({
-    authority: conflictApplicationAuthority(opts.decision),
-    implementation: opts.context,
-  });
-  return (
-    `🚧 ${opts.context.accepted_task.id.split("-").at(-1)} task: record managed implementation evidence\n\n` +
-    `AgentPlane-Result: ${resultDigest}\nAgentPlane-Postcondition: ${postcondition}`
-  );
-}
+import {
+  managedConflictEvidenceCommitMessage,
+  managedConflictTaskPostconditions,
+  managedImplementationStatusNote,
+  type ManagedConflictApplicationContext,
+} from "./branch-task-supervisor-conflict-contract.js";
+import {
+  proveManagedConflictKernelApplication,
+  type ManagedConflictKernelApplication,
+} from "./branch-task-supervisor-conflict-kernel-proof.js";
 
 type ManagedConflictTaskApplication = {
   implementation_commit: string;
   stage: "reconciled" | "applied";
   artifacts_committed: boolean;
 };
-
-type ManagedConflictKernelApplication = {
-  implementation_commit: string;
-};
-
-async function proveManagedConflictKernelApplication(opts: {
-  command: CommandContext;
-  checkout: string;
-  task_id: string;
-  decision: TaskRouteDecision;
-  context: ManagedConflictApplicationContext;
-  executed: ExecutedTaskRunnerExecution;
-}): Promise<ManagedConflictKernelApplication | null> {
-  const task = await opts.command.taskBackend.getTask(opts.task_id);
-  if (!task) throw new Error("Managed canonical conflict Task disappeared.");
-  const repositoryIdentity = await resolveLogicalRepositoryIdentity({
-    git_root: opts.command.resolvedProject.gitRoot,
-    task,
-    create_if_missing: false,
-  });
-  const read = readKernelRecord(task, repositoryIdentity as taskKernel.Sha256Digest);
-  if (read.kind !== "canonical") return null;
-  const order = opts.executed.bundle.work_order;
-  if (!order) throw new Error("Managed canonical conflict proof has no WorkOrder.");
-  const conflict = resolveConflictReworkSemanticInput({
-    task_id: order.task.id,
-    checkout: opts.checkout,
-    head: order.state_fingerprint.git_head,
-    writable_roots: order.authority.writable_roots,
-    required_inputs: order.required_inputs,
-  });
-  if (!conflict) throw new Error("Managed canonical conflict proof has no bound context.");
-  const git = async (args: string[]) =>
-    await runProcess({ command: "git", args, cwd: opts.checkout, env: gitProofEnv() });
-  const head = (await git(["rev-parse", "HEAD"])).stdout.trim();
-  const message = (await git(["show", "-s", "--format=%B", head])).stdout;
-  const expectedMessage = managedConflictEvidenceCommitMessage({
-    context: opts.context,
-    result: opts.executed.result,
-    decision: opts.decision,
-  });
-  if (message.split("\n")[0] !== expectedMessage.split("\n")[0]) return null;
-  const proofTrailers = (text: string) =>
-    text.split("\n").filter((line) => /^AgentPlane-(?:Result|Postcondition):/u.test(line));
-  const parents = (await git(["show", "-s", "--format=%P", head])).stdout.trim().split(" ");
-  if (
-    parents.length !== 1 ||
-    taskCentricDigest(proofTrailers(message)) !== taskCentricDigest(proofTrailers(expectedMessage))
-  ) {
-    throw new Error("Managed canonical conflict evidence differs from its exact result.");
-  }
-  const mergeHead = parents[0]!;
-  const resultDigest = taskCentricDigest({
-    run_id: opts.context.run_id,
-    work_order: order.work_order_id,
-    result: opts.executed.result,
-  });
-  const snapshot = await resolveConflictResolutionSnapshot({
-    cwd: opts.checkout,
-    task_id: opts.task_id,
-    baseline: opts.context.execution_base_commit!,
-    head: mergeHead,
-    base: conflict.local.base_head_sha,
-    result_digest: resultDigest,
-  });
-  const prefix = `${opts.command.config.paths.workflow_dir.replaceAll("\\", "/")}/${opts.task_id}/`;
-  const roots = order.authority.writable_roots.map(
-    (root) => path.relative(opts.checkout, root).replaceAll(path.sep, "/") || ".",
-  );
-  const prepared = await prepareConflictResolutionTree({
-    cwd: opts.checkout,
-    task_head: opts.context.execution_base_commit!,
-    resolution_snapshot: snapshot,
-    base: conflict.local.base_head_sha,
-    merge_base: conflict.local.merge_base_sha,
-    allowed_path: (file) =>
-      file.startsWith(prefix) ||
-      roots.some((root) => root === "." || file === root || file.startsWith(`${root}/`)),
-  });
-  await assertConflictResolutionCommit({
-    cwd: opts.checkout,
-    task_id: opts.task_id,
-    head: mergeHead,
-    resolution_snapshot: snapshot,
-    base: conflict.local.base_head_sha,
-    tree: prepared.tree,
-    semantic_result_digest: resultDigest,
-  });
-  const evidencePaths = (await git(["diff", "--name-only", "-z", mergeHead, head])).stdout
-    .split("\0")
-    .filter(Boolean);
-  if (evidencePaths.length === 0 || evidencePaths.some((file) => !file.startsWith(prefix))) {
-    throw new Error("Managed canonical conflict evidence contains foreign changes.");
-  }
-  if ((await git(["status", "--porcelain", "-z", "--untracked-files=all"])).stdout !== "") {
-    throw new Error("Managed canonical conflict recovery found foreign workspace changes.");
-  }
-  const runtime = await createKernelRuntime({
-    command: opts.command,
-    task_id: opts.task_id,
-    transport: "managed",
-    operation_id: `recover-managed-provider-conflict:${opts.context.result_digest}`,
-  });
-  const kernelContext = await runtime.native.readContext(opts.task_id);
-  const authority = read.record.aggregate.authority_lineage?.at(-1)?.authority;
-  const validation = read.record.aggregate.final_validation;
-  if (
-    !authority ||
-    authority.repository_fingerprint !== kernelContext.repository_fingerprint ||
-    validation?.status !== "PASSED" ||
-    validation.identity.implementation_identity !== kernelContext.repository_fingerprint
-  ) {
-    throw new Error("Managed canonical conflict Kernel evidence is stale.");
-  }
-  return { implementation_commit: mergeHead };
-}
-
-export function managedConflictTaskPostconditions(opts: {
-  context: ManagedConflictApplicationContext;
-  checkout: string;
-  workflow_dir: string;
-  commit: NonNullable<TaskData["commit"]>;
-  changed_paths: readonly string[];
-  observed_external_effects: readonly TaskExternalEffect[];
-}): { reconciled: TaskData; applied: TaskData } {
-  const persisted = (current: TaskData, next: TaskData): TaskData => {
-    const projected = projectTaskCentricCompatibilityMutation({ current, next });
-    return taskRecordToData({
-      id: current.id,
-      frontmatter: {
-        ...taskDataToFrontmatter(projected),
-        revision: (current.revision ?? 1) + 1,
-      } as never,
-      body: projected.doc ?? "",
-      readmePath: path.join(opts.checkout, opts.workflow_dir, current.id, "README.md"),
-    });
-  };
-  const projection = projectObservedTaskExecutionContract({
-    task: opts.context.accepted_task,
-    workflow_dir: opts.workflow_dir,
-    changed_paths: opts.changed_paths,
-    observed_external_effects: opts.observed_external_effects,
-    preserved_commit: opts.commit.hash,
-  });
-  if (projection.escalated || projection.episodeAuthorityViolations.length > 0) {
-    throw new Error("Managed conflict Task postcondition exceeds accepted authority.");
-  }
-  const reconciled = projection.nextTask
-    ? persisted(opts.context.accepted_task, projection.nextTask)
-    : opts.context.accepted_task;
-  const note = managedImplementationStatusNote(opts.commit.hash);
-  const transition = buildTaskStatusTransition({
-    task: reconciled,
-    at: opts.context.status_at,
-    toStatus: "DOING",
-    eventAuthor: "SUPERVISOR",
-    updatedBy: "SUPERVISOR",
-    note,
-    comment: { author: "SUPERVISOR", body: note },
-    commit: opts.commit,
-  });
-  return { reconciled, applied: persisted(reconciled, transition.nextTask) };
-}
 
 export function hasPendingManagedConflict(journal: SupervisorExecutionEpisodeJournal): boolean {
   return (

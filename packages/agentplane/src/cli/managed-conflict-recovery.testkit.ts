@@ -311,7 +311,7 @@ export async function exerciseManagedConflict(opts: {
   expect(
     outcome.status,
     JSON.stringify({
-      stop: outcome.status === "stopped" ? outcome.stop : null,
+      stopped: outcome.status === "stopped",
       status: result.status,
       summary: result.summary,
       receipt: result.execution_receipt,

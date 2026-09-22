@@ -163,7 +163,7 @@ async function completeCanonicalDemoTask(ctx: CommandContext, task: TaskData): P
   await runtime.checkpoint(await runtime.observe());
   const approved = requireKernelCommit(await runtime.authority.approve(taskId));
   const plan = approved.record.aggregate.current_plan;
-  if (!plan || plan.state !== "APPROVED") {
+  if (plan?.state !== "APPROVED") {
     throw new Error("Demo canonical plan approval was not persisted.");
   }
 

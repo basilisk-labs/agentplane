@@ -55,13 +55,15 @@ import {
 import {
   hasPendingManagedConflict,
   loadManagedConflictRecovery,
-  managedImplementationStatusNote,
-  managedConflictTaskPostconditions,
   finishManagedConflictTaskRecovery,
   finishManagedConflictKernelRecovery,
-  managedConflictEvidenceCommitMessage,
-  type ManagedConflictApplicationContext,
 } from "./branch-task-supervisor-conflict-recovery.js";
+import {
+  managedConflictEvidenceCommitMessage,
+  managedConflictTaskPostconditions,
+  managedImplementationStatusNote,
+  type ManagedConflictApplicationContext,
+} from "./branch-task-supervisor-conflict-contract.js";
 import {
   conflictApplicationAuthority,
   conflictRecoveryAuthority,
