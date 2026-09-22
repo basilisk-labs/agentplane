@@ -594,6 +594,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           ref: ${{ env.AGENTPLANE_CI_REF }}
+          fetch-depth: 0
       - name: Resolve release-ready target
         id: target
         shell: bash
