@@ -8,6 +8,7 @@ import {
   prepareReplacementSupervisorExecutionEpisodeAfterFailure,
   recoverSupervisorExecutionEpisodeJournal,
   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
+  reopenSupervisorExecutionEpisodeAfterEffectEvidence,
   startSupervisorExecutionEpisode,
   stopSupervisorExecutionEpisode,
   type SupervisorEpisodeOperationKind,
@@ -419,6 +420,40 @@ export async function supervisePersistedWorkflowEpisode(opts: {
       journal,
       journal_path: opened.journal_path,
     };
+  }
+
+  const interruptedOperation = journal.operations.at(-1);
+  if (
+    operation.id === "worktree.prepare" &&
+    journal.status === "stopped" &&
+    journal.stop?.reason === "effect_in_doubt" &&
+    interruptedOperation?.status === "intent" &&
+    interruptedOperation.effect_ref === operation.idempotencyKey &&
+    interruptedOperation.authority_ref === "workflow-operation:worktree.prepare"
+  ) {
+    const reopened = reopenSupervisorExecutionEpisodeAfterEffectEvidence({
+      journal,
+      operation_key: interruptedOperation.operation_key,
+    });
+    const failed = completeSupervisorExecutionEpisode({
+      journal: reopened,
+      operation_key: interruptedOperation.operation_key,
+      result: {
+        status: "not_applied",
+        evidence: "current_route_still_requires_worktree.prepare",
+      },
+      failed: true,
+    });
+    const replacement = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
+      journal: failed,
+      state_fingerprint_digest: currentFingerprint,
+    });
+    if (!(await store.compareAndSwap(journal.digest, replacement))) {
+      throw new Error(
+        "Supervisor episode changed while replacing a proven not-applied worktree preparation.",
+      );
+    }
+    journal = replacement;
   }
 
   // A restart can observe the durable agent outcome before the route cursor

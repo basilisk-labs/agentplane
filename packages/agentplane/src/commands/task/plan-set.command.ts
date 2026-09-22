@@ -1,11 +1,10 @@
-import { readFile } from "node:fs/promises";
-import path from "node:path";
 import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
 import { setCanonicalPlan } from "./kernel-plan.js";
 import { createCliEmitter } from "../../cli/output.js";
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
 import type { CommandContext } from "../shared/task-backend.js";
+import { resolveTextPayload, validateTextPayloadSource } from "../shared/text-payload.js";
 
 import { cmdTaskPlanSet } from "./plan.js";
 
@@ -60,14 +59,12 @@ export const taskPlanSetSpec: CommandSpec<TaskPlanSetParsed> = {
     },
   ],
   validateRaw: (raw) => {
-    const hasText = typeof raw.opts.text === "string";
-    const hasFile = typeof raw.opts.file === "string";
-    if (hasText === hasFile) {
-      throw usageError({
-        spec: taskPlanSetSpec,
-        message: "Provide exactly one of --text or --file.",
-      });
-    }
+    validateTextPayloadSource(
+      raw,
+      taskPlanSetSpec,
+      { inline: "text", file: "file", label: "plan text" },
+      { required: true },
+    );
     const updatedBy = raw.opts["updated-by"];
     if (typeof updatedBy === "string" && updatedBy.trim().length === 0) {
       throw usageError({
@@ -102,7 +99,12 @@ export function makeRunTaskPlanSetHandler(getCtx: (cmd: string) => Promise<Comma
     const command = await getCtx("task plan set");
     const source = await command.taskBackend.getTask(p.taskId);
     if (source?.extensions && Object.hasOwn(source.extensions, TASK_KERNEL_EXTENSION)) {
-      const text = p.file ? await readFile(path.resolve(ctx.cwd, p.file), "utf8") : (p.text ?? "");
+      const text = await resolveTextPayload({
+        cwd: ctx.cwd,
+        inline: p.text,
+        file: p.file,
+        label: "plan",
+      });
       const result = await setCanonicalPlan(command, p.taskId, JSON.parse(text), {
         scopeExpansionApprovedBy: p.scopeExpansionApprovedBy,
       });
