@@ -6,14 +6,14 @@ Created: 2026-09-22T10:15:30.580Z
 
 - Task: `202609220826-DS03Q6`
 - Title: Allow canonical completed tasks to record branch_pr pre-merge closure without legacy task mutation
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609220826-DS03Q6/allow-canonical-completed-tasks-to-record-branch`
 - Canonical task record: `.agentplane/tasks/202609220826-DS03Q6/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:95341fd5c857a32f8bb3cdccffa5ee942b2982a82805efffb4c36e757057ccd5
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

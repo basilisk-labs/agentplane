@@ -15,8 +15,8 @@ Fix the 0.7.11 lifecycle deadlock where next-action routes task.pre_merge_close 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:95341fd5c857a32f8bb3cdccffa5ee942b2982a82805efffb4c36e757057ccd5
 - Canonical workflow state lives in the task README.
 
 <details>

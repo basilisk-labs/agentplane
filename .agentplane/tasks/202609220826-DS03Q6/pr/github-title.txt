@@ -1,1 +1,1 @@
-🚧 DS03Q6 task: Allow canonical completed tasks to record branch_pr pre-merge closure without legacy task mut... [202609220826-DS03Q6]
+✅ DS03Q6 task: Allow canonical completed tasks to record branch_pr pre-merge closure without legacy task mut... [202609220826-DS03Q6]
