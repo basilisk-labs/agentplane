@@ -91,11 +91,6 @@ jobs:
         with:
           ref: ${{ env.AGENTPLANE_CI_REF }}
           fetch-depth: 0
-      - name: Initialize recipes submodule
-        if: >-
-          needs.plan.outputs.route != 'reuse-verified-parent' &&
-          needs.plan.outputs.needs_recipes_inventory == 'true'
-        run: git submodule update --init agentplane-recipes
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: "1.4.2"

@@ -15,8 +15,8 @@ Remove the marketing and agentplane-recipes gitlinks from the AgentPlane superpr
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:d8428d26dc4fb4ab379526ebef96e0450f811b589a32ac72a5d8edea7013647f
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,12 +27,33 @@ Remove the marketing and agentplane-recipes gitlinks from the AgentPlane superpr
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/developer/recipes-development.mdx             | 19 +++++++
- docs/recipes-inventory.json                        | 45 +--------------
- .../cli/generate-recipes-inventory-script.test.ts  | 63 +++++++++++----------
- scripts/checks/check-recipes-inventory-fresh.mjs   | 64 ++++++++++++++++++----
- scripts/generate/generate-recipes-inventory.mjs    | 54 ++++++++++++------
- 5 files changed, 144 insertions(+), 101 deletions(-)
+ .github/workflows/ci.yml                           |   5 -
+ .github/workflows/publish-distribution-module.yml  |   1 -
+ .github/workflows/publish.yml                      |  26 ----
+ .gitmodules                                        |   6 -
+ .prettierignore                                    |   2 -
+ agentplane-recipes                                 |   1 -
+ docs/README.md                                     |   7 +-
+ docs/developer/project-layout.mdx                  |   4 +-
+ docs/developer/recipes-development.mdx             |  19 +++
+ docs/developer/testing-and-quality.mdx             |   1 -
+ docs/help/troubleshooting.mdx                      |   1 -
+ docs/recipes-inventory.json                        |  45 +------
+ eslint.config.cjs                                  |   1 -
+ marketing                                          |   1 -
+ packages/agentplane/bin/framework-dev-contract.js  |   1 -
+ .../src/cli/bootstrap-framework-dev-script.test.ts | 143 +++------------------
+ .../cli/generate-recipes-inventory-script.test.ts  |  63 ++++-----
+ .../cli/run-cli.core.pr-conflict-rework.test.ts    |   2 +-
+ .../run-cli.core.pr-flow.worktree-runtime.test.ts  |   9 --
+ ...i.core.task-advance.worktree-resolution.test.ts |   3 +-
+ .../commands/branch/work-start.materialize.test.ts |   6 +-
+ .../src/commands/branch/work-start.materialize.ts  |   2 +-
+ scripts/checks/check-recipes-inventory-fresh.mjs   |  64 +++++++--
+ scripts/generate/generate-recipes-inventory.mjs    |  54 +++++---
+ scripts/lib/github-ci-capabilities.mjs             |   7 +-
+ scripts/workflow/bootstrap-framework-dev.mjs       |  58 +--------
+ 26 files changed, 172 insertions(+), 360 deletions(-)
 ```
 
 </details>

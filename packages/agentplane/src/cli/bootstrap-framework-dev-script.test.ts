@@ -8,26 +8,13 @@ import { afterEach, describe, expect, it } from "vitest";
 
 const tempRoots: string[] = [];
 type FrameworkDevExec = (repoRoot: string, cmd: string, args: string[]) => void;
-type BootstrapOptions = {
-  resolveCommonRepoRoot?: (cwd?: string) => string;
-};
 type BootstrapModule = {
   resolveRepoRoot: (cwd?: string) => string;
-  runFrameworkDevBootstrap: (
-    cwd?: string,
-    exec?: FrameworkDevExec,
-    options?: BootstrapOptions,
-  ) => void;
+  runFrameworkDevBootstrap: (cwd?: string, exec?: FrameworkDevExec) => void;
 };
 const recordCallExec = (_repoRoot: string, cmd: string, args: string[], calls: string[]) => {
   calls.push([cmd, ...args].join(" "));
 };
-function gitFailureExec(_repoRoot: string, cmd: string, args: string[]) {
-  if (cmd === "git") {
-    throw new Error(`failed: ${args.join(" ")}`);
-  }
-}
-
 async function loadBootstrapModule(): Promise<BootstrapModule> {
   return (await import("../../../../scripts/bootstrap-framework-dev.mjs")) as BootstrapModule;
 }
@@ -94,20 +81,17 @@ describe("bootstrap-framework-dev script", () => {
     expect(resolveRepoRoot(nested)).toBe(repoRoot);
   });
 
-  it("runs install, submodule init, builds, and repo-local verify when prerequisites are missing", async () => {
+  it("runs install, builds, and repo-local verify when prerequisites are missing", async () => {
     const { runFrameworkDevBootstrap } = await loadBootstrapModule();
     const repoRoot = await mkFrameworkRepo();
     const calls: string[] = [];
     const exec = (currentRepoRoot: string, cmd: string, args: string[]) =>
       recordCallExec(currentRepoRoot, cmd, args, calls);
 
-    runFrameworkDevBootstrap(repoRoot, exec, {
-      resolveCommonRepoRoot: () => repoRoot,
-    });
+    runFrameworkDevBootstrap(repoRoot, exec);
 
     expect(calls).toEqual([
       "bun install --ignore-scripts",
-      "git submodule update --init --recursive agentplane-recipes",
       "bun run --filter=@agentplaneorg/core build",
       "bun run --filter=agentplane build",
       "bun run --filter=@agentplane/testkit build",
@@ -127,9 +111,7 @@ describe("bootstrap-framework-dev script", () => {
       }
     };
 
-    runFrameworkDevBootstrap(repoRoot, exec, {
-      resolveCommonRepoRoot: () => repoRoot,
-    });
+    runFrameworkDevBootstrap(repoRoot, exec);
 
     expect(observedLocks.length).toBeGreaterThan(0);
     expect(observedLocks[0]).toContain('"operation": "framework-dev-bootstrap"');
@@ -152,13 +134,8 @@ describe("bootstrap-framework-dev script", () => {
     );
 
     expect(() =>
-      runFrameworkDevBootstrap(
-        repoRoot,
-        (currentRepoRoot: string, cmd: string, args: string[]) =>
-          recordCallExec(currentRepoRoot, cmd, args, []),
-        {
-          resolveCommonRepoRoot: () => repoRoot,
-        },
+      runFrameworkDevBootstrap(repoRoot, (currentRepoRoot: string, cmd: string, args: string[]) =>
+        recordCallExec(currentRepoRoot, cmd, args, []),
       ),
     ).toThrow(/Another framework dev build is already running/);
   });
@@ -181,15 +158,13 @@ describe("bootstrap-framework-dev script", () => {
     const exec = (currentRepoRoot: string, cmd: string, args: string[]) =>
       recordCallExec(currentRepoRoot, cmd, args, calls);
 
-    runFrameworkDevBootstrap(repoRoot, exec, {
-      resolveCommonRepoRoot: () => repoRoot,
-    });
+    runFrameworkDevBootstrap(repoRoot, exec);
 
     expect(calls).toContain("bun run --filter=agentplane build");
     await expect(lstat(lockDir)).rejects.toMatchObject({ code: "ENOENT" });
   });
 
-  it("skips install and submodule init when prerequisites already exist", async () => {
+  it("skips install when prerequisites already exist", async () => {
     const { runFrameworkDevBootstrap } = await loadBootstrapModule();
     const repoRoot = await mkFrameworkRepo();
     await mkdir(path.join(repoRoot, "node_modules"), { recursive: true });
@@ -198,15 +173,11 @@ describe("bootstrap-framework-dev script", () => {
       recursive: true,
     });
     await mkdir(path.join(repoRoot, "website", "node_modules"), { recursive: true });
-    await mkdir(path.join(repoRoot, "agentplane-recipes"), { recursive: true });
-    await writeFile(path.join(repoRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
     const calls: string[] = [];
     const exec = (currentRepoRoot: string, cmd: string, args: string[]) =>
       recordCallExec(currentRepoRoot, cmd, args, calls);
 
-    runFrameworkDevBootstrap(repoRoot, exec, {
-      resolveCommonRepoRoot: () => repoRoot,
-    });
+    runFrameworkDevBootstrap(repoRoot, exec);
 
     expect(calls).toEqual([
       "bun run --filter=@agentplaneorg/core build",
@@ -244,12 +215,10 @@ describe("bootstrap-framework-dev script", () => {
       const packageLayouts = ["packages/core", "packages/agentplane", "website"];
       for (const relative of packageLayouts)
         await mkdir(path.join(repoRoot, relative, "node_modules"), { recursive: true });
-      await mkdir(path.join(repoRoot, "agentplane-recipes"));
-      await writeFile(path.join(repoRoot, "agentplane-recipes", "index.json"), "{}");
       const calls: string[] = [];
       const exec: FrameworkDevExec = (root, cmd, args) => recordCallExec(root, cmd, args, calls);
 
-      runFrameworkDevBootstrap(repoRoot, exec, { resolveCommonRepoRoot: () => repoRoot });
+      runFrameworkDevBootstrap(repoRoot, exec);
 
       expect(calls).toContain("bun install --ignore-scripts");
       await expect(lstat(path.join(repoRoot, "node_modules"))).rejects.toThrow();
@@ -265,7 +234,7 @@ describe("bootstrap-framework-dev script", () => {
         await mkdir(path.join(repoRoot, relative, "node_modules"), { recursive: true });
       calls.length = 0;
 
-      runFrameworkDevBootstrap(repoRoot, exec, { resolveCommonRepoRoot: () => repoRoot });
+      runFrameworkDevBootstrap(repoRoot, exec);
 
       expect(calls).not.toContain("bun install --ignore-scripts");
       expect(calls).toContain("bun run --filter=agentplane build");
@@ -306,15 +275,11 @@ describe("bootstrap-framework-dev script", () => {
       path.join(repoRoot, "node_modules", "eslint"),
       "dir",
     );
-    await mkdir(path.join(repoRoot, "agentplane-recipes"), { recursive: true });
-    await writeFile(path.join(repoRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
     const calls: string[] = [];
     const exec = (currentRepoRoot: string, cmd: string, args: string[]) =>
       recordCallExec(currentRepoRoot, cmd, args, calls);
 
-    runFrameworkDevBootstrap(repoRoot, exec, {
-      resolveCommonRepoRoot: () => repoRoot,
-    });
+    runFrameworkDevBootstrap(repoRoot, exec);
 
     expect(calls).toEqual([
       "bun install --ignore-scripts",
@@ -340,8 +305,6 @@ describe("bootstrap-framework-dev script", () => {
       recursive: true,
     });
     await mkdir(path.join(repoRoot, "website", "node_modules"), { recursive: true });
-    await mkdir(path.join(repoRoot, "agentplane-recipes"), { recursive: true });
-    await writeFile(path.join(repoRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
     await writeFile(
       path.join(repoRoot, ".git", "hooks", "pre-push"),
       '#!/usr/bin/env sh\n# agentplane-hook (do not edit)\nexec agentplane hooks run pre-push "$@"\n',
@@ -351,9 +314,7 @@ describe("bootstrap-framework-dev script", () => {
     const exec = (currentRepoRoot: string, cmd: string, args: string[]) =>
       recordCallExec(currentRepoRoot, cmd, args, calls);
 
-    runFrameworkDevBootstrap(repoRoot, exec, {
-      resolveCommonRepoRoot: () => repoRoot,
-    });
+    runFrameworkDevBootstrap(repoRoot, exec);
 
     expect(calls).toEqual([
       "bun run --filter=@agentplaneorg/core build",
@@ -364,61 +325,6 @@ describe("bootstrap-framework-dev script", () => {
     const postMerge = await readFile(path.join(repoRoot, ".git", "hooks", "post-merge"), "utf8");
     expect(postMerge).toContain("agentplane-hook");
     expect(postMerge).toContain("hooks run post-merge");
-  });
-
-  it("reuses only recipes metadata from the common root for a fresh worktree checkout", async () => {
-    const { runFrameworkDevBootstrap } = await loadBootstrapModule();
-    const commonRepoRoot = await mkFrameworkRepo();
-    const repoRoot = await mkFrameworkRepo();
-    await mkdir(path.join(commonRepoRoot, "node_modules"), { recursive: true });
-    await mkdir(path.join(commonRepoRoot, "packages", "core", "node_modules"), {
-      recursive: true,
-    });
-    await mkdir(path.join(commonRepoRoot, "packages", "agentplane", "node_modules"), {
-      recursive: true,
-    });
-    await mkdir(path.join(commonRepoRoot, "website", "node_modules"), { recursive: true });
-    await mkdir(path.join(commonRepoRoot, "agentplane-recipes"), { recursive: true });
-    await writeFile(path.join(commonRepoRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
-    const calls: string[] = [];
-    const exec = (currentRepoRoot: string, cmd: string, args: string[]) =>
-      recordCallExec(currentRepoRoot, cmd, args, calls);
-
-    runFrameworkDevBootstrap(repoRoot, exec, {
-      resolveCommonRepoRoot: () => commonRepoRoot,
-    });
-
-    expect(calls).toEqual([
-      "bun install --ignore-scripts",
-      "bun run --filter=@agentplaneorg/core build",
-      "bun run --filter=agentplane build",
-      "bun run --filter=@agentplane/testkit build",
-      "node packages/agentplane/bin/agentplane.js runtime explain",
-    ]);
-  });
-
-  it("runs bun install when the shared root lacks package-local build layout", async () => {
-    const { runFrameworkDevBootstrap } = await loadBootstrapModule();
-    const commonRepoRoot = await mkFrameworkRepo();
-    const repoRoot = await mkFrameworkRepo();
-    await mkdir(path.join(commonRepoRoot, "node_modules"), { recursive: true });
-    await mkdir(path.join(commonRepoRoot, "agentplane-recipes"), { recursive: true });
-    await writeFile(path.join(commonRepoRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
-    const calls: string[] = [];
-    const exec = (currentRepoRoot: string, cmd: string, args: string[]) =>
-      recordCallExec(currentRepoRoot, cmd, args, calls);
-
-    runFrameworkDevBootstrap(repoRoot, exec, {
-      resolveCommonRepoRoot: () => commonRepoRoot,
-    });
-
-    expect(calls).toEqual([
-      "bun install --ignore-scripts",
-      "bun run --filter=@agentplaneorg/core build",
-      "bun run --filter=agentplane build",
-      "bun run --filter=@agentplane/testkit build",
-      "node packages/agentplane/bin/agentplane.js runtime explain",
-    ]);
   });
 
   it("removes foreign package-local install layout before rebuilding the worktree runtime", async () => {
@@ -433,8 +339,6 @@ describe("bootstrap-framework-dev script", () => {
       recursive: true,
     });
     await mkdir(path.join(commonRepoRoot, "website", "node_modules"), { recursive: true });
-    await mkdir(path.join(commonRepoRoot, "agentplane-recipes"), { recursive: true });
-    await writeFile(path.join(commonRepoRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
     await fs.promises.symlink(
       path.join(commonRepoRoot, "packages", "core", "node_modules"),
       path.join(repoRoot, "packages", "core", "node_modules"),
@@ -454,9 +358,7 @@ describe("bootstrap-framework-dev script", () => {
     const exec = (currentRepoRoot: string, cmd: string, args: string[]) =>
       recordCallExec(currentRepoRoot, cmd, args, calls);
 
-    runFrameworkDevBootstrap(repoRoot, exec, {
-      resolveCommonRepoRoot: () => commonRepoRoot,
-    });
+    runFrameworkDevBootstrap(repoRoot, exec);
 
     expect(calls).toEqual([
       "bun install --ignore-scripts",
@@ -482,8 +384,6 @@ describe("bootstrap-framework-dev script", () => {
       recursive: true,
     });
     await mkdir(path.join(repoRoot, "website", "node_modules"), { recursive: true });
-    await mkdir(path.join(repoRoot, "agentplane-recipes"), { recursive: true });
-    await writeFile(path.join(repoRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
     await writeFile(
       path.join(repoRoot, ".git", "hooks", "pre-push"),
       '#!/bin/sh\ncall_lefthook()\n{\n  echo "Can\'t find lefthook in PATH"\n}\n',
@@ -493,9 +393,7 @@ describe("bootstrap-framework-dev script", () => {
     const exec = (currentRepoRoot: string, cmd: string, args: string[]) =>
       recordCallExec(currentRepoRoot, cmd, args, calls);
 
-    runFrameworkDevBootstrap(repoRoot, exec, {
-      resolveCommonRepoRoot: () => repoRoot,
-    });
+    runFrameworkDevBootstrap(repoRoot, exec);
 
     expect(calls).toEqual([
       "bun run --filter=@agentplaneorg/core build",
@@ -512,16 +410,5 @@ describe("bootstrap-framework-dev script", () => {
       `INSTALL_BIN='${path.join(repoRoot, "packages", "agentplane", "bin", "agentplane.js")}'`,
     );
     expect(shim).toContain("AGENTPLANE_HOOK_ALLOW_GLOBAL");
-  });
-
-  it("surfaces a precise error when the recipes gitlink cannot be initialized", async () => {
-    const { runFrameworkDevBootstrap } = await loadBootstrapModule();
-    const repoRoot = await mkFrameworkRepo();
-
-    expect(() =>
-      runFrameworkDevBootstrap(repoRoot, gitFailureExec, {
-        resolveCommonRepoRoot: () => repoRoot,
-      }),
-    ).toThrow(/Failed to initialize agentplane-recipes/);
   });
 });

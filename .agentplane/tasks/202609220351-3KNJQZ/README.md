@@ -4,7 +4,7 @@ title: "Remove marketing and recipes Git submodules"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 35
 origin:
   system: "manual"
 depends_on: []
@@ -22,15 +22,30 @@ verify:
   - "bun run ci:local:fast"
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-22T03:55:45.547Z"
+  updated_at: "2026-09-22T04:10:21.350Z"
   updated_by: "USER"
-  note: null
+  note: "Projected from the approved canonical Task Kernel plan."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "ok"
+  updated_at: "2026-09-22T04:10:21.350Z"
+  updated_by: "SUPERVISOR"
+  note: "Canonical validation sha256:d8428d26dc4fb4ab379526ebef96e0450f811b589a32ac72a5d8edea7013647f"
+  attempts: 1
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-22T04:10:21.350Z"
+  updated_by: "EVALUATOR"
+  note: "Canonical EVALUATOR review passed."
+  evaluated_sha: "60f246fe5b3bed9cfa33c308ecfe5358b8a92dac"
+  review_identity_digest: "sha256:2d2f26c6ddcd73e0e7cd44e41a7b4a9f88d64f9993f64d41e23a69f5af7889d9"
+  evidence_refs:
+    - "../../../.git/agentplane/kernel/exchanges/202609220351-3KNJQZ/806ab33467cb0ef41acf35edf5301084d96326cb7c4cd05232aec9647379a0c5/quality-report.json"
+  findings:
+    - "The generator accepts only an explicit path from AGENTPLANE_RECIPES_SOURCE or --recipes-source and validates index.json plus recipes/ without consulting worktree or common-root submodule paths."
+    - "The freshness check uses an explicit source when supplied and otherwise clones the independent public repository into an isolated temporary directory that is removed after comparison."
+    - "Native validation passed both the focused 4-test suite and the bare docs:recipes:check against commit 60f246fe5b3bed9cfa33c308ecfe5358b8a92dac."
+    - "Recipe runtime constants and signed-catalog command paths were not modified."
 execution_route:
   frozen: true
   reason_codes:
@@ -166,7 +181,9 @@ execution_contract:
       - "repository_effect:repository_write"
       - "repository_effect:source_code"
       - "task_outcome"
-commit: null
+commit:
+  hash: "60f246fe5b3bed9cfa33c308ecfe5358b8a92dac"
+  message: "AgentPlane-owned canonical implementation commit"
 comments: []
 events: []
 doc_version: 3
@@ -199,6 +216,23 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.kernel_operational_projection:
+    digest: "sha256:891dd545c335ac1139879d5081a1adf1319beaab7edacdfa0dc8704b6d774acd"
+    evidence_refs:
+      - "../../../.git/agentplane/kernel/exchanges/202609220351-3KNJQZ/806ab33467cb0ef41acf35edf5301084d96326cb7c4cd05232aec9647379a0c5/quality-report.json"
+    findings:
+      - "The generator accepts only an explicit path from AGENTPLANE_RECIPES_SOURCE or --recipes-source and validates index.json plus recipes/ without consulting worktree or common-root submodule paths."
+      - "The freshness check uses an explicit source when supplied and otherwise clones the independent public repository into an isolated temporary directory that is removed after comparison."
+      - "Native validation passed both the focused 4-test suite and the bare docs:recipes:check against commit 60f246fe5b3bed9cfa33c308ecfe5358b8a92dac."
+      - "Recipe runtime constants and signed-catalog command paths were not modified."
+    implementation_commit: "60f246fe5b3bed9cfa33c308ecfe5358b8a92dac"
+    implementation_tree: "8b0c8709d55eadaa7f463df7170ff6502f5f68ca"
+    projected_at: "2026-09-22T04:10:21.350Z"
+    review_identity_digest: "sha256:2d2f26c6ddcd73e0e7cd44e41a7b4a9f88d64f9993f64d41e23a69f5af7889d9"
+    schema_version: 1
+    source: "task_kernel"
+    verification_evidence_digest: "sha256:d8428d26dc4fb4ab379526ebef96e0450f811b589a32ac72a5d8edea7013647f"
+    work_order_id: "sha256:31594f45bfc0b1fe3426dd1b6b19e2cdc4cc277f8b63eb1ddf4e7e3772a95060"
   task_execution_context:
     base_ref: "main"
     base_sha: "1d6f6cabf7325beec6422f7a69841009b1915475"
@@ -452,6 +486,598 @@ extensions:
             evidence_digest: "sha256:931b7fbae4be4046c6957836ef220aa5d0f9c25b2957c879dd236d06fa2cea6a"
             kind: "repository_implementation"
             previous_fingerprint: "sha256:c4c1f94be25944b7fc1903d5628bfb909b33bb655fbc56b4a733dcef7d828964"
+        -
+          approval_mode: null
+          authority:
+            capabilities:
+              - "git_read"
+              - "network_read"
+              - "repository_read"
+              - "repository_write"
+              - "test_execution"
+            completion_requirements:
+              - "work_item_validation"
+              - "final_validation"
+            digest: "sha256:5063625013961c3fba8be701ae6f320236a9cd6dced96dfabef3065c321bb16d"
+            expires_at: null
+            external_effects: []
+            plan_digest: "sha256:da5d499041d5fd36f35fe3ddd0c274f72a718c38d6c97a7ec8362a8800b1880e"
+            plan_revision: 1
+            policy_digests:
+              - "sha256:4d715b617cb49d4304a46cbd010ff04038119a5412bfcf5889d6d1ce83807648"
+            provenance:
+              actor_id: "agentplane:kernel-controller"
+              evidence_digest: "sha256:85fd5956165ab263141804d75197aab590571854ef2d21b0bcca3f7de84055d3"
+              kind: "SYSTEM"
+              parent_authority_digest: "sha256:a2b6faed2c542b06e73e3fb1779f1672b734f6005a8ec408ef35860607095eb1"
+            repository_effects:
+              - "ci"
+              - "documentation"
+              - "repository_write"
+              - "source_code"
+              - "tests"
+            repository_fingerprint: "sha256:b8025a2744e39d5ed620ce3a179de23ad9cfcad2a20f1b3507de9c8bd7f1364e"
+            repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+            resources:
+              - "Changed-file diff"
+              - "Current AgentPlane main checkout"
+              - "Existing framework bootstrap and branch worktree tests"
+              - "Repository test and contract suites"
+              - "https://github.com/basilisk-labs/agentplane-recipes"
+              - "https://raw.githubusercontent.com/basilisk-labs/agentplane-recipes/main/index.json"
+            risk:
+              implementation: "bounded"
+              requirements: "bounded"
+              reversibility: "reversible"
+            scope_roots:
+              - "."
+              - ".github/workflows"
+              - ".gitmodules"
+              - ".prettierignore"
+              - "agentplane-recipes"
+              - "docs"
+              - "docs/developer"
+              - "docs/recipes-inventory.json"
+              - "eslint.config.cjs"
+              - "marketing"
+              - "packages/agentplane/bin"
+              - "packages/agentplane/src/cli"
+              - "packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts"
+              - "packages/agentplane/src/commands/branch"
+              - "scripts/checks"
+              - "scripts/generate"
+              - "scripts/lib"
+              - "scripts/workflow"
+            task_id: "202609220351-3KNJQZ"
+            validation_requirements:
+              - "bun run ci:contract"
+              - "bun run ci:local:fast"
+              - "bun run docs:recipes:check"
+              - "bunx vitest run packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+              - "bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts"
+              - "git diff --check"
+              - "git grep -n -I -E 'git submodule|Recipes submodule|marketing/.*submodule|agentplane-recipes.*submodule' -- ':!docs/releases/**' ':!.agentplane/tasks/**' ':!.agentplane/tmp/**'"
+              - "git ls-files --stage | awk '$1 == 160000 { print }'"
+              - "git status --short --untracked-files=all"
+              - "node .agentplane/policy/check-routing.mjs"
+            work_item_id: null
+          observation:
+            changed_paths:
+              - "docs/recipes-inventory.json"
+            evidence_digest: "sha256:6cba26ca22a3da6a138ab2764b413d531ec97124a7b3c453a15c1887c875f46e"
+            kind: "repository_implementation"
+            previous_fingerprint: "sha256:6e986214387ad2a641b8d92fad096efeb95119704f310c0d1f6f3e26bed666a5"
+        -
+          approval_mode: null
+          authority:
+            capabilities:
+              - "git_read"
+              - "network_read"
+              - "repository_read"
+              - "repository_write"
+              - "test_execution"
+            completion_requirements:
+              - "work_item_validation"
+              - "final_validation"
+            digest: "sha256:090cc9818488d6b6cfd9184c8c2f5d6888c4e5f4ae2c59797d18a6dcd646c0a4"
+            expires_at: null
+            external_effects: []
+            plan_digest: "sha256:da5d499041d5fd36f35fe3ddd0c274f72a718c38d6c97a7ec8362a8800b1880e"
+            plan_revision: 1
+            policy_digests:
+              - "sha256:4d715b617cb49d4304a46cbd010ff04038119a5412bfcf5889d6d1ce83807648"
+            provenance:
+              actor_id: "agentplane:kernel-controller"
+              evidence_digest: "sha256:85fd5956165ab263141804d75197aab590571854ef2d21b0bcca3f7de84055d3"
+              kind: "SYSTEM"
+              parent_authority_digest: "sha256:5063625013961c3fba8be701ae6f320236a9cd6dced96dfabef3065c321bb16d"
+            repository_effects:
+              - "ci"
+              - "documentation"
+              - "repository_write"
+              - "source_code"
+              - "tests"
+            repository_fingerprint: "sha256:ba8658d5c4e51bff77304141a0f5598c177da55c091df3711dc055c64ef77980"
+            repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+            resources:
+              - "Changed-file diff"
+              - "Current AgentPlane main checkout"
+              - "Existing framework bootstrap and branch worktree tests"
+              - "Repository test and contract suites"
+              - "https://github.com/basilisk-labs/agentplane-recipes"
+              - "https://raw.githubusercontent.com/basilisk-labs/agentplane-recipes/main/index.json"
+            risk:
+              implementation: "bounded"
+              requirements: "bounded"
+              reversibility: "reversible"
+            scope_roots:
+              - "."
+              - ".github/workflows"
+              - ".gitmodules"
+              - ".prettierignore"
+              - "agentplane-recipes"
+              - "docs"
+              - "docs/developer"
+              - "docs/recipes-inventory.json"
+              - "eslint.config.cjs"
+              - "marketing"
+              - "packages/agentplane/bin"
+              - "packages/agentplane/src/cli"
+              - "packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts"
+              - "packages/agentplane/src/commands/branch"
+              - "scripts/checks"
+              - "scripts/generate"
+              - "scripts/lib"
+              - "scripts/workflow"
+            task_id: "202609220351-3KNJQZ"
+            validation_requirements:
+              - "bun run ci:contract"
+              - "bun run ci:local:fast"
+              - "bun run docs:recipes:check"
+              - "bunx vitest run packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+              - "bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts"
+              - "git diff --check"
+              - "git grep -n -I -E 'git submodule|Recipes submodule|marketing/.*submodule|agentplane-recipes.*submodule' -- ':!docs/releases/**' ':!.agentplane/tasks/**' ':!.agentplane/tmp/**'"
+              - "git ls-files --stage | awk '$1 == 160000 { print }'"
+              - "git status --short --untracked-files=all"
+              - "node .agentplane/policy/check-routing.mjs"
+            work_item_id: null
+          observation:
+            changed_paths:
+              - ".github/workflows/ci.yml"
+              - ".github/workflows/publish-distribution-module.yml"
+              - ".github/workflows/publish.yml"
+              - ".gitmodules"
+              - ".prettierignore"
+              - "agentplane-recipes"
+              - "docs/README.md"
+              - "docs/developer/project-layout.mdx"
+              - "docs/developer/testing-and-quality.mdx"
+              - "docs/help/troubleshooting.mdx"
+              - "eslint.config.cjs"
+              - "marketing"
+              - "packages/agentplane/bin/framework-dev-contract.js"
+              - "packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts"
+              - "packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts"
+              - "packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+              - "packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
+              - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
+              - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
+              - "scripts/lib/github-ci-capabilities.mjs"
+              - "scripts/workflow/bootstrap-framework-dev.mjs"
+            evidence_digest: "sha256:b2be95e568af6f24352f9b1229a4645eb6bb621a34c76491a264bf00ca2a8b78"
+            kind: "repository_implementation"
+            previous_fingerprint: "sha256:b8025a2744e39d5ed620ce3a179de23ad9cfcad2a20f1b3507de9c8bd7f1364e"
+        -
+          approval_mode: null
+          authority:
+            capabilities:
+              - "git_read"
+              - "network_read"
+              - "repository_read"
+              - "repository_write"
+              - "test_execution"
+            completion_requirements:
+              - "work_item_validation"
+              - "final_validation"
+            digest: "sha256:09b5eddcaf0349baabb2ea66b725904695c683fe71c0bfb1abf135ddc4fa1f30"
+            expires_at: null
+            external_effects: []
+            plan_digest: "sha256:da5d499041d5fd36f35fe3ddd0c274f72a718c38d6c97a7ec8362a8800b1880e"
+            plan_revision: 1
+            policy_digests:
+              - "sha256:4d715b617cb49d4304a46cbd010ff04038119a5412bfcf5889d6d1ce83807648"
+            provenance:
+              actor_id: "agentplane:kernel-controller"
+              evidence_digest: "sha256:85fd5956165ab263141804d75197aab590571854ef2d21b0bcca3f7de84055d3"
+              kind: "SYSTEM"
+              parent_authority_digest: "sha256:090cc9818488d6b6cfd9184c8c2f5d6888c4e5f4ae2c59797d18a6dcd646c0a4"
+            repository_effects:
+              - "ci"
+              - "documentation"
+              - "repository_write"
+              - "source_code"
+              - "tests"
+            repository_fingerprint: "sha256:2930db6a1bc48be30fd16de0c8e2b03d483de745c5d25d98d4adcbcdbc8edc1b"
+            repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+            resources:
+              - "Changed-file diff"
+              - "Current AgentPlane main checkout"
+              - "Existing framework bootstrap and branch worktree tests"
+              - "Repository test and contract suites"
+              - "https://github.com/basilisk-labs/agentplane-recipes"
+              - "https://raw.githubusercontent.com/basilisk-labs/agentplane-recipes/main/index.json"
+            risk:
+              implementation: "bounded"
+              requirements: "bounded"
+              reversibility: "reversible"
+            scope_roots:
+              - "."
+              - ".github/workflows"
+              - ".gitmodules"
+              - ".prettierignore"
+              - "agentplane-recipes"
+              - "docs"
+              - "docs/developer"
+              - "docs/recipes-inventory.json"
+              - "eslint.config.cjs"
+              - "marketing"
+              - "packages/agentplane/bin"
+              - "packages/agentplane/src/cli"
+              - "packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts"
+              - "packages/agentplane/src/commands/branch"
+              - "scripts/checks"
+              - "scripts/generate"
+              - "scripts/lib"
+              - "scripts/workflow"
+            task_id: "202609220351-3KNJQZ"
+            validation_requirements:
+              - "bun run ci:contract"
+              - "bun run ci:local:fast"
+              - "bun run docs:recipes:check"
+              - "bunx vitest run packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+              - "bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts"
+              - "git diff --check"
+              - "git grep -n -I -E 'git submodule|Recipes submodule|marketing/.*submodule|agentplane-recipes.*submodule' -- ':!docs/releases/**' ':!.agentplane/tasks/**' ':!.agentplane/tmp/**'"
+              - "git ls-files --stage | awk '$1 == 160000 { print }'"
+              - "git status --short --untracked-files=all"
+              - "node .agentplane/policy/check-routing.mjs"
+            work_item_id: null
+          observation:
+            changed_paths:
+              - "agentplane-recipes"
+              - "marketing"
+            evidence_digest: "sha256:fef12aea68ce6798db54212fa2a0aac89fb422fdc9b1e6701b43a6883f42080f"
+            kind: "repository_implementation"
+            previous_fingerprint: "sha256:ba8658d5c4e51bff77304141a0f5598c177da55c091df3711dc055c64ef77980"
+        -
+          approval_mode: null
+          authority:
+            capabilities:
+              - "git_read"
+              - "network_read"
+              - "repository_read"
+              - "repository_write"
+              - "test_execution"
+            completion_requirements:
+              - "work_item_validation"
+              - "final_validation"
+            digest: "sha256:4a90a5cd69e468185c9acb5ac8a7dbc096c635ee4d516123ef8683f55d205bcb"
+            expires_at: null
+            external_effects: []
+            plan_digest: "sha256:da5d499041d5fd36f35fe3ddd0c274f72a718c38d6c97a7ec8362a8800b1880e"
+            plan_revision: 1
+            policy_digests:
+              - "sha256:4d715b617cb49d4304a46cbd010ff04038119a5412bfcf5889d6d1ce83807648"
+            provenance:
+              actor_id: "agentplane:kernel-controller"
+              evidence_digest: "sha256:85fd5956165ab263141804d75197aab590571854ef2d21b0bcca3f7de84055d3"
+              kind: "SYSTEM"
+              parent_authority_digest: "sha256:09b5eddcaf0349baabb2ea66b725904695c683fe71c0bfb1abf135ddc4fa1f30"
+            repository_effects:
+              - "ci"
+              - "documentation"
+              - "repository_write"
+              - "source_code"
+              - "tests"
+            repository_fingerprint: "sha256:ba8658d5c4e51bff77304141a0f5598c177da55c091df3711dc055c64ef77980"
+            repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+            resources:
+              - "Changed-file diff"
+              - "Current AgentPlane main checkout"
+              - "Existing framework bootstrap and branch worktree tests"
+              - "Repository test and contract suites"
+              - "https://github.com/basilisk-labs/agentplane-recipes"
+              - "https://raw.githubusercontent.com/basilisk-labs/agentplane-recipes/main/index.json"
+            risk:
+              implementation: "bounded"
+              requirements: "bounded"
+              reversibility: "reversible"
+            scope_roots:
+              - "."
+              - ".github/workflows"
+              - ".gitmodules"
+              - ".prettierignore"
+              - "agentplane-recipes"
+              - "docs"
+              - "docs/developer"
+              - "docs/recipes-inventory.json"
+              - "eslint.config.cjs"
+              - "marketing"
+              - "packages/agentplane/bin"
+              - "packages/agentplane/src/cli"
+              - "packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts"
+              - "packages/agentplane/src/commands/branch"
+              - "scripts/checks"
+              - "scripts/generate"
+              - "scripts/lib"
+              - "scripts/workflow"
+            task_id: "202609220351-3KNJQZ"
+            validation_requirements:
+              - "bun run ci:contract"
+              - "bun run ci:local:fast"
+              - "bun run docs:recipes:check"
+              - "bunx vitest run packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+              - "bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts"
+              - "git diff --check"
+              - "git grep -n -I -E 'git submodule|Recipes submodule|marketing/.*submodule|agentplane-recipes.*submodule' -- ':!docs/releases/**' ':!.agentplane/tasks/**' ':!.agentplane/tmp/**'"
+              - "git ls-files --stage | awk '$1 == 160000 { print }'"
+              - "git status --short --untracked-files=all"
+              - "node .agentplane/policy/check-routing.mjs"
+            work_item_id: null
+          observation:
+            changed_paths:
+              - "agentplane-recipes"
+              - "marketing"
+            evidence_digest: "sha256:246a3580637536b9f82f6977ad894c0ceee197c955f711f6b31708d44d062915"
+            kind: "repository_implementation"
+            previous_fingerprint: "sha256:2930db6a1bc48be30fd16de0c8e2b03d483de745c5d25d98d4adcbcdbc8edc1b"
+        -
+          approval_mode: null
+          authority:
+            capabilities:
+              - "git_read"
+              - "network_read"
+              - "repository_read"
+              - "repository_write"
+              - "test_execution"
+            completion_requirements:
+              - "work_item_validation"
+              - "final_validation"
+            digest: "sha256:68d3cae6a7238e3af49305017df919d71d2ec7bd760a6ad7ee0e03385631d5a9"
+            expires_at: null
+            external_effects: []
+            plan_digest: "sha256:da5d499041d5fd36f35fe3ddd0c274f72a718c38d6c97a7ec8362a8800b1880e"
+            plan_revision: 1
+            policy_digests:
+              - "sha256:4d715b617cb49d4304a46cbd010ff04038119a5412bfcf5889d6d1ce83807648"
+            provenance:
+              actor_id: "agentplane:kernel-controller"
+              evidence_digest: "sha256:85fd5956165ab263141804d75197aab590571854ef2d21b0bcca3f7de84055d3"
+              kind: "SYSTEM"
+              parent_authority_digest: "sha256:4a90a5cd69e468185c9acb5ac8a7dbc096c635ee4d516123ef8683f55d205bcb"
+            repository_effects:
+              - "ci"
+              - "documentation"
+              - "repository_write"
+              - "source_code"
+              - "tests"
+            repository_fingerprint: "sha256:2930db6a1bc48be30fd16de0c8e2b03d483de745c5d25d98d4adcbcdbc8edc1b"
+            repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+            resources:
+              - "Changed-file diff"
+              - "Current AgentPlane main checkout"
+              - "Existing framework bootstrap and branch worktree tests"
+              - "Repository test and contract suites"
+              - "https://github.com/basilisk-labs/agentplane-recipes"
+              - "https://raw.githubusercontent.com/basilisk-labs/agentplane-recipes/main/index.json"
+            risk:
+              implementation: "bounded"
+              requirements: "bounded"
+              reversibility: "reversible"
+            scope_roots:
+              - "."
+              - ".github/workflows"
+              - ".gitmodules"
+              - ".prettierignore"
+              - "agentplane-recipes"
+              - "docs"
+              - "docs/developer"
+              - "docs/recipes-inventory.json"
+              - "eslint.config.cjs"
+              - "marketing"
+              - "packages/agentplane/bin"
+              - "packages/agentplane/src/cli"
+              - "packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts"
+              - "packages/agentplane/src/commands/branch"
+              - "scripts/checks"
+              - "scripts/generate"
+              - "scripts/lib"
+              - "scripts/workflow"
+            task_id: "202609220351-3KNJQZ"
+            validation_requirements:
+              - "bun run ci:contract"
+              - "bun run ci:local:fast"
+              - "bun run docs:recipes:check"
+              - "bunx vitest run packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+              - "bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts"
+              - "git diff --check"
+              - "git grep -n -I -E 'git submodule|Recipes submodule|marketing/.*submodule|agentplane-recipes.*submodule' -- ':!docs/releases/**' ':!.agentplane/tasks/**' ':!.agentplane/tmp/**'"
+              - "git ls-files --stage | awk '$1 == 160000 { print }'"
+              - "git status --short --untracked-files=all"
+              - "node .agentplane/policy/check-routing.mjs"
+            work_item_id: null
+          observation:
+            changed_paths:
+              - "agentplane-recipes"
+              - "marketing"
+            evidence_digest: "sha256:fef12aea68ce6798db54212fa2a0aac89fb422fdc9b1e6701b43a6883f42080f"
+            kind: "repository_implementation"
+            previous_fingerprint: "sha256:ba8658d5c4e51bff77304141a0f5598c177da55c091df3711dc055c64ef77980"
+        -
+          approval_mode: null
+          authority:
+            capabilities:
+              - "git_read"
+              - "network_read"
+              - "repository_read"
+              - "repository_write"
+              - "test_execution"
+            completion_requirements:
+              - "work_item_validation"
+              - "final_validation"
+            digest: "sha256:13ca361e2ce4db3c574fca39a747bc03c87c7af4fd12e59bf7dedb08f2dce99a"
+            expires_at: null
+            external_effects: []
+            plan_digest: "sha256:da5d499041d5fd36f35fe3ddd0c274f72a718c38d6c97a7ec8362a8800b1880e"
+            plan_revision: 1
+            policy_digests:
+              - "sha256:4d715b617cb49d4304a46cbd010ff04038119a5412bfcf5889d6d1ce83807648"
+            provenance:
+              actor_id: "agentplane:kernel-controller"
+              evidence_digest: "sha256:85fd5956165ab263141804d75197aab590571854ef2d21b0bcca3f7de84055d3"
+              kind: "SYSTEM"
+              parent_authority_digest: "sha256:68d3cae6a7238e3af49305017df919d71d2ec7bd760a6ad7ee0e03385631d5a9"
+            repository_effects:
+              - "ci"
+              - "documentation"
+              - "repository_write"
+              - "source_code"
+              - "tests"
+            repository_fingerprint: "sha256:ba8658d5c4e51bff77304141a0f5598c177da55c091df3711dc055c64ef77980"
+            repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+            resources:
+              - "Changed-file diff"
+              - "Current AgentPlane main checkout"
+              - "Existing framework bootstrap and branch worktree tests"
+              - "Repository test and contract suites"
+              - "https://github.com/basilisk-labs/agentplane-recipes"
+              - "https://raw.githubusercontent.com/basilisk-labs/agentplane-recipes/main/index.json"
+            risk:
+              implementation: "bounded"
+              requirements: "bounded"
+              reversibility: "reversible"
+            scope_roots:
+              - "."
+              - ".github/workflows"
+              - ".gitmodules"
+              - ".prettierignore"
+              - "agentplane-recipes"
+              - "docs"
+              - "docs/developer"
+              - "docs/recipes-inventory.json"
+              - "eslint.config.cjs"
+              - "marketing"
+              - "packages/agentplane/bin"
+              - "packages/agentplane/src/cli"
+              - "packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts"
+              - "packages/agentplane/src/commands/branch"
+              - "scripts/checks"
+              - "scripts/generate"
+              - "scripts/lib"
+              - "scripts/workflow"
+            task_id: "202609220351-3KNJQZ"
+            validation_requirements:
+              - "bun run ci:contract"
+              - "bun run ci:local:fast"
+              - "bun run docs:recipes:check"
+              - "bunx vitest run packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+              - "bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts"
+              - "git diff --check"
+              - "git grep -n -I -E 'git submodule|Recipes submodule|marketing/.*submodule|agentplane-recipes.*submodule' -- ':!docs/releases/**' ':!.agentplane/tasks/**' ':!.agentplane/tmp/**'"
+              - "git ls-files --stage | awk '$1 == 160000 { print }'"
+              - "git status --short --untracked-files=all"
+              - "node .agentplane/policy/check-routing.mjs"
+            work_item_id: null
+          observation:
+            changed_paths:
+              - "agentplane-recipes"
+              - "marketing"
+            evidence_digest: "sha256:246a3580637536b9f82f6977ad894c0ceee197c955f711f6b31708d44d062915"
+            kind: "repository_implementation"
+            previous_fingerprint: "sha256:2930db6a1bc48be30fd16de0c8e2b03d483de745c5d25d98d4adcbcdbc8edc1b"
+        -
+          approval_mode: null
+          authority:
+            capabilities:
+              - "git_read"
+              - "network_read"
+              - "repository_read"
+              - "repository_write"
+              - "test_execution"
+            completion_requirements:
+              - "work_item_validation"
+              - "final_validation"
+            digest: "sha256:f3599fc24bb4769766602f9b32657c9be41bee8590ca26db5524314863fec8ff"
+            expires_at: null
+            external_effects: []
+            plan_digest: "sha256:da5d499041d5fd36f35fe3ddd0c274f72a718c38d6c97a7ec8362a8800b1880e"
+            plan_revision: 1
+            policy_digests:
+              - "sha256:4d715b617cb49d4304a46cbd010ff04038119a5412bfcf5889d6d1ce83807648"
+            provenance:
+              actor_id: "agentplane:kernel-controller"
+              evidence_digest: "sha256:85fd5956165ab263141804d75197aab590571854ef2d21b0bcca3f7de84055d3"
+              kind: "SYSTEM"
+              parent_authority_digest: "sha256:13ca361e2ce4db3c574fca39a747bc03c87c7af4fd12e59bf7dedb08f2dce99a"
+            repository_effects:
+              - "ci"
+              - "documentation"
+              - "repository_write"
+              - "source_code"
+              - "tests"
+            repository_fingerprint: "sha256:2930db6a1bc48be30fd16de0c8e2b03d483de745c5d25d98d4adcbcdbc8edc1b"
+            repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+            resources:
+              - "Changed-file diff"
+              - "Current AgentPlane main checkout"
+              - "Existing framework bootstrap and branch worktree tests"
+              - "Repository test and contract suites"
+              - "https://github.com/basilisk-labs/agentplane-recipes"
+              - "https://raw.githubusercontent.com/basilisk-labs/agentplane-recipes/main/index.json"
+            risk:
+              implementation: "bounded"
+              requirements: "bounded"
+              reversibility: "reversible"
+            scope_roots:
+              - "."
+              - ".github/workflows"
+              - ".gitmodules"
+              - ".prettierignore"
+              - "agentplane-recipes"
+              - "docs"
+              - "docs/developer"
+              - "docs/recipes-inventory.json"
+              - "eslint.config.cjs"
+              - "marketing"
+              - "packages/agentplane/bin"
+              - "packages/agentplane/src/cli"
+              - "packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts"
+              - "packages/agentplane/src/commands/branch"
+              - "scripts/checks"
+              - "scripts/generate"
+              - "scripts/lib"
+              - "scripts/workflow"
+            task_id: "202609220351-3KNJQZ"
+            validation_requirements:
+              - "bun run ci:contract"
+              - "bun run ci:local:fast"
+              - "bun run docs:recipes:check"
+              - "bunx vitest run packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+              - "bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts"
+              - "git diff --check"
+              - "git grep -n -I -E 'git submodule|Recipes submodule|marketing/.*submodule|agentplane-recipes.*submodule' -- ':!docs/releases/**' ':!.agentplane/tasks/**' ':!.agentplane/tmp/**'"
+              - "git ls-files --stage | awk '$1 == 160000 { print }'"
+              - "git status --short --untracked-files=all"
+              - "node .agentplane/policy/check-routing.mjs"
+            work_item_id: null
+          observation:
+            changed_paths:
+              - "agentplane-recipes"
+              - "marketing"
+            evidence_digest: "sha256:fef12aea68ce6798db54212fa2a0aac89fb422fdc9b1e6701b43a6883f42080f"
+            kind: "repository_implementation"
+            previous_fingerprint: "sha256:ba8658d5c4e51bff77304141a0f5598c177da55c091df3711dc055c64ef77980"
       controller_transfer: null
       current_plan:
         approval_actor_id: "USER"
@@ -577,6 +1203,15 @@ extensions:
           event_digests:
             - "sha256:0efdc66d8ca4d132a92b688238fc8ba90729a78e6d5d8c00d77856aac3276afa"
           mutation_id: "capture:202609220351-3KNJQZ"
+        kernel_work_item_claim_required:sha256:09de754feaf0d30eda005bf6bb51eb8d2698e5b9efca3efad1861cefacce8230:sha256:b8025a2744e39d5ed620ce3a179de23ad9cfcad2a20f1b3507de9c8bd7f1364e:
+          after_revision: 26
+          aggregate_digest: "sha256:97cbd5b1382877d61eea850791c6cc5918b732204558e0ae311fdb66fb1c256b"
+          before_revision: 25
+          command_digest: "sha256:c7f8c3d22b35ef5e8d56548e507c28d6c97abaf746fae3972ed55a7db994c004"
+          effect_ids: []
+          event_digests:
+            - "sha256:433fc757ba58dd21e53e68b282dc328643b6876fdefbb5279bcd02984a151b38"
+          mutation_id: "kernel_work_item_claim_required:sha256:09de754feaf0d30eda005bf6bb51eb8d2698e5b9efca3efad1861cefacce8230:sha256:b8025a2744e39d5ed620ce3a179de23ad9cfcad2a20f1b3507de9c8bd7f1364e"
         kernel_work_item_claim_required:sha256:eaf3d661364ba9c08cae82d041a2156e75ca0c1074c110a764620b4562a37755:sha256:5640572d639cb43b7b0901a4a81b7b815d02baf2d7385fb6537d5abed0003b3a:
           after_revision: 5
           aggregate_digest: "sha256:5edb330e5345d2cc15acfa1c40efd2548458cb97ba033e10d18e946688fda718"
@@ -595,6 +1230,15 @@ extensions:
           event_digests:
             - "sha256:67270f849026f1423e7bcf3951186bb8ed90157c04c8558d03742aeee17d3645"
           mutation_id: "kernel_work_item_execution_required:sha256:444d0f2077beca182eb24adc2c80f19470172e1720d80ff43c44ad7bd568e50e:sha256:6e986214387ad2a641b8d92fad096efeb95119704f310c0d1f6f3e26bed666a5"
+        kernel_work_item_execution_required:sha256:56955442a93897b6b8430ade13101f9dd1e248f4bfdf520a184db794b6d88753:sha256:b8025a2744e39d5ed620ce3a179de23ad9cfcad2a20f1b3507de9c8bd7f1364e:
+          after_revision: 27
+          aggregate_digest: "sha256:efdbfa9f0c4ae3bfeb3a6cbeaa3c4f2b8175115b5b38227d3458fae737126dfd"
+          before_revision: 26
+          command_digest: "sha256:f0450ef7995b35802c283698618fd9fc80e5b5244c000e44868e1cb17f9b27dc"
+          effect_ids: []
+          event_digests:
+            - "sha256:93dcede79a4b810e4bb2777fa7aef8101fdf97cf130207ac31db2f8d5c30eb08"
+          mutation_id: "kernel_work_item_execution_required:sha256:56955442a93897b6b8430ade13101f9dd1e248f4bfdf520a184db794b6d88753:sha256:b8025a2744e39d5ed620ce3a179de23ad9cfcad2a20f1b3507de9c8bd7f1364e"
         kernel_work_item_execution_required:sha256:d6f34310823e8d929dd1eea583cc8b82fb4674c4b4d778fa429eb6f054e849ba:sha256:5640572d639cb43b7b0901a4a81b7b815d02baf2d7385fb6537d5abed0003b3a:
           after_revision: 6
           aggregate_digest: "sha256:4a7edf6ee6552226ba8b9ea922e651659f4a6c8df7a4b0e267d21aae8ae481e8"
@@ -631,6 +1275,15 @@ extensions:
           event_digests:
             - "sha256:de4f2015a8a843c5b155601756318d3bec461cfaa22f20b2fb123866250f31af"
           mutation_id: "kernel_work_item_inspection_required:sha256:a5d726410d7c8d69f21e7d71e0bd6e215afbe596794c6fae480b61a1654bf751:sha256:6e986214387ad2a641b8d92fad096efeb95119704f310c0d1f6f3e26bed666a5"
+        kernel_work_item_inspection_required:sha256:da3f002199d91ed609d3d330796e151697e4dcdae7f593c48f5bae51fe60dfae:sha256:b8025a2744e39d5ed620ce3a179de23ad9cfcad2a20f1b3507de9c8bd7f1364e:
+          after_revision: 23
+          aggregate_digest: "sha256:51ef6fda9d34e2443af78568fc38c174d23bb7d08ede4de95310197379ca4713"
+          before_revision: 22
+          command_digest: "sha256:16d02297be1dd377718f48ed1430302cbad893f8de8853b784f3aae48a6aa1ea"
+          effect_ids: []
+          event_digests:
+            - "sha256:b29450ef420fb590e43e1b4190aebebad7a84e594eee391f06f0495f87ebd1aa"
+          mutation_id: "kernel_work_item_inspection_required:sha256:da3f002199d91ed609d3d330796e151697e4dcdae7f593c48f5bae51fe60dfae:sha256:b8025a2744e39d5ed620ce3a179de23ad9cfcad2a20f1b3507de9c8bd7f1364e"
         kernel_work_item_materialization_required:sha256:a04d9d0ab763503036ec64b6f5fc5d27b60d60fdb530b57d5bdefdad08d43530:sha256:5640572d639cb43b7b0901a4a81b7b815d02baf2d7385fb6537d5abed0003b3a:
           after_revision: 4
           aggregate_digest: "sha256:9eb07a42a12a8074f4c1bd3e55621e2a113d611febaecdcb022c4ea519305c84"
@@ -658,6 +1311,15 @@ extensions:
           event_digests:
             - "sha256:3eb187a7c31e54194a94d70f1ef08ac678818f78494174d471e2f4c57428880c"
           mutation_id: "kernel_work_item_rework_claim_required:sha256:d9f8f301cbc51204ca3d894fa1b1b32e304f97bd0606382290d81ab4770d42aa:sha256:6e986214387ad2a641b8d92fad096efeb95119704f310c0d1f6f3e26bed666a5"
+        result:sha256:31594f45bfc0b1fe3426dd1b6b19e2cdc4cc277f8b63eb1ddf4e7e3772a95060:
+          after_revision: 22
+          aggregate_digest: "sha256:64691bba4346c6adb41310b1515eafcebe4a081b0860c04d44ef09448ceab3d9"
+          before_revision: 21
+          command_digest: "sha256:b6b7f56eff35350981a763a94782308c0a0ab3f71ae1f07b6c746c45d89ac118"
+          effect_ids: []
+          event_digests:
+            - "sha256:2d9deda079eae65d622c089a7d57f81fadf85ca949eb681de46ecd34cc145c29"
+          mutation_id: "result:sha256:31594f45bfc0b1fe3426dd1b6b19e2cdc4cc277f8b63eb1ddf4e7e3772a95060"
         result:sha256:7a9f4128d6c17dd74af46e914049d9c3503c907506713aa3f59d765ad0bfb900:
           after_revision: 2
           aggregate_digest: "sha256:5843c9fc5f0c6ba827506191ae5e6c04ebfde1c5bb5bb5a5861d9a8b06780d42"
@@ -685,6 +1347,15 @@ extensions:
           event_digests:
             - "sha256:6b4418cb98b8efebbcf29412b8d0e1bf90d9a436a34f5cb2edea86604731d16b"
           mutation_id: "result:sha256:fc7493e24926b6e8449f4913a157b63ebe277b2fd059114e7fd0ffc13f0526c0"
+        sha256:06b948d181b5b14c3cb07a3d07ccb124c850aad04b7abc842184c12249162a8a:
+          after_revision: 33
+          aggregate_digest: "sha256:c56b121516df5f3e8ea3d6614607797830108d54a5f151a27f97ff757c1dd02e"
+          before_revision: 32
+          command_digest: "sha256:ea3f4a6eb09ad265779e9da15b7323eaedc3dcb859a197c57914984274facf6e"
+          effect_ids: []
+          event_digests:
+            - "sha256:be38777348188beb9eb5b1b2bea08b88d31f19683e95971b212a360087c50a1c"
+          mutation_id: "sha256:06b948d181b5b14c3cb07a3d07ccb124c850aad04b7abc842184c12249162a8a"
         sha256:1ce5be9966c3e645f91d7dc5118937c300a34373eb6c4311001d2c6aef0de731:
           after_revision: 3
           aggregate_digest: "sha256:8e8b0636142f6f62dcd6914d5a39be6dd1ac68f68a0d57163fc7ff3719a4eaa0"
@@ -694,6 +1365,15 @@ extensions:
           event_digests:
             - "sha256:8b24050b0d8b8c19e3443e75beef9875cb37b01c5b15a4785f68fa992544fe6f"
           mutation_id: "sha256:1ce5be9966c3e645f91d7dc5118937c300a34373eb6c4311001d2c6aef0de731"
+        sha256:360e0b7f846bd6cbd277ec84ccef2bc29a68484b59df1ee454ba6afed48536be:
+          after_revision: 28
+          aggregate_digest: "sha256:6d4df8bd4bbeb158df48f3e44c330d72f490c07872b822a47ed89686fcb13cfc"
+          before_revision: 27
+          command_digest: "sha256:07bc4087443bfb48112d5de3c6381cc030fa65f30d9e98b8430e999e1b9420d9"
+          effect_ids: []
+          event_digests:
+            - "sha256:ec1b244d3cd7223d840f0f3b7952f60fc8b6b9043679c351e5ba2df80156d7e9"
+          mutation_id: "sha256:360e0b7f846bd6cbd277ec84ccef2bc29a68484b59df1ee454ba6afed48536be"
         sha256:3e8300ccace2e3728b8f187363c08d5df5d9358176a34f0a2e66c25079d3860a:
           after_revision: 7
           aggregate_digest: "sha256:d9aefa3658c0757b9d1c0fd24eece8d277ac76d341cebfc09237f1f397880afb"
@@ -703,6 +1383,15 @@ extensions:
           event_digests:
             - "sha256:bfc46dee4054f9dd00bfe2fe7d2623f3aebd7d7797ca463ee46fd261b079d038"
           mutation_id: "sha256:3e8300ccace2e3728b8f187363c08d5df5d9358176a34f0a2e66c25079d3860a"
+        sha256:41925e7940b34fae7dc4d070ef3bb4e1eed4a8b82bb183a48a233afdb51a0791:
+          after_revision: 32
+          aggregate_digest: "sha256:d88392a9d76f90a0df3aa14406c3caa809f90a3031b11fc537685a4b8b7a100b"
+          before_revision: 31
+          command_digest: "sha256:d1063ecea93e2c0a8f9dce63ba11b9e2125073afe4c1a5c3d28b750e9bd40629"
+          effect_ids: []
+          event_digests:
+            - "sha256:9e753a9868040b034ee265f7311d6825ea4219ed29472bf595d0c45f9790a8e6"
+          mutation_id: "sha256:41925e7940b34fae7dc4d070ef3bb4e1eed4a8b82bb183a48a233afdb51a0791"
         sha256:48b03e93f4ad4afa23d637c7fd1a8d4ab9de911bb8246b7f3ed20827448648f1:
           after_revision: 14
           aggregate_digest: "sha256:41bef3bcffbab44ad97f9e73368c4c502d92ce34f512f64ad6e64a0b47b64423"
@@ -712,6 +1401,42 @@ extensions:
           event_digests:
             - "sha256:045ace91a565fa55b8a114f8371bdded9d42cf96245babc242956bb34c7bafc7"
           mutation_id: "sha256:48b03e93f4ad4afa23d637c7fd1a8d4ab9de911bb8246b7f3ed20827448648f1"
+        sha256:4c29b90efb6c48534fc52e5eb942c7bdfd252770d4482ccb622be209780d7a40:
+          after_revision: 21
+          aggregate_digest: "sha256:4ed8ece274b41ca7467ee28efe05dc6430f764bd2c2249ab43cf7107d1a9f73c"
+          before_revision: 20
+          command_digest: "sha256:079e327bc566eff2cce9bfefff35505a79407dd7fcd8961f27e5ccef53fb0f7a"
+          effect_ids: []
+          event_digests:
+            - "sha256:7e99e2d44563d072464f8f2f68ac44e36c69b2b143b3f50f3438ae6302d7bc8b"
+          mutation_id: "sha256:4c29b90efb6c48534fc52e5eb942c7bdfd252770d4482ccb622be209780d7a40"
+        sha256:4d1c57d07c107a2e84f39bd07ffc336f28a4459b550d9422922fa06f737bc6ed:
+          after_revision: 30
+          aggregate_digest: "sha256:bda22149a0e689fbfd2b06e82cf356341c589bdd2257d2280e3095e8b25f4e2c"
+          before_revision: 29
+          command_digest: "sha256:6889b1a0b99a058c286a64cd10870ce28e57080c368272f3b93d053cbe2ed229"
+          effect_ids: []
+          event_digests:
+            - "sha256:a75639d9e1a1a4ada13bc253cf4c52c15265a70f7c5e2549371319b3263cda12"
+          mutation_id: "sha256:4d1c57d07c107a2e84f39bd07ffc336f28a4459b550d9422922fa06f737bc6ed"
+        sha256:8aa118012d352012c529eb7fe111cf3fcb9b79a03211353719a3f389969c3fe2:
+          after_revision: 29
+          aggregate_digest: "sha256:5250d11abb88338eb74aa490983632405cdde3f3d74f4b198112f30f781fb5e3"
+          before_revision: 28
+          command_digest: "sha256:a55105318beabe6f05154cb80b63bbbcd52a1bbe566a1acd67d1e0d0ab03f556"
+          effect_ids: []
+          event_digests:
+            - "sha256:5a3742f2f2f5628ae55490fac56a0fc34ea908a3fd4def5b7a78d06544b2e2f1"
+          mutation_id: "sha256:8aa118012d352012c529eb7fe111cf3fcb9b79a03211353719a3f389969c3fe2"
+        sha256:fc438a60d3332ccc385221290505c550f580efd36105060533271e7bc18bb028:
+          after_revision: 31
+          aggregate_digest: "sha256:09ce35f80662179c9c55ae13221f60dd035ab65625f917ae8b532e218ecfe76e"
+          before_revision: 30
+          command_digest: "sha256:a5a6c44aadb4c0950d814e0ba175588956c807eca7ddaa577bbb1cec9d145e4e"
+          effect_ids: []
+          event_digests:
+            - "sha256:b22e7f85b819187e9df8eac5dbf71f4ab1d03f316c3cbc062f025f6610ab70c2"
+          mutation_id: "sha256:fc438a60d3332ccc385221290505c550f580efd36105060533271e7bc18bb028"
         validation-resolution:sha256:935098ed00ec3191844ef6f15c2be7fe2db5109f6c81f1e92f3a3ccce21fa273:
           after_revision: 11
           aggregate_digest: "sha256:a22af2a00a793230f6f719ea10703897ad8951a47b2053aff6bab73aed613015"
@@ -730,6 +1455,24 @@ extensions:
           event_digests:
             - "sha256:5580406e814c921e916c1dca1bcf3a12daed56fc02dca9eee60800981a3d73dd"
           mutation_id: "validation-resolution:sha256:d555367cec2122b70d80facb62a3d69e21b2e7459b7654fea7f36bf723ec94b1"
+        validation-resolution:sha256:ddac7565d15d47cad34785d1373a0615e5e084680dcb360f6992bd3ef31088d9:
+          after_revision: 25
+          aggregate_digest: "sha256:fd2f61282e882f42585b61a18ff8e363864bb82a3d7820bbf64647d3d41015ed"
+          before_revision: 24
+          command_digest: "sha256:4b12fa2a58dd641a1403a1710d95d9cfa25bfd114b161348192e4348b540f881"
+          effect_ids: []
+          event_digests:
+            - "sha256:6b6bad644086f70e1045c3573e1005d44fc27e2b50cfc8fd95a90417e5db6026"
+          mutation_id: "validation-resolution:sha256:ddac7565d15d47cad34785d1373a0615e5e084680dcb360f6992bd3ef31088d9"
+        validation:sha256:806ab33467cb0ef41acf35edf5301084d96326cb7c4cd05232aec9647379a0c5:
+          after_revision: 24
+          aggregate_digest: "sha256:97677fe1e662d62eb52bfb07996a22c15f3f4b42abbf18d76324f9aae6cfc561"
+          before_revision: 23
+          command_digest: "sha256:0f0d1f5c26211326b0f381280e18504e76f1f5e1c1c6b3ef12fe901662ee4c69"
+          effect_ids: []
+          event_digests:
+            - "sha256:7b63735e5cd2ad39473a239ba041cab104ef15f9742114c4ce8ad3e88dde4bd7"
+          mutation_id: "validation:sha256:806ab33467cb0ef41acf35edf5301084d96326cb7c4cd05232aec9647379a0c5"
         validation:sha256:d5ee6ec10dc57baecee646fb5ed0dbb53be22a46739fd04e9907c877876e26f7:
           after_revision: 17
           aggregate_digest: "sha256:417ece9fb995589338f571947b215c657204c1efbb51bedb72add193c73b9a6d"
@@ -749,13 +1492,13 @@ extensions:
             - "sha256:648eac5f3e610abdd81991c8727e268241334d82f97f59f1c9434ac7a9c5f5cf"
           mutation_id: "validation:sha256:fc7493e24926b6e8449f4913a157b63ebe277b2fd059114e7fd0ffc13f0526c0"
       plan_history: []
-      revision: 20
+      revision: 33
       schema_version: 1
       state: "ACTIVE"
       work_items:
         detach-superproject-submodules:
-          attempt: 0
-          claim_id: null
+          attempt: 1
+          claim_id: "sha256:e11deef318512510b433fa947c2e7bc834ccf91535021d92551b20a606433085"
           definition:
             contract_digest: "sha256:6a073904ee8ff179584e9585cf3b8a7065dc322dd4d4a0d3a5612d4ffba18500"
             depends_on:
@@ -799,8 +1542,8 @@ extensions:
               - "recipe-source-contract"
           output_manifests: []
           result_digest: null
-          revision: 1
-          state: "PLANNED"
+          revision: 4
+          state: "EXECUTING"
           validation: null
         external-recipes-source-contract:
           attempt: 3
@@ -836,11 +1579,49 @@ extensions:
             id: "external-recipes-source-contract"
             optional: false
             required_inputs: []
-          output_manifests: []
-          result_digest: null
-          revision: 15
-          state: "EXECUTING"
-          validation: null
+          output_manifests:
+            -
+              attempt: 3
+              digest: "sha256:460599c56ed45d12fa434ea0339a5106109dc7b5bf7ffbae12f1c08ed4c1b472"
+              id: "recipe-source-contract"
+              kind: "report"
+              plan_revision: 1
+              repository_fingerprint: "sha256:b8025a2744e39d5ed620ce3a179de23ad9cfcad2a20f1b3507de9c8bd7f1364e"
+              task_id: "202609220351-3KNJQZ"
+              work_item_id: "external-recipes-source-contract"
+            -
+              attempt: 3
+              digest: "sha256:e56ac4dae0ed21f4f9620ae53656cf58f0169dc91e6bc5fdf64c145b83911ab6"
+              id: "recipe-source-tests"
+              kind: "report"
+              plan_revision: 1
+              repository_fingerprint: "sha256:b8025a2744e39d5ed620ce3a179de23ad9cfcad2a20f1b3507de9c8bd7f1364e"
+              task_id: "202609220351-3KNJQZ"
+              work_item_id: "external-recipes-source-contract"
+            -
+              attempt: 3
+              digest: "sha256:b0f6f8ba59b1627fb464cb9f16c8e20cd6997d603d1ca0fbb0bebfc03a144221"
+              id: "recipe-source-docs"
+              kind: "report"
+              plan_revision: 1
+              repository_fingerprint: "sha256:b8025a2744e39d5ed620ce3a179de23ad9cfcad2a20f1b3507de9c8bd7f1364e"
+              task_id: "202609220351-3KNJQZ"
+              work_item_id: "external-recipes-source-contract"
+          result_digest: "sha256:4c4809a18f56afa855eddfddc15cad489e4ff5c406ca4c535b67a184279c0da7"
+          revision: 19
+          state: "COMPLETED"
+          validation:
+            evidence_digests:
+              - "sha256:58d7bce2430775439dbf039817cde0ae88b1e4d580229cc49b7f3e3bd698157e"
+              - "sha256:2d2f26c6ddcd73e0e7cd44e41a7b4a9f88d64f9993f64d41e23a69f5af7889d9"
+            identity:
+              check_id: "canonical-contract-and-inspection"
+              command_digest: "sha256:81bedd6fd534c8934b09a05e7b2a1a0b1fb93358d4f986f88174d5f0890af532"
+              environment_digest: "sha256:f3f84e42dfb8d373edee9f70d5e3bf9140d81a5050f73bc5258b7e7b734aeedf"
+              implementation_identity: "sha256:4c4809a18f56afa855eddfddc15cad489e4ff5c406ca4c535b67a184279c0da7"
+              toolchain_digest: "sha256:1a755b889c57fe42eceac130b8698617219f04ae931e429c3ec3f478fcbf510a"
+            observed_at: "2026-09-22T04:10:21.350Z"
+            status: "PASSED"
         verify-submodule-free-repository:
           attempt: 0
           claim_id: null
@@ -879,7 +1660,7 @@ extensions:
           revision: 1
           state: "PLANNED"
           validation: null
-    digest: "sha256:3f765463509e6a15d1b3df9579d27630a6ea04ce0da91270eb69414b35f0101c"
+    digest: "sha256:a506c56f2d95c0a1bfd8a6b58f796ffa27bb2b1963fa8b0cc7417a0929cbc789"
     documents:
       contracts:
         sha256:2d105029d1fb9f67a819fdf382bff5c62f62ac17c1289bf804c36d472ca3a57a:
@@ -1104,6 +1885,123 @@ extensions:
         payload_digest: "sha256:6be4eb1581bb948f5369ee31ba2b1c82cad0a47f7ed303ae87f9c56df308dba5"
         task_id: "202609220351-3KNJQZ"
         task_revision: 20
+      -
+        command_digest: "sha256:079e327bc566eff2cce9bfefff35505a79407dd7fcd8961f27e5ccef53fb0f7a"
+        id: "sha256:4c29b90efb6c48534fc52e5eb942c7bdfd252770d4482ccb622be209780d7a40:authority_continued"
+        kind: "authority_continued"
+        mutation_id: "sha256:4c29b90efb6c48534fc52e5eb942c7bdfd252770d4482ccb622be209780d7a40"
+        occurred_at: "2026-09-22T04:08:53.383Z"
+        payload_digest: "sha256:69dc0f4c08a537c2ac464283b4eadc2dbf095e184bb3517220c6ad77169ab37f"
+        task_id: "202609220351-3KNJQZ"
+        task_revision: 21
+      -
+        command_digest: "sha256:b6b7f56eff35350981a763a94782308c0a0ab3f71ae1f07b6c746c45d89ac118"
+        id: "result:sha256:31594f45bfc0b1fe3426dd1b6b19e2cdc4cc277f8b63eb1ddf4e7e3772a95060:work_item_result_accepted"
+        kind: "work_item_result_accepted"
+        mutation_id: "result:sha256:31594f45bfc0b1fe3426dd1b6b19e2cdc4cc277f8b63eb1ddf4e7e3772a95060"
+        occurred_at: "2026-09-22T04:08:57.367Z"
+        payload_digest: "sha256:0909349b0439b554db4b4450982b8c538fcc513bb5154268100b33efa83f8996"
+        task_id: "202609220351-3KNJQZ"
+        task_revision: 22
+      -
+        command_digest: "sha256:16d02297be1dd377718f48ed1430302cbad893f8de8853b784f3aae48a6aa1ea"
+        id: "kernel_work_item_inspection_required:sha256:da3f002199d91ed609d3d330796e151697e4dcdae7f593c48f5bae51fe60dfae:sha256:b8025a2744e39d5ed620ce3a179de23ad9cfcad2a20f1b3507de9c8bd7f1364e:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "kernel_work_item_inspection_required:sha256:da3f002199d91ed609d3d330796e151697e4dcdae7f593c48f5bae51fe60dfae:sha256:b8025a2744e39d5ed620ce3a179de23ad9cfcad2a20f1b3507de9c8bd7f1364e"
+        occurred_at: "2026-09-22T04:09:00.488Z"
+        payload_digest: "sha256:cef1e95dbfd67cac8cd925768badce5ee5e942662a72361f0aa8ef2d416e79f6"
+        task_id: "202609220351-3KNJQZ"
+        task_revision: 23
+      -
+        command_digest: "sha256:0f0d1f5c26211326b0f381280e18504e76f1f5e1c1c6b3ef12fe901662ee4c69"
+        id: "validation:sha256:806ab33467cb0ef41acf35edf5301084d96326cb7c4cd05232aec9647379a0c5:work_item_validation_recorded"
+        kind: "work_item_validation_recorded"
+        mutation_id: "validation:sha256:806ab33467cb0ef41acf35edf5301084d96326cb7c4cd05232aec9647379a0c5"
+        occurred_at: "2026-09-22T04:10:24.187Z"
+        payload_digest: "sha256:4878ab2391d59246cd05275fa5f1dec131ae6cd0229e806e9863b1686acfa772"
+        task_id: "202609220351-3KNJQZ"
+        task_revision: 24
+      -
+        command_digest: "sha256:4b12fa2a58dd641a1403a1710d95d9cfa25bfd114b161348192e4348b540f881"
+        id: "validation-resolution:sha256:ddac7565d15d47cad34785d1373a0615e5e084680dcb360f6992bd3ef31088d9:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "validation-resolution:sha256:ddac7565d15d47cad34785d1373a0615e5e084680dcb360f6992bd3ef31088d9"
+        occurred_at: "2026-09-22T04:10:26.056Z"
+        payload_digest: "sha256:6f7fa4a9665ce45767c85b4efd855646bf5c972b9e91436a9268ab0e1e87d948"
+        task_id: "202609220351-3KNJQZ"
+        task_revision: 25
+      -
+        command_digest: "sha256:c7f8c3d22b35ef5e8d56548e507c28d6c97abaf746fae3972ed55a7db994c004"
+        id: "kernel_work_item_claim_required:sha256:09de754feaf0d30eda005bf6bb51eb8d2698e5b9efca3efad1861cefacce8230:sha256:b8025a2744e39d5ed620ce3a179de23ad9cfcad2a20f1b3507de9c8bd7f1364e:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "kernel_work_item_claim_required:sha256:09de754feaf0d30eda005bf6bb51eb8d2698e5b9efca3efad1861cefacce8230:sha256:b8025a2744e39d5ed620ce3a179de23ad9cfcad2a20f1b3507de9c8bd7f1364e"
+        occurred_at: "2026-09-22T04:10:29.939Z"
+        payload_digest: "sha256:889e73562cf53a9c7dee2be452348c5ea0df14be85ac054a16b3e1f587a2ee0b"
+        task_id: "202609220351-3KNJQZ"
+        task_revision: 26
+      -
+        command_digest: "sha256:f0450ef7995b35802c283698618fd9fc80e5b5244c000e44868e1cb17f9b27dc"
+        id: "kernel_work_item_execution_required:sha256:56955442a93897b6b8430ade13101f9dd1e248f4bfdf520a184db794b6d88753:sha256:b8025a2744e39d5ed620ce3a179de23ad9cfcad2a20f1b3507de9c8bd7f1364e:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "kernel_work_item_execution_required:sha256:56955442a93897b6b8430ade13101f9dd1e248f4bfdf520a184db794b6d88753:sha256:b8025a2744e39d5ed620ce3a179de23ad9cfcad2a20f1b3507de9c8bd7f1364e"
+        occurred_at: "2026-09-22T04:10:32.876Z"
+        payload_digest: "sha256:a6b9393b728eff7d50e5310deb6401fea9252fbd392b0fedbc3fb37467df9c63"
+        task_id: "202609220351-3KNJQZ"
+        task_revision: 27
+      -
+        command_digest: "sha256:07bc4087443bfb48112d5de3c6381cc030fa65f30d9e98b8430e999e1b9420d9"
+        id: "sha256:360e0b7f846bd6cbd277ec84ccef2bc29a68484b59df1ee454ba6afed48536be:authority_continued"
+        kind: "authority_continued"
+        mutation_id: "sha256:360e0b7f846bd6cbd277ec84ccef2bc29a68484b59df1ee454ba6afed48536be"
+        occurred_at: "2026-09-22T04:31:43.855Z"
+        payload_digest: "sha256:758d046bb700bfb388afb5f242615a0666d8c68a77abc7d727af5deb3ef3a0b2"
+        task_id: "202609220351-3KNJQZ"
+        task_revision: 28
+      -
+        command_digest: "sha256:a55105318beabe6f05154cb80b63bbbcd52a1bbe566a1acd67d1e0d0ab03f556"
+        id: "sha256:8aa118012d352012c529eb7fe111cf3fcb9b79a03211353719a3f389969c3fe2:authority_continued"
+        kind: "authority_continued"
+        mutation_id: "sha256:8aa118012d352012c529eb7fe111cf3fcb9b79a03211353719a3f389969c3fe2"
+        occurred_at: "2026-09-22T04:33:48.443Z"
+        payload_digest: "sha256:9bdd9c008229f5159e6574f270504d3c53c0148537448e60eea0692538aa3492"
+        task_id: "202609220351-3KNJQZ"
+        task_revision: 29
+      -
+        command_digest: "sha256:6889b1a0b99a058c286a64cd10870ce28e57080c368272f3b93d053cbe2ed229"
+        id: "sha256:4d1c57d07c107a2e84f39bd07ffc336f28a4459b550d9422922fa06f737bc6ed:authority_continued"
+        kind: "authority_continued"
+        mutation_id: "sha256:4d1c57d07c107a2e84f39bd07ffc336f28a4459b550d9422922fa06f737bc6ed"
+        occurred_at: "2026-09-22T04:35:31.669Z"
+        payload_digest: "sha256:d4a92440b02b7b741d34bf4343153c638a5d88f1b605a1aa1260bbd3f66d3c26"
+        task_id: "202609220351-3KNJQZ"
+        task_revision: 30
+      -
+        command_digest: "sha256:a5a6c44aadb4c0950d814e0ba175588956c807eca7ddaa577bbb1cec9d145e4e"
+        id: "sha256:fc438a60d3332ccc385221290505c550f580efd36105060533271e7bc18bb028:authority_continued"
+        kind: "authority_continued"
+        mutation_id: "sha256:fc438a60d3332ccc385221290505c550f580efd36105060533271e7bc18bb028"
+        occurred_at: "2026-09-22T04:37:09.079Z"
+        payload_digest: "sha256:f8f92483994f2aeee36455a8aef37798ccb0aa0f98a768f9257fd5f3451c0f68"
+        task_id: "202609220351-3KNJQZ"
+        task_revision: 31
+      -
+        command_digest: "sha256:d1063ecea93e2c0a8f9dce63ba11b9e2125073afe4c1a5c3d28b750e9bd40629"
+        id: "sha256:41925e7940b34fae7dc4d070ef3bb4e1eed4a8b82bb183a48a233afdb51a0791:authority_continued"
+        kind: "authority_continued"
+        mutation_id: "sha256:41925e7940b34fae7dc4d070ef3bb4e1eed4a8b82bb183a48a233afdb51a0791"
+        occurred_at: "2026-09-22T04:40:36.904Z"
+        payload_digest: "sha256:6b0f9b979513ff748ce5c95191c6a22e38213e59f0f8c1b26ecc8051ae00244f"
+        task_id: "202609220351-3KNJQZ"
+        task_revision: 32
+      -
+        command_digest: "sha256:ea3f4a6eb09ad265779e9da15b7323eaedc3dcb859a197c57914984274facf6e"
+        id: "sha256:06b948d181b5b14c3cb07a3d07ccb124c850aad04b7abc842184c12249162a8a:authority_continued"
+        kind: "authority_continued"
+        mutation_id: "sha256:06b948d181b5b14c3cb07a3d07ccb124c850aad04b7abc842184c12249162a8a"
+        occurred_at: "2026-09-22T04:43:18.599Z"
+        payload_digest: "sha256:797a4608a5a898fb6c9075f8e924209f716af73cbbb0f52cf8e21122982b5bef"
+        task_id: "202609220351-3KNJQZ"
+        task_revision: 33
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1

@@ -13,9 +13,10 @@ Page text lives in the Markdown and MDX files under this directory.
 
 `website/sidebars.ts` is the active navigation manifest for the public docs site.
 
-Marketing and positioning source documents moved to the `marketing/` submodule
-(`basilisk-labs/agentplane-marketing`). The public docs routes for `manifesto`, `compare`,
-`listing`, `showcase`, and `user/website-ia` stay here as thin compatibility pages.
+Marketing and positioning source documents live in the independent
+[`basilisk-labs/agentplane-marketing`](https://github.com/basilisk-labs/agentplane-marketing)
+repository. The public docs routes for `manifesto`, `compare`, `listing`, `showcase`, and
+`user/website-ia` stay here as thin compatibility pages.
 
 Docs are organized into an agent-first public navigation model on top of `docs/user/`, `docs/help/`,
 `docs/workflow-guides/`, `docs/recipes/`, `docs/reference/`, and `docs/releases/`:

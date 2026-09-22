@@ -307,7 +307,6 @@ jobs:
           ref: main
           persist-credentials: false
           fetch-depth: 0
-          submodules: false
       - name: Select qualified release source from main history
         shell: bash
         env:
@@ -326,7 +325,6 @@ jobs:
           ref: ${{ github.workflow_sha }}
           persist-credentials: false
           path: .agentplane/.release/runtime
-          submodules: false
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: "1.4.2"
@@ -392,30 +390,6 @@ jobs:
         with:
           ref: ${{ needs.detect.outputs.ref }}
           fetch-depth: 0
-          submodules: false
-      - name: Initialize required publish-relevant submodules
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [ ! -f .gitmodules ]; then
-            echo "No submodules configured; nothing to init."
-            exit 0
-          fi
-
-          if [ -f .gitmodules ] && git config --file .gitmodules --get-regexp '^submodule\..*\.url$' | awk '{print $1}' | grep -q '\.'; then
-            echo "Preparing publish-relevant submodules."
-            # We only need release-critical submodules available for publish checks.
-            # Marketing docs submodule is optional for publish and may be unavailable.
-            git submodule update --init agentplane-recipes || {
-              echo "Warning: failed to initialize agentplane-recipes submodule; publish continues with minimal checkout." >&2
-            }
-            if [ -d marketing ]; then
-              git submodule deinit -f marketing || true
-              rm -rf .git/modules/marketing || true
-            fi
-          else
-            echo "No recognized submodule entries to initialize."
-          fi
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: "1.4.2"
