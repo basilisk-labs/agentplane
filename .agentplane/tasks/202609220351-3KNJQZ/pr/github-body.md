@@ -49,11 +49,12 @@ Remove the marketing and agentplane-recipes gitlinks from the AgentPlane superpr
  ...i.core.task-advance.worktree-resolution.test.ts |   3 +-
  .../commands/branch/work-start.materialize.test.ts |   6 +-
  .../src/commands/branch/work-start.materialize.ts  |   2 +-
+ .../release/publish-workflow-contract.test.ts      |   6 +-
  scripts/checks/check-recipes-inventory-fresh.mjs   |  64 +++++++--
  scripts/generate/generate-recipes-inventory.mjs    |  54 +++++---
  scripts/lib/github-ci-capabilities.mjs             |   7 +-
  scripts/workflow/bootstrap-framework-dev.mjs       |  58 +--------
- 26 files changed, 173 insertions(+), 360 deletions(-)
+ 27 files changed, 176 insertions(+), 363 deletions(-)
 ```
 
 </details>
