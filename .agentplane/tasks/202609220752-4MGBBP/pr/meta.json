@@ -3,7 +3,8 @@
   "branch": "task/202609220752-4MGBBP/fix-issue-5991-by-cleaning-owned-vitest-temporar",
   "created_at": "2026-09-22T08:00:58.998Z",
   "diffstat_sha256": "sha256:dd3cc8ec1394ab995b0e1501ed3eb2b96bc414ebea21f541b7796f0c85dd0a8f",
-  "last_verified_at": null,
+  "last_verified_at": "2026-09-22T08:02:59.419Z",
+  "last_verified_diffstat_sha256": "sha256:dd3cc8ec1394ab995b0e1501ed3eb2b96bc414ebea21f541b7796f0c85dd0a8f",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202609220752-4MGBBP",
   "updated_at": "2026-09-22T08:00:58.998Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

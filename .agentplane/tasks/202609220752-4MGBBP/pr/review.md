@@ -6,14 +6,14 @@ Created: 2026-09-22T08:00:58.998Z
 
 - Task: `202609220752-4MGBBP`
 - Title: Fix issue #5991 by cleaning owned Vitest temporary roots
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609220752-4MGBBP/fix-issue-5991-by-cleaning-owned-vitest-temporar`
 - Canonical task record: `.agentplane/tasks/202609220752-4MGBBP/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
