@@ -20,7 +20,7 @@ type PlanningPacket = {
   };
 };
 
-export function createFixtureTaskPlan(
+function createFixtureTaskPlan(
   workOrder: AgentWorkOrderV2,
   opts: {
     id: string;

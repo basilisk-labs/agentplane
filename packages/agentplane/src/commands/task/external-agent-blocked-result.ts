@@ -53,7 +53,7 @@ function externalBlockedResultReceipt(opts: {
   });
 }
 
-export function blockedResultBody(opts: {
+function blockedResultBody(opts: {
   exchange: ExternalAgentExchange;
   semantic: ExternalAgentResultEnvelope["result"];
 }): string {

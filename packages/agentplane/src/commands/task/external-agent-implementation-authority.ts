@@ -126,7 +126,7 @@ export function assertExternalImplementationReturnState(opts: {
   return changed;
 }
 
-export const blockingImplementationAuthorityViolations = (items: readonly string[]): string[] =>
+const blockingImplementationAuthorityViolations = (items: readonly string[]): string[] =>
   items.filter((violation) => !violation.startsWith("verification:"));
 
 function assertScopeExtensionBlockerPreservedBaseline(opts: {
