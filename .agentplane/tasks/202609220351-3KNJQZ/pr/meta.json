@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:796e1f85d677d4da4eedfbc62a2b888baa0aff6dfea7f17cfdb3ac14a7c2e786",
   "pr_number": 6002,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6002",
+  "pre_merge_closure": {
+    "basis_commit": "ddfadc4c55b4c58da21efa339297d56a16c12969",
+    "branch": "task/202609220351-3KNJQZ/remove-marketing-and-recipes-git-submodules",
+    "pr_number": 6002,
+    "recorded_at": "2026-09-22T07:03:59.587Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
