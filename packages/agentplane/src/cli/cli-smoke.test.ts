@@ -7,7 +7,6 @@ import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
 import { runCli } from "./run-cli.js";
-import { materializeLegacyDrainIdentityFixture } from "../commands/shared/native-task-identity-fixture.js";
 import { createRecipeArchive, recordVerificationOk, setTaskVerifySteps } from "@agentplane/testkit";
 
 const execFileAsync = promisify(execFile);
@@ -168,15 +167,6 @@ describe("agentplane CLI smoke", () => {
 
       await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "test: record smoke verification"], {
-        cwd: root,
-      });
-      await materializeLegacyDrainIdentityFixture({
-        root,
-        task_id: taskId,
-        work_items_completed: true,
-      });
-      await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
-      await execFileAsync("git", ["commit", "-m", "test: complete smoke work item"], {
         cwd: root,
       });
 
