@@ -27,9 +27,9 @@ Fix the 0.7.11 lifecycle deadlock where next-action routes task.pre_merge_close 
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../agentplane/src/commands/task/finish-execute.ts | 59 +++++++++++++++-------
- .../task/finish.pre-merge-closure.unit.test.ts     | 56 ++++++++++++++++++++
- 2 files changed, 98 insertions(+), 17 deletions(-)
+ .../agentplane/src/commands/task/finish-execute.ts | 58 +++++++++++++++-------
+ .../task/finish.pre-merge-closure.unit.test.ts     | 50 ++++++++++++++++++-
+ 2 files changed, 90 insertions(+), 18 deletions(-)
 ```
 
 </details>

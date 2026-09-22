@@ -13,7 +13,6 @@ import type { FinishExecutionPlan, FinishOptions } from "./finish-types.js";
 const mocks = vi.hoisted(() => ({
   createTaskCloseCommit: vi.fn(),
   gitCurrentBranch: vi.fn(),
-  hasCanonicalPreMergeEvidence: vi.fn(),
   materializeBranchPrCloseTail: vi.fn(),
   resolveBranchPrCloseTailState: vi.fn(),
 }));
@@ -28,10 +27,6 @@ vi.mock("./finish-close.js", () => ({
 vi.mock("../shared/git-ops.js", () => ({
   gitCurrentBranch: mocks.gitCurrentBranch,
 }));
-vi.mock("../shared/canonical-pre-merge-evidence.js", () => ({
-  hasCanonicalPreMergeEvidence: mocks.hasCanonicalPreMergeEvidence,
-}));
-
 function mkCtx(root: string): CommandContext {
   return {
     config: {
@@ -78,7 +73,6 @@ function mkOptions(cwd: string): FinishOptions {
 
 describe("finish pre-merge closure", () => {
   it("preserves an already completed canonical task while recording pre-merge closure", async () => {
-    mocks.hasCanonicalPreMergeEvidence.mockReturnValue(true);
     const { shouldPreserveCompletedCanonicalTaskState } = await import("./finish-execute.js");
     const plan = {
       preMergeClosure: true,
@@ -99,11 +93,9 @@ describe("finish pre-merge closure", () => {
         loadedTasks: [{ taskId: "T-1", task } as never],
       }),
     ).toBe(true);
-    expect(mocks.hasCanonicalPreMergeEvidence).toHaveBeenCalledWith(task);
   });
 
   it("keeps legacy and active canonical tasks on the existing finish mutation path", async () => {
-    mocks.hasCanonicalPreMergeEvidence.mockReturnValue(true);
     const { shouldPreserveCompletedCanonicalTaskState } = await import("./finish-execute.js");
     const plan = { preMergeClosure: true, primaryTaskId: "T-1" } as FinishExecutionPlan;
 

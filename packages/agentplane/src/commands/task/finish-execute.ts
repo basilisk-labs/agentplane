@@ -46,8 +46,7 @@ export function shouldPreserveCompletedCanonicalTaskState(opts: {
       aggregate !== null &&
       typeof aggregate === "object" &&
       !Array.isArray(aggregate) &&
-      (aggregate as { state?: unknown }).state === "COMPLETED" &&
-      hasCanonicalPreMergeEvidence(task)
+      (aggregate as { state?: unknown }).state === "COMPLETED"
     );
   });
 }
