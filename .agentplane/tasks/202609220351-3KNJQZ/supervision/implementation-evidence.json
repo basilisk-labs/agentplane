@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 7b3ffdb83961e2346016fe264bb99208d390bff6..b71807623475a3a2cf3eba122bc72e2d603ce847",
+      "command": "git diff --check b71807623475a3a2cf3eba122bc72e2d603ce847..3887e57a49c2b906e5986cd280232f51459f468f",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 7b3ffdb83961e2346016fe264bb99208d390bff6..b71807623475a3a2cf3eba122bc72e2d603ce847",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB b71807623475a3a2cf3eba122bc72e2d603ce847..3887e57a49c2b906e5986cd280232f51459f468f",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,7 +24,7 @@
         "M\t.agentplane/tasks/202609220351-3KNJQZ/pr/review.md",
         "M\t.agentplane/tasks/202609220351-3KNJQZ/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202609220351-3KNJQZ/supervision/implementation-evidence.json",
-        "M\tpackages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts"
+        "M\tpackages/agentplane/src/commands/release/publish-workflow-contract.test.ts"
       ]
     },
     {
@@ -34,8 +34,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "7b3ffdb83961e2346016fe264bb99208d390bff6",
-  "implementation_commit": "b71807623475a3a2cf3eba122bc72e2d603ce847",
+  "execution_base_commit": "b71807623475a3a2cf3eba122bc72e2d603ce847",
+  "implementation_commit": "3887e57a49c2b906e5986cd280232f51459f468f",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [

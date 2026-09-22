@@ -88,7 +88,7 @@ export function resolveInventoryPaths(cwd = ROOT, options = {}) {
 
 function resolveRecipesSourceArg(argv) {
   const sourceIndex = argv.indexOf("--recipes-source");
-  if (sourceIndex === -1) return undefined;
+  if (sourceIndex === -1) return;
   const value = argv[sourceIndex + 1];
   if (!value || value.startsWith("-")) {
     throw new Error("Missing value for --recipes-source");
