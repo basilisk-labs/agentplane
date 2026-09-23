@@ -1,0 +1,42 @@
+{
+  "native_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_task_identity",
+    "task_id": "202609231152-HP97AA",
+    "plan": {
+      "revision": 1,
+      "digest": "sha256:d46c4a8d16199b3f926fbe1e7bc6603d0f0240d81365b1c876c75c3e94e0fb73",
+      "approval_state": "approved",
+      "approved_digest": "sha256:d46c4a8d16199b3f926fbe1e7bc6603d0f0240d81365b1c876c75c3e94e0fb73"
+    },
+    "policy": {
+      "digest": "sha256:1508520334b86880f4c7ebdff3696edff99bcc2f3bd0e31747a3b7da58bf1dd6"
+    },
+    "capability": {
+      "digest": "sha256:44668150af015035b4f9295eeb1e83a605e3c89b183ce28b4421a381c9bdb75f"
+    },
+    "checks": {
+      "verification_contract_digest": "sha256:26485d693e8a72f8e84def46b13b595170e712892cdf6c7072f663211b0c7b2c",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "digest": "sha256:ac449ff8c8e5a530002463b79ec85878503797b8492a2100df9fa60fc041401a"
+    },
+    "digest": "sha256:c2438cee25a0408ea806dc551ad2baec0ab4ba67c75b0e292b35a1e19cda010e"
+  },
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202609231152-HP97AA",
+    "plan_digest": "sha256:d46c4a8d16199b3f926fbe1e7bc6603d0f0240d81365b1c876c75c3e94e0fb73",
+    "policy_digest": "sha256:1508520334b86880f4c7ebdff3696edff99bcc2f3bd0e31747a3b7da58bf1dd6",
+    "capability_digest": "sha256:44668150af015035b4f9295eeb1e83a605e3c89b183ce28b4421a381c9bdb75f",
+    "checks_digest": "sha256:ac449ff8c8e5a530002463b79ec85878503797b8492a2100df9fa60fc041401a",
+    "verification_input_digest": "sha256:d898c3faa200e733002c31f7aef2261de23daed3df041fdae94ac9792d3966e8",
+    "acceptance_digest": "sha256:f933249f1da7e49e04ce3ac9dd0d308c0853ea525f5ea9fe52e2003bc6ad897b",
+    "implementation_sha": "106b90ee0acbc3db8d0646a8824392caf9fc8701",
+    "digest": "sha256:fbdfecd15b4c7a149ab339ffe3031853fa1fedbbb070865b30d3eeb2f95253db"
+  }
+}

@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -30,21 +30,31 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-23T12:06:13.675Z"
+  updated_at: "2026-09-23T12:39:38.644Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
   evaluated_sha: "106b90ee0acbc3db8d0646a8824392caf9fc8701"
-  review_identity_digest: "sha256:d4263248ca43a7fa9465cc5e09363fa5bbf2695617127fdafc7e08dbda7b7b0d"
+  review_identity_digest: "sha256:fbdfecd15b4c7a149ab339ffe3031853fa1fedbbb070865b30d3eeb2f95253db"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202609231152-HP97AA/83c858718bd16ed974b5cecfddcf5ef89c88ad61797c1ea597849fa7ebc953c4/quality-report.json"
+    - ".agentplane/tasks/202609231152-HP97AA/quality/20260923-123625330-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609231152-HP97AA/quality/20260923-123625330-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609231152-HP97AA/quality/objects/sha256/c98d0a733e080e4ebef609c8c553bf7f7315f3c1033fd229ac0cc37f0d1cf359.md"
+    - ".agentplane/tasks/202609231152-HP97AA/quality/20260923-123625330-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609231152-HP97AA/quality/20260923-123625330-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609231152-HP97AA/quality/20260923-123625330-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609231152-HP97AA/README.md"
+    - ".agentplane/tasks/202609231152-HP97AA/quality/objects/sha256/367ab027b2648ca0c4957873b269f302eb9d0822109731abe79144c7889ab5cd.patch"
+    - ".agentplane/tasks/202609231152-HP97AA/quality/objects/sha256/cdeff7abc0a7068da98a9d5056013992f5703330dcee4ad70dee4a1d1a9c489b.json"
+    - ".agentplane/tasks/202609231152-HP97AA/verification/20260923120633958-28469bf4760981f8.json"
+    - ".agentplane/tasks/202609231152-HP97AA/quality/objects/sha256/060cccfe07757db6cd8edea917f22d383f3be1996d86951c5788543fa7de860c.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Pass: reject_plan alone bypasses the lineage replacement guard, while the kernel reducer retains the exact approved-plan, ACTIVE, blocked-work, manual USER, and rejection-evidence conditions."
-    - "Pass: capture_intent and propose_plan still throw before rejection, and propose_plan remains allowed only in PLANNING with a REJECTED current plan."
-    - "Pass: the regression tests invoke the same exported guard used by createKernelRuntime.input, and all four AgentPlane-observed native checks passed against commit 106b90ee0acbc3db8d0646a8824392caf9fc8701."
+    - "No contract violation found: only reject_plan bypasses the authority-lineage replacement guard, while capture_intent and propose_plan remain blocked until the plan is explicitly rejected and the task enters replanning."
 token_usage:
   agent_runs: 0
-  cached_input_observed_agent_runs: 0
-  cached_input_tokens: null
   input_tokens: null
   journal_digest: "sha256:0816e84d2c2594ca8f037f69dab41206d4b3b54caa4b9370a1317fc96af1dd8d"
   observed_agent_runs: 0
@@ -261,7 +271,7 @@ events:
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "db379ae203ee9b5ca4f23b1bb497e69c1779b2ac"
 doc_version: 3
-doc_updated_at: "2026-09-23T12:13:33.756Z"
+doc_updated_at: "2026-09-23T12:39:38.655Z"
 doc_updated_by: "CODER"
 description: "Fix the unreachable canonical replanning route: task plan reject currently treats reject_plan as planning but rejects it whenever USER authority lineage exists. Preserve USER authority and existing blocked implementation evidence, allow only the exact manual USER rejection path, and add a regression test that exercises the real runtime guard."
 sections:
