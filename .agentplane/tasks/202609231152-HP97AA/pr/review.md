@@ -6,14 +6,14 @@ Created: 2026-09-23T12:04:47.411Z
 
 - Task: `202609231152-HP97AA`
 - Title: Allow explicit USER rejection of an approved blocked canonical plan
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609231152-HP97AA/allow-explicit-user-rejection-of-an-approved-blo`
 - Canonical task record: `.agentplane/tasks/202609231152-HP97AA/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

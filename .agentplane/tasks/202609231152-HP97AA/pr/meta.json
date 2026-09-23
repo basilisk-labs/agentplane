@@ -3,7 +3,8 @@
   "branch": "task/202609231152-HP97AA/allow-explicit-user-rejection-of-an-approved-blo",
   "created_at": "2026-09-23T12:04:47.411Z",
   "diffstat_sha256": "sha256:c6c9d48f8922171745d01788da15ad9f145c8c20a1b1f318535733ca7fabbd84",
-  "last_verified_at": null,
+  "last_verified_at": "2026-09-23T12:06:33.958Z",
+  "last_verified_diffstat_sha256": "sha256:c6c9d48f8922171745d01788da15ad9f145c8c20a1b1f318535733ca7fabbd84",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202609231152-HP97AA",
   "updated_at": "2026-09-23T12:04:47.411Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

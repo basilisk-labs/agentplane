@@ -1,1 +1,1 @@
-🚧 HP97AA task: Allow explicit USER rejection of an approved blocked canonical plan [202609231152-HP97AA]
+✅ HP97AA task: Allow explicit USER rejection of an approved blocked canonical plan [202609231152-HP97AA]
