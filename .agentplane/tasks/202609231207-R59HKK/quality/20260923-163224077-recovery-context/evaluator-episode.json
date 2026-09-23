@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202609231207-R59HKK-462829a19c9db3aaf5928fa1",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Projects/agentplane/.agentplane/lifecycle-fix-base/.agentplane/worktrees/202609231207-R59HKK-make-canonical-supervisor-transitions-recoverabl",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Projects/agentplane/.agentplane/lifecycle-fix-base/.agentplane/worktrees/202609231207-R59HKK-make-canonical-supervisor-transitions-recoverabl/.agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json",
+    "-"
+  ],
+  "started_at": "2026-09-23T16:32:24.730Z",
+  "ended_at": "2026-09-23T16:34:45.381Z",
+  "stdout_bytes": 338220,
+  "stderr_bytes": 1110,
+  "provider_usage": {
+    "cached_input_tokens": 783360,
+    "input_tokens": 868715,
+    "output_tokens": 3113,
+    "total_tokens": 871828,
+    "visible_output_tokens": 2704,
+    "reasoning_tokens": 409,
+    "thread_id": "01a0cf1c-7f53-7182-9c44-18a6bc79e9cb"
+  },
+  "provider_usage_status": "partial",
+  "provider_thread_id": "01a0cf1c-7f53-7182-9c44-18a6bc79e9cb",
+  "provider_turn_id": null,
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:975131799de56c631c9a51ad2393dce172ea9adbd0595a91afebb0ea90769770"
+}

@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -30,31 +30,32 @@ verification:
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "human_review"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-23T15:46:09.717Z"
+  updated_at: "2026-09-23T16:34:45.974Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "6759b1616cba474373998abdd8963b8894ad4b2e"
-  review_identity_digest: "sha256:b5a51da3bf570f191ac73d549d2dcf102a1f4bb677417612fe9fb8cb74281a03"
+  note: "EVALUATOR returned human_review with 1 typed finding(s)."
+  evaluated_sha: "1dcaddc9c0d3b76fa4a724b7262a6ab32678dc77"
+  review_identity_digest: "sha256:012676464dd990b05cbfb77279c46e30cbfd5c19e7af5610186d8e61b7cb6521"
   evidence_refs:
-    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-154436878-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-154436878-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/696026ee45c209e97ccfd92e33ebb14b399770bcc0a70f0d7025ee07ec20bd35.md"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-154436878-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-154436878-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-154436878-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-163224077-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-163224077-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/63f1ce87a9c962b6e76ca0919947cc36d3c13e1752beb54ac696d0269bf2cc00.md"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-163224077-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-163224077-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-163224077-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-163224077-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609231207-R59HKK/README.md"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/70e6995465910c8353ef1bbf2b986daaa46b4ddc358d39e9ddafa8e78a0c53f6.patch"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/43eb18c44593714c701dc9351e8debc7e368182484c30e1d848a1a501370c973.json"
-    - ".agentplane/tasks/202609231207-R59HKK/verification/20260923154402112-3f5ee60dd679ac16.json"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/7f7eb9cdbe3d1ef6d3597b5833a7c60954f42183239589eb3a18f8b6d0fb782f.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/96c42aaff1d9618c7f1893e1e504ab2d6d73cccf5a5fef605d2c0853ed931571.patch"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/f56d38e49b4aeafff63d1e537493decea1eb32e8d8b49833712af3ea1c4967e8.json"
+    - ".agentplane/tasks/202609231207-R59HKK/verification/20260923163153262-f2ac13c46929e267.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/eed76037586e56f9efd4ce48039a2c8ea599b035ccdb32b19625ba50bb5ef81a.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Frozen evidence digests match. Recorded verification passes all three required commands for the evaluated SHA. Observed workspace drift consists only of this review’s generated evidence artifacts."
+    - "The frozen diff updates bun.lock workspace versions to 0.7.12-beta.1, outside the approved WorkItem scope. No approval for this expansion appears in the supplied evidence."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -431,7 +432,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-23T16:31:57.512Z"
+doc_updated_at: "2026-09-23T16:34:46.045Z"
 doc_updated_by: "CODER"
 description: "Repair evaluator diff-base selection after provider branch updates, forward replacement intent into evaluator episodes, persist supervisor-generated task artifacts without false task_worktree_resolution, dispatch pre-merge closure through the supported local lifecycle path, and admit worktree.prepare before dirty-base worktree resolution."
 sections:
@@ -984,6 +985,14 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.human_input:
+    history: []
+    openQuestion:
+      askedAt: "2026-09-23T16:34:45.974Z"
+      askedBy: "EVALUATOR"
+      id: "evaluator-evaluator-work-order-202609231207-R59HKK-462829a19c9db3aaf5928fa1"
+      previousStatus: "DONE"
+      question: "Do you approve the bun.lock synchronization to 0.7.12-beta.1 as an explicit scope expansion for this task?"
   agentplane.kernel_operational_projection:
     digest: "sha256:6a150ed5e5ae8073bb8806e9add6eb885c7c0bd4e02b7f41f9f6e1042c56abd1"
     evidence_refs:

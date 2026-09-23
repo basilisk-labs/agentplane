@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "human_review",
+  "findings": [
+    {
+      "id": "scope-approval-gap",
+      "severity": "medium",
+      "summary": "The frozen diff updates bun.lock workspace versions to 0.7.12-beta.1, outside the approved WorkItem scope. No approval for this expansion appears in the supplied evidence.",
+      "broken_invariant": "The approved WorkItem restricts changes to four command-source directories; dod.core requires explicit re-approval for changes outside approved scope.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/96c42aaff1d9618c7f1893e1e504ab2d6d73cccf5a5fef605d2c0853ed931571.patch",
+          "sha256": "sha256:96c42aaff1d9618c7f1893e1e504ab2d6d73cccf5a5fef605d2c0853ed931571",
+          "line": 1
+        },
+        {
+          "path": ".agentplane/tasks/202609231207-R59HKK/README.md",
+          "sha256": "sha256:caecc922211d7a8fe8b0cf9b0c9f27d34eee3db182f6e717f22d7c04c4cc1c23",
+          "line": 1135,
+          "section": "extensions.task_kernel.aggregate.current_plan.work_items"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "Material drift criteria"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Lockfile synchronization after the provider branch update is assumed to be authorized despite the frozen scope restriction."
+  ],
+  "recovery_context": "Do you approve the bun.lock synchronization to 0.7.12-beta.1 as an explicit scope expansion for this task?"
+}
