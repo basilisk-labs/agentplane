@@ -4,7 +4,7 @@ title: "Fix canonical completed-task branch lifecycle recovery without internal 
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,11 @@ plan_approval:
   updated_by: "USER"
   note: "Projected from the approved canonical Task Kernel plan."
 verification:
-  state: "blocked_external"
-  updated_at: "2026-09-23T21:25:19.767Z"
+  state: "ok"
+  updated_at: "2026-09-23T21:45:03.660Z"
   updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 7
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -92,8 +92,6 @@ execution_contract:
       - "repository_effect:dependencies"
       - "repository_effect:schema"
       - "repository_effect:tests"
-      - "verification:recorded-check-1:fail"
-      - "verification:verification-record:fail"
     changed_components:
       - "bun.lock"
       - "packages/agentplane"
@@ -169,10 +167,34 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "fail"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
       -
         id: "verification-record"
-        result: "fail"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "observed_effect_dependencies"
@@ -555,8 +577,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
-      - "verification_recovery:verification-record"
 commit: null
 comments: []
 events:
@@ -608,8 +628,14 @@ events:
     author: "SUPERVISOR"
     state: "blocked_external"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "verify"
+    at: "2026-09-23T21:45:03.660Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-23T21:25:26.308Z"
+doc_updated_at: "2026-09-23T21:45:08.794Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the verified AgentPlane lifecycle fixes as one clean semantic code task. Keep implementation, tests, and local verification in the work item. Leave PR publication, hosted checks, merge, and cleanup to branch_pr lifecycle. Include completed canonical implementation-rework routing, safe supervisor journal replacement and stale-state recovery, exact DONE rework runner authority, completed verification and quality-review routing, base-checkout provider operations, and Codex-compatible strict output schemas. Do not include task artifacts from other tasks."
 sections:
@@ -938,6 +964,89 @@ sections:
     - capability_digest: sha256:44668150af015035b4f9295eeb1e83a605e3c89b183ce28b4421a381c9bdb75f
     - checks_digest: sha256:00a64bdeee46cc450c680b122209ef944aa9e343a0a9e86210c2083b8b7338d6
     - identity_digest: sha256:f3ebe3e4ba53d856a21de36fdb46c81f99171c66d5487d3d51883dc23deeea47
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-23T21:45:03.660Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:5f3d95b05b031f07880a41a3eca628614d6b7cf0567af923f9cf8881f7c6b8ca, input_digest=sha256:cf307e28189b465ed826eb498593df29e5882219938d526f382beadbfd18d1e6
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609231019-MPSGJZ Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts packages/agentplane/src/commands/pr/conflict-rework.test.ts packages/agentplane/src/runner/adapters/codex-result-transport.test.ts packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609231019-MPSGJZ Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609231019-MPSGJZ Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: bunx vitest run packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts packages/agentplane/src/commands/pr/conflict-rework.test.ts packages/agentplane/src/runner/adapters/codex-result-transport.test.ts packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609231019-MPSGJZ Verification Contract check critical_paths (2/2)
+
+    Check: docs_contract
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609231019-MPSGJZ Verification Contract check docs_contract (1/2)
+
+    Check: docs_contract
+    Command: bunx vitest run packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts packages/agentplane/src/commands/pr/conflict-rework.test.ts packages/agentplane/src/runner/adapters/codex-result-transport.test.ts packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609231019-MPSGJZ Verification Contract check docs_contract (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609231019-MPSGJZ Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609231019-MPSGJZ Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: bunx vitest run packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts packages/agentplane/src/commands/pr/conflict-rework.test.ts packages/agentplane/src/runner/adapters/codex-result-transport.test.ts packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609231019-MPSGJZ Verification Contract check task_outcome (2/2)
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:b8810dd303286d6fdd7c8b7e964e33cdb45ef13091247e90d5d458d559e9f9a0
+    - policy_digest: sha256:9c3e5325d78af3d590b3ecf1641b0da288f0a1e3fec30c28b808c2c2f01aa68e
+    - capability_digest: sha256:44668150af015035b4f9295eeb1e83a605e3c89b183ce28b4421a381c9bdb75f
+    - checks_digest: sha256:b210c956ad50fee265b5e19b6389dbdc2318d2787decae6760335c7d68a3a806
+    - identity_digest: sha256:dc0f908e17aedca8adb2c050f25d063ddb84a966a205557115a7233e5e01dc49
 
     DecisionContextRef:
     - operator_action: stop
@@ -1847,6 +1956,89 @@ NativeTaskIdentityRef:
 - capability_digest: sha256:44668150af015035b4f9295eeb1e83a605e3c89b183ce28b4421a381c9bdb75f
 - checks_digest: sha256:00a64bdeee46cc450c680b122209ef944aa9e343a0a9e86210c2083b8b7338d6
 - identity_digest: sha256:f3ebe3e4ba53d856a21de36fdb46c81f99171c66d5487d3d51883dc23deeea47
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-23T21:45:03.660Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:5f3d95b05b031f07880a41a3eca628614d6b7cf0567af923f9cf8881f7c6b8ca, input_digest=sha256:cf307e28189b465ed826eb498593df29e5882219938d526f382beadbfd18d1e6
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609231019-MPSGJZ Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts packages/agentplane/src/commands/pr/conflict-rework.test.ts packages/agentplane/src/runner/adapters/codex-result-transport.test.ts packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609231019-MPSGJZ Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609231019-MPSGJZ Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: bunx vitest run packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts packages/agentplane/src/commands/pr/conflict-rework.test.ts packages/agentplane/src/runner/adapters/codex-result-transport.test.ts packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609231019-MPSGJZ Verification Contract check critical_paths (2/2)
+
+Check: docs_contract
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609231019-MPSGJZ Verification Contract check docs_contract (1/2)
+
+Check: docs_contract
+Command: bunx vitest run packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts packages/agentplane/src/commands/pr/conflict-rework.test.ts packages/agentplane/src/runner/adapters/codex-result-transport.test.ts packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609231019-MPSGJZ Verification Contract check docs_contract (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609231019-MPSGJZ Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609231019-MPSGJZ Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: bunx vitest run packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts packages/agentplane/src/commands/pr/conflict-rework.test.ts packages/agentplane/src/runner/adapters/codex-result-transport.test.ts packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609231019-MPSGJZ Verification Contract check task_outcome (2/2)
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:b8810dd303286d6fdd7c8b7e964e33cdb45ef13091247e90d5d458d559e9f9a0
+- policy_digest: sha256:9c3e5325d78af3d590b3ecf1641b0da288f0a1e3fec30c28b808c2c2f01aa68e
+- capability_digest: sha256:44668150af015035b4f9295eeb1e83a605e3c89b183ce28b4421a381c9bdb75f
+- checks_digest: sha256:b210c956ad50fee265b5e19b6389dbdc2318d2787decae6760335c7d68a3a806
+- identity_digest: sha256:dc0f908e17aedca8adb2c050f25d063ddb84a966a205557115a7233e5e01dc49
 
 DecisionContextRef:
 - operator_action: stop

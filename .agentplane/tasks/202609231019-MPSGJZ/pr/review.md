@@ -12,8 +12,8 @@ Created: 2026-09-23T10:57:06.440Z
 
 ## Verification
 
-- State: blocked_external
-- Note: Rework: Declared check failed: bun run ci:local:full
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
