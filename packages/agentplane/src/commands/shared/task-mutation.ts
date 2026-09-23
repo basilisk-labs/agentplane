@@ -62,6 +62,12 @@ function assertCanonicalProjectionPreserved(opts: { current: TaskData; next: Tas
   }
 }
 
+function preserveCanonicalProjectionStatus(opts: { current: TaskData; next: TaskData }): TaskData {
+  const aggregate = (opts.current.extensions?.[TASK_KERNEL_EXTENSION] as Partial<KernelRecord>)
+    ?.aggregate;
+  return aggregate ? { ...opts.next, status: projectKernelTask(aggregate).status } : opts.next;
+}
+
 function assertTaskCentricProjection(opts: { current: TaskData; next: TaskData }): void {
   const task = opts.next;
   const aggregate = taskCentricAggregateFromExtensions(task.extensions);
@@ -261,16 +267,21 @@ export async function applyTaskMutation(opts: {
         if (plan.nextTask !== undefined) {
           const next = projectTaskCentricCompatibilityMutation({
             current,
-            next: plan.nextTask,
+            next: opts.allowCanonicalProjection
+              ? preserveCanonicalProjectionStatus({ current, next: plan.nextTask })
+              : plan.nextTask,
           });
           if (opts.allowCanonicalProjection) assertCanonicalProjectionPreserved({ current, next });
           assertTaskCentricProjection({ current, next });
           return next;
         }
         if (plan.intents !== undefined) {
+          const intended = applyTaskStoreIntentsToTask(current, plan.intents);
           const next = projectTaskCentricCompatibilityMutation({
             current,
-            next: applyTaskStoreIntentsToTask(current, plan.intents),
+            next: opts.allowCanonicalProjection
+              ? preserveCanonicalProjectionStatus({ current, next: intended })
+              : intended,
           });
           if (opts.allowCanonicalProjection) assertCanonicalProjectionPreserved({ current, next });
           assertTaskCentricProjection({ current, next });

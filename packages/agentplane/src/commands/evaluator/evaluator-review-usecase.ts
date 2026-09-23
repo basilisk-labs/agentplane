@@ -174,12 +174,21 @@ async function prepareEvaluatorReviewLocked(
     reason: "preparation",
     execution: opts.execution,
   });
-  const diffBaseSha = await resolveEvaluatorDiffBase({
+  const currentBaseSha = await resolveEvaluatorDiffBase({
     gitRoot,
     evaluatedSha,
-    baseRef: evaluatedSha ? opts.execution.base_sha : null,
+    baseRef: evaluatedSha ? opts.execution.base_ref : null,
     allowSingleCommitFallback: opts.execution.selected_mode !== "branch_pr",
   });
+  const diffBaseSha =
+    evaluatedSha && currentBaseSha === evaluatedSha && opts.execution.base_sha !== evaluatedSha
+      ? await resolveEvaluatorDiffBase({
+          gitRoot,
+          evaluatedSha,
+          baseRef: opts.execution.base_sha,
+          allowSingleCommitFallback: opts.execution.selected_mode !== "branch_pr",
+        })
+      : currentBaseSha;
   const taskArtifactPrefixes = normalizeBranchPrBatchTaskIds(opts.task, opts.task.id).map(
     (taskId) => `${opts.ctx.config.paths.workflow_dir.replaceAll("\\", "/")}/${taskId}/`,
   );

@@ -20,6 +20,7 @@ export async function recordDirectTaskFormalOperation(opts: {
   git_root: string;
   task_id: string;
   id: "task_verify" | "task_finish";
+  replacement?: boolean;
   run: () => Promise<Record<string, unknown>> | Record<string, unknown>;
   decision: () => Promise<TaskRouteDecision>;
 }): Promise<{
@@ -67,6 +68,17 @@ export async function recordDirectTaskFormalOperation(opts: {
       });
       journal = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
         journal: failed,
+        state_fingerprint_digest: before.workflowStep.preconditionFingerprint.digest,
+      });
+      await opened.store.write(journal);
+    }
+    if (
+      journal.status === "stopped" &&
+      journal.stop?.reason === "operation_failed" &&
+      opts.replacement === true
+    ) {
+      journal = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
+        journal,
         state_fingerprint_digest: before.workflowStep.preconditionFingerprint.digest,
       });
       await opened.store.write(journal);

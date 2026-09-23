@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202609231207-R59HKK/make-canonical-supervisor-transitions-recoverabl",
+  "created_at": "2026-09-23T12:42:13.939Z",
+  "diffstat_sha256": "sha256:c53c2ceef9833e2b2750007007aa33f820e2b6fe2a9854de0a524989a2fcd33d",
+  "last_verified_at": "2026-09-23T17:20:59.611Z",
+  "last_verified_diffstat_sha256": "sha256:55a29fa5c76869c487ba161cc3c90ee9bffcb2e1790d315fa93f7c8ba62bf952",
+  "pr_number": 6013,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6013",
+  "pre_merge_closure": {
+    "basis_commit": "e2fdb7e5a2772f4d06066bfcec4f22a16c0c9e06",
+    "branch": "task/202609231207-R59HKK/make-canonical-supervisor-transitions-recoverabl",
+    "pr_number": 6013,
+    "recorded_at": "2026-09-23T18:32:25.310Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202609231207-R59HKK",
+  "updated_at": "2026-09-23T13:04:05.195Z",
+  "verify": {
+    "status": "pass"
+  }
+}

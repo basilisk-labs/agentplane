@@ -25,6 +25,7 @@ import {
   includedBatchStep,
   qualityEvidenceRefreshStep,
   qualityReviewStep,
+  readyWorkItemWorktreeStep,
   requiredWorkItemRoute,
   routeBlockerFor,
   routeBlockerSnapshot,
@@ -347,6 +348,7 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
   const id = state.task.id;
   const supersededStep = supersededProviderConflictStep(state);
   if (supersededStep) return supersededStep;
+  const workItemRoute = requiredWorkItemRoute(state.task);
   const worktreeBlocker = taskWorktreeBlocker(state);
   const status = String(state.task.status).toUpperCase();
   if (status === "TODO" || (status === "DOING" && hasUninitializedTaskBaseline(state.task))) {
@@ -382,6 +384,10 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
     });
   }
   if (status === "BLOCKED") return blockedTaskStep(state);
+  const conflictStep = conflictReworkRouteStep(state);
+  if (conflictStep) return conflictStep;
+  const readyWorktreeStep = readyWorkItemWorktreeStep(state);
+  if (readyWorktreeStep) return readyWorktreeStep;
   if (state.batchOwnership.role === "included") return includedBatchStep(state);
   if (!state.prFlow?.branch.name && verifiedIncludedClosureCandidate(state.task)) {
     return cliOperationStep({
@@ -421,7 +427,7 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
   }
   const baseSyncStep = branchBaseSyncStep(state);
   if (baseSyncStep) return baseSyncStep;
-  const recoveryStep = conflictReworkRouteStep(state) ?? providerUpdateBranchStep(state);
+  const recoveryStep = providerUpdateBranchStep(state);
   if (recoveryStep) return recoveryStep;
   if (state.taskWorktree?.state === "not_present" && hasRouteBlocker(state, "pr_meta_stale")) {
     const slug = workSlug(state.task);
@@ -485,7 +491,6 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
       selectedBlocker: routeBlockerFor(state, "on_base_checkout"),
     });
   }
-  const workItemRoute = requiredWorkItemRoute(state.task);
   if (workItemRoute.state === "ready") return branchImplementationStep(state);
   if (workItemRoute.state === "blocked") {
     return workItemReadinessWaitStep(state, "task_worktree");

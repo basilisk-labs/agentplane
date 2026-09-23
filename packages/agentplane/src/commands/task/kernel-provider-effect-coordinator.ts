@@ -4,7 +4,11 @@ import { validateSupervisorExecutionEpisodeJournal } from "@agentplaneorg/core/s
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
 
 import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
-import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-backend.js";
+import {
+  loadCommandContext,
+  resolveCommandGitCommonDir,
+  type CommandContext,
+} from "../shared/task-backend.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import {
@@ -32,6 +36,8 @@ import {
   withCanonicalControllerSuspendedForOperation,
 } from "./kernel-controller-handoff.js";
 import { ensureKernelOperationalProjectionEvidence } from "./kernel-operational-projection.js";
+import { executeProductionBranchEpisode } from "./branch-task-supervisor-episodes.js";
+import { CliError } from "../../shared/errors.js";
 
 type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
 
@@ -491,6 +497,37 @@ export async function prepareCanonicalWorkflowEffect(opts: {
   return "prepared";
 }
 
+/** Execute repository-local lifecycle work without misclassifying it as a provider effect. */
+export async function executeCanonicalLocalWorkflowOperation(opts: {
+  command: CommandContext;
+  decision: TaskRouteDecision;
+  task_id: string;
+}): Promise<boolean> {
+  const step = opts.decision.workflowStep;
+  if (step.kind !== "cli_operation" || step.operation.id in CANONICAL_EFFECT_KIND_BY_OPERATION) {
+    return false;
+  }
+  const persisted = await executeAdmittedBranchWorkflowOperation({
+    decision: opts.decision,
+    git_root: opts.command.resolvedProject.gitRoot,
+    refresh: async () => await decide(opts.command, opts.task_id),
+  });
+  const execution = persisted.execution;
+  if (
+    !execution.executable ||
+    execution.stop_reason !== null ||
+    execution.result?.status !== "succeeded" ||
+    execution.refreshed_decision === null
+  ) {
+    throw new Error(
+      `Canonical local lifecycle operation ${step.operation.id} failed: ${
+        execution.stop_reason ?? execution.result?.detail ?? "route refresh unavailable"
+      }`,
+    );
+  }
+  return true;
+}
+
 export async function decideCanonicalWorkflowEffect(
   command: CommandContext,
   taskId: string,
@@ -504,4 +541,39 @@ export async function decideCanonicalWorkflowEffect(
     freshHead: true,
     taskId,
   });
+}
+
+export async function executeCanonicalCompletedAgentEpisode(opts: {
+  command: CommandContext;
+  decision: TaskRouteDecision;
+  task_id: string;
+  replace_failed_operation?: boolean;
+}) {
+  if (
+    opts.decision.workflowStep.kind !== "agent_episode" ||
+    !["implementation_rework", "verification", "quality_review"].includes(
+      opts.decision.workflowStep.episode.purpose,
+    )
+  ) {
+    return null;
+  }
+  const checkout = opts.decision.executionPacket.mustRunFrom ?? opts.decision.workspace.root;
+  const workflowCommand =
+    path.resolve(checkout) === path.resolve(opts.command.resolvedProject.gitRoot)
+      ? opts.command
+      : await loadCommandContext({ cwd: checkout, rootOverride: null });
+  const outcome = await executeProductionBranchEpisode({
+    input: {
+      ctx: { cwd: checkout },
+      command: workflowCommand,
+      task_id: opts.task_id,
+      replace_failed_operation: opts.replace_failed_operation,
+    },
+    decision: opts.decision,
+    decide: async () => await decideCanonicalWorkflowEffect(workflowCommand, opts.task_id, false),
+  });
+  if (outcome.status === "stopped") {
+    throw new CliError({ code: "E_RUNTIME", message: outcome.stop.reason });
+  }
+  return true;
 }

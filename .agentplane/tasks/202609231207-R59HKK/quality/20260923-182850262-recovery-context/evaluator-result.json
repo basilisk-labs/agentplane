@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "stale-focused-test-path",
+      "severity": "low",
+      "summary": "The declared focused Vitest command includes external-agent-supervisor.test.ts, which is absent at the evaluated SHA. Its passing result does not establish coverage of that named suite; the persisted full regression check also passed.",
+      "broken_invariant": "Declared verification targets should identify existing tests so a successful command accurately represents its stated coverage.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609231207-R59HKK/README.md",
+          "sha256": "sha256:4cd48f4dd9feb9456fb65ded80d3a60b304e17bd0a0c6697c8b3a2d6c9a126b9",
+          "section": "verify"
+        },
+        {
+          "path": ".agentplane/tasks/202609231207-R59HKK/verification/20260923182218141-e6531c975af7f0a6.json",
+          "sha256": "sha256:c9a27d2ad28ef645ddbc0385033778ee1a34f7800288173406c5843711592265",
+          "section": "details"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

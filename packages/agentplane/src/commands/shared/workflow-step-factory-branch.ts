@@ -8,6 +8,7 @@ import type { TaskData } from "../../backends/task-backend.js";
 import { isRecord } from "../../shared/guards.js";
 import type { RouteBlocker } from "./route-oracle.js";
 import { cliOperationStep } from "./workflow-step-authority.js";
+import { routeBlockerFor, workSlug } from "./workflow-step-common.js";
 import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
 
 export type RequiredWorkItemRoute =
@@ -46,6 +47,26 @@ export function requiredWorkItemRoute(task: TaskData): RequiredWorkItemRoute {
   return selected
     ? { state: "ready", work_item_id: selected.id }
     : { state: "blocked", work_item_id: null };
+}
+
+export function readyWorkItemWorktreeStep(state: WorkflowRouteState): WorkflowStep | null {
+  if (requiredWorkItemRoute(state.task).state !== "ready") return null;
+  const worktree = state.taskWorktree;
+  if (
+    worktree &&
+    worktree.state !== "not_present" &&
+    worktree.branch !== state.resume.base_branch
+  ) {
+    return null;
+  }
+  return cliOperationStep({
+    state,
+    operationId: "worktree.prepare",
+    params: { taskId: state.task.id, agent: state.task.owner, slug: workSlug(state.task) },
+    code: "start_or_recover_worktree",
+    summary: "create or recover the dedicated branch_pr worktree before agent execution",
+    selectedBlocker: routeBlockerFor(state, "missing_pr_branch", "on_base_checkout"),
+  });
 }
 
 export function verifiedIncludedClosureCandidate(task: TaskData): boolean {

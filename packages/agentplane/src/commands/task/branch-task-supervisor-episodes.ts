@@ -361,6 +361,7 @@ async function executeBranchVerificationEpisode(opts: {
       git_root: command.resolvedProject.gitRoot,
       task_id: opts.input.task_id,
       id: "task_verify",
+      replacement: opts.input.replace_failed_operation === true,
       decision: opts.decide,
       run: async () => {
         const verification = await resolveImplementationVerificationTask({
@@ -422,6 +423,7 @@ async function executeBranchVerificationEpisode(opts: {
             result: checks,
           }),
           verificationSnapshot: verification.snapshot,
+          allowCanonicalProjection: true,
           localOnly: false,
           repoFixable: !passed,
           incidentTags: [],

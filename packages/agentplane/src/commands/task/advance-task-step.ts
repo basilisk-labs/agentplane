@@ -21,6 +21,7 @@ import {
   decideCanonicalWorkflowEffect,
   prepareCanonicalWorkflowEffect,
 } from "./kernel-provider-effect-coordinator.js";
+import { executeCanonicalCompletedWorkflowLocally } from "./kernel-completed-workflow.js";
 import { ensureKernelOperationalProjectionEvidence } from "./kernel-operational-projection.js";
 import { transferCanonicalControllerToBase } from "./kernel-controller-handoff.js";
 import { acceptKernelSemanticResult } from "./kernel-semantic-result.js";
@@ -120,6 +121,7 @@ async function advanceCanonicalRoute(opts: {
   transport: "host" | "managed";
   effect_port_resolver?: KernelEffectPortResolver;
   allow_provider_effects?: boolean;
+  replace_failed_operation?: boolean;
 }) {
   const runtime = await createKernelRuntime({
     command: opts.command,
@@ -137,6 +139,7 @@ async function advanceCanonicalRoute(opts: {
     if (stop) return { schema_version: 1, task_id: opts.task_id, action: stop };
   }
   const visited = new Set<string>();
+  let replaceFailedOperation = opts.replace_failed_operation;
   let finalValidation: {
     fingerprint: string;
     environment_digest: string;
@@ -196,18 +199,28 @@ async function advanceCanonicalRoute(opts: {
       route.reason_code === "kernel_task_completed" &&
       current.read.task.execution_route?.repository_mode === "branch_pr"
     ) {
+      await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
       const localWorkflow = await decideCanonicalWorkflowEffect(opts.command, opts.task_id, false);
       const localTerminal =
         localWorkflow.workflowStep.kind === "terminal" &&
         ["done", "superseded"].includes(localWorkflow.workflowStep.outcome.type);
       if (localTerminal) {
-        await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
         return {
           schema_version: 1,
           task_id: opts.task_id,
           action: { kind: "terminal", reason: route.reason_code },
           canonical_revision: record.aggregate.revision,
         };
+      }
+      const localProgress = await executeCanonicalCompletedWorkflowLocally({
+        command: opts.command,
+        decision: localWorkflow,
+        task_id: opts.task_id,
+        replace_failed_operation: replaceFailedOperation,
+      });
+      if (localProgress) {
+        if (localProgress === "agent") replaceFailedOperation = false;
+        continue;
       }
       if (!opts.allow_provider_effects) {
         return {
@@ -243,13 +256,22 @@ async function advanceCanonicalRoute(opts: {
         workflow.workflowStep.kind === "terminal" &&
         ["done", "superseded"].includes(workflow.workflowStep.outcome.type);
       if (terminal) {
-        await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
         return {
           schema_version: 1,
           task_id: opts.task_id,
           action: { kind: "terminal", reason: route.reason_code },
           canonical_revision: record.aggregate.revision,
         };
+      }
+      const providerProgress = await executeCanonicalCompletedWorkflowLocally({
+        command: opts.command,
+        decision: workflow,
+        task_id: opts.task_id,
+        replace_failed_operation: replaceFailedOperation,
+      });
+      if (providerProgress) {
+        if (providerProgress === "agent") replaceFailedOperation = false;
+        continue;
       }
       const prepared = await prepareCanonicalWorkflowEffect({
         command: opts.command,
