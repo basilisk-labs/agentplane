@@ -351,7 +351,7 @@ describe("task-scoped execution grants", () => {
     expect(parseOperationLease({ ...lease, task_id: "task-2" })).toBeNull();
   });
 
-  it("rejects an agent-asserted or malformed host decision", () => {
+  it("reports the first malformed host-decision field", () => {
     const encoded = Buffer.from(
       JSON.stringify({
         schema_version: 1,
@@ -360,7 +360,23 @@ describe("task-scoped execution grants", () => {
       }),
       "utf8",
     ).toString("base64url");
-    expect(() => parseHostUserDecision(encoded)).toThrow(/fields are malformed/u);
+    expect(() => parseHostUserDecision(encoded)).toThrow(
+      "Host user decision field origin is missing or invalid.",
+    );
+  });
+
+  it("reports a missing host-supplied decision field by name", () => {
+    const encoded = Buffer.from(
+      JSON.stringify({
+        schema_version: 1,
+        kind: "agentplane.host_user_decision",
+        origin: "user",
+      }),
+      "utf8",
+    ).toString("base64url");
+    expect(() => parseHostUserDecision(encoded)).toThrow(
+      "Host user decision field host_id is missing or invalid.",
+    );
   });
 
   it("rejects excessive base64url padding without a backtracking expression", () => {

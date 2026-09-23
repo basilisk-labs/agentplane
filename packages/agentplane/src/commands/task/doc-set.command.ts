@@ -1,6 +1,7 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
 import type { CommandContext } from "../shared/task-backend.js";
+import { validateTextPayloadSource } from "../shared/text-payload.js";
 
 import { cmdTaskDocSet } from "./doc.js";
 
@@ -87,14 +88,12 @@ export const taskDocSetSpec: CommandSpec<TaskDocSetParsed> = {
     if (typeof raw.opts.section === "string" && section === "") {
       throw usageError({ spec: taskDocSetSpec, message: "Invalid value for --section: empty." });
     }
-    const hasText = typeof raw.opts.text === "string";
-    const hasFile = typeof raw.opts.file === "string";
-    if (hasText === hasFile) {
-      throw usageError({
-        spec: taskDocSetSpec,
-        message: "Exactly one of --text or --file is required.",
-      });
-    }
+    validateTextPayloadSource(
+      raw,
+      taskDocSetSpec,
+      { inline: "text", file: "file", label: "task document content" },
+      { required: true },
+    );
     const updatedBy = raw.opts["updated-by"];
     if (typeof updatedBy === "string" && updatedBy.trim() === "") {
       throw usageError({ spec: taskDocSetSpec, message: "--updated-by must be non-empty." });

@@ -19,7 +19,9 @@ describe("LC-03 common advance-one-step coordinator", () => {
       true,
     );
     expect(canonicalCompletionPrecedesWorkflow(operationStep("task.worktree.cleanup"))).toBe(true);
+    expect(canonicalCompletionPrecedesWorkflow(operationStep("integration.enqueue"))).toBe(false);
     expect(canonicalCompletionPrecedesWorkflow(operationStep("integration.run_next"))).toBe(false);
+    expect(canonicalCompletionPrecedesWorkflow(operationStep("pr.open"))).toBe(false);
     expect(
       canonicalCompletionPrecedesWorkflow({
         kind: "terminal",
@@ -35,6 +37,8 @@ describe("LC-03 common advance-one-step coordinator", () => {
     ]);
 
     expect(command).toContain("advanceTaskStep");
+    expect(command).toContain("preparePersistedSupervisorReplacementAfterFailure");
+    expect(command).not.toContain("Canonical replacement requires an explicit recovery episode");
     expect(command).not.toMatch(/for\s*\(/u);
     expect(command).not.toContain("supervisePersistedWorkflowEpisode");
     expect(coordinator).toContain("export async function advanceTaskStep");
@@ -52,7 +56,7 @@ describe("LC-03 common advance-one-step coordinator", () => {
     expect(ordinary).toContain("result_schema_ref");
     expect(ordinary).toContain("resume_argv");
     expect(ordinary).toContain("effect_in_doubt");
-    expect(coordinator).toContain("canonical_workflow_effect_no_progress");
+    expect(coordinator).toContain("executeCanonicalAdmittedWorkflowOperation");
     expect(supervisor).toContain("stale precondition fingerprint");
     expect(supervisor).toContain("repeated idempotency key");
   });
@@ -70,6 +74,7 @@ describe("LC-03 common advance-one-step coordinator", () => {
     expect(completionBranch).toContain('runtime.input({ kind: "complete_task" }');
     expect(completionBranch).not.toContain("prepareCanonicalWorkflowEffect");
     expect(coordinator).toContain('route.reason_code === "kernel_task_completed"');
-    expect(coordinator).toContain("prepareCanonicalWorkflowEffect");
+    expect(coordinator).not.toContain("prepareCanonicalWorkflowEffect");
+    expect(coordinator).toContain("executeCanonicalAdmittedWorkflowOperation");
   });
 });

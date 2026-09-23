@@ -27,7 +27,6 @@ vi.mock("./finish-close.js", () => ({
 vi.mock("../shared/git-ops.js", () => ({
   gitCurrentBranch: mocks.gitCurrentBranch,
 }));
-
 function mkCtx(root: string): CommandContext {
   return {
     config: {
@@ -73,6 +72,55 @@ function mkOptions(cwd: string): FinishOptions {
 }
 
 describe("finish pre-merge closure", () => {
+  it("preserves an already completed canonical task while recording pre-merge closure", async () => {
+    const { shouldPreserveCompletedCanonicalTaskState } = await import("./finish-execute.js");
+    const plan = {
+      preMergeClosure: true,
+      primaryTaskId: "T-1",
+    } as FinishExecutionPlan;
+    const task = {
+      id: "T-1",
+      extensions: {
+        task_kernel: {
+          aggregate: { state: "COMPLETED" },
+        },
+      },
+    };
+
+    expect(
+      shouldPreserveCompletedCanonicalTaskState({
+        plan,
+        loadedTasks: [{ taskId: "T-1", task } as never],
+      }),
+    ).toBe(true);
+  });
+
+  it("keeps legacy and active canonical tasks on the existing finish mutation path", async () => {
+    const { shouldPreserveCompletedCanonicalTaskState } = await import("./finish-execute.js");
+    const plan = { preMergeClosure: true, primaryTaskId: "T-1" } as FinishExecutionPlan;
+
+    expect(
+      shouldPreserveCompletedCanonicalTaskState({
+        plan,
+        loadedTasks: [{ taskId: "T-1", task: { id: "T-1", extensions: {} } } as never],
+      }),
+    ).toBe(false);
+    expect(
+      shouldPreserveCompletedCanonicalTaskState({
+        plan,
+        loadedTasks: [
+          {
+            taskId: "T-1",
+            task: {
+              id: "T-1",
+              extensions: { task_kernel: { aggregate: { state: "ACTIVE" } } },
+            },
+          } as never,
+        ],
+      }),
+    ).toBe(false);
+  });
+
   it("does not skip an explicit closure refresh when an older close tail exists", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-pre-merge-refresh-"));
     try {

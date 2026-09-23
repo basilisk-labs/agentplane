@@ -1,0 +1,1 @@
+✅ MPSGJZ task: Fix canonical completed-task branch lifecycle recovery without internal provider work items [202609231019-MPSGJZ]

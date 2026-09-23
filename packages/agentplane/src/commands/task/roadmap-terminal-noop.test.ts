@@ -16,7 +16,9 @@ const mocks = vi.hoisted(() => ({
   commitCanonicalTerminalTaskArtifacts: vi.fn().mockResolvedValue(false),
   createKernelRuntime: vi.fn(),
   decideCanonicalWorkflowEffect: vi.fn(),
-  prepareCanonicalWorkflowEffect: vi.fn(),
+  canonicalWorkflowRequestDigest: vi.fn().mockReturnValue(`sha256:${"d".repeat(64)}`),
+  executeCanonicalAdmittedWorkflowOperation: vi.fn(),
+  executeCanonicalCompletedAgentEpisode: vi.fn().mockResolvedValue(null),
   restoreKernelFinalValidation: vi.fn().mockResolvedValue(null),
   runKernelFinalValidation: vi.fn(),
   ensureKernelOperationalProjectionEvidence: vi.fn().mockResolvedValue(undefined),
@@ -36,7 +38,9 @@ vi.mock("./kernel-final-validation.js", () => ({
 }));
 vi.mock("./kernel-provider-effect-coordinator.js", () => ({
   decideCanonicalWorkflowEffect: mocks.decideCanonicalWorkflowEffect,
-  prepareCanonicalWorkflowEffect: mocks.prepareCanonicalWorkflowEffect,
+  canonicalWorkflowRequestDigest: mocks.canonicalWorkflowRequestDigest,
+  executeCanonicalAdmittedWorkflowOperation: mocks.executeCanonicalAdmittedWorkflowOperation,
+  executeCanonicalCompletedAgentEpisode: mocks.executeCanonicalCompletedAgentEpisode,
 }));
 vi.mock("./kernel-repository-coordinator.js", () => ({
   commitCanonicalTerminalTaskArtifacts: mocks.commitCanonicalTerminalTaskArtifacts,
@@ -281,13 +285,61 @@ describe("LC-20 terminal replay", () => {
       false,
     );
     expect(mocks.decideCanonicalWorkflowEffect).toHaveBeenCalledTimes(2);
-    expect(mocks.prepareCanonicalWorkflowEffect).not.toHaveBeenCalled();
+    expect(mocks.executeCanonicalAdmittedWorkflowOperation).not.toHaveBeenCalled();
     expect(mocks.runKernelFinalValidation).not.toHaveBeenCalled();
     expect(mocks.applyKernelEffectStep).not.toHaveBeenCalled();
     expect(apply).not.toHaveBeenCalled();
     expect(input).not.toHaveBeenCalled();
     expect(checkpoint).not.toHaveBeenCalled();
     await expect(repositorySnapshot(root, evidencePath, record)).resolves.toEqual(before);
+  });
+
+  it("executes provider lifecycle after canonical completion without preparing a Kernel effect", async () => {
+    const { runtime, apply, input } = completedRuntime();
+    mocks.createKernelRuntime.mockResolvedValue(runtime);
+    const operation = {
+      id: "pr.open",
+      idempotencyKey: "pr.open:task-1:exact",
+      preconditionFingerprint: { digest: `sha256:${"a".repeat(64)}` },
+    };
+    const pending = {
+      workspace: { baseCheckoutPath: "/repo" },
+      workflowStep: {
+        id: "provider.pr.open",
+        kind: "cli_operation",
+        operation,
+        preconditionFingerprint: operation.preconditionFingerprint,
+      },
+    };
+    const done = {
+      workspace: { baseCheckoutPath: "/repo" },
+      workflowStep: { kind: "terminal", outcome: { type: "done" } },
+    };
+    mocks.decideCanonicalWorkflowEffect
+      .mockResolvedValueOnce(pending)
+      .mockResolvedValueOnce(pending)
+      .mockResolvedValueOnce(done);
+    mocks.executeCanonicalAdmittedWorkflowOperation.mockResolvedValueOnce({
+      journal: { digest: `sha256:${"b".repeat(64)}` },
+      execution: {
+        executable: true,
+        stop_reason: null,
+        result: { status: "succeeded" },
+        refreshed_decision: done,
+      },
+    });
+
+    await expect(
+      advanceTaskStep({
+        command: { resolvedProject: { gitRoot: "/repo" } } as never,
+        task_id: "task-1",
+        transport: "host",
+        allow_provider_effects: true,
+      }),
+    ).resolves.toMatchObject({ action: { kind: "terminal" } });
+    expect(mocks.executeCanonicalAdmittedWorkflowOperation).toHaveBeenCalledTimes(1);
+    expect(apply).not.toHaveBeenCalled();
+    expect(input).not.toHaveBeenCalled();
   });
 
   it("does not shortcut an unresolved effect", async () => {

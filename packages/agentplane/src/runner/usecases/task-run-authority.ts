@@ -242,7 +242,16 @@ export function assertRunnerTaskExecutable(bundle: RunnerContextBundle): void {
       writable_roots: order.authority.writable_roots,
       required_inputs: order.required_inputs,
     }) !== null;
-  if (status !== "DOING" && !conflictRework) {
+  const completedTaskRework =
+    status === "DONE" &&
+    step?.kind === "agent_episode" &&
+    step.id === "agent.implementation_rework" &&
+    step.episode.purpose === "implementation_rework" &&
+    order?.role === "EXECUTOR" &&
+    order.task.id === task.metadata.task_id &&
+    bundle.route_decision?.task.id === task.metadata.task_id &&
+    order.state_fingerprint.digest === step.preconditionFingerprint.digest;
+  if (status !== "DOING" && !conflictRework && !completedTaskRework) {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",

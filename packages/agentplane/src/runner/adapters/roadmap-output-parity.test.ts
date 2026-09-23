@@ -315,6 +315,7 @@ describe("roadmap managed semantic output parity", () => {
 
       const schemaText = await readFile(invocation.output_schema_path!, "utf8");
       expect(schemaText).toBe(renderCodexResultOutputSchemaJson(workOrder));
+      expect(schemaText).not.toMatch(/"(?:allOf|anyOf|oneOf)"/u);
       const schema = JSON.parse(schemaText) as { properties?: Record<string, unknown> };
       expect(schema.properties).toHaveProperty(roleField);
       expect(schema.properties).not.toHaveProperty("canonical_binding");

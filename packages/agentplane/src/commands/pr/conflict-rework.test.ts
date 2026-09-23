@@ -835,3 +835,42 @@ describe("provider conflict rework packet", () => {
     });
   });
 });
+
+describe("completed task rework authority", () => {
+  it("admits only an exact implementation rework episode", () => {
+    const bundle = {
+      task: {
+        metadata: { task_id: taskId, status: "DONE", task_kind: "code", mutation_scope: "code" },
+      },
+      repository: { git_root: "/repo" },
+      work_order: {
+        role: "EXECUTOR",
+        task: { id: taskId },
+        state_fingerprint: { digest: "bound-route", git_head: "head" },
+      },
+      route_decision: {
+        task: { id: taskId },
+        workflowStep: {
+          kind: "agent_episode",
+          id: "agent.implementation_rework",
+          episode: { purpose: "implementation_rework" },
+          preconditionFingerprint: { digest: "bound-route" },
+        },
+      },
+    } as unknown as RunnerContextBundle;
+
+    expect(() => assertRunnerTaskExecutable(bundle)).not.toThrow();
+    for (const changed of [
+      { ...bundle, route_decision: undefined },
+      {
+        ...bundle,
+        work_order: {
+          ...bundle.work_order!,
+          state_fingerprint: { ...bundle.work_order!.state_fingerprint, digest: "stale-route" },
+        },
+      },
+    ]) {
+      expect(() => assertRunnerTaskExecutable(changed as RunnerContextBundle)).toThrow();
+    }
+  });
+});
