@@ -249,6 +249,45 @@ function DoodleArrow({ reverse = false }: { reverse?: boolean }): ReactNode {
   );
 }
 
+function StageGlyph({
+  stage,
+}: {
+  stage: "Authority" | "Observed" | "Verified" | "Recorded";
+}): ReactNode {
+  if (stage === "Verified") return <IconSuccess aria-hidden="true" />;
+  if (stage === "Authority") {
+    return (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        aria-hidden="true"
+      >
+        <path
+          d="M6 2.8h8l4 4V21H6zM14 2.8V7h4M9 11h6M9 14h6M9 17h4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    );
+  }
+  if (stage === "Observed") {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+        <circle cx="10.6" cy="10.6" r="6.2" />
+        <path d="m15.3 15.3 5 5" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+      <ellipse cx="12" cy="5.2" rx="6.8" ry="2.7" />
+      <path d="M5.2 5.2v13.6c0 1.5 3 2.7 6.8 2.7s6.8-1.2 6.8-2.7V5.2M5.2 10c0 1.5 3 2.7 6.8 2.7s6.8-1.2 6.8-2.7M5.2 14.6c0 1.5 3 2.7 6.8 2.7s6.8-1.2 6.8-2.7" />
+    </svg>
+  );
+}
+
 function highlightLine(line: string): ReactNode {
   if (!line) return "\u00a0";
   const tokens: ReactNode[] = [];
@@ -413,15 +452,7 @@ function ArtifactExplorer(): ReactNode {
           {stages.map((stage, index) => (
             <div className={styles.stage} key={stage.title}>
               <span className={[styles.stageIcon, styles["stageIcon" + stage.title]].join(" ")}>
-                {index === 0 ? (
-                  <IconEdit aria-hidden="true" />
-                ) : index === 2 ? (
-                  <IconSuccess aria-hidden="true" />
-                ) : index === 3 ? (
-                  <IconCopy aria-hidden="true" />
-                ) : (
-                  <span aria-hidden="true">◎</span>
-                )}
+                <StageGlyph stage={stage.title} />
               </span>
               <span>
                 <strong>{stage.title}</strong>
@@ -515,7 +546,7 @@ function ProofOverview(): ReactNode {
         <div className={styles.proofOverviewGrid}>
           <div>
             <span className={`${styles.stageIcon} ${styles.stageIconAuthority}`}>
-              <IconEdit aria-hidden="true" />
+              <StageGlyph stage="Authority" />
             </span>
             <h3>Clear authority</h3>
             <p>Define what agents can do in AGENTS.md with explicit scope and constraints.</p>
@@ -531,7 +562,7 @@ function ProofOverview(): ReactNode {
           </div>
           <div>
             <span className={`${styles.stageIcon} ${styles.stageIconRecorded}`}>
-              <IconCopy aria-hidden="true" />
+              <StageGlyph stage="Recorded" />
             </span>
             <h3>A durable record</h3>
             <p>
