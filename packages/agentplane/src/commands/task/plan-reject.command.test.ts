@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
 import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
+import type * as KernelRuntimeContext from "./kernel-runtime-context.js";
 
 if (typeof vi.hoisted !== "function") {
   Object.defineProperty(vi, "hoisted", { value: <T>(factory: () => T): T => factory() });
@@ -19,6 +20,45 @@ vi.mock("./kernel-runtime-context.js", () => ({
 vi.mock("./plan.js", () => ({ cmdTaskPlanReject: mocks.legacyReject }));
 
 import { makeRunTaskPlanRejectHandler } from "./plan-reject.command.js";
+
+const { assertPlanningAuthorityBoundary } = await vi.importActual<typeof KernelRuntimeContext>(
+  "./kernel-runtime-context.js",
+);
+
+const canonicalRead = (state: "ACTIVE" | "PLANNING", planState: "APPROVED" | "REJECTED") =>
+  ({
+    kind: "canonical",
+    record: {
+      aggregate: {
+        state,
+        current_plan: { state: planState },
+        authority_lineage: [{ authority: {} }],
+      },
+    },
+  }) as never;
+
+describe("canonical planning authority boundary", () => {
+  it("allows exact plan rejection to reach the kernel with existing user authority", () => {
+    expect(() =>
+      assertPlanningAuthorityBoundary("reject_plan", canonicalRead("ACTIVE", "APPROVED")),
+    ).not.toThrow();
+  });
+
+  it.each(["capture_intent", "propose_plan"] as const)(
+    "keeps %s from replacing canonical user authority",
+    (kind) => {
+      expect(() =>
+        assertPlanningAuthorityBoundary(kind, canonicalRead("ACTIVE", "APPROVED")),
+      ).toThrow("Planning cannot replace canonical user authority");
+    },
+  );
+
+  it("allows a replacement proposal only after rejection entered replanning", () => {
+    expect(() =>
+      assertPlanningAuthorityBoundary("propose_plan", canonicalRead("PLANNING", "REJECTED")),
+    ).not.toThrow();
+  });
+});
 
 describe("task plan reject canonical routing", () => {
   beforeEach(() => vi.clearAllMocks());
