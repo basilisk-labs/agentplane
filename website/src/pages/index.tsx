@@ -5,16 +5,106 @@ import IconArrow from "@theme/Icon/Arrow";
 import IconCopy from "@theme/Icon/Copy";
 import IconEdit from "@theme/Icon/Edit";
 import IconSuccess from "@theme/Icon/Success";
-import { type ReactNode, useEffect, useMemo, useState } from "react";
+import { type CSSProperties, type ReactNode, useEffect, useMemo, useState } from "react";
 import {
   acrUrl,
   examplesUrl,
   homepageContent,
   installCommand,
   quickstartUrl,
+  siteRoutes,
 } from "../data/homepage-content";
 import { site } from "../data/site";
 import styles from "./_home.module.css";
+
+const tourDuration = 4500;
+const artifacts = [
+  {
+    file: "AGENTS.md",
+    category: "01 / AUTHORITY",
+    caption: "The agent reads the rules before it touches the code.",
+    notes: ["Start with the boundary.", "Instructions live with the repo.", "Scope comes first."],
+    preview: [
+      "# AGENTS.md",
+      "",
+      "## Scope",
+      "Work only inside the approved task.",
+      "Read the current WorkOrder before editing.",
+      "",
+      "## Checks",
+      "Return evidence for every required check.",
+    ],
+  },
+  {
+    file: ".agentplane/tasks/<task-id>/README.md",
+    category: "02 / TASK RECORD",
+    caption: "A task has an owner, a plan, and a reviewable path to done.",
+    notes: ["A plan you can inspect.", "One task, one record.", "No hidden handoff."],
+    preview: [
+      "# Fix parser edge case",
+      "",
+      "Status: DOING",
+      "Plan approval: approved",
+      "",
+      "## Scope",
+      "Update the parser and its focused checks.",
+      "",
+      "## Verify Steps",
+      "Run the checks named in this task.",
+    ],
+  },
+  {
+    file: "observations.jsonl",
+    category: "03 / OBSERVED",
+    caption: "Repository facts are captured separately from the agent's report.",
+    notes: ["Show what happened.", "Claims differ from observations.", "Readable later."],
+    preview: [
+      '{"kind":"workspace_observation",',
+      ' "task_id":"parser-edge",',
+      ' "changed_paths":["src/parser/token.ts"],',
+      ' "checks":[{"name":"unit","status":"passed"}],',
+      ' "source":"repository_readback"}',
+    ],
+  },
+  {
+    file: "acr.json",
+    category: "04 / CHANGE RECORD",
+    caption: "The Agent Change Record connects the work to its authority and proof.",
+    notes: ["The review trail.", "Proof follows the code.", "A clear handoff."],
+    preview: [
+      "{",
+      '  "schema_version": "0.1",',
+      '  "task_id": "parser-edge",',
+      '  "authority": "approved",',
+      '  "verification": "passed",',
+      '  "changed_paths": ["src/parser/token.ts"]',
+      "}",
+    ],
+  },
+  {
+    file: "evidence/manifest.json",
+    category: "05 / EVIDENCE",
+    caption: "A manifest keeps the checks and their source files together in Git.",
+    notes: ["Find the evidence.", "Verify the bundle.", "Keep the record."],
+    preview: [
+      "{",
+      '  "schema_version": 1,',
+      '  "task_id": "parser-edge",',
+      '  "artifacts": [',
+      '    "verification/result.json",',
+      '    "observations.jsonl"',
+      "  ]",
+      "}",
+    ],
+  },
+] as const;
+
+const stages = [
+  { title: "Authority", text: "Approved scope" },
+  { title: "Observed", text: "Actions captured" },
+  { title: "Verified", text: "Checks passed" },
+  { title: "Recorded", text: "Evidence in Git" },
+] as const;
 
 function trackHomeEvent(eventName: string, payload: Record<string, string> = {}): void {
   if (globalThis.window === undefined) return;
@@ -87,79 +177,250 @@ function CopyInstallButton({ location }: { location: string }): ReactNode {
   );
 }
 
-function HeroReceipt(): ReactNode {
-  const { receipt } = homepageContent;
+function DoodleArrow({ reverse = false }: { reverse?: boolean }): ReactNode {
+  return (
+    <svg
+      className={[styles.doodleArrow, reverse ? styles.doodleArrowReverse : ""].join(" ")}
+      viewBox="0 0 94 48"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M88 37C62 44 38 36 10 9M10 9l2 17M10 9l17 5"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function ArtifactExplorer(): ReactNode {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const active = artifacts[activeIndex];
+
+  useEffect(() => {
+    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const syncPreference = () => {
+      setReducedMotion(preference.matches);
+      setPlaying(!preference.matches);
+    };
+    syncPreference();
+    preference.addEventListener("change", syncPreference);
+    return () => preference.removeEventListener("change", syncPreference);
+  }, []);
+
+  useEffect(() => {
+    if (!playing || reducedMotion) return;
+    const timer = window.setTimeout(() => {
+      if (activeIndex === artifacts.length - 1) setPlaying(false);
+      else setActiveIndex(activeIndex + 1);
+    }, tourDuration);
+    return () => window.clearTimeout(timer);
+  }, [activeIndex, playing, reducedMotion]);
+
+  function selectArtifact(index: number): void {
+    setPlaying(false);
+    setActiveIndex(index);
+    trackHomeEvent("artifact_select", { file: artifacts[index].file });
+  }
+
+  function toggleTour(): void {
+    if (reducedMotion) {
+      setActiveIndex((index) => (index + 1) % artifacts.length);
+      return;
+    }
+    if (playing) {
+      setPlaying(false);
+      return;
+    }
+    if (activeIndex === artifacts.length - 1) setActiveIndex(0);
+    setPlaying(true);
+  }
+
+  const progressStyle = {
+    "--progress-start": String((activeIndex / artifacts.length) * 100) + "%",
+    "--progress-end": String(((activeIndex + 1) / artifacts.length) * 100) + "%",
+    "--tour-duration": String(tourDuration) + "ms",
+  } as CSSProperties;
 
   return (
-    <article className={styles.heroReceipt} aria-label="Example Agentplane execution receipt">
-      <header className={styles.receiptHeader}>
-        <div>
-          <span className={styles.receiptType}>Execution receipt</span>
-          <p>{receipt.id}</p>
-        </div>
-        <span className={styles.receiptAuthority}>Authority + proof</span>
-      </header>
-
-      <div className={styles.receiptTitle}>
-        <p>WorkOrder</p>
-        <h2>{receipt.objective}</h2>
+    <div className={styles.explorerScene}>
+      <div className={styles.annotationTop}>
+        <DoodleArrow />
+        <span key={active.file + "-top"}>{active.notes[0]}</span>
       </div>
-
-      <dl className={styles.receiptRows}>
-        {receipt.rows.map(([label, value, detail], index) => (
-          <div key={label} className={styles.receiptRow}>
-            <dt>{label}</dt>
-            <dd>{value}</dd>
-            <dd className={styles.receiptDetail}>
-              {index >= 2 ? <IconSuccess aria-hidden="true" /> : null}
-              {detail}
-            </dd>
+      <div className={styles.annotationRight}>
+        <DoodleArrow reverse />
+        <span key={active.file + "-right"}>{active.notes[1]}</span>
+      </div>
+      <div
+        className={styles.artifactWindow}
+        onMouseEnter={() => setPlaying(false)}
+        onFocusCapture={() => setPlaying(false)}
+      >
+        <div className={styles.windowChrome}>
+          <div className={styles.windowDots} aria-hidden="true">
+            <i />
+            <i />
+            <i />
           </div>
-        ))}
-      </dl>
-
-      <footer className={styles.receiptFooter}>
-        <span className={styles.verifiedMark}>
-          <IconSuccess aria-hidden="true" />
-        </span>
-        <div>
-          <strong>Durable record in Git</strong>
-          <p>Task state, ACR, and evidence manifest stay reviewable with the code.</p>
+          <span>agentplane / repository</span>
+          <span className={styles.windowBranch}>main ↗</span>
         </div>
-        <code>{receipt.commit}</code>
-      </footer>
-    </article>
+        <div className={styles.windowBody}>
+          <nav className={styles.fileTree} aria-label="Explore Agentplane artifacts">
+            <p className={styles.treeLabel}>
+              EXPLORER <span>⌄</span>
+            </p>
+            <p className={styles.treeRoot}>
+              <span aria-hidden="true">▾</span> my-repository
+            </p>
+            <div className={styles.treeFiles}>
+              {artifacts.map((artifact, index) => (
+                <button
+                  key={artifact.file}
+                  type="button"
+                  className={[
+                    styles.fileButton,
+                    index === activeIndex ? styles.fileButtonActive : "",
+                  ].join(" ")}
+                  aria-current={index === activeIndex ? "true" : undefined}
+                  onClick={() => selectArtifact(index)}
+                >
+                  <span className={styles.fileGlyph} aria-hidden="true">
+                    {index === 0 ? "▤" : "{}"}
+                  </span>
+                  <span>{artifact.file}</span>
+                </button>
+              ))}
+            </div>
+            <div className={styles.treeHint}>
+              <span>●</span> repository-owned
+            </div>
+          </nav>
+          <div className={styles.editor}>
+            <div className={styles.editorTab}>
+              <span className={styles.tabFileIcon} aria-hidden="true">
+                ▤
+              </span>
+              {active.file}
+              <span className={styles.tabClose} aria-hidden="true">
+                ×
+              </span>
+            </div>
+            <div className={styles.editorContent} key={active.file}>
+              <div className={styles.codeHeader}>
+                <span>{active.category}</span>
+                <span>EXAMPLE FILE</span>
+              </div>
+              <div className={styles.codeLines} aria-label={"Example contents of " + active.file}>
+                {active.preview.map((line, index) => (
+                  <div className={styles.codeLine} key={index}>
+                    <span className={styles.lineNumber} aria-hidden="true">
+                      {index + 1}
+                    </span>
+                    <code>{line || "\u00a0"}</code>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className={styles.stageStrip} aria-label="How Agentplane records agent work">
+          {stages.map((stage, index) => (
+            <div className={styles.stage} key={stage.title}>
+              <span className={[styles.stageIcon, styles["stageIcon" + stage.title]].join(" ")}>
+                {index === 0 ? (
+                  <IconEdit aria-hidden="true" />
+                ) : index === 2 ? (
+                  <IconSuccess aria-hidden="true" />
+                ) : index === 3 ? (
+                  <IconCopy aria-hidden="true" />
+                ) : (
+                  <span aria-hidden="true">◎</span>
+                )}
+              </span>
+              <span>
+                <strong>{stage.title}</strong>
+                <small>{stage.text}</small>
+              </span>
+              {index < stages.length - 1 ? (
+                <IconArrow className={styles.stageArrow} aria-hidden="true" />
+              ) : null}
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className={styles.progressTrack} aria-hidden="true">
+        <span
+          key={activeIndex}
+          className={playing && !reducedMotion ? styles.progressAnimating : styles.progressStatic}
+          style={progressStyle}
+        />
+      </div>
+      <div className={styles.explorerFooter}>
+        <p className={styles.artifactCaption} aria-live={playing ? "off" : "polite"}>
+          <span>{active.category}</span>
+          {active.caption}
+        </p>
+        <button
+          className={styles.tourControl}
+          type="button"
+          onClick={toggleTour}
+          aria-label={reducedMotion ? "Next file" : playing ? "Pause file tour" : "Play file tour"}
+        >
+          {reducedMotion
+            ? "NEXT FILE"
+            : playing
+              ? "PAUSE TOUR"
+              : activeIndex === artifacts.length - 1
+                ? "REPLAY TOUR"
+                : "PLAY TOUR"}
+          <span aria-hidden="true">{reducedMotion ? "→" : playing ? "Ⅱ" : "▷"}</span>
+        </button>
+      </div>
+      <div className={styles.annotationBottom}>
+        <span key={active.file + "-bottom"}>{active.notes[2]}</span>
+        <DoodleArrow />
+      </div>
+    </div>
   );
 }
 
 function Hero(): ReactNode {
   const { hero } = homepageContent;
-
   return (
     <section className={styles.hero}>
-      <div className={styles.heroInner}>
-        <div className={styles.heroCopy}>
-          <p className={styles.kicker}>{hero.eyebrow}</p>
-          <h1 aria-label={hero.title}>
-            {hero.titleLines.map((line) => (
-              <span key={line}>{line}</span>
-            ))}
-          </h1>
-          <p className={styles.lede}>{hero.subtitle}</p>
-          <div className={styles.ctaGroup}>
-            <Link
-              className={styles.buttonPrimary}
-              to={quickstartUrl}
-              onClick={() => trackHomeEvent("quickstart_click", { location: "hero_primary" })}
-            >
-              Start in your repository
-            </Link>
-            <CopyInstallButton location="hero" />
-          </div>
-          <p className={styles.trust}>{hero.trustLine}</p>
+      <div className={styles.heroIntro}>
+        <p className={styles.kicker}>
+          <span className={styles.kickerDot} />
+          {hero.eyebrow}
+        </p>
+        <h1>
+          Let agents write code.
+          <br />
+          <em>Keep the record.</em>
+        </h1>
+        <p className={styles.lede}>
+          {hero.subtitle} Define authority, observe the work, and keep the proof next to your code.
+        </p>
+        <div className={styles.ctaGroup}>
+          <Link
+            className={styles.buttonPrimary}
+            to={quickstartUrl}
+            onClick={() => trackHomeEvent("quickstart_click", { location: "hero_primary" })}
+          >
+            Start in your repository <IconArrow aria-hidden="true" />
+          </Link>
+          <CopyInstallButton location="hero" />
         </div>
-        <HeroReceipt />
+        <p className={styles.trust}>{hero.trustLine}</p>
       </div>
+      <ArtifactExplorer />
     </section>
   );
 }
@@ -336,6 +597,74 @@ function WorksWith(): ReactNode {
   );
 }
 
+function WorkflowModes(): ReactNode {
+  return (
+    <section className={`${styles.section} ${styles.modesSection} ${styles.reveal}`}>
+      <div className={styles.sectionIntroWide}>
+        <p className={styles.kicker}>Choose the route</p>
+        <h2>One control model. Two ways to work.</h2>
+        <p>
+          Use the workflow that fits the size of the change. Both keep task state and verification
+          in your repository.
+        </p>
+      </div>
+      <div className={styles.modeGrid}>
+        <div className={styles.modeCard}>
+          <span className={styles.modeIndex}>01 / LOCAL LOOP</span>
+          <h3>
+            <code>direct</code>
+          </h3>
+          <p>
+            Work in the current checkout for quick, focused changes. Review the task record and
+            required checks before closing.
+          </p>
+        </div>
+        <div className={styles.modeCard}>
+          <span className={styles.modeIndex}>02 / REVIEW ROUTE</span>
+          <h3>
+            <code>branch_pr</code>
+          </h3>
+          <p>
+            Use an isolated worktree and a PR for changes that need a formal review and integration
+            path.
+          </p>
+        </div>
+      </div>
+      <Link className={styles.textLink} to={siteRoutes.overview}>
+        Explore the workflow <IconArrow aria-hidden="true" />
+      </Link>
+    </section>
+  );
+}
+
+function DocsRail(): ReactNode {
+  const groups = [
+    { label: "Getting started", title: "Run your first task", href: siteRoutes.quickstart },
+    { label: "Workflow model", title: "See how control works", href: siteRoutes.overview },
+    { label: "Reference", title: "Inspect the ACR", href: siteRoutes.acr },
+    { label: "Developer track", title: "Explore runnable examples", href: siteRoutes.examples },
+    { label: "Support", title: "Compare approaches", href: siteRoutes.compare },
+  ];
+
+  return (
+    <section className={`${styles.section} ${styles.docsSection} ${styles.reveal}`}>
+      <div className={styles.sectionIntroWide}>
+        <p className={styles.kicker}>Keep exploring</p>
+        <h2>Find the next useful page.</h2>
+      </div>
+      <div className={styles.docsGrid}>
+        {groups.map((group) => (
+          <Link className={styles.docsCard} to={group.href} key={group.label}>
+            <span>{group.label}</span>
+            <strong>{group.title}</strong>
+            <IconArrow aria-hidden="true" />
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function FinalCta(): ReactNode {
   const { closing } = homepageContent;
   return (
@@ -380,6 +709,8 @@ export default function Home(): ReactNode {
         <ControlLoop />
         <DurableProof />
         <WorksWith />
+        <WorkflowModes />
+        <DocsRail />
         <FinalCta />
       </main>
     </Layout>
