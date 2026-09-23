@@ -16,6 +16,7 @@ const mocks = vi.hoisted(() => ({
   commitCanonicalTerminalTaskArtifacts: vi.fn().mockResolvedValue(false),
   createKernelRuntime: vi.fn(),
   decideCanonicalWorkflowEffect: vi.fn(),
+  executeCanonicalLocalWorkflowOperation: vi.fn().mockResolvedValue(false),
   prepareCanonicalWorkflowEffect: vi.fn(),
   restoreKernelFinalValidation: vi.fn().mockResolvedValue(null),
   runKernelFinalValidation: vi.fn(),
@@ -36,6 +37,7 @@ vi.mock("./kernel-final-validation.js", () => ({
 }));
 vi.mock("./kernel-provider-effect-coordinator.js", () => ({
   decideCanonicalWorkflowEffect: mocks.decideCanonicalWorkflowEffect,
+  executeCanonicalLocalWorkflowOperation: mocks.executeCanonicalLocalWorkflowOperation,
   prepareCanonicalWorkflowEffect: mocks.prepareCanonicalWorkflowEffect,
 }));
 vi.mock("./kernel-repository-coordinator.js", () => ({
@@ -53,6 +55,7 @@ const temporaryRoots: string[] = [];
 afterEach(async () => {
   vi.clearAllMocks();
   mocks.commitCanonicalTerminalTaskArtifacts.mockResolvedValue(false);
+  mocks.executeCanonicalLocalWorkflowOperation.mockResolvedValue(false);
   mocks.restoreKernelFinalValidation.mockResolvedValue(null);
   mocks.ensureKernelOperationalProjectionEvidence.mockResolvedValue(undefined);
   await Promise.all(
@@ -288,6 +291,38 @@ describe("LC-20 terminal replay", () => {
     expect(input).not.toHaveBeenCalled();
     expect(checkpoint).not.toHaveBeenCalled();
     await expect(repositorySnapshot(root, evidencePath, record)).resolves.toEqual(before);
+  });
+
+  it("executes a repository-local close transition before evaluating provider effects", async () => {
+    const { runtime } = completedRuntime();
+    mocks.createKernelRuntime.mockResolvedValue(runtime);
+    const localDecision = {
+      workflowStep: {
+        kind: "cli_operation",
+        operation: { id: "task.pre_merge_close" },
+      },
+    };
+    const terminalDecision = {
+      workflowStep: { kind: "terminal", outcome: { type: "done" } },
+    };
+    mocks.decideCanonicalWorkflowEffect
+      .mockResolvedValueOnce(localDecision)
+      .mockResolvedValueOnce(terminalDecision);
+    mocks.executeCanonicalLocalWorkflowOperation.mockResolvedValueOnce(true);
+
+    await expect(
+      advanceTaskStep({
+        command: { resolvedProject: { gitRoot: "/repo" } } as never,
+        task_id: "task-1",
+        transport: "host",
+        allow_provider_effects: true,
+      }),
+    ).resolves.toMatchObject({ action: { kind: "terminal", reason: "kernel_task_completed" } });
+
+    expect(mocks.executeCanonicalLocalWorkflowOperation).toHaveBeenCalledWith(
+      expect.objectContaining({ decision: localDecision, task_id: "task-1" }),
+    );
+    expect(mocks.prepareCanonicalWorkflowEffect).not.toHaveBeenCalled();
   });
 
   it("does not shortcut an unresolved effect", async () => {
