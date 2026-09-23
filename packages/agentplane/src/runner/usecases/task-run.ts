@@ -312,6 +312,7 @@ export async function executeTaskRunnerExecution(opts: {
   sandbox_override?: string;
   replay_provenance?: TaskRunnerReplayProvenance;
   task_execution?: TaskExecutionContext;
+  on_dispatch_intent?: (prepared: PreparedTaskRunnerExecution) => Promise<void>;
 }): Promise<ExecutedTaskRunnerExecution> {
   const ctx =
     opts.ctx ??
@@ -429,6 +430,7 @@ export async function executeTaskRunnerExecution(opts: {
             }
           : {}),
         before_apply: async (stateFingerprint) => {
+          await opts.on_dispatch_intent?.(prepared);
           await assertTaskRunnerActiveClaimHistorySafe({
             ctx,
             lease: activeClaim,

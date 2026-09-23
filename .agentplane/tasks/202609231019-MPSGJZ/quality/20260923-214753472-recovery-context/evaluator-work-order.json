@@ -1,0 +1,122 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609231019-MPSGJZ-e3ec3cf63d9684ce50bde417",
+  "prepared_at": "2026-09-23T21:47:53.472Z",
+  "task": {
+    "id": "202609231019-MPSGJZ",
+    "revision": 25,
+    "objective": "Fix canonical completed-task branch lifecycle recovery without internal provider work items\n\nImplement the verified AgentPlane lifecycle fixes as one clean semantic code task. Keep implementation, tests, and local verification in the work item. Leave PR publication, hosted checks, merge, and cleanup to branch_pr lifecycle. Include completed canonical implementation-rework routing, safe supervisor journal replacement and stale-state recovery, exact DONE rework runner authority, completed verification and quality-review routing, base-checkout provider operations, and Codex-compatible strict output schemas. Do not include task artifacts from other tasks.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "bunx vitest run packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts packages/agentplane/src/commands/pr/conflict-rework.test.ts packages/agentplane/src/runner/adapters/codex-result-transport.test.ts packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts",
+      "- In scope: Implement the verified AgentPlane lifecycle fixes as one clean semantic code task. Keep implementation, tests, and local verification in the work item. Leave PR publication, hosted checks, merge, and cleanup to branch_pr lifecycle. Include completed canonical implementation-rework routing, safe supervisor journal replacement and stale-state recovery, exact DONE rework runner authority, completed verification and quality-review routing, base-checkout provider operations, and Codex-compatible strict output schemas. Do not include task artifacts from other tasks.\n- Out of scope: unrelated refactors not required for \"Fix canonical completed-task branch lifecycle recovery without internal provider work items\".",
+      "1. Execute approved WorkItem implement-lifecycle-recovery.",
+      "PLANNER fallback scaffold for \"Fix canonical completed-task branch lifecycle recovery without internal provider work items\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Fix canonical completed-task branch lifecycle recovery without internal provider work items\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "1fecb569ae6cef37ed5b07dfa8386378ed49cd50",
+  "diff_base_sha": "940209a800dedc5b27c382a2642dff316b30a8fc",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609231019-MPSGJZ/quality/20260923-214753472-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:b0488f01436bfc686c8fb0364199a2e44665f5bbd27f92521c0a79ed2f3f3eb0",
+    "prompt_path": ".agentplane/tasks/202609231019-MPSGJZ/quality/objects/sha256/ed13f76d2f8ba2e0aa4a26c72591aba09c081e4fd692cc77a42cd3e726cbe56f.md",
+    "result_schema_path": ".agentplane/tasks/202609231019-MPSGJZ/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202609231019-MPSGJZ",
+    "plan_digest": "sha256:b8810dd303286d6fdd7c8b7e964e33cdb45ef13091247e90d5d458d559e9f9a0",
+    "policy_digest": "sha256:9c3e5325d78af3d590b3ecf1641b0da288f0a1e3fec30c28b808c2c2f01aa68e",
+    "capability_digest": "sha256:44668150af015035b4f9295eeb1e83a605e3c89b183ce28b4421a381c9bdb75f",
+    "checks_digest": "sha256:b210c956ad50fee265b5e19b6389dbdc2318d2787decae6760335c7d68a3a806",
+    "verification_input_digest": "sha256:cf307e28189b465ed826eb498593df29e5882219938d526f382beadbfd18d1e6",
+    "acceptance_digest": "sha256:335ba3648cf45413965fe6521e77afeaf0d8b2e9bef9de8290a68df344cfaa37",
+    "implementation_sha": "1fecb569ae6cef37ed5b07dfa8386378ed49cd50",
+    "digest": "sha256:18ae97e4ead5dc6a301d954ea359dee77c6890c22fa7a78e82750845e95249ff"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609231019-MPSGJZ/README.md",
+      "sha256": "sha256:f8c26505428802d9b3746ed4ac661c15b528202a357eb807eb5d2115bd964c57",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609231019-MPSGJZ/quality/objects/sha256/288a74b6ec3b8c99f289e214d03676063dad172dcbebd2b71c5b3ee194a4e48a.patch",
+      "sha256": "sha256:288a74b6ec3b8c99f289e214d03676063dad172dcbebd2b71c5b3ee194a4e48a",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609231019-MPSGJZ/quality/objects/sha256/d6f6eb6e98e7e8c70f1d14b72cce1d6e7fc43d0eaa4167b5ec6dfb416a89c20a.json",
+      "sha256": "sha256:d6f6eb6e98e7e8c70f1d14b72cce1d6e7fc43d0eaa4167b5ec6dfb416a89c20a",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609231019-MPSGJZ/verification/20260923214503660-591c1c08d3baefcb.json",
+      "sha256": "sha256:93cd6c91509dc8cd9a06c852523f813325191ae3f0065ba74973308be6968d60",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202609231019-MPSGJZ/quality/objects/sha256/030a4b77515e95ac9b09197efa672a7d540362c56b4409e729957a921e6fa2ee.json",
+      "sha256": "sha256:030a4b77515e95ac9b09197efa672a7d540362c56b4409e729957a921e6fa2ee",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

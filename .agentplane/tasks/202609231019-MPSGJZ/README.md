@@ -4,7 +4,7 @@ title: "Fix canonical completed-task branch lifecycle recovery without internal 
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -28,21 +28,32 @@ verification:
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-23T11:08:08.624Z"
+  updated_at: "2026-09-23T21:49:20.524Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "9ce569668659b81073d3a95a3f5522ca121bc94e"
-  review_identity_digest: "sha256:e9999f10a6bf6231faab4ed945197d7c3e492d2dd1d7b602c604cccb9d750d5b"
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
+  evaluated_sha: "1fecb569ae6cef37ed5b07dfa8386378ed49cd50"
+  review_identity_digest: "sha256:18ae97e4ead5dc6a301d954ea359dee77c6890c22fa7a78e82750845e95249ff"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202609231019-MPSGJZ/2c1b20755cb1de1ea54021d939676d04dac3d4eb5f18feb70c0ea5202d5e02da/quality-report.json"
+    - ".agentplane/tasks/202609231019-MPSGJZ/quality/20260923-214753472-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609231019-MPSGJZ/quality/20260923-214753472-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609231019-MPSGJZ/quality/objects/sha256/ed13f76d2f8ba2e0aa4a26c72591aba09c081e4fd692cc77a42cd3e726cbe56f.md"
+    - ".agentplane/tasks/202609231019-MPSGJZ/quality/20260923-214753472-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609231019-MPSGJZ/quality/20260923-214753472-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609231019-MPSGJZ/quality/20260923-214753472-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202609231019-MPSGJZ/quality/20260923-214753472-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609231019-MPSGJZ/README.md"
+    - ".agentplane/tasks/202609231019-MPSGJZ/quality/objects/sha256/288a74b6ec3b8c99f289e214d03676063dad172dcbebd2b71c5b3ee194a4e48a.patch"
+    - ".agentplane/tasks/202609231019-MPSGJZ/quality/objects/sha256/d6f6eb6e98e7e8c70f1d14b72cce1d6e7fc43d0eaa4167b5ec6dfb416a89c20a.json"
+    - ".agentplane/tasks/202609231019-MPSGJZ/verification/20260923214503660-591c1c08d3baefcb.json"
+    - ".agentplane/tasks/202609231019-MPSGJZ/quality/objects/sha256/030a4b77515e95ac9b09197efa672a7d540362c56b4409e729957a921e6fa2ee.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "PASS: WorkItem validation targets AgentPlane-owned PR, hosted CI, integration, hosted-close, and cleanup identifiers without blocking ordinary approved deploy or external-write semantics."
-    - "PASS: supervisor recovery binds retries to exact operation identity, persists replacement state with compare-and-swap, and leaves ambiguous effects in doubt."
-    - "PASS: completed-task rework, verification, quality review, base-checkout integration, strict Codex schemas, host decision diagnostics, shell-sensitive text routing, and repeat cleanup have focused regression coverage."
-    - "PASS: repository evidence is bound to implementation commit 9ce569668659b81073d3a95a3f5522ca121bc94e and contains no artifacts from earlier task IDs."
-    - "PASS: AgentPlane-native validation recorded all three required commands with exit code 0, including the full local CI suite."
+    - "Replacement can replay an executor that already started. Ordinary implementation episodes retain work_order_ref=null during execution. After a supervisor crash, the new recovery condition classifies that unresolved intent as pre-dispatch failure and permits another executor run."
 execution_route:
   frozen: true
   reason_codes:

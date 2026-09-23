@@ -11,6 +11,7 @@ import {
 import {
   advanceSupervisorExecutionEpisodeState,
   completeSupervisorExecutionEpisode,
+  markSupervisorExecutionEpisodeIntentDispatched,
   startSupervisorExecutionEpisode,
 } from "@agentplaneorg/core/schemas";
 
@@ -228,6 +229,7 @@ async function executeBranchImplementationEpisode(opts: {
     ]);
     const eventsBefore = task.events?.length ?? 0;
     let executed: Awaited<ReturnType<typeof executeTaskRunnerExecution>>;
+    let dispatchAdmissionLost = false;
     const dispatchStartedAt = performance.now();
     const timing = (endedAt: number, firstMutation: boolean) =>
       buildSingleStageLifecycleTiming({
@@ -249,8 +251,31 @@ async function executeBranchImplementationEpisode(opts: {
         ...(opts.input.sandbox_override ? { sandbox_override: opts.input.sandbox_override } : {}),
         ...(opts.input.danger_authority ? { danger_authority: opts.input.danger_authority } : {}),
         task_execution: opts.input.task_execution,
+        on_dispatch_intent: async (prepared) => {
+          const dispatched = markSupervisorExecutionEpisodeIntentDispatched({
+            journal,
+            operation_key: started.operation_key,
+            dispatch_ref: `${prepared.invocation.run_id}:${prepared.invocation.work_order_id}`,
+          });
+          if (!(await opened.store.compareAndSwap(journal.digest, dispatched))) {
+            dispatchAdmissionLost = true;
+            throw new Error(
+              "Branch supervisor journal changed before executor dispatch was recorded.",
+            );
+          }
+          journal = dispatched;
+        },
       });
     } catch (error) {
+      if (dispatchAdmissionLost) {
+        return stoppedEpisode({
+          decision: opts.decision,
+          code: "supervisor_stopped",
+          reason:
+            "The branch supervisor journal changed before executor dispatch; no executor was started.",
+          journal: journalProjection(journal, opened.journal_path),
+        });
+      }
       journal = completeSupervisorExecutionEpisode({
         journal,
         operation_key: started.operation_key,

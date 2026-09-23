@@ -1217,6 +1217,49 @@ export function startSupervisorExecutionEpisode(opts: {
   return { status: "started", journal: createJournal(next), operation_key };
 }
 
+/**
+ * Persist that an agent invocation may now have reached its provider. Recovery must treat this
+ * intent as effect-in-doubt until the original runner result is reconciled; it is no longer safe
+ * to classify a missing work-order reference as proof that dispatch never started.
+ */
+export function markSupervisorExecutionEpisodeIntentDispatched(opts: {
+  journal: SupervisorExecutionEpisodeJournal;
+  operation_key: string;
+  dispatch_ref: string;
+  now?: string;
+}): SupervisorExecutionEpisodeJournal {
+  const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
+  const last = journal.operations.at(-1);
+  if (
+    journal.status !== "running" ||
+    journal.cursor.phase !== "intent_recorded" ||
+    journal.cursor.operation_key !== opts.operation_key ||
+    last?.operation_key !== opts.operation_key ||
+    last.status !== "intent" ||
+    last.progress_digest !== null
+  ) {
+    throw new Error(
+      "Supervisor dispatch marker requires the exact unmarked latest operation intent.",
+    );
+  }
+  const dispatchRef = opts.dispatch_ref.trim();
+  if (!dispatchRef) throw new Error("Supervisor dispatch marker requires a dispatch reference.");
+  const now = opts.now ?? new Date().toISOString();
+  const operation = {
+    ...last,
+    progress_digest: digestSupervisorEpisodeValue({
+      kind: "agent_dispatch_started",
+      dispatch_ref: dispatchRef,
+    }),
+  };
+  return createJournal({
+    ...journal,
+    operations: [...journal.operations.slice(0, -1), operation],
+    updated_at: now,
+    previous_digest: journal.digest,
+  });
+}
+
 export function completeSupervisorExecutionEpisode(opts: {
   journal: SupervisorExecutionEpisodeJournal;
   operation_key: string;

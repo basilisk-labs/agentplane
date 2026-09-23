@@ -158,6 +158,7 @@ export {
   continueSupervisorExecutionEpisodeAfterEpisodeBudget,
   createSupervisorExecutionEpisodeJournal,
   digestSupervisorEpisodeValue,
+  markSupervisorExecutionEpisodeIntentDispatched,
   prepareReplacementSupervisorExecutionEpisodeAfterFailure,
   refreshPendingReplacementSupervisorExecutionEpisode,
   recoverSupervisorExecutionEpisodeJournal,

@@ -51,8 +51,9 @@ Created: 2026-09-23T10:57:06.440Z
  .../src/commands/task/advance.command.ts           |  25 ++-
  .../src/commands/task/agent-action-packet.test.ts  |   1 +
  .../src/commands/task/agent-action-packet.ts       |   8 +-
- .../task/branch-task-supervisor-episodes.ts        |  48 +++++-
- .../branch-task-supervisor-journal-recovery.ts     |  89 ++++++++++
+ .../task/branch-task-supervisor-episodes.ts        |  73 ++++++++-
+ ...branch-task-supervisor-journal-recovery.test.ts |  66 ++++++++
+ .../branch-task-supervisor-journal-recovery.ts     |  90 +++++++++++
  .../commands/task/branch-task-supervisor.test.ts   |  31 +++-
  .../src/commands/task/branch-task-supervisor.ts    |   1 +
  .../commands/task/branch-task-verification.test.ts |  14 +-
@@ -78,15 +79,16 @@ Created: 2026-09-23T10:57:06.440Z
  .../src/runner/adapters/codex-result-transport.ts  |  41 +++--
  .../runner/adapters/roadmap-output-parity.test.ts  |   1 +
  .../src/runner/usecases/task-run-authority.ts      |  11 +-
- .../src/runner/supervisor-execution-episode.ts     |  37 +++++
- .../supervisor-execution-human-review.test.ts      |  72 +++++++++
- packages/core/src/schemas/index.ts                 |   1 +
+ .../agentplane/src/runner/usecases/task-run.ts     |   2 +
+ .../src/runner/supervisor-execution-episode.ts     |  80 +++++++++
+ .../supervisor-execution-human-review.test.ts      | 121 ++++++++++++++
+ packages/core/src/schemas/index.ts                 |   2 +
  packages/core/src/tasks/index.ts                   |   1 +
  .../core/src/tasks/plan-execution-grant.test.ts    |  20 ++-
  packages/core/src/tasks/plan-execution-grant.ts    |  52 +++---
  .../core/src/tasks/task-kernel/invariants.test.ts  |  69 ++++++++
  packages/core/src/tasks/task-kernel/invariants.ts  |  11 ++
- 57 files changed, 2161 insertions(+), 297 deletions(-)
+ 59 files changed, 2348 insertions(+), 297 deletions(-)
 ```
 
 </details>

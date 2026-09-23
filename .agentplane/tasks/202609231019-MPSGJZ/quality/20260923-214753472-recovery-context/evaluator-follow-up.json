@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202609231019-MPSGJZ-e3ec3cf63d9684ce50bde417",
+  "task_id": "202609231019-MPSGJZ",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Frozen evidence digests match, and both required checks are recorded as passing for the evaluated commit. Fix recovery to distinguish proven non-dispatch from an unresolved dispatched run, and add a behavioral interruption regression test. Existing passing verification does not cover this crash window.",
+  "findings": [
+    {
+      "id": "recovery-001",
+      "summary": "Replacement can replay an executor that already started. Ordinary implementation episodes retain work_order_ref=null during execution. After a supervisor crash, the new recovery condition classifies that unresolved intent as pre-dispatch failure and permits another executor run.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609231019-MPSGJZ/quality/objects/sha256/288a74b6ec3b8c99f289e214d03676063dad172dcbebd2b71c5b3ee194a4e48a.patch",
+          "sha256": "sha256:288a74b6ec3b8c99f289e214d03676063dad172dcbebd2b71c5b3ee194a4e48a",
+          "line": 1376,
+          "section": "branch-task-supervisor-journal-recovery.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202609231019-MPSGJZ/quality/objects/sha256/288a74b6ec3b8c99f289e214d03676063dad172dcbebd2b71c5b3ee194a4e48a.patch",
+          "sha256": "sha256:288a74b6ec3b8c99f289e214d03676063dad172dcbebd2b71c5b3ee194a4e48a",
+          "line": 1282,
+          "section": "branch-task-supervisor-episodes.ts"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202609231019-MPSGJZ/quality/20260923-214753472-recovery-context/evaluator-result.json"
+}

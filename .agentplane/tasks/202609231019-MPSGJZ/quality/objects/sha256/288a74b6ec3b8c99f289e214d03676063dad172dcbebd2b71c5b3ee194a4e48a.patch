@@ -1,0 +1,3599 @@
+diff --git a/bun.lock b/bun.lock
+index b264e329c..02b696934 100644
+--- a/bun.lock
++++ b/bun.lock
+@@ -32,7 +32,7 @@
+     },
+     "packages/agentplane": {
+       "name": "agentplane",
+-      "version": "0.7.11",
++      "version": "0.7.12-beta.1",
+       "bin": {
+         "ap": "bin/ap.js",
+         "agentplane": "bin/agentplane.js",
+@@ -53,7 +53,7 @@
+     },
+     "packages/core": {
+       "name": "@agentplaneorg/core",
+-      "version": "0.7.11",
++      "version": "0.7.12-beta.1",
+       "dependencies": {
+         "canonicalize": "^3.0.0",
+         "execa": "^9.6.1",
+@@ -64,7 +64,7 @@
+     },
+     "packages/recipes": {
+       "name": "@agentplaneorg/recipes",
+-      "version": "0.7.11",
++      "version": "0.7.12-beta.1",
+     },
+     "packages/spec": {
+       "name": "@agentplane/spec",
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts b/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts
+index 0424f16e3..ad630bb29 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts
+@@ -22,6 +22,7 @@ import {
+ } from "../shared/supervisor-execution-episode.js";
+ import type { CommandContext } from "../shared/task-backend.js";
+ import type { EvaluatorArtifactPreparationPort } from "./evaluator-artifact-port.js";
++import { prepareHumanReviewEvaluatorReplacement } from "./evaluator-human-review-replacement.js";
+ 
+ import {
+   evaluatorProviderFailureRecord,
+@@ -36,6 +37,7 @@ import {
+   readWorkOrder,
+   validateStrictEvaluatorResult,
+ } from "./evaluator-review-usecase.js";
++import { relative as relativeToProject } from "./evaluator-review-shared.js";
+ import { reportPaths } from "./evaluator-review-support.js";
+ 
+ type CompletedEvaluatorOutcome = {
+@@ -318,8 +320,23 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
+   try {
+     let journal = opened.journal;
+     let replacementOfOperationKey: string | null = null;
++    let preparedHumanReviewReplacement:
++      | Awaited<ReturnType<EvaluatorArtifactPreparationPort["prepare"]>>["prepared"]
++      | null = null;
+     if (opts.replacement) {
+-      if (
++      if (journal.status === "stopped" && journal.stop?.reason === "human_review") {
++        const replacement = await prepareHumanReviewEvaluatorReplacement({
++          journal,
++          store: opened.store,
++          artifacts: opts.artifacts,
++          ctx: opts.ctx,
++          taskId: opts.task_id,
++          evaluatorId: opts.evaluator.id,
++          stateFingerprintDigest: decision.workflowStep.preconditionFingerprint.digest,
++        });
++        journal = replacement.journal;
++        preparedHumanReviewReplacement = replacement.prepared;
++      } else if (
+         journal.status === "running" &&
+         journal.cursor.phase === "ready" &&
+         journal.cursor.replacement_of_operation_key
+@@ -461,12 +478,15 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
+             "Evaluator supervisor journal is not ready; resolve its typed stop before another provider invocation.",
+         });
+       }
+-      const { prepared } = await opts.artifacts.prepare({
+-        ctx: opts.ctx,
+-        taskId: opts.task_id,
+-        evaluatorId: opts.evaluator.id,
+-        provenance: "evaluator_supplied",
+-      });
++      const preparedResult = preparedHumanReviewReplacement
++        ? null
++        : await opts.artifacts.prepare({
++            ctx: opts.ctx,
++            taskId: opts.task_id,
++            evaluatorId: opts.evaluator.id,
++            provenance: "evaluator_supplied",
++          });
++      const prepared = preparedHumanReviewReplacement ?? preparedResult!.prepared;
+       const replacementBinding = replacementOfOperationKey
+         ? { replacement_of_operation_key: replacementOfOperationKey }
+         : {};
+@@ -576,7 +596,3 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
+     await lease.release();
+   }
+ }
+-
+-function relativeToProject(gitRoot: string, absolutePath: string): string {
+-  return path.relative(gitRoot, absolutePath).replaceAll("\\\\", "/");
+-}
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-human-review-replacement.test.ts b/packages/agentplane/src/commands/evaluator/evaluator-human-review-replacement.test.ts
+new file mode 100644
+index 000000000..a15824f93
+--- /dev/null
++++ b/packages/agentplane/src/commands/evaluator/evaluator-human-review-replacement.test.ts
+@@ -0,0 +1,70 @@
++import { describe, expect, it, vi } from "vitest";
++import {
++  completeSupervisorExecutionEpisode,
++  createSupervisorExecutionEpisodeJournal,
++  startSupervisorExecutionEpisode,
++  stopSupervisorExecutionEpisode,
++} from "@agentplaneorg/core/schemas";
++
++import type { EvaluatorArtifactPreparationPort } from "./evaluator-artifact-port.js";
++import { prepareHumanReviewEvaluatorReplacement } from "./evaluator-human-review-replacement.js";
++
++describe("evaluator human-review replacement", () => {
++  it("prepares a distinct work order and persists the reopened journal with CAS", async () => {
++    const fingerprint = `sha256:${"a".repeat(64)}` as const;
++    const created = createSupervisorExecutionEpisodeJournal({
++      task_id: "T-review",
++      task_revision: 1,
++      state_fingerprint_digest: fingerprint,
++      budget: {
++        max_episodes: 3,
++        max_agent_runs: 2,
++        max_input_tokens: null,
++        max_output_tokens: null,
++        max_total_tokens: null,
++        max_wall_time_ms: 10_000,
++        max_changed_files: 4,
++        max_diff_lines: 40,
++        max_no_progress_episodes: 2,
++      },
++    });
++    const started = startSupervisorExecutionEpisode({
++      journal: created,
++      role: "EVALUATOR",
++      kind: "evaluator_episode",
++      operation_identity: { work_order_id: "old" },
++      precondition_fingerprint_digest: fingerprint,
++      authority_ref: "evaluator:fixture",
++      authority_digest: fingerprint,
++    });
++    if (started.status !== "started") throw new Error("expected started episode");
++    const completed = completeSupervisorExecutionEpisode({
++      journal: started.journal,
++      operation_key: started.operation_key,
++      result: { verdict: "human_review" },
++    });
++    const journal = stopSupervisorExecutionEpisode({
++      journal: completed,
++      reason: "human_review",
++    });
++    const prepared = { work_order: { work_order_id: "new" } };
++    const artifacts = {
++      prepare: vi.fn().mockResolvedValue({ prepared }),
++    } as unknown as EvaluatorArtifactPreparationPort;
++    const compareAndSwap = vi.fn().mockResolvedValue(true);
++
++    const replacement = await prepareHumanReviewEvaluatorReplacement({
++      journal,
++      store: { read: vi.fn(), write: vi.fn(), compareAndSwap, path: "/journal" },
++      artifacts,
++      ctx: {} as never,
++      taskId: "T-review",
++      evaluatorId: "recovery-context",
++      stateFingerprintDigest: fingerprint,
++    });
++
++    expect(replacement.journal).toMatchObject({ status: "running", stop: null });
++    expect(replacement.prepared).toBe(prepared);
++    expect(compareAndSwap).toHaveBeenCalledWith(journal.digest, replacement.journal);
++  });
++});
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-human-review-replacement.ts b/packages/agentplane/src/commands/evaluator/evaluator-human-review-replacement.ts
+new file mode 100644
+index 000000000..b3df9aac6
+--- /dev/null
++++ b/packages/agentplane/src/commands/evaluator/evaluator-human-review-replacement.ts
+@@ -0,0 +1,44 @@
++import {
++  reopenSupervisorExecutionEpisodeAfterHumanReviewStateChange,
++  type SupervisorExecutionEpisodeJournal,
++} from "@agentplaneorg/core/schemas";
++
++import type { CommandCtx } from "../../cli/spec/spec.js";
++import { CliError } from "../../shared/errors.js";
++import type { SupervisorEpisodeStore } from "../shared/supervisor-execution-episode.js";
++import type { EvaluatorArtifactPreparationPort } from "./evaluator-artifact-port.js";
++
++type PreparedEvaluator = Awaited<
++  ReturnType<EvaluatorArtifactPreparationPort["prepare"]>
++>["prepared"];
++
++export async function prepareHumanReviewEvaluatorReplacement(opts: {
++  journal: SupervisorExecutionEpisodeJournal;
++  store: SupervisorEpisodeStore;
++  artifacts: EvaluatorArtifactPreparationPort;
++  ctx: CommandCtx;
++  taskId: string;
++  evaluatorId: string;
++  stateFingerprintDigest: string;
++}): Promise<{ journal: SupervisorExecutionEpisodeJournal; prepared: PreparedEvaluator }> {
++  const { prepared } = await opts.artifacts.prepare({
++    ctx: opts.ctx,
++    taskId: opts.taskId,
++    evaluatorId: opts.evaluatorId,
++    provenance: "evaluator_supplied",
++  });
++  const reopened = reopenSupervisorExecutionEpisodeAfterHumanReviewStateChange({
++    journal: opts.journal,
++    state_fingerprint_digest: opts.stateFingerprintDigest,
++    replacement_effect_ref: prepared.work_order.work_order_id,
++  });
++  if (!(await opts.store.compareAndSwap(opts.journal.digest, reopened))) {
++    throw new CliError({
++      exitCode: 2,
++      code: "E_USAGE",
++      message:
++        "Evaluator human-review replacement changed concurrently; no provider episode was started.",
++    });
++  }
++  return { journal: reopened, prepared };
++}
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-review-apply.test.ts b/packages/agentplane/src/commands/evaluator/evaluator-review-apply.test.ts
+index a97589fda..c54aa36cc 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-review-apply.test.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-review-apply.test.ts
+@@ -1,6 +1,9 @@
+ import { describe, expect, it } from "vitest";
+ 
+-import { evaluatorReviewAllowsCanonicalProjection } from "./evaluator-review-apply.js";
++import {
++  canonicalEvaluatorPassProjection,
++  evaluatorReviewAllowsCanonicalProjection,
++} from "./evaluator-review-apply.js";
+ 
+ describe("evaluator review compatibility projection", () => {
+   it("enables compatibility projection only for canonical Kernel tasks", () => {
+@@ -11,4 +14,36 @@ describe("evaluator review compatibility projection", () => {
+       }),
+     ).toBe(true);
+   });
++
++  it("refreshes canonical implementation identity from a passing evaluator review", () => {
++    const task = {
++      extensions: {
++        task_kernel: { kind: "canonical_task" },
++        implementation_commit: { hash: "old", message: "old" },
++      },
++    };
++
++    expect(
++      canonicalEvaluatorPassProjection({
++        task,
++        verdict: "pass",
++        evaluatedSha: "a".repeat(40),
++      }),
++    ).toEqual({
++      commit: {
++        hash: "a".repeat(40),
++        message: "AgentPlane-owned canonical implementation commit",
++      },
++      extensions: {
++        ...task.extensions,
++        implementation_commit: {
++          hash: "a".repeat(40),
++          message: "AgentPlane-owned canonical implementation commit",
++        },
++      },
++    });
++    expect(
++      canonicalEvaluatorPassProjection({ task, verdict: "human_review", evaluatedSha: "head" }),
++    ).toBeNull();
++  });
+ });
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts b/packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts
+index a9ce9c969..37bab1013 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts
+@@ -36,6 +36,31 @@ export function evaluatorReviewAllowsCanonicalProjection(
+   return Object.hasOwn(task.extensions ?? {}, TASK_KERNEL_EXTENSION);
+ }
+ 
++export function canonicalEvaluatorPassProjection(opts: {
++  task: Pick<TaskData, "extensions">;
++  verdict: EvaluatorQualityReport["verdict"];
++  evaluatedSha: string | null;
++}): Pick<TaskData, "commit" | "extensions"> | null {
++  if (
++    opts.verdict !== "pass" ||
++    !opts.evaluatedSha ||
++    !evaluatorReviewAllowsCanonicalProjection(opts.task)
++  ) {
++    return null;
++  }
++  const commit = {
++    hash: opts.evaluatedSha,
++    message: "AgentPlane-owned canonical implementation commit",
++  };
++  return {
++    commit,
++    extensions: {
++      ...opts.task.extensions,
++      implementation_commit: commit,
++    },
++  };
++}
++
+ async function persistReview(opts: {
+   ctx: CommandContext;
+   task: TaskData;
+@@ -114,25 +139,33 @@ async function persistReview(opts: {
+     policyAction: "task_verify",
+     phase: "verify",
+     allowCanonicalProjection: evaluatorReviewAllowsCanonicalProjection(opts.task),
+-    build: () => ({
+-      intents: setTaskFieldsIntent({
+-        quality_review: {
+-          state: opts.report.verdict,
+-          provenance: opts.report.provenance,
+-          updated_at: opts.report.generated_at,
+-          updated_by: opts.report.provenance === "human_supplied" ? "HUMAN" : "EVALUATOR",
+-          note: opts.report.summary,
+-          evaluated_sha: opts.report.evaluated_sha,
+-          review_identity_digest: opts.report.review_identity_digest,
+-          evidence_refs: evidenceRefs,
+-          findings: opts.report.findings,
+-          ...(opts.resultPayload?.recovery_reason
+-            ? { recovery_reason: opts.resultPayload.recovery_reason }
+-            : {}),
+-        },
+-        ...(humanInput ? { extensions: humanInput } : {}),
+-      }),
+-    }),
++    build: (current) => {
++      const canonicalPass = canonicalEvaluatorPassProjection({
++        task: current,
++        verdict: opts.report.verdict,
++        evaluatedSha: opts.report.evaluated_sha,
++      });
++      return {
++        intents: setTaskFieldsIntent({
++          quality_review: {
++            state: opts.report.verdict,
++            provenance: opts.report.provenance,
++            updated_at: opts.report.generated_at,
++            updated_by: opts.report.provenance === "human_supplied" ? "HUMAN" : "EVALUATOR",
++            note: opts.report.summary,
++            evaluated_sha: opts.report.evaluated_sha,
++            review_identity_digest: opts.report.review_identity_digest,
++            evidence_refs: evidenceRefs,
++            findings: opts.report.findings,
++            ...(opts.resultPayload?.recovery_reason
++              ? { recovery_reason: opts.resultPayload.recovery_reason }
++              : {}),
++          },
++          ...(canonicalPass ?? {}),
++          ...(humanInput ? { extensions: humanInput } : {}),
++        }),
++      };
++    },
+   });
+   return {
+     report_path: relative(gitRoot, paths.report_path),
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts b/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
+index c4d5fa328..12678a74a 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
+@@ -174,12 +174,21 @@ async function prepareEvaluatorReviewLocked(
+     reason: "preparation",
+     execution: opts.execution,
+   });
+-  const diffBaseSha = await resolveEvaluatorDiffBase({
++  const currentBaseSha = await resolveEvaluatorDiffBase({
+     gitRoot,
+     evaluatedSha,
+-    baseRef: evaluatedSha ? opts.execution.base_sha : null,
++    baseRef: evaluatedSha ? opts.execution.base_ref : null,
+     allowSingleCommitFallback: opts.execution.selected_mode !== "branch_pr",
+   });
++  const diffBaseSha =
++    evaluatedSha && currentBaseSha === evaluatedSha && opts.execution.base_sha !== evaluatedSha
++      ? await resolveEvaluatorDiffBase({
++          gitRoot,
++          evaluatedSha,
++          baseRef: opts.execution.base_sha,
++          allowSingleCommitFallback: opts.execution.selected_mode !== "branch_pr",
++        })
++      : currentBaseSha;
+   const taskArtifactPrefixes = normalizeBranchPrBatchTaskIds(opts.task, opts.task.id).map(
+     (taskId) => `${opts.ctx.config.paths.workflow_dir.replaceAll("\\", "/")}/${taskId}/`,
+   );
+diff --git a/packages/agentplane/src/commands/pr/conflict-rework.test.ts b/packages/agentplane/src/commands/pr/conflict-rework.test.ts
+index 13e66c354..31ef282e2 100644
+--- a/packages/agentplane/src/commands/pr/conflict-rework.test.ts
++++ b/packages/agentplane/src/commands/pr/conflict-rework.test.ts
+@@ -835,3 +835,42 @@ describe("provider conflict rework packet", () => {
+     });
+   });
+ });
++
++describe("completed task rework authority", () => {
++  it("admits only an exact implementation rework episode", () => {
++    const bundle = {
++      task: {
++        metadata: { task_id: taskId, status: "DONE", task_kind: "code", mutation_scope: "code" },
++      },
++      repository: { git_root: "/repo" },
++      work_order: {
++        role: "EXECUTOR",
++        task: { id: taskId },
++        state_fingerprint: { digest: "bound-route", git_head: "head" },
++      },
++      route_decision: {
++        task: { id: taskId },
++        workflowStep: {
++          kind: "agent_episode",
++          id: "agent.implementation_rework",
++          episode: { purpose: "implementation_rework" },
++          preconditionFingerprint: { digest: "bound-route" },
++        },
++      },
++    } as unknown as RunnerContextBundle;
++
++    expect(() => assertRunnerTaskExecutable(bundle)).not.toThrow();
++    for (const changed of [
++      { ...bundle, route_decision: undefined },
++      {
++        ...bundle,
++        work_order: {
++          ...bundle.work_order!,
++          state_fingerprint: { ...bundle.work_order!.state_fingerprint, digest: "stale-route" },
++        },
++      },
++    ]) {
++      expect(() => assertRunnerTaskExecutable(changed as RunnerContextBundle)).toThrow();
++    }
++  });
++});
+diff --git a/packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts b/packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts
+index 4bf13bc6e..a7e3f9b95 100644
+--- a/packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts
++++ b/packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts
+@@ -125,7 +125,7 @@ describe("commands/shared/merged-branch-cleanup", () => {
+     expect(mocks.rm).not.toHaveBeenCalled();
+   });
+ 
+-  it("atomically removes a proven branch while preserving a stale unregistered worktree hint", async () => {
++  it("removes a proven unregistered leftover directory before deleting its branch", async () => {
+     const { cleanupMergedLocalBranch } = await import("./merged-branch-cleanup.js");
+     const worktreePathHint = "/repo/.agentplane/worktrees/task-T2-stale-hint";
+     mocks.gitRevParse.mockResolvedValue("head-1");
+@@ -139,7 +139,7 @@ describe("commands/shared/merged-branch-cleanup", () => {
+ 
+     expect(result).toEqual({
+       removedBranch: true,
+-      removedWorktree: false,
++      removedWorktree: true,
+       worktreePath: worktreePathHint,
+       skippedReason: null,
+       preservedDirtyState: false,
+@@ -150,7 +150,35 @@ describe("commands/shared/merged-branch-cleanup", () => {
+       ["update-ref", "-d", "refs/heads/task/T-2-stale-hint", "head-1"],
+       expect.objectContaining({ cwd: "/repo" }),
+     );
+-    expect(mocks.rm).not.toHaveBeenCalled();
++    expect(mocks.rm).toHaveBeenCalledWith(worktreePathHint, {
++      recursive: true,
++      maxRetries: 3,
++      retryDelay: 100,
++    });
++  });
++
++  it("preserves a proven branch when repeat cleanup cannot remove the leftover directory", async () => {
++    const { cleanupMergedLocalBranch } = await import("./merged-branch-cleanup.js");
++    const worktreePathHint = "/repo/.agentplane/worktrees/task-T2-locked";
++    mocks.gitRevParse.mockResolvedValue("head-1");
++    mocks.rm.mockRejectedValue(new Error("permission denied"));
++
++    await expect(
++      cleanupMergedLocalBranch({
++        gitRoot: "/repo",
++        branch: "task/T-2-locked",
++        worktreePathHint,
++        expectedHeadSha: "head-1",
++      }),
++    ).rejects.toMatchObject({
++      code: "E_GIT",
++      context: { reason_code: "merged_worktree_orphan_recovery_failed" },
++    });
++    expect(mocks.execFileAsync).not.toHaveBeenCalledWith(
++      "git",
++      ["update-ref", "-d", "refs/heads/task/T-2-locked", "head-1"],
++      expect.anything(),
++    );
+   });
+ 
+   it("treats a branch that disappears after worktree removal as already cleaned up", async () => {
+diff --git a/packages/agentplane/src/commands/shared/merged-branch-cleanup.ts b/packages/agentplane/src/commands/shared/merged-branch-cleanup.ts
+index 636f2ec79..809629568 100644
+--- a/packages/agentplane/src/commands/shared/merged-branch-cleanup.ts
++++ b/packages/agentplane/src/commands/shared/merged-branch-cleanup.ts
+@@ -108,10 +108,16 @@ export async function cleanupMergedLocalBranch(opts: {
+         branch: opts.branch,
+         expectedHeadSha: opts.expectedHeadSha,
+       });
++      await removeUnregisteredWorktreeDirectory({
++        gitRoot: opts.gitRoot,
++        branch: opts.branch,
++        worktreePath,
++        cause: new Error("worktree is already unregistered"),
++      });
+       const removedBranch = await removeBranch(opts.gitRoot, opts.branch, opts.expectedHeadSha);
+       return {
+         removedBranch,
+-        removedWorktree: false,
++        removedWorktree: true,
+         worktreePath,
+         skippedReason: null,
+         preservedDirtyState: false,
+diff --git a/packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts b/packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts
+index c9e44d33c..eb3c833fd 100644
+--- a/packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts
++++ b/packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts
+@@ -25,5 +25,5 @@ it("conserves implementation work across verification retries", { timeout: 60_00
+     { cwd: process.cwd() },
+   );
+ 
+-  expect(stripAnsi(result.stdout)).toMatch(/\bTests\s+12 passed\b/);
++  expect(stripAnsi(result.stdout)).toMatch(/\bTests\s+13 passed\b/);
+ });
+diff --git a/packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.ts b/packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.ts
+index dc4b14a3f..8813311ba 100644
+--- a/packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.ts
++++ b/packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.ts
+@@ -1,9 +1,26 @@
+ import {
+   digestSupervisorEpisodeValue,
+   validateSupervisorExecutionEpisodeJournal,
++  type SupervisorExecutionBudget,
+   type SupervisorExecutionEpisodeJournal,
+ } from "@agentplaneorg/core/schemas";
+ 
++export const DEFAULT_SUPERVISOR_EXECUTION_BUDGET: SupervisorExecutionBudget = {
++  max_episodes: 50,
++  max_agent_runs: 50,
++  max_input_tokens: null,
++  max_output_tokens: null,
++  max_total_tokens: null,
++  max_wall_time_ms: 4 * 60 * 60 * 1000,
++  max_changed_files: 2000,
++  max_diff_lines: null,
++  max_no_progress_episodes: 3,
++};
++
++export function defaultSupervisorExecutionBudget(): SupervisorExecutionBudget {
++  return structuredClone(DEFAULT_SUPERVISOR_EXECUTION_BUDGET);
++}
++
+ export function continueSupervisorExecutionEpisodeAfterRenewableBudget(opts: {
+   journal: SupervisorExecutionEpisodeJournal;
+   state_fingerprint_digest: string;
+diff --git a/packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts b/packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts
+index 96990cc72..5f9d7217f 100644
+--- a/packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts
++++ b/packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts
+@@ -5,7 +5,6 @@ import { describe, expect, it } from "vitest";
+ 
+ import {
+   advanceSupervisorExecutionEpisodeState,
+-  buildStateFingerprint,
+   completeSupervisorExecutionEpisode,
+   createSupervisorExecutionEpisodeJournal,
+   startSupervisorExecutionEpisode,
+@@ -29,80 +28,11 @@ import {
+   tryAcquireSupervisorExecutionLease,
+ } from "./supervisor-execution-episode.js";
+ 
+-const taskId = "202607280001-EPISODE";
+-const UNMETERED_TOKEN_BUDGET = {
+-  max_episodes: 50,
+-  max_agent_runs: 50,
+-  max_input_tokens: null,
+-  max_output_tokens: null,
+-  max_total_tokens: null,
+-  max_wall_time_ms: 4 * 60 * 60 * 1000,
+-  max_changed_files: 2000,
+-  max_diff_lines: null,
+-  max_no_progress_episodes: 3,
+-} as const;
+-
+-function fixtureDecision(
+-  root: string,
+-  revision: number,
+-  owner: "CODER" | "CURATOR" = "CODER",
+-): TaskRouteDecision {
+-  const component = {
+-    state: "present",
+-    source: "supervisor_execution_episode_test",
+-    value: { taskId, revision },
+-  } as const;
+-  const fingerprint = buildStateFingerprint({
+-    task_id: taskId,
+-    task_revision: revision,
+-    git_head: "0123456789abcdef0123456789abcdef01234567",
+-    worktree: root,
+-    components: {
+-      task: component,
+-      git: component,
+-      backend_projection: component,
+-      policy: component,
+-      blueprint: component,
+-      knowledge: component,
+-      provider: component,
+-      authority: component,
+-    },
+-  });
+-  const operation: WorkflowOperation = {
+-    id: "runner.follow",
+-    type: "runner_follow",
+-    params: { mode: "run", taskId },
+-    preconditionFingerprint: fingerprint,
+-    authorityRef: `route:${taskId}:${fingerprint.digest}`,
+-    idempotencyKey: `runner.follow:${taskId}:${fingerprint.digest}:fixture`,
+-    expectedPostconditions: WORKFLOW_OPERATION_REGISTRY["runner.follow"].expectedPostconditions,
+-    triggersGitHooks: false,
+-  };
+-  return {
+-    task: {
+-      id: taskId,
+-      title: "Supervisor episode fixture",
+-      status: "DOING",
+-      owner,
+-      planApproval: "approved",
+-      verification: "pending",
+-      commit: null,
+-    },
+-    workflowStep: {
+-      id: "runner.follow",
+-      kind: "cli_operation",
+-      summary: "run the typed task runner operation",
+-      preconditionFingerprint: fingerprint,
+-      operation,
+-      execution: { actionKind: "local_command" },
+-    },
+-    executionPacket: {
+-      actionKind: "local_command",
+-      safeToMutate: true,
+-      exactArgv: projectWorkflowOperationArgv(operation),
+-    },
+-  } as TaskRouteDecision;
+-}
++import {
++  fixtureDecision,
++  taskId,
++  UNMETERED_TOKEN_BUDGET,
++} from "./supervisor-execution-episode.testkit.js";
+ 
+ function executedLifecycle(opts: {
+   decision: TaskRouteDecision;
+@@ -817,6 +747,33 @@ describe("persisted supervisor execution episodes", () => {
+       usage: { episodes: 1, agent_runs: 1 },
+     });
+     expect(stored.usage.wall_time_ms).toBeGreaterThan(0);
++
++    await expect(
++      preparePersistedSupervisorReplacementAfterFailure({
++        git_root: root,
++        task_id: taskId,
++        state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
++        replacement_operation_idempotency_key:
++          decision.workflowStep.kind === "cli_operation"
++            ? decision.workflowStep.operation.idempotencyKey
++            : "unreachable",
++      }),
++    ).resolves.toBe("not_failed");
++    await expect(
++      preparePersistedSupervisorReplacementAfterFailure({
++        git_root: root,
++        task_id: taskId,
++        state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
++        replacement_operation_idempotency_key: "provider.pr.update_branch:distinct",
++      }),
++    ).resolves.toBe("prepared");
++    expect(await createSupervisorEpisodeStore(outcome.journal_path).read()).toMatchObject({
++      status: "running",
++      cursor: {
++        phase: "ready",
++        replacement_of_operation_key: stored.operations.at(-1)?.operation_key,
++      },
++    });
+   });
+ 
+   it("keeps a CURATOR context run in the same journal and budget boundary", async () => {
+diff --git a/packages/agentplane/src/commands/shared/supervisor-execution-episode.testkit.ts b/packages/agentplane/src/commands/shared/supervisor-execution-episode.testkit.ts
+new file mode 100644
+index 000000000..07861e703
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/supervisor-execution-episode.testkit.ts
+@@ -0,0 +1,80 @@
++import { buildStateFingerprint } from "@agentplaneorg/core/schemas";
++
++import type { TaskRouteDecision } from "./route-decision-types.js";
++import { projectWorkflowOperationArgv } from "./workflow-operation-projection.js";
++import { WORKFLOW_OPERATION_REGISTRY, type WorkflowOperation } from "./workflow-step.js";
++
++export const taskId = "202607280001-EPISODE";
++export const UNMETERED_TOKEN_BUDGET = {
++  max_episodes: 50,
++  max_agent_runs: 50,
++  max_input_tokens: null,
++  max_output_tokens: null,
++  max_total_tokens: null,
++  max_wall_time_ms: 4 * 60 * 60 * 1000,
++  max_changed_files: 2000,
++  max_diff_lines: null,
++  max_no_progress_episodes: 3,
++} as const;
++
++export function fixtureDecision(
++  root: string,
++  revision: number,
++  owner: "CODER" | "CURATOR" = "CODER",
++): TaskRouteDecision {
++  const component = {
++    state: "present",
++    source: "supervisor_execution_episode_test",
++    value: { taskId, revision },
++  } as const;
++  const fingerprint = buildStateFingerprint({
++    task_id: taskId,
++    task_revision: revision,
++    git_head: "0123456789abcdef0123456789abcdef01234567",
++    worktree: root,
++    components: {
++      task: component,
++      git: component,
++      backend_projection: component,
++      policy: component,
++      blueprint: component,
++      knowledge: component,
++      provider: component,
++      authority: component,
++    },
++  });
++  const operation: WorkflowOperation = {
++    id: "runner.follow",
++    type: "runner_follow",
++    params: { mode: "run", taskId },
++    preconditionFingerprint: fingerprint,
++    authorityRef: `route:${taskId}:${fingerprint.digest}`,
++    idempotencyKey: `runner.follow:${taskId}:${fingerprint.digest}:fixture`,
++    expectedPostconditions: WORKFLOW_OPERATION_REGISTRY["runner.follow"].expectedPostconditions,
++    triggersGitHooks: false,
++  };
++  return {
++    task: {
++      id: taskId,
++      title: "Supervisor episode fixture",
++      status: "DOING",
++      owner,
++      planApproval: "approved",
++      verification: "pending",
++      commit: null,
++    },
++    workflowStep: {
++      id: "runner.follow",
++      kind: "cli_operation",
++      summary: "run the typed task runner operation",
++      preconditionFingerprint: fingerprint,
++      operation,
++      execution: { actionKind: "local_command" },
++    },
++    executionPacket: {
++      actionKind: "local_command",
++      safeToMutate: true,
++      exactArgv: projectWorkflowOperationArgv(operation),
++    },
++  } as TaskRouteDecision;
++}
+diff --git a/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts b/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
+index 13838098c..2c8604773 100644
+--- a/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
++++ b/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
+@@ -20,6 +20,8 @@ import { gitRevParse } from "@agentplaneorg/core/git";
+ import type { TaskRouteDecision } from "./route-decision-types.js";
+ import {
+   continueSupervisorExecutionEpisodeAfterRenewableBudget,
++  DEFAULT_SUPERVISOR_EXECUTION_BUDGET,
++  defaultSupervisorExecutionBudget,
+   recoverSupervisorExecutionEpisodeAfterResolvedTokenTelemetry,
+ } from "./supervisor-execution-budget-renewal.js";
+ import {
+@@ -32,34 +34,13 @@ import {
+   workflowOperationLifecycleStage,
+ } from "./lifecycle-stage-timing.js";
+ import { observedRunnerUsage } from "./supervisor-execution-observation.js";
+-
++import { recoverNotAppliedWorktreePreparation } from "./supervisor-execution-worktree-recovery.js";
+ import { tryAcquireSupervisorExecutionLease } from "./supervisor-execution-lease.js";
+ 
+ export { tryAcquireSupervisorExecutionLease } from "./supervisor-execution-lease.js";
+ 
+ const SUPERVISOR_EPISODE_ARTIFACT_DIRECTORY = "agentplane/supervisor/episodes";
+ 
+-/**
+- * Conservative process limits. Token limits stay disabled until the provider
+- * supplies attributable telemetry; enforcing an unobservable token cap would
+- * stop healthy external-agent workflows after their first agent result. The
+- * measurable episode, agent-run, wall-time, changed-file, and no-progress
+- * limits continue to bound supervisor-owned work.
+- */
+-const DEFAULT_SUPERVISOR_EXECUTION_BUDGET: SupervisorExecutionBudget = {
+-  max_episodes: 50,
+-  max_agent_runs: 50,
+-  max_input_tokens: null,
+-  max_output_tokens: null,
+-  max_total_tokens: null,
+-  max_wall_time_ms: 4 * 60 * 60 * 1000,
+-  max_changed_files: 2000,
+-  // The runner has no supervisor-observed line delta yet. A non-null default
+-  // would falsely claim a hard limit while always charging zero.
+-  max_diff_lines: null,
+-  max_no_progress_episodes: 3,
+-};
+-
+ export type SupervisorEpisodeStore = {
+   read: () => Promise<unknown>;
+   write: (journal: SupervisorExecutionEpisodeJournal) => Promise<void>;
+@@ -197,10 +178,6 @@ export async function withSupervisorExecutionAdmissionFence<T>(opts: {
+   }
+ }
+ 
+-function defaultSupervisorExecutionBudget(): SupervisorExecutionBudget {
+-  return structuredClone(DEFAULT_SUPERVISOR_EXECUTION_BUDGET);
+-}
+-
+ export async function openSupervisorExecutionEpisode(opts: {
+   git_root: string;
+   common_git_dir?: string;
+@@ -254,6 +231,7 @@ export async function preparePersistedSupervisorReplacementAfterFailure(opts: {
+   git_root: string;
+   task_id: string;
+   state_fingerprint_digest: string;
++  replacement_operation_idempotency_key?: string;
+   allow_agent_run_budget_extension?: boolean;
+   budget_only?: boolean;
+ }): Promise<
+@@ -334,6 +312,12 @@ export async function preparePersistedSupervisorReplacementAfterFailure(opts: {
+     if (!recoverableFailure) {
+       return "not_failed";
+     }
++    if (
++      opts.replacement_operation_idempotency_key !== undefined &&
++      latest.effect_ref === opts.replacement_operation_idempotency_key
++    ) {
++      return "not_failed";
++    }
+     const replacement = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
+       journal,
+       state_fingerprint_digest: opts.state_fingerprint_digest,
+@@ -421,6 +405,14 @@ export async function supervisePersistedWorkflowEpisode(opts: {
+     };
+   }
+ 
++  journal = await recoverNotAppliedWorktreePreparation({
++    journal,
++    operation,
++    state_fingerprint_digest: currentFingerprint,
++    compare_and_swap: (expectedDigest, replacement) =>
++      store.compareAndSwap(expectedDigest, replacement),
++  });
++
+   // A restart can observe the durable agent outcome before the route cursor
+   // was advanced. Refresh and commit that observation first; launching a new
+   // provider here would replay an already completed semantic episode.
+diff --git a/packages/agentplane/src/commands/shared/supervisor-execution-worktree-recovery.test.ts b/packages/agentplane/src/commands/shared/supervisor-execution-worktree-recovery.test.ts
+new file mode 100644
+index 000000000..0579e6c69
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/supervisor-execution-worktree-recovery.test.ts
+@@ -0,0 +1,66 @@
++import { describe, expect, it, vi } from "vitest";
++
++import {
++  createSupervisorExecutionEpisodeJournal,
++  recoverSupervisorExecutionEpisodeJournal,
++  startSupervisorExecutionEpisode,
++} from "@agentplaneorg/core/schemas";
++
++import { recoverNotAppliedWorktreePreparation } from "./supervisor-execution-worktree-recovery.js";
++
++const FINGERPRINT = `sha256:${"1".repeat(64)}`;
++const IDEMPOTENCY_KEY = "worktree.prepare:T-1:fixture";
++
++describe("supervisor worktree recovery", () => {
++  it("replaces the exact proven not-applied intent before a retry", async () => {
++    const created = createSupervisorExecutionEpisodeJournal({
++      task_id: "T-1",
++      task_revision: 1,
++      state_fingerprint_digest: FINGERPRINT,
++      budget: {
++        max_episodes: 2,
++        max_agent_runs: 2,
++        max_input_tokens: null,
++        max_output_tokens: null,
++        max_total_tokens: null,
++        max_wall_time_ms: null,
++        max_changed_files: null,
++        max_diff_lines: null,
++        max_no_progress_episodes: null,
++      },
++    });
++    const started = startSupervisorExecutionEpisode({
++      journal: created,
++      role: "EXECUTOR",
++      kind: "cli_operation",
++      operation_identity: { id: "worktree.prepare", task_id: "T-1" },
++      precondition_fingerprint_digest: FINGERPRINT,
++      authority_ref: "workflow-operation:worktree.prepare",
++      authority_digest: FINGERPRINT,
++      effect_ref: IDEMPOTENCY_KEY,
++    });
++    if (started.status !== "started") throw new Error("expected started operation");
++    const interrupted = recoverSupervisorExecutionEpisodeJournal({
++      journal: started.journal,
++      state_fingerprint_digest: FINGERPRINT,
++    });
++    const compareAndSwap = vi.fn(() => Promise.resolve(true));
++
++    const replacement = await recoverNotAppliedWorktreePreparation({
++      journal: interrupted,
++      operation: { id: "worktree.prepare", idempotencyKey: IDEMPOTENCY_KEY },
++      state_fingerprint_digest: FINGERPRINT,
++      compare_and_swap: compareAndSwap,
++    });
++
++    expect(compareAndSwap).toHaveBeenCalledOnce();
++    expect(replacement.operations).toMatchObject([{ status: "failed" }]);
++    expect(replacement).toMatchObject({
++      status: "running",
++      cursor: {
++        phase: "ready",
++        replacement_of_operation_key: started.operation_key,
++      },
++    });
++  });
++});
+diff --git a/packages/agentplane/src/commands/shared/supervisor-execution-worktree-recovery.ts b/packages/agentplane/src/commands/shared/supervisor-execution-worktree-recovery.ts
+new file mode 100644
+index 000000000..aee0d7fc1
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/supervisor-execution-worktree-recovery.ts
+@@ -0,0 +1,52 @@
++import {
++  completeSupervisorExecutionEpisode,
++  prepareReplacementSupervisorExecutionEpisodeAfterFailure,
++  reopenSupervisorExecutionEpisodeAfterEffectEvidence,
++  type SupervisorExecutionEpisodeJournal,
++} from "@agentplaneorg/core/schemas";
++
++export async function recoverNotAppliedWorktreePreparation(opts: {
++  journal: SupervisorExecutionEpisodeJournal;
++  operation: { id: string; idempotencyKey: string };
++  state_fingerprint_digest: string;
++  compare_and_swap: (
++    expected_digest: SupervisorExecutionEpisodeJournal["digest"],
++    replacement: SupervisorExecutionEpisodeJournal,
++  ) => Promise<boolean>;
++}): Promise<SupervisorExecutionEpisodeJournal> {
++  const interruptedOperation = opts.journal.operations.at(-1);
++  if (
++    opts.operation.id !== "worktree.prepare" ||
++    opts.journal.status !== "stopped" ||
++    opts.journal.stop?.reason !== "effect_in_doubt" ||
++    interruptedOperation?.status !== "intent" ||
++    interruptedOperation.effect_ref !== opts.operation.idempotencyKey ||
++    interruptedOperation.authority_ref !== "workflow-operation:worktree.prepare"
++  ) {
++    return opts.journal;
++  }
++
++  const reopened = reopenSupervisorExecutionEpisodeAfterEffectEvidence({
++    journal: opts.journal,
++    operation_key: interruptedOperation.operation_key,
++  });
++  const failed = completeSupervisorExecutionEpisode({
++    journal: reopened,
++    operation_key: interruptedOperation.operation_key,
++    result: {
++      status: "not_applied",
++      evidence: "current_route_still_requires_worktree.prepare",
++    },
++    failed: true,
++  });
++  const replacement = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
++    journal: failed,
++    state_fingerprint_digest: opts.state_fingerprint_digest,
++  });
++  if (!(await opts.compare_and_swap(opts.journal.digest, replacement))) {
++    throw new Error(
++      "Supervisor episode changed while replacing a proven not-applied worktree preparation.",
++    );
++  }
++  return replacement;
++}
+diff --git a/packages/agentplane/src/commands/shared/text-payload.ts b/packages/agentplane/src/commands/shared/text-payload.ts
+index ee7c0d0d9..c32ab4205 100644
+--- a/packages/agentplane/src/commands/shared/text-payload.ts
++++ b/packages/agentplane/src/commands/shared/text-payload.ts
+@@ -14,7 +14,6 @@ type TextPayloadSource = {
+ const SHELL_RISK_PATTERNS: readonly { pattern: RegExp; label: string }[] = [
+   { pattern: /`/, label: "backticks" },
+   { pattern: /\$\(/, label: "command substitution" },
+-  { pattern: /\r|\n/, label: "literal newlines" },
+   { pattern: /\$\{[^}]+}/, label: "shell variable expansion" },
+ ];
+ 
+diff --git a/packages/agentplane/src/commands/task/advance-task-step.ts b/packages/agentplane/src/commands/task/advance-task-step.ts
+index 23af4b81d..a98f8c974 100644
+--- a/packages/agentplane/src/commands/task/advance-task-step.ts
++++ b/packages/agentplane/src/commands/task/advance-task-step.ts
+@@ -19,7 +19,9 @@ import {
+ import { commitCanonicalTerminalTaskArtifacts } from "./kernel-repository-coordinator.js";
+ import {
+   decideCanonicalWorkflowEffect,
+-  prepareCanonicalWorkflowEffect,
++  canonicalWorkflowRequestDigest,
++  executeCanonicalCompletedAgentEpisode,
++  executeCanonicalAdmittedWorkflowOperation,
+ } from "./kernel-provider-effect-coordinator.js";
+ import { ensureKernelOperationalProjectionEvidence } from "./kernel-operational-projection.js";
+ import { transferCanonicalControllerToBase } from "./kernel-controller-handoff.js";
+@@ -119,6 +121,7 @@ async function advanceCanonicalRoute(opts: {
+   transport: "host" | "managed";
+   effect_port_resolver?: KernelEffectPortResolver;
+   allow_provider_effects?: boolean;
++  replace_failed_operation?: boolean;
+ }) {
+   const runtime = await createKernelRuntime({
+     command: opts.command,
+@@ -208,6 +211,15 @@ async function advanceCanonicalRoute(opts: {
+           canonical_revision: record.aggregate.revision,
+         };
+       }
++      if (
++        await executeCanonicalCompletedAgentEpisode({
++          command: opts.command,
++          decision: localWorkflow,
++          task_id: opts.task_id,
++          replace_failed_operation: opts.replace_failed_operation,
++        })
++      )
++        continue;
+       if (!opts.allow_provider_effects) {
+         return {
+           schema_version: 1,
+@@ -216,6 +228,15 @@ async function advanceCanonicalRoute(opts: {
+         };
+       }
+       const workflow = await decideCanonicalWorkflowEffect(opts.command, opts.task_id, true);
++      if (
++        await executeCanonicalCompletedAgentEpisode({
++          command: opts.command,
++          decision: workflow,
++          task_id: opts.task_id,
++          replace_failed_operation: opts.replace_failed_operation,
++        })
++      )
++        continue;
+       const baseCheckout = workflow.workspace.baseCheckoutPath;
+       if (
+         canonicalCompletionPrecedesWorkflow(workflow.workflowStep) &&
+@@ -250,22 +271,46 @@ async function advanceCanonicalRoute(opts: {
+           canonical_revision: record.aggregate.revision,
+         };
+       }
+-      const prepared = await prepareCanonicalWorkflowEffect({
+-        command: opts.command,
+-        runtime,
+-        record,
+-        decision: workflow,
+-      });
+-      if (prepared === "prepared") continue;
++      if (workflow.workflowStep.kind === "cli_operation") {
++        const persisted = await executeCanonicalAdmittedWorkflowOperation({
++          command: opts.command,
++          decision: workflow,
++          task_id: opts.task_id,
++          request_digest: canonicalWorkflowRequestDigest(
++            opts.task_id,
++            workflow,
++            workflow.workflowStep.operation,
++          ),
++        });
++        const execution = persisted.execution;
++        if (
++          execution.executable &&
++          execution.stop_reason === null &&
++          execution.result?.status === "succeeded" &&
++          execution.refreshed_decision !== null
++        ) {
++          continue;
++        }
++        return {
++          schema_version: 1,
++          task_id: opts.task_id,
++          action: {
++            kind: "human_required",
++            reason:
++              persisted.journal.stop?.reason === "effect_in_doubt"
++                ? "effect_in_doubt"
++                : "canonical_workflow_effect_unavailable",
++            workflow_step: workflow.workflowStep.id,
++            evidence_digest: persisted.journal.digest,
++          },
++        };
++      }
+       return {
+         schema_version: 1,
+         task_id: opts.task_id,
+         action: {
+           kind: workflow.workflowStep.kind === "wait" ? "external_wait" : "human_required",
+-          reason:
+-            prepared === "already_observed"
+-              ? "canonical_workflow_effect_no_progress"
+-              : "canonical_workflow_effect_unavailable",
++          reason: "canonical_workflow_effect_unavailable",
+           workflow_step: workflow.workflowStep.id,
+         },
+       };
+diff --git a/packages/agentplane/src/commands/task/advance.command.ts b/packages/agentplane/src/commands/task/advance.command.ts
+index 44d8e611f..4bc792b64 100644
+--- a/packages/agentplane/src/commands/task/advance.command.ts
++++ b/packages/agentplane/src/commands/task/advance.command.ts
+@@ -18,6 +18,7 @@ import {
+ import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
+ import { classifyKernelCutover } from "./kernel-cutover.js";
+ import { advanceOrdinaryRoute } from "./ordinary-advance-step.js";
++import { preparePersistedSupervisorReplacementAfterFailure } from "../shared/supervisor-execution-episode.js";
+ 
+ function legacyMigrationRequired(taskId: string, reason: string): CliError {
+   return new CliError({
+@@ -118,15 +119,28 @@ export function makeRunTaskAdvanceHandler(deps: {
+         message: "Canonical tasks do not use integration supervisor effect recovery.",
+       });
+     }
+-    if (parsed.replacement) {
+-      throw new Error("Canonical replacement requires an explicit recovery episode");
+-    }
+     const externalConflictResult =
+       parsed.result?.replaceAll("\\", "/").includes("/agentplane/external-agent/") === true;
+     const workflow =
+-      parsed.remote && !parsed.result
+-        ? await decideCanonicalWorkflowEffect(command, parsed.taskId, true)
++      (parsed.remote || parsed.replacement) && !parsed.result
++        ? await decideCanonicalWorkflowEffect(command, parsed.taskId, parsed.remote)
+         : null;
++    const branchEpisodeReplacement =
++      parsed.replacement && workflow?.workflowStep.kind === "agent_episode";
++    if (parsed.replacement && !branchEpisodeReplacement) {
++      const replacement = await preparePersistedSupervisorReplacementAfterFailure({
++        git_root: command.resolvedProject.gitRoot,
++        task_id: parsed.taskId,
++        state_fingerprint_digest: workflow!.workflowStep.preconditionFingerprint.digest,
++      });
++      if (replacement === "not_failed") {
++        throw new CliError({
++          code: "E_USAGE",
++          message:
++            "task advance --replacement requires a terminal failed canonical supervisor operation.",
++        });
++      }
++    }
+     if (externalConflictResult || workflow?.workflowStep.id === "agent.provider_conflict_rework") {
+       const compatibility = await advanceOrdinaryRoute({ ctx, parsed, command });
+       createCliEmitter().json(compatibility.packet);
+@@ -142,6 +156,7 @@ export function makeRunTaskAdvanceHandler(deps: {
+         allow_remote: parsed.remote,
+       }),
+       allow_provider_effects: parsed.remote,
++      replace_failed_operation: branchEpisodeReplacement,
+     });
+     createCliEmitter().json(packet);
+     return 0;
+diff --git a/packages/agentplane/src/commands/task/agent-action-packet.test.ts b/packages/agentplane/src/commands/task/agent-action-packet.test.ts
+index 2c57136fa..bf3c5d444 100644
+--- a/packages/agentplane/src/commands/task/agent-action-packet.test.ts
++++ b/packages/agentplane/src/commands/task/agent-action-packet.test.ts
+@@ -208,6 +208,7 @@ describe("compact agent action packet", () => {
+             plan_digest: computePlanDigest("Approved plan"),
+             state_fingerprint: FINGERPRINT,
+             decision: "approved",
++            required_fields: ["host_id", "conversation_id", "message_id", "decided_at"],
+           },
+         },
+       });
+diff --git a/packages/agentplane/src/commands/task/agent-action-packet.ts b/packages/agentplane/src/commands/task/agent-action-packet.ts
+index 1226c8770..443c7c203 100644
+--- a/packages/agentplane/src/commands/task/agent-action-packet.ts
++++ b/packages/agentplane/src/commands/task/agent-action-packet.ts
+@@ -7,7 +7,11 @@ import {
+ import { createHash } from "node:crypto";
+ 
+ import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
+-import { createHumanDecisionTicket, type HumanDecisionTicket } from "@agentplaneorg/core/tasks";
++import {
++  createHumanDecisionTicket,
++  HOST_USER_DECISION_REQUIRED_FIELDS,
++  type HumanDecisionTicket,
++} from "@agentplaneorg/core/tasks";
+ 
+ import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+ import { AGENT_INSTRUCTION_LANGUAGE } from "../../runner/context/semantic-prompt-projection.js";
+@@ -80,6 +84,7 @@ export type AgentActionPacket = {
+         plan_digest: string;
+         state_fingerprint: string;
+         decision: "approved";
++        required_fields: typeof HOST_USER_DECISION_REQUIRED_FIELDS;
+       };
+     };
+   };
+@@ -197,6 +202,7 @@ function operatorActionFor(opts: {
+             plan_digest: planDigest,
+             state_fingerprint: step.preconditionFingerprint.digest,
+             decision: "approved",
++            required_fields: HOST_USER_DECISION_REQUIRED_FIELDS,
+           },
+         },
+       };
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts b/packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts
+index 3ea140f3b..43ec7bfcd 100644
+--- a/packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts
+@@ -65,6 +65,10 @@ import { conflictApplicationAuthority } from "../pr/conflict-rework-authority.js
+ import { workflowTaskFingerprintComponent } from "../shared/workflow-step-fingerprint.js";
+ import { buildSingleStageLifecycleTiming } from "../shared/lifecycle-stage-timing.js";
+ import { executeBranchEvaluatorEpisode } from "./branch-task-supervisor-evaluator-episode.js";
++import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
++import { requiresImplementationReworkReopen } from "../shared/task-scope-extension-request.js";
++import { cmdTaskSetStatus } from "./set-status.js";
++import { recoverBranchImplementationJournal } from "./branch-task-supervisor-journal-recovery.js";
+ 
+ async function executeBranchImplementationEpisode(opts: {
+   input: BranchTaskSupervisorOptions;
+@@ -80,7 +84,7 @@ async function executeBranchImplementationEpisode(opts: {
+     });
+   }
+   const command = await loadCommandContext({ cwd: checkout, rootOverride: null });
+-  const task = await loadTaskFromContext({ ctx: command, taskId: opts.input.task_id });
++  let task = await loadTaskFromContext({ ctx: command, taskId: opts.input.task_id });
+   const opened = await openSupervisorExecutionEpisode({
+     git_root: command.resolvedProject.gitRoot,
+     task_id: opts.input.task_id,
+@@ -99,7 +103,13 @@ async function executeBranchImplementationEpisode(opts: {
+     });
+   }
+   try {
+-    let journal = opened.journal;
++    let journal = await recoverBranchImplementationJournal({
++      opened,
++      journal: opened.journal,
++      decision: opts.decision,
++      task,
++      replace_failed_operation: opts.input.replace_failed_operation === true,
++    });
+     if (journal.status === "running" && journal.cursor.phase === "completed") {
+       const advanced = advanceSupervisorExecutionEpisodeState({
+         journal,
+@@ -158,6 +168,9 @@ async function executeBranchImplementationEpisode(opts: {
+         conflictRunPaths?.result_path ??
+         `branch-pr:${opts.input.task_id}:${step.preconditionFingerprint.digest}`,
+       ...(conflictRunPaths ? { work_order_ref: conflictRunPaths.bundle_path } : {}),
++      ...(journal.cursor.replacement_of_operation_key
++        ? { replacement_of_operation_key: journal.cursor.replacement_of_operation_key }
++        : {}),
+     });
+     if (started.status !== "started") {
+       await opened.store.write(started.journal);
+@@ -181,6 +194,34 @@ async function executeBranchImplementationEpisode(opts: {
+       });
+     }
+     journal = started.journal;
++    if (
++      requiresImplementationReworkReopen({
++        purpose: step.episode.purpose,
++        task_status: task.status,
++        work_item_id: null,
++        work_item_is_required: false,
++      }) &&
++      !Object.hasOwn(task.extensions ?? {}, TASK_KERNEL_EXTENSION)
++    ) {
++      await cmdTaskSetStatus({
++        ctx: command,
++        cwd: checkout,
++        taskId: opts.input.task_id,
++        status: "DOING",
++        author: "SUPERVISOR",
++        body: "Reopen completed task for implementation rework before executor dispatch.",
++        force: true,
++        yes: true,
++        commitFromComment: true,
++        commitAllow: [],
++        commitAutoAllow: false,
++        commitAllowTasks: true,
++        commitRequireClean: false,
++        confirmStatusCommit: true,
++        quiet: true,
++      });
++      task = await loadTaskFromContext({ ctx: command, taskId: opts.input.task_id });
++    }
+     const [executionBaseCommit, executionBaselineStatus] = await Promise.all([
+       readDirectTaskHead(checkout),
+       readDirectRepositoryStatus(checkout),
+@@ -361,6 +402,7 @@ async function executeBranchVerificationEpisode(opts: {
+       git_root: command.resolvedProject.gitRoot,
+       task_id: opts.input.task_id,
+       id: "task_verify",
++      replace_failed_operation: opts.input.replace_failed_operation,
+       decision: opts.decide,
+       run: async () => {
+         const verification = await resolveImplementationVerificationTask({
+@@ -427,6 +469,8 @@ async function executeBranchVerificationEpisode(opts: {
+           incidentTags: [],
+           incidentMatch: [],
+           quiet: true,
++          allowCanonicalProjection:
++            task.extensions !== undefined && Object.hasOwn(task.extensions, TASK_KERNEL_EXTENSION),
+         });
+         if (exitCode !== 0) throw new Error(`Verification record exited with ${exitCode}.`);
+         const coalesce =
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor-journal-recovery.ts b/packages/agentplane/src/commands/task/branch-task-supervisor-journal-recovery.ts
+new file mode 100644
+index 000000000..17cfa5b12
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor-journal-recovery.ts
+@@ -0,0 +1,89 @@
++import {
++  completeSupervisorExecutionEpisode,
++  prepareReplacementSupervisorExecutionEpisodeAfterFailure,
++  refreshPendingReplacementSupervisorExecutionEpisode,
++  reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
++  type SupervisorExecutionEpisodeJournal,
++} from "@agentplaneorg/core/schemas";
++import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
++import type { TaskData } from "../../backends/task-backend.js";
++import type { TaskRouteDecision } from "../shared/route-decision-types.js";
++import type { openSupervisorExecutionEpisode } from "../shared/supervisor-execution-episode.js";
++
++export async function recoverBranchImplementationJournal(opts: {
++  opened: Awaited<ReturnType<typeof openSupervisorExecutionEpisode>>;
++  journal: SupervisorExecutionEpisodeJournal;
++  decision: TaskRouteDecision;
++  task: TaskData;
++  replace_failed_operation: boolean;
++}): Promise<SupervisorExecutionEpisodeJournal> {
++  let journal = opts.journal;
++  const fingerprint = opts.decision.workflowStep.preconditionFingerprint.digest;
++  const interruptedPredispatch = journal.operations.at(-1);
++  if (
++    opts.replace_failed_operation &&
++    journal.status === "running" &&
++    journal.cursor.phase === "intent_recorded" &&
++    journal.cursor.operation_key === interruptedPredispatch?.operation_key &&
++    interruptedPredispatch.status === "intent" &&
++    interruptedPredispatch.kind === "agent_episode" &&
++    interruptedPredispatch.work_order_ref === null &&
++    opts.decision.workflowStep.kind === "agent_episode" &&
++    opts.decision.workflowStep.episode.purpose === "implementation_rework" &&
++    opts.task.status === "DONE" &&
++    Object.hasOwn(opts.task.extensions ?? {}, TASK_KERNEL_EXTENSION)
++  ) {
++    const failed = completeSupervisorExecutionEpisode({
++      journal,
++      operation_key: interruptedPredispatch.operation_key,
++      result: { error: "canonical_rework_predispatch_interrupted" },
++      failed: true,
++    });
++    const replacement = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
++      journal: failed,
++      state_fingerprint_digest: fingerprint,
++    });
++    if (!(await opts.opened.store.compareAndSwap(journal.digest, replacement))) {
++      throw new Error("Branch supervisor journal changed during pre-dispatch recovery.");
++    }
++    journal = replacement;
++  }
++  if (journal.status === "stopped" && opts.replace_failed_operation) {
++    const replacement = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
++      journal,
++      state_fingerprint_digest: fingerprint,
++    });
++    if (!(await opts.opened.store.compareAndSwap(journal.digest, replacement))) {
++      throw new Error("Branch supervisor journal changed during replacement preparation.");
++    }
++    journal = replacement;
++  }
++  const replacementOperation = journal.operations.at(-1);
++  if (
++    journal.status === "running" &&
++    journal.cursor.phase === "ready" &&
++    journal.cursor.replacement_of_operation_key === replacementOperation?.operation_key &&
++    replacementOperation?.status === "failed" &&
++    journal.state_fingerprint_digest !== fingerprint
++  ) {
++    const refreshed = refreshPendingReplacementSupervisorExecutionEpisode({
++      journal,
++      state_fingerprint_digest: fingerprint,
++    });
++    if (!(await opts.opened.store.compareAndSwap(journal.digest, refreshed))) {
++      throw new Error("Branch supervisor journal changed during replacement refresh.");
++    }
++    journal = refreshed;
++  }
++  if (journal.status === "stopped" && journal.stop?.reason === "stale_state") {
++    const reopened = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
++      journal,
++      state_fingerprint_digest: fingerprint,
++    });
++    if (!(await opts.opened.store.compareAndSwap(journal.digest, reopened))) {
++      throw new Error("Branch supervisor journal changed during stale-state recovery.");
++    }
++    journal = reopened;
++  }
++  return journal;
++}
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor.test.ts b/packages/agentplane/src/commands/task/branch-task-supervisor.test.ts
+index b6ea3958d..61fb8e48f 100644
+--- a/packages/agentplane/src/commands/task/branch-task-supervisor.test.ts
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor.test.ts
+@@ -2,12 +2,14 @@ import { readFile } from "node:fs/promises";
+ import { describe, expect, it } from "vitest";
+ 
+ async function sources() {
+-  const [contract, episodes, advance] = await Promise.all([
++  const [contract, episodes, recovery, advance, provider] = await Promise.all([
+     readFile(new URL("branch-task-supervisor.ts", import.meta.url), "utf8"),
+     readFile(new URL("branch-task-supervisor-episodes.ts", import.meta.url), "utf8"),
++    readFile(new URL("branch-task-supervisor-journal-recovery.ts", import.meta.url), "utf8"),
+     readFile(new URL("advance-task-step.ts", import.meta.url), "utf8"),
++    readFile(new URL("kernel-provider-effect-coordinator.ts", import.meta.url), "utf8"),
+   ]);
+-  return { contract, episodes, advance };
++  return { contract, episodes, recovery, advance, provider };
+ }
+ 
+ describe("retired branch task outer supervisor", () => {
+@@ -28,20 +30,35 @@ describe("retired branch task outer supervisor", () => {
+   });
+ 
+   it("maps late checks through the canonical workflow effect coordinator", async () => {
+-    const { advance } = await sources();
+-    expect(advance).toContain("prepareCanonicalWorkflowEffect");
++    const { advance, episodes, recovery, provider } = await sources();
++    expect(advance).toContain("executeCanonicalAdmittedWorkflowOperation");
++    expect(advance).toContain("executeCanonicalCompletedAgentEpisode");
++    expect(provider).toContain('["implementation_rework", "verification", "quality_review"]');
++    expect(episodes).toContain("requiresImplementationReworkReopen");
++    expect(episodes).toContain("recoverBranchImplementationJournal");
++    expect(recovery).toContain("prepareReplacementSupervisorExecutionEpisodeAfterFailure");
++    expect(recovery).toContain("refreshPendingReplacementSupervisorExecutionEpisode");
++    expect(recovery).toContain("canonical_rework_predispatch_interrupted");
++    expect(episodes).toContain(
++      "replacement_of_operation_key: journal.cursor.replacement_of_operation_key",
++    );
++    expect(episodes).toContain(
++      "Reopen completed task for implementation rework before executor dispatch.",
++    );
+     expect(advance).toContain("applyKernelEffectStep");
+   });
+ 
+   it("does not replay a completed hosted-close side effect on supervisor restart", async () => {
+-    const { advance } = await sources();
++    const { advance, recovery } = await sources();
+     expect(advance).toContain("restoreKernelFinalValidation");
+-    expect(advance).toContain("canonical_workflow_effect_no_progress");
++    expect(advance).toContain("effect_in_doubt");
++    expect(recovery).toContain("reopenCompletedSupervisorExecutionEpisodeAfterStaleState");
++    expect(recovery).toContain("Branch supervisor journal changed during stale-state recovery.");
+   });
+ 
+   it("records merged provider truth and the final main head in cleanup receipts", async () => {
+     const { advance } = await sources();
+-    expect(advance).toContain("prepareCanonicalWorkflowEffect");
++    expect(advance).toContain("canonicalWorkflowRequestDigest");
+     expect(advance).toContain("ensureKernelOperationalProjectionEvidence");
+   });
+ });
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor.ts b/packages/agentplane/src/commands/task/branch-task-supervisor.ts
+index 5f4aa99bf..46f74bcbc 100644
+--- a/packages/agentplane/src/commands/task/branch-task-supervisor.ts
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor.ts
+@@ -81,6 +81,7 @@ export type BranchTaskSupervisorOptions = {
+   ctx: CommandCtx;
+   command: CommandContext;
+   task_id: string;
++  replace_failed_operation?: boolean;
+   task_execution?: TaskExecutionContext;
+   sandbox_override?: string;
+   danger_authority?: {
+diff --git a/packages/agentplane/src/commands/task/branch-task-verification.test.ts b/packages/agentplane/src/commands/task/branch-task-verification.test.ts
+index da5f753ba..852bb31c4 100644
+--- a/packages/agentplane/src/commands/task/branch-task-verification.test.ts
++++ b/packages/agentplane/src/commands/task/branch-task-verification.test.ts
+@@ -14,9 +14,13 @@ import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+ 
+ const taskId = "202607310001-BRANCH";
+ 
+-it.each([false, true])(
+-  "freezes branch verification and preserves its planned commands (%s)",
+-  async (planned) => {
++it.each([
++  { planned: false, canonical: false, status: "DOING", allowCanonicalProjection: false },
++  { planned: true, canonical: false, status: "DOING", allowCanonicalProjection: false },
++  { planned: true, canonical: true, status: "DONE", allowCanonicalProjection: true },
++] as const)(
++  "freezes branch verification and preserves its planned commands ($status, planned=$planned)",
++  async ({ planned, canonical, status, allowCanonicalProjection }) => {
+     const decision = {
+       task: { id: taskId },
+       executionPacket: { mustRunFrom: "/repo/task" },
+@@ -39,7 +43,7 @@ it.each([false, true])(
+       revision: 2,
+       title: "Branch fixture",
+       description: "",
+-      status: "DOING",
++      status,
+       acceptance_criteria: [],
+       captured_at: "2026-09-07T00:00:00Z",
+       updated_at: "2026-09-07T00:00:00Z",
+@@ -69,6 +73,7 @@ it.each([false, true])(
+                   },
+                 },
+               },
++              ...(canonical ? { task_kernel: { aggregate: { state: "COMPLETED" } } } : {}),
+             },
+           }
+         : {}),
+@@ -151,6 +156,7 @@ it.each([false, true])(
+       expect(verificationRecord.cmdVerifyParsed).toHaveBeenCalledWith(
+         expect.objectContaining({
+           verificationSnapshot: snapshot,
++          allowCanonicalProjection,
+         }),
+       );
+       expect(vi.mocked(verificationRecord.cmdVerifyParsed).mock.calls[0]?.[0].details).toContain(
+diff --git a/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts b/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts
+index f59120ece..9fb1e082e 100644
+--- a/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts
++++ b/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts
+@@ -4,6 +4,7 @@ import {
+   createSupervisorExecutionEpisodeJournal,
+   prepareReplacementSupervisorExecutionEpisodeAfterFailure,
+   recoverSupervisorExecutionEpisodeJournal,
++  stopSupervisorExecutionEpisode,
+   startSupervisorExecutionEpisode,
+ } from "@agentplaneorg/core/schemas";
+ import { beforeEach, describe, expect, it, vi } from "vitest";
+@@ -128,6 +129,64 @@ describe("direct task supervisor formal operation", () => {
+     });
+   });
+ 
++  it("continues formal verification after reviewed state changes", async () => {
++    const ready = createSupervisorExecutionEpisodeJournal({
++      task_id: TASK_ID,
++      task_revision: null,
++      state_fingerprint_digest: FIRST_FINGERPRINT,
++      budget: {
++        max_episodes: 50,
++        max_agent_runs: 50,
++        max_input_tokens: 3_000_000,
++        max_output_tokens: 1_000_000,
++        max_total_tokens: 4_000_000,
++        max_wall_time_ms: 14_400_000,
++        max_changed_files: 2000,
++        max_diff_lines: null,
++        max_no_progress_episodes: 3,
++      },
++    });
++    const review = startSupervisorExecutionEpisode({
++      journal: ready,
++      role: "EVALUATOR",
++      kind: "evaluator_episode",
++      operation_identity: { id: "quality_review" },
++      precondition_fingerprint_digest: FIRST_FINGERPRINT,
++    });
++    if (review.status !== "started") throw new Error("expected review fixture");
++    const completed = completeSupervisorExecutionEpisode({
++      journal: review.journal,
++      operation_key: review.operation_key,
++      result: { verdict: "human_review" },
++    });
++    const stopped = stopSupervisorExecutionEpisode({
++      journal: completed,
++      reason: "human_review",
++    });
++    const write = vi.fn().mockResolvedValue(undefined);
++    mocks.open.mockResolvedValue({
++      journal: stopped,
++      journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
++      store: { write },
++    });
++    const run = vi.fn().mockResolvedValue({ verification: "ok" });
++
++    const result = await recordDirectTaskFormalOperation({
++      git_root: "/repo",
++      task_id: TASK_ID,
++      id: "task_verify",
++      decision: vi.fn().mockResolvedValue(decision(NEXT_FINGERPRINT)),
++      run,
++    });
++
++    expect(run).toHaveBeenCalledOnce();
++    expect(result.journal).toMatchObject({ status: "running", stop: null });
++    expect(result.journal.operations.at(-1)).toMatchObject({
++      kind: "cli_operation",
++      status: "completed",
++    });
++  });
++
+   it("refuses a retry when the prior formal effect is unknown", async () => {
+     const initial = createSupervisorExecutionEpisodeJournal({
+       task_id: TASK_ID,
+@@ -360,6 +419,119 @@ describe("direct task supervisor formal operation", () => {
+     });
+   });
+ 
++  it("prepares an explicitly authorized replacement for the same formal operation", async () => {
++    const initial = createSupervisorExecutionEpisodeJournal({
++      task_id: TASK_ID,
++      task_revision: null,
++      state_fingerprint_digest: FIRST_FINGERPRINT,
++      budget: {
++        max_episodes: 50,
++        max_agent_runs: 50,
++        max_input_tokens: 3_000_000,
++        max_output_tokens: 1_000_000,
++        max_total_tokens: 4_000_000,
++        max_wall_time_ms: 14_400_000,
++        max_changed_files: 2000,
++        max_diff_lines: null,
++        max_no_progress_episodes: 3,
++      },
++    });
++    const started = startSupervisorExecutionEpisode({
++      journal: initial,
++      role: "EXECUTOR",
++      kind: "cli_operation",
++      operation_identity: { direct_task_operation: "task_verify" },
++      precondition_fingerprint_digest: FIRST_FINGERPRINT,
++      effect_ref: "task_verify",
++    });
++    if (started.status !== "started") throw new Error("expected failed operation fixture");
++    const failed = completeSupervisorExecutionEpisode({
++      journal: started.journal,
++      operation_key: started.operation_key,
++      result: { error: "declared_checks_failed" },
++      failed: true,
++    });
++    const write = vi.fn().mockResolvedValue(undefined);
++    mocks.open.mockResolvedValue({
++      journal: failed,
++      journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
++      store: { write },
++    });
++    const run = vi.fn().mockResolvedValue({ verification: "ok" });
++
++    const result = await recordDirectTaskFormalOperation({
++      git_root: "/repo",
++      task_id: TASK_ID,
++      id: "task_verify",
++      replace_failed_operation: true,
++      decision: vi.fn().mockResolvedValue(decision(NEXT_FINGERPRINT)),
++      run,
++    });
++
++    expect(run).toHaveBeenCalledOnce();
++    expect(result.journal.operations.at(-1)).toMatchObject({
++      status: "completed",
++      replacement_of_operation_key: started.operation_key,
++    });
++  });
++
++  it("starts verification after a different lifecycle operation failed", async () => {
++    const initial = createSupervisorExecutionEpisodeJournal({
++      task_id: TASK_ID,
++      task_revision: null,
++      state_fingerprint_digest: FIRST_FINGERPRINT,
++      budget: {
++        max_episodes: 50,
++        max_agent_runs: 50,
++        max_input_tokens: 3_000_000,
++        max_output_tokens: 1_000_000,
++        max_total_tokens: 4_000_000,
++        max_wall_time_ms: 14_400_000,
++        max_changed_files: 2000,
++        max_diff_lines: null,
++        max_no_progress_episodes: 3,
++      },
++    });
++    const started = startSupervisorExecutionEpisode({
++      journal: initial,
++      role: "EXECUTOR",
++      kind: "cli_operation",
++      operation_identity: { id: "provider.pr.update_branch" },
++      precondition_fingerprint_digest: FIRST_FINGERPRINT,
++      effect_ref: "provider.pr.update_branch:request",
++    });
++    if (started.status !== "started") throw new Error("expected failed operation fixture");
++    const failed = completeSupervisorExecutionEpisode({
++      journal: started.journal,
++      operation_key: started.operation_key,
++      result: { error: "known_provider_postcondition_failure" },
++      failed: true,
++    });
++    const write = vi.fn().mockResolvedValue(undefined);
++    mocks.open.mockResolvedValue({
++      journal: failed,
++      journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
++      store: { write },
++    });
++    const run = vi.fn().mockResolvedValue({ verification: "ok" });
++
++    const result = await recordDirectTaskFormalOperation({
++      git_root: "/repo",
++      task_id: TASK_ID,
++      id: "task_verify",
++      decision: vi.fn().mockResolvedValue(decision(NEXT_FINGERPRINT)),
++      run,
++    });
++
++    expect(run).toHaveBeenCalledOnce();
++    expect(result.journal.operations).toHaveLength(2);
++    expect(result.journal.operations[1]).toMatchObject({
++      status: "completed",
++      effect_ref: "task_verify",
++      replacement_of_operation_key: started.operation_key,
++    });
++  });
++
+   it("refreshes a reserved failed-operation replacement before a formal route transition", async () => {
+     const initial = createSupervisorExecutionEpisodeJournal({
+       task_id: TASK_ID,
+diff --git a/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts b/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts
+index f56cd1c2e..6446dab32 100644
+--- a/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts
++++ b/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts
+@@ -4,6 +4,7 @@ import {
+   prepareReplacementSupervisorExecutionEpisodeAfterFailure,
+   refreshPendingReplacementSupervisorExecutionEpisode,
+   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
++  reopenSupervisorExecutionEpisodeAfterHumanReviewStateChange,
+   startSupervisorExecutionEpisode,
+   type SupervisorExecutionEpisodeJournal,
+ } from "@agentplaneorg/core/schemas";
+@@ -20,6 +21,7 @@ export async function recordDirectTaskFormalOperation(opts: {
+   git_root: string;
+   task_id: string;
+   id: "task_verify" | "task_finish";
++  replace_failed_operation?: boolean;
+   run: () => Promise<Record<string, unknown>> | Record<string, unknown>;
+   decision: () => Promise<TaskRouteDecision>;
+ }): Promise<{
+@@ -71,6 +73,30 @@ export async function recordDirectTaskFormalOperation(opts: {
+       });
+       await opened.store.write(journal);
+     }
++    const failedOperation = journal.operations.at(-1);
++    if (
++      journal.status === "stopped" &&
++      (journal.stop?.reason === "operation_failed" || journal.stop?.reason === "stale_state") &&
++      failedOperation?.status === "failed" &&
++      (opts.replace_failed_operation === true || failedOperation.effect_ref !== opts.id)
++    ) {
++      journal = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
++        journal,
++        state_fingerprint_digest: before.workflowStep.preconditionFingerprint.digest,
++      });
++      await opened.store.write(journal);
++    }
++    if (
++      journal.status === "stopped" &&
++      journal.stop?.reason === "human_review" &&
++      journal.state_fingerprint_digest !== before.workflowStep.preconditionFingerprint.digest
++    ) {
++      journal = reopenSupervisorExecutionEpisodeAfterHumanReviewStateChange({
++        journal,
++        state_fingerprint_digest: before.workflowStep.preconditionFingerprint.digest,
++      });
++      await opened.store.write(journal);
++    }
+     if (journal.status === "stopped") {
+       throw new CliError({
+         code: "E_RUNTIME",
+diff --git a/packages/agentplane/src/commands/task/doc-set.command.ts b/packages/agentplane/src/commands/task/doc-set.command.ts
+index 6f3b1ec7d..1c8cf224d 100644
+--- a/packages/agentplane/src/commands/task/doc-set.command.ts
++++ b/packages/agentplane/src/commands/task/doc-set.command.ts
+@@ -1,6 +1,7 @@
+ import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
+ import { usageError } from "../../cli/spec/errors.js";
+ import type { CommandContext } from "../shared/task-backend.js";
++import { validateTextPayloadSource } from "../shared/text-payload.js";
+ 
+ import { cmdTaskDocSet } from "./doc.js";
+ 
+@@ -87,14 +88,12 @@ export const taskDocSetSpec: CommandSpec<TaskDocSetParsed> = {
+     if (typeof raw.opts.section === "string" && section === "") {
+       throw usageError({ spec: taskDocSetSpec, message: "Invalid value for --section: empty." });
+     }
+-    const hasText = typeof raw.opts.text === "string";
+-    const hasFile = typeof raw.opts.file === "string";
+-    if (hasText === hasFile) {
+-      throw usageError({
+-        spec: taskDocSetSpec,
+-        message: "Exactly one of --text or --file is required.",
+-      });
+-    }
++    validateTextPayloadSource(
++      raw,
++      taskDocSetSpec,
++      { inline: "text", file: "file", label: "task document content" },
++      { required: true },
++    );
+     const updatedBy = raw.opts["updated-by"];
+     if (typeof updatedBy === "string" && updatedBy.trim() === "") {
+       throw usageError({ spec: taskDocSetSpec, message: "--updated-by must be non-empty." });
+diff --git a/packages/agentplane/src/commands/task/doc.unit.test.ts b/packages/agentplane/src/commands/task/doc.unit.test.ts
+index 80449268f..5540b92f0 100644
+--- a/packages/agentplane/src/commands/task/doc.unit.test.ts
++++ b/packages/agentplane/src/commands/task/doc.unit.test.ts
+@@ -62,6 +62,17 @@ function mkCtxWithOptionalVerifySteps(overrides?: Partial<CommandContext>): Comm
+ }
+ 
+ describe("task doc commands (unit)", () => {
++  it("requires command-bearing document text to use --file", async () => {
++    const { taskDocSetSpec } = await import("./doc-set.command.js");
++    expect(() =>
++      taskDocSetSpec.validateRaw?.({
++        args: { "task-id": "T-1" },
++        opts: { section: "Verify Steps", text: "Run `node test.js`" },
++        extra: [],
++      }),
++    ).toThrow(/use --file for task document content/u);
++  });
++
+   beforeEach(() => {
+     mocks.loadCommandContext.mockReset();
+     mocks.loadTaskFromContext.mockReset();
+diff --git a/packages/agentplane/src/commands/task/external-agent-supervisor.test.ts b/packages/agentplane/src/commands/task/external-agent-supervisor.test.ts
+new file mode 100644
+index 000000000..89abbc14b
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/external-agent-supervisor.test.ts
+@@ -0,0 +1,180 @@
++import { readFile } from "node:fs/promises";
++import path from "node:path";
++
++import {
++  buildStateFingerprint,
++  completeSupervisorExecutionEpisode,
++  createSupervisorExecutionEpisodeJournal,
++  digestSupervisorEpisodeValue,
++  startSupervisorExecutionEpisode,
++} from "@agentplaneorg/core/schemas";
++import { mkGitRepoRoot } from "@agentplane/testkit";
++import { describe, expect, it } from "vitest";
++
++import { createSupervisorEpisodeStore } from "../shared/supervisor-execution-episode.js";
++import {
++  finalizeCompletedExternalAgentExchange,
++  type assertExternalAgentSupervisorIntent,
++} from "./external-agent-exchange-authority.js";
++import { assertExternalImplementationReturnState } from "./external-agent-implementation-authority.js";
++import type {
++  ExternalAgentExchange,
++  ExternalAgentExchangePaths,
++} from "./external-agent-exchange.js";
++
++describe("external agent supervisor replay", () => {
++  it("rejects an implementation result whose task revision no longer matches its work order", () => {
++    const expected = {
++      task_id: "T-REVISION",
++      task_revision: 3,
++      worktree: "/repo/worktree",
++      components: {
++        task: { digest: `sha256:${"a".repeat(64)}` },
++        backend_projection: { digest: `sha256:${"b".repeat(64)}` },
++        provider: { digest: `sha256:${"c".repeat(64)}` },
++      },
++    };
++    expect(() =>
++      assertExternalImplementationReturnState({
++        exchange: { baseline: { head: "head", changed_paths: [] } } as ExternalAgentExchange,
++        work_order: { state_fingerprint: expected } as never,
++        current: {
++          workflowStep: {
++            preconditionFingerprint: { ...expected, task_revision: 4 },
++          },
++        } as never,
++        current_head: "head",
++        current_status_lines: [],
++        require_changes: false,
++      }),
++    ).toThrow("External-agent implementation result is stale against current task authority.");
++  });
++
++  it("consumes an accepted result after task application completed but exchange persistence did not", async () => {
++    const root = await mkGitRepoRoot();
++    const taskId = "202609220001-REPLAY";
++    const component = {
++      state: "present",
++      source: "external_agent_supervisor_test",
++      value: { taskId },
++    } as const;
++    const fingerprint = buildStateFingerprint({
++      task_id: taskId,
++      task_revision: 3,
++      git_head: "a".repeat(40),
++      worktree: root,
++      components: {
++        task: component,
++        git: component,
++        backend_projection: component,
++        policy: component,
++        blueprint: component,
++        knowledge: component,
++        provider: component,
++        authority: component,
++      },
++    });
++    const operationIdentity = {
++      id: "external_agent.implementation",
++      type: "external_agent",
++      params: { taskId },
++      preconditionFingerprint: fingerprint,
++      authorityRef: "external-agent:test",
++      idempotencyKey: "external-agent:test",
++      expectedPostconditions: [],
++      triggersGitHooks: false,
++    } as const;
++    const created = createSupervisorExecutionEpisodeJournal({
++      task_id: taskId,
++      task_revision: 3,
++      state_fingerprint_digest: fingerprint.digest,
++      budget: {
++        max_episodes: 5,
++        max_agent_runs: 5,
++        max_input_tokens: null,
++        max_output_tokens: null,
++        max_total_tokens: null,
++        max_wall_time_ms: 60_000,
++        max_changed_files: 20,
++        max_diff_lines: null,
++        max_no_progress_episodes: 3,
++      },
++    });
++    const started = startSupervisorExecutionEpisode({
++      journal: created,
++      role: "EXECUTOR",
++      kind: "agent_episode",
++      operation_identity: operationIdentity,
++      precondition_fingerprint_digest: fingerprint.digest,
++      authority_ref: operationIdentity.authorityRef,
++      authority_digest: fingerprint.digest,
++      effect_ref: operationIdentity.idempotencyKey,
++    });
++    if (started.status !== "started") throw new Error("expected started operation");
++    const resultDigest = `sha256:${"b".repeat(64)}`;
++    const workOrderId = `sha256:${"c".repeat(64)}`;
++    const semanticStatus = "completed";
++    const postcondition = { digest: fingerprint.digest };
++    const completed = completeSupervisorExecutionEpisode({
++      journal: started.journal,
++      operation_key: started.operation_key,
++      result: {
++        work_order_id: workOrderId,
++        semantic_status: semanticStatus,
++        result_digest: resultDigest,
++      },
++      progress: postcondition,
++    });
++    const journalPath = path.join(root, ".git", "replay-journal.json");
++    const store = createSupervisorEpisodeStore(journalPath);
++    await store.write(completed);
++    const directory = path.join(root, ".agentplane", "exchange");
++    const paths: ExternalAgentExchangePaths = {
++      directory,
++      exchange: path.join(directory, "exchange.json"),
++      work_order: path.join(directory, "work-order.json"),
++      result_schema: path.join(directory, "result-schema.json"),
++      semantic_result_schema: path.join(directory, "semantic-result-schema.json"),
++      result: path.join(directory, "result.json"),
++    };
++    const exchange = {
++      schema_version: 1,
++      kind: "external_agent_exchange",
++      status: "accepted",
++      task_id: taskId,
++      result_digest: resultDigest,
++    } as ExternalAgentExchange;
++    const intent = {
++      state: "completed_pending_exchange",
++      journal: completed,
++      operation: completed.operations.at(-1)!,
++    } as ReturnType<typeof assertExternalAgentSupervisorIntent>;
++
++    await expect(
++      finalizeCompletedExternalAgentExchange({
++        intent,
++        store,
++        exchange,
++        paths,
++        postcondition,
++        postcondition_fingerprint: fingerprint.digest,
++        route_step_id: "next-step",
++        work_order_id: workOrderId,
++        semantic_status: semanticStatus,
++        result_digest: resultDigest,
++      }),
++    ).resolves.toBe(true);
++
++    const persistedExchange = JSON.parse(await readFile(paths.exchange, "utf8")) as {
++      status: string;
++    };
++    expect(persistedExchange.status).toBe("consumed");
++    expect(completed.operations.at(-1)?.result_digest).toBe(
++      digestSupervisorEpisodeValue({
++        work_order_id: workOrderId,
++        semantic_status: semanticStatus,
++        result_digest: resultDigest,
++      }),
++    );
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/finish-execute-close.ts b/packages/agentplane/src/commands/task/finish-execute-close.ts
+index 8b9ccd170..23c19390b 100644
+--- a/packages/agentplane/src/commands/task/finish-execute-close.ts
++++ b/packages/agentplane/src/commands/task/finish-execute-close.ts
+@@ -10,8 +10,10 @@ import { resolveIgnoredDirectCloseDirtyPaths } from "../guard/impl/close-dirt.js
+ import type { CommandContext } from "../shared/task-backend.js";
+ import { gitCurrentBranch } from "../shared/git-ops.js";
+ import { parsePrMeta } from "../shared/pr-meta.js";
++import { applyTaskMutation } from "../shared/task-mutation.js";
+ import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
+ import { createTaskCloseCommit } from "./finish-shared.js";
++import type { ResolvedCommitInfo } from "./finish-shared.js";
+ import { materializeBranchPrCloseTail } from "./finish-close.js";
+ import {
+   resolveFinishWorkflowMode,
+@@ -124,6 +126,9 @@ export async function finalizeCloseTail(opts: {
+   plan: FinishExecutionPlan;
+   primaryTaskId: string;
+   promotedIncidents: number;
++  preserveCompletedCanonicalTaskState?: boolean;
++  taskCommitInfo?: ResolvedCommitInfo | null;
++  implementationCommitInfo?: ResolvedCommitInfo | null;
+ }): Promise<void> {
+   const { ctx, options, plan, primaryTaskId, promotedIncidents } = opts;
+   const workflowMode = resolveFinishWorkflowMode(plan, ctx);
+@@ -135,6 +140,14 @@ export async function finalizeCloseTail(opts: {
+   const closeUnstageOthers = options.closeCommit === true && options.closeUnstageOthers === true;
+   if (workflowMode === "branch_pr") {
+     if (plan.preMergeClosure) {
++      if (opts.preserveCompletedCanonicalTaskState) {
++        await persistCompletedCanonicalPreMergeCommitMetadata({
++          ctx,
++          taskId: primaryTaskId,
++          taskCommitInfo: opts.taskCommitInfo ?? null,
++          implementationCommitInfo: opts.implementationCommitInfo ?? null,
++        });
++      }
+       await markPreMergeClosure({ ctx, taskId: primaryTaskId });
+       await createTaskCloseCommit({
+         ctx,
+@@ -193,6 +206,34 @@ export async function finalizeCloseTail(opts: {
+   });
+ }
+ 
++async function persistCompletedCanonicalPreMergeCommitMetadata(opts: {
++  ctx: CommandContext;
++  taskId: string;
++  taskCommitInfo: ResolvedCommitInfo | null;
++  implementationCommitInfo: ResolvedCommitInfo | null;
++}): Promise<void> {
++  if (!opts.taskCommitInfo) return;
++  await applyTaskMutation({
++    ctx: opts.ctx,
++    taskId: opts.taskId,
++    policyAction: "task_status_transition",
++    phase: "finish",
++    allowCanonicalProjection: true,
++    build: (current) => ({
++      nextTask: {
++        ...current,
++        commit: opts.taskCommitInfo,
++        extensions: opts.implementationCommitInfo
++          ? {
++              ...current.extensions,
++              implementation_commit: opts.implementationCommitInfo,
++            }
++          : current.extensions,
++      },
++    }),
++  });
++}
++
+ async function markPreMergeClosure(opts: { ctx: CommandContext; taskId: string }): Promise<void> {
+   const metaPath = path.join(
+     opts.ctx.resolvedProject.gitRoot,
+diff --git a/packages/agentplane/src/commands/task/finish-execute.ts b/packages/agentplane/src/commands/task/finish-execute.ts
+index 6c7e990c5..bda96f417 100644
+--- a/packages/agentplane/src/commands/task/finish-execute.ts
++++ b/packages/agentplane/src/commands/task/finish-execute.ts
+@@ -33,6 +33,24 @@ import {
+   openFinishCloseoutJournal,
+ } from "./finish-closeout-journal.js";
+ 
++export function shouldPreserveCompletedCanonicalTaskState(opts: {
++  plan: FinishExecutionPlan;
++  loadedTasks: readonly LoadedFinishTask[];
++}): boolean {
++  if (!opts.plan.preMergeClosure || opts.loadedTasks.length === 0) return false;
++  return opts.loadedTasks.every(({ task }) => {
++    const record = task.extensions?.task_kernel;
++    if (!record || typeof record !== "object" || Array.isArray(record)) return false;
++    const aggregate = (record as { aggregate?: unknown }).aggregate;
++    return (
++      aggregate !== null &&
++      typeof aggregate === "object" &&
++      !Array.isArray(aggregate) &&
++      (aggregate as { state?: unknown }).state === "COMPLETED"
++    );
++  });
++}
++
+ export async function executeFinishPlan(opts: {
+   ctx: CommandContext;
+   options: FinishOptions;
+@@ -54,6 +72,10 @@ export async function executeFinishPlan(opts: {
+     }
+ 
+     const loadedState = await loadFinishTasks({ ctx, options, plan });
++    const preserveCompletedCanonicalTaskState = shouldPreserveCompletedCanonicalTaskState({
++      plan,
++      loadedTasks: loadedState.loadedTasks,
++    });
+     if (!taskStateAlreadyWritten) {
+       assertFinishPhasePolicy({ ctx, loadedTasks: loadedState.loadedTasks, plan });
+       assertNativeTaskIdentityBeforeFinish({ ctx, loadedTasks: loadedState.loadedTasks });
+@@ -123,23 +145,25 @@ export async function executeFinishPlan(opts: {
+     }
+ 
+     if (!taskStateAlreadyWritten) {
+-      await writeFinishedTasks({
+-        ctx,
+-        loadedTasks: loadedState.loadedTasks,
+-        metaTaskId: plan.metaTaskId,
+-        author: options.author,
+-        body: options.body,
+-        force: options.force,
+-        resultProvided: plan.resultProvided,
+-        resultSummary: plan.resultSummary,
+-        riskLevel: plan.riskLevel,
+-        breaking: plan.breaking,
+-        taskCommitInfo,
+-        implementationCommitInfo,
+-        allowCanonicalProjection:
+-          plan.preMergeClosure &&
+-          loadedState.loadedTasks.every(({ task }) => hasCanonicalPreMergeEvidence(task)),
+-      });
++      if (!preserveCompletedCanonicalTaskState) {
++        await writeFinishedTasks({
++          ctx,
++          loadedTasks: loadedState.loadedTasks,
++          metaTaskId: plan.metaTaskId,
++          author: options.author,
++          body: options.body,
++          force: options.force,
++          resultProvided: plan.resultProvided,
++          resultSummary: plan.resultSummary,
++          riskLevel: plan.riskLevel,
++          breaking: plan.breaking,
++          taskCommitInfo,
++          implementationCommitInfo,
++          allowCanonicalProjection:
++            plan.preMergeClosure &&
++            loadedState.loadedTasks.every(({ task }) => hasCanonicalPreMergeEvidence(task)),
++        });
++      }
+       closeoutJournal = await advanceFinishCloseoutJournal({
+         path: closeout.path,
+         journal: closeoutJournal,
+@@ -181,6 +205,9 @@ export async function executeFinishPlan(opts: {
+         plan,
+         primaryTaskId: plan.primaryTaskId,
+         promotedIncidents,
++        preserveCompletedCanonicalTaskState,
++        taskCommitInfo,
++        implementationCommitInfo,
+       });
+       closeoutJournal = await advanceFinishCloseoutJournal({
+         path: closeout.path,
+diff --git a/packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts b/packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts
+index 29a3f5d1e..bec5b02b6 100644
+--- a/packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts
++++ b/packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts
+@@ -27,7 +27,6 @@ vi.mock("./finish-close.js", () => ({
+ vi.mock("../shared/git-ops.js", () => ({
+   gitCurrentBranch: mocks.gitCurrentBranch,
+ }));
+-
+ function mkCtx(root: string): CommandContext {
+   return {
+     config: {
+@@ -73,6 +72,55 @@ function mkOptions(cwd: string): FinishOptions {
+ }
+ 
+ describe("finish pre-merge closure", () => {
++  it("preserves an already completed canonical task while recording pre-merge closure", async () => {
++    const { shouldPreserveCompletedCanonicalTaskState } = await import("./finish-execute.js");
++    const plan = {
++      preMergeClosure: true,
++      primaryTaskId: "T-1",
++    } as FinishExecutionPlan;
++    const task = {
++      id: "T-1",
++      extensions: {
++        task_kernel: {
++          aggregate: { state: "COMPLETED" },
++        },
++      },
++    };
++
++    expect(
++      shouldPreserveCompletedCanonicalTaskState({
++        plan,
++        loadedTasks: [{ taskId: "T-1", task } as never],
++      }),
++    ).toBe(true);
++  });
++
++  it("keeps legacy and active canonical tasks on the existing finish mutation path", async () => {
++    const { shouldPreserveCompletedCanonicalTaskState } = await import("./finish-execute.js");
++    const plan = { preMergeClosure: true, primaryTaskId: "T-1" } as FinishExecutionPlan;
++
++    expect(
++      shouldPreserveCompletedCanonicalTaskState({
++        plan,
++        loadedTasks: [{ taskId: "T-1", task: { id: "T-1", extensions: {} } } as never],
++      }),
++    ).toBe(false);
++    expect(
++      shouldPreserveCompletedCanonicalTaskState({
++        plan,
++        loadedTasks: [
++          {
++            taskId: "T-1",
++            task: {
++              id: "T-1",
++              extensions: { task_kernel: { aggregate: { state: "ACTIVE" } } },
++            },
++          } as never,
++        ],
++      }),
++    ).toBe(false);
++  });
++
+   it("does not skip an explicit closure refresh when an older close tail exists", async () => {
+     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-pre-merge-refresh-"));
+     try {
+diff --git a/packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts b/packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts
+index b2df660a7..ad3c89809 100644
+--- a/packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts
++++ b/packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts
+@@ -16,6 +16,11 @@ const mocks = vi.hoisted(() => ({
+   readEnvelope: vi.fn(),
+   readJournal: vi.fn(),
+   ensureProjection: vi.fn(),
++  prepareReplacement: vi.fn(),
++  executeEpisode: vi.fn(),
++  loadCommand: vi.fn(),
++  recoverSuspension: vi.fn(),
++  withSuspended: vi.fn((opts: { run: () => Promise<unknown> }) => opts.run()),
+ }));
+ const routeBeforeDigest = k.kernelDigest("route-before");
+ const routeAfterDigest = k.kernelDigest("route-after");
+@@ -25,6 +30,7 @@ vi.mock("../shared/route-decision.js", () => ({
+ }));
+ vi.mock("../shared/supervisor-execution-episode.js", () => ({
+   supervisePersistedWorkflowEpisode: mocks.supervise,
++  preparePersistedSupervisorReplacementAfterFailure: mocks.prepareReplacement,
+   resolveSupervisorExecutionEpisodePath: () => Promise.resolve("/repo/.git/journal.json"),
+   createSupervisorEpisodeStore: () => ({ read: mocks.readJournal }),
+ }));
+@@ -38,24 +44,36 @@ vi.mock("../../shared/stable-file.js", () => ({
+ vi.mock("./kernel-operational-projection.js", () => ({
+   ensureKernelOperationalProjectionEvidence: mocks.ensureProjection,
+ }));
++vi.mock("./branch-task-supervisor-episodes.js", () => ({
++  executeProductionBranchEpisode: mocks.executeEpisode,
++}));
++vi.mock("./kernel-controller-handoff.js", () => ({
++  recoverCanonicalControllerSuspension: mocks.recoverSuspension,
++  withCanonicalControllerSuspendedForOperation: mocks.withSuspended,
++}));
+ vi.mock("../shared/task-backend.js", async (importOriginal) => ({
+   ...(await importOriginal<typeof TaskBackendModule>()),
++  loadCommandContext: mocks.loadCommand,
+   resolveCommandGitCommonDir: () => Promise.resolve("/repo/.git"),
+ }));
+ 
+ import {
+   canonicalWorkflowEffectForDecision,
+   createKernelProviderEffectPortResolver,
++  executeCanonicalAdmittedWorkflowOperation,
++  executeCanonicalCompletedAgentEpisode,
+ } from "./kernel-provider-effect-coordinator.js";
+ 
+-function operation(id: "pr.open" | "integration.enqueue" = "pr.open") {
++function operation(id: "pr.open" | "integration.enqueue" | "integration.run_next" = "pr.open") {
+   return {
+     id,
+     type: "pr_sync",
+     params:
+       id === "pr.open"
+         ? { taskId: "T-1", author: "CODER", includeTaskIds: [] }
+-        : { taskId: "T-1", branch: "task/T-1/work" },
++        : id === "integration.enqueue"
++          ? { taskId: "T-1", branch: "task/T-1/work" }
++          : { taskId: "T-1" },
+     preconditionFingerprint: { digest: routeBeforeDigest },
+     authorityRef: "authority:route-before",
+     idempotencyKey: `${id}:T-1:${routeBeforeDigest}:payload`,
+@@ -72,7 +90,10 @@ function decision(candidate = operation()): TaskRouteDecision {
+       baseBranch: "main",
+       headSha: "a".repeat(40),
+       prBranch: "task/T-1/work",
++      baseCheckoutPath: "/repo",
++      taskWorktreePath: "/repo/task",
+     },
++    executionPacket: { mustRunFrom: "/repo/task" },
+     prFlow: null,
+     cleanupProbe: { state: "not_requested" },
+     workflowStep: {
+@@ -335,4 +356,137 @@ describe("canonical provider effect coordinator", () => {
+       port!.observe({ task_id: "T-1", effect, idempotency_key: effect.idempotency_key }),
+     ).resolves.toMatchObject({ state: "IN_DOUBT" });
+   });
++
++  it("runs post-completion provider lifecycle through the admitted supervisor", async () => {
++    const before = decision();
++    const after = terminalDecision();
++    mocks.supervise.mockResolvedValueOnce({
++      journal: { digest: k.kernelDigest("post-completion") },
++      execution: {
++        executable: true,
++        result: { status: "succeeded", observed_postconditions: [], detail: "ok" },
++        stop_reason: null,
++        refreshed_decision: after,
++      },
++    });
++
++    await expect(
++      executeCanonicalAdmittedWorkflowOperation({
++        command: { resolvedProject: { gitRoot: "/repo" } } as never,
++        decision: before,
++        task_id: "T-1",
++        request_digest: k.kernelDigest("post-completion-request"),
++      }),
++    ).resolves.toMatchObject({ execution: { refreshed_decision: after } });
++    expect(mocks.supervise).toHaveBeenCalledWith(
++      expect.objectContaining({ decision: before, git_root: "/repo" }),
++    );
++    expect(mocks.prepareReplacement).toHaveBeenCalledWith({
++      git_root: "/repo",
++      task_id: "T-1",
++      state_fingerprint_digest: routeBeforeDigest,
++      replacement_operation_idempotency_key: `pr.open:T-1:${routeBeforeDigest}:payload`,
++    });
++  });
++
++  it.each(["integration.enqueue", "integration.run_next"] as const)(
++    "executes post-completion %s from the base checkout without a Kernel controller transition",
++    async (operationId) => {
++      const candidate = operation(operationId);
++      const before = decision(candidate);
++      const after = terminalDecision();
++      mocks.supervise.mockImplementationOnce(async (input) => {
++        const execute = (
++          input as unknown as {
++            execute: (invoked: typeof candidate) => Promise<unknown>;
++          }
++        ).execute;
++        await execute(candidate);
++        return {
++          journal: { digest: k.kernelDigest("post-completion-integration") },
++          execution: {
++            executable: true,
++            result: { status: "succeeded", observed_postconditions: [], detail: "ok" },
++            stop_reason: null,
++            refreshed_decision: after,
++          },
++        };
++      });
++      mocks.execute.mockResolvedValueOnce({
++        status: "succeeded",
++        observed_postconditions: [],
++        detail: "ok",
++      });
++
++      await executeCanonicalAdmittedWorkflowOperation({
++        command: { resolvedProject: { gitRoot: "/repo/task" } } as never,
++        decision: before,
++        task_id: "T-1",
++        request_digest: k.kernelDigest(`post-completion-${operationId}`),
++      });
++
++      const executionCall = mocks.execute.mock.calls.at(-1)?.[0] as unknown as {
++        decision: TaskRouteDecision;
++        operation: typeof candidate;
++      };
++      expect(executionCall.decision.executionPacket).toMatchObject({
++        authoritativeCheckout: "base_checkout",
++        authoritativeCheckoutPath: "/repo",
++        mutationPathHint: "/repo",
++        mustRunFrom: "/repo",
++      });
++      expect(executionCall.operation).toEqual(candidate);
++      if (operationId === "integration.run_next") {
++        expect(mocks.recoverSuspension).toHaveBeenCalledOnce();
++        expect(mocks.withSuspended).toHaveBeenCalledOnce();
++      }
++    },
++  );
++
++  it.each(["implementation_rework", "verification", "quality_review"] as const)(
++    "routes completed canonical %s episodes through the authoritative task checkout",
++    async (purpose) => {
++      const command = { resolvedProject: { gitRoot: "/repo" } } as never;
++      const taskCommand = { resolvedProject: { gitRoot: "/repo/task" } } as never;
++      const episodeDecision = {
++        ...decision(),
++        workflowStep: {
++          id: `agent.${purpose}`,
++          kind: "agent_episode",
++          episode: { purpose },
++        },
++      } as unknown as TaskRouteDecision;
++      mocks.loadCommand.mockResolvedValueOnce(taskCommand);
++      mocks.executeEpisode.mockResolvedValueOnce({
++        status: "completed",
++        decision: episodeDecision,
++        journal: null,
++        provider_episodes: 0,
++        lifecycle_calls: 1,
++      });
++
++      await expect(
++        executeCanonicalCompletedAgentEpisode({
++          command,
++          decision: episodeDecision,
++          task_id: "T-1",
++          replace_failed_operation: true,
++        }),
++      ).resolves.toBe(true);
++      expect(mocks.loadCommand).toHaveBeenCalledWith({ cwd: "/repo/task", rootOverride: null });
++      expect(mocks.executeEpisode).toHaveBeenCalledOnce();
++      const invocation = mocks.executeEpisode.mock.calls[0]?.[0] as unknown as {
++        input: {
++          command: unknown;
++          task_id: string;
++          replace_failed_operation: boolean;
++        };
++        decision: TaskRouteDecision;
++      };
++      expect(invocation.input.command).toBe(taskCommand);
++      expect(invocation.input.task_id).toBe("T-1");
++      expect(invocation.input.replace_failed_operation).toBe(true);
++      expect(invocation.decision).toBe(episodeDecision);
++    },
++  );
+ });
+diff --git a/packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts b/packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts
+index a5f124d83..87208356d 100644
+--- a/packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts
++++ b/packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts
+@@ -4,11 +4,16 @@ import { validateSupervisorExecutionEpisodeJournal } from "@agentplaneorg/core/s
+ import { taskKernel as k } from "@agentplaneorg/core/tasks";
+ 
+ import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
+-import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-backend.js";
++import {
++  loadCommandContext,
++  resolveCommandGitCommonDir,
++  type CommandContext,
++} from "../shared/task-backend.js";
+ import { buildTaskRouteDecision } from "../shared/route-decision.js";
+ import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+ import {
+   createSupervisorEpisodeStore,
++  preparePersistedSupervisorReplacementAfterFailure,
+   resolveSupervisorExecutionEpisodePath,
+ } from "../shared/supervisor-execution-episode.js";
+ import type { WorkflowOperation } from "../shared/workflow-step.js";
+@@ -32,6 +37,8 @@ import {
+   withCanonicalControllerSuspendedForOperation,
+ } from "./kernel-controller-handoff.js";
+ import { ensureKernelOperationalProjectionEvidence } from "./kernel-operational-projection.js";
++import { executeProductionBranchEpisode } from "./branch-task-supervisor-episodes.js";
++import { CliError } from "../../shared/errors.js";
+ 
+ type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
+ 
+@@ -289,6 +296,76 @@ function operationIdFromEffect(effect: k.ExternalEffect): SupportedOperationId |
+   return operationId && operationId in CANONICAL_EFFECT_KIND_BY_OPERATION ? operationId : null;
+ }
+ 
++/**
++ * Execute an admitted canonical branch operation without mutating the Task Kernel aggregate.
++ * Completed tasks use this path because provider lifecycle authority is separate from semantic
++ * WorkItem authority and the terminal aggregate cannot accept another prepare_effect command.
++ */
++export async function executeCanonicalAdmittedWorkflowOperation(opts: {
++  command: CommandContext;
++  decision: TaskRouteDecision;
++  task_id: string;
++  request_digest: k.Sha256Digest;
++}) {
++  const before = opts.decision;
++  const expected = supportedOperation(before);
++  if (!expected) throw new Error("Canonical provider lifecycle requires a supported operation");
++  if (expected.id === "integration.run_next") {
++    await recoverCanonicalControllerSuspension({
++      command: opts.command,
++      task_id: opts.task_id,
++      request_digest: opts.request_digest,
++    });
++  }
++  await preparePersistedSupervisorReplacementAfterFailure({
++    git_root: opts.command.resolvedProject.gitRoot,
++    task_id: opts.task_id,
++    state_fingerprint_digest: before.workflowStep.preconditionFingerprint.digest,
++    replacement_operation_idempotency_key: expected.idempotencyKey,
++  });
++  return await executeAdmittedBranchWorkflowOperation({
++    decision: before,
++    git_root: opts.command.resolvedProject.gitRoot,
++    execute: async (invoked) => {
++      const baseCheckout = before.workspace.baseCheckoutPath;
++      const executeFromBase = ["integration.enqueue", "integration.run_next"].includes(invoked.id);
++      const executionDecision =
++        executeFromBase && baseCheckout
++          ? {
++              ...before,
++              executionPacket: {
++                ...before.executionPacket,
++                authoritativeCheckout: "base_checkout" as const,
++                authoritativeCheckoutPath: baseCheckout,
++                mutationPathHint: baseCheckout,
++                mustRunFrom: baseCheckout,
++              },
++            }
++          : before;
++      const run = () =>
++        executeBranchWorkflowOperation({ decision: executionDecision, operation: invoked });
++      const controllerCheckout =
++        invoked.id === "integration.run_next"
++          ? before.workspace.taskWorktreePath
++          : ["task.hosted_close.finalize", "task.worktree.cleanup"].includes(invoked.id)
++            ? before.executionPacket.mustRunFrom
++            : null;
++      return controllerCheckout
++        ? await withCanonicalControllerSuspendedForOperation({
++            command: opts.command,
++            decision: before,
++            task_id: opts.task_id,
++            request_digest: opts.request_digest,
++            operation_idempotency_key: invoked.idempotencyKey,
++            controller_checkout: controllerCheckout,
++            run,
++          })
++        : await run();
++    },
++    refresh: async () => await decide(opts.command, opts.task_id),
++  });
++}
++
+ /**
+  * Bridge from a canonical effect to the mature typed branch supervisor operation. The bridge
+  * freezes the exact fresh route and configured authority before Kernel intent persistence. Its
+@@ -308,13 +385,6 @@ export function createKernelProviderEffectPortResolver(opts: {
+           command: opts.command,
+           task_id: input.task_id,
+         });
+-        if (expectedOperationId === "integration.run_next") {
+-          await recoverCanonicalControllerSuspension({
+-            command: opts.command,
+-            task_id: input.task_id,
+-            request_digest: input.effect.request_digest,
+-          });
+-        }
+         const envelope = await loadProviderEffectEnvelope({
+           command: opts.command,
+           task_id: input.task_id,
+@@ -332,31 +402,11 @@ export function createKernelProviderEffectPortResolver(opts: {
+             }),
+           };
+         }
+-        const persisted = await executeAdmittedBranchWorkflowOperation({
++        const persisted = await executeCanonicalAdmittedWorkflowOperation({
++          command: opts.command,
+           decision: before,
+-          git_root: opts.command.resolvedProject.gitRoot,
+-          execute: async (invoked) => {
+-            const run = () =>
+-              executeBranchWorkflowOperation({ decision: before, operation: invoked });
+-            const controllerCheckout =
+-              invoked.id === "integration.run_next"
+-                ? before.workspace.taskWorktreePath
+-                : ["task.hosted_close.finalize", "task.worktree.cleanup"].includes(invoked.id)
+-                  ? before.executionPacket.mustRunFrom
+-                  : null;
+-            return controllerCheckout
+-              ? await withCanonicalControllerSuspendedForOperation({
+-                  command: opts.command,
+-                  decision: before,
+-                  task_id: input.task_id,
+-                  request_digest: input.effect.request_digest,
+-                  operation_idempotency_key: invoked.idempotencyKey,
+-                  controller_checkout: controllerCheckout,
+-                  run,
+-                })
+-              : await run();
+-          },
+-          refresh: async () => await decide(opts.command, input.task_id),
++          task_id: input.task_id,
++          request_digest: input.effect.request_digest,
+         });
+         const execution = persisted.execution;
+         if (
+@@ -505,3 +555,38 @@ export async function decideCanonicalWorkflowEffect(
+     taskId,
+   });
+ }
++
++export async function executeCanonicalCompletedAgentEpisode(opts: {
++  command: CommandContext;
++  decision: TaskRouteDecision;
++  task_id: string;
++  replace_failed_operation?: boolean;
++}) {
++  if (
++    opts.decision.workflowStep.kind !== "agent_episode" ||
++    !["implementation_rework", "verification", "quality_review"].includes(
++      opts.decision.workflowStep.episode.purpose,
++    )
++  ) {
++    return null;
++  }
++  const checkout = opts.decision.executionPacket.mustRunFrom ?? opts.decision.workspace.root;
++  const workflowCommand =
++    path.resolve(checkout) === path.resolve(opts.command.resolvedProject.gitRoot)
++      ? opts.command
++      : await loadCommandContext({ cwd: checkout, rootOverride: null });
++  const outcome = await executeProductionBranchEpisode({
++    input: {
++      ctx: { cwd: checkout },
++      command: workflowCommand,
++      task_id: opts.task_id,
++      replace_failed_operation: opts.replace_failed_operation,
++    },
++    decision: opts.decision,
++    decide: async () => await decideCanonicalWorkflowEffect(workflowCommand, opts.task_id, false),
++  });
++  if (outcome.status === "stopped") {
++    throw new CliError({ code: "E_RUNTIME", message: outcome.stop.reason });
++  }
++  return true;
++}
+diff --git a/packages/agentplane/src/commands/task/plan-set.command.ts b/packages/agentplane/src/commands/task/plan-set.command.ts
+index c5d00dd44..88f5d3f6d 100644
+--- a/packages/agentplane/src/commands/task/plan-set.command.ts
++++ b/packages/agentplane/src/commands/task/plan-set.command.ts
+@@ -1,11 +1,10 @@
+-import { readFile } from "node:fs/promises";
+-import path from "node:path";
+ import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
+ import { setCanonicalPlan } from "./kernel-plan.js";
+ import { createCliEmitter } from "../../cli/output.js";
+ import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
+ import { usageError } from "../../cli/spec/errors.js";
+ import type { CommandContext } from "../shared/task-backend.js";
++import { resolveTextPayload, validateTextPayloadSource } from "../shared/text-payload.js";
+ 
+ import { cmdTaskPlanSet } from "./plan.js";
+ 
+@@ -60,14 +59,12 @@ export const taskPlanSetSpec: CommandSpec<TaskPlanSetParsed> = {
+     },
+   ],
+   validateRaw: (raw) => {
+-    const hasText = typeof raw.opts.text === "string";
+-    const hasFile = typeof raw.opts.file === "string";
+-    if (hasText === hasFile) {
+-      throw usageError({
+-        spec: taskPlanSetSpec,
+-        message: "Provide exactly one of --text or --file.",
+-      });
+-    }
++    validateTextPayloadSource(
++      raw,
++      taskPlanSetSpec,
++      { inline: "text", file: "file", label: "plan text" },
++      { required: true },
++    );
+     const updatedBy = raw.opts["updated-by"];
+     if (typeof updatedBy === "string" && updatedBy.trim().length === 0) {
+       throw usageError({
+@@ -102,7 +99,12 @@ export function makeRunTaskPlanSetHandler(getCtx: (cmd: string) => Promise<Comma
+     const command = await getCtx("task plan set");
+     const source = await command.taskBackend.getTask(p.taskId);
+     if (source?.extensions && Object.hasOwn(source.extensions, TASK_KERNEL_EXTENSION)) {
+-      const text = p.file ? await readFile(path.resolve(ctx.cwd, p.file), "utf8") : (p.text ?? "");
++      const text = await resolveTextPayload({
++        cwd: ctx.cwd,
++        inline: p.text,
++        file: p.file,
++        label: "plan",
++      });
+       const result = await setCanonicalPlan(command, p.taskId, JSON.parse(text), {
+         scopeExpansionApprovedBy: p.scopeExpansionApprovedBy,
+       });
+diff --git a/packages/agentplane/src/commands/task/plan.unit.test.ts b/packages/agentplane/src/commands/task/plan.unit.test.ts
+index 3b4c79963..3070f8c5e 100644
+--- a/packages/agentplane/src/commands/task/plan.unit.test.ts
++++ b/packages/agentplane/src/commands/task/plan.unit.test.ts
+@@ -89,6 +89,17 @@ function applyStorePatch(current: TaskData, patch: TaskStorePatch | null | undef
+ }
+ 
+ describe("task plan commands (unit)", () => {
++  it("requires command-bearing plan text to use --file", async () => {
++    const { taskPlanSetSpec } = await import("./plan-set.command.js");
++    expect(() =>
++      taskPlanSetSpec.validateRaw?.({
++        args: { "task-id": "T-1" },
++        opts: { text: "Run `node test.js` and $(npm test)" },
++        extra: [],
++      }),
++    ).toThrow(/use --file for plan text/u);
++  });
++
+   it.each([false, true])(
+     "approves canonical status and revision in one write (local=%s)",
+     async (local) => {
+diff --git a/packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts b/packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts
+index 882e98d45..fdb57babd 100644
+--- a/packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts
++++ b/packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts
+@@ -19,7 +19,9 @@ describe("LC-03 common advance-one-step coordinator", () => {
+       true,
+     );
+     expect(canonicalCompletionPrecedesWorkflow(operationStep("task.worktree.cleanup"))).toBe(true);
++    expect(canonicalCompletionPrecedesWorkflow(operationStep("integration.enqueue"))).toBe(false);
+     expect(canonicalCompletionPrecedesWorkflow(operationStep("integration.run_next"))).toBe(false);
++    expect(canonicalCompletionPrecedesWorkflow(operationStep("pr.open"))).toBe(false);
+     expect(
+       canonicalCompletionPrecedesWorkflow({
+         kind: "terminal",
+@@ -35,6 +37,8 @@ describe("LC-03 common advance-one-step coordinator", () => {
+     ]);
+ 
+     expect(command).toContain("advanceTaskStep");
++    expect(command).toContain("preparePersistedSupervisorReplacementAfterFailure");
++    expect(command).not.toContain("Canonical replacement requires an explicit recovery episode");
+     expect(command).not.toMatch(/for\s*\(/u);
+     expect(command).not.toContain("supervisePersistedWorkflowEpisode");
+     expect(coordinator).toContain("export async function advanceTaskStep");
+@@ -52,7 +56,7 @@ describe("LC-03 common advance-one-step coordinator", () => {
+     expect(ordinary).toContain("result_schema_ref");
+     expect(ordinary).toContain("resume_argv");
+     expect(ordinary).toContain("effect_in_doubt");
+-    expect(coordinator).toContain("canonical_workflow_effect_no_progress");
++    expect(coordinator).toContain("executeCanonicalAdmittedWorkflowOperation");
+     expect(supervisor).toContain("stale precondition fingerprint");
+     expect(supervisor).toContain("repeated idempotency key");
+   });
+@@ -70,6 +74,7 @@ describe("LC-03 common advance-one-step coordinator", () => {
+     expect(completionBranch).toContain('runtime.input({ kind: "complete_task" }');
+     expect(completionBranch).not.toContain("prepareCanonicalWorkflowEffect");
+     expect(coordinator).toContain('route.reason_code === "kernel_task_completed"');
+-    expect(coordinator).toContain("prepareCanonicalWorkflowEffect");
++    expect(coordinator).not.toContain("prepareCanonicalWorkflowEffect");
++    expect(coordinator).toContain("executeCanonicalAdmittedWorkflowOperation");
+   });
+ });
+diff --git a/packages/agentplane/src/commands/task/roadmap-integration-parity.test.ts b/packages/agentplane/src/commands/task/roadmap-integration-parity.test.ts
+index 9d2f09ec9..a368aac93 100644
+--- a/packages/agentplane/src/commands/task/roadmap-integration-parity.test.ts
++++ b/packages/agentplane/src/commands/task/roadmap-integration-parity.test.ts
+@@ -12,6 +12,7 @@ const mocks = vi.hoisted(() => ({
+   decide: vi.fn(),
+   ensureProjection: vi.fn(),
+   execute: vi.fn(),
++  gitRevParse: vi.fn(),
+   readEnvelope: vi.fn(),
+   recoverSuspension: vi.fn(),
+ }));
+@@ -27,6 +28,10 @@ vi.mock("../../shared/stable-file.js", () => ({
+ vi.mock("./kernel-operational-projection.js", () => ({
+   ensureKernelOperationalProjectionEvidence: mocks.ensureProjection,
+ }));
++vi.mock("@agentplaneorg/core/git", async (importOriginal) => ({
++  ...(await importOriginal<Record<string, unknown>>()),
++  gitRevParse: mocks.gitRevParse,
++}));
+ vi.mock("./kernel-controller-handoff.js", () => ({
+   recoverCanonicalControllerSuspension: mocks.recoverSuspension,
+   withCanonicalControllerSuspendedForOperation: vi.fn(),
+@@ -143,6 +148,7 @@ describe("0.7.11 hosted integration parity", () => {
+   beforeEach(() => {
+     vi.resetAllMocks();
+     mocks.ensureProjection.mockResolvedValue(undefined);
++    mocks.gitRevParse.mockResolvedValue(".git");
+     mocks.recoverSuspension.mockResolvedValue(undefined);
+   });
+ 
+diff --git a/packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts b/packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts
+index 73ba1c028..d7c4734d0 100644
+--- a/packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts
++++ b/packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts
+@@ -16,7 +16,9 @@ const mocks = vi.hoisted(() => ({
+   commitCanonicalTerminalTaskArtifacts: vi.fn().mockResolvedValue(false),
+   createKernelRuntime: vi.fn(),
+   decideCanonicalWorkflowEffect: vi.fn(),
+-  prepareCanonicalWorkflowEffect: vi.fn(),
++  canonicalWorkflowRequestDigest: vi.fn().mockReturnValue(`sha256:${"d".repeat(64)}`),
++  executeCanonicalAdmittedWorkflowOperation: vi.fn(),
++  executeCanonicalCompletedAgentEpisode: vi.fn().mockResolvedValue(null),
+   restoreKernelFinalValidation: vi.fn().mockResolvedValue(null),
+   runKernelFinalValidation: vi.fn(),
+   ensureKernelOperationalProjectionEvidence: vi.fn().mockResolvedValue(undefined),
+@@ -36,7 +38,9 @@ vi.mock("./kernel-final-validation.js", () => ({
+ }));
+ vi.mock("./kernel-provider-effect-coordinator.js", () => ({
+   decideCanonicalWorkflowEffect: mocks.decideCanonicalWorkflowEffect,
+-  prepareCanonicalWorkflowEffect: mocks.prepareCanonicalWorkflowEffect,
++  canonicalWorkflowRequestDigest: mocks.canonicalWorkflowRequestDigest,
++  executeCanonicalAdmittedWorkflowOperation: mocks.executeCanonicalAdmittedWorkflowOperation,
++  executeCanonicalCompletedAgentEpisode: mocks.executeCanonicalCompletedAgentEpisode,
+ }));
+ vi.mock("./kernel-repository-coordinator.js", () => ({
+   commitCanonicalTerminalTaskArtifacts: mocks.commitCanonicalTerminalTaskArtifacts,
+@@ -281,7 +285,7 @@ describe("LC-20 terminal replay", () => {
+       false,
+     );
+     expect(mocks.decideCanonicalWorkflowEffect).toHaveBeenCalledTimes(2);
+-    expect(mocks.prepareCanonicalWorkflowEffect).not.toHaveBeenCalled();
++    expect(mocks.executeCanonicalAdmittedWorkflowOperation).not.toHaveBeenCalled();
+     expect(mocks.runKernelFinalValidation).not.toHaveBeenCalled();
+     expect(mocks.applyKernelEffectStep).not.toHaveBeenCalled();
+     expect(apply).not.toHaveBeenCalled();
+@@ -290,6 +294,54 @@ describe("LC-20 terminal replay", () => {
+     await expect(repositorySnapshot(root, evidencePath, record)).resolves.toEqual(before);
+   });
+ 
++  it("executes provider lifecycle after canonical completion without preparing a Kernel effect", async () => {
++    const { runtime, apply, input } = completedRuntime();
++    mocks.createKernelRuntime.mockResolvedValue(runtime);
++    const operation = {
++      id: "pr.open",
++      idempotencyKey: "pr.open:task-1:exact",
++      preconditionFingerprint: { digest: `sha256:${"a".repeat(64)}` },
++    };
++    const pending = {
++      workspace: { baseCheckoutPath: "/repo" },
++      workflowStep: {
++        id: "provider.pr.open",
++        kind: "cli_operation",
++        operation,
++        preconditionFingerprint: operation.preconditionFingerprint,
++      },
++    };
++    const done = {
++      workspace: { baseCheckoutPath: "/repo" },
++      workflowStep: { kind: "terminal", outcome: { type: "done" } },
++    };
++    mocks.decideCanonicalWorkflowEffect
++      .mockResolvedValueOnce(pending)
++      .mockResolvedValueOnce(pending)
++      .mockResolvedValueOnce(done);
++    mocks.executeCanonicalAdmittedWorkflowOperation.mockResolvedValueOnce({
++      journal: { digest: `sha256:${"b".repeat(64)}` },
++      execution: {
++        executable: true,
++        stop_reason: null,
++        result: { status: "succeeded" },
++        refreshed_decision: done,
++      },
++    });
++
++    await expect(
++      advanceTaskStep({
++        command: { resolvedProject: { gitRoot: "/repo" } } as never,
++        task_id: "task-1",
++        transport: "host",
++        allow_provider_effects: true,
++      }),
++    ).resolves.toMatchObject({ action: { kind: "terminal" } });
++    expect(mocks.executeCanonicalAdmittedWorkflowOperation).toHaveBeenCalledTimes(1);
++    expect(apply).not.toHaveBeenCalled();
++    expect(input).not.toHaveBeenCalled();
++  });
++
+   it("does not shortcut an unresolved effect", async () => {
+     const { runtime } = completedRuntime();
+     runtime.lifecycle.read.mockResolvedValue({
+diff --git a/packages/agentplane/src/commands/task/verify-record-execute.ts b/packages/agentplane/src/commands/task/verify-record-execute.ts
+index c85fad3fd..e4752c8bc 100644
+--- a/packages/agentplane/src/commands/task/verify-record-execute.ts
++++ b/packages/agentplane/src/commands/task/verify-record-execute.ts
+@@ -72,14 +72,10 @@ import {
+   appendDecisionContextReference,
+ } from "./verify-record-references.js";
+ import { syncRecordedVerificationArtifacts } from "./verify-record-pr-artifacts.js";
++import * as verificationKernelState from "./verify-record-kernel-state.js";
+ 
+ export { syncRecordedVerificationArtifacts } from "./verify-record-pr-artifacts.js";
+-
+-function verificationStateToQualityReviewState(state: string): "pass" | "rework" | "blocked" {
+-  if (state === "ok") return "pass";
+-  if (state === "blocked_external") return "blocked";
+-  return "rework";
+-}
++export * from "./verify-record-kernel-state.js";
+ 
+ function sha256(value: string): `sha256:${string}` {
+   return `sha256:${createHash("sha256").update(value).digest("hex")}`;
+@@ -394,6 +390,14 @@ async function recordVerificationResult(opts: {
+           verificationInputDigest: verificationInput?.digest ?? null,
+         });
+         const intents = [...execution.intents];
++        const preserveCompletedKernelState =
++          verificationKernelState.shouldPreserveCompletedKernelStateDuringVerification({
++            task: current,
++            allowCanonicalProjection: opts.allowCanonicalProjection,
++          });
++        if (preserveCompletedKernelState && opts.state !== "ok") {
++          intents.push(setTaskFieldsIntent({ status: "DONE" }));
++        }
+         const verificationResults = (parsedDetails ?? []).map((check, index) => ({
+           id: `recorded-check-${String(index + 1)}`,
+           result: check.result,
+@@ -423,7 +427,7 @@ async function recordVerificationResult(opts: {
+         if (opts.state !== "ok") {
+           Reflect.deleteProperty(nextExtensions, "implementation_commit");
+           const aggregate = taskCentricAggregateFromExtensions(nextExtensions);
+-          if (aggregate?.lifecycle === "COMPLETED") {
++          if (aggregate?.lifecycle === "COMPLETED" && !preserveCompletedKernelState) {
+             nextExtensions = withTaskCentricAggregate(nextExtensions, {
+               ...aggregate,
+               lifecycle: "ACTIVE",
+@@ -478,7 +482,7 @@ async function recordVerificationResult(opts: {
+           intents.push(
+             setTaskFieldsIntent({
+               quality_review: {
+-                state: verificationStateToQualityReviewState(
++                state: verificationKernelState.verificationStateToQualityReviewState(
+                   execution.nextTask.verification?.state ?? opts.state,
+                 ),
+                 updated_at: at,
+diff --git a/packages/agentplane/src/commands/task/verify-record-kernel-state.test.ts b/packages/agentplane/src/commands/task/verify-record-kernel-state.test.ts
+new file mode 100644
+index 000000000..d83603eb0
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/verify-record-kernel-state.test.ts
+@@ -0,0 +1,20 @@
++import { describe, expect, it } from "vitest";
++
++import { shouldPreserveCompletedKernelStateDuringVerification } from "./verify-record-kernel-state.js";
++
++describe("replacement verification Kernel state", () => {
++  it("preserves only a completed canonical task", () => {
++    expect(
++      shouldPreserveCompletedKernelStateDuringVerification({
++        task: { status: "DONE", extensions: { task_kernel: { kind: "canonical_task" } } },
++        allowCanonicalProjection: true,
++      }),
++    ).toBe(true);
++    expect(
++      shouldPreserveCompletedKernelStateDuringVerification({
++        task: { status: "DOING", extensions: { task_kernel: { kind: "canonical_task" } } },
++        allowCanonicalProjection: true,
++      }),
++    ).toBe(false);
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/verify-record-kernel-state.ts b/packages/agentplane/src/commands/task/verify-record-kernel-state.ts
+new file mode 100644
+index 000000000..203ea1ed4
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/verify-record-kernel-state.ts
+@@ -0,0 +1,21 @@
++import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
++import type { TaskData } from "../../backends/task-backend.js";
++
++export function verificationStateToQualityReviewState(
++  state: string,
++): "pass" | "rework" | "blocked" {
++  if (state === "ok") return "pass";
++  if (state === "blocked_external") return "blocked";
++  return "rework";
++}
++
++export function shouldPreserveCompletedKernelStateDuringVerification(opts: {
++  task: { status: TaskData["status"]; extensions?: TaskData["extensions"] };
++  allowCanonicalProjection?: boolean;
++}): boolean {
++  return (
++    opts.allowCanonicalProjection === true &&
++    opts.task.status === "DONE" &&
++    Object.hasOwn(opts.task.extensions ?? {}, TASK_KERNEL_EXTENSION)
++  );
++}
+diff --git a/packages/agentplane/src/runner/adapters/codex-output-schema-compat.ts b/packages/agentplane/src/runner/adapters/codex-output-schema-compat.ts
+new file mode 100644
+index 000000000..729de1eda
+--- /dev/null
++++ b/packages/agentplane/src/runner/adapters/codex-output-schema-compat.ts
+@@ -0,0 +1,95 @@
++import { isRecord } from "../../shared/guards.js";
++
++function simplifyCodexSchemaComposition(value: unknown): unknown {
++  if (Array.isArray(value)) {
++    return value.map((entry) => simplifyCodexSchemaComposition(entry));
++  }
++  if (!isRecord(value)) return value;
++  if (Object.keys(value).length === 1 && Array.isArray(value.allOf) && value.allOf.length === 1) {
++    return simplifyCodexSchemaComposition(value.allOf[0]);
++  }
++  for (const keyword of ["oneOf", "anyOf"] as const) {
++    const alternatives: unknown = value[keyword];
++    if (!Array.isArray(alternatives) || alternatives.length === 0) continue;
++    const siblings = Object.fromEntries(Object.entries(value).filter(([key]) => key !== keyword));
++    const preferred: unknown = alternatives[0];
++    return simplifyCodexSchemaComposition(
++      isRecord(preferred) ? { ...preferred, ...siblings } : siblings,
++    );
++  }
++  return Object.fromEntries(
++    Object.entries(value).map(([key, nested]) => [key, simplifyCodexSchemaComposition(nested)]),
++  );
++}
++
++function requireEveryCodexObjectProperty(
++  value: unknown,
++  rootFields: ReadonlySet<string>,
++  root = true,
++): unknown {
++  if (Array.isArray(value)) {
++    return value.map((entry) => requireEveryCodexObjectProperty(entry, rootFields, false));
++  }
++  if (!isRecord(value)) return value;
++  const properties = isRecord(value.properties) ? value.properties : null;
++  if (properties) {
++    const originallyRequired = new Set(
++      Array.isArray(value.required)
++        ? value.required.filter((field): field is string => typeof field === "string")
++        : [],
++    );
++    for (const [key, property] of Object.entries(properties)) {
++      if (
++        !originallyRequired.has(key) &&
++        !(root && rootFields.has(key)) &&
++        isRecord(property) &&
++        typeof property.type === "string"
++      ) {
++        property.type = [property.type, "null"];
++      }
++    }
++    value.required = Object.keys(properties);
++  }
++  return Object.fromEntries(
++    Object.entries(value).map(([key, nested]) => [
++      key,
++      requireEveryCodexObjectProperty(nested, rootFields, false),
++    ]),
++  );
++}
++
++export function omitNullCodexFields(value: unknown): unknown {
++  if (Array.isArray(value)) return value.map((entry) => omitNullCodexFields(entry));
++  if (!isRecord(value)) return value;
++  return Object.fromEntries(
++    Object.entries(value)
++      .filter(([, nested]) => nested !== null)
++      .map(([key, nested]) => [key, omitNullCodexFields(nested)]),
++  );
++}
++
++export function codexCompatibleRoleSchema(
++  schema: Record<string, unknown>,
++  rootFields: ReadonlySet<string>,
++): Record<string, unknown> {
++  delete schema.allOf;
++  const blocker = isRecord(schema.properties) ? schema.properties.blocker : null;
++  const blockerProperties =
++    isRecord(blocker) && isRecord(blocker.properties) ? blocker.properties : null;
++  const scopeExtension = blockerProperties?.scope_extension_request;
++  if (isRecord(scopeExtension) && Array.isArray(scopeExtension.anyOf)) {
++    const first: unknown = scopeExtension.anyOf[0];
++    if (isRecord(first)) {
++      delete scopeExtension.anyOf;
++      Object.assign(scopeExtension, first);
++      if (isRecord(scopeExtension.properties)) {
++        for (const field of ["scope_roots", "repository_effects"]) {
++          const property = scopeExtension.properties[field];
++          if (isRecord(property)) delete property.minItems;
++        }
++      }
++    }
++  }
++  const simplified = simplifyCodexSchemaComposition(schema);
++  return requireEveryCodexObjectProperty(simplified, rootFields) as Record<string, unknown>;
++}
+diff --git a/packages/agentplane/src/runner/adapters/codex-result-transport.ts b/packages/agentplane/src/runner/adapters/codex-result-transport.ts
+index 5b2d5bece..86745d051 100644
+--- a/packages/agentplane/src/runner/adapters/codex-result-transport.ts
++++ b/packages/agentplane/src/runner/adapters/codex-result-transport.ts
+@@ -18,6 +18,7 @@ import { atomicWriteFile } from "@agentplaneorg/core/fs";
+ import path from "node:path";
+ 
+ import { isRecord } from "../../shared/guards.js";
++import { codexCompatibleRoleSchema, omitNullCodexFields } from "./codex-output-schema-compat.js";
+ 
+ export const CODEX_RESULT_TRANSPORT = "supervisor_jsonl_event_collector" as const;
+ export const CODEX_RESULT_TRANSPORT_ENV = "AGENTPLANE_RUNNER_RESULT_TRANSPORT";
+@@ -225,25 +226,37 @@ export function resolveCodexResultTransportPaths(runDir: string): {
+ export function renderCodexResultOutputSchemaJson(workOrder?: AgentWorkOrderV2): string {
+   if (workOrder) {
+     const issued = validateAgentWorkOrderV2(workOrder);
+-    const schema = JSON.parse(
+-      renderAgentSemanticResultSchemaJson({
+-        role: issued.role,
+-        ...(issued.canonical_binding ? { phase: issued.canonical_binding.phase } : {}),
+-      }),
+-    ) as Record<string, unknown>;
++    const roleFields = new Set<string>(
++      issued.canonical_binding
++        ? [
++            issued.canonical_binding.phase === "planning"
++              ? "canonical_plan"
++              : issued.canonical_binding.phase === "implementation"
++                ? "canonical_outputs"
++                : "review",
++          ]
++        : issued.role === "PLANNER"
++          ? ["task_intent", "task_plan_proposal"]
++          : issued.role === "EVALUATOR"
++            ? ["review"]
++            : [],
++    );
++    const schema = codexCompatibleRoleSchema(
++      JSON.parse(
++        renderAgentSemanticResultSchemaJson({
++          role: issued.role,
++          ...(issued.canonical_binding ? { phase: issued.canonical_binding.phase } : {}),
++        }),
++      ) as Record<string, unknown>,
++      roleFields,
++    );
+     if (isRecord(schema.properties)) delete schema.properties.work_order_id;
+     if (Array.isArray(schema.required)) {
+       schema.required = schema.required.filter((field) => field !== "work_order_id");
+     }
+     schema.description =
+       "Role-specific semantic payload. The AgentPlane supervisor supplies the issued WorkOrder identity and service fields.";
+-    if (Array.isArray(schema.examples)) {
+-      schema.examples = schema.examples.map((example: unknown) => {
+-        if (!isRecord(example)) return example;
+-        const { work_order_id: _workOrderId, ...rest } = example;
+-        return rest;
+-      });
+-    }
++    delete schema.examples;
+     return `${JSON.stringify(schema, null, 2)}\n`;
+   }
+   // Work-order-free recipe runs retain the legacy transport until they have a
+@@ -490,7 +503,7 @@ export async function materializeCodexResultTransport(opts: {
+   if (opts.work_order) {
+     const normalized = validateAgentSemanticResultForWorkOrder({
+       work_order: opts.work_order,
+-      semantic_result: raw,
++      semantic_result: omitNullCodexFields(raw),
+       format: "semantic_payload_v1",
+     });
+     if (normalized.work_order_id !== opts.work_order_id) {
+diff --git a/packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts b/packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts
+index 8ad32f824..44df86436 100644
+--- a/packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts
++++ b/packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts
+@@ -315,6 +315,7 @@ describe("roadmap managed semantic output parity", () => {
+ 
+       const schemaText = await readFile(invocation.output_schema_path!, "utf8");
+       expect(schemaText).toBe(renderCodexResultOutputSchemaJson(workOrder));
++      expect(schemaText).not.toMatch(/"(?:allOf|anyOf|oneOf)"/u);
+       const schema = JSON.parse(schemaText) as { properties?: Record<string, unknown> };
+       expect(schema.properties).toHaveProperty(roleField);
+       expect(schema.properties).not.toHaveProperty("canonical_binding");
+diff --git a/packages/agentplane/src/runner/usecases/task-run-authority.ts b/packages/agentplane/src/runner/usecases/task-run-authority.ts
+index cd68eee36..44511878b 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-authority.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-authority.ts
+@@ -242,7 +242,16 @@ export function assertRunnerTaskExecutable(bundle: RunnerContextBundle): void {
+       writable_roots: order.authority.writable_roots,
+       required_inputs: order.required_inputs,
+     }) !== null;
+-  if (status !== "DOING" && !conflictRework) {
++  const completedTaskRework =
++    status === "DONE" &&
++    step?.kind === "agent_episode" &&
++    step.id === "agent.implementation_rework" &&
++    step.episode.purpose === "implementation_rework" &&
++    order?.role === "EXECUTOR" &&
++    order.task.id === task.metadata.task_id &&
++    bundle.route_decision?.task.id === task.metadata.task_id &&
++    order.state_fingerprint.digest === step.preconditionFingerprint.digest;
++  if (status !== "DOING" && !conflictRework && !completedTaskRework) {
+     throw new CliError({
+       exitCode: 2,
+       code: "E_USAGE",
+diff --git a/packages/core/src/runner/supervisor-execution-episode.ts b/packages/core/src/runner/supervisor-execution-episode.ts
+index ff1d2c985..6d336b079 100644
+--- a/packages/core/src/runner/supervisor-execution-episode.ts
++++ b/packages/core/src/runner/supervisor-execution-episode.ts
+@@ -1533,6 +1533,43 @@ export function reopenCompletedSupervisorExecutionEpisodeAfterStaleState(opts: {
+   return createJournal(next);
+ }
+ 
++/**
++ * Continue after a human-review stop only when repository truth has changed since the reviewed
++ * operation completed. The completed review remains in history and no provider effect is retried.
++ */
++export function reopenSupervisorExecutionEpisodeAfterHumanReviewStateChange(opts: {
++  journal: SupervisorExecutionEpisodeJournal;
++  state_fingerprint_digest: string;
++  replacement_effect_ref?: string;
++  now?: string;
++}): SupervisorExecutionEpisodeJournal {
++  const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
++  const now = opts.now ?? new Date().toISOString();
++  const last = journal.operations.at(-1);
++  if (
++    journal.status !== "stopped" ||
++    journal.stop?.reason !== "human_review" ||
++    journal.cursor.phase !== "stopped" ||
++    journal.stop.operation_key !== last?.operation_key ||
++    last?.status !== "completed" ||
++    (journal.state_fingerprint_digest === opts.state_fingerprint_digest &&
++      (!opts.replacement_effect_ref || opts.replacement_effect_ref === last.effect_ref))
++  ) {
++    throw new Error(
++      "Supervisor episode human-review reopening requires a completed reviewed operation and either changed state or a distinct replacement effect.",
++    );
++  }
++  return createJournal({
++    ...journal,
++    state_fingerprint_digest: opts.state_fingerprint_digest,
++    cursor: { episode: journal.cursor.episode, phase: "ready", operation_key: null },
++    status: "running",
++    stop: null,
++    updated_at: now,
++    previous_digest: journal.digest,
++  });
++}
++
+ /**
+  * Refresh only the route fingerprint of an explicitly reserved replacement
+  * before its successor intent is recorded. The exact failed-operation binding
+diff --git a/packages/core/src/runner/supervisor-execution-human-review.test.ts b/packages/core/src/runner/supervisor-execution-human-review.test.ts
+new file mode 100644
+index 000000000..2f59f2dd1
+--- /dev/null
++++ b/packages/core/src/runner/supervisor-execution-human-review.test.ts
+@@ -0,0 +1,72 @@
++import { describe, expect, it } from "vitest";
++
++import {
++  completeSupervisorExecutionEpisode,
++  createSupervisorExecutionEpisodeJournal,
++  reopenSupervisorExecutionEpisodeAfterHumanReviewStateChange,
++  startSupervisorExecutionEpisode,
++  stopSupervisorExecutionEpisode,
++} from "./supervisor-execution-episode.js";
++
++const FINGERPRINT = `sha256:${"a".repeat(64)}` as const;
++const NEXT_FINGERPRINT = `sha256:${"b".repeat(64)}` as const;
++
++function stoppedHumanReview() {
++  const journal = createSupervisorExecutionEpisodeJournal({
++    task_id: "T-human-review",
++    task_revision: 1,
++    state_fingerprint_digest: FINGERPRINT,
++    budget: {
++      max_episodes: 3,
++      max_agent_runs: 2,
++      max_input_tokens: null,
++      max_output_tokens: null,
++      max_total_tokens: null,
++      max_wall_time_ms: 10_000,
++      max_changed_files: 4,
++      max_diff_lines: 40,
++      max_no_progress_episodes: 2,
++    },
++  });
++  const started = startSupervisorExecutionEpisode({
++    journal,
++    role: "EVALUATOR",
++    kind: "evaluator_episode",
++    operation_identity: { command: "fixture" },
++    precondition_fingerprint_digest: FINGERPRINT,
++    authority_ref: "evaluator:fixture",
++    authority_digest: FINGERPRINT,
++  });
++  if (started.status !== "started") throw new Error("expected started episode");
++  const completed = completeSupervisorExecutionEpisode({
++    journal: started.journal,
++    operation_key: started.operation_key,
++    result: { verdict: "human_review" },
++  });
++  return stopSupervisorExecutionEpisode({ journal: completed, reason: "human_review" });
++}
++
++describe("human-review supervisor replacement", () => {
++  it("requires changed state or a distinct replacement effect", () => {
++    const stopped = stoppedHumanReview();
++    expect(() =>
++      reopenSupervisorExecutionEpisodeAfterHumanReviewStateChange({
++        journal: stopped,
++        state_fingerprint_digest: FINGERPRINT,
++      }),
++    ).toThrow(/changed state or a distinct replacement effect/u);
++    expect(
++      reopenSupervisorExecutionEpisodeAfterHumanReviewStateChange({
++        journal: stopped,
++        state_fingerprint_digest: FINGERPRINT,
++        replacement_effect_ref: "evaluator-work-order:distinct",
++      }),
++    ).toMatchObject({ status: "running", stop: null, operations: [{ status: "completed" }] });
++    expect(
++      reopenSupervisorExecutionEpisodeAfterHumanReviewStateChange({
++        journal: stopped,
++        state_fingerprint_digest: NEXT_FINGERPRINT,
++      }),
++    ).toMatchObject({ status: "running", state_fingerprint_digest: NEXT_FINGERPRINT });
++  });
++});
+diff --git a/packages/core/src/schemas/index.ts b/packages/core/src/schemas/index.ts
+index 47eeeaf8c..8b674b920 100644
+--- a/packages/core/src/schemas/index.ts
++++ b/packages/core/src/schemas/index.ts
+@@ -162,6 +162,7 @@ export {
+   refreshPendingReplacementSupervisorExecutionEpisode,
+   recoverSupervisorExecutionEpisodeJournal,
+   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
++  reopenSupervisorExecutionEpisodeAfterHumanReviewStateChange,
+   reopenSupervisorExecutionEpisodeAfterEffectEvidence,
+   retireSupervisorExecutionEpisodeIntentAfterStateDrift,
+   retryFailedSupervisorExecutionEpisode,
+diff --git a/packages/core/src/tasks/index.ts b/packages/core/src/tasks/index.ts
+index fd9c8d973..9b15bd95a 100644
+--- a/packages/core/src/tasks/index.ts
++++ b/packages/core/src/tasks/index.ts
+@@ -64,6 +64,7 @@ export * as taskKernel from "./task-kernel/index.js";
+ 
+ export {
+   EXECUTION_GRANT_EXTENSION_KEY,
++  HOST_USER_DECISION_REQUIRED_FIELDS,
+   computeExecutionScopeDigest,
+   computeLogicalCompletionContractDigest,
+   computePlanDigest,
+diff --git a/packages/core/src/tasks/plan-execution-grant.test.ts b/packages/core/src/tasks/plan-execution-grant.test.ts
+index cad30c13e..399b49c12 100644
+--- a/packages/core/src/tasks/plan-execution-grant.test.ts
++++ b/packages/core/src/tasks/plan-execution-grant.test.ts
+@@ -351,7 +351,7 @@ describe("task-scoped execution grants", () => {
+     expect(parseOperationLease({ ...lease, task_id: "task-2" })).toBeNull();
+   });
+ 
+-  it("rejects an agent-asserted or malformed host decision", () => {
++  it("reports the first malformed host-decision field", () => {
+     const encoded = Buffer.from(
+       JSON.stringify({
+         schema_version: 1,
+@@ -360,7 +360,23 @@ describe("task-scoped execution grants", () => {
+       }),
+       "utf8",
+     ).toString("base64url");
+-    expect(() => parseHostUserDecision(encoded)).toThrow(/fields are malformed/u);
++    expect(() => parseHostUserDecision(encoded)).toThrow(
++      "Host user decision field origin is missing or invalid.",
++    );
++  });
++
++  it("reports a missing host-supplied decision field by name", () => {
++    const encoded = Buffer.from(
++      JSON.stringify({
++        schema_version: 1,
++        kind: "agentplane.host_user_decision",
++        origin: "user",
++      }),
++      "utf8",
++    ).toString("base64url");
++    expect(() => parseHostUserDecision(encoded)).toThrow(
++      "Host user decision field host_id is missing or invalid.",
++    );
+   });
+ 
+   it("rejects excessive base64url padding without a backtracking expression", () => {
+diff --git a/packages/core/src/tasks/plan-execution-grant.ts b/packages/core/src/tasks/plan-execution-grant.ts
+index 200310197..0d30e4d12 100644
+--- a/packages/core/src/tasks/plan-execution-grant.ts
++++ b/packages/core/src/tasks/plan-execution-grant.ts
+@@ -34,6 +34,13 @@ export type HostUserDecision = Readonly<{
+   decided_at: string;
+ }>;
+ 
++export const HOST_USER_DECISION_REQUIRED_FIELDS = [
++  "host_id",
++  "conversation_id",
++  "message_id",
++  "decided_at",
++] as const;
++
+ export type ExecutionGrantCapability =
+   | "task.lifecycle"
+   | "task.scope.extend"
+@@ -438,28 +445,29 @@ export function parseHostUserDecision(encoded: string): HostUserDecision {
+     throw new Error("Host user decision must be canonical base64url-encoded JSON.");
+   }
+   const item = record(value);
+-  if (!item) throw new Error("Host user decision fields are malformed.");
+-  if (
+-    item.schema_version !== 1 ||
+-    item.kind !== "agentplane.host_user_decision" ||
+-    item.origin !== "user" ||
+-    typeof item.host_id !== "string" ||
+-    !item.host_id.trim() ||
+-    typeof item.conversation_id !== "string" ||
+-    !item.conversation_id.trim() ||
+-    typeof item.message_id !== "string" ||
+-    !item.message_id.trim() ||
+-    typeof item.task_id !== "string" ||
+-    !item.task_id.trim() ||
+-    typeof item.plan_digest !== "string" ||
+-    !DIGEST_PATTERN.test(item.plan_digest) ||
+-    typeof item.state_fingerprint !== "string" ||
+-    !DIGEST_PATTERN.test(item.state_fingerprint) ||
+-    item.decision !== "approved" ||
+-    !isIsoDate(item.decided_at)
+-  ) {
+-    throw new Error("Host user decision fields are malformed.");
+-  }
++  if (!item) throw new Error("Host user decision must be a JSON object.");
++  const requireField = (field: string, valid: boolean): void => {
++    if (!valid) throw new Error(`Host user decision field ${field} is missing or invalid.`);
++  };
++  const nonEmptyString = (field: string): boolean =>
++    typeof item[field] === "string" && (item[field] as string).trim().length > 0;
++  requireField("schema_version", item.schema_version === 1);
++  requireField("kind", item.kind === "agentplane.host_user_decision");
++  requireField("origin", item.origin === "user");
++  requireField("host_id", nonEmptyString("host_id"));
++  requireField("conversation_id", nonEmptyString("conversation_id"));
++  requireField("message_id", nonEmptyString("message_id"));
++  requireField("task_id", nonEmptyString("task_id"));
++  requireField(
++    "plan_digest",
++    typeof item.plan_digest === "string" && DIGEST_PATTERN.test(item.plan_digest),
++  );
++  requireField(
++    "state_fingerprint",
++    typeof item.state_fingerprint === "string" && DIGEST_PATTERN.test(item.state_fingerprint),
++  );
++  requireField("decision", item.decision === "approved");
++  requireField("decided_at", isIsoDate(item.decided_at));
+   return Object.freeze(item as unknown as HostUserDecision);
+ }
+ 
+diff --git a/packages/core/src/tasks/task-kernel/invariants.test.ts b/packages/core/src/tasks/task-kernel/invariants.test.ts
+index 2869eb409..2a209e069 100644
+--- a/packages/core/src/tasks/task-kernel/invariants.test.ts
++++ b/packages/core/src/tasks/task-kernel/invariants.test.ts
+@@ -419,6 +419,75 @@ describe("canonical task kernel invariants", () => {
+     );
+   });
+ 
++  it("rejects supervisor-owned lifecycle effects without rejecting multiple semantic items", () => {
++    const semantic = {
++      id: "implementation",
++      depends_on: [],
++      required_inputs: [],
++      expected_outputs: ["source"],
++      execution_requirements: requirements,
++      optional: false,
++    };
++    const verification = {
++      ...semantic,
++      id: "browser-verification",
++      depends_on: [semantic.id],
++      expected_outputs: ["browser-evidence"],
++    };
++    expect(validateWorkItemDefinitions([semantic, verification])).toEqual([]);
++    expect(
++      validateWorkItemDefinitions([
++        {
++          ...semantic,
++          execution_requirements: {
++            ...requirements,
++            resources: ["merged-worktree-cleanup"],
++          },
++        },
++      ]),
++    ).toEqual([]);
++    for (const externalEffect of [
++      "pull_request",
++      "integration",
++      "hosted_ci",
++      "pr.open",
++      "integration.enqueue",
++    ]) {
++      expect(
++        validateWorkItemDefinitions([
++          semantic,
++          {
++            ...verification,
++            id: "publish-and-merge",
++            execution_requirements: {
++              ...requirements,
++              external_effects: [externalEffect],
++            },
++          },
++        ]),
++      ).toContain(`supervisor_owned_lifecycle:publish-and-merge:${externalEffect}`);
++    }
++    expect(
++      validateWorkItemDefinitions([
++        {
++          ...semantic,
++          execution_requirements: { ...requirements, external_effects: ["network_read"] },
++        },
++      ]),
++    ).toEqual([]);
++    expect(
++      validateWorkItemDefinitions([
++        {
++          ...semantic,
++          execution_requirements: {
++            ...requirements,
++            external_effects: ["external_write", "publish", "deploy", "destructive_git"],
++          },
++        },
++      ]),
++    ).toEqual([]);
++  });
++
+   it("blocks unrelated mutations while a non-idempotent effect is uncertain", () => {
+     const uncertain: ExternalEffect = {
+       id: "provider-effect",
+diff --git a/packages/core/src/tasks/task-kernel/invariants.ts b/packages/core/src/tasks/task-kernel/invariants.ts
+index e2854b60b..db1ef6e28 100644
+--- a/packages/core/src/tasks/task-kernel/invariants.ts
++++ b/packages/core/src/tasks/task-kernel/invariants.ts
+@@ -202,6 +202,17 @@ export function validateWorkItemDefinitions(
+   const ids = new Set<string>();
+   const producers = new Map<string, string[]>();
+   for (const definition of definitions) {
++    const supervisorOwnedRequirement = [
++      ...definition.execution_requirements.external_effects,
++      ...definition.execution_requirements.capabilities,
++    ].find((value) =>
++      /^(?:pull_request|integration|hosted_ci|pr\.(?:open|merge|head\.publish|sync_or_verify|artifacts\.update)|provider\.(?:merge|pr(?:\.(?:refresh|update_branch))?)|integration\.(?:enqueue|run_next)|task\.(?:hosted_close\.(?:open|finalize)|worktree\.cleanup)|hosted\.close|publish_pr|merge_pr|hosted_close|cleanup_worktree|merged-worktree-cleanup)$/u.test(
++        value,
++      ),
++    );
++    if (supervisorOwnedRequirement) {
++      issues.push(`supervisor_owned_lifecycle:${definition.id}:${supervisorOwnedRequirement}`);
++    }
+     if (
+       definition.contract_digest !== undefined &&
+       !DIGEST_PATTERN.test(definition.contract_digest)

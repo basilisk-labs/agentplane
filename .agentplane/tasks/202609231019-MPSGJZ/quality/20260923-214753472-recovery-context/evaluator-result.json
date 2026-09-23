@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "recovery-001",
+      "severity": "high",
+      "summary": "Replacement can replay an executor that already started. Ordinary implementation episodes retain work_order_ref=null during execution. After a supervisor crash, the new recovery condition classifies that unresolved intent as pre-dispatch failure and permits another executor run.",
+      "broken_invariant": "Safe journal recovery must preserve uncertainty about dispatched effects; a null work-order reference does not establish that dispatch never occurred.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609231019-MPSGJZ/quality/objects/sha256/288a74b6ec3b8c99f289e214d03676063dad172dcbebd2b71c5b3ee194a4e48a.patch",
+          "sha256": "sha256:288a74b6ec3b8c99f289e214d03676063dad172dcbebd2b71c5b3ee194a4e48a",
+          "line": 1376,
+          "section": "branch-task-supervisor-journal-recovery.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202609231019-MPSGJZ/quality/objects/sha256/288a74b6ec3b8c99f289e214d03676063dad172dcbebd2b71c5b3ee194a4e48a.patch",
+          "sha256": "sha256:288a74b6ec3b8c99f289e214d03676063dad172dcbebd2b71c5b3ee194a4e48a",
+          "line": 1282,
+          "section": "branch-task-supervisor-episodes.ts"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Interrupt a completed canonical implementation-rework episode after executor dispatch but before journal completion; request replacement and assert that no second executor starts without resolution of the original run."
+  ],
+  "hidden_assumptions": [
+    "work_order_ref=null distinguishes pre-dispatch interruption from an executor run whose outcome has not yet been persisted."
+  ],
+  "recovery_context": "Frozen evidence digests match, and both required checks are recorded as passing for the evaluated commit. Fix recovery to distinguish proven non-dispatch from an unresolved dispatched run, and add a behavioral interruption regression test. Existing passing verification does not cover this crash window."
+}

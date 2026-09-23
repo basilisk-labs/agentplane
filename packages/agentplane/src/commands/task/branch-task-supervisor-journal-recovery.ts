@@ -28,6 +28,7 @@ export async function recoverBranchImplementationJournal(opts: {
     interruptedPredispatch.status === "intent" &&
     interruptedPredispatch.kind === "agent_episode" &&
     interruptedPredispatch.work_order_ref === null &&
+    interruptedPredispatch.progress_digest === null &&
     opts.decision.workflowStep.kind === "agent_episode" &&
     opts.decision.workflowStep.episode.purpose === "implementation_rework" &&
     opts.task.status === "DONE" &&
