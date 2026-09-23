@@ -21,7 +21,7 @@ async function resolveIntegratedBaseFromTaskUpstream(opts: {
       { cwd: opts.gitRoot, env: gitEnv() },
     );
     for (const line of stdout.split(/\r?\n/u)) {
-      const [, , ...integratedParents] = line.trim().split(/\s+/u);
+      const integratedParents = line.trim().split(/\s+/u).slice(2);
       for (const candidate of integratedParents) {
         if (
           candidate &&
