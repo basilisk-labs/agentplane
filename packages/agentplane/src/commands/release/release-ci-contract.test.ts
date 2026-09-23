@@ -162,8 +162,14 @@ describe("release CI contract", () => {
 
     expect(wrapper).toContain("workflow/reinstall-global-agentplane.sh");
     expect(reinstall).toContain("bun run --filter=@agentplaneorg/core build");
+    expect(reinstall).toContain("bun run --filter=@agentplaneorg/recipes build");
     expect(reinstall).toContain("bun run --filter=agentplane build:bundle");
-    expect(reinstall).toContain("npm link");
+    expect(reinstall).toContain("npm pack ./packages/core");
+    expect(reinstall).toContain("npm pack ./packages/recipes");
+    expect(reinstall).toContain("npm pack ./packages/agentplane");
+    expect(reinstall).toContain("npm install --global");
+    expect(reinstall).toContain("AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane --version");
+    expect(reinstall).not.toContain("npm link");
     expect(reinstall).not.toContain("bun run --filter=@agentplane/testkit build");
     expect(reinstall).not.toContain("npm install -g ./packages");
   });
