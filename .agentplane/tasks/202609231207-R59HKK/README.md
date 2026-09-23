@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 30
 origin:
   system: "manual"
 depends_on: []
@@ -32,21 +32,21 @@ verification:
 quality_review:
   state: "human_review"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-23T16:50:29.523Z"
+  updated_at: "2026-09-23T17:09:50.573Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned human_review with 1 typed finding(s)."
   evaluated_sha: "5c015bc1bf457c164f058e655a08ae166e65c53b"
   review_identity_digest: "sha256:3f04ce586c2a4792ecca2ee3e1df4f49763cb9861d48e979539290ffd8dbea2e"
   evidence_refs:
-    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-164900171-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-164900171-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/3db1fffbd3a92ba385d9ed9fc832ed22d7e64ff87693e513ea4ccd1b984dea86.md"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-164900171-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-164900171-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-164900171-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-164900171-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-170816913-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-170816913-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/8dab65f25409950e07c039e39814a877b12e15fb0c0759b80407db09ca51d72b.md"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-170816913-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-170816913-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-170816913-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-170816913-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609231207-R59HKK/README.md"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/3dc4e9b0d5ea5b9504874a43b4c97e5898c3418bbeffd93a5fa6f388a089256c.patch"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/70e6995465910c8353ef1bbf2b986daaa46b4ddc358d39e9ddafa8e78a0c53f6.patch"
     - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/36600dc72a100753ed006c356b45fd09c3ae5925a5ec7b8aaf3fd74071ad10c9.json"
     - ".agentplane/tasks/202609231207-R59HKK/verification/20260923164834144-d394aabf02f62bfd.json"
     - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/0043e9c4bbc2828cd35ea2ccf9c9f3e8003b3f8c8e469b206a9a61a25c1e0ac2.json"
@@ -55,7 +55,7 @@ quality_review:
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen diff includes a canonical authority-boundary exception for blocked-plan rejection and bun.lock workspace version changes to 0.7.12-beta.1. The supplied approved scope does not authorize these changes; the previous lockfile finding remains unresolved. All evidence digests match, and the current verification record reports all three declared commands passed."
+    - "The frozen patch still changes three bun.lock workspace versions from 0.7.11 to 0.7.12-beta.1. The supplied scope covers supervisor recovery, and the frozen execution contract explicitly forbids dependencies and release metadata changes. No approval for this remaining drift is recorded."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -438,7 +438,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-23T16:50:29.531Z"
+doc_updated_at: "2026-09-23T17:09:50.598Z"
 doc_updated_by: "CODER"
 description: "Repair evaluator diff-base selection after provider branch updates, forward replacement intent into evaluator episodes, persist supervisor-generated task artifacts without false task_worktree_resolution, dispatch pre-merge closure through the supported local lifecycle path, and admit worktree.prepare before dirty-base worktree resolution."
 sections:
@@ -1101,11 +1101,11 @@ extensions:
   agentplane.human_input:
     history: []
     openQuestion:
-      askedAt: "2026-09-23T16:50:29.523Z"
+      askedAt: "2026-09-23T17:09:50.573Z"
       askedBy: "EVALUATOR"
-      id: "evaluator-evaluator-work-order-202609231207-R59HKK-78f021e3f936ea289ba4bac8"
+      id: "evaluator-evaluator-work-order-202609231207-R59HKK-14f6ff27aa83b8ff0b884976"
       previousStatus: "DONE"
-      question: "Do you approve expanding this task’s scope to include the blocked-plan rejection authority exception and the bun.lock workspace version changes to 0.7.12-beta.1?"
+      question: "Do you approve retaining the three bun.lock workspace-version updates to 0.7.12-beta.1 within this task's scope?"
   agentplane.kernel_operational_projection:
     digest: "sha256:6a150ed5e5ae8073bb8806e9add6eb885c7c0bd4e02b7f41f9f6e1042c56abd1"
     evidence_refs:
