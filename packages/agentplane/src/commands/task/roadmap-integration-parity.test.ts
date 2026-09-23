@@ -12,6 +12,7 @@ const mocks = vi.hoisted(() => ({
   decide: vi.fn(),
   ensureProjection: vi.fn(),
   execute: vi.fn(),
+  gitRevParse: vi.fn(),
   readEnvelope: vi.fn(),
   recoverSuspension: vi.fn(),
 }));
@@ -26,6 +27,10 @@ vi.mock("../../shared/stable-file.js", () => ({
 }));
 vi.mock("./kernel-operational-projection.js", () => ({
   ensureKernelOperationalProjectionEvidence: mocks.ensureProjection,
+}));
+vi.mock("@agentplaneorg/core/git", async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
+  gitRevParse: mocks.gitRevParse,
 }));
 vi.mock("./kernel-controller-handoff.js", () => ({
   recoverCanonicalControllerSuspension: mocks.recoverSuspension,
@@ -143,6 +148,7 @@ describe("0.7.11 hosted integration parity", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     mocks.ensureProjection.mockResolvedValue(undefined);
+    mocks.gitRevParse.mockResolvedValue(".git");
     mocks.recoverSuspension.mockResolvedValue(undefined);
   });
 
