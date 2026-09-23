@@ -120,7 +120,7 @@ export const homepageContent = {
   worksWith: {
     title: "Control plane, not another coding agent.",
     text: "Keep the model, editor, agent, and CI you already use. Agentplane gives each worker the same authority and evidence contract.",
-    tools: ["Codex", "Claude Code", "Cursor", "Aider", "Any repository-capable agent"],
+    tools: ["Codex", "Claude Code", "Cursor", "Hermes", "Any repository-capable agent"],
   },
   closing: {
     title: "Put your next agent task under control.",

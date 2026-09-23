@@ -3540,9 +3540,124 @@
   font-size: 0.74rem;
 }
 
+/* A brief light sweep makes the repository window the entrance focal point. */
+.explorerScene::before {
+  animation: windowHalo 1250ms 140ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  background: radial-gradient(
+    ellipse at center,
+    rgb(255 93 82 / 0.17),
+    rgb(112 130 222 / 0.11) 42%,
+    transparent 72%
+  );
+  content: "";
+  filter: blur(18px);
+  inset: -65px -85px 20px;
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+}
+
+.artifactWindow::after {
+  animation: windowLightSweep 1180ms 410ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    rgb(255 255 255 / 0.08) 44%,
+    rgb(205 218 255 / 0.38) 50%,
+    rgb(255 245 242 / 0.3) 55%,
+    transparent 65%
+  );
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 3;
+}
+
+@keyframes windowHalo {
+  from {
+    opacity: 0;
+    transform: translateY(34px) scale(0.83);
+  }
+  65% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.68;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes windowLightSweep {
+  from {
+    opacity: 0;
+    transform: translateX(-105%);
+  }
+  32% {
+    opacity: 0.75;
+  }
+  to {
+    opacity: 0;
+    transform: translateX(105%);
+  }
+}
+
+@media (min-width: 761px) {
+  .proofOverview {
+    padding-block: 69px 76px;
+  }
+  .proofOverviewGrid {
+    margin-top: 36px;
+  }
+  .section {
+    padding-block: 86px;
+  }
+  .authoritySection {
+    padding-block: 96px 113px;
+  }
+  .sectionIntro,
+  .sectionIntroWide {
+    gap: 15px;
+  }
+  .loopSection {
+    gap: 24px;
+  }
+  .loopGrid {
+    margin-top: 11px;
+  }
+  .loopEvidence {
+    margin-top: 14px;
+  }
+  .proofSection {
+    gap: 32px;
+  }
+  .worksSection {
+    gap: 24px;
+  }
+  .modesSection .modeGrid {
+    margin-block: 27px 19px;
+  }
+  .docsGrid {
+    margin-top: 27px;
+  }
+  .finalCta {
+    padding-bottom: 82px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .explorerScene::before,
+  .artifactWindow::after {
+    animation: none;
+  }
+  .artifactWindow::after {
+    display: none;
+  }
+}
+
 @media (max-width: 760px) {
   .proofOverview {
-    padding-block: 34px 36px;
+    padding-block: 43px 46px;
   }
   .proofOverviewInner,
   .section .sectionIntro,
@@ -3572,7 +3687,7 @@
     display: none;
   }
   .proofOverviewGrid {
-    gap: 13px;
+    gap: 17px;
     grid-template-columns: 1fr;
     margin-top: 17px;
   }
@@ -3600,7 +3715,7 @@
   }
 
   .section {
-    padding: 38px 16px;
+    padding: 50px 16px;
   }
   .section::before,
   .section::after {
@@ -3629,13 +3744,13 @@
   }
 
   .authoritySection {
-    padding-bottom: 73px;
+    padding-bottom: 83px;
   }
   .authoritySection .splitSection {
     align-items: stretch;
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 23px;
   }
   .authoritySection .sectionIntro h2 {
     font-size: clamp(1.55rem, 6.6vw, 1.85rem);
@@ -3690,7 +3805,7 @@
   }
 
   .loopSection {
-    gap: 13px;
+    gap: 20px;
   }
   .loopGrid {
     gap: 17px 10px;
@@ -3759,7 +3874,7 @@
   }
 
   .proofSection {
-    gap: 13px;
+    gap: 19px;
   }
   .proofLedger > header {
     align-items: start;
@@ -3835,7 +3950,7 @@
   }
 
   .worksSection {
-    gap: 12px;
+    gap: 19px;
   }
   .worksSection .toolList {
     gap: 7px;
@@ -3864,7 +3979,7 @@
     column-gap: 10px;
     display: grid;
     grid-template-columns: 37px 1fr;
-    padding: 10px;
+    padding: 14px;
   }
   .modeGlyph {
     grid-column: 1;
@@ -3900,12 +4015,12 @@
   }
 
   .docsGrid {
-    margin-top: 12px;
+    margin-top: 18px;
   }
   .docsCard {
     gap: 6px;
     grid-template-columns: 92px minmax(0, 1fr) 13px;
-    min-height: 42px;
+    min-height: 48px;
     padding: 6px 8px;
   }
   .docsCard span {
@@ -3924,8 +4039,8 @@
   }
 
   .finalCta {
-    gap: 13px;
-    padding-bottom: 37px;
+    gap: 19px;
+    padding-bottom: 48px;
   }
   .finalCta .ctaGroup {
     display: grid;

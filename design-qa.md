@@ -28,6 +28,8 @@ The files are in `/Users/densmirnov/.codex/visualizations/2026/09/23/01a0ce1b-2b
 - At 390 px and 320 px, document scroll width equals viewport width. The mobile tabs expose all seven artifacts and scroll inside the card.
 - Compared the continuation against both mobile mockups in a full-page 390 px capture and checked the narrower 320 px layout. The proof points are short rows, the control loop is 2 × 2, the evidence ledger stays in two columns, the tool names form a 2 × 2 grid, and workflow routes stack as cards.
 - Selecting Verify in the control loop changes the pressed state and evidence to the verification message and artifact.
+- The compatibility grid now names Hermes in place of Aider. Section padding and internal gaps were increased on desktop and mobile; a full-page capture at 1024 px and 390 px confirmed that the blocks stay aligned. At 390 px and 320 px, document scroll width still equals viewport width.
+- The repository window now gets a one-time halo and light sweep on entry. At 760 ms after navigation, the sweep had 0.75 opacity; after another 1050 ms it was at 0. The CSS disables both effects for reduced-motion users; browser emulation of that preference was not available in this check.
 - Selecting `AGENTS.md` changes the code, caption, and handwritten note. It leaves the hero's internal scroll position at zero; the repository window no longer jumps within the hero.
 - After 900 ms of playback, pausing held the progress line at 13.58 px through a further 650 ms. Resuming advanced the line and selected the next file after the remaining interval, with matching caption and note.
 - Reduced-motion preference uses a manual next-file control by code path; this preference was not emulated in the browser session.
