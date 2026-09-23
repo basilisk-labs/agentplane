@@ -12,8 +12,8 @@ Created: 2026-09-23T10:25:48.224Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:5e8298c1a7b3254408d6f69fb13ffd26cb6b44f617b306f78672546c59375241
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,6 +29,10 @@ Created: 2026-09-23T10:25:48.224Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ docs/developer/task-execution-authority.mdx        |  13 +-
+ docs/user/cli-reference.generated.mdx              |   5 +
+ docs/user/configuration.mdx                        |  10 +-
+ docs/user/task-lifecycle.mdx                       |  30 ++--
  .../task-backend/kernel-authority-schema.ts        |   2 +-
  .../src/commands/task/advance-task-step.ts         |  17 +++
  .../agentplane/src/commands/task/create.command.ts | 153 ++++++++++++++++++--
@@ -46,7 +50,7 @@ Created: 2026-09-23T10:25:48.224Z
  packages/core/src/tasks/task-kernel/model.ts       |   3 +-
  .../task-kernel/repository-policy-approval.test.ts |  63 +++++++++
  packages/core/src/tasks/task-store.ts              |   4 +
- 17 files changed, 685 insertions(+), 92 deletions(-)
+ 21 files changed, 728 insertions(+), 107 deletions(-)
 ```
 
 </details>

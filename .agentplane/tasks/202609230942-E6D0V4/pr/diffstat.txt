@@ -1,3 +1,7 @@
+ docs/developer/task-execution-authority.mdx        |  13 +-
+ docs/user/cli-reference.generated.mdx              |   5 +
+ docs/user/configuration.mdx                        |  10 +-
+ docs/user/task-lifecycle.mdx                       |  30 ++--
  .../task-backend/kernel-authority-schema.ts        |   2 +-
  .../src/commands/task/advance-task-step.ts         |  17 +++
  .../agentplane/src/commands/task/create.command.ts | 153 ++++++++++++++++++--
@@ -15,4 +19,4 @@
  packages/core/src/tasks/task-kernel/model.ts       |   3 +-
  .../task-kernel/repository-policy-approval.test.ts |  63 +++++++++
  packages/core/src/tasks/task-store.ts              |   4 +
- 17 files changed, 685 insertions(+), 92 deletions(-)
+ 21 files changed, 728 insertions(+), 107 deletions(-)

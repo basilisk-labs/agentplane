@@ -1,0 +1,57 @@
+{
+  "checks": [
+    {
+      "check_ids": [],
+      "command": "bunx vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-kernel packages/core/src/tasks/task-execution-contract-compat.test.ts packages/core/src/config/config.test.ts",
+      "duration_ms": 879,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:4c2d327500ed4d640c4e3a64208540ae63f3b3d92a7ef1f45416ba665216c3c0",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/.codex/worktrees/pre-0712-clean/agentplane/.agentplane/worktrees/202609230942-E6D0V4-make-canonical-agentplane-autonomy-safe-and-defa\n\n\n Test Files  8 passed (8)\n      Tests  132 passed (132)\n   Start at  16:45:54\n   Duration  546ms (transform 821ms, setup 533ms, import 1.17s, tests 144ms, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [],
+      "command": "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task packages/agentplane/src/runner/usecases/kernel-authority.test.ts",
+      "duration_ms": 19260,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:4c2d327500ed4d640c4e3a64208540ae63f3b3d92a7ef1f45416ba665216c3c0",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": null,
+      "stderr_tail": "ℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=full-doc-updated section=Summary\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\n",
+      "stdout_tail": "-E6D0V4-make-canonical-agentplane-autonomy-safe-and-defa\n\n✅ migrated task docs (changed=1)\n✅ migrated task docs (changed=0)\n202602050900-V1F4P\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-vitest-run-ktx3Wy/agentplane-cli-test-pntGuy/.agentplane/tasks/202602050900-V1F4P/README.md\n✅ migrated task docs (changed=1)\n✅ migrated task docs (changed=1)\n✅ migrated task docs (changed=1)\n✅ migrated task docs (changed=1)\n✅ migrated task docs (changed=1)\n✅ migrated task docs (changed=1)\n✅ migrated task docs (changed=2)\n✅ migrated task docs (changed=1)\n202602050900-V1F4P\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-vitest-run-ktx3Wy/agentplane-cli-test-TaPdEf/.agentplane/tasks/202602050900-V1F4P/README.md\n✅ blocked T-1 (commit=new-hash)\n/repo/.agentplane/tasks/T-1/README.md\n/repo/.agentplane/tasks/T-1/README.md\n/repo/.agentplane/tasks/T-1/README.md\n/repo/.agentplane/tasks/T-1/README.md\n✅ commented T-1\n202602050900-V1F4P\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-vitest-run-ktx3Wy/agentplane-cli-test-fddYcd/.agentplane/tasks/202602050900-V1F4P/README.md\n✅ updated T-1\n✅ updated T-1\n✅ status T-1 (next=DOING)\n✅ status T-1 (next=DOING)\n/repo/.agentplane/tasks/T-1/README.md\n202602050900-V1F4F\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-vitest-run-ktx3Wy/agentplane-cli-test-WThoud/.agentplane/tasks/202602050900-V1F4F/README.md\n202602050900-V1F4G\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-vitest-run-ktx3Wy/agentplane-cli-test-zteE8I/.agentplane/tasks/202602050900-V1F4G/README.md\n202602050900-V1F4H\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-vitest-run-ktx3Wy/agentplane-cli-test-AT8zj6/.agentplane/tasks/202602050900-V1F4H/README.md\n{\n  \"summary\": {\n    \"tasks\": 1,\n    \"observations\": 0,\n    \"open\": 0,\n    \"invalid\": 1,\n    \"blocking\": 0,\n    \"byAction\": {}\n  },\n  \"tasks\": [\n    {\n      \"task_id\": \"202605191736-EQBZ4M\",\n      \"title\": \"Observation task\",\n      \"path\": \".agentplane/tasks/202605191736-EQBZ4M/observations.jsonl\",\n      \"observations\": [],\n      \"errors\": [\n        {\n          \"line\": 1,\n          \"message\": \"Expected property name or '}' in JSON at position 1 (line 1 column 2)\",\n          \"raw\": \"{not-json}\"\n        }\n      ],\n      \"blocking\": []\n    }\n  ]\n}\n202602050900-V1F4\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-vitest-run-ktx3Wy/agentplane-cli-test-JG1mmj/.agentplane/tasks/202602050900-V1F4/README.md\n202602050900-V1F4D\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-vitest-run-ktx3Wy/agentplane-cli-test-uBY2TQ/.agentplane/tasks/202602050900-V1F4D/README.md\n202602050900-V1F4D\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-vitest-run-ktx3Wy/agentplane-cli-test-eufkPI/.agentplane/tasks/202602050900-V1F4D/README.md\n202602050900-V1F4D\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-vitest-run-ktx3Wy/agentplane-cli-test-YaBBMI/.agentplane/tasks/202602050900-V1F4D/README.md\n202602050900-V1F4D\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-vitest-run-ktx3Wy/agentplane-cli-test-Xf2wVq/.agentplane/tasks/202602050900-V1F4D/README.md\n202602050900-V1F4T\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-vitest-run-ktx3Wy/agentplane-cli-test-HCDDAj/.agentplane/tasks/202602050900-V1F4T/README.md\n202602050900-V1F4T\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-vitest-run-ktx3Wy/agentplane-cli-test-KFRUi9/.agentplane/tasks/202602050900-V1F4T/README.md\n202602050900-V1F4B\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-vitest-run-ktx3Wy/agentplane-cli-test-I313Yq/.agentplane/tasks/202602050900-V1F4B/README.md\n202602050900-V1F5\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-vitest-run-ktx3Wy/agentplane-cli-test-5ZtW4j/.agentplane/tasks/202602050900-V1F5/README.md\n\n Test Files  113 passed (113)\n      Tests  834 passed (834)\n   Start at  16:45:54\n   Duration  18.90s (transform 14.63s, setup 3.52s, import 57.40s, tests 49.71s, environment 6ms)\n\n"
+    },
+    {
+      "check_ids": [],
+      "command": "bun run typecheck",
+      "duration_ms": 288,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:4c2d327500ed4d640c4e3a64208540ae63f3b3d92a7ef1f45416ba665216c3c0",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202609230942-E6D0V4"
+}

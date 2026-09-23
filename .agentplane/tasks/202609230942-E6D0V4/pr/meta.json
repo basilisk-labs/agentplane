@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202609230942-E6D0V4/make-canonical-agentplane-autonomy-safe-and-defa",
   "created_at": "2026-09-23T10:25:48.224Z",
-  "diffstat_sha256": "sha256:d0a638fdbf548d01b0e02983375a361d462eeee055a12bb39ceb6a0908a1762d",
+  "diffstat_sha256": "sha256:d255cd3ffd4d4608fee689a6f5bbc8b16c8d47de2c6f43a7668a75b14f6b822a",
   "last_verified_at": null,
   "provider": {
     "hostname": "github.com",
