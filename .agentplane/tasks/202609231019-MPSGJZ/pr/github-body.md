@@ -15,7 +15,7 @@ Implement the verified AgentPlane lifecycle fixes as one clean semantic code tas
 
 ## Verification
 
-- State: needs_rework
+- State: blocked_external
 - Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
