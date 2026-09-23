@@ -24,7 +24,7 @@ Created: 2026-09-23T10:57:06.440Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-23T10:57:06.440Z
+- Updated: 2026-09-23T11:19:17.178Z
 - Branch: task/202609231019-MPSGJZ/fix-canonical-completed-task-branch-lifecycle-re
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
