@@ -16,7 +16,7 @@ Fix the root cause that blocks Codex-hosted autonomous execution after explicit 
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:5e8298c1a7b3254408d6f69fb13ffd26cb6b44f617b306f78672546c59375241
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>

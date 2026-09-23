@@ -6,14 +6,14 @@ Created: 2026-09-23T10:25:48.224Z
 
 - Task: `202609230942-E6D0V4`
 - Title: Make canonical AgentPlane autonomy safe and default
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609230942-E6D0V4/make-canonical-agentplane-autonomy-safe-and-defa`
 - Canonical task record: `.agentplane/tasks/202609230942-E6D0V4/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:5e8298c1a7b3254408d6f69fb13ffd26cb6b44f617b306f78672546c59375241
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
