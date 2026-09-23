@@ -307,7 +307,6 @@ export async function deriveBlockers(opts: {
     });
   }
   if (opts.workflowMode === "branch_pr") {
-    const canonicalPreMergeEvidence = hasCanonicalPreMergeEvidence(opts.task);
     let verificationReason: string | null = null;
     let verificationRecoveryHint: string | null = null;
     const finalizedDoneTask =
@@ -317,9 +316,8 @@ export async function deriveBlockers(opts: {
     addVerificationRequiredBlocker({
       blockers,
       task: opts.task,
-      acceptedVerificationRecord: canonicalPreMergeEvidence
-        ? true
-        : opts.task.verification?.state === "ok" && !finalizedDoneTask
+      acceptedVerificationRecord:
+        opts.task.verification?.state === "ok" && !finalizedDoneTask
           ? await hasAcceptedVerificationForCurrentImplementation({
               ...opts,
               execution: opts.execution,
