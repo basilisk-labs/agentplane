@@ -1,0 +1,30 @@
+ .agentplane/tasks/202609221053-GMZJ6N/README.md    | 1213 --------------------
+ .../tasks/202609221053-GMZJ6N/pr/diffstat.txt      |    8 -
+ .../tasks/202609221053-GMZJ6N/pr/github-body.md    |   40 -
+ .../tasks/202609221053-GMZJ6N/pr/github-title.txt  |    1 -
+ .agentplane/tasks/202609221053-GMZJ6N/pr/meta.json |   32 -
+ .agentplane/tasks/202609221053-GMZJ6N/pr/review.md |   43 -
+ ...c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json |  Bin 8497 -> 0 bytes
+ ...87e07dfff35ea84123952ef257b9037259c0405a62.json |  Bin 10258 -> 0 bytes
+ ...9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json |  Bin 7278 -> 0 bytes
+ .../supervision/declared-checks.json               |  115 --
+ .../supervision/implementation-evidence.json       |   78 --
+ .../20260922221327270-d5763aed36d18755.json        |  270 -----
+ .agentplane/tasks/202609222222-GGCDPS/README.md    | 1114 ------------------
+ .../tasks/202609222222-GGCDPS/pr/diffstat.txt      |    3 -
+ .../tasks/202609222222-GGCDPS/pr/github-body.md    |   35 -
+ .../tasks/202609222222-GGCDPS/pr/github-title.txt  |    1 -
+ .agentplane/tasks/202609222222-GGCDPS/pr/meta.json |   32 -
+ .agentplane/tasks/202609222222-GGCDPS/pr/review.md |   38 -
+ ...c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json |  Bin 8497 -> 0 bytes
+ ...87e07dfff35ea84123952ef257b9037259c0405a62.json |  Bin 10258 -> 0 bytes
+ ...9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json |  Bin 7278 -> 0 bytes
+ .../supervision/declared-checks.json               |   94 --
+ .../supervision/implementation-evidence.json       |   73 --
+ .../20260922224220049-3454975f6bdb9b8c.json        |  246 ----
+ .../shared/roadmap-rework-conservation.test.ts     |    2 +-
+ .../src/commands/task/advance-task-step.ts         |   19 +
+ .../task/branch-task-supervisor-episodes.ts        |    3 +
+ .../commands/task/branch-task-verification.test.ts |   14 +-
+ .../task/kernel-provider-effect-coordinator.ts     |   28 +-
+ 29 files changed, 60 insertions(+), 3442 deletions(-)

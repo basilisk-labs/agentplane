@@ -1,3 +1,0 @@
- packages/agentplane/src/commands/task/ordinary-advance-step.ts     | 7 ++++++-
- .../agentplane/src/commands/task/roadmap-advance-one-step.test.ts  | 4 +++-
- 2 files changed, 9 insertions(+), 2 deletions(-)
