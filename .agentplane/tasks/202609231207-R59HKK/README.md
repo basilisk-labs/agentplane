@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -30,22 +30,32 @@ verification:
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-23T12:54:48.211Z"
+  updated_at: "2026-09-23T14:54:39.716Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "3243d26a28119f73b05e2e6e5036d8a74a97cb54"
-  review_identity_digest: "sha256:c9cc8b8ef8fc0565382ba8725df942b755cf57fd804b6fe0046cda960c58bd29"
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
+  evaluated_sha: "1663b3c247eb098033997ad12a007220dd39601e"
+  review_identity_digest: "sha256:c88cdc580f353ac8adedd2dc69d2d76aa945e00a56c7a117ce2c0d5a3062971f"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202609231207-R59HKK/b2a5e6975b545834c44149cc7b157b3c130abae36873572d871b7e1800a3f78d/quality-report.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-145321863-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-145321863-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/4b6731a5c57300dafdfc09ebb523cc5559af5937d055fb34abcd5c57c1ee0fd8.md"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-145321863-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-145321863-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-145321863-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-145321863-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609231207-R59HKK/README.md"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/b62f2aa81cf989ed4066eed7a13bdfafe0a259b324469b0fcf7cae04b1fc5872.patch"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/e1483435cf1fb395403f7cfbe40e6f18bdd3bc5bdd7f9be05af554e838364d7b.json"
+    - ".agentplane/tasks/202609231207-R59HKK/verification/20260923144846870-4a1e16580868d4ae.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/9bfbe82d2e857611eb04b1407e7dca21d72de2e2a8167fa0864a8883642181a1.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "PASS: evaluator diff-base selection uses the current base-ref merge point after provider branch updates and falls back to the frozen base SHA only when the base ref resolves to the evaluated commit."
-    - "PASS: replacement authority propagates from branch supervision into evaluator episode execution with focused unit coverage."
-    - "PASS: completed canonical tasks persist generated terminal artifacts before route evaluation and can execute admitted repository-local lifecycle operations without creating a false provider effect."
-    - "PASS: ready WorkItems without a dedicated task worktree route to worktree.prepare before unrelated dirty base-checkout resolution, while invalid provider-conflict context remains fail-closed."
-    - "PASS: repository evidence binds the implementation to commit 3243d26a28119f73b05e2e6e5036d8a74a97cb54 and lists only the approved task artifacts, source files, and regression tests."
-    - "PASS: AgentPlane-native validation recorded the required contract tests, typecheck, and full local CI suite with exit code 0."
+    - "The diff-base fallback can exclude task-owned changes. resolveIntegratedBaseFromTaskUpstream selects the first qualifying second parent from any published merge, without establishing that it belongs to the configured base branch. If a task merges a feature branch descended from the local base, that feature tip satisfies both ancestry checks and becomes the review base, hiding its changes from the evaluator."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -317,7 +327,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-23T14:48:51.030Z"
+doc_updated_at: "2026-09-23T14:54:39.724Z"
 doc_updated_by: "CODER"
 description: "Repair evaluator diff-base selection after provider branch updates, forward replacement intent into evaluator episodes, persist supervisor-generated task artifacts without false task_worktree_resolution, dispatch pre-merge closure through the supported local lifecycle path, and admit worktree.prepare before dirty-base worktree resolution."
 sections:
