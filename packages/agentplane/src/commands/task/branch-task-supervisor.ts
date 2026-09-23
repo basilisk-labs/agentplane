@@ -81,6 +81,7 @@ export type BranchTaskSupervisorOptions = {
   ctx: CommandCtx;
   command: CommandContext;
   task_id: string;
+  replace_failed_operation?: boolean;
   task_execution?: TaskExecutionContext;
   sandbox_override?: string;
   danger_authority?: {

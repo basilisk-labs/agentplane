@@ -40,6 +40,7 @@ export async function executeBranchEvaluatorEpisode(opts: {
       task,
       task_id: opts.input.task_id,
       evaluator_id: "recovery-context",
+      replacement: opts.input.replace_failed_operation === true,
     });
     await commitBranchSupervisorTaskArtifacts({
       command,

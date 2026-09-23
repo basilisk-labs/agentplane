@@ -19,6 +19,7 @@ import {
 import { commitCanonicalTerminalTaskArtifacts } from "./kernel-repository-coordinator.js";
 import {
   decideCanonicalWorkflowEffect,
+  executeCanonicalLocalWorkflowOperation,
   prepareCanonicalWorkflowEffect,
 } from "./kernel-provider-effect-coordinator.js";
 import { ensureKernelOperationalProjectionEvidence } from "./kernel-operational-projection.js";
@@ -195,18 +196,27 @@ async function advanceCanonicalRoute(opts: {
       route.reason_code === "kernel_task_completed" &&
       current.read.task.execution_route?.repository_mode === "branch_pr"
     ) {
+      await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
       const localWorkflow = await decideCanonicalWorkflowEffect(opts.command, opts.task_id, false);
       const localTerminal =
         localWorkflow.workflowStep.kind === "terminal" &&
         ["done", "superseded"].includes(localWorkflow.workflowStep.outcome.type);
       if (localTerminal) {
-        await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
         return {
           schema_version: 1,
           task_id: opts.task_id,
           action: { kind: "terminal", reason: route.reason_code },
           canonical_revision: record.aggregate.revision,
         };
+      }
+      if (
+        await executeCanonicalLocalWorkflowOperation({
+          command: opts.command,
+          decision: localWorkflow,
+          task_id: opts.task_id,
+        })
+      ) {
+        continue;
       }
       if (!opts.allow_provider_effects) {
         return {
@@ -242,13 +252,21 @@ async function advanceCanonicalRoute(opts: {
         workflow.workflowStep.kind === "terminal" &&
         ["done", "superseded"].includes(workflow.workflowStep.outcome.type);
       if (terminal) {
-        await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
         return {
           schema_version: 1,
           task_id: opts.task_id,
           action: { kind: "terminal", reason: route.reason_code },
           canonical_revision: record.aggregate.revision,
         };
+      }
+      if (
+        await executeCanonicalLocalWorkflowOperation({
+          command: opts.command,
+          decision: workflow,
+          task_id: opts.task_id,
+        })
+      ) {
+        continue;
       }
       const prepared = await prepareCanonicalWorkflowEffect({
         command: opts.command,

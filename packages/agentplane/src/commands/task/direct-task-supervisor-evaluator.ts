@@ -15,6 +15,7 @@ export async function runAndApplyDirectTaskEvaluator(opts: {
   task: TaskData;
   task_id: string;
   evaluator_id: string;
+  replacement?: boolean;
 }): Promise<{
   execution: Awaited<ReturnType<typeof executeEvaluatorSupervisorEpisode>>;
   result: {
@@ -42,7 +43,7 @@ export async function runAndApplyDirectTaskEvaluator(opts: {
     task: opts.task,
     evaluator,
     task_id: opts.task_id,
-    replacement: false,
+    replacement: opts.replacement === true,
     artifacts: createEvaluatorArtifactPreparationPort(opts.command),
   });
   const currentTask = await loadTaskFromContext({ ctx: opts.command, taskId: opts.task_id });

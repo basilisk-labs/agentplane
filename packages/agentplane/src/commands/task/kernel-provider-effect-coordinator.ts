@@ -491,6 +491,37 @@ export async function prepareCanonicalWorkflowEffect(opts: {
   return "prepared";
 }
 
+/** Execute repository-local lifecycle work without misclassifying it as a provider effect. */
+export async function executeCanonicalLocalWorkflowOperation(opts: {
+  command: CommandContext;
+  decision: TaskRouteDecision;
+  task_id: string;
+}): Promise<boolean> {
+  const step = opts.decision.workflowStep;
+  if (step.kind !== "cli_operation" || step.operation.id in CANONICAL_EFFECT_KIND_BY_OPERATION) {
+    return false;
+  }
+  const persisted = await executeAdmittedBranchWorkflowOperation({
+    decision: opts.decision,
+    git_root: opts.command.resolvedProject.gitRoot,
+    refresh: async () => await decide(opts.command, opts.task_id),
+  });
+  const execution = persisted.execution;
+  if (
+    !execution.executable ||
+    execution.stop_reason !== null ||
+    execution.result?.status !== "succeeded" ||
+    execution.refreshed_decision === null
+  ) {
+    throw new Error(
+      `Canonical local lifecycle operation ${step.operation.id} failed: ${
+        execution.stop_reason ?? execution.result?.detail ?? "route refresh unavailable"
+      }`,
+    );
+  }
+  return true;
+}
+
 export async function decideCanonicalWorkflowEffect(
   command: CommandContext,
   taskId: string,
