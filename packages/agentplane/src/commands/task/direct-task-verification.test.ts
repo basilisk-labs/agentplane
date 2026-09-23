@@ -181,8 +181,12 @@ describe("direct task verification", () => {
       .spyOn(reviewTarget, "resolveQualityReviewTargetSha")
       .mockResolvedValue("frozen-head");
     const observed = vi
-      .spyOn(observedChanges, "resolveObservedVerificationChangedPaths")
-      .mockResolvedValue(["docs/contract.md"]);
+      .spyOn(observedChanges, "resolveObservedVerificationChangeSet")
+      .mockResolvedValue({
+        changed_paths: ["docs/contract.md"],
+        inherited_paths: [],
+        repository_effects: ["documentation", "repository_write"],
+      });
     const retain = vi
       .spyOn(infrastructureVerification, "prepareInfrastructureVerificationForCheckout")
       .mockResolvedValue(() => Promise.resolve("infra.json"));

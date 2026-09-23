@@ -32,9 +32,7 @@ import {
 } from "../shared/quality-review-target.js";
 import { normalizeBranchPrBatchTaskIds } from "../pr/internal/sync-batch-ownership.js";
 import {
-  resolveObservedVerificationChangedPaths,
-  resolveObservedVerificationRepositoryEffects,
-  resolveInheritedVerificationPaths,
+  resolveObservedVerificationChangeSet,
   reconcileVerificationExecutionContract,
 } from "./verify-record-observed-changes.js";
 import { isQualificationTask } from "./qualification-packet.js";
@@ -330,29 +328,12 @@ export async function resolveImplementationVerificationTask(opts: {
     previousEvaluatedSha: recordedTaskImplementationCommitSha(opts.task),
     workflowMode: opts.workflow,
   });
-  const changedPaths = await resolveObservedVerificationChangedPaths({
+  const observedChanges = await resolveObservedVerificationChangeSet({
     ctx: opts.command,
     evaluatedSha,
     taskId: opts.task.id,
     artifactTaskIds: taskIds,
     execution,
-  });
-  const inheritedPaths = await resolveInheritedVerificationPaths({
-    ctx: opts.command,
-    evaluatedSha,
-    taskId: opts.task.id,
-    artifactTaskIds: taskIds,
-    execution,
-    changed_paths: changedPaths,
-  });
-  const observedRepositoryEffects = await resolveObservedVerificationRepositoryEffects({
-    ctx: opts.command,
-    evaluatedSha,
-    taskId: opts.task.id,
-    artifactTaskIds: taskIds,
-    execution,
-    changed_paths: changedPaths,
-    inherited_paths: inheritedPaths,
   });
   const verificationTask = {
     ...opts.task,
@@ -364,9 +345,9 @@ export async function resolveImplementationVerificationTask(opts: {
           task: opts.task,
           requestedMode: opts.workflow,
         }),
-      changed_paths: changedPaths,
-      inherited_paths: inheritedPaths,
-      observed_repository_effects: observedRepositoryEffects,
+      changed_paths: observedChanges.changed_paths,
+      inherited_paths: observedChanges.inherited_paths,
+      observed_repository_effects: observedChanges.repository_effects,
     }),
   };
   return {
@@ -374,9 +355,9 @@ export async function resolveImplementationVerificationTask(opts: {
     snapshot: {
       execution_contract: verificationTask.execution_contract!,
       evaluated_sha: evaluatedSha,
-      changed_paths: changedPaths,
-      inherited_paths: inheritedPaths,
-      repository_effects: observedRepositoryEffects,
+      changed_paths: observedChanges.changed_paths,
+      inherited_paths: observedChanges.inherited_paths,
+      repository_effects: observedChanges.repository_effects,
     },
   };
 }

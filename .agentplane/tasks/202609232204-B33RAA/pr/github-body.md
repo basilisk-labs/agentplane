@@ -31,13 +31,14 @@ Resolve #4835 and replace stale PR #5932 on current main: classify package.json 
  .../src/cli/run-cli.core.tasks.create.test.ts      | 97 ++++++++++++++++++++++
  .../agentplane/src/commands/task/brief-model.ts    |  7 ++
  .../agentplane/src/commands/task/brief-render.ts   |  6 ++
- .../task/external-agent-implementation-recovery.ts | 14 ++++
+ .../commands/task/direct-task-verification.test.ts |  8 +-
+ .../task/external-agent-implementation-recovery.ts | 25 +++---
  .../agentplane/src/commands/task/kernel-read.ts    | 13 ++-
  packages/agentplane/src/commands/task/new.spec.ts  |  8 +-
  packages/agentplane/src/commands/task/new.ts       | 31 +++++++
- .../src/commands/task/verify-record-execute.ts     | 14 ++++
- .../task/verify-record-observed-changes.ts         | 54 +++++++++++-
- .../task/verify-record.durability.unit.test.ts     | 81 ++++++++++++++++++
+ .../src/commands/task/verify-record-execute.ts     | 34 +++-----
+ .../task/verify-record-observed-changes.ts         | 83 +++++++++++++++++-
+ .../task/verify-record.durability.unit.test.ts     | 79 ++++++++++++++++++
  .../src/commands/task/verify-record.types.ts       |  2 +
  .../src/runtime/task-routing/resolve.test.ts       | 39 +++++++++
  .../agentplane/src/runtime/task-routing/resolve.ts |  2 +
@@ -46,7 +47,7 @@ Resolve #4835 and replace stale PR #5932 on current main: classify package.json 
  .../core/src/tasks/verification-contract-kernel.js | 58 +++++++++++--
  .../core/src/tasks/verification-contract.test.ts   | 53 ++++++++++++
  packages/core/src/tasks/verification-contract.ts   |  8 ++
- 19 files changed, 551 insertions(+), 8 deletions(-)
+ 20 files changed, 579 insertions(+), 46 deletions(-)
 ```
 
 </details>

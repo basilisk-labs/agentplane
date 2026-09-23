@@ -845,9 +845,8 @@ describe("task verification durability", () => {
     );
     await execFileAsync("git", ["add", manifestPath], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "test: update manifest metadata"], { cwd: root });
-    const metadataSha = (
-      await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root })
-    ).stdout.trim();
+    const metadataHead = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    const metadataSha = metadataHead.stdout.trim();
     const metadataEffects = await resolveObservedVerificationRepositoryEffects({
       ctx,
       evaluatedSha: metadataSha,
@@ -867,9 +866,8 @@ describe("task verification durability", () => {
     await execFileAsync("git", ["commit", "-m", "test: update manifest dependency"], {
       cwd: root,
     });
-    const dependencySha = (
-      await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root })
-    ).stdout.trim();
+    const dependencyHead = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    const dependencySha = dependencyHead.stdout.trim();
     const dependencyEffects = await resolveObservedVerificationRepositoryEffects({
       ctx,
       evaluatedSha: dependencySha,

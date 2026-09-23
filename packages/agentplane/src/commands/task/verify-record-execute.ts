@@ -54,9 +54,7 @@ import {
 } from "./shared.js";
 import { resolveVerifyRecordInput } from "./verify-record-input.js";
 import {
-  resolveObservedVerificationChangedPaths,
-  resolveObservedVerificationRepositoryEffects,
-  resolveInheritedVerificationPaths,
+  resolveObservedVerificationChangeSet,
   reconcileVerificationExecutionContract,
 } from "./verify-record-observed-changes.js";
 import { isQualificationTask, writeQualificationPacket } from "./qualification-packet.js";
@@ -201,41 +199,21 @@ async function recordVerificationResult(opts: {
               current.quality_review?.evaluated_sha ?? recordedTaskImplementationCommitSha(current),
             workflowMode,
           }));
-        const observedChangedPaths =
-          opts.verificationSnapshot?.changed_paths ??
-          (await resolveObservedVerificationChangedPaths({
-            ctx,
-            evaluatedSha,
-            taskId: current.id,
-            artifactTaskIds: qualityReviewTaskIds,
-            execution: taskCommand.execution,
-          }));
-        const inheritedPaths =
-          opts.verificationSnapshot?.inherited_paths ??
-          (await resolveInheritedVerificationPaths({
-            ctx,
-            evaluatedSha,
-            taskId: current.id,
-            artifactTaskIds: qualityReviewTaskIds,
-            execution: taskCommand.execution,
-            changed_paths: observedChangedPaths,
-          }));
-        const observedRepositoryEffects =
-          opts.verificationSnapshot?.repository_effects ??
-          (await resolveObservedVerificationRepositoryEffects({
-            ctx,
-            evaluatedSha,
-            taskId: current.id,
-            artifactTaskIds: qualityReviewTaskIds,
-            execution: taskCommand.execution,
-            changed_paths: observedChangedPaths,
-            inherited_paths: inheritedPaths,
-          }));
+        const observedChanges = await resolveObservedVerificationChangeSet({
+          ctx,
+          evaluatedSha,
+          taskId: current.id,
+          artifactTaskIds: qualityReviewTaskIds,
+          execution: taskCommand.execution,
+          snapshot: opts.verificationSnapshot,
+        });
+        const observedChangedPaths = observedChanges.changed_paths;
+        const inheritedPaths = observedChanges.inherited_paths;
         const observedExecutionContract = reconcileVerificationExecutionContract({
           contract: baseExecutionContract,
           changed_paths: observedChangedPaths,
           inherited_paths: inheritedPaths,
-          observed_repository_effects: observedRepositoryEffects,
+          observed_repository_effects: observedChanges.repository_effects,
         });
         const contractTask = { ...current, execution_contract: observedExecutionContract };
         const parsedDetails = parseVerificationCheckDetails(opts.details);
@@ -456,7 +434,7 @@ async function recordVerificationResult(opts: {
           },
           changed_paths: observedChangedPaths,
           inherited_paths: inheritedPaths,
-          observed_repository_effects: observedRepositoryEffects,
+          observed_repository_effects: observedChanges.repository_effects,
           verification_results: verificationResults,
         });
         intents.unshift(

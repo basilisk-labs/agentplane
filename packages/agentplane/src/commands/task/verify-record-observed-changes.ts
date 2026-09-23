@@ -140,6 +140,35 @@ export async function resolveInheritedVerificationPaths(
   return opts.changed_paths.filter((file) => !owned.has(file));
 }
 
+export async function resolveObservedVerificationChangeSet(
+  opts: Parameters<typeof resolveObservedVerificationChangedPaths>[0] & {
+    snapshot?: {
+      changed_paths: readonly string[];
+      inherited_paths?: readonly string[];
+      repository_effects?: readonly TaskRepositoryEffect[];
+    };
+  },
+): Promise<{
+  changed_paths: string[];
+  inherited_paths: string[];
+  repository_effects: TaskRepositoryEffect[];
+}> {
+  const changed_paths = opts.snapshot
+    ? [...opts.snapshot.changed_paths]
+    : await resolveObservedVerificationChangedPaths(opts);
+  const inherited_paths = opts.snapshot?.inherited_paths
+    ? [...opts.snapshot.inherited_paths]
+    : await resolveInheritedVerificationPaths({ ...opts, changed_paths });
+  const repository_effects = opts.snapshot?.repository_effects
+    ? [...opts.snapshot.repository_effects]
+    : await resolveObservedVerificationRepositoryEffects({
+        ...opts,
+        changed_paths,
+        inherited_paths,
+      });
+  return { changed_paths, inherited_paths, repository_effects };
+}
+
 /** Verification coverage may include inherited files; semantic write observations must not. */
 export function reconcileVerificationExecutionContract(opts: {
   contract: TaskExecutionContract;
