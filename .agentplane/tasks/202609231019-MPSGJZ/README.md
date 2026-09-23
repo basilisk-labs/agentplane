@@ -4,7 +4,7 @@ title: "Fix canonical completed-task branch lifecycle recovery without internal 
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -55,32 +55,87 @@ quality_review:
   findings:
     - "Replacement can replay an executor that already started. Ordinary implementation episodes retain work_order_ref=null during execution. After a supervisor crash, the new recovery condition classifies that unresolved intent as pre-dispatch failure and permits another executor run."
 runner:
-  run_id: "2026-09-23T22-00-07-126Z"
+  run_id: "2026-09-23T22-39-27-682Z"
   status: "success"
   adapter_id: "codex"
   mode: "execute"
-  updated_at: "2026-09-23T22:13:47.475Z"
-  started_at: "2026-09-23T22:01:31.375Z"
-  ended_at: "2026-09-23T22:14:05.168Z"
+  updated_at: "2026-09-23T22:42:21.702Z"
+  started_at: "2026-09-23T22:40:48.896Z"
+  ended_at: "2026-09-23T22:42:35.137Z"
   exit_code: 0
   target:
     kind: "task"
     task_id: "202609231019-MPSGJZ"
-  summary: "Codex runner completed successfully. | AgentSemanticStatus[agent_reported]: blocked | AgentSummary[agent_reported]: Required full local verification failed; no source changes were made. | AgentFindings[agent_reported]: HEAD 98d7d7f10 already contains the executor dispatch marker and recovery guard. | Focused tests passed: 7 files, 93 tests. TMPDIR was set inside the writable checkout. | bun run ci:local:full exited 1: build and cli passed; runtime, docs-schema, and core failed. | Recipes documentation check attempted its fallback GitHub clone because no local source was available; DNS resolution failed. | Active-claim test received competing_owner_status=unverified instead of stale. Core cancellation tests also failed. | No source files changed. Verification temporary files were removed. Final git status --short --untracked-files=all was clean. | report_result rejected status=blocked with invalid_input; this blocker uses the declared report_blocker channel. | AgentUncertainty[agent_reported]: Runtime and core failure causes remain unverified. | policy_decision_recorded was not independently observed. | AgentBlocker[agent_reported]: Required full local verification failed; no source changes were made.; recommended_action=Provide a local recipes source checkout within the granted context. Diagnose active-claim and cancellation test failures before issuing a fresh implementation or verification episode."
+  summary: "Codex runner completed successfully. | AgentSemanticStatus[agent_reported]: blocked | AgentSummary[agent_reported]: Required full verification needs an offline recipes source; no source changes were made. | AgentFindings[agent_reported]: Requested focused suite passed: 5 files, 90 tests. Executor replay regression passed: 1 test. Both used TMPDIR in the writable checkout and bunx --no-install. | Existing code records executor dispatch and guards journal replacement. | Full CI was not run because the recipes inventory check would clone from GitHub while network is denied. | report_result rejected the blocked semantic result because it accepts only completed or failed. | AgentUncertainty[agent_reported]: Full CI, previous runtime/core failures, and policy_decision_recorded remain unverified. | AgentBlocker[agent_reported]: Required full verification needs an offline recipes source; no source changes were made.; recommended_action=Provide a declared local agentplane-recipes checkout and configure AGENTPLANE_RECIPES_SOURCE, then issue a fresh verification episode."
   metrics:
-    duration_ms: 753793
-    stdout_bytes: 700168
-    stderr_bytes: 1501
-    output_last_message_bytes: 926
-  created_at: "2026-09-23T22:00:14.960Z"
+    duration_ms: 106241
+    stdout_bytes: 421476
+    stderr_bytes: 804
+    output_last_message_bytes: 975
+  created_at: "2026-09-23T22:39:35.974Z"
   evidence:
     files_changed_count: 0
     provenance: "supervisor_observed"
   execution_receipt:
     observed_by: "agentplane"
-    path: "agentplane-run://tasks/202609231019-MPSGJZ/2026-09-23T22-00-07-126Z/execution-receipt.json"
-    sha256: "sha256:aa1dbf94ff9cbc9fa26987607ccb4057effa12098e518398a1e57ef3d090f6cd"
+    path: "agentplane-run://tasks/202609231019-MPSGJZ/2026-09-23T22-39-27-682Z/execution-receipt.json"
+    sha256: "sha256:22bb33779cd60539363a3a970eb3fef1e26d19f4a6242d414611cb5f5b16b954"
     verification_state: "unverified"
+  history:
+    -
+      adapter_id: "codex"
+      created_at: "2026-09-23T22:39:35.974Z"
+      ended_at: "2026-09-23T22:42:35.137Z"
+      evidence:
+        files_changed_count: 0
+        provenance: "supervisor_observed"
+      execution_receipt:
+        observed_by: "agentplane"
+        path: "agentplane-run://tasks/202609231019-MPSGJZ/2026-09-23T22-39-27-682Z/execution-receipt.json"
+        sha256: "sha256:22bb33779cd60539363a3a970eb3fef1e26d19f4a6242d414611cb5f5b16b954"
+        verification_state: "unverified"
+      exit_code: 0
+      metrics:
+        duration_ms: 106241
+        stdout_bytes: 421476
+        stderr_bytes: 804
+        output_last_message_bytes: 975
+      mode: "execute"
+      run_id: "2026-09-23T22-39-27-682Z"
+      started_at: "2026-09-23T22:40:48.896Z"
+      status: "success"
+      summary: "Codex runner completed successfully. | AgentSemanticStatus[agent_reported]: blocked | AgentSummary[agent_reported]: Required full verification needs an offline recipes source; no source changes were made. | AgentFindings[agent_reported]: Requested focused suite passed: 5 files, 90 tests. Executor replay regression passed: 1 test. Both used TMPDIR in the writable checkout and bunx --no-install. | Existing code records executor dispatch and guards journal replacement. | Full CI was not run because the recipes inventory check would clone from GitHub while network is denied. | report_result rejected the blocked semantic result because it accepts only completed or failed. | AgentUncertainty[agent_reported]: Full CI, previous runtime/core failures, and policy_decision_recorded remain unverified. | AgentBlocker[agent_reported]: Required full verification needs an offline recipes source; no source changes were made.; recommended_action=Provide a declared local agentplane-recipes checkout and configure AGENTPLANE_RECIPES_SOURCE, then issue a fresh verification episode."
+      target:
+        kind: "task"
+        task_id: "202609231019-MPSGJZ"
+      updated_at: "2026-09-23T22:42:21.702Z"
+    -
+      adapter_id: "codex"
+      created_at: "2026-09-23T22:00:14.960Z"
+      ended_at: "2026-09-23T22:14:05.168Z"
+      evidence:
+        files_changed_count: 0
+        provenance: "supervisor_observed"
+      execution_receipt:
+        observed_by: "agentplane"
+        path: "agentplane-run://tasks/202609231019-MPSGJZ/2026-09-23T22-00-07-126Z/execution-receipt.json"
+        sha256: "sha256:aa1dbf94ff9cbc9fa26987607ccb4057effa12098e518398a1e57ef3d090f6cd"
+        verification_state: "unverified"
+      exit_code: 0
+      metrics:
+        duration_ms: 753793
+        stdout_bytes: 700168
+        stderr_bytes: 1501
+        output_last_message_bytes: 926
+      mode: "execute"
+      run_id: "2026-09-23T22-00-07-126Z"
+      started_at: "2026-09-23T22:01:31.375Z"
+      status: "success"
+      summary: "Codex runner completed successfully. | AgentSemanticStatus[agent_reported]: blocked | AgentSummary[agent_reported]: Required full local verification failed; no source changes were made. | AgentFindings[agent_reported]: HEAD 98d7d7f10 already contains the executor dispatch marker and recovery guard. | Focused tests passed: 7 files, 93 tests. TMPDIR was set inside the writable checkout. | bun run ci:local:full exited 1: build and cli passed; runtime, docs-schema, and core failed. | Recipes documentation check attempted its fallback GitHub clone because no local source was available; DNS resolution failed. | Active-claim test received competing_owner_status=unverified instead of stale. Core cancellation tests also failed. | No source files changed. Verification temporary files were removed. Final git status --short --untracked-files=all was clean. | report_result rejected status=blocked with invalid_input; this blocker uses the declared report_blocker channel. | AgentUncertainty[agent_reported]: Runtime and core failure causes remain unverified. | policy_decision_recorded was not independently observed. | AgentBlocker[agent_reported]: Required full local verification failed; no source changes were made.; recommended_action=Provide a local recipes source checkout within the granted context. Diagnose active-claim and cancellation test failures before issuing a fresh implementation or verification episode."
+      target:
+        kind: "task"
+        task_id: "202609231019-MPSGJZ"
+      updated_at: "2026-09-23T22:13:47.475Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -673,7 +728,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-23T22:13:58.912Z"
+doc_updated_at: "2026-09-23T22:42:33.961Z"
 doc_updated_by: "CODER"
 description: "Implement the verified AgentPlane lifecycle fixes as one clean semantic code task. Keep implementation, tests, and local verification in the work item. Leave PR publication, hosted checks, merge, and cleanup to branch_pr lifecycle. Include completed canonical implementation-rework routing, safe supervisor journal replacement and stale-state recovery, exact DONE rework runner authority, completed verification and quality-review routing, base-checkout provider operations, and Codex-compatible strict output schemas. Do not include task artifacts from other tasks."
 sections:
@@ -1104,6 +1159,42 @@ sections:
   Findings: |-
     <!-- BEGIN RUNNER OUTCOME -->
 
+    #### 2026-09-23T22:42:21.702Z — RUNNER — success
+
+    RunId: 2026-09-23T22-39-27-682Z
+
+    Adapter: codex
+
+    Mode: execute
+
+    Target: task 202609231019-MPSGJZ
+
+    CreatedAt: 2026-09-23T22:39:35.974Z
+
+    UpdatedAt: 2026-09-23T22:42:21.702Z
+
+    RunArtifacts: ap task run inspect 202609231019-MPSGJZ --run-id 2026-09-23T22-39-27-682Z
+
+    ExitCode: 0
+
+    StartedAt: 2026-09-23T22:40:48.896Z
+
+    EndedAt: 2026-09-23T22:42:35.137Z
+
+    Summary: Codex runner completed successfully. | AgentSemanticStatus[agent_reported]: blocked | AgentSummary[agent_reported]: Required full verification needs an offline recipes source; no source changes were made. | AgentFindings[agent_reported]: Requested focused suite passed: 5 files, 90 tests. Executor replay regression passed: 1 test. Both used TMPDIR in the writable checkout and bunx --no-install. | Existing code records executor dispatch and guards journal replacement. | Full CI was not run because the recipes inventory check would clone from GitHub while network is denied. | report_result rejected the blocked semantic result because it accepts only completed or failed. | AgentUncertainty[agent_reported]: Full CI, previous runtime/core failures, and policy_decision_recorded remain unverified. | AgentBlocker[agent_reported]: Required full verification needs an offline recipes source; no source changes were made.; recommended_action=Provide a declared local agentplane-recipes checkout and configure AGENTPLANE_RECIPES_SOURCE, then issue a fresh verification episode.
+
+    Capabilities: codex.exec
+
+    Metrics: duration_ms=106241, stdout_bytes=421476, stderr_bytes=804, output_last_message_bytes=975
+
+    FilesChangedCount: 0
+
+    ExecutionReceipt: agentplane-run://tasks/202609231019-MPSGJZ/2026-09-23T22-39-27-682Z/execution-receipt.json
+    ExecutionReceiptSha256: sha256:22bb33779cd60539363a3a970eb3fef1e26d19f4a6242d414611cb5f5b16b954
+    ExecutionReceiptVerification: unverified
+
+    VerificationHint: runner completed successfully; human verification and closure remain explicit lifecycle steps.
+
     #### 2026-09-23T22:13:47.475Z — RUNNER — success
 
     RunId: 2026-09-23T22-00-07-126Z
@@ -1127,8 +1218,6 @@ sections:
     EndedAt: 2026-09-23T22:14:05.168Z
 
     Summary: Codex runner completed successfully. | AgentSemanticStatus[agent_reported]: blocked | AgentSummary[agent_reported]: Required full local verification failed; no source changes were made. | AgentFindings[agent_reported]: HEAD 98d7d7f10 already contains the executor dispatch marker and recovery guard. | Focused tests passed: 7 files, 93 tests. TMPDIR was set inside the writable checkout. | bun run ci:local:full exited 1: build and cli passed; runtime, docs-schema, and core failed. | Recipes documentation check attempted its fallback GitHub clone because no local source was available; DNS resolution failed. | Active-claim test received competing_owner_status=unverified instead of stale. Core cancellation tests also failed. | No source files changed. Verification temporary files were removed. Final git status --short --untracked-files=all was clean. | report_result rejected status=blocked with invalid_input; this blocker uses the declared report_blocker channel. | AgentUncertainty[agent_reported]: Runtime and core failure causes remain unverified. | policy_decision_recorded was not independently observed. | AgentBlocker[agent_reported]: Required full local verification failed; no source changes were made.; recommended_action=Provide a local recipes source checkout within the granted context. Diagnose active-claim and cancellation test failures before issuing a fresh implementation or verification episode.
-
-    Capabilities: codex.exec
 
     Metrics: duration_ms=753793, stdout_bytes=700168, stderr_bytes=1501, output_last_message_bytes=926
 
@@ -2139,6 +2228,42 @@ DecisionContextRef:
 
 <!-- BEGIN RUNNER OUTCOME -->
 
+#### 2026-09-23T22:42:21.702Z — RUNNER — success
+
+RunId: 2026-09-23T22-39-27-682Z
+
+Adapter: codex
+
+Mode: execute
+
+Target: task 202609231019-MPSGJZ
+
+CreatedAt: 2026-09-23T22:39:35.974Z
+
+UpdatedAt: 2026-09-23T22:42:21.702Z
+
+RunArtifacts: ap task run inspect 202609231019-MPSGJZ --run-id 2026-09-23T22-39-27-682Z
+
+ExitCode: 0
+
+StartedAt: 2026-09-23T22:40:48.896Z
+
+EndedAt: 2026-09-23T22:42:35.137Z
+
+Summary: Codex runner completed successfully. | AgentSemanticStatus[agent_reported]: blocked | AgentSummary[agent_reported]: Required full verification needs an offline recipes source; no source changes were made. | AgentFindings[agent_reported]: Requested focused suite passed: 5 files, 90 tests. Executor replay regression passed: 1 test. Both used TMPDIR in the writable checkout and bunx --no-install. | Existing code records executor dispatch and guards journal replacement. | Full CI was not run because the recipes inventory check would clone from GitHub while network is denied. | report_result rejected the blocked semantic result because it accepts only completed or failed. | AgentUncertainty[agent_reported]: Full CI, previous runtime/core failures, and policy_decision_recorded remain unverified. | AgentBlocker[agent_reported]: Required full verification needs an offline recipes source; no source changes were made.; recommended_action=Provide a declared local agentplane-recipes checkout and configure AGENTPLANE_RECIPES_SOURCE, then issue a fresh verification episode.
+
+Capabilities: codex.exec
+
+Metrics: duration_ms=106241, stdout_bytes=421476, stderr_bytes=804, output_last_message_bytes=975
+
+FilesChangedCount: 0
+
+ExecutionReceipt: agentplane-run://tasks/202609231019-MPSGJZ/2026-09-23T22-39-27-682Z/execution-receipt.json
+ExecutionReceiptSha256: sha256:22bb33779cd60539363a3a970eb3fef1e26d19f4a6242d414611cb5f5b16b954
+ExecutionReceiptVerification: unverified
+
+VerificationHint: runner completed successfully; human verification and closure remain explicit lifecycle steps.
+
 #### 2026-09-23T22:13:47.475Z — RUNNER — success
 
 RunId: 2026-09-23T22-00-07-126Z
@@ -2162,8 +2287,6 @@ StartedAt: 2026-09-23T22:01:31.375Z
 EndedAt: 2026-09-23T22:14:05.168Z
 
 Summary: Codex runner completed successfully. | AgentSemanticStatus[agent_reported]: blocked | AgentSummary[agent_reported]: Required full local verification failed; no source changes were made. | AgentFindings[agent_reported]: HEAD 98d7d7f10 already contains the executor dispatch marker and recovery guard. | Focused tests passed: 7 files, 93 tests. TMPDIR was set inside the writable checkout. | bun run ci:local:full exited 1: build and cli passed; runtime, docs-schema, and core failed. | Recipes documentation check attempted its fallback GitHub clone because no local source was available; DNS resolution failed. | Active-claim test received competing_owner_status=unverified instead of stale. Core cancellation tests also failed. | No source files changed. Verification temporary files were removed. Final git status --short --untracked-files=all was clean. | report_result rejected status=blocked with invalid_input; this blocker uses the declared report_blocker channel. | AgentUncertainty[agent_reported]: Runtime and core failure causes remain unverified. | policy_decision_recorded was not independently observed. | AgentBlocker[agent_reported]: Required full local verification failed; no source changes were made.; recommended_action=Provide a local recipes source checkout within the granted context. Diagnose active-claim and cancellation test failures before issuing a fresh implementation or verification episode.
-
-Capabilities: codex.exec
 
 Metrics: duration_ms=753793, stdout_bytes=700168, stderr_bytes=1501, output_last_message_bytes=926
 

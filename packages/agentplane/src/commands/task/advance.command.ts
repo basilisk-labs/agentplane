@@ -141,7 +141,7 @@ export function makeRunTaskAdvanceHandler(deps: {
         });
       }
     }
-    if (externalConflictResult || workflow?.workflowStep.id === "agent.provider_conflict_rework") {
+    if (externalConflictResult || workflow?.workflowStep.kind === "agent_episode") {
       const compatibility = await advanceOrdinaryRoute({ ctx, parsed, command });
       createCliEmitter().json(compatibility.packet);
       return 0;
