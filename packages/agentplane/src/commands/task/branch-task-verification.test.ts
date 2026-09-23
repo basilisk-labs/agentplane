@@ -15,12 +15,12 @@ import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 const taskId = "202607310001-BRANCH";
 
 it.each([
-  { planned: false, status: "DOING", allowCanonicalProjection: false },
-  { planned: true, status: "DOING", allowCanonicalProjection: false },
-  { planned: true, status: "DONE", allowCanonicalProjection: true },
+  { planned: false, canonical: false, status: "DOING", allowCanonicalProjection: false },
+  { planned: true, canonical: false, status: "DOING", allowCanonicalProjection: false },
+  { planned: true, canonical: true, status: "DONE", allowCanonicalProjection: true },
 ] as const)(
   "freezes branch verification and preserves its planned commands ($status, planned=$planned)",
-  async ({ planned, status, allowCanonicalProjection }) => {
+  async ({ planned, canonical, status, allowCanonicalProjection }) => {
     const decision = {
       task: { id: taskId },
       executionPacket: { mustRunFrom: "/repo/task" },
@@ -73,6 +73,7 @@ it.each([
                   },
                 },
               },
+              ...(canonical ? { task_kernel: { aggregate: { state: "COMPLETED" } } } : {}),
             },
           }
         : {}),
