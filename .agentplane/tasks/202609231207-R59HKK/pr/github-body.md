@@ -33,6 +33,7 @@ Repair evaluator diff-base selection after provider branch updates, forward repl
  .../evaluator-verification-contract.test.ts        | 77 ++++++++++++++++++++++
  .../pr/provider-update-branch-local.test.ts        |  2 +
  .../commands/pr/provider-update-branch-local.ts    | 16 +++++
+ .../src/commands/pr/provider-update-branch.test.ts |  2 +-
  .../src/commands/pr/provider-update-branch.ts      |  6 +-
  .../src/commands/shared/route-decision-blockers.ts |  6 +-
  .../src/commands/shared/workflow-step-branch.ts    |  9 ++-
@@ -49,7 +50,7 @@ Repair evaluator diff-base selection after provider branch updates, forward repl
  .../direct-task-supervisor-formal-operation.ts     | 12 ++++
  .../task/kernel-provider-effect-coordinator.ts     | 74 ++++++++++++++++++++-
  .../commands/task/roadmap-terminal-noop.test.ts    | 38 +++++++++++
- 22 files changed, 473 insertions(+), 23 deletions(-)
+ 23 files changed, 474 insertions(+), 24 deletions(-)
 ```
 
 </details>
