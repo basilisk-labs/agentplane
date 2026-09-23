@@ -1,0 +1,87 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 77dba67215c2c7f23ef15c3e617d6ea319f38003..bf74d494f068db3cfa36c347cff216adbf1fb0d4",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 77dba67215c2c7f23ef15c3e617d6ea319f38003..bf74d494f068db3cfa36c347cff216adbf1fb0d4",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202609222258-EC35TN/README.md",
+        "A\t.agentplane/tasks/202609222258-EC35TN/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "M\tpackages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts",
+        "M\tpackages/agentplane/src/commands/task/ordinary-advance-step.ts",
+        "M\tpackages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "77dba67215c2c7f23ef15c3e617d6ea319f38003",
+  "implementation_commit": "bf74d494f068db3cfa36c347cff216adbf1fb0d4",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts",
+      " M packages/agentplane/src/commands/task/ordinary-advance-step.ts",
+      " M packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts",
+      "?? .agentplane/tasks/202609222258-EC35TN/README.md",
+      "?? .agentplane/tasks/202609222258-EC35TN/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/ordinary-advance-step.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609222258-EC35TN/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609222258-EC35TN/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts",
+      " M packages/agentplane/src/commands/task/ordinary-advance-step.ts",
+      " M packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts",
+      "?? .agentplane/tasks/202609222258-EC35TN/README.md",
+      "?? .agentplane/tasks/202609222258-EC35TN/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609222258-EC35TN"
+}

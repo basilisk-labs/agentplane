@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202609222258-EC35TN",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-22T23:31:37.740Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "4c520fdf778ca1771d8d062f1495217cd98fe608",
+  "review_identity_digest": "sha256:e15e4192b5f82716fe6299c76df3b580484e0d613a6c96fb79a303442e32b4e9",
+  "findings": [
+    "PASS: completed-task integration operations execute from the frozen base checkout without a terminal Kernel controller transition, while hosted-close and cleanup transfer behavior remains unchanged."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609222258-EC35TN/quality/objects/sha256/0a59b05b5fb3aad19ed94b974347192b394efe83351b5d0549fec88623a5c560.patch",
+    ".agentplane/tasks/202609222258-EC35TN/quality/objects/sha256/c5ef8bbb81a6f583eed54de452e0935a4623ea2e681820c686276c4ae7a95dd6.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

@@ -1,0 +1,149 @@
+diff --git a/packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts b/packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts
+index c6708eb17..d97a14363 100644
+--- a/packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts
++++ b/packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts
+@@ -49,14 +49,16 @@ import {
+   executeCanonicalAdmittedWorkflowOperation,
+ } from "./kernel-provider-effect-coordinator.js";
+ 
+-function operation(id: "pr.open" | "integration.enqueue" = "pr.open") {
++function operation(id: "pr.open" | "integration.enqueue" | "integration.run_next" = "pr.open") {
+   return {
+     id,
+     type: "pr_sync",
+     params:
+       id === "pr.open"
+         ? { taskId: "T-1", author: "CODER", includeTaskIds: [] }
+-        : { taskId: "T-1", branch: "task/T-1/work" },
++        : id === "integration.enqueue"
++          ? { taskId: "T-1", branch: "task/T-1/work" }
++          : { taskId: "T-1" },
+     preconditionFingerprint: { digest: routeBeforeDigest },
+     authorityRef: "authority:route-before",
+     idempotencyKey: `${id}:T-1:${routeBeforeDigest}:payload`,
+@@ -73,7 +75,10 @@ function decision(candidate = operation()): TaskRouteDecision {
+       baseBranch: "main",
+       headSha: "a".repeat(40),
+       prBranch: "task/T-1/work",
++      baseCheckoutPath: "/repo",
++      taskWorktreePath: "/repo/task",
+     },
++    executionPacket: { mustRunFrom: "/repo/task" },
+     prFlow: null,
+     cleanupProbe: { state: "not_requested" },
+     workflowStep: {
+@@ -362,4 +367,52 @@ describe("canonical provider effect coordinator", () => {
+       expect.objectContaining({ decision: before, git_root: "/repo" }),
+     );
+   });
++
++  it("executes post-completion integration from the base checkout without a Kernel controller transition", async () => {
++    const operationId = "integration.enqueue" as const;
++    const candidate = operation(operationId);
++    const before = decision(candidate);
++    const after = terminalDecision();
++    mocks.supervise.mockImplementationOnce(async (input) => {
++      const execute = (
++        input as unknown as {
++          execute: (invoked: typeof candidate) => Promise<unknown>;
++        }
++      ).execute;
++      await execute(candidate);
++      return {
++        journal: { digest: k.kernelDigest("post-completion-integration") },
++        execution: {
++          executable: true,
++          result: { status: "succeeded", observed_postconditions: [], detail: "ok" },
++          stop_reason: null,
++          refreshed_decision: after,
++        },
++      };
++    });
++    mocks.execute.mockResolvedValueOnce({
++      status: "succeeded",
++      observed_postconditions: [],
++      detail: "ok",
++    });
++
++    await executeCanonicalAdmittedWorkflowOperation({
++      command: { resolvedProject: { gitRoot: "/repo/task" } } as never,
++      decision: before,
++      task_id: "T-1",
++      request_digest: k.kernelDigest(`post-completion-${operationId}`),
++    });
++
++    const executionCall = mocks.execute.mock.calls.at(-1)?.[0] as unknown as {
++      decision: TaskRouteDecision;
++      operation: typeof candidate;
++    };
++    expect(executionCall.decision.executionPacket).toMatchObject({
++      authoritativeCheckout: "base_checkout",
++      authoritativeCheckoutPath: "/repo",
++      mutationPathHint: "/repo",
++      mustRunFrom: "/repo",
++    });
++    expect(executionCall.operation).toEqual(candidate);
++  });
+ });
+diff --git a/packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts b/packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts
+index 4b2b29373..716b900d2 100644
+--- a/packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts
++++ b/packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts
+@@ -314,7 +314,23 @@ export async function executeCanonicalAdmittedWorkflowOperation(opts: {
+     decision: before,
+     git_root: opts.command.resolvedProject.gitRoot,
+     execute: async (invoked) => {
+-      const run = () => executeBranchWorkflowOperation({ decision: before, operation: invoked });
++      const baseCheckout = before.workspace.baseCheckoutPath;
++      const executeFromBase = ["integration.enqueue", "integration.run_next"].includes(invoked.id);
++      const executionDecision =
++        executeFromBase && baseCheckout
++          ? {
++              ...before,
++              executionPacket: {
++                ...before.executionPacket,
++                authoritativeCheckout: "base_checkout" as const,
++                authoritativeCheckoutPath: baseCheckout,
++                mutationPathHint: baseCheckout,
++                mustRunFrom: baseCheckout,
++              },
++            }
++          : before;
++      const run = () =>
++        executeBranchWorkflowOperation({ decision: executionDecision, operation: invoked });
+       const controllerCheckout =
+         invoked.id === "integration.run_next"
+           ? before.workspace.taskWorktreePath
+diff --git a/packages/agentplane/src/commands/task/ordinary-advance-step.ts b/packages/agentplane/src/commands/task/ordinary-advance-step.ts
+index fad2eb333..333e35a25 100644
+--- a/packages/agentplane/src/commands/task/ordinary-advance-step.ts
++++ b/packages/agentplane/src/commands/task/ordinary-advance-step.ts
+@@ -37,12 +37,7 @@ export function canonicalCompletionPrecedesWorkflow(
+   return (
+     (step.kind === "terminal" && step.authoritativeCheckout === "base_checkout") ||
+     (step.kind === "cli_operation" &&
+-      [
+-        "integration.enqueue",
+-        "integration.run_next",
+-        "task.hosted_close.finalize",
+-        "task.worktree.cleanup",
+-      ].includes(step.operation.id))
++      ["task.hosted_close.finalize", "task.worktree.cleanup"].includes(step.operation.id))
+   );
+ }
+ 
+diff --git a/packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts b/packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts
+index 6865f4308..fdb57babd 100644
+--- a/packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts
++++ b/packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts
+@@ -19,8 +19,8 @@ describe("LC-03 common advance-one-step coordinator", () => {
+       true,
+     );
+     expect(canonicalCompletionPrecedesWorkflow(operationStep("task.worktree.cleanup"))).toBe(true);
+-    expect(canonicalCompletionPrecedesWorkflow(operationStep("integration.enqueue"))).toBe(true);
+-    expect(canonicalCompletionPrecedesWorkflow(operationStep("integration.run_next"))).toBe(true);
++    expect(canonicalCompletionPrecedesWorkflow(operationStep("integration.enqueue"))).toBe(false);
++    expect(canonicalCompletionPrecedesWorkflow(operationStep("integration.run_next"))).toBe(false);
+     expect(canonicalCompletionPrecedesWorkflow(operationStep("pr.open"))).toBe(false);
+     expect(
+       canonicalCompletionPrecedesWorkflow({

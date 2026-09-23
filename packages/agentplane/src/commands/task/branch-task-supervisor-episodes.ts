@@ -65,6 +65,7 @@ import { conflictApplicationAuthority } from "../pr/conflict-rework-authority.js
 import { workflowTaskFingerprintComponent } from "../shared/workflow-step-fingerprint.js";
 import { buildSingleStageLifecycleTiming } from "../shared/lifecycle-stage-timing.js";
 import { executeBranchEvaluatorEpisode } from "./branch-task-supervisor-evaluator-episode.js";
+import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
 
 async function executeBranchImplementationEpisode(opts: {
   input: BranchTaskSupervisorOptions;
@@ -427,6 +428,8 @@ async function executeBranchVerificationEpisode(opts: {
           incidentTags: [],
           incidentMatch: [],
           quiet: true,
+          allowCanonicalProjection:
+            task.extensions !== undefined && Object.hasOwn(task.extensions, TASK_KERNEL_EXTENSION),
         });
         if (exitCode !== 0) throw new Error(`Verification record exited with ${exitCode}.`);
         const coalesce =

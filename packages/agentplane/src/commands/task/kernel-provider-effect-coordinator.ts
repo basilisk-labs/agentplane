@@ -4,7 +4,11 @@ import { validateSupervisorExecutionEpisodeJournal } from "@agentplaneorg/core/s
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
 
 import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
-import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-backend.js";
+import {
+  loadCommandContext,
+  resolveCommandGitCommonDir,
+  type CommandContext,
+} from "../shared/task-backend.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import {
@@ -32,6 +36,7 @@ import {
   withCanonicalControllerSuspendedForOperation,
 } from "./kernel-controller-handoff.js";
 import { ensureKernelOperationalProjectionEvidence } from "./kernel-operational-projection.js";
+import { executeProductionBranchEpisode } from "./branch-task-supervisor-episodes.js";
 
 type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
 
@@ -290,6 +295,70 @@ function operationIdFromEffect(effect: k.ExternalEffect): SupportedOperationId |
 }
 
 /**
+ * Execute an admitted canonical branch operation without mutating the Task Kernel aggregate.
+ * Completed tasks use this path because provider lifecycle authority is separate from semantic
+ * WorkItem authority and the terminal aggregate cannot accept another prepare_effect command.
+ */
+export async function executeCanonicalAdmittedWorkflowOperation(opts: {
+  command: CommandContext;
+  decision: TaskRouteDecision;
+  task_id: string;
+  request_digest: k.Sha256Digest;
+}) {
+  const before = opts.decision;
+  const expected = supportedOperation(before);
+  if (!expected) throw new Error("Canonical provider lifecycle requires a supported operation");
+  if (expected.id === "integration.run_next") {
+    await recoverCanonicalControllerSuspension({
+      command: opts.command,
+      task_id: opts.task_id,
+      request_digest: opts.request_digest,
+    });
+  }
+  return await executeAdmittedBranchWorkflowOperation({
+    decision: before,
+    git_root: opts.command.resolvedProject.gitRoot,
+    execute: async (invoked) => {
+      const baseCheckout = before.workspace.baseCheckoutPath;
+      const executeFromBase = ["integration.enqueue", "integration.run_next"].includes(invoked.id);
+      const executionDecision =
+        executeFromBase && baseCheckout
+          ? {
+              ...before,
+              executionPacket: {
+                ...before.executionPacket,
+                authoritativeCheckout: "base_checkout" as const,
+                authoritativeCheckoutPath: baseCheckout,
+                mutationPathHint: baseCheckout,
+                mustRunFrom: baseCheckout,
+              },
+            }
+          : before;
+      const run = () =>
+        executeBranchWorkflowOperation({ decision: executionDecision, operation: invoked });
+      const controllerCheckout =
+        invoked.id === "integration.run_next"
+          ? before.workspace.taskWorktreePath
+          : ["task.hosted_close.finalize", "task.worktree.cleanup"].includes(invoked.id)
+            ? before.executionPacket.mustRunFrom
+            : null;
+      return controllerCheckout
+        ? await withCanonicalControllerSuspendedForOperation({
+            command: opts.command,
+            decision: before,
+            task_id: opts.task_id,
+            request_digest: opts.request_digest,
+            operation_idempotency_key: invoked.idempotencyKey,
+            controller_checkout: controllerCheckout,
+            run,
+          })
+        : await run();
+    },
+    refresh: async () => await decide(opts.command, opts.task_id),
+  });
+}
+
+/**
  * Bridge from a canonical effect to the mature typed branch supervisor operation. The bridge
  * freezes the exact fresh route and configured authority before Kernel intent persistence. Its
  * persisted supervisor journal is the provider crash/readback boundary; ambiguous failures are
@@ -308,13 +377,6 @@ export function createKernelProviderEffectPortResolver(opts: {
           command: opts.command,
           task_id: input.task_id,
         });
-        if (expectedOperationId === "integration.run_next") {
-          await recoverCanonicalControllerSuspension({
-            command: opts.command,
-            task_id: input.task_id,
-            request_digest: input.effect.request_digest,
-          });
-        }
         const envelope = await loadProviderEffectEnvelope({
           command: opts.command,
           task_id: input.task_id,
@@ -332,31 +394,11 @@ export function createKernelProviderEffectPortResolver(opts: {
             }),
           };
         }
-        const persisted = await executeAdmittedBranchWorkflowOperation({
+        const persisted = await executeCanonicalAdmittedWorkflowOperation({
+          command: opts.command,
           decision: before,
-          git_root: opts.command.resolvedProject.gitRoot,
-          execute: async (invoked) => {
-            const run = () =>
-              executeBranchWorkflowOperation({ decision: before, operation: invoked });
-            const controllerCheckout =
-              invoked.id === "integration.run_next"
-                ? before.workspace.taskWorktreePath
-                : ["task.hosted_close.finalize", "task.worktree.cleanup"].includes(invoked.id)
-                  ? before.executionPacket.mustRunFrom
-                  : null;
-            return controllerCheckout
-              ? await withCanonicalControllerSuspendedForOperation({
-                  command: opts.command,
-                  decision: before,
-                  task_id: input.task_id,
-                  request_digest: input.effect.request_digest,
-                  operation_idempotency_key: invoked.idempotencyKey,
-                  controller_checkout: controllerCheckout,
-                  run,
-                })
-              : await run();
-          },
-          refresh: async () => await decide(opts.command, input.task_id),
+          task_id: input.task_id,
+          request_digest: input.effect.request_digest,
         });
         const execution = persisted.execution;
         if (
@@ -503,5 +545,26 @@ export async function decideCanonicalWorkflowEffect(
     includeRemote,
     freshHead: true,
     taskId,
+  });
+}
+
+export async function executeCanonicalCompletedVerification(opts: {
+  command: CommandContext;
+  decision: TaskRouteDecision;
+  task_id: string;
+}) {
+  const checkout = opts.decision.executionPacket.mustRunFrom ?? opts.decision.workspace.root;
+  const workflowCommand =
+    path.resolve(checkout) === path.resolve(opts.command.resolvedProject.gitRoot)
+      ? opts.command
+      : await loadCommandContext({ cwd: checkout, rootOverride: null });
+  return await executeProductionBranchEpisode({
+    input: {
+      ctx: { cwd: checkout },
+      command: workflowCommand,
+      task_id: opts.task_id,
+    },
+    decision: opts.decision,
+    decide: async () => await decideCanonicalWorkflowEffect(workflowCommand, opts.task_id, false),
   });
 }
