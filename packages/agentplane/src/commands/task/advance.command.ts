@@ -18,6 +18,7 @@ import {
 import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
 import { classifyKernelCutover } from "./kernel-cutover.js";
 import { advanceOrdinaryRoute } from "./ordinary-advance-step.js";
+import { preparePersistedSupervisorReplacementAfterFailure } from "../shared/supervisor-execution-episode.js";
 
 function legacyMigrationRequired(taskId: string, reason: string): CliError {
   return new CliError({
@@ -118,15 +119,28 @@ export function makeRunTaskAdvanceHandler(deps: {
         message: "Canonical tasks do not use integration supervisor effect recovery.",
       });
     }
-    if (parsed.replacement) {
-      throw new Error("Canonical replacement requires an explicit recovery episode");
-    }
     const externalConflictResult =
       parsed.result?.replaceAll("\\", "/").includes("/agentplane/external-agent/") === true;
     const workflow =
-      parsed.remote && !parsed.result
-        ? await decideCanonicalWorkflowEffect(command, parsed.taskId, true)
+      (parsed.remote || parsed.replacement) && !parsed.result
+        ? await decideCanonicalWorkflowEffect(command, parsed.taskId, parsed.remote)
         : null;
+    const branchEpisodeReplacement =
+      parsed.replacement && workflow?.workflowStep.kind === "agent_episode";
+    if (parsed.replacement && !branchEpisodeReplacement) {
+      const replacement = await preparePersistedSupervisorReplacementAfterFailure({
+        git_root: command.resolvedProject.gitRoot,
+        task_id: parsed.taskId,
+        state_fingerprint_digest: workflow!.workflowStep.preconditionFingerprint.digest,
+      });
+      if (replacement === "not_failed") {
+        throw new CliError({
+          code: "E_USAGE",
+          message:
+            "task advance --replacement requires a terminal failed canonical supervisor operation.",
+        });
+      }
+    }
     if (externalConflictResult || workflow?.workflowStep.id === "agent.provider_conflict_rework") {
       const compatibility = await advanceOrdinaryRoute({ ctx, parsed, command });
       createCliEmitter().json(compatibility.packet);
@@ -142,6 +156,7 @@ export function makeRunTaskAdvanceHandler(deps: {
         allow_remote: parsed.remote,
       }),
       allow_provider_effects: parsed.remote,
+      replace_failed_operation: branchEpisodeReplacement,
     });
     createCliEmitter().json(packet);
     return 0;

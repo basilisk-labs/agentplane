@@ -42,13 +42,14 @@ Created: 2026-09-23T12:42:13.939Z
  .../src/commands/shared/workflow-step-factory.ts   |  1 +
  .../shared/workflow-step-worktree-priority.test.ts | 30 +++++++++
  .../src/commands/task/advance-task-step.ts         | 44 ++++++++++++-
+ .../src/commands/task/advance.command.ts           | 25 +++++--
  .../branch-task-supervisor-evaluator-episode.ts    |  1 +
  .../src/commands/task/branch-task-supervisor.ts    |  1 +
  .../task/direct-task-supervisor-evaluator.test.ts  | 60 +++++++++++++++++
  .../task/direct-task-supervisor-evaluator.ts       |  3 +-
  .../task/kernel-provider-effect-coordinator.ts     | 74 ++++++++++++++++++++-
  .../commands/task/roadmap-terminal-noop.test.ts    | 38 +++++++++++
- 19 files changed, 440 insertions(+), 18 deletions(-)
+ 20 files changed, 460 insertions(+), 23 deletions(-)
 ```
 
 </details>
