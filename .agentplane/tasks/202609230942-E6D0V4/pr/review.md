@@ -24,7 +24,7 @@ Created: 2026-09-23T10:25:48.224Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-23T10:25:48.224Z
+- Updated: 2026-09-23T16:40:58.442Z
 - Branch: task/202609230942-E6D0V4/make-canonical-agentplane-autonomy-safe-and-defa
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
@@ -60,7 +60,11 @@ Created: 2026-09-23T10:25:48.224Z
  packages/spec/schemas/tasks-export.schema.json     |  14 ++
  schemas/task-readme-frontmatter.schema.json        |  14 ++
  schemas/tasks-export.schema.json                   |  14 ++
- 31 files changed, 877 insertions(+), 113 deletions(-)
+ scripts/baselines/clone-baseline.json              | 123 +++++++--------
+ .../baselines/v0.7-compatibility-candidate.json    | 153 ++++++++++++++++++-
+ .../check-compatibility-contract-baseline.mjs      | 137 +++++++++++++++++
+ website/static/llms-full.txt                       |  30 ++--
+ 35 files changed, 1242 insertions(+), 191 deletions(-)
 ```
 
 </details>
