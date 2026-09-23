@@ -27,7 +27,7 @@ Repair evaluator diff-base selection after provider branch updates, forward repl
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- bun.lock                                           |  12 +-
+ bun.lock                                           |   6 +-
  .../commands/evaluator/evaluator-diff-evidence.ts  |   3 +-
  .../commands/evaluator/evaluator-review-usecase.ts |  13 +-
  .../evaluator-verification-contract.test.ts        | 171 +++++++++++++++++++++
@@ -55,7 +55,7 @@ Repair evaluator diff-base selection after provider branch updates, forward repl
  .../direct-task-supervisor-formal-operation.ts     |  12 ++
  .../task/kernel-provider-effect-coordinator.ts     |  74 ++++++++-
  .../commands/task/roadmap-terminal-noop.test.ts    |  65 ++++++++
- 28 files changed, 693 insertions(+), 39 deletions(-)
+ 28 files changed, 690 insertions(+), 36 deletions(-)
 ```
 
 </details>

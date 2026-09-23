@@ -2,9 +2,9 @@
   "base": "main",
   "branch": "task/202609231207-R59HKK/make-canonical-supervisor-transitions-recoverabl",
   "created_at": "2026-09-23T12:42:13.939Z",
-  "diffstat_sha256": "sha256:373cb1f25aa4b488b2e5bd4bf27a0b132c5203522d8a9310f7de7a08b70b7707",
-  "last_verified_at": "2026-09-23T16:31:53.262Z",
-  "last_verified_diffstat_sha256": "sha256:373cb1f25aa4b488b2e5bd4bf27a0b132c5203522d8a9310f7de7a08b70b7707",
+  "diffstat_sha256": "sha256:2fcce3c3aae375fedbda70677f5d59994f1b1a9e2beacfd57c16cad148e99918",
+  "last_verified_at": "2026-09-23T16:48:34.144Z",
+  "last_verified_diffstat_sha256": "sha256:2fcce3c3aae375fedbda70677f5d59994f1b1a9e2beacfd57c16cad148e99918",
   "pr_number": 6013,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6013",
   "provider": {
