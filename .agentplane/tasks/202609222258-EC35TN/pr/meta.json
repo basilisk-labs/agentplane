@@ -3,7 +3,8 @@
   "branch": "task/202609222258-EC35TN/canonical-integration-base-checkout",
   "created_at": "2026-09-23T00:31:34.638Z",
   "diffstat_sha256": "sha256:8a49b0a07e25feff461802c25a15ff1db5be146954fd46aec15d4fed6545f3a2",
-  "last_verified_at": null,
+  "last_verified_at": "2026-09-23T00:39:28.926Z",
+  "last_verified_diffstat_sha256": "sha256:8a49b0a07e25feff461802c25a15ff1db5be146954fd46aec15d4fed6545f3a2",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202609222258-EC35TN",
   "updated_at": "2026-09-23T00:31:34.638Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
