@@ -4,7 +4,7 @@ title: "Fix canonical completed-task branch lifecycle recovery without internal 
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on: []
@@ -728,8 +728,8 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-23T22:42:33.961Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-23T23:03:19.922Z"
+doc_updated_by: "external:EXECUTOR"
 description: "Implement the verified AgentPlane lifecycle fixes as one clean semantic code task. Keep implementation, tests, and local verification in the work item. Leave PR publication, hosted checks, merge, and cleanup to branch_pr lifecycle. Include completed canonical implementation-rework routing, safe supervisor journal replacement and stale-state recovery, exact DONE rework runner authority, completed verification and quality-review routing, base-checkout provider operations, and Codex-compatible strict output schemas. Do not include task artifacts from other tasks."
 sections:
   Summary: |-
@@ -741,11 +741,9 @@ sections:
     - Out of scope: unrelated refactors not required for "Fix canonical completed-task branch lifecycle recovery without internal provider work items".
   Plan: "1. Execute approved WorkItem implement-lifecycle-recovery."
   Verify Steps: |-
-    PLANNER fallback scaffold for "Fix canonical completed-task branch lifecycle recovery without internal provider work items". Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Review the requested outcome for "Fix canonical completed-task branch lifecycle recovery without internal provider work items". Expected: the visible result matches ## Summary and stays inside approved scope.
-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+    1. Run `bunx vitest run packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts packages/agentplane/src/commands/pr/conflict-rework.test.ts packages/agentplane/src/runner/adapters/codex-result-transport.test.ts packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts`. Expected: The command passes for Implement the verified 0.7.11 lifecycle hardening and completed-task branch supervisor fixes on one clean branch without internal provider lifecycle work items.
+    2. Run `bun run typecheck`. Expected: The command passes for Implement the verified 0.7.11 lifecycle hardening and completed-task branch supervisor fixes on one clean branch without internal provider lifecycle work items.
+    3. Run `bun run ci:local:full`. Expected: The command passes for Implement the verified 0.7.11 lifecycle hardening and completed-task branch supervisor fixes on one clean branch without internal provider lifecycle work items.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-09-23T11:15:46.137Z — VERIFY — ok
@@ -1804,11 +1802,9 @@ Implement the verified AgentPlane lifecycle fixes as one clean semantic code tas
 
 ## Verify Steps
 
-PLANNER fallback scaffold for "Fix canonical completed-task branch lifecycle recovery without internal provider work items". Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Review the requested outcome for "Fix canonical completed-task branch lifecycle recovery without internal provider work items". Expected: the visible result matches ## Summary and stays inside approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+1. Run `bunx vitest run packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts packages/agentplane/src/commands/pr/conflict-rework.test.ts packages/agentplane/src/runner/adapters/codex-result-transport.test.ts packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts`. Expected: The command passes for Implement the verified 0.7.11 lifecycle hardening and completed-task branch supervisor fixes on one clean branch without internal provider lifecycle work items.
+2. Run `bun run typecheck`. Expected: The command passes for Implement the verified 0.7.11 lifecycle hardening and completed-task branch supervisor fixes on one clean branch without internal provider lifecycle work items.
+3. Run `bun run ci:local:full`. Expected: The command passes for Implement the verified 0.7.11 lifecycle hardening and completed-task branch supervisor fixes on one clean branch without internal provider lifecycle work items.
 
 ## Verification
 
