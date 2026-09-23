@@ -539,6 +539,9 @@ function ArtifactExplorer(): ReactNode {
                 aria-current={index === activeIndex ? "true" : undefined}
                 onClick={() => selectArtifact(index)}
               >
+                <span className={styles.mobileTabGlyph} aria-hidden="true">
+                  {artifacts[index].file.endsWith(".json") ? "{}" : "▤"}
+                </span>
                 {index === 1 ? "task README.md" : artifacts[index].file.split("/").at(-1)}
               </button>
             ))}
@@ -618,7 +621,8 @@ function Hero(): ReactNode {
         <h1>
           Let agents write code.
           <br />
-          Keep authority and proof in Git.
+          Keep authority and <br className={styles.heroMobileBreak} />
+          proof in Git.
         </h1>
         <p className={styles.lede}>
           Agentplane puts coding agents on an approved, verifiable repository workflow.

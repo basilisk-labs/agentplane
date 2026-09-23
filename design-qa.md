@@ -12,6 +12,8 @@ References: selected 1024 × 1536 desktop mockup (`exec-c047d834-adbc-4a5b-92bc-
 ## Behavior and responsive check
 
 - The generated mobile concept guided the simplified 390 px layout: logo and menu, stacked actions, horizontal artifact tabs, 11 visible code lines, a thin progress line, one handwritten note, and a 2 × 2 stage summary below the card.
+- Rechecked the published beta against the concept and corrected its mobile proportions. At 390 px, the headline starts at y=81 px, the 330 px wide card at y=332 px, and the proof section at y=746 px. The concept scales to approximately y=85 px, y=332 px, and y=741 px at that width.
+- The first three artifact tabs now fill the card width, with an icon and blue active underline. Other files remain available by horizontal scrolling. The card height is 251 px, close to the concept's approximately 248 px.
 - At 390 px and 320 px, document scroll width equals viewport width. The mobile tabs expose all seven artifacts and scroll inside the card.
 - Selecting `AGENTS.md` changes the code, caption, and handwritten note. It leaves the hero's internal scroll position at zero; the repository window no longer jumps within the hero.
 - After 900 ms of playback, pausing held the progress line at 13.58 px through a further 650 ms. Resuming advanced the line and selected the next file after the remaining interval, with matching caption and note.

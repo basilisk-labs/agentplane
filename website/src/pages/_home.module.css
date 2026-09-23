@@ -1957,6 +1957,10 @@
   margin: 27px 0 17px;
 }
 
+.heroMobileBreak {
+  display: none;
+}
+
 .hero .lede {
   color: #66789e;
   font-size: 1.17rem;
@@ -2628,11 +2632,11 @@
 @media (max-width: 760px) {
   :global(body.agentplane-home) :global(.navbar),
   :global(body.agentplane-home) :global(.navbar__inner) {
-    height: 56px;
-    min-height: 56px;
+    height: 44px;
+    min-height: 44px;
   }
   :global(body.agentplane-home) :global(.navbar) {
-    padding: 0 16px;
+    padding: 0 30px;
   }
   :global(body.agentplane-home) :global(.navbar__items--right) {
     display: none !important;
@@ -2643,52 +2647,72 @@
     width: 100%;
   }
   :global(body.agentplane-home) :global(.navbar__brand) {
+    margin-left: 23px;
     margin-right: auto;
     order: 1;
   }
+  :global(body.agentplane-home) :global(.navbar__logo) {
+    height: 22px;
+  }
   :global(body.agentplane-home) :global(.navbar__toggle) {
+    background: transparent;
+    border: 0;
     margin-left: auto;
     order: 2;
+  }
+  :global(body.agentplane-home) :global(.navbar__toggle svg) {
+    height: 24px;
+    width: 24px;
   }
   :global(body.agentplane-home) :global(.main-wrapper) {
     padding-top: 0;
   }
 
   .hero {
-    padding: 12px 16px 30px;
+    padding: 0 16px 5px;
   }
   .heroIntro {
-    max-width: 490px;
+    max-width: 330px;
   }
   .heroIntro .kicker {
     font-size: 0.53rem;
+    line-height: 1.2;
+    max-width: 230px;
+    text-align: left;
   }
   .hero h1 {
-    font-size: clamp(2rem, 8.1vw, 2.8rem);
+    font-size: clamp(1.72rem, 7.1vw, 2.25rem);
     line-height: 1.02;
-    margin: 11px 0 9px;
+    margin: 5px 0 9px;
+  }
+  .heroMobileBreak {
+    display: inline;
   }
   .hero .lede {
-    font-size: 0.91rem;
+    font-size: 0.82rem;
     line-height: 1.35;
+    max-width: 305px;
   }
   .hero .ctaGroup {
-    gap: 6px;
-    margin-top: 14px;
+    gap: 8px;
+    margin: 7px auto 0;
+    max-width: 304px;
   }
   .hero .buttonPrimary,
   .hero .installButton {
-    min-height: 40px;
+    min-height: 36px;
     width: 100%;
   }
   .hero .trust {
-    font-size: 0.48rem;
-    letter-spacing: 0;
-    margin-top: 10px;
+    font-family: var(--ifm-font-family-base);
+    font-size: 0.6rem;
+    letter-spacing: -0.02em;
+    margin-top: 8px;
     white-space: nowrap;
   }
   .explorerScene {
-    margin-top: 13px;
+    margin: 11px auto 0;
+    max-width: 330px;
   }
   .annotationTop,
   .annotationRight {
@@ -2698,7 +2722,7 @@
     width: 100%;
   }
   .windowChrome {
-    height: 43px;
+    height: 37px;
     padding: 0 11px;
   }
   .repoName {
@@ -2724,24 +2748,28 @@
     background: #fff;
     border-bottom: 1px solid #e1e6f0;
     display: flex;
-    min-height: 40px;
+    min-height: 34px;
     overflow-x: auto;
     scrollbar-width: thin;
   }
   .mobileFileTabs button {
+    align-items: center;
     background: transparent;
     border: 0;
     border-bottom: 2px solid transparent;
     color: #7483a0;
     cursor: pointer;
-    flex: 0 0 auto;
+    display: inline-flex;
+    flex: 0 0 33.333%;
     font-family: var(--ifm-font-family-base);
-    font-size: 0.67rem;
-    padding: 0 12px;
+    font-size: 0.66rem;
+    gap: 6px;
+    justify-content: center;
+    padding: 0 4px;
     white-space: nowrap;
   }
   .mobileFileTabs .mobileFileTabActive {
-    border-bottom-color: #ff544b;
+    border-bottom-color: #2675ec;
     color: #172f62;
     font-weight: 650;
   }
@@ -2749,16 +2777,24 @@
     outline: 2px solid #ff544b;
     outline-offset: -2px;
   }
+  .mobileTabGlyph {
+    color: #5977aa;
+    font-family: var(--ifm-font-family-monospace);
+    font-size: 0.92rem;
+  }
+  .mobileFileTabActive .mobileTabGlyph {
+    color: #2675ec;
+  }
   .editorContent {
-    height: 209px;
+    height: 178px;
     min-height: 0;
     overflow: hidden;
-    padding: 8px 7px;
+    padding: 6px 7px;
   }
   .codeLine {
     font-size: 0.62rem;
     grid-template-columns: 27px minmax(0, 1fr);
-    line-height: 18px;
+    line-height: 15px;
   }
   .lineNumber {
     padding-right: 7px;
@@ -2777,40 +2813,58 @@
   .explorerFooter {
     align-items: flex-start;
     flex-direction: row;
-    gap: 12px;
+    gap: 0;
     justify-content: space-between;
-    margin-top: 9px;
-    position: static;
+    margin-top: 8px;
+    min-height: 37px;
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
   }
   .artifactCaption {
-    font-size: 0.69rem;
-    line-height: 1.28;
+    font-size: 0.59rem;
+    line-height: 1.2;
     margin: 0;
+    max-width: 190px;
   }
   .tourControl {
-    flex: 0 0 auto;
-    font-size: 0.58rem;
+    font-size: 0;
+    position: absolute;
+    right: 2px;
+    top: -47px;
+  }
+  .tourControl span {
+    font-size: 0.9rem;
+    margin-left: 0;
   }
   .annotationBottom {
     display: flex;
     font-size: 0.72rem;
     justify-content: flex-end;
-    margin: 6px 8px 0 0;
-    position: static;
+    left: auto;
+    margin: 0;
+    position: absolute;
+    right: 0;
+    top: 261px;
     transform: rotate(-5deg);
   }
   .annotationBottom span {
-    max-width: 190px;
+    max-width: 135px;
+  }
+  .annotationBottom .doodleArrow {
+    height: 29px;
+    width: 44px;
   }
   .stageStripMobile {
     background: transparent;
     border: 0;
     box-shadow: none;
     display: grid;
-    gap: 17px 12px;
+    gap: 12px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     min-height: 0;
-    padding: 19px 0 4px;
+    padding: 10px 0 0;
   }
   .stageStripMobile .stage::after {
     display: none;
@@ -2824,22 +2878,33 @@
     width: 18px;
   }
   .proofOverview {
-    padding: 34px 16px 42px;
+    padding: 34px 35px 42px;
   }
   .proofOverview h2 {
-    font-size: 2.1rem;
+    font-size: 1.48rem;
   }
   .proofOverviewLede {
-    font-size: 0.93rem;
+    font-size: 0.81rem;
   }
 }
 
 @media (max-width: 360px) {
+  :global(body.agentplane-home) :global(.navbar__brand) {
+    margin-left: 8px;
+  }
+  :global(body.agentplane-home) :global(.navbar) {
+    padding: 0 18px;
+  }
   .hero .trust {
     line-height: 1.45;
     white-space: normal;
   }
-  .tourControl {
-    font-size: 0.52rem;
+  .proofOverview {
+    padding-inline: 20px;
+  }
+  .annotationBottom {
+    justify-content: flex-end;
+    margin-top: 6px;
+    position: static;
   }
 }
