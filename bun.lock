@@ -38,8 +38,8 @@
         "agentplane": "bin/agentplane.js",
       },
       "dependencies": {
-        "@agentplaneorg/core": "0.7.11",
-        "@agentplaneorg/recipes": "0.7.11",
+        "@agentplaneorg/core": "0.7.12-beta.1",
+        "@agentplaneorg/recipes": "0.7.12-beta.1",
         "@clack/prompts": "^1.5.1",
         "yaml": "^2.7.1",
         "yauzl": "^3.4.0",
@@ -74,7 +74,7 @@
       "name": "@agentplane/testkit",
       "version": "0.0.0",
       "dependencies": {
-        "@agentplaneorg/core": "0.7.11",
+        "@agentplaneorg/core": "0.7.12-beta.1",
       },
     },
     "website": {
