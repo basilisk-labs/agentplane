@@ -4,7 +4,7 @@ title: "Execute completed-task integration effects from the base checkout withou
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -23,9 +23,9 @@ plan_approval:
   note: "Projected from the approved canonical Task Kernel plan."
 verification:
   state: "ok"
-  updated_at: "2026-09-22T23:22:55.247Z"
+  updated_at: "2026-09-23T00:28:12.080Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: canonical Task Kernel final checks passed."
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
   state: "pass"
@@ -103,10 +103,11 @@ execution_contract:
     changed_components:
       - "packages/agentplane"
     changed_paths:
-      - "packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts"
+      - "packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts"
+      - "packages/agentplane/src/commands/task/advance-task-step.ts"
+      - "packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts"
+      - "packages/agentplane/src/commands/task/branch-task-verification.test.ts"
       - "packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts"
-      - "packages/agentplane/src/commands/task/ordinary-advance-step.ts"
-      - "packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts"
     external_effects: []
     repository_effects:
       - "repository_write"
@@ -176,8 +177,9 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:fb3df265fb8938628efca47bd129d8e5834f8921abefd78c0157e7fe0c701745"
+      digest: "sha256:7b042d188fe66e86eb6abc71bb977f6c7da852d9f949d1d5adf83233affcad2c"
       escalation_reasons:
+        - "central_path:packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts"
         - "effect_release_metadata"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
@@ -190,6 +192,10 @@ execution_contract:
         changed_components:
           - "packages/agentplane"
         changed_files:
+          - "packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts"
+          - "packages/agentplane/src/commands/task/advance-task-step.ts"
+          - "packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts"
+          - "packages/agentplane/src/commands/task/branch-task-verification.test.ts"
           - "packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts"
           - "packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts"
           - "packages/agentplane/src/commands/task/ordinary-advance-step.ts"
@@ -243,8 +249,14 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "verify"
+    at: "2026-09-23T00:28:12.080Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-22T23:22:56.172Z"
+doc_updated_at: "2026-09-23T00:28:13.206Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the broken supervisor transition discovered while validating the 0.7.11 lifecycle feedback. integration.enqueue and integration.run_next must execute from the base checkout without sending record_controller_transfer to an already COMPLETED Task Kernel aggregate."
 sections:
@@ -335,6 +347,89 @@ sections:
     - capability_digest: sha256:4fad168dcc6ce614e806e5ee61bfa5b2309a2f4596fd91f7b675e8f86b7f6ad8
     - checks_digest: sha256:1fa60887df046d3264c65f7aeed438d45c76cc44ff95aba45e1b2beac0ac4e03
     - identity_digest: sha256:2a7204ae49a60cf3dff4e22e5e6e8e82f7b93d1dba03aab28eead263016d9cf9
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-23T00:28:12.080Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f90e2b26361b6adf41f20c69dec3879f2ae1428039287af6af9c54a6d7039dd1, input_digest=sha256:1d5a0b8fddc041277270783ce3786366abcf163eaed30cd220bee8323f6c200d
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609222258-EC35TN/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609222258-EC35TN Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609222258-EC35TN/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609222258-EC35TN Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bunx vitest run packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609222258-EC35TN/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609222258-EC35TN Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609222258-EC35TN/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609222258-EC35TN Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609222258-EC35TN/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609222258-EC35TN Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bunx vitest run packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609222258-EC35TN/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609222258-EC35TN Verification Contract check real_e2e (1/2)
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609222258-EC35TN/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609222258-EC35TN Verification Contract check real_e2e (2/2)
+
+    Check: task_outcome
+    Command: bunx vitest run packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609222258-EC35TN/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609222258-EC35TN Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609222258-EC35TN/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609222258-EC35TN Verification Contract check task_outcome (2/2)
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:a17df72ff0887e595edf6c7f087b595ac9172b919b67a680ae981f146224b5c9
+    - policy_digest: sha256:9b668d089af056af9741759543ed685caaa27c913a3aa16d382cfde5faf1adc7
+    - capability_digest: sha256:4fad168dcc6ce614e806e5ee61bfa5b2309a2f4596fd91f7b675e8f86b7f6ad8
+    - checks_digest: sha256:b221c938b5276643fe13c4eacc0d951316a790b1a2bb591617f9079e0b651b8d
+    - identity_digest: sha256:f188c2bb99ed791ca61725ba2938f09d9f36d062013c9ca563384dfc5b491b9f
 
     DecisionContextRef:
     - operator_action: stop
@@ -1042,6 +1137,89 @@ NativeTaskIdentityRef:
 - capability_digest: sha256:4fad168dcc6ce614e806e5ee61bfa5b2309a2f4596fd91f7b675e8f86b7f6ad8
 - checks_digest: sha256:1fa60887df046d3264c65f7aeed438d45c76cc44ff95aba45e1b2beac0ac4e03
 - identity_digest: sha256:2a7204ae49a60cf3dff4e22e5e6e8e82f7b93d1dba03aab28eead263016d9cf9
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-23T00:28:12.080Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f90e2b26361b6adf41f20c69dec3879f2ae1428039287af6af9c54a6d7039dd1, input_digest=sha256:1d5a0b8fddc041277270783ce3786366abcf163eaed30cd220bee8323f6c200d
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609222258-EC35TN/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609222258-EC35TN Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609222258-EC35TN/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609222258-EC35TN Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bunx vitest run packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609222258-EC35TN/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609222258-EC35TN Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609222258-EC35TN/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609222258-EC35TN Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609222258-EC35TN/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609222258-EC35TN Verification Contract check full_regression
+
+Check: real_e2e
+Command: bunx vitest run packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609222258-EC35TN/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609222258-EC35TN Verification Contract check real_e2e (1/2)
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609222258-EC35TN/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609222258-EC35TN Verification Contract check real_e2e (2/2)
+
+Check: task_outcome
+Command: bunx vitest run packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609222258-EC35TN/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609222258-EC35TN Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609222258-EC35TN/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609222258-EC35TN Verification Contract check task_outcome (2/2)
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:a17df72ff0887e595edf6c7f087b595ac9172b919b67a680ae981f146224b5c9
+- policy_digest: sha256:9b668d089af056af9741759543ed685caaa27c913a3aa16d382cfde5faf1adc7
+- capability_digest: sha256:4fad168dcc6ce614e806e5ee61bfa5b2309a2f4596fd91f7b675e8f86b7f6ad8
+- checks_digest: sha256:b221c938b5276643fe13c4eacc0d951316a790b1a2bb591617f9079e0b651b8d
+- identity_digest: sha256:f188c2bb99ed791ca61725ba2938f09d9f36d062013c9ca563384dfc5b491b9f
 
 DecisionContextRef:
 - operator_action: stop
