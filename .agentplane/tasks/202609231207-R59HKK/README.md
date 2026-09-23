@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 34
+revision: 35
 origin:
   system: "manual"
 depends_on: []
@@ -32,29 +32,29 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-23T17:22:54.264Z"
+  updated_at: "2026-09-23T18:30:32.830Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "94c257a156d1356d43eaecac7a621b9e696a1d9c"
-  review_identity_digest: "sha256:97b649444d5d6b07180598269c2bea0cc20645b0fd417b0ac06661aae73788ab"
+  evaluated_sha: "efa6884528cf52bd514dd3d317a4d07b421e0330"
+  review_identity_digest: "sha256:7c77ca215c38f44ad34ab8742627153301e66dab881183a344704cd2f37baf69"
   evidence_refs:
-    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-172127825-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-172127825-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/a6a4e6a842fe32b80cc922bb64b1bd12e2419e5551d4c309af23c34391e2cc1e.md"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-172127825-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-172127825-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-172127825-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-182850262-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-182850262-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/647687b0b4724c30d3ba7fe35a693f5fff504c5399de06ea775fcd2a2a86b379.md"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-182850262-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-182850262-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-182850262-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609231207-R59HKK/README.md"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/188fb08e3857277cc5a3cf4cae71268f896fe1372e9d7b67449db7972ab279c6.patch"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/b50f5a2b2801bbce49f0b186e21576f3e447e5783ab2d92aa28c527f3eaee8e4.json"
-    - ".agentplane/tasks/202609231207-R59HKK/verification/20260923172059611-9615ca6b14d682e8.json"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/7b1bce66e7c48cb8fbf243e2b22291adad9516ecfd71c83af0058625ea97555f.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/6c8da8005020289a3642003bbcd3b8e9dba6e8299275285dd7be881d6117dfff.patch"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/345f53c7ef4d15ee7e0c569d6417ac1a8bdb108733acbbfa9c99f3cb1bda9ae8.json"
+    - ".agentplane/tasks/202609231207-R59HKK/verification/20260923182218141-e6531c975af7f0a6.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/68731b780bb764a869187efcddea2cdb9fedf29683b293d2dc30acaa17657fbd.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen change covers the requested recovery paths. All nine evidence digests match; current persisted verification records all three required commands as passing. The previous lockfile drift is absent."
+    - "The declared focused Vitest command includes external-agent-supervisor.test.ts, which is absent at the evaluated SHA. Its passing result does not establish coverage of that named suite; the persisted full regression check also passed."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -518,8 +518,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "a224d4e867e50177b2c5a10a2597a9bd41028a8c"
-  message: "🧭 R59HKK task: record evaluator verdict"
+  hash: "efa6884528cf52bd514dd3d317a4d07b421e0330"
+  message: "AgentPlane-owned canonical implementation commit"
 comments:
   -
     author: "CODER"
@@ -588,7 +588,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-23T18:22:24.807Z"
+doc_updated_at: "2026-09-23T18:30:32.860Z"
 doc_updated_by: "CODER"
 description: "Repair evaluator diff-base selection after provider branch updates, forward replacement intent into evaluator episodes, persist supervisor-generated task artifacts without false task_worktree_resolution, dispatch pre-merge closure through the supported local lifecycle path, and admit worktree.prepare before dirty-base worktree resolution."
 sections:
@@ -1490,8 +1490,8 @@ extensions:
     verification_evidence_digest: "sha256:b27716cfdf21052f810046405dc0204d0cad21eac7b0da8dd262dc1c954b7118"
     work_order_id: "sha256:061cb3ad1041d2a68dd6a373011b1dca865f86c72792d04ad23534280c23cf19"
   implementation_commit:
-    hash: "94c257a156d1356d43eaecac7a621b9e696a1d9c"
-    message: "🐛 R59HKK task: align inherited lockfile metadata"
+    hash: "efa6884528cf52bd514dd3d317a4d07b421e0330"
+    message: "AgentPlane-owned canonical implementation commit"
   task_execution_context:
     base_ref: "main"
     base_sha: "940209a800dedc5b27c382a2642dff316b30a8fc"
