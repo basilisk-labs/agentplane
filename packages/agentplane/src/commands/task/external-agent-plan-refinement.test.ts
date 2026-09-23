@@ -47,6 +47,24 @@ describe("canonical external plan refinement", () => {
     );
   });
 
+  it("refuses to invent checks when the canonical contract projection is incomplete", () => {
+    expect(
+      canonicalVerifySteps({
+        aggregate: { current_plan: { work_items: [] } },
+      } as unknown as KernelRecord),
+    ).toBeNull();
+    expect(
+      canonicalVerifySteps({
+        aggregate: {
+          current_plan: {
+            work_items: [{ id: "implementation", contract_digest: `sha256:${"b".repeat(64)}` }],
+          },
+        },
+        documents: { contracts: {} },
+      } as unknown as KernelRecord),
+    ).toBeNull();
+  });
+
   it("accepts only a non-material clarification for a completed canonical task", () => {
     expect(isPureCanonicalClarification(clarification)).toBe(true);
     expect(isPureCanonicalClarification({ ...clarification, dependencies_changed: true })).toBe(
