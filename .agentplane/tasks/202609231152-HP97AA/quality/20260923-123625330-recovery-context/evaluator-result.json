@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "authority-boundary-covered",
+      "severity": "low",
+      "summary": "No contract violation found: only reject_plan bypasses the authority-lineage replacement guard, while capture_intent and propose_plan remain blocked until the plan is explicitly rejected and the task enters replanning.",
+      "broken_invariant": "None; the USER authority boundary and the explicit rejection-before-replanning invariant are preserved.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609231152-HP97AA/quality/objects/sha256/367ab027b2648ca0c4957873b269f302eb9d0822109731abe79144c7889ab5cd.patch",
+          "sha256": "sha256:367ab027b2648ca0c4957873b269f302eb9d0822109731abe79144c7889ab5cd",
+          "section": "kernel runtime guard and regression tests"
+        },
+        {
+          "path": ".agentplane/tasks/202609231152-HP97AA/verification/20260923120633958-28469bf4760981f8.json",
+          "sha256": "sha256:3c41be149c2152f1131acec966da2cb92ebdf36c01e41b6fbc9c65c89661734e",
+          "section": "observed verification checks"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

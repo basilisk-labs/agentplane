@@ -1,0 +1,73 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 4d25a67cc233872b57c12b7fbaa6ceb84ed7d939..106b90ee0acbc3db8d0646a8824392caf9fc8701",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 4d25a67cc233872b57c12b7fbaa6ceb84ed7d939..106b90ee0acbc3db8d0646a8824392caf9fc8701",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202609231152-HP97AA/README.md",
+        "A\t.agentplane/tasks/202609231152-HP97AA/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202609231152-HP97AA/pr/github-body.md",
+        "A\t.agentplane/tasks/202609231152-HP97AA/pr/github-title.txt",
+        "A\t.agentplane/tasks/202609231152-HP97AA/pr/meta.json",
+        "A\t.agentplane/tasks/202609231152-HP97AA/pr/review.md",
+        "A\t.agentplane/tasks/202609231152-HP97AA/quality/objects/sha256/4340c69a72ea01faa72dcf87e07dfff35ea84123952ef257b9037259c0405a62.json",
+        "A\t.agentplane/tasks/202609231152-HP97AA/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "M\tpackages/agentplane/src/commands/task/kernel-runtime-context.ts",
+        "M\tpackages/agentplane/src/commands/task/plan-reject.command.test.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "4d25a67cc233872b57c12b7fbaa6ceb84ed7d939",
+  "implementation_commit": "106b90ee0acbc3db8d0646a8824392caf9fc8701",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "?? .agentplane/tasks/202609231152-HP97AA/README.md",
+      "?? .agentplane/tasks/202609231152-HP97AA/quality/objects/sha256/4340c69a72ea01faa72dcf87e07dfff35ea84123952ef257b9037259c0405a62.json",
+      "?? .agentplane/tasks/202609231152-HP97AA/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609231152-HP97AA/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609231152-HP97AA/quality/objects/sha256/4340c69a72ea01faa72dcf87e07dfff35ea84123952ef257b9037259c0405a62.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609231152-HP97AA/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "?? .agentplane/tasks/202609231152-HP97AA/README.md",
+      "?? .agentplane/tasks/202609231152-HP97AA/quality/objects/sha256/4340c69a72ea01faa72dcf87e07dfff35ea84123952ef257b9037259c0405a62.json",
+      "?? .agentplane/tasks/202609231152-HP97AA/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609231152-HP97AA"
+}

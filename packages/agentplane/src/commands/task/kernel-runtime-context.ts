@@ -7,6 +7,7 @@ import {
   type KernelAdapterResult,
   type KernelCommandInput,
 } from "../../adapters/task-backend/kernel-backend-adapter.js";
+import type { KernelRead } from "../../adapters/task-backend/kernel-record.js";
 import { KernelTaskLifecycle } from "../../runner/usecases/kernel-task-lifecycle.js";
 import { KernelAuthorityResolver } from "../../runner/usecases/kernel-authority.js";
 import {
@@ -36,6 +37,22 @@ export type KernelCommandPayload = k.TaskCommand extends infer C
     ? Omit<C, "task_id" | "expected_task_revision" | "expected_state_fingerprint">
     : never
   : never;
+
+export function assertPlanningAuthorityBoundary(
+  payloadKind: KernelCommandPayload["kind"],
+  read: KernelRead,
+): void {
+  if (
+    payloadKind !== "reject_plan" &&
+    read.kind === "canonical" &&
+    read.record.aggregate.authority_lineage?.length &&
+    !(
+      read.record.aggregate.state === "PLANNING" &&
+      read.record.aggregate.current_plan?.state === "REJECTED"
+    )
+  )
+    throw new Error("Planning cannot replace canonical user authority");
+}
 
 /** Native command context. Semantic JSON cannot supply actor identity or approval evidence. */
 export async function createKernelRuntime(opts: {
@@ -192,15 +209,7 @@ export async function createKernelRuntime(opts: {
       )
         throw new Error("Planning authority cannot execute implementation commands");
       const read = await adapter.read(opts.task_id);
-      if (
-        read.kind === "canonical" &&
-        read.record.aggregate.authority_lineage?.length &&
-        !(
-          read.record.aggregate.state === "PLANNING" &&
-          read.record.aggregate.current_plan?.state === "REJECTED"
-        )
-      )
-        throw new Error("Planning cannot replace canonical user authority");
+      assertPlanningAuthorityBoundary(payload.kind, read);
       const plan = read.kind === "canonical" ? read.record.aggregate.current_plan : null;
       const contents = {
         ...context.ceiling,
