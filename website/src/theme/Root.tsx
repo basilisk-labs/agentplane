@@ -173,6 +173,17 @@ function NavbarGithubButton(): null {
     const host = document.createElement("span");
     host.className = "navbar-github-button-host navbar__item";
 
+    if (globalThis.location.pathname === "/") {
+      const homeLink = document.createElement("a");
+      homeLink.className = "navbar-github-home";
+      homeLink.href = "https://github.com/basilisk-labs/agentplane";
+      homeLink.setAttribute("aria-label", "Open basilisk-labs/agentplane on GitHub");
+      homeLink.textContent = "GitHub";
+      host.append(homeLink);
+      rightItems.append(host);
+      return () => host.remove();
+    }
+
     const link = document.createElement("a");
     link.className = "github-button";
     link.href = "https://github.com/basilisk-labs/agentplane";

@@ -1185,6 +1185,22 @@
   width: 100%;
 }
 
+.treeFileGroup {
+  min-width: 0;
+}
+
+.treeFileGroup .fileButton {
+  margin-top: 0;
+}
+
+.treeFolderEvidence {
+  padding-left: 18px;
+}
+
+.treeFileGroup:nth-child(3) .fileButton {
+  padding-left: 44px;
+}
+
 .fileButton > span:last-child {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1841,5 +1857,697 @@
   }
   .progressAnimating {
     width: var(--progress-end);
+  }
+}
+
+/* Selected repository-window mockup. */
+.page {
+  --home-black: 20 24 32;
+  --home-muted: 100 116 150;
+  --home-faint: 111 128 161;
+  --home-border: 222 228 240;
+  --home-coral: 255 79 70;
+  background: #fff;
+}
+
+:global(html:has(body.agentplane-home)),
+:global(body.agentplane-home),
+:global(body.agentplane-home) :global(#__docusaurus),
+:global(body.agentplane-home) :global(.main-wrapper),
+:global(body.agentplane-home) :global(.navbar) {
+  background: #fff;
+}
+
+:global(body.agentplane-home) :global(.navbar) {
+  border-bottom: 0;
+  padding-inline: 3.25rem;
+}
+
+:global(body.agentplane-home) :global(.navbar__inner) {
+  max-width: 920px;
+  min-height: 56px;
+}
+
+:global(body.agentplane-home) :global(.navbar__logo) {
+  height: 31px;
+}
+
+:global(body.agentplane-home) :global(.navbar__item.navbar__link) {
+  font-size: 0.82rem;
+  font-weight: 450;
+}
+
+:global(body.agentplane-home) :global(.navbar-install-command) {
+  display: none;
+}
+
+.hero {
+  background:
+    radial-gradient(circle, rgb(255 95 86 / 0.42) 0 0.65px, transparent 0.85px) left 81px / 14px
+      14px repeat-y,
+    radial-gradient(circle, rgb(100 113 179 / 0.32) 0 0.65px, transparent 0.85px) right 81px / 14px
+      14px repeat-y,
+    #fff;
+  border-bottom: 1px solid #eff1f6;
+  padding: 29px 3.25rem 36px;
+}
+
+.hero::before {
+  background: radial-gradient(ellipse, rgb(232 236 249 / 0.42), transparent 67%);
+  height: 690px;
+  top: 310px;
+}
+
+.heroIntro {
+  max-width: 960px;
+}
+
+.heroIntro .kicker {
+  color: #7f8eaf;
+  font-size: 0.64rem;
+  font-weight: 500;
+  gap: 13px;
+  letter-spacing: 0.1em;
+}
+
+.kickerDot {
+  border-radius: 0;
+  height: 1px;
+  margin-top: 0.6em;
+  width: 21px;
+}
+
+.hero h1 {
+  color: #151820;
+  font-size: clamp(3rem, 5.45vw, 3.65rem);
+  font-weight: 710;
+  letter-spacing: -0.057em;
+  line-height: 0.98;
+  margin: 27px 0 17px;
+}
+
+.hero .lede {
+  color: #66789e;
+  font-size: 1.17rem;
+  line-height: 1.4;
+  max-width: none;
+}
+
+.hero .ctaGroup {
+  gap: 18px;
+  margin-top: 22px;
+}
+
+.hero .buttonPrimary {
+  background: #ff544b;
+  border-color: #ff544b;
+  box-shadow: none;
+  font-size: 0.87rem;
+  font-weight: 520;
+  min-height: 49px;
+  min-width: 237px;
+}
+
+.hero .buttonPrimary:hover,
+.hero .buttonPrimary:focus-visible {
+  background: #e9453d;
+  border-color: #e9453d;
+}
+
+.hero .installButton {
+  border-color: #dce2ee;
+  box-shadow: 0 3px 8px rgb(100 118 158 / 0.04);
+  min-height: 49px;
+  min-width: 219px;
+}
+
+.hero .trust {
+  color: #8290ad;
+  font-size: 0.67rem;
+  margin-top: 22px;
+}
+
+.explorerScene {
+  margin-top: 38px;
+  max-width: 920px;
+}
+
+.artifactWindow {
+  border-color: #dce3f0;
+  border-radius: 4px;
+  box-shadow: 0 18px 45px rgb(64 83 135 / 0.12);
+  max-width: 920px;
+}
+
+.windowChrome {
+  background: #fff;
+  color: #252e44;
+  height: 55px;
+  justify-content: space-between;
+  padding: 0 15px 0 28px;
+}
+
+.repoName,
+.windowActions {
+  align-items: center;
+  display: flex;
+}
+
+.repoName {
+  gap: 16px;
+  font-family: var(--ifm-font-family-base);
+  font-size: 0.82rem;
+}
+
+.repoGlyph {
+  color: #111822;
+  font-size: 1.1rem;
+}
+
+.windowBranch {
+  border: 1px solid #dce3f0;
+  border-radius: 4px;
+  color: #65759b;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.73rem;
+  padding: 7px 9px;
+  position: static;
+}
+
+.windowActions {
+  gap: 12px;
+  color: #7383a5;
+  font-family: var(--ifm-font-family-base);
+  font-size: 0.73rem;
+}
+
+.searchFiles {
+  border: 1px solid #dce3f0;
+  border-radius: 4px;
+  display: inline-flex;
+  min-width: 210px;
+  padding: 8px 10px;
+}
+
+.chromeAction {
+  border: 1px solid #dce3f0;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  height: 31px;
+  line-height: 28px;
+  text-align: center;
+  width: 31px;
+}
+
+.windowBody {
+  grid-template-columns: 31.2% 68.8%;
+  height: 515px;
+  min-height: 0;
+}
+
+.fileTree {
+  background: #fff;
+  border-color: #e1e6f0;
+  padding: 13px 10px 12px;
+}
+
+.treeFolder {
+  color: #3e5074;
+  font-family: var(--ifm-font-family-base);
+  font-size: 0.79rem;
+  line-height: 28px;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.treeFolderNested {
+  padding-left: 19px;
+}
+
+.treeFolderTask {
+  padding-left: 39px;
+}
+
+.treeFiles {
+  gap: 0;
+}
+
+.fileButton {
+  border: 0;
+  border-radius: 4px;
+  color: #415274;
+  font-family: var(--ifm-font-family-base);
+  font-size: 0.78rem;
+  gap: 9px;
+  min-height: 30px;
+  padding: 5px 8px 5px 39px;
+}
+
+.fileButton:nth-child(3) {
+  margin-top: 29px;
+}
+
+.fileButton:nth-child(n + 4) {
+  padding-left: 18px;
+}
+
+.fileButtonActive {
+  background: #eaf2ff;
+  color: #172f62;
+  font-weight: 550;
+}
+
+.fileGlyph {
+  color: #536b9c;
+  flex-basis: 17px;
+  font-family: var(--ifm-font-family-monospace);
+}
+
+.editorTab {
+  background: #fff;
+  border-right: 1px solid #e4e8f1;
+  color: #26334e;
+  height: 35px;
+  justify-content: flex-start;
+  max-width: 154px;
+  padding: 0 14px;
+}
+
+.tabClose {
+  margin-left: 10px;
+}
+
+.editorContent {
+  min-height: 0;
+  padding: 8px 17px 8px 17px;
+}
+
+.codeLines {
+  gap: 0;
+}
+
+.codeLine {
+  color: #27304b;
+  font-size: 0.75rem;
+  grid-template-columns: 54px minmax(0, 1fr);
+  line-height: 18px;
+}
+
+.lineNumber {
+  border-right: 1px solid #edf0f7;
+  color: #94a2c0;
+  padding-right: 26px;
+  text-align: right;
+}
+
+.codeLine code,
+.codeLine:first-child code,
+.codeLine:nth-child(3) code {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  color: #263552;
+  font-weight: 450;
+  padding-left: 8px;
+}
+
+.codeKey {
+  color: #645aff;
+}
+
+.codeValue {
+  color: #e02020;
+}
+
+.stageStrip {
+  border-color: #e1e6f0;
+  grid-template-columns: 250px 227px 230px minmax(0, 1fr);
+  min-height: 108px;
+  padding: 18px 24px;
+}
+
+.stage {
+  gap: 13px;
+}
+
+.stage strong {
+  color: #182135;
+  font-size: 0.78rem;
+  font-weight: 640;
+}
+
+.stage small {
+  color: #677b9f;
+  font-size: 0.71rem;
+  line-height: 1.3;
+  max-width: 125px;
+}
+
+.stageIcon {
+  flex-basis: 46px;
+  height: 46px;
+}
+
+.stageIconAuthority {
+  background: #fff0ef;
+  color: #ef3d38;
+}
+
+.stageIconObserved {
+  background: #f2edff;
+  color: #6337ce;
+}
+
+.stageIconVerified {
+  background: #f1ebff;
+  color: #6533d0;
+}
+
+.stageIconRecorded {
+  background: #fff0ef;
+  color: #ef3d38;
+}
+
+.stageArrow {
+  display: none;
+}
+
+.stage:not(:last-child)::after {
+  color: #7385a7;
+  content: "→";
+  font-size: 1.1rem;
+  position: absolute;
+  right: 27px;
+}
+
+.progressTrack {
+  background: #e6eaf2;
+  max-width: 920px;
+}
+
+.progressTrack > span {
+  background: #ff544b;
+}
+
+.explorerFooter {
+  margin-top: 10px;
+  max-width: 920px;
+}
+
+.artifactCaption {
+  color: #66779b;
+  font-size: 0.78rem;
+}
+
+.artifactCaption span {
+  color: #fa5149;
+  font-size: 0.61rem;
+}
+
+.tourControl {
+  color: #7382a2;
+}
+
+.annotationTop,
+.annotationRight,
+.annotationBottom {
+  color: #667699;
+  font-family: "Bradley Hand", "Marker Felt", "Comic Sans MS", cursive;
+  font-size: 1.03rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.annotationTop {
+  font-size: 0.74rem;
+  left: 3px;
+  top: -29px;
+  transform: rotate(-6deg);
+}
+
+.annotationRight {
+  font-size: 0.74rem;
+  right: 20px;
+  top: 35%;
+  transform: rotate(7deg);
+}
+
+.annotationBottom {
+  bottom: auto;
+  left: auto;
+  right: -23px;
+  top: 700px;
+  transform: rotate(-7deg);
+}
+
+.annotationTop .doodleArrow,
+.annotationRight .doodleArrow {
+  height: 24px;
+  width: 43px;
+}
+
+:global(body.agentplane-home) :global(.navbar-github-button-fallback) {
+  background: transparent;
+  border: 0;
+  color: #182135;
+  font-family: var(--ifm-font-family-base);
+  font-size: 0.82rem;
+  font-weight: 470;
+  gap: 15px;
+  padding: 0;
+}
+
+:global(body.agentplane-home) :global(.navbar-github-button-fallback::before) {
+  content: "◕";
+  font-size: 1.4rem;
+}
+
+:global(body.agentplane-home) :global(.navbar-github-home) {
+  align-items: center;
+  color: #151820;
+  display: inline-flex;
+  font-family: var(--ifm-font-family-base);
+  font-size: 0.82rem;
+  font-weight: 450;
+  gap: 15px;
+  text-decoration: none;
+}
+
+:global(body.agentplane-home) :global(.navbar-github-home::before) {
+  background: #151820;
+  content: "";
+  height: 19px;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 .5C5.73.5.65 5.58.65 11.85c0 5.02 3.26 9.27 7.78 10.78.57.11.78-.24.78-.55v-2.1c-3.16.69-3.83-1.34-3.83-1.34-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.67 1.24 3.32.95.1-.74.4-1.25.72-1.54-2.52-.29-5.17-1.26-5.17-5.61 0-1.24.45-2.26 1.18-3.06-.12-.29-.51-1.45.11-3.02 0 0 .96-.31 3.14 1.17a10.9 10.9 0 0 1 5.72 0c2.18-1.48 3.14-1.17 3.14-1.17.62 1.57.23 2.73.11 3.02.73.8 1.18 1.82 1.18 3.06 0 4.36-2.65 5.31-5.18 5.6.4.35.76 1.04.76 2.1v3.12c0 .31.21.67.79.55 4.52-1.51 7.77-5.76 7.77-10.78C23.35 5.58 18.27.5 12 .5Z'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+  width: 19px;
+}
+
+:global(body.agentplane-home) :global(.main-wrapper) {
+  padding-top: 8px;
+}
+
+.explorerFooter {
+  left: 0;
+  margin-top: 0;
+  position: absolute;
+  right: 0;
+  top: 692px;
+}
+
+.annotationBottom {
+  top: 679px;
+}
+
+@media (min-width: 761px) {
+  .hero {
+    padding-bottom: 48px;
+    padding-top: 2px;
+  }
+
+  .heroIntro {
+    top: 9px;
+  }
+
+  .explorerScene {
+    margin-bottom: -13px;
+  }
+}
+
+.annotationBottom span {
+  max-width: 145px;
+}
+
+.proofOverview {
+  background:
+    radial-gradient(circle, rgb(255 95 86 / 0.42) 0 0.65px, transparent 0.85px) left 42px / 14px
+      14px repeat-y,
+    radial-gradient(circle, rgb(100 113 179 / 0.32) 0 0.65px, transparent 0.85px) right 42px / 14px
+      14px repeat-y,
+    #fff;
+  padding: 51px 2rem 58px;
+}
+
+.proofOverviewInner {
+  margin: 0 auto;
+  max-width: 720px;
+}
+
+.proofOverview .kicker {
+  color: #ff554d;
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.proofOverview .kicker::before {
+  background: #ff554d;
+  content: "";
+  display: inline-block;
+  height: 1px;
+  margin: 0 16px 4px 0;
+  width: 20px;
+}
+
+.proofOverview h2 {
+  color: #151820;
+  font-size: 2.65rem;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  line-height: 1.1;
+  margin: 17px 0 8px;
+}
+
+.proofOverviewLede {
+  color: #687a9d;
+  font-size: 1.14rem;
+  line-height: 1.36;
+  margin: 0;
+}
+
+.proofOverviewGrid {
+  display: grid;
+  gap: 58px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 28px;
+}
+
+.proofOverviewGrid .stageIcon {
+  height: 40px;
+  width: 40px;
+}
+
+.proofOverviewGrid h3 {
+  color: #1b2332;
+  font-size: 0.94rem;
+  margin: 8px 0 4px;
+}
+
+.proofOverviewGrid p {
+  color: #687a9d;
+  font-size: 0.9rem;
+  line-height: 1.34;
+  margin: 0;
+}
+
+@media (max-width: 760px) {
+  .hero {
+    padding: 34px 1rem 46px;
+  }
+  .hero h1 {
+    font-size: clamp(2.5rem, 9vw, 3.3rem);
+  }
+  .explorerScene {
+    margin-top: 40px;
+  }
+  .windowChrome {
+    height: 48px;
+    padding-left: 12px;
+  }
+  .windowActions,
+  .treeFolder {
+    display: none;
+  }
+  .windowBody {
+    display: block;
+    height: auto;
+  }
+  .fileTree {
+    border-bottom: 1px solid #e1e6f0;
+    border-right: 0;
+    overflow-x: auto;
+  }
+  .treeFiles {
+    display: flex;
+  }
+  .treeFileGroup {
+    flex: 0 0 auto;
+  }
+  .fileButton,
+  .fileButton:nth-child(n + 4) {
+    border: 1px solid #e1e6f0;
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 5px 8px;
+    width: auto;
+  }
+  .editorContent {
+    min-height: 442px;
+  }
+  .stageStrip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .annotationTop,
+  .annotationRight,
+  .annotationBottom {
+    font-size: 0.8rem;
+    transform: none;
+  }
+  .annotationBottom {
+    margin-top: 10px;
+  }
+  .proofOverviewGrid {
+    gap: 25px;
+  }
+}
+
+@media (max-width: 540px) {
+  .heroIntro .kicker {
+    font-size: 0.53rem;
+  }
+  .hero .lede {
+    font-size: 1rem;
+  }
+  .hero .trust {
+    line-height: 1.6;
+  }
+  .stageStrip {
+    gap: 14px 7px;
+    padding: 14px 9px;
+  }
+  .stage {
+    gap: 7px;
+  }
+  .stageIcon {
+    flex-basis: 32px;
+    height: 32px;
+  }
+  .stage small {
+    font-size: 0.56rem;
+  }
+  .stage strong {
+    font-size: 0.67rem;
+  }
+  .proofOverview {
+    padding-inline: 1rem;
+  }
+  .proofOverview h2 {
+    font-size: 2rem;
+  }
+  .proofOverviewLede {
+    font-size: 1rem;
+  }
+  .proofOverviewGrid {
+    grid-template-columns: 1fr;
   }
 }

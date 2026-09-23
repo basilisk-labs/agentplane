@@ -70,14 +70,33 @@ const artifacts = [
     file: "acr.json",
     category: "04 / CHANGE RECORD",
     caption: "The Agent Change Record connects the work to its authority and proof.",
-    notes: ["The review trail.", "Proof follows the code.", "A clear handoff."],
+    notes: ["Authority, in writing.", "Changes you can inspect.", "Every change leaves a record."],
     preview: [
       "{",
-      '  "schema_version": "0.1",',
-      '  "task_id": "parser-edge",',
-      '  "authority": "approved",',
-      '  "verification": "passed",',
-      '  "changed_paths": ["src/parser/token.ts"]',
+      '  "version": "1",',
+      '  "task": "fix-parser-edge-case",',
+      '  "authority": {',
+      '    "actor": "code-agent:cli",',
+      '    "policy": "AGENTS.md",',
+      '    "scope": ["src/parser/**"]',
+      "  },",
+      '  "changes": [',
+      "    {",
+      '      "path": "src/parser/lexer.ts",',
+      '      "action": "modify",',
+      '      "summary": "Handle empty input edge case"',
+      "    },",
+      "    {",
+      '      "path": "src/parser/lexer.test.ts",',
+      '      "action": "add",',
+      '      "summary": "Add regression test"',
+      "    }",
+      "  ],",
+      '  "observations": "see observations.jsonl",',
+      '  "verified": {',
+      '    "checks": ["lint", "typecheck", "tests"],',
+      '    "status": "passed"',
+      "  }",
       "}",
     ],
   },
@@ -97,13 +116,47 @@ const artifacts = [
       "}",
     ],
   },
+  {
+    file: "package.json",
+    category: "06 / PROJECT",
+    caption: "Agentplane works alongside the checks your project already runs.",
+    notes: ["Your tools stay yours.", "Run the real checks.", "Keep the workflow local."],
+    preview: [
+      "{",
+      '  "name": "web-app",',
+      '  "private": true,',
+      '  "scripts": {',
+      '    "lint": "eslint .",',
+      '    "typecheck": "tsc --noEmit",',
+      '    "test": "vitest run"',
+      "  }",
+      "}",
+    ],
+  },
+  {
+    file: "README.md",
+    category: "07 / REPOSITORY",
+    caption: "People and agents share the same repository context.",
+    notes: ["Built for your team.", "A familiar starting point.", "The record stays in Git."],
+    preview: [
+      "# web-app",
+      "",
+      "A small application with a reviewable agent workflow.",
+      "",
+      "## Work on a task",
+      "",
+      "1. Review the approved scope in AGENTS.md.",
+      "2. Make the change and run the project checks.",
+      "3. Review the task record and evidence in Git.",
+    ],
+  },
 ] as const;
 
 const stages = [
-  { title: "Authority", text: "Approved scope" },
-  { title: "Observed", text: "Actions captured" },
-  { title: "Verified", text: "Checks passed" },
-  { title: "Recorded", text: "Evidence in Git" },
+  { title: "Authority", text: "Bounded by AGENTS.md and approved scope" },
+  { title: "Observed", text: "Agent actions and rationale captured" },
+  { title: "Verified", text: "Tests and checks must pass" },
+  { title: "Recorded", text: "Durable, auditable evidence in Git" },
 ] as const;
 
 function trackHomeEvent(eventName: string, payload: Record<string, string> = {}): void {
@@ -196,8 +249,27 @@ function DoodleArrow({ reverse = false }: { reverse?: boolean }): ReactNode {
   );
 }
 
+function highlightLine(line: string): ReactNode {
+  if (!line) return "\u00a0";
+  const tokens: ReactNode[] = [];
+  const pattern = /("(?:\\.|[^"\\])*"(?=\s*:))|("(?:\\.|[^"\\])*")|\b(true|false|null)\b/g;
+  let position = 0;
+  for (const match of line.matchAll(pattern)) {
+    const start = match.index ?? 0;
+    if (start > position) tokens.push(line.slice(position, start));
+    tokens.push(
+      <span className={match[1] ? styles.codeKey : styles.codeValue} key={start}>
+        {match[0]}
+      </span>,
+    );
+    position = start + match[0].length;
+  }
+  if (position < line.length) tokens.push(line.slice(position));
+  return tokens.length ? tokens : line;
+}
+
 function ArtifactExplorer(): ReactNode {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(3);
   const [playing, setPlaying] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const active = artifacts[activeIndex];
@@ -216,8 +288,7 @@ function ArtifactExplorer(): ReactNode {
   useEffect(() => {
     if (!playing || reducedMotion) return;
     const timer = window.setTimeout(() => {
-      if (activeIndex === artifacts.length - 1) setPlaying(false);
-      else setActiveIndex(activeIndex + 1);
+      setActiveIndex((index) => (index + 1) % artifacts.length);
     }, tourDuration);
     return () => window.clearTimeout(timer);
   }, [activeIndex, playing, reducedMotion]);
@@ -237,7 +308,6 @@ function ArtifactExplorer(): ReactNode {
       setPlaying(false);
       return;
     }
-    if (activeIndex === artifacts.length - 1) setActiveIndex(0);
     setPlaying(true);
   }
 
@@ -257,49 +327,62 @@ function ArtifactExplorer(): ReactNode {
         <DoodleArrow reverse />
         <span key={active.file + "-right"}>{active.notes[1]}</span>
       </div>
-      <div
-        className={styles.artifactWindow}
-        onMouseEnter={() => setPlaying(false)}
-        onFocusCapture={() => setPlaying(false)}
-      >
+      <div className={styles.artifactWindow} onFocusCapture={() => setPlaying(false)}>
         <div className={styles.windowChrome}>
-          <div className={styles.windowDots} aria-hidden="true">
-            <i />
-            <i />
-            <i />
+          <div className={styles.repoName}>
+            <span className={styles.repoGlyph} aria-hidden="true">
+              ▣
+            </span>
+            <span>acme / web-app</span>
+            <span className={styles.windowBranch}>♧ main</span>
           </div>
-          <span>agentplane / repository</span>
-          <span className={styles.windowBranch}>main ↗</span>
+          <div className={styles.windowActions} aria-hidden="true">
+            <span className={styles.searchFiles}>⌕ &nbsp; Search files...</span>
+            <span className={styles.chromeAction}>◩</span>
+            <span className={styles.chromeAction}>•••</span>
+          </div>
         </div>
         <div className={styles.windowBody}>
           <nav className={styles.fileTree} aria-label="Explore Agentplane artifacts">
-            <p className={styles.treeLabel}>
-              EXPLORER <span>⌄</span>
+            <p className={styles.treeFolder}>⌄ &nbsp; 📁 &nbsp; .agentplane</p>
+            <p className={`${styles.treeFolder} ${styles.treeFolderNested}`}>
+              ⌄ &nbsp; 📁 &nbsp; tasks
             </p>
-            <p className={styles.treeRoot}>
-              <span aria-hidden="true">▾</span> my-repository
+            <p className={`${styles.treeFolder} ${styles.treeFolderTask}`}>
+              › &nbsp; 📁 &nbsp; task-001-fix-parser
+            </p>
+            <p className={`${styles.treeFolder} ${styles.treeFolderTask}`}>
+              › &nbsp; 📁 &nbsp; task-002-add-tests
             </p>
             <div className={styles.treeFiles}>
-              {artifacts.map((artifact, index) => (
-                <button
-                  key={artifact.file}
-                  type="button"
-                  className={[
-                    styles.fileButton,
-                    index === activeIndex ? styles.fileButtonActive : "",
-                  ].join(" ")}
-                  aria-current={index === activeIndex ? "true" : undefined}
-                  onClick={() => selectArtifact(index)}
-                >
-                  <span className={styles.fileGlyph} aria-hidden="true">
-                    {index === 0 ? "▤" : "{}"}
-                  </span>
-                  <span>{artifact.file}</span>
-                </button>
-              ))}
-            </div>
-            <div className={styles.treeHint}>
-              <span>●</span> repository-owned
+              {[2, 3, 4, 0, 5, 6, 1].map((index) => {
+                const artifact = artifacts[index];
+                return (
+                  <div className={styles.treeFileGroup} key={artifact.file}>
+                    {index === 4 ? (
+                      <p className={`${styles.treeFolder} ${styles.treeFolderEvidence}`}>
+                        ⌄ &nbsp; 📁 &nbsp; evidence
+                      </p>
+                    ) : null}
+                    <button
+                      type="button"
+                      className={[
+                        styles.fileButton,
+                        index === activeIndex ? styles.fileButtonActive : "",
+                      ].join(" ")}
+                      aria-current={index === activeIndex ? "true" : undefined}
+                      onClick={() => selectArtifact(index)}
+                    >
+                      <span className={styles.fileGlyph} aria-hidden="true">
+                        {artifact.file.endsWith(".json") ? "{}" : "▤"}
+                      </span>
+                      <span>
+                        {index === 1 ? "task README.md" : artifact.file.split("/").at(-1)}
+                      </span>
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           </nav>
           <div className={styles.editor}>
@@ -313,17 +396,13 @@ function ArtifactExplorer(): ReactNode {
               </span>
             </div>
             <div className={styles.editorContent} key={active.file}>
-              <div className={styles.codeHeader}>
-                <span>{active.category}</span>
-                <span>EXAMPLE FILE</span>
-              </div>
               <div className={styles.codeLines} aria-label={"Example contents of " + active.file}>
                 {active.preview.map((line, index) => (
                   <div className={styles.codeLine} key={index}>
                     <span className={styles.lineNumber} aria-hidden="true">
                       {index + 1}
                     </span>
-                    <code>{line || "\u00a0"}</code>
+                    <code>{highlightLine(line)}</code>
                   </div>
                 ))}
               </div>
@@ -373,13 +452,7 @@ function ArtifactExplorer(): ReactNode {
           onClick={toggleTour}
           aria-label={reducedMotion ? "Next file" : playing ? "Pause file tour" : "Play file tour"}
         >
-          {reducedMotion
-            ? "NEXT FILE"
-            : playing
-              ? "PAUSE TOUR"
-              : activeIndex === artifacts.length - 1
-                ? "REPLAY TOUR"
-                : "PLAY TOUR"}
+          {reducedMotion ? "NEXT FILE" : playing ? "PAUSE TOUR" : "PLAY TOUR"}
           <span aria-hidden="true">{reducedMotion ? "→" : playing ? "Ⅱ" : "▷"}</span>
         </button>
       </div>
@@ -403,10 +476,10 @@ function Hero(): ReactNode {
         <h1>
           Let agents write code.
           <br />
-          <em>Keep the record.</em>
+          Keep authority and proof in Git.
         </h1>
         <p className={styles.lede}>
-          {hero.subtitle} Define authority, observe the work, and keep the proof next to your code.
+          Agentplane puts coding agents on an approved, verifiable repository workflow.
         </p>
         <div className={styles.ctaGroup}>
           <Link
@@ -414,13 +487,59 @@ function Hero(): ReactNode {
             to={quickstartUrl}
             onClick={() => trackHomeEvent("quickstart_click", { location: "hero_primary" })}
           >
-            Start in your repository <IconArrow aria-hidden="true" />
+            Start in your repository <span aria-hidden="true">→</span>
           </Link>
           <CopyInstallButton location="hero" />
         </div>
-        <p className={styles.trust}>{hero.trustLine}</p>
+        <p className={styles.trust}>
+          Agent-agnostic &nbsp; · &nbsp; Local-first &nbsp; · &nbsp; No account required &nbsp; ·
+          &nbsp; MIT licensed
+        </p>
       </div>
       <ArtifactExplorer />
+    </section>
+  );
+}
+
+function ProofOverview(): ReactNode {
+  return (
+    <section className={`${styles.proofOverview} ${styles.reveal}`}>
+      <div className={styles.proofOverviewInner}>
+        <p className={styles.kicker}>Built for real development</p>
+        <h2>Proof lives with the code.</h2>
+        <p className={styles.proofOverviewLede}>
+          Every change from an agent runs in a controlled workflow,
+          <br />
+          with tests, checks, and a permanent record in Git.
+        </p>
+        <div className={styles.proofOverviewGrid}>
+          <div>
+            <span className={`${styles.stageIcon} ${styles.stageIconAuthority}`}>
+              <IconEdit aria-hidden="true" />
+            </span>
+            <h3>Clear authority</h3>
+            <p>Define what agents can do in AGENTS.md with explicit scope and constraints.</p>
+          </div>
+          <div>
+            <span className={`${styles.stageIcon} ${styles.stageIconVerified}`}>
+              <IconSuccess aria-hidden="true" />
+            </span>
+            <h3>Verifiable work</h3>
+            <p>
+              Agents run locally, changes pass your checks, and nothing lands without verification.
+            </p>
+          </div>
+          <div>
+            <span className={`${styles.stageIcon} ${styles.stageIconRecorded}`}>
+              <IconCopy aria-hidden="true" />
+            </span>
+            <h3>A durable record</h3>
+            <p>
+              Task state, ACR, and evidence are committed to your repository alongside the code.
+            </p>
+          </div>
+        </div>
+      </div>
     </section>
   );
 }
@@ -705,6 +824,7 @@ export default function Home(): ReactNode {
       <HomeJsonLd />
       <main className={styles.page}>
         <Hero />
+        <ProofOverview />
         <AuthorityGap />
         <ControlLoop />
         <DurableProof />
