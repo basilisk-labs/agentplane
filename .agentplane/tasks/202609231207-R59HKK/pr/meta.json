@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202609231207-R59HKK/make-canonical-supervisor-transitions-recoverabl",
   "created_at": "2026-09-23T12:42:13.939Z",
-  "diffstat_sha256": "sha256:e7998002b591eb3a4931bacb761b2c92dde20b29fca30e4be3e7f49edb7990e2",
+  "diffstat_sha256": "sha256:860a7c424add0f0287c6046b8784d477ce998a6c40291fe250a3fac500b88bec",
   "last_verified_at": "2026-09-23T13:02:14.896Z",
   "last_verified_diffstat_sha256": "sha256:06b991904decfaaf6ff8165fcc28e408d2c004fa9e58c15545a0916417ebad25",
   "pr_number": 6013,
