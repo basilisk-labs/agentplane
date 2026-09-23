@@ -694,7 +694,7 @@ function AuthorityGap(): ReactNode {
   const { authorityGap } = homepageContent;
 
   return (
-    <section className={`${styles.section} ${styles.reveal}`}>
+    <section className={`${styles.section} ${styles.authoritySection} ${styles.reveal}`}>
       <div className={styles.splitSection}>
         <div className={styles.sectionIntro}>
           <p className={styles.kicker}>{authorityGap.eyebrow}</p>
@@ -703,27 +703,31 @@ function AuthorityGap(): ReactNode {
         </div>
         <div className={styles.diffPanel} aria-label="Git diff without authority evidence">
           <header>
-            <code>git diff -- src/parser/token.ts</code>
+            <span className={styles.diffFile}>
+              <RepoGlyph /> <code>src/parser/lexer.ts</code>
+            </span>
+            <span className={styles.diffStats} aria-label="Two additions and one deletion">
+              <span>+2</span> <span>−1</span>
+            </span>
           </header>
           <pre>
             <code>
-              <span className={styles.diffMeta}>@@ -142,7 +142,7 @@ parse_token(...)</span>
-              {"\n"}
-              <span className={styles.diffRemove}>
-                - if (c == EOF &amp;&amp; !in_string) &#123;
-              </span>
-              {"\n"}
-              <span className={styles.diffAdd}>
-                + if (c == EOF &amp;&amp; !in_string &amp;&amp; !escaped) &#123;
-              </span>
-              {"\n"}
-              {"    return ERROR_UNTERMINATED;\n  }"}
+              <span className={styles.diffMeta}>42 function tokenize(input: string) &#123;</span>
+              <span>43 const tokens = [];</span>
+              <span>44 let i = 0;</span>
+              <span className={styles.diffRemove}>45 - if (ch === "-") &#123;</span>
+              <span className={styles.diffAdd}>46 + if (ch === "-") &#123;</span>
+              <span className={styles.diffAdd}>47 + tokens.push(ch);</span>
+              <span>48 return tokens;</span>
             </code>
           </pre>
           <footer>
             <strong>Missing proof</strong>
             <p>No record of scope, allowed effects, approver, or independent verification.</p>
           </footer>
+        </div>
+        <div className={styles.authorityAnnotation} aria-hidden="true">
+          <DoodleArrow /> <span>A diff shows the what. Agentplane captures the why.</span>
         </div>
       </div>
     </section>
@@ -738,10 +742,14 @@ const toneClasses = {
 } as const;
 
 function StepIcon({ icon }: { icon: string }): ReactNode {
-  if (icon === "authorize") return <IconEdit />;
-  if (icon === "verify") return <IconSuccess />;
-  if (icon === "record") return <IconCopy />;
-  return <IconArrow />;
+  if (icon === "authorize") return <StageGlyph stage="Authority" />;
+  if (icon === "verify") return <StageGlyph stage="Verified" />;
+  if (icon === "record") return <StageGlyph stage="Recorded" />;
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+      <path d="m8 4 12 8-12 8z" strokeLinejoin="round" />
+    </svg>
+  );
 }
 
 function ControlLoop(): ReactNode {
@@ -789,8 +797,13 @@ function ControlLoop(): ReactNode {
       </div>
 
       <div className={`${styles.loopEvidence} ${toneClasses[activeStep.tone]}`} aria-live="polite">
-        <span>{activeStep.title}</span>
-        <strong>{activeStep.evidence}</strong>
+        <span className={styles.loopEvidenceIcon} aria-hidden="true">
+          <StepIcon icon={activeStep.icon} />
+        </span>
+        <span className={styles.loopEvidenceCopy}>
+          <strong>{activeStep.evidence}</strong>
+          <small>{activeStep.text}</small>
+        </span>
         <code>{activeStep.artifact}</code>
       </div>
     </section>
@@ -811,6 +824,9 @@ function DurableProof(): ReactNode {
       <div className={styles.proofLedger}>
         <header>
           <div>
+            <span className={styles.ledgerRepo}>
+              <RepoGlyph /> acme / web-app
+            </span>
             <code>{durableProof.commit}</code>
             <strong>{durableProof.summary}</strong>
           </div>
@@ -822,7 +838,8 @@ function DurableProof(): ReactNode {
           <ul className={styles.fileList} aria-label="Repository evidence files">
             {durableProof.files.map((file) => (
               <li key={file}>
-                <code>{file}</code>
+                <RepoGlyph />
+                <code title={file}>{file.replace(".agentplane/tasks/parser-edge/", "")}</code>
               </li>
             ))}
           </ul>
@@ -875,6 +892,9 @@ function WorkflowModes(): ReactNode {
       </div>
       <div className={styles.modeGrid}>
         <div className={styles.modeCard}>
+          <span className={styles.modeGlyph} aria-hidden="true">
+            <IconEdit />
+          </span>
           <span className={styles.modeIndex}>01 / LOCAL LOOP</span>
           <h3>
             <code>direct</code>
@@ -883,8 +903,16 @@ function WorkflowModes(): ReactNode {
             Work in the current checkout for quick, focused changes. Review the task record and
             required checks before closing.
           </p>
+          <ul>
+            <li>Fast iteration in your environment</li>
+            <li>Full control and visibility</li>
+            <li>The same verification record</li>
+          </ul>
         </div>
         <div className={styles.modeCard}>
+          <span className={styles.modeGlyph} aria-hidden="true">
+            <IconArrow />
+          </span>
           <span className={styles.modeIndex}>02 / REVIEW ROUTE</span>
           <h3>
             <code>branch_pr</code>
@@ -893,10 +921,15 @@ function WorkflowModes(): ReactNode {
             Use an isolated worktree and a PR for changes that need a formal review and integration
             path.
           </p>
+          <ul>
+            <li>Isolated changes in a branch</li>
+            <li>Review and discuss like normal</li>
+            <li>Evidence included with the PR</li>
+          </ul>
         </div>
       </div>
       <Link className={styles.textLink} to={siteRoutes.overview}>
-        Explore the workflow <IconArrow aria-hidden="true" />
+        Explore the workflow <span aria-hidden="true">→</span>
       </Link>
     </section>
   );
@@ -922,7 +955,7 @@ function DocsRail(): ReactNode {
           <Link className={styles.docsCard} to={group.href} key={group.label}>
             <span>{group.label}</span>
             <strong>{group.title}</strong>
-            <IconArrow aria-hidden="true" />
+            <span aria-hidden="true">→</span>
           </Link>
         ))}
       </div>
@@ -941,7 +974,7 @@ function FinalCta(): ReactNode {
       </div>
       <div className={styles.ctaGroup}>
         <Link className={styles.buttonPrimary} to={quickstartUrl}>
-          Run quickstart
+          Run quickstart <span aria-hidden="true">→</span>
         </Link>
         <CopyInstallButton location="closing" />
         <Link className={styles.textLink} to={acrUrl}>
