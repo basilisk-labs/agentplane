@@ -12,8 +12,8 @@ Created: 2026-09-23T12:42:13.939Z
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,7 +29,7 @@ Created: 2026-09-23T12:42:13.939Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- bun.lock                                           |   6 +-
+ bun.lock                                           |  12 +-
  .../commands/evaluator/evaluator-diff-evidence.ts  |   3 +-
  .../commands/evaluator/evaluator-review-usecase.ts |  13 +-
  .../evaluator-verification-contract.test.ts        | 171 +++++++++++++++++++++
@@ -57,7 +57,7 @@ Created: 2026-09-23T12:42:13.939Z
  .../direct-task-supervisor-formal-operation.ts     |  12 ++
  .../task/kernel-provider-effect-coordinator.ts     |  74 ++++++++-
  .../commands/task/roadmap-terminal-noop.test.ts    |  65 ++++++++
- 28 files changed, 690 insertions(+), 36 deletions(-)
+ 28 files changed, 693 insertions(+), 39 deletions(-)
 ```
 
 </details>
