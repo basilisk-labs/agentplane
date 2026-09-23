@@ -59,6 +59,8 @@ Implement the verified AgentPlane lifecycle fixes as one clean semantic code tas
  .../direct-task-supervisor-formal-operation.ts     |  26 +++
  .../src/commands/task/doc-set.command.ts           |  15 +-
  .../agentplane/src/commands/task/doc.unit.test.ts  |  11 ++
+ .../task/external-agent-plan-refinement.test.ts    |  57 +++++++
+ .../task/external-agent-plan-refinement.ts         | 128 ++++++++++++++-
  .../task/external-agent-supervisor.test.ts         | 180 +++++++++++++++++++++
  .../src/commands/task/finish-execute-close.ts      |  41 +++++
  .../agentplane/src/commands/task/finish-execute.ts |  61 +++++--
@@ -86,7 +88,7 @@ Implement the verified AgentPlane lifecycle fixes as one clean semantic code tas
  packages/core/src/tasks/plan-execution-grant.ts    |  52 +++---
  .../core/src/tasks/task-kernel/invariants.test.ts  |  69 ++++++++
  packages/core/src/tasks/task-kernel/invariants.ts  |  11 ++
- 59 files changed, 2353 insertions(+), 298 deletions(-)
+ 61 files changed, 2535 insertions(+), 301 deletions(-)
 ```
 
 </details>
