@@ -1,0 +1,6 @@
+ .../src/commands/shared/branch-identity.ts         | 13 +++++
+ .../src/commands/shared/branch-pr-context.test.ts  | 18 ++++++
+ .../src/commands/shared/branch-pr-context.ts       |  3 +-
+ .../shared/route-decision-workspace.test.ts        | 67 ++++++++++++++++++++++
+ .../commands/shared/route-decision-workspace.ts    | 14 ++++-
+ 5 files changed, 111 insertions(+), 4 deletions(-)
