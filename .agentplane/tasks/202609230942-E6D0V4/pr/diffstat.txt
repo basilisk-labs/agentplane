@@ -3,6 +3,10 @@
  docs/user/configuration.mdx                        |  10 +-
  docs/user/task-lifecycle.mdx                       |  30 ++--
  .../task-backend/kernel-authority-schema.ts        |   2 +-
+ .../src/backends/task-backend/shared/record.ts     |   4 +
+ .../run-cli.core.direct-task-supervision.test.ts   |  16 +-
+ ...-cli.core.roadmap-managed-owner-cutover.test.ts |  19 ++-
+ .../src/cli/run-cli.critical.task-centric.test.ts  |  22 +++
  .../src/commands/task/advance-task-step.ts         |  17 +++
  .../agentplane/src/commands/task/create.command.ts | 153 ++++++++++++++++++-
  .../commands/task/kernel-plan-authority.test.ts    | 170 +++++++++++++++++++++
@@ -13,10 +17,16 @@
  packages/agentplane/src/commands/task/new.ts       |  34 +++--
  .../src/runner/usecases/kernel-authority.test.ts   | 108 +++++++------
  .../src/runner/usecases/kernel-authority.ts        |  49 +++++-
+ .../schemas/task-readme-frontmatter.schema.json    |  14 ++
+ packages/core/schemas/tasks-export.schema.json     |  14 ++
  .../core/src/tasks/task-artifact-schema.task.ts    |   8 +
  .../src/tasks/task-kernel/authority-lineage.ts     |  20 ++-
  packages/core/src/tasks/task-kernel/kernel.ts      |  11 +-
  packages/core/src/tasks/task-kernel/model.ts       |   3 +-
  .../task-kernel/repository-policy-approval.test.ts |  63 ++++++++
  packages/core/src/tasks/task-store.ts              |   4 +
- 21 files changed, 738 insertions(+), 107 deletions(-)
+ .../schemas/task-readme-frontmatter.schema.json    |  14 ++
+ packages/spec/schemas/tasks-export.schema.json     |  14 ++
+ schemas/task-readme-frontmatter.schema.json        |  14 ++
+ schemas/tasks-export.schema.json                   |  14 ++
+ 31 files changed, 877 insertions(+), 113 deletions(-)
