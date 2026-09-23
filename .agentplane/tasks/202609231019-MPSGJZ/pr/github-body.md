@@ -29,7 +29,7 @@ Implement the verified AgentPlane lifecycle fixes as one clean semantic code tas
 ```text
  bun.lock                                           |   6 +-
  .../evaluator/evaluator-execute-supervisor.ts      |  38 +++--
- .../evaluator/evaluator-execute.command.test.ts    |  22 +++
+ .../evaluator-human-review-replacement.test.ts     |  70 ++++++++
  .../evaluator-human-review-replacement.ts          |  44 +++++
  .../evaluator/evaluator-review-apply.test.ts       |  37 ++++-
  .../commands/evaluator/evaluator-review-apply.ts   |  71 +++++---
@@ -39,7 +39,8 @@ Implement the verified AgentPlane lifecycle fixes as one clean semantic code tas
  .../src/commands/shared/merged-branch-cleanup.ts   |   8 +-
  .../shared/roadmap-rework-conservation.test.ts     |   2 +-
  .../shared/supervisor-execution-budget-renewal.ts  |  17 ++
- .../shared/supervisor-execution-episode.test.ts    |  27 ++++
+ .../shared/supervisor-execution-episode.test.ts    | 107 ++++--------
+ .../shared/supervisor-execution-episode.testkit.ts |  80 +++++++++
  .../shared/supervisor-execution-episode.ts         |  44 +++--
  .../supervisor-execution-worktree-recovery.test.ts |  66 ++++++++
  .../supervisor-execution-worktree-recovery.ts      |  52 ++++++
@@ -68,21 +69,21 @@ Implement the verified AgentPlane lifecycle fixes as one clean semantic code tas
  .../commands/task/roadmap-advance-one-step.test.ts |   9 +-
  .../commands/task/roadmap-terminal-noop.test.ts    |  58 ++++++-
  .../src/commands/task/verify-record-execute.ts     |  20 ++-
+ .../task/verify-record-kernel-state.test.ts        |  20 +++
  .../commands/task/verify-record-kernel-state.ts    |  21 +++
- .../src/commands/task/verify-record.unit.test.ts   |  17 ++
  .../runner/adapters/codex-output-schema-compat.ts  |  95 +++++++++++
  .../src/runner/adapters/codex-result-transport.ts  |  41 +++--
  .../runner/adapters/roadmap-output-parity.test.ts  |   1 +
  .../src/runner/usecases/task-run-authority.ts      |  11 +-
- .../runner/supervisor-execution-episode.test.ts    |  50 ++++++
  .../src/runner/supervisor-execution-episode.ts     |  37 +++++
+ .../supervisor-execution-human-review.test.ts      |  72 +++++++++
  packages/core/src/schemas/index.ts                 |   1 +
  packages/core/src/tasks/index.ts                   |   1 +
  .../core/src/tasks/plan-execution-grant.test.ts    |  20 ++-
  packages/core/src/tasks/plan-execution-grant.ts    |  52 +++---
  .../core/src/tasks/task-kernel/invariants.test.ts  |  69 ++++++++
  packages/core/src/tasks/task-kernel/invariants.ts  |  11 ++
- 55 files changed, 1997 insertions(+), 222 deletions(-)
+ 56 files changed, 2155 insertions(+), 297 deletions(-)
 ```
 
 </details>

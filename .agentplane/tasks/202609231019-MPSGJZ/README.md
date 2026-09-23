@@ -4,7 +4,7 @@ title: "Fix canonical completed-task branch lifecycle recovery without internal 
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -23,10 +23,10 @@ plan_approval:
   note: "Projected from the approved canonical Task Kernel plan."
 verification:
   state: "needs_rework"
-  updated_at: "2026-09-23T19:37:02.872Z"
+  updated_at: "2026-09-23T19:52:59.162Z"
   updated_by: "SUPERVISOR"
   note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 2
+  attempts: 3
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -102,6 +102,7 @@ execution_contract:
       - "bun.lock"
       - "packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts"
       - "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-human-review-replacement.test.ts"
       - "packages/agentplane/src/commands/evaluator/evaluator-human-review-replacement.ts"
       - "packages/agentplane/src/commands/evaluator/evaluator-review-apply.test.ts"
       - "packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts"
@@ -112,6 +113,7 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts"
       - "packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.ts"
       - "packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
+      - "packages/agentplane/src/commands/shared/supervisor-execution-episode.testkit.ts"
       - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
       - "packages/agentplane/src/commands/shared/supervisor-execution-worktree-recovery.test.ts"
       - "packages/agentplane/src/commands/shared/supervisor-execution-worktree-recovery.ts"
@@ -140,6 +142,7 @@ execution_contract:
       - "packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts"
       - "packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts"
       - "packages/agentplane/src/commands/task/verify-record-execute.ts"
+      - "packages/agentplane/src/commands/task/verify-record-kernel-state.test.ts"
       - "packages/agentplane/src/commands/task/verify-record-kernel-state.ts"
       - "packages/agentplane/src/commands/task/verify-record.unit.test.ts"
       - "packages/agentplane/src/runner/adapters/codex-output-schema-compat.ts"
@@ -148,6 +151,7 @@ execution_contract:
       - "packages/agentplane/src/runner/usecases/task-run-authority.ts"
       - "packages/core/src/runner/supervisor-execution-episode.test.ts"
       - "packages/core/src/runner/supervisor-execution-episode.ts"
+      - "packages/core/src/runner/supervisor-execution-human-review.test.ts"
       - "packages/core/src/schemas/index.ts"
       - "packages/core/src/tasks/index.ts"
       - "packages/core/src/tasks/plan-execution-grant.test.ts"
@@ -202,7 +206,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:fc2fcc1d851516931b400c0e370712a86998e6a4a2192257dafeadc507a298a3"
+      digest: "sha256:30b8f4d5366ef1695c63add290b0cbdc2a692d38e876fbdb5a986c73ce6acaca"
       escalation_reasons:
         - "central_path:bun.lock"
         - "central_path:packages/agentplane/src/commands/shared/branch-identity.ts"
@@ -215,12 +219,14 @@ execution_contract:
         - "central_path:packages/agentplane/src/commands/shared/route-decision-workspace.ts"
         - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.ts"
         - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-episode.testkit.ts"
         - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
         - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-worktree-recovery.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-worktree-recovery.ts"
         - "central_path:packages/agentplane/src/commands/shared/text-payload.ts"
         - "central_path:packages/core/src/runner/supervisor-execution-episode.test.ts"
         - "central_path:packages/core/src/runner/supervisor-execution-episode.ts"
+        - "central_path:packages/core/src/runner/supervisor-execution-human-review.test.ts"
         - "central_path:packages/core/src/schemas/index.ts"
         - "central_path:packages/core/src/tasks/index.ts"
         - "central_path:packages/core/src/tasks/plan-execution-grant.test.ts"
@@ -438,6 +444,7 @@ execution_contract:
           - "bun.lock"
           - "packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts"
           - "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-human-review-replacement.test.ts"
           - "packages/agentplane/src/commands/evaluator/evaluator-human-review-replacement.ts"
           - "packages/agentplane/src/commands/evaluator/evaluator-review-apply.test.ts"
           - "packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts"
@@ -454,6 +461,7 @@ execution_contract:
           - "packages/agentplane/src/commands/shared/route-decision-workspace.ts"
           - "packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.ts"
           - "packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
+          - "packages/agentplane/src/commands/shared/supervisor-execution-episode.testkit.ts"
           - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
           - "packages/agentplane/src/commands/shared/supervisor-execution-worktree-recovery.test.ts"
           - "packages/agentplane/src/commands/shared/supervisor-execution-worktree-recovery.ts"
@@ -482,6 +490,7 @@ execution_contract:
           - "packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts"
           - "packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts"
           - "packages/agentplane/src/commands/task/verify-record-execute.ts"
+          - "packages/agentplane/src/commands/task/verify-record-kernel-state.test.ts"
           - "packages/agentplane/src/commands/task/verify-record-kernel-state.ts"
           - "packages/agentplane/src/commands/task/verify-record.unit.test.ts"
           - "packages/agentplane/src/runner/adapters/codex-output-schema-compat.ts"
@@ -490,6 +499,7 @@ execution_contract:
           - "packages/agentplane/src/runner/usecases/task-run-authority.ts"
           - "packages/core/src/runner/supervisor-execution-episode.test.ts"
           - "packages/core/src/runner/supervisor-execution-episode.ts"
+          - "packages/core/src/runner/supervisor-execution-human-review.test.ts"
           - "packages/core/src/schemas/index.ts"
           - "packages/core/src/tasks/index.ts"
           - "packages/core/src/tasks/plan-execution-grant.test.ts"
@@ -566,8 +576,14 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "verify"
+    at: "2026-09-23T19:52:59.162Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-23T19:37:07.003Z"
+doc_updated_at: "2026-09-23T19:53:03.285Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the verified AgentPlane lifecycle fixes as one clean semantic code task. Keep implementation, tests, and local verification in the work item. Leave PR publication, hosted checks, merge, and cleanup to branch_pr lifecycle. Include completed canonical implementation-rework routing, safe supervisor journal replacement and stale-state recovery, exact DONE rework runner authority, completed verification and quality-review routing, base-checkout provider operations, and Codex-compatible strict output schemas. Do not include task artifacts from other tasks."
 sections:
@@ -726,6 +742,40 @@ sections:
     - capability_digest: sha256:44668150af015035b4f9295eeb1e83a605e3c89b183ce28b4421a381c9bdb75f
     - checks_digest: sha256:9674ba83e08fb47ffd8bcfbdbda7075510e493ca1f3850e827109c2a14425341
     - identity_digest: sha256:e43db6b98f324e4e848c0da5498855946e35d15f0c9d19f7e31c386f7565d125
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-23T19:52:59.162Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 3
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:5f3d95b05b031f07880a41a3eca628614d6b7cf0567af923f9cf8881f7c6b8ca, input_digest=sha256:d94ff5f3be03c7ca190feb24db66345304cc47877bc0e35914ba753f61f20426
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609231019-MPSGJZ declared verification
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:b8810dd303286d6fdd7c8b7e964e33cdb45ef13091247e90d5d458d559e9f9a0
+    - policy_digest: sha256:9c3e5325d78af3d590b3ecf1641b0da288f0a1e3fec30c28b808c2c2f01aa68e
+    - capability_digest: sha256:44668150af015035b4f9295eeb1e83a605e3c89b183ce28b4421a381c9bdb75f
+    - checks_digest: sha256:53f51eaabd8acf31ad72a76aaf64e203b0df53eaeafeb5663579bf0879b9a3b5
+    - identity_digest: sha256:738f9f256586cccc0c051880338b9650d7b6f0812677a1c73172be621baf9171
 
     DecisionContextRef:
     - operator_action: stop
@@ -1465,6 +1515,40 @@ NativeTaskIdentityRef:
 - capability_digest: sha256:44668150af015035b4f9295eeb1e83a605e3c89b183ce28b4421a381c9bdb75f
 - checks_digest: sha256:9674ba83e08fb47ffd8bcfbdbda7075510e493ca1f3850e827109c2a14425341
 - identity_digest: sha256:e43db6b98f324e4e848c0da5498855946e35d15f0c9d19f7e31c386f7565d125
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-23T19:52:59.162Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 3
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:5f3d95b05b031f07880a41a3eca628614d6b7cf0567af923f9cf8881f7c6b8ca, input_digest=sha256:d94ff5f3be03c7ca190feb24db66345304cc47877bc0e35914ba753f61f20426
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609231019-MPSGJZ declared verification
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:b8810dd303286d6fdd7c8b7e964e33cdb45ef13091247e90d5d458d559e9f9a0
+- policy_digest: sha256:9c3e5325d78af3d590b3ecf1641b0da288f0a1e3fec30c28b808c2c2f01aa68e
+- capability_digest: sha256:44668150af015035b4f9295eeb1e83a605e3c89b183ce28b4421a381c9bdb75f
+- checks_digest: sha256:53f51eaabd8acf31ad72a76aaf64e203b0df53eaeafeb5663579bf0879b9a3b5
+- identity_digest: sha256:738f9f256586cccc0c051880338b9650d7b6f0812677a1c73172be621baf9171
 
 DecisionContextRef:
 - operator_action: stop
