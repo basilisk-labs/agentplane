@@ -6,14 +6,14 @@ Created: 2026-09-23T12:42:13.939Z
 
 - Task: `202609231207-R59HKK`
 - Title: Make canonical supervisor transitions recoverable across branch lifecycle boundaries
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609231207-R59HKK/make-canonical-supervisor-transitions-recoverabl`
 - Canonical task record: `.agentplane/tasks/202609231207-R59HKK/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

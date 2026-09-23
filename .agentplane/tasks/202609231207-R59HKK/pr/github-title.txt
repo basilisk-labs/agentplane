@@ -1,1 +1,1 @@
-🚧 R59HKK task: Make canonical supervisor transitions recoverable across branch lifecycle boundaries [202609231207-R59HKK]
+✅ R59HKK task: Make canonical supervisor transitions recoverable across branch lifecycle boundaries [202609231207-R59HKK]
