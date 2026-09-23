@@ -4,6 +4,7 @@ import {
   prepareReplacementSupervisorExecutionEpisodeAfterFailure,
   refreshPendingReplacementSupervisorExecutionEpisode,
   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
+  reopenSupervisorExecutionEpisodeAfterHumanReviewStateChange,
   startSupervisorExecutionEpisode,
   type SupervisorExecutionEpisodeJournal,
 } from "@agentplaneorg/core/schemas";
@@ -20,6 +21,7 @@ export async function recordDirectTaskFormalOperation(opts: {
   git_root: string;
   task_id: string;
   id: "task_verify" | "task_finish";
+  replace_failed_operation?: boolean;
   run: () => Promise<Record<string, unknown>> | Record<string, unknown>;
   decision: () => Promise<TaskRouteDecision>;
 }): Promise<{
@@ -67,6 +69,30 @@ export async function recordDirectTaskFormalOperation(opts: {
       });
       journal = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
         journal: failed,
+        state_fingerprint_digest: before.workflowStep.preconditionFingerprint.digest,
+      });
+      await opened.store.write(journal);
+    }
+    const failedOperation = journal.operations.at(-1);
+    if (
+      journal.status === "stopped" &&
+      (journal.stop?.reason === "operation_failed" || journal.stop?.reason === "stale_state") &&
+      failedOperation?.status === "failed" &&
+      (opts.replace_failed_operation === true || failedOperation.effect_ref !== opts.id)
+    ) {
+      journal = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
+        journal,
+        state_fingerprint_digest: before.workflowStep.preconditionFingerprint.digest,
+      });
+      await opened.store.write(journal);
+    }
+    if (
+      journal.status === "stopped" &&
+      journal.stop?.reason === "human_review" &&
+      journal.state_fingerprint_digest !== before.workflowStep.preconditionFingerprint.digest
+    ) {
+      journal = reopenSupervisorExecutionEpisodeAfterHumanReviewStateChange({
+        journal,
         state_fingerprint_digest: before.workflowStep.preconditionFingerprint.digest,
       });
       await opened.store.write(journal);

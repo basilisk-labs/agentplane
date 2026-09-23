@@ -4,6 +4,7 @@ import {
   createSupervisorExecutionEpisodeJournal,
   prepareReplacementSupervisorExecutionEpisodeAfterFailure,
   recoverSupervisorExecutionEpisodeJournal,
+  stopSupervisorExecutionEpisode,
   startSupervisorExecutionEpisode,
 } from "@agentplaneorg/core/schemas";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -122,6 +123,64 @@ describe("direct task supervisor formal operation", () => {
       cursor: { phase: "ready", operation_key: null },
     });
     expect(result.journal.operations).toHaveLength(2);
+    expect(result.journal.operations.at(-1)).toMatchObject({
+      kind: "cli_operation",
+      status: "completed",
+    });
+  });
+
+  it("continues formal verification after reviewed state changes", async () => {
+    const ready = createSupervisorExecutionEpisodeJournal({
+      task_id: TASK_ID,
+      task_revision: null,
+      state_fingerprint_digest: FIRST_FINGERPRINT,
+      budget: {
+        max_episodes: 50,
+        max_agent_runs: 50,
+        max_input_tokens: 3_000_000,
+        max_output_tokens: 1_000_000,
+        max_total_tokens: 4_000_000,
+        max_wall_time_ms: 14_400_000,
+        max_changed_files: 2000,
+        max_diff_lines: null,
+        max_no_progress_episodes: 3,
+      },
+    });
+    const review = startSupervisorExecutionEpisode({
+      journal: ready,
+      role: "EVALUATOR",
+      kind: "evaluator_episode",
+      operation_identity: { id: "quality_review" },
+      precondition_fingerprint_digest: FIRST_FINGERPRINT,
+    });
+    if (review.status !== "started") throw new Error("expected review fixture");
+    const completed = completeSupervisorExecutionEpisode({
+      journal: review.journal,
+      operation_key: review.operation_key,
+      result: { verdict: "human_review" },
+    });
+    const stopped = stopSupervisorExecutionEpisode({
+      journal: completed,
+      reason: "human_review",
+    });
+    const write = vi.fn().mockResolvedValue(undefined);
+    mocks.open.mockResolvedValue({
+      journal: stopped,
+      journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
+      store: { write },
+    });
+    const run = vi.fn().mockResolvedValue({ verification: "ok" });
+
+    const result = await recordDirectTaskFormalOperation({
+      git_root: "/repo",
+      task_id: TASK_ID,
+      id: "task_verify",
+      decision: vi.fn().mockResolvedValue(decision(NEXT_FINGERPRINT)),
+      run,
+    });
+
+    expect(run).toHaveBeenCalledOnce();
+    expect(result.journal).toMatchObject({ status: "running", stop: null });
     expect(result.journal.operations.at(-1)).toMatchObject({
       kind: "cli_operation",
       status: "completed",
@@ -356,6 +415,119 @@ describe("direct task supervisor formal operation", () => {
     });
     expect(result.journal.operations[1]).toMatchObject({
       status: "completed",
+      replacement_of_operation_key: started.operation_key,
+    });
+  });
+
+  it("prepares an explicitly authorized replacement for the same formal operation", async () => {
+    const initial = createSupervisorExecutionEpisodeJournal({
+      task_id: TASK_ID,
+      task_revision: null,
+      state_fingerprint_digest: FIRST_FINGERPRINT,
+      budget: {
+        max_episodes: 50,
+        max_agent_runs: 50,
+        max_input_tokens: 3_000_000,
+        max_output_tokens: 1_000_000,
+        max_total_tokens: 4_000_000,
+        max_wall_time_ms: 14_400_000,
+        max_changed_files: 2000,
+        max_diff_lines: null,
+        max_no_progress_episodes: 3,
+      },
+    });
+    const started = startSupervisorExecutionEpisode({
+      journal: initial,
+      role: "EXECUTOR",
+      kind: "cli_operation",
+      operation_identity: { direct_task_operation: "task_verify" },
+      precondition_fingerprint_digest: FIRST_FINGERPRINT,
+      effect_ref: "task_verify",
+    });
+    if (started.status !== "started") throw new Error("expected failed operation fixture");
+    const failed = completeSupervisorExecutionEpisode({
+      journal: started.journal,
+      operation_key: started.operation_key,
+      result: { error: "declared_checks_failed" },
+      failed: true,
+    });
+    const write = vi.fn().mockResolvedValue(undefined);
+    mocks.open.mockResolvedValue({
+      journal: failed,
+      journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
+      store: { write },
+    });
+    const run = vi.fn().mockResolvedValue({ verification: "ok" });
+
+    const result = await recordDirectTaskFormalOperation({
+      git_root: "/repo",
+      task_id: TASK_ID,
+      id: "task_verify",
+      replace_failed_operation: true,
+      decision: vi.fn().mockResolvedValue(decision(NEXT_FINGERPRINT)),
+      run,
+    });
+
+    expect(run).toHaveBeenCalledOnce();
+    expect(result.journal.operations.at(-1)).toMatchObject({
+      status: "completed",
+      replacement_of_operation_key: started.operation_key,
+    });
+  });
+
+  it("starts verification after a different lifecycle operation failed", async () => {
+    const initial = createSupervisorExecutionEpisodeJournal({
+      task_id: TASK_ID,
+      task_revision: null,
+      state_fingerprint_digest: FIRST_FINGERPRINT,
+      budget: {
+        max_episodes: 50,
+        max_agent_runs: 50,
+        max_input_tokens: 3_000_000,
+        max_output_tokens: 1_000_000,
+        max_total_tokens: 4_000_000,
+        max_wall_time_ms: 14_400_000,
+        max_changed_files: 2000,
+        max_diff_lines: null,
+        max_no_progress_episodes: 3,
+      },
+    });
+    const started = startSupervisorExecutionEpisode({
+      journal: initial,
+      role: "EXECUTOR",
+      kind: "cli_operation",
+      operation_identity: { id: "provider.pr.update_branch" },
+      precondition_fingerprint_digest: FIRST_FINGERPRINT,
+      effect_ref: "provider.pr.update_branch:request",
+    });
+    if (started.status !== "started") throw new Error("expected failed operation fixture");
+    const failed = completeSupervisorExecutionEpisode({
+      journal: started.journal,
+      operation_key: started.operation_key,
+      result: { error: "known_provider_postcondition_failure" },
+      failed: true,
+    });
+    const write = vi.fn().mockResolvedValue(undefined);
+    mocks.open.mockResolvedValue({
+      journal: failed,
+      journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
+      store: { write },
+    });
+    const run = vi.fn().mockResolvedValue({ verification: "ok" });
+
+    const result = await recordDirectTaskFormalOperation({
+      git_root: "/repo",
+      task_id: TASK_ID,
+      id: "task_verify",
+      decision: vi.fn().mockResolvedValue(decision(NEXT_FINGERPRINT)),
+      run,
+    });
+
+    expect(run).toHaveBeenCalledOnce();
+    expect(result.journal.operations).toHaveLength(2);
+    expect(result.journal.operations[1]).toMatchObject({
+      status: "completed",
+      effect_ref: "task_verify",
       replacement_of_operation_key: started.operation_key,
     });
   });

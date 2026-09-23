@@ -741,6 +741,23 @@ describe("task verify record (unit)", () => {
     writeSpy.mockRestore();
   });
 
+  it("preserves a completed Kernel state while recording replacement verification", async () => {
+    const { shouldPreserveCompletedKernelStateDuringVerification } =
+      await import("./verify-record-execute.js");
+    expect(
+      shouldPreserveCompletedKernelStateDuringVerification({
+        task: { status: "DONE", extensions: { task_kernel: { kind: "canonical_task" } } },
+        allowCanonicalProjection: true,
+      }),
+    ).toBe(true);
+    expect(
+      shouldPreserveCompletedKernelStateDuringVerification({
+        task: { status: "DOING", extensions: { task_kernel: { kind: "canonical_task" } } },
+        allowCanonicalProjection: true,
+      }),
+    ).toBe(false);
+  });
+
   it("cmdTaskVerifyRework prints a status summary when quiet=false", async () => {
     const writes: string[] = [];
     const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation((chunk) => {

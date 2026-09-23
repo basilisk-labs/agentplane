@@ -1534,6 +1534,43 @@ export function reopenCompletedSupervisorExecutionEpisodeAfterStaleState(opts: {
 }
 
 /**
+ * Continue after a human-review stop only when repository truth has changed since the reviewed
+ * operation completed. The completed review remains in history and no provider effect is retried.
+ */
+export function reopenSupervisorExecutionEpisodeAfterHumanReviewStateChange(opts: {
+  journal: SupervisorExecutionEpisodeJournal;
+  state_fingerprint_digest: string;
+  replacement_effect_ref?: string;
+  now?: string;
+}): SupervisorExecutionEpisodeJournal {
+  const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
+  const now = opts.now ?? new Date().toISOString();
+  const last = journal.operations.at(-1);
+  if (
+    journal.status !== "stopped" ||
+    journal.stop?.reason !== "human_review" ||
+    journal.cursor.phase !== "stopped" ||
+    journal.stop.operation_key !== last?.operation_key ||
+    last?.status !== "completed" ||
+    (journal.state_fingerprint_digest === opts.state_fingerprint_digest &&
+      (!opts.replacement_effect_ref || opts.replacement_effect_ref === last.effect_ref))
+  ) {
+    throw new Error(
+      "Supervisor episode human-review reopening requires a completed reviewed operation and either changed state or a distinct replacement effect.",
+    );
+  }
+  return createJournal({
+    ...journal,
+    state_fingerprint_digest: opts.state_fingerprint_digest,
+    cursor: { episode: journal.cursor.episode, phase: "ready", operation_key: null },
+    status: "running",
+    stop: null,
+    updated_at: now,
+    previous_digest: journal.digest,
+  });
+}
+
+/**
  * Refresh only the route fingerprint of an explicitly reserved replacement
  * before its successor intent is recorded. The exact failed-operation binding
  * remains unchanged, so a route transition cannot become an unbound retry.

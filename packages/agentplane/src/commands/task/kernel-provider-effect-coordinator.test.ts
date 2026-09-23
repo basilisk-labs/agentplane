@@ -16,6 +16,7 @@ const mocks = vi.hoisted(() => ({
   readEnvelope: vi.fn(),
   readJournal: vi.fn(),
   ensureProjection: vi.fn(),
+  prepareReplacement: vi.fn(),
   executeEpisode: vi.fn(),
   loadCommand: vi.fn(),
   recoverSuspension: vi.fn(),
@@ -29,6 +30,7 @@ vi.mock("../shared/route-decision.js", () => ({
 }));
 vi.mock("../shared/supervisor-execution-episode.js", () => ({
   supervisePersistedWorkflowEpisode: mocks.supervise,
+  preparePersistedSupervisorReplacementAfterFailure: mocks.prepareReplacement,
   resolveSupervisorExecutionEpisodePath: () => Promise.resolve("/repo/.git/journal.json"),
   createSupervisorEpisodeStore: () => ({ read: mocks.readJournal }),
 }));
@@ -379,6 +381,12 @@ describe("canonical provider effect coordinator", () => {
     expect(mocks.supervise).toHaveBeenCalledWith(
       expect.objectContaining({ decision: before, git_root: "/repo" }),
     );
+    expect(mocks.prepareReplacement).toHaveBeenCalledWith({
+      git_root: "/repo",
+      task_id: "T-1",
+      state_fingerprint_digest: routeBeforeDigest,
+      replacement_operation_idempotency_key: before.workflowStep.operation.idempotencyKey,
+    });
   });
 
   it.each(["integration.enqueue", "integration.run_next"] as const)(

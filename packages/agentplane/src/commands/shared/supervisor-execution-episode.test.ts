@@ -817,6 +817,33 @@ describe("persisted supervisor execution episodes", () => {
       usage: { episodes: 1, agent_runs: 1 },
     });
     expect(stored.usage.wall_time_ms).toBeGreaterThan(0);
+
+    await expect(
+      preparePersistedSupervisorReplacementAfterFailure({
+        git_root: root,
+        task_id: taskId,
+        state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+        replacement_operation_idempotency_key:
+          decision.workflowStep.kind === "cli_operation"
+            ? decision.workflowStep.operation.idempotencyKey
+            : "unreachable",
+      }),
+    ).resolves.toBe("not_failed");
+    await expect(
+      preparePersistedSupervisorReplacementAfterFailure({
+        git_root: root,
+        task_id: taskId,
+        state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+        replacement_operation_idempotency_key: "provider.pr.update_branch:distinct",
+      }),
+    ).resolves.toBe("prepared");
+    expect(await createSupervisorEpisodeStore(outcome.journal_path).read()).toMatchObject({
+      status: "running",
+      cursor: {
+        phase: "ready",
+        replacement_of_operation_key: stored.operations.at(-1)?.operation_key,
+      },
+    });
   });
 
   it("keeps a CURATOR context run in the same journal and budget boundary", async () => {

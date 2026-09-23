@@ -36,6 +36,31 @@ export function evaluatorReviewAllowsCanonicalProjection(
   return Object.hasOwn(task.extensions ?? {}, TASK_KERNEL_EXTENSION);
 }
 
+export function canonicalEvaluatorPassProjection(opts: {
+  task: Pick<TaskData, "extensions">;
+  verdict: EvaluatorQualityReport["verdict"];
+  evaluatedSha: string | null;
+}): Pick<TaskData, "commit" | "extensions"> | null {
+  if (
+    opts.verdict !== "pass" ||
+    !opts.evaluatedSha ||
+    !evaluatorReviewAllowsCanonicalProjection(opts.task)
+  ) {
+    return null;
+  }
+  const commit = {
+    hash: opts.evaluatedSha,
+    message: "AgentPlane-owned canonical implementation commit",
+  };
+  return {
+    commit,
+    extensions: {
+      ...opts.task.extensions,
+      implementation_commit: commit,
+    },
+  };
+}
+
 async function persistReview(opts: {
   ctx: CommandContext;
   task: TaskData;
@@ -114,25 +139,33 @@ async function persistReview(opts: {
     policyAction: "task_verify",
     phase: "verify",
     allowCanonicalProjection: evaluatorReviewAllowsCanonicalProjection(opts.task),
-    build: () => ({
-      intents: setTaskFieldsIntent({
-        quality_review: {
-          state: opts.report.verdict,
-          provenance: opts.report.provenance,
-          updated_at: opts.report.generated_at,
-          updated_by: opts.report.provenance === "human_supplied" ? "HUMAN" : "EVALUATOR",
-          note: opts.report.summary,
-          evaluated_sha: opts.report.evaluated_sha,
-          review_identity_digest: opts.report.review_identity_digest,
-          evidence_refs: evidenceRefs,
-          findings: opts.report.findings,
-          ...(opts.resultPayload?.recovery_reason
-            ? { recovery_reason: opts.resultPayload.recovery_reason }
-            : {}),
-        },
-        ...(humanInput ? { extensions: humanInput } : {}),
-      }),
-    }),
+    build: (current) => {
+      const canonicalPass = canonicalEvaluatorPassProjection({
+        task: current,
+        verdict: opts.report.verdict,
+        evaluatedSha: opts.report.evaluated_sha,
+      });
+      return {
+        intents: setTaskFieldsIntent({
+          quality_review: {
+            state: opts.report.verdict,
+            provenance: opts.report.provenance,
+            updated_at: opts.report.generated_at,
+            updated_by: opts.report.provenance === "human_supplied" ? "HUMAN" : "EVALUATOR",
+            note: opts.report.summary,
+            evaluated_sha: opts.report.evaluated_sha,
+            review_identity_digest: opts.report.review_identity_digest,
+            evidence_refs: evidenceRefs,
+            findings: opts.report.findings,
+            ...(opts.resultPayload?.recovery_reason
+              ? { recovery_reason: opts.resultPayload.recovery_reason }
+              : {}),
+          },
+          ...(canonicalPass ?? {}),
+          ...(humanInput ? { extensions: humanInput } : {}),
+        }),
+      };
+    },
   });
   return {
     report_path: relative(gitRoot, paths.report_path),

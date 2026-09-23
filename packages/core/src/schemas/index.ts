@@ -162,6 +162,7 @@ export {
   refreshPendingReplacementSupervisorExecutionEpisode,
   recoverSupervisorExecutionEpisodeJournal,
   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
+  reopenSupervisorExecutionEpisodeAfterHumanReviewStateChange,
   reopenSupervisorExecutionEpisodeAfterEffectEvidence,
   retireSupervisorExecutionEpisodeIntentAfterStateDrift,
   retryFailedSupervisorExecutionEpisode,

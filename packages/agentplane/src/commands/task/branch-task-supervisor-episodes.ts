@@ -402,6 +402,7 @@ async function executeBranchVerificationEpisode(opts: {
       git_root: command.resolvedProject.gitRoot,
       task_id: opts.input.task_id,
       id: "task_verify",
+      replace_failed_operation: opts.input.replace_failed_operation,
       decision: opts.decide,
       run: async () => {
         const verification = await resolveImplementationVerificationTask({

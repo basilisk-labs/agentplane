@@ -13,6 +13,7 @@ import { buildTaskRouteDecision } from "../shared/route-decision.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import {
   createSupervisorEpisodeStore,
+  preparePersistedSupervisorReplacementAfterFailure,
   resolveSupervisorExecutionEpisodePath,
 } from "../shared/supervisor-execution-episode.js";
 import type { WorkflowOperation } from "../shared/workflow-step.js";
@@ -316,6 +317,12 @@ export async function executeCanonicalAdmittedWorkflowOperation(opts: {
       request_digest: opts.request_digest,
     });
   }
+  await preparePersistedSupervisorReplacementAfterFailure({
+    git_root: opts.command.resolvedProject.gitRoot,
+    task_id: opts.task_id,
+    state_fingerprint_digest: before.workflowStep.preconditionFingerprint.digest,
+    replacement_operation_idempotency_key: expected.idempotencyKey,
+  });
   return await executeAdmittedBranchWorkflowOperation({
     decision: before,
     git_root: opts.command.resolvedProject.gitRoot,

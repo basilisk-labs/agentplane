@@ -72,6 +72,8 @@ import {
   appendDecisionContextReference,
 } from "./verify-record-references.js";
 import { syncRecordedVerificationArtifacts } from "./verify-record-pr-artifacts.js";
+import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
+import type { TaskData } from "../../backends/task-backend.js";
 
 export { syncRecordedVerificationArtifacts } from "./verify-record-pr-artifacts.js";
 
@@ -79,6 +81,17 @@ function verificationStateToQualityReviewState(state: string): "pass" | "rework"
   if (state === "ok") return "pass";
   if (state === "blocked_external") return "blocked";
   return "rework";
+}
+
+export function shouldPreserveCompletedKernelStateDuringVerification(opts: {
+  task: { status: TaskData["status"]; extensions?: TaskData["extensions"] };
+  allowCanonicalProjection?: boolean;
+}): boolean {
+  return (
+    opts.allowCanonicalProjection === true &&
+    opts.task.status === "DONE" &&
+    Object.hasOwn(opts.task.extensions ?? {}, TASK_KERNEL_EXTENSION)
+  );
 }
 
 function sha256(value: string): `sha256:${string}` {
@@ -394,6 +407,13 @@ async function recordVerificationResult(opts: {
           verificationInputDigest: verificationInput?.digest ?? null,
         });
         const intents = [...execution.intents];
+        const preserveCompletedKernelState = shouldPreserveCompletedKernelStateDuringVerification({
+          task: current,
+          allowCanonicalProjection: opts.allowCanonicalProjection,
+        });
+        if (preserveCompletedKernelState && opts.state !== "ok") {
+          intents.push(setTaskFieldsIntent({ status: "DONE" }));
+        }
         const verificationResults = (parsedDetails ?? []).map((check, index) => ({
           id: `recorded-check-${String(index + 1)}`,
           result: check.result,
@@ -423,7 +443,7 @@ async function recordVerificationResult(opts: {
         if (opts.state !== "ok") {
           Reflect.deleteProperty(nextExtensions, "implementation_commit");
           const aggregate = taskCentricAggregateFromExtensions(nextExtensions);
-          if (aggregate?.lifecycle === "COMPLETED") {
+          if (aggregate?.lifecycle === "COMPLETED" && !preserveCompletedKernelState) {
             nextExtensions = withTaskCentricAggregate(nextExtensions, {
               ...aggregate,
               lifecycle: "ACTIVE",

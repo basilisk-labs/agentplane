@@ -205,6 +205,9 @@ export async function executeFinishPlan(opts: {
         plan,
         primaryTaskId: plan.primaryTaskId,
         promotedIncidents,
+        preserveCompletedCanonicalTaskState,
+        taskCommitInfo,
+        implementationCommitInfo,
       });
       closeoutJournal = await advanceFinishCloseoutJournal({
         path: closeout.path,

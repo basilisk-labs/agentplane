@@ -254,6 +254,7 @@ export async function preparePersistedSupervisorReplacementAfterFailure(opts: {
   git_root: string;
   task_id: string;
   state_fingerprint_digest: string;
+  replacement_operation_idempotency_key?: string;
   allow_agent_run_budget_extension?: boolean;
   budget_only?: boolean;
 }): Promise<
@@ -332,6 +333,12 @@ export async function preparePersistedSupervisorReplacementAfterFailure(opts: {
       latest?.status === "failed" &&
       (journal.stop?.reason === "operation_failed" || journal.stop?.reason === "stale_state");
     if (!recoverableFailure) {
+      return "not_failed";
+    }
+    if (
+      opts.replacement_operation_idempotency_key !== undefined &&
+      latest.effect_ref === opts.replacement_operation_idempotency_key
+    ) {
       return "not_failed";
     }
     const replacement = prepareReplacementSupervisorExecutionEpisodeAfterFailure({

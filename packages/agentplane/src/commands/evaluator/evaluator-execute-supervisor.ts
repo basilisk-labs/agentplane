@@ -6,6 +6,7 @@ import {
   prepareReplacementSupervisorExecutionEpisodeAfterFailure,
   refreshPendingReplacementSupervisorExecutionEpisode,
   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
+  reopenSupervisorExecutionEpisodeAfterHumanReviewStateChange,
   startSupervisorExecutionEpisode,
   stopSupervisorExecutionEpisode,
   type SupervisorExecutionEpisodeJournal,
@@ -318,8 +319,33 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
   try {
     let journal = opened.journal;
     let replacementOfOperationKey: string | null = null;
+    let preparedHumanReviewReplacement:
+      | Awaited<ReturnType<EvaluatorArtifactPreparationPort["prepare"]>>["prepared"]
+      | null = null;
     if (opts.replacement) {
-      if (
+      if (journal.status === "stopped" && journal.stop?.reason === "human_review") {
+        const { prepared } = await opts.artifacts.prepare({
+          ctx: opts.ctx,
+          taskId: opts.task_id,
+          evaluatorId: opts.evaluator.id,
+          provenance: "evaluator_supplied",
+        });
+        const reopened = reopenSupervisorExecutionEpisodeAfterHumanReviewStateChange({
+          journal,
+          state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+          replacement_effect_ref: prepared.work_order.work_order_id,
+        });
+        if (!(await opened.store.compareAndSwap(journal.digest, reopened))) {
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message:
+              "Evaluator human-review replacement changed concurrently; no provider episode was started.",
+          });
+        }
+        journal = reopened;
+        preparedHumanReviewReplacement = prepared;
+      } else if (
         journal.status === "running" &&
         journal.cursor.phase === "ready" &&
         journal.cursor.replacement_of_operation_key
@@ -461,12 +487,16 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
             "Evaluator supervisor journal is not ready; resolve its typed stop before another provider invocation.",
         });
       }
-      const { prepared } = await opts.artifacts.prepare({
-        ctx: opts.ctx,
-        taskId: opts.task_id,
-        evaluatorId: opts.evaluator.id,
-        provenance: "evaluator_supplied",
-      });
+      const prepared =
+        preparedHumanReviewReplacement ??
+        (
+          await opts.artifacts.prepare({
+            ctx: opts.ctx,
+            taskId: opts.task_id,
+            evaluatorId: opts.evaluator.id,
+            provenance: "evaluator_supplied",
+          })
+        ).prepared;
       const replacementBinding = replacementOfOperationKey
         ? { replacement_of_operation_key: replacementOfOperationKey }
         : {};

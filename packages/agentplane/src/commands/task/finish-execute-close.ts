@@ -10,8 +10,10 @@ import { resolveIgnoredDirectCloseDirtyPaths } from "../guard/impl/close-dirt.js
 import type { CommandContext } from "../shared/task-backend.js";
 import { gitCurrentBranch } from "../shared/git-ops.js";
 import { parsePrMeta } from "../shared/pr-meta.js";
+import { applyTaskMutation } from "../shared/task-mutation.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
 import { createTaskCloseCommit } from "./finish-shared.js";
+import type { ResolvedCommitInfo } from "./finish-shared.js";
 import { materializeBranchPrCloseTail } from "./finish-close.js";
 import {
   resolveFinishWorkflowMode,
@@ -124,6 +126,9 @@ export async function finalizeCloseTail(opts: {
   plan: FinishExecutionPlan;
   primaryTaskId: string;
   promotedIncidents: number;
+  preserveCompletedCanonicalTaskState?: boolean;
+  taskCommitInfo?: ResolvedCommitInfo | null;
+  implementationCommitInfo?: ResolvedCommitInfo | null;
 }): Promise<void> {
   const { ctx, options, plan, primaryTaskId, promotedIncidents } = opts;
   const workflowMode = resolveFinishWorkflowMode(plan, ctx);
@@ -135,6 +140,14 @@ export async function finalizeCloseTail(opts: {
   const closeUnstageOthers = options.closeCommit === true && options.closeUnstageOthers === true;
   if (workflowMode === "branch_pr") {
     if (plan.preMergeClosure) {
+      if (opts.preserveCompletedCanonicalTaskState) {
+        await persistCompletedCanonicalPreMergeCommitMetadata({
+          ctx,
+          taskId: primaryTaskId,
+          taskCommitInfo: opts.taskCommitInfo ?? null,
+          implementationCommitInfo: opts.implementationCommitInfo ?? null,
+        });
+      }
       await markPreMergeClosure({ ctx, taskId: primaryTaskId });
       await createTaskCloseCommit({
         ctx,
@@ -190,6 +203,34 @@ export async function finalizeCloseTail(opts: {
     allowPolicy: promotedIncidents > 0,
     additionalTaskIds: plan.closeAdditionalTaskIds,
     workflowMode,
+  });
+}
+
+async function persistCompletedCanonicalPreMergeCommitMetadata(opts: {
+  ctx: CommandContext;
+  taskId: string;
+  taskCommitInfo: ResolvedCommitInfo | null;
+  implementationCommitInfo: ResolvedCommitInfo | null;
+}): Promise<void> {
+  if (!opts.taskCommitInfo) return;
+  await applyTaskMutation({
+    ctx: opts.ctx,
+    taskId: opts.taskId,
+    policyAction: "task_status_transition",
+    phase: "finish",
+    allowCanonicalProjection: true,
+    build: (current) => ({
+      nextTask: {
+        ...current,
+        commit: opts.taskCommitInfo,
+        extensions: opts.implementationCommitInfo
+          ? {
+              ...current.extensions,
+              implementation_commit: opts.implementationCommitInfo,
+            }
+          : current.extensions,
+      },
+    }),
   });
 }
 
