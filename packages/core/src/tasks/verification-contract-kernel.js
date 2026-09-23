@@ -9,6 +9,14 @@ const FULL_REGRESSION_REPOSITORY_EFFECTS = new Set([
   "security_boundary",
 ]);
 const REAL_E2E_EXTERNAL_EFFECTS = new Set(["external_write", "credentials", "publish", "deploy"]);
+const PACKAGE_MANIFEST_DEPENDENCY_FIELDS = [
+  "dependencies",
+  "devDependencies",
+  "optionalDependencies",
+  "peerDependencies",
+  "bundledDependencies",
+  "bundleDependencies",
+];
 const CENTRAL_PATH_PATTERNS = [
   /^package\.json$/u,
   /^bun\.lock$/u,
@@ -80,11 +88,7 @@ export function repositoryEffectsForPath(pathValue) {
   ) {
     effects.push("ci");
   }
-  if (
-    /(^|\/)(?:package\.json|bun\.lockb?|pnpm-lock\.yaml|yarn\.lock|package-lock\.json)$/u.test(
-      normalized,
-    )
-  ) {
+  if (/(^|\/)(?:bun\.lockb?|pnpm-lock\.yaml|yarn\.lock|package-lock\.json)$/u.test(normalized)) {
     effects.push("dependencies");
   }
   if (
@@ -106,6 +110,50 @@ export function repositoryEffectsForPath(pathValue) {
   }
   if (/^packages\/[^/]+\/src\/index\.[cm]?[jt]sx?$/u.test(normalized)) {
     effects.push("public_api");
+  }
+  return uniqueSorted(effects);
+}
+
+function dependencyFieldsFromManifest(content) {
+  if (content === null) return {};
+  try {
+    const parsed = JSON.parse(content);
+    if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) return null;
+    return Object.fromEntries(
+      PACKAGE_MANIFEST_DEPENDENCY_FIELDS.filter((field) =>
+        Object.prototype.hasOwnProperty.call(parsed, field),
+      ).map((field) => [field, parsed[field]]),
+    );
+  } catch {
+    return null;
+  }
+}
+
+function stableJsonValue(value) {
+  if (Array.isArray(value)) return value.map((entry) => stableJsonValue(entry));
+  if (value !== null && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value)
+        .toSorted(([left], [right]) => left.localeCompare(right))
+        .map(([key, entry]) => [key, stableJsonValue(entry)]),
+    );
+  }
+  return value;
+}
+
+export function repositoryEffectsForChange(pathValue, beforeContent, afterContent) {
+  const normalized = normalizedPath(pathValue);
+  const effects = repositoryEffectsForPath(normalized);
+  if (!/(^|\/)package\.json$/u.test(normalized)) return effects;
+  const beforeDependencies = dependencyFieldsFromManifest(beforeContent);
+  const afterDependencies = dependencyFieldsFromManifest(afterContent);
+  if (
+    beforeDependencies === null ||
+    afterDependencies === null ||
+    JSON.stringify(stableJsonValue(beforeDependencies)) !==
+      JSON.stringify(stableJsonValue(afterDependencies))
+  ) {
+    effects.push("dependencies");
   }
   return uniqueSorted(effects);
 }

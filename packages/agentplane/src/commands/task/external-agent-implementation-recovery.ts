@@ -8,6 +8,7 @@ import {
   setMarkdownSection,
   taskCentricAggregateFromExtensions,
   isGitObjectId,
+  type TaskRepositoryEffect,
 } from "@agentplaneorg/core/tasks";
 import type { AgentSemanticResult, AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 
@@ -32,6 +33,7 @@ import {
 import { normalizeBranchPrBatchTaskIds } from "../pr/internal/sync-batch-ownership.js";
 import {
   resolveObservedVerificationChangedPaths,
+  resolveObservedVerificationRepositoryEffects,
   resolveInheritedVerificationPaths,
   reconcileVerificationExecutionContract,
 } from "./verify-record-observed-changes.js";
@@ -303,6 +305,7 @@ export async function resolveImplementationVerificationTask(opts: {
     evaluated_sha: string | null;
     changed_paths: string[];
     inherited_paths: string[];
+    repository_effects: TaskRepositoryEffect[];
   };
 }> {
   const execution = await resolveTaskExecutionContext({
@@ -342,6 +345,15 @@ export async function resolveImplementationVerificationTask(opts: {
     execution,
     changed_paths: changedPaths,
   });
+  const observedRepositoryEffects = await resolveObservedVerificationRepositoryEffects({
+    ctx: opts.command,
+    evaluatedSha,
+    taskId: opts.task.id,
+    artifactTaskIds: taskIds,
+    execution,
+    changed_paths: changedPaths,
+    inherited_paths: inheritedPaths,
+  });
   const verificationTask = {
     ...opts.task,
     execution_contract: reconcileVerificationExecutionContract({
@@ -354,6 +366,7 @@ export async function resolveImplementationVerificationTask(opts: {
         }),
       changed_paths: changedPaths,
       inherited_paths: inheritedPaths,
+      observed_repository_effects: observedRepositoryEffects,
     }),
   };
   return {
@@ -363,6 +376,7 @@ export async function resolveImplementationVerificationTask(opts: {
       evaluated_sha: evaluatedSha,
       changed_paths: changedPaths,
       inherited_paths: inheritedPaths,
+      repository_effects: observedRepositoryEffects,
     },
   };
 }

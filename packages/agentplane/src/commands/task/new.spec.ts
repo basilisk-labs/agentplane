@@ -75,7 +75,8 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
         "security",
         "external_system",
       ],
-      description: "Structured task risk flag. Repeatable.",
+      description:
+        "Structured task risk flag. Repeatable. Controlled ops requires credentials, deploy, security, or external_system.",
     },
     {
       kind: "string",
@@ -114,10 +115,15 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
       cmd: 'agentplane task new --title "Refactor CLI" --description "Improve CLI output" --owner CODER --tag cli',
       why: "Create a new task with one tag.",
     },
+    {
+      cmd: 'agentplane task new --title "Restart the worker" --description "Restart one production worker" --owner OPS --tag ops --task-kind ops --mutation-scope ops --risk external_system',
+      why: "Create a controlled ops task with complete structured intent.",
+    },
   ],
   notes: [
     "Task creation defaults to doc_version=3 and seeds the README v3 section contract automatically.",
     "For verify-required primary tags, this command seeds a default ## Verify Steps acceptance contract in README.",
+    "Tasks tagged or declared as ops must provide task kind, mutation scope, and a controlled ops risk before creation.",
   ],
   parse: (raw) => ({
     title: raw.opts.title as string,

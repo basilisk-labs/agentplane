@@ -430,6 +430,7 @@ function verificationObservation(value: TaskVerificationObservation): TaskVerifi
 export function reconcileTaskExecutionContract(opts: {
   contract: TaskExecutionContract;
   changed_paths: readonly string[];
+  observed_repository_effects?: readonly TaskRepositoryEffect[];
   observed_external_effects?: readonly TaskExternalEffect[];
   verification_results?: readonly TaskVerificationObservation[];
   preserved_commit?: string;
@@ -441,6 +442,7 @@ export function reconcileTaskExecutionContract(opts: {
   );
   const observedEffects = uniqueSorted([
     ...opts.contract.observed.repository_effects,
+    ...(opts.observed_repository_effects ?? []),
     ...changed_paths.flatMap((changedPath) => structuralEffectsForPath(changedPath)),
   ]);
   const observedExternalEffects = uniqueSorted([

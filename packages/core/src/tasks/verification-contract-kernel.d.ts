@@ -72,6 +72,11 @@ export type VerificationContractKernelResult = {
 };
 
 export function repositoryEffectsForPath(pathValue: string): TaskRepositoryEffect[];
+export function repositoryEffectsForChange(
+  pathValue: string,
+  beforeContent: string | null,
+  afterContent: string | null,
+): TaskRepositoryEffect[];
 export function componentForVerificationPath(pathValue: string): string;
 export function isCentralVerificationPath(pathValue: string): boolean;
 export function computeVerificationContractKernel(

@@ -55,6 +55,7 @@ import {
 import { resolveVerifyRecordInput } from "./verify-record-input.js";
 import {
   resolveObservedVerificationChangedPaths,
+  resolveObservedVerificationRepositoryEffects,
   resolveInheritedVerificationPaths,
   reconcileVerificationExecutionContract,
 } from "./verify-record-observed-changes.js";
@@ -219,10 +220,22 @@ async function recordVerificationResult(opts: {
             execution: taskCommand.execution,
             changed_paths: observedChangedPaths,
           }));
+        const observedRepositoryEffects =
+          opts.verificationSnapshot?.repository_effects ??
+          (await resolveObservedVerificationRepositoryEffects({
+            ctx,
+            evaluatedSha,
+            taskId: current.id,
+            artifactTaskIds: qualityReviewTaskIds,
+            execution: taskCommand.execution,
+            changed_paths: observedChangedPaths,
+            inherited_paths: inheritedPaths,
+          }));
         const observedExecutionContract = reconcileVerificationExecutionContract({
           contract: baseExecutionContract,
           changed_paths: observedChangedPaths,
           inherited_paths: inheritedPaths,
+          observed_repository_effects: observedRepositoryEffects,
         });
         const contractTask = { ...current, execution_contract: observedExecutionContract };
         const parsedDetails = parseVerificationCheckDetails(opts.details);
@@ -443,6 +456,7 @@ async function recordVerificationResult(opts: {
           },
           changed_paths: observedChangedPaths,
           inherited_paths: inheritedPaths,
+          observed_repository_effects: observedRepositoryEffects,
           verification_results: verificationResults,
         });
         intents.unshift(
