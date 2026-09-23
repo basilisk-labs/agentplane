@@ -121,7 +121,8 @@ export type ExecutionAuthority = Readonly<{
 export type CanonicalApprovalMode =
   | "manual_operator"
   | "signed_user_receipt"
-  | "host_user_decision";
+  | "host_user_decision"
+  | "repository_policy";
 
 export type AuthorityObservation = Readonly<{
   kind: "plan_amendment" | "repository_implementation" | "authority_delta";

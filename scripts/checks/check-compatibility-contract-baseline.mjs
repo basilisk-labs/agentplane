@@ -357,6 +357,7 @@ function validateReviewedCandidate({
     "202609060720-NZXQ0E",
     "202609130858-RMHWQ5",
     "202609162254-YE48GC",
+    "202609230942-E6D0V4",
   ];
   const expectedSourceTasks = [
     "202607221846-4VB97J",
@@ -408,6 +409,7 @@ function validateReviewedCandidate({
     "202609130858-RMHWQ5",
     "202609162254-YE48GC",
     "202609211330-5A54M1",
+    "202609230942-E6D0V4",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -1540,6 +1542,56 @@ function validateReviewedCandidate({
         },
         { name: "tag", kind: "string", valueHint: "<tag>", repeatable: true },
         { name: "verify", kind: "string", valueHint: "<command>", repeatable: true },
+        {
+          name: "scope-root",
+          kind: "string",
+          valueHint: "<repository-relative-path>",
+          repeatable: true,
+        },
+        {
+          name: "repository-effect",
+          kind: "string",
+          valueHint: "<effect>",
+          repeatable: true,
+          choices: [
+            "repository_write",
+            "documentation",
+            "source_code",
+            "tests",
+            "public_api",
+            "schema",
+            "dependencies",
+            "ci",
+            "release_metadata",
+            "security_boundary",
+          ],
+        },
+        {
+          name: "external-effect",
+          kind: "string",
+          valueHint: "<effect>",
+          repeatable: true,
+          choices: [
+            "network_read",
+            "external_write",
+            "credentials",
+            "publish",
+            "deploy",
+            "destructive_git",
+          ],
+        },
+        {
+          name: "capability",
+          kind: "string",
+          valueHint: "<capability>",
+          repeatable: true,
+        },
+        {
+          name: "resource",
+          kind: "string",
+          valueHint: "<resource>",
+          repeatable: true,
+        },
         { name: "base", kind: "string", valueHint: "<branch-or-ref>" },
         { name: "allow-duplicate", kind: "boolean", valueHint: null, default: false },
         { name: "json", kind: "boolean", valueHint: null, default: false },
@@ -2075,6 +2127,13 @@ function validateReviewedCandidate({
     },
     {
       command: "task create",
+      name: "capability",
+      kind: "string",
+      valueHint: "<capability>",
+      repeatable: true,
+    },
+    {
+      command: "task create",
       name: "blueprint-request",
       kind: "string",
       valueHint: "<id>",
@@ -2094,6 +2153,21 @@ function validateReviewedCandidate({
       ],
     },
     { command: "task create", name: "description", kind: "string", valueHint: "<text>" },
+    {
+      command: "task create",
+      name: "external-effect",
+      kind: "string",
+      valueHint: "<effect>",
+      choices: [
+        "network_read",
+        "external_write",
+        "credentials",
+        "publish",
+        "deploy",
+        "destructive_git",
+      ],
+      repeatable: true,
+    },
     {
       command: "task create",
       name: "json",
@@ -2125,6 +2199,32 @@ function validateReviewedCandidate({
     },
     {
       command: "task create",
+      name: "repository-effect",
+      kind: "string",
+      valueHint: "<effect>",
+      choices: [
+        "repository_write",
+        "documentation",
+        "source_code",
+        "tests",
+        "public_api",
+        "schema",
+        "dependencies",
+        "ci",
+        "release_metadata",
+        "security_boundary",
+      ],
+      repeatable: true,
+    },
+    {
+      command: "task create",
+      name: "resource",
+      kind: "string",
+      valueHint: "<resource>",
+      repeatable: true,
+    },
+    {
+      command: "task create",
       name: "risk",
       kind: "string",
       valueHint: "<risk>",
@@ -2146,6 +2246,13 @@ function validateReviewedCandidate({
       valueHint: "<auto|direct|branch_pr>",
       default: "auto",
       choices: ["auto", "direct", "branch_pr"],
+    },
+    {
+      command: "task create",
+      name: "scope-root",
+      kind: "string",
+      valueHint: "<repository-relative-path>",
+      repeatable: true,
     },
     { command: "task create", name: "tag", kind: "string", valueHint: "<tag>", repeatable: true },
     {
@@ -2817,6 +2924,12 @@ function validateReviewedCandidate({
     {
       kind: "option",
       command: "task create",
+      name: "capability",
+      source_task: "202609230942-E6D0V4",
+    },
+    {
+      kind: "option",
+      command: "task create",
       name: "blueprint-request",
       source_task: "202608110235-WCJJRD",
     },
@@ -2825,6 +2938,12 @@ function validateReviewedCandidate({
       command: "task create",
       name: "description",
       source_task: "202608061646-30TKV4",
+    },
+    {
+      kind: "option",
+      command: "task create",
+      name: "external-effect",
+      source_task: "202609230942-E6D0V4",
     },
     {
       kind: "option",
@@ -2853,6 +2972,18 @@ function validateReviewedCandidate({
     {
       kind: "option",
       command: "task create",
+      name: "repository-effect",
+      source_task: "202609230942-E6D0V4",
+    },
+    {
+      kind: "option",
+      command: "task create",
+      name: "resource",
+      source_task: "202609230942-E6D0V4",
+    },
+    {
+      kind: "option",
+      command: "task create",
       name: "risk",
       source_task: "202608110235-WCJJRD",
     },
@@ -2861,6 +2992,12 @@ function validateReviewedCandidate({
       command: "task create",
       name: "route",
       source_task: "202608061646-30TKV4",
+    },
+    {
+      kind: "option",
+      command: "task create",
+      name: "scope-root",
+      source_task: "202609230942-E6D0V4",
     },
     {
       kind: "option",

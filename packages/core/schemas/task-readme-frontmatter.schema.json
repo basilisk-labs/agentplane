@@ -1051,6 +1051,20 @@
                   "destructive_git"
                 ]
               }
+            },
+            "allowed_capabilities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "allowed_resources": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
             }
           },
           "required": [

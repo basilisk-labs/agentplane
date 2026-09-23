@@ -5,6 +5,7 @@ import {
 } from "@agentplaneorg/core/tasks";
 import type { CommandContext } from "../shared/task-backend.js";
 import { createKernelRuntime, requireKernelCommit } from "./kernel-runtime-context.js";
+import { assertCanonicalPlanWithinExecutionContract } from "./kernel-plan-authority.js";
 
 export function canonicalPlanFromProposal(
   proposal: KernelPlanProposal,
@@ -53,6 +54,7 @@ export async function setCanonicalPlan(
     return { kind: "committed" as const, record: read.record, receipts: [], replayed: true };
   }
   const plan = canonicalPlanFromProposal(proposal, (current?.revision ?? 0) + 1);
+  assertCanonicalPlanWithinExecutionContract(read.task, plan);
   const contracts = proposal.work_items.map((item) => item.contract);
   if (current?.state !== "APPROVED") {
     return requireKernelCommit(
