@@ -27,31 +27,31 @@ Repair evaluator diff-base selection after provider branch updates, forward repl
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- bun.lock                                           |  6 +-
- .../commands/evaluator/evaluator-diff-evidence.ts  | 50 +++++++++++++-
- .../commands/evaluator/evaluator-review-usecase.ts | 13 +++-
- .../evaluator-verification-contract.test.ts        | 77 ++++++++++++++++++++++
- .../pr/provider-update-branch-local.test.ts        |  2 +
- .../commands/pr/provider-update-branch-local.ts    | 16 +++++
- .../src/commands/pr/provider-update-branch.test.ts |  2 +-
- .../src/commands/pr/provider-update-branch.ts      |  6 +-
- .../src/commands/shared/route-decision-blockers.ts |  6 +-
- .../src/commands/shared/workflow-step-branch.ts    |  9 ++-
- .../shared/workflow-step-factory-branch.ts         | 21 ++++++
- .../src/commands/shared/workflow-step-factory.ts   |  1 +
- .../shared/workflow-step-worktree-priority.test.ts | 30 +++++++++
- .../src/commands/task/advance-task-step.ts         | 44 ++++++++++++-
- .../src/commands/task/advance.command.ts           | 25 +++++--
- .../task/branch-task-supervisor-episodes.ts        |  2 +
- .../branch-task-supervisor-evaluator-episode.ts    |  1 +
- .../commands/task/branch-task-supervisor.test.ts   |  5 ++
- .../src/commands/task/branch-task-supervisor.ts    |  1 +
- .../task/direct-task-supervisor-evaluator.test.ts  | 60 +++++++++++++++++
- .../task/direct-task-supervisor-evaluator.ts       |  3 +-
- .../direct-task-supervisor-formal-operation.ts     | 12 ++++
- .../task/kernel-provider-effect-coordinator.ts     | 74 ++++++++++++++++++++-
- .../commands/task/roadmap-terminal-noop.test.ts    | 38 +++++++++++
- 24 files changed, 480 insertions(+), 24 deletions(-)
+ bun.lock                                           |   6 +-
+ .../commands/evaluator/evaluator-diff-evidence.ts  |   3 +-
+ .../commands/evaluator/evaluator-review-usecase.ts |  13 +-
+ .../evaluator-verification-contract.test.ts        | 156 +++++++++++++++++++++
+ .../pr/provider-update-branch-local.test.ts        |   2 +
+ .../commands/pr/provider-update-branch-local.ts    |  16 +++
+ .../src/commands/pr/provider-update-branch.test.ts |   2 +-
+ .../src/commands/pr/provider-update-branch.ts      |   6 +-
+ .../src/commands/shared/route-decision-blockers.ts |   6 +-
+ .../src/commands/shared/workflow-step-branch.ts    |   9 +-
+ .../shared/workflow-step-factory-branch.ts         |  21 +++
+ .../src/commands/shared/workflow-step-factory.ts   |   1 +
+ .../shared/workflow-step-worktree-priority.test.ts |  30 ++++
+ .../src/commands/task/advance-task-step.ts         |  44 +++++-
+ .../src/commands/task/advance.command.ts           |  25 +++-
+ .../task/branch-task-supervisor-episodes.ts        |   2 +
+ .../branch-task-supervisor-evaluator-episode.ts    |   3 +-
+ .../commands/task/branch-task-supervisor.test.ts   |  13 ++
+ .../src/commands/task/branch-task-supervisor.ts    |   1 +
+ .../task/direct-task-supervisor-evaluator.test.ts  |  60 ++++++++
+ .../task/direct-task-supervisor-evaluator.ts       |   3 +-
+ .../direct-task-supervisor-formal-operation.ts     |  12 ++
+ .../task/kernel-provider-effect-coordinator.ts     |  74 +++++++++-
+ .../commands/task/roadmap-terminal-noop.test.ts    |  38 +++++
+ 24 files changed, 521 insertions(+), 25 deletions(-)
 ```
 
 </details>

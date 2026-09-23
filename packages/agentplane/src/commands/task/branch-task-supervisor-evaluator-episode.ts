@@ -54,7 +54,7 @@ export async function executeBranchEvaluatorEpisode(opts: {
       code: "evaluator_adapter_crash",
       reason:
         "The independent EVALUATOR did not produce and commit a typed verdict " +
-        `(${error instanceof Error ? error.name : "unknown_error"}).`,
+        `(${error instanceof Error ? `${error.name}: ${error.message}` : "unknown_error"}).`,
       provider_episodes: 1,
     });
   }

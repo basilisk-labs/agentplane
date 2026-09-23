@@ -38,6 +38,14 @@ describe("retired branch task outer supervisor", () => {
     expect(episodes).toContain("allowCanonicalProjection: true");
   });
 
+  it("preserves evaluator adapter failure details", async () => {
+    const evaluatorEpisode = await readFile(
+      new URL("branch-task-supervisor-evaluator-episode.ts", import.meta.url),
+      "utf8",
+    );
+    expect(evaluatorEpisode).toContain("`${error.name}: ${error.message}`");
+  });
+
   it("does not replay a completed hosted-close side effect on supervisor restart", async () => {
     const { advance } = await sources();
     expect(advance).toContain("restoreKernelFinalValidation");
