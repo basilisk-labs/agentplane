@@ -4,7 +4,11 @@ import { validateSupervisorExecutionEpisodeJournal } from "@agentplaneorg/core/s
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
 
 import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
-import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-backend.js";
+import {
+  loadCommandContext,
+  resolveCommandGitCommonDir,
+  type CommandContext,
+} from "../shared/task-backend.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import {
@@ -32,6 +36,7 @@ import {
   withCanonicalControllerSuspendedForOperation,
 } from "./kernel-controller-handoff.js";
 import { ensureKernelOperationalProjectionEvidence } from "./kernel-operational-projection.js";
+import { executeProductionBranchEpisode } from "./branch-task-supervisor-episodes.js";
 
 type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
 
@@ -540,5 +545,26 @@ export async function decideCanonicalWorkflowEffect(
     includeRemote,
     freshHead: true,
     taskId,
+  });
+}
+
+export async function executeCanonicalCompletedVerification(opts: {
+  command: CommandContext;
+  decision: TaskRouteDecision;
+  task_id: string;
+}) {
+  const checkout = opts.decision.executionPacket.mustRunFrom ?? opts.decision.workspace.root;
+  const workflowCommand =
+    path.resolve(checkout) === path.resolve(opts.command.resolvedProject.gitRoot)
+      ? opts.command
+      : await loadCommandContext({ cwd: checkout, rootOverride: null });
+  return await executeProductionBranchEpisode({
+    input: {
+      ctx: { cwd: checkout },
+      command: workflowCommand,
+      task_id: opts.task_id,
+    },
+    decision: opts.decision,
+    decide: async () => await decideCanonicalWorkflowEffect(workflowCommand, opts.task_id, false),
   });
 }

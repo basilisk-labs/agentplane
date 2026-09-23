@@ -20,6 +20,7 @@ import { commitCanonicalTerminalTaskArtifacts } from "./kernel-repository-coordi
 import {
   decideCanonicalWorkflowEffect,
   canonicalWorkflowRequestDigest,
+  executeCanonicalCompletedVerification,
   executeCanonicalAdmittedWorkflowOperation,
 } from "./kernel-provider-effect-coordinator.js";
 import { ensureKernelOperationalProjectionEvidence } from "./kernel-operational-projection.js";
@@ -27,8 +28,6 @@ import { transferCanonicalControllerToBase } from "./kernel-controller-handoff.j
 import { acceptKernelSemanticResult } from "./kernel-semantic-result.js";
 import { ensureCanonicalTaskWorktree } from "./kernel-worktree-routing.js";
 import { canonicalCompletionPrecedesWorkflow } from "./ordinary-advance-step.js";
-import { executeProductionBranchEpisode } from "./branch-task-supervisor-episodes.js";
-import { loadCommandContext } from "../shared/task-backend.js";
 
 export { blockKernelSemanticEpisode } from "./kernel-semantic-result.js";
 
@@ -215,30 +214,16 @@ async function advanceCanonicalRoute(opts: {
         localWorkflow.workflowStep.kind === "agent_episode" &&
         localWorkflow.workflowStep.episode.purpose === "verification"
       ) {
-        const checkout = localWorkflow.executionPacket.mustRunFrom ?? localWorkflow.workspace.root;
-        const workflowCommand =
-          path.resolve(checkout) === path.resolve(opts.command.resolvedProject.gitRoot)
-            ? opts.command
-            : await loadCommandContext({ cwd: checkout, rootOverride: null });
-        const outcome = await executeProductionBranchEpisode({
-          input: {
-            ctx: { cwd: checkout },
-            command: workflowCommand,
-            task_id: opts.task_id,
-          },
+        const outcome = await executeCanonicalCompletedVerification({
+          command: opts.command,
           decision: localWorkflow,
-          decide: async () =>
-            await decideCanonicalWorkflowEffect(workflowCommand, opts.task_id, false),
+          task_id: opts.task_id,
         });
         if (outcome.status === "stopped") {
           return {
             schema_version: 1,
             task_id: opts.task_id,
-            action: {
-              kind: "human_required",
-              reason: outcome.stop.code,
-              workflow_step: localWorkflow.workflowStep.id,
-            },
+            action: { kind: "human_required", reason: outcome.stop.code },
           };
         }
         continue;
