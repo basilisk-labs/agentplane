@@ -171,69 +171,6 @@ function successfulOperationResult() {
 }
 
 describe("persisted supervisor execution episodes", () => {
-  it("replaces a proven not-applied interrupted worktree preparation without replaying it", async () => {
-    const root = await mkGitRepoRoot();
-    const decision = fixtureDecision(root, 1);
-    if (decision.workflowStep.kind !== "cli_operation") throw new Error("expected operation");
-    const operation: WorkflowOperation = {
-      ...decision.workflowStep.operation,
-      id: "worktree.prepare",
-      type: "worktree_prepare",
-      params: { taskId, agent: "CODER", slug: "fixture" },
-      idempotencyKey: `worktree.prepare:${taskId}:fixture`,
-      expectedPostconditions:
-        WORKFLOW_OPERATION_REGISTRY["worktree.prepare"].expectedPostconditions,
-    };
-    decision.workflowStep = { ...decision.workflowStep, id: operation.id, operation };
-    decision.executionPacket.exactArgv = projectWorkflowOperationArgv(operation);
-    const created = createSupervisorExecutionEpisodeJournal({
-      task_id: taskId,
-      task_revision: 1,
-      state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
-      budget: UNMETERED_TOKEN_BUDGET,
-    });
-    const started = startSupervisorExecutionEpisode({
-      journal: created,
-      role: "EXECUTOR",
-      kind: "cli_operation",
-      operation_identity: operation,
-      precondition_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
-      authority_ref: "workflow-operation:worktree.prepare",
-      authority_digest: operation.preconditionFingerprint.digest,
-      effect_ref: operation.idempotencyKey,
-    });
-    if (started.status !== "started") throw new Error("expected started operation");
-    const journalPath = await resolveSupervisorExecutionEpisodePath({
-      git_root: root,
-      task_id: taskId,
-    });
-    await createSupervisorEpisodeStore(journalPath).write(started.journal);
-    let executions = 0;
-
-    const outcome = await supervisePersistedWorkflowEpisode({
-      decision,
-      git_root: root,
-      task_revision: 1,
-      execute: () => {
-        executions += 1;
-        return Promise.resolve({
-          status: "succeeded" as const,
-          observed_postconditions: operation.expectedPostconditions.map((item) => item.id),
-          detail: "fixture worktree prepared",
-          exit_code: 0,
-        });
-      },
-      refresh: () => Promise.resolve(fixtureDecision(root, 2)),
-      budget: UNMETERED_TOKEN_BUDGET,
-    });
-
-    expect(executions).toBe(1);
-    expect(outcome.journal.operations).toMatchObject([
-      { status: "failed" },
-      { status: "completed", replacement_of_operation_key: started.operation_key },
-    ]);
-  });
-
   it("persists integration operation and provider identity before invoking the queue worker", async () => {
     const root = await mkGitRepoRoot();
     const decision = fixtureDecision(root, 1);

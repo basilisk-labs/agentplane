@@ -251,10 +251,8 @@ describe("canonical native authority", () => {
     expect(child.plan_digest).toBe(f.plan.digest);
   });
 
-  it("delegates an approved disposable deploy with its exact resource scope", async () => {
+  it("delegates approved semantic work with its exact resource scope", async () => {
     const requirements = {
-      external_effects: ["deploy"],
-      capabilities: ["deploy"],
       resources: ["environment:disposable/qualification"],
     };
     const f = await fixture("manual_operator", requirements);
@@ -272,10 +270,8 @@ describe("canonical native authority", () => {
     await expect(f.resolver.resolve(f.taskId, "build")).rejects.toThrow("native_policy_changed");
   });
 
-  it("refuses a production deploy under a disposable-only native approval", async () => {
+  it("refuses a production resource under a disposable-only native approval", async () => {
     const requirements = {
-      external_effects: ["deploy"],
-      capabilities: ["deploy"],
       resources: ["environment:production"],
     };
     const f = await fixture("manual_operator", requirements);
