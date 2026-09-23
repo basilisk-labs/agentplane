@@ -184,6 +184,19 @@ function planMatches(
   return plan !== null && plan.revision === revision && plan.digest === digest;
 }
 
+function isApprovedBlockedPlanRejection(input: KernelInput): boolean {
+  return (
+    input.command.kind === "reject_plan" &&
+    input.aggregate.current_plan?.state === "APPROVED" &&
+    input.aggregate.state === "ACTIVE" &&
+    Object.values(input.aggregate.work_items).some((item) => item.state === "BLOCKED") &&
+    input.actor.kind === "USER" &&
+    input.actor.transport === "manual" &&
+    input.command.rejection_evidence_digest !== undefined &&
+    isSha256Digest(input.command.rejection_evidence_digest)
+  );
+}
+
 function requiredAuthority(input: KernelInput, workItemId: string | null): KernelResult | null {
   const authority = input.authority;
   if (!authority) return rejected("AUTHORITY_MISSING", [input.command.kind], "request_authority");
@@ -200,11 +213,13 @@ function requiredAuthority(input: KernelInput, workItemId: string | null): Kerne
     input.command.kind === "propose_plan" &&
     input.aggregate.state === "PLANNING" &&
     input.aggregate.current_plan?.state === "REJECTED";
+  const approvedBlockedPlanRejection = isApprovedBlockedPlanRejection(input);
   if (persisted && input.command.kind !== "approve_plan") {
     if (authority.digest !== authorityDigest(authority))
       return rejected("AUTHORITY_SCOPE_EXCEEDED", ["authority_digest"]);
     if (
       !rejectedPlanReplanning &&
+      !approvedBlockedPlanRejection &&
       kernelDigest(authority) !== kernelDigest(persisted) &&
       !compareExecutionAuthority(persisted, authority).ok
     )
@@ -753,14 +768,7 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       if (!planMatches(aggregate.current_plan, command.plan_revision, command.plan_digest)) {
         return rejected("PLAN_DIGEST_MISMATCH", [command.plan_digest]);
       }
-      const approvedBlockedReplan =
-        aggregate.current_plan.state === "APPROVED" &&
-        aggregate.state === "ACTIVE" &&
-        Object.values(aggregate.work_items).some((item) => item.state === "BLOCKED") &&
-        input.actor.kind === "USER" &&
-        input.actor.transport === "manual" &&
-        command.rejection_evidence_digest !== undefined &&
-        isSha256Digest(command.rejection_evidence_digest);
+      const approvedBlockedReplan = isApprovedBlockedPlanRejection(input);
       if (aggregate.current_plan.state !== "PROPOSED" && !approvedBlockedReplan) {
         return rejected("ILLEGAL_TASK_TRANSITION", [aggregate.current_plan.state, "REJECTED"]);
       }
