@@ -101,6 +101,7 @@ export {
   computeVerificationContractKernel,
   computeLegacyVerificationContractKernel,
   isCentralVerificationPath,
+  repositoryEffectsForChange,
   repositoryEffectsForPath,
   type VerificationContractKernelInput,
   type VerificationContractPhase,

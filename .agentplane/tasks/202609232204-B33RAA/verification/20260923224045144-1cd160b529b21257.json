@@ -1,0 +1,222 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202609232204-B33RAA/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609232204-B33RAA Verification Contract check affected_unit_integration (1/4)\n\nCheck: affected_unit_integration\nCommand: bunx vitest run packages/agentplane/src/runtime/task-routing/resolve.test.ts packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts --maxWorkers=1\nResult: pass\nEvidence: .agentplane/tasks/202609232204-B33RAA/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609232204-B33RAA Verification Contract check affected_unit_integration (2/4)\n\nCheck: affected_unit_integration\nCommand: bunx vitest run packages/agentplane/src/runtime/task-routing/resolve.test.ts packages/core/src/tasks/verification-contract.test.ts --maxWorkers=1\nResult: pass\nEvidence: .agentplane/tasks/202609232204-B33RAA/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609232204-B33RAA Verification Contract check affected_unit_integration (3/4)\n\nCheck: affected_unit_integration\nCommand: bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts --maxWorkers=1\nResult: pass\nEvidence: .agentplane/tasks/202609232204-B33RAA/supervision/declared-checks.json#check-4\nScope: branch_pr task 202609232204-B33RAA Verification Contract check affected_unit_integration (4/4)\n\nCheck: critical_paths\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202609232204-B33RAA/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609232204-B33RAA Verification Contract check critical_paths (1/4)\n\nCheck: critical_paths\nCommand: bunx vitest run packages/agentplane/src/runtime/task-routing/resolve.test.ts packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts --maxWorkers=1\nResult: pass\nEvidence: .agentplane/tasks/202609232204-B33RAA/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609232204-B33RAA Verification Contract check critical_paths (2/4)\n\nCheck: critical_paths\nCommand: bunx vitest run packages/agentplane/src/runtime/task-routing/resolve.test.ts packages/core/src/tasks/verification-contract.test.ts --maxWorkers=1\nResult: pass\nEvidence: .agentplane/tasks/202609232204-B33RAA/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609232204-B33RAA Verification Contract check critical_paths (3/4)\n\nCheck: critical_paths\nCommand: bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts --maxWorkers=1\nResult: pass\nEvidence: .agentplane/tasks/202609232204-B33RAA/supervision/declared-checks.json#check-4\nScope: branch_pr task 202609232204-B33RAA Verification Contract check critical_paths (4/4)\n\nCheck: task_outcome\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202609232204-B33RAA/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609232204-B33RAA Verification Contract check task_outcome (1/4)\n\nCheck: task_outcome\nCommand: bunx vitest run packages/agentplane/src/runtime/task-routing/resolve.test.ts packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts --maxWorkers=1\nResult: pass\nEvidence: .agentplane/tasks/202609232204-B33RAA/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609232204-B33RAA Verification Contract check task_outcome (2/4)\n\nCheck: task_outcome\nCommand: bunx vitest run packages/agentplane/src/runtime/task-routing/resolve.test.ts packages/core/src/tasks/verification-contract.test.ts --maxWorkers=1\nResult: pass\nEvidence: .agentplane/tasks/202609232204-B33RAA/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609232204-B33RAA Verification Contract check task_outcome (3/4)\n\nCheck: task_outcome\nCommand: bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts --maxWorkers=1\nResult: pass\nEvidence: .agentplane/tasks/202609232204-B33RAA/supervision/declared-checks.json#check-4\nScope: branch_pr task 202609232204-B33RAA Verification Contract check task_outcome (4/4)",
+  "digest": "sha256:1cd160b529b212577988cdaedeeb5a74a490b43cd4a2a08c6df8b565a6bf921e",
+  "implementation_sha": "5ee2da01f9fa34bbdd8386dc8be29a93b2c4fcb2",
+  "input": {
+    "checked_input": {
+      "commands": {
+        "digest": "sha256:d9d0f3503c64f8076e2ea6e31cb1f2775bfb37f91174301b88d7f3d1be032d53",
+        "entries": [
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run typecheck"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts --maxWorkers=1"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bunx vitest run packages/agentplane/src/runtime/task-routing/resolve.test.ts packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts --maxWorkers=1"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bunx vitest run packages/agentplane/src/runtime/task-routing/resolve.test.ts packages/core/src/tasks/verification-contract.test.ts --maxWorkers=1"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run typecheck"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts --maxWorkers=1"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bunx vitest run packages/agentplane/src/runtime/task-routing/resolve.test.ts packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts --maxWorkers=1"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bunx vitest run packages/agentplane/src/runtime/task-routing/resolve.test.ts packages/core/src/tasks/verification-contract.test.ts --maxWorkers=1"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run typecheck"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts --maxWorkers=1"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bunx vitest run packages/agentplane/src/runtime/task-routing/resolve.test.ts packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts --maxWorkers=1"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bunx vitest run packages/agentplane/src/runtime/task-routing/resolve.test.ts packages/core/src/tasks/verification-contract.test.ts --maxWorkers=1"
+          }
+        ]
+      },
+      "context": {
+        "digest": "sha256:d9d6be06d753cd306739380bd4aed1d1ce9b7f24d93f9916f549597135b00026",
+        "paths": [
+          ".agentplane/WORKFLOW.md",
+          ".github/ISSUE_TEMPLATE/config.yml",
+          "bun.lock",
+          "depcruise.config.cjs",
+          "eslint.config.cjs",
+          "knip.json",
+          "package.json",
+          "packages/agentplane/package.json",
+          "packages/agentplane/src/cli/run-cli/commands/config.ts",
+          "packages/agentplane/src/runner/config.test.ts",
+          "packages/agentplane/src/runner/config.ts",
+          "packages/agentplane/tsconfig.json",
+          "packages/agentplane/tsup.config.ts",
+          "packages/core/package.json",
+          "packages/core/schemas/config.schema.json",
+          "packages/core/src/config/config.test.ts",
+          "packages/core/src/config/config.ts",
+          "packages/core/tsconfig.json",
+          "packages/core/tsup.config.ts",
+          "packages/recipes/package.json",
+          "packages/recipes/tsconfig.json",
+          "packages/recipes/tsup.config.ts",
+          "packages/spec/examples/config.json",
+          "packages/spec/package.json",
+          "packages/spec/schemas/config.schema.json",
+          "packages/testkit/package.json",
+          "packages/testkit/tsconfig.json",
+          "schemas/config.schema.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+          "tsconfig.json",
+          "turbo.json",
+          "vitest.config.ts",
+          "vitest.workspace.ts",
+          "website/bun.lock",
+          "website/docusaurus.config.ts",
+          "website/package.json",
+          "website/tsconfig.json"
+        ]
+      },
+      "digest": "sha256:e3082f09fc07b4ce9e61fb11613b1d3683d1933e25b2df2b5beb84cb70854410",
+      "environment": {
+        "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+        "runtime": {
+          "architecture": "arm64",
+          "bun_major": null,
+          "node_major": "24",
+          "platform": "darwin"
+        }
+      },
+      "evidence": {
+        "details_digest": "sha256:675da2dc08154164860c2bf9afa92626325724e4c400fab4198e60a8d17bc017",
+        "digest": "sha256:110082c6b15fb93894b1c4f1ba74804338d15ed8948f4af7c365e03846f1759c",
+        "references": [
+          {
+            "digest": "sha256:b08b4a8aaa69402eb5ea4a9b9b8bf3ac8b9951f4b5e10e241fe5413849b9bf98",
+            "fragment": "check-1",
+            "path": ".agentplane/tasks/202609232204-B33RAA/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202609232204-B33RAA/supervision/declared-checks.json#check-1",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:b08b4a8aaa69402eb5ea4a9b9b8bf3ac8b9951f4b5e10e241fe5413849b9bf98",
+            "fragment": "check-2",
+            "path": ".agentplane/tasks/202609232204-B33RAA/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202609232204-B33RAA/supervision/declared-checks.json#check-2",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:b08b4a8aaa69402eb5ea4a9b9b8bf3ac8b9951f4b5e10e241fe5413849b9bf98",
+            "fragment": "check-3",
+            "path": ".agentplane/tasks/202609232204-B33RAA/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202609232204-B33RAA/supervision/declared-checks.json#check-3",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:b08b4a8aaa69402eb5ea4a9b9b8bf3ac8b9951f4b5e10e241fe5413849b9bf98",
+            "fragment": "check-4",
+            "path": ".agentplane/tasks/202609232204-B33RAA/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202609232204-B33RAA/supervision/declared-checks.json#check-4",
+            "source": "filesystem"
+          }
+        ]
+      },
+      "implementation": {
+        "base_sha": "5ee2da01f9fa34bbdd8386dc8be29a93b2c4fcb2",
+        "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "strategy": "branch_diff",
+        "target_sha": "5ee2da01f9fa34bbdd8386dc8be29a93b2c4fcb2"
+      }
+    },
+    "concurrency": {
+      "digest": "sha256:ef2b393fb83cc62d8ac11fecc828ef44fa73085d6ba88999bc68d49729021261",
+      "execution": {
+        "authoritative_task_source": "task_worktree",
+        "base_ref": "main",
+        "base_sha": "5ee2da01f9fa34bbdd8386dc8be29a93b2c4fcb2",
+        "digest": "sha256:2f12274d415372c5750ace5d0ba0098284a1307ff02eef75aa8280b95415c50e",
+        "primary_task_id": "202609232204-B33RAA",
+        "reason_codes": [
+          "agent_preferred_branch_pr",
+          "repository_branch_pr_floor"
+        ],
+        "repository_mode": "branch_pr",
+        "requested_mode": "branch_pr",
+        "route_source": "execution_contract",
+        "selected_mode": "branch_pr",
+        "task_ids": [
+          "202609232204-B33RAA"
+        ]
+      },
+      "task": {
+        "capability": {
+          "digest": "sha256:46110055c8caeef747ebc499338bda69c61c7aa9f1ec99d202d9b0005224f6cd"
+        },
+        "checks": {
+          "digest": "sha256:46be63a181b477f7e54d121bc1d553426d324512c08aeefb0501b8cbfeb9d704",
+          "required_check_ids": [
+            "affected_unit_integration",
+            "critical_paths",
+            "task_outcome"
+          ],
+          "verification_contract_digest": "sha256:5cce438a0252ecd96091bc582c42af2d777ee0f2a627b7930089252831afd436"
+        },
+        "digest": "sha256:780c1e94dbaf3fe824ff64174180eaabc32e86f13207ff09f69b52d5834bfcc5",
+        "kind": "agentplane.native_task_identity",
+        "plan": {
+          "approval_state": "approved",
+          "approved_digest": "sha256:8b1eb61be45d42d445f4103dc8ee1f62b46b7199c427867826722796fd4bea9a",
+          "digest": "sha256:8b1eb61be45d42d445f4103dc8ee1f62b46b7199c427867826722796fd4bea9a",
+          "revision": 1
+        },
+        "policy": {
+          "digest": "sha256:1508520334b86880f4c7ebdff3696edff99bcc2f3bd0e31747a3b7da58bf1dd6"
+        },
+        "schema_version": 1,
+        "task_id": "202609232204-B33RAA"
+      }
+    },
+    "digest": "sha256:b1eb0fb1d3a87dc29c3de42afe5f2beebdab15237a82e001cb0268cea0432dcb",
+    "kind": "task_verification_input",
+    "obligations": {
+      "digest": "sha256:03063b5a4efdae765da51517cc47d6de0d6f28638eb07b40c9b1181a18b09d97",
+      "required_check_ids": [],
+      "verification_contract_digest": "sha256:5cce438a0252ecd96091bc582c42af2d777ee0f2a627b7930089252831afd436",
+      "verify_steps_digest": "sha256:a3ced96d407b1656d88dd1a5cf5732b8e7f80f6604f5e829715ec25b455b856f"
+    },
+    "schema_version": 5
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: canonical Task Kernel final checks passed.",
+  "recorded_at": "2026-09-23T22:40:45.144Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bunx vitest run packages/agentplane/src/runtime/task-routing/resolve.test.ts packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts --maxWorkers=1`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
+  "scope_digest": "sha256:a3ced96d407b1656d88dd1a5cf5732b8e7f80f6604f5e829715ec25b455b856f",
+  "task_id": "202609232204-B33RAA",
+  "verification_command": "agentplane verify 202609232204-B33RAA --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
