@@ -1,10 +1,11 @@
 ---
 id: "202609231207-R59HKK"
 title: "Make canonical supervisor transitions recoverable across branch lifecycle boundaries"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -45,6 +46,22 @@ quality_review:
     - "PASS: ready WorkItems without a dedicated task worktree route to worktree.prepare before unrelated dirty base-checkout resolution, while invalid provider-conflict context remains fail-closed."
     - "PASS: repository evidence binds the implementation to commit 3243d26a28119f73b05e2e6e5036d8a74a97cb54 and lists only the approved task artifacts, source files, and regression tests."
     - "PASS: AgentPlane-native validation recorded the required contract tests, typecheck, and full local CI suite with exit code 0."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:11093f041c237c3577ee7b30a908aa8dd3263b3aee00957ac0ac3d73618ea479"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-09-23T13:07:28.998Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -238,9 +255,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "3243d26a28119f73b05e2e6e5036d8a74a97cb54"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "af086495680ba250505f93e77296f3efe6134299"
+  message: "✅ R59HKK task: persist canonical completion"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -248,9 +268,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-09-23T13:07:28.998Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "af086495680ba250505f93e77296f3efe6134299"
 doc_version: 3
-doc_updated_at: "2026-09-23T13:02:15.908Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-23T13:07:28.998Z"
+doc_updated_by: "CODER"
 description: "Repair evaluator diff-base selection after provider branch updates, forward replacement intent into evaluator episodes, persist supervisor-generated task artifacts without false task_worktree_resolution, dispatch pre-merge closure through the supported local lifecycle path, and admit worktree.prepare before dirty-base worktree resolution."
 sections:
   Summary: |-
@@ -377,6 +405,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:b27716cfdf21052f810046405dc0204d0cad21eac7b0da8dd262dc1c954b7118"
     work_order_id: "sha256:061cb3ad1041d2a68dd6a373011b1dca865f86c72792d04ad23534280c23cf19"
+  implementation_commit:
+    hash: "3243d26a28119f73b05e2e6e5036d8a74a97cb54"
+    message: "🚧 R59HKK task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "940209a800dedc5b27c382a2642dff316b30a8fc"
@@ -1005,3 +1036,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:11093f041c237c3577ee7b30a908aa8dd3263b3aee00957ac0ac3d73618ea479`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-09-23T13:07:28.998Z`
