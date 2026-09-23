@@ -1,0 +1,204 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609231207-R59HKK/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609231207-R59HKK Verification Contract check affected_unit_integration (1/3)\n\nCheck: affected_unit_integration\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202609231207-R59HKK/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609231207-R59HKK Verification Contract check affected_unit_integration (2/3)\n\nCheck: affected_unit_integration\nCommand: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-verification-contract.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts packages/agentplane/src/commands/task/external-agent-supervisor.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609231207-R59HKK/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609231207-R59HKK Verification Contract check affected_unit_integration (3/3)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609231207-R59HKK/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609231207-R59HKK Verification Contract check critical_paths (1/3)\n\nCheck: critical_paths\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202609231207-R59HKK/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609231207-R59HKK Verification Contract check critical_paths (2/3)\n\nCheck: critical_paths\nCommand: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-verification-contract.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts packages/agentplane/src/commands/task/external-agent-supervisor.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609231207-R59HKK/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609231207-R59HKK Verification Contract check critical_paths (3/3)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609231207-R59HKK/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609231207-R59HKK Verification Contract check task_outcome (1/3)\n\nCheck: task_outcome\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202609231207-R59HKK/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609231207-R59HKK Verification Contract check task_outcome (2/3)\n\nCheck: task_outcome\nCommand: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-verification-contract.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts packages/agentplane/src/commands/task/external-agent-supervisor.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609231207-R59HKK/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609231207-R59HKK Verification Contract check task_outcome (3/3)",
+  "digest": "sha256:dd2f946040fd9a164f3006e63b4d35e8a9a4deec74dc965dd91ba3633ad08efd",
+  "implementation_sha": "3243d26a28119f73b05e2e6e5036d8a74a97cb54",
+  "input": {
+    "checked_input": {
+      "commands": {
+        "digest": "sha256:60297af03958c38bc8259212cf0675d56963510de0ddcaa2d45b6f78202f9b4d",
+        "entries": [
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run typecheck"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-verification-contract.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts packages/agentplane/src/commands/task/external-agent-supervisor.test.ts"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run typecheck"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-verification-contract.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts packages/agentplane/src/commands/task/external-agent-supervisor.test.ts"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run typecheck"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-verification-contract.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts packages/agentplane/src/commands/task/external-agent-supervisor.test.ts"
+          }
+        ]
+      },
+      "context": {
+        "digest": "sha256:d9d6be06d753cd306739380bd4aed1d1ce9b7f24d93f9916f549597135b00026",
+        "paths": [
+          ".agentplane/WORKFLOW.md",
+          ".github/ISSUE_TEMPLATE/config.yml",
+          "bun.lock",
+          "depcruise.config.cjs",
+          "eslint.config.cjs",
+          "knip.json",
+          "package.json",
+          "packages/agentplane/package.json",
+          "packages/agentplane/src/cli/run-cli/commands/config.ts",
+          "packages/agentplane/src/runner/config.test.ts",
+          "packages/agentplane/src/runner/config.ts",
+          "packages/agentplane/tsconfig.json",
+          "packages/agentplane/tsup.config.ts",
+          "packages/core/package.json",
+          "packages/core/schemas/config.schema.json",
+          "packages/core/src/config/config.test.ts",
+          "packages/core/src/config/config.ts",
+          "packages/core/tsconfig.json",
+          "packages/core/tsup.config.ts",
+          "packages/recipes/package.json",
+          "packages/recipes/tsconfig.json",
+          "packages/recipes/tsup.config.ts",
+          "packages/spec/examples/config.json",
+          "packages/spec/package.json",
+          "packages/spec/schemas/config.schema.json",
+          "packages/testkit/package.json",
+          "packages/testkit/tsconfig.json",
+          "schemas/config.schema.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+          "tsconfig.json",
+          "turbo.json",
+          "vitest.config.ts",
+          "vitest.workspace.ts",
+          "website/bun.lock",
+          "website/docusaurus.config.ts",
+          "website/package.json",
+          "website/tsconfig.json"
+        ]
+      },
+      "digest": "sha256:4af8dd0d3cb73431952ca5f1bab6fe83c7609bf61e44032c3cc3367864e218e1",
+      "environment": {
+        "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+        "runtime": {
+          "architecture": "arm64",
+          "bun_major": null,
+          "node_major": "24",
+          "platform": "darwin"
+        }
+      },
+      "evidence": {
+        "details_digest": "sha256:7449617959af8819a24bf0b35592e3d890e9243131b4aa54bc5827ccfcc48c14",
+        "digest": "sha256:291335d6e6baf87f18233e1194cfd10e28d94b3fe1430d3210862557f19947d6",
+        "references": [
+          {
+            "digest": "sha256:b089fa5fa4072d218dd88227243aec6c9752deccaebed06ca0f00b776f78e241",
+            "fragment": "check-1",
+            "path": ".agentplane/tasks/202609231207-R59HKK/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202609231207-R59HKK/supervision/declared-checks.json#check-1",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:b089fa5fa4072d218dd88227243aec6c9752deccaebed06ca0f00b776f78e241",
+            "fragment": "check-2",
+            "path": ".agentplane/tasks/202609231207-R59HKK/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202609231207-R59HKK/supervision/declared-checks.json#check-2",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:b089fa5fa4072d218dd88227243aec6c9752deccaebed06ca0f00b776f78e241",
+            "fragment": "check-3",
+            "path": ".agentplane/tasks/202609231207-R59HKK/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202609231207-R59HKK/supervision/declared-checks.json#check-3",
+            "source": "filesystem"
+          }
+        ]
+      },
+      "implementation": {
+        "base_sha": "940209a800dedc5b27c382a2642dff316b30a8fc",
+        "digest": "sha256:2dd025b7bc668d340b6e2f11b7d41005a6367ff5ed967ed27af88ffee7bdc4bf",
+        "strategy": "branch_diff",
+        "target_sha": "3243d26a28119f73b05e2e6e5036d8a74a97cb54"
+      }
+    },
+    "concurrency": {
+      "digest": "sha256:f5aa2af5bb3d9e4b97a339b2c942cfc41953d1fe65c5e684eca905e404eb3359",
+      "execution": {
+        "authoritative_task_source": "task_worktree",
+        "base_ref": "main",
+        "base_sha": "940209a800dedc5b27c382a2642dff316b30a8fc",
+        "digest": "sha256:25c8c12cbdacaf4186346df317b56165d9193bc17897b608ae193fa03c8f0993",
+        "primary_task_id": "202609231207-R59HKK",
+        "reason_codes": [
+          "agent_preferred_branch_pr",
+          "repository_branch_pr_floor"
+        ],
+        "repository_mode": "branch_pr",
+        "requested_mode": "branch_pr",
+        "route_source": "execution_contract",
+        "selected_mode": "branch_pr",
+        "task_ids": [
+          "202609231207-R59HKK"
+        ]
+      },
+      "task": {
+        "capability": {
+          "digest": "sha256:44668150af015035b4f9295eeb1e83a605e3c89b183ce28b4421a381c9bdb75f"
+        },
+        "checks": {
+          "digest": "sha256:34d79048132ae7f4ed26f9c62b2c80c8599f198d385b557fa19cec12621a8f24",
+          "required_check_ids": [
+            "affected_unit_integration",
+            "critical_paths",
+            "full_regression",
+            "task_outcome"
+          ],
+          "verification_contract_digest": "sha256:06f97575ea001766b97b9fd8bf00f1eab7e731db00fa77994d3db37494d6bcdf"
+        },
+        "digest": "sha256:1620a94c1d8086c1436937fe1a17a51a9a130353ee2ab726277d1dae9ac3d26f",
+        "kind": "agentplane.native_task_identity",
+        "plan": {
+          "approval_state": "approved",
+          "approved_digest": "sha256:c7e4e13963ee3e176d46d80eff725163587d243761643fc175af5d05a235650d",
+          "digest": "sha256:c7e4e13963ee3e176d46d80eff725163587d243761643fc175af5d05a235650d",
+          "revision": 1
+        },
+        "policy": {
+          "digest": "sha256:1508520334b86880f4c7ebdff3696edff99bcc2f3bd0e31747a3b7da58bf1dd6"
+        },
+        "schema_version": 1,
+        "task_id": "202609231207-R59HKK"
+      }
+    },
+    "digest": "sha256:8161cc8d2cd1d40f07974075332e5ebd086f3088348ae049b903129d10376678",
+    "kind": "task_verification_input",
+    "obligations": {
+      "digest": "sha256:9ad2b56a4d842fc9c4daec5203ca9afd1de0951a81ac05fd5e3747d303831b44",
+      "required_check_ids": [],
+      "verification_contract_digest": "sha256:06f97575ea001766b97b9fd8bf00f1eab7e731db00fa77994d3db37494d6bcdf",
+      "verify_steps_digest": "sha256:e573dbefa699ecc216e4bc34caa974444ade6e1ea84217539d4b4351c4f85e5d"
+    },
+    "schema_version": 5
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: canonical Task Kernel final checks passed.",
+  "recorded_at": "2026-09-23T13:02:14.896Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Make canonical supervisor transitions recoverable across branch lifecycle boundaries\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Make canonical supervisor transitions recoverable across branch lifecycle boundaries\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:e573dbefa699ecc216e4bc34caa974444ade6e1ea84217539d4b4351c4f85e5d",
+  "task_id": "202609231207-R59HKK",
+  "verification_command": "agentplane verify 202609231207-R59HKK --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
