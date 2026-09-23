@@ -423,6 +423,7 @@ async function executeBranchVerificationEpisode(opts: {
             result: checks,
           }),
           verificationSnapshot: verification.snapshot,
+          allowCanonicalProjection: true,
           localOnly: false,
           repoFixable: !passed,
           incidentTags: [],

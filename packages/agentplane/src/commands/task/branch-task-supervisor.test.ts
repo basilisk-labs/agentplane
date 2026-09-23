@@ -33,6 +33,11 @@ describe("retired branch task outer supervisor", () => {
     expect(advance).toContain("applyKernelEffectStep");
   });
 
+  it("records branch verification as a canonical compatibility projection", async () => {
+    const { episodes } = await sources();
+    expect(episodes).toContain("allowCanonicalProjection: true");
+  });
+
   it("does not replay a completed hosted-close side effect on supervisor restart", async () => {
     const { advance } = await sources();
     expect(advance).toContain("restoreKernelFinalValidation");
