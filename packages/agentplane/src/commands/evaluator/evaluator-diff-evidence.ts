@@ -7,6 +7,38 @@ import { CliError } from "../../shared/errors.js";
 
 const execFileNative = promisify(execFile);
 
+async function resolveIntegratedBaseFromTaskUpstream(opts: {
+  gitRoot: string;
+  evaluatedSha: string;
+  localMergeBase: string;
+}): Promise<string | null> {
+  try {
+    const upstreamHead = await gitRevParse(opts.gitRoot, ["@{upstream}^{commit}"]);
+    if (!(await gitIsAncestor(opts.gitRoot, upstreamHead, opts.evaluatedSha))) return null;
+    const { stdout } = await execFileAsync(
+      "git",
+      ["rev-list", "--first-parent", "--merges", "--parents", upstreamHead],
+      { cwd: opts.gitRoot, env: gitEnv() },
+    );
+    for (const line of stdout.split(/\r?\n/u)) {
+      const [, , ...integratedParents] = line.trim().split(/\s+/u);
+      for (const candidate of integratedParents) {
+        if (
+          candidate &&
+          candidate !== opts.localMergeBase &&
+          (await gitIsAncestor(opts.gitRoot, opts.localMergeBase, candidate)) &&
+          (await gitIsAncestor(opts.gitRoot, candidate, opts.evaluatedSha))
+        ) {
+          return candidate;
+        }
+      }
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 function assertGitObjectId(value: string): void {
   if (!/^[0-9a-f]{40}(?:[0-9a-f]{24})?$/u.test(value)) {
     throw new Error(`expected a full Git object ID, received: ${value}`);
@@ -36,7 +68,15 @@ export async function resolveEvaluatorDiffBase(opts: {
     const upstreamCommit = await gitRevParse(opts.gitRoot, [
       `${baseRef}@{upstream}^{commit}`,
     ]).catch(() => null);
-    if (!upstreamCommit) return localMergeBase;
+    if (!upstreamCommit) {
+      return (
+        (await resolveIntegratedBaseFromTaskUpstream({
+          gitRoot: opts.gitRoot,
+          evaluatedSha: opts.evaluatedSha,
+          localMergeBase,
+        })) ?? localMergeBase
+      );
+    }
 
     const upstreamMergeBase = await gitMergeBase(
       opts.gitRoot,
@@ -48,7 +88,13 @@ export async function resolveEvaluatorDiffBase(opts: {
       upstreamMergeBase === localMergeBase ||
       !(await gitIsAncestor(opts.gitRoot, localMergeBase, upstreamMergeBase))
     ) {
-      return localMergeBase;
+      return (
+        (await resolveIntegratedBaseFromTaskUpstream({
+          gitRoot: opts.gitRoot,
+          evaluatedSha: opts.evaluatedSha,
+          localMergeBase,
+        })) ?? localMergeBase
+      );
     }
 
     // A squash-merged base update can leave the checked-out local base on a

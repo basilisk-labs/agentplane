@@ -85,4 +85,48 @@ describe("evaluator verification contract", () => {
     expect(frozenDiff).toContain("src/task-owned.ts");
     expect(frozenDiff).not.toContain("src/unrelated-main.ts");
   });
+
+  it("recovers the integrated base from the published task head when base tracking is stale", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202605240900-EV28";
+    await commitPath(root, "README.md", "base\n", "chore: establish base");
+    await addTask(root, taskId);
+    const frozenBase = await freezeTaskExecutionBase(root, taskId);
+    await execFileAsync("git", ["switch", "-c", "task/evaluator-stale-base"], { cwd: root });
+    await commitPath(root, "src/task-owned.ts", "export const taskOwned = true;\n", "feat: task");
+    await execFileAsync("git", ["switch", "main"], { cwd: root });
+    await commitPath(
+      root,
+      "src/unrelated-main.ts",
+      "export const unrelated = true;\n",
+      "feat: main",
+    );
+    await execFileAsync("git", ["switch", "task/evaluator-stale-base"], { cwd: root });
+    await execFileAsync("git", ["merge", "--no-edit", "main"], { cwd: root });
+    const { stdout: integratedStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    const integratedHead = integratedStdout.trim();
+    await execFileAsync("git", ["remote", "add", "origin", root], { cwd: root });
+    await execFileAsync(
+      "git",
+      ["update-ref", "refs/remotes/origin/task/evaluator-stale-base", integratedHead],
+      { cwd: root },
+    );
+    await execFileAsync(
+      "git",
+      ["branch", "--set-upstream-to", "origin/task/evaluator-stale-base"],
+      { cwd: root },
+    );
+    await execFileAsync("git", ["update-ref", "refs/heads/main", frozenBase], { cwd: root });
+
+    const { prepared } = await prepareTypedReview(root, taskId);
+    const actualDiff = prepared.work_order.evidence.find((entry) => entry.kind === "actual_diff");
+    if (!actualDiff) throw new Error("Missing actual-diff evidence.");
+    const frozenDiff = await readFile(path.join(root, actualDiff.path), "utf8");
+
+    expect(frozenDiff).toContain("src/task-owned.ts");
+    expect(frozenDiff).not.toContain("src/unrelated-main.ts");
+  });
 });
