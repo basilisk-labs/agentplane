@@ -119,6 +119,33 @@ async function repositorySnapshot(root: string, evidencePath: string, record: un
 }
 
 describe("LC-20 terminal replay", () => {
+  it("consumes replacement authority before advancing to the next canonical episode", async () => {
+    const { runtime } = completedRuntime();
+    mocks.createKernelRuntime.mockResolvedValue(runtime);
+    mocks.decideCanonicalWorkflowEffect
+      .mockResolvedValueOnce({ workflowStep: { kind: "agent_episode" } })
+      .mockResolvedValueOnce({ workflowStep: { kind: "agent_episode" } })
+      .mockResolvedValueOnce({ workflowStep: { kind: "terminal", outcome: { type: "done" } } });
+    mocks.executeCanonicalCompletedAgentEpisode.mockResolvedValue(true);
+
+    await advanceTaskStep({
+      command: { resolvedProject: { gitRoot: "/repo" } } as never,
+      task_id: "task-1",
+      transport: "host",
+      allow_provider_effects: true,
+      replace_failed_operation: true,
+    });
+
+    expect(mocks.executeCanonicalCompletedAgentEpisode).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ replace_failed_operation: true }),
+    );
+    expect(mocks.executeCanonicalCompletedAgentEpisode).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ replace_failed_operation: false }),
+    );
+  });
+
   it("commits terminal task artifacts only after complete_task is persisted", async () => {
     const events: string[] = [];
     const evidenceDigest = `sha256:${"e".repeat(64)}`;

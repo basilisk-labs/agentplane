@@ -46,7 +46,7 @@ Created: 2026-09-23T12:42:13.939Z
  .../shared/workflow-step-factory-branch.ts         |  21 +++
  .../src/commands/shared/workflow-step-factory.ts   |   1 +
  .../shared/workflow-step-worktree-priority.test.ts |  30 ++++
- .../src/commands/task/advance-task-step.ts         |  44 +++++-
+ .../src/commands/task/advance-task-step.ts         |  47 +++++-
  .../src/commands/task/advance.command.ts           |  25 ++-
  .../task/branch-task-supervisor-episodes.ts        |   2 +
  .../branch-task-supervisor-evaluator-episode.ts    |   3 +-
@@ -56,8 +56,8 @@ Created: 2026-09-23T12:42:13.939Z
  .../task/direct-task-supervisor-evaluator.ts       |   3 +-
  .../direct-task-supervisor-formal-operation.ts     |  12 ++
  .../task/kernel-provider-effect-coordinator.ts     |  74 ++++++++-
- .../commands/task/roadmap-terminal-noop.test.ts    |  38 +++++
- 28 files changed, 660 insertions(+), 36 deletions(-)
+ .../commands/task/roadmap-terminal-noop.test.ts    |  65 ++++++++
+ 28 files changed, 690 insertions(+), 36 deletions(-)
 ```
 
 </details>
