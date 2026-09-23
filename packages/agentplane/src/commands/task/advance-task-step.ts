@@ -139,6 +139,7 @@ async function advanceCanonicalRoute(opts: {
     if (stop) return { schema_version: 1, task_id: opts.task_id, action: stop };
   }
   const visited = new Set<string>();
+  let replaceFailedOperation = opts.replace_failed_operation;
   let finalValidation: {
     fingerprint: string;
     environment_digest: string;
@@ -216,9 +217,10 @@ async function advanceCanonicalRoute(opts: {
           command: opts.command,
           decision: localWorkflow,
           task_id: opts.task_id,
-          replace_failed_operation: opts.replace_failed_operation,
+          replace_failed_operation: replaceFailedOperation,
         })
       ) {
+        replaceFailedOperation = false;
         continue;
       }
       if (
@@ -276,9 +278,10 @@ async function advanceCanonicalRoute(opts: {
           command: opts.command,
           decision: workflow,
           task_id: opts.task_id,
-          replace_failed_operation: opts.replace_failed_operation,
+          replace_failed_operation: replaceFailedOperation,
         })
       ) {
+        replaceFailedOperation = false;
         continue;
       }
       if (
