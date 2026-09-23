@@ -397,11 +397,21 @@ export async function deriveBlockers(opts: {
   }
   if (opts.task.status === "DONE") {
     if (opts.workflowMode === "branch_pr" && qualityReviewRequiresImplementationRework(opts.task)) {
-      addBlocker(
-        blockers,
-        "implementation_rework_required",
-        "latest EVALUATOR result requires implementation rework before integration",
-      );
+      const reworkAppliesToCurrentHead = await qualityReviewIsFreshForHead({
+        ctx: opts.ctx,
+        task: opts.task,
+        headSha: opts.prFlow?.branch.headSha ?? opts.resume.head_sha,
+        batchOwnership: opts.batchOwnership,
+        expectedState: opts.task.quality_review?.state === "blocked" ? "blocked" : "rework",
+        workflowMode: opts.workflowMode,
+      });
+      if (reworkAppliesToCurrentHead) {
+        addBlocker(
+          blockers,
+          "implementation_rework_required",
+          "latest EVALUATOR result requires implementation rework before integration",
+        );
+      }
     }
     if (opts.workflowMode === "branch_pr" && opts.cleanupProbe.state === "blocked") {
       addBlocker(

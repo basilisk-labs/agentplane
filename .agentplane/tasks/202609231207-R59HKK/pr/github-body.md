@@ -35,7 +35,8 @@ Repair evaluator diff-base selection after provider branch updates, forward repl
  .../commands/pr/provider-update-branch-local.ts    |  16 +++
  .../src/commands/pr/provider-update-branch.test.ts |   2 +-
  .../src/commands/pr/provider-update-branch.ts      |   6 +-
- .../src/commands/shared/route-decision-blockers.ts |   6 +-
+ .../route-decision-blockers.quality-review.test.ts |  25 ++++
+ .../src/commands/shared/route-decision-blockers.ts |  26 ++--
  .../src/commands/shared/workflow-step-branch.ts    |   9 +-
  .../shared/workflow-step-factory-branch.ts         |  21 +++
  .../src/commands/shared/workflow-step-factory.ts   |   1 +
@@ -51,7 +52,7 @@ Repair evaluator diff-base selection after provider branch updates, forward repl
  .../direct-task-supervisor-formal-operation.ts     |  12 ++
  .../task/kernel-provider-effect-coordinator.ts     |  74 +++++++++-
  .../commands/task/roadmap-terminal-noop.test.ts    |  38 +++++
- 24 files changed, 521 insertions(+), 25 deletions(-)
+ 25 files changed, 561 insertions(+), 30 deletions(-)
 ```
 
 </details>
