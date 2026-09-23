@@ -50,15 +50,11 @@ describe("route decision workspace", () => {
     const context = resume({ branch: "task/202609230938-QFMVQ0/fix-route" });
 
     expect(deriveRouteCheckoutRole(context)).toBe("task_worktree");
-    expect(inferTaskRouteBranch(context, null)).toBe(
-      "task/202609230938-QFMVQ0/fix-route",
-    );
+    expect(inferTaskRouteBranch(context, null)).toBe("task/202609230938-QFMVQ0/fix-route");
   });
 
   it("resolves an origin-tracking base through its local branch worktree", async () => {
-    vi.mocked(findWorktreeForBranch)
-      .mockResolvedValueOnce(null)
-      .mockResolvedValueOnce("/repo");
+    vi.mocked(findWorktreeForBranch).mockResolvedValueOnce(null).mockResolvedValueOnce("/repo");
 
     await expect(findRouteWorktreePath("/repo", "origin/main")).resolves.toBe("/repo");
     expect(findWorktreeForBranch).toHaveBeenNthCalledWith(1, "/repo", "origin/main");
