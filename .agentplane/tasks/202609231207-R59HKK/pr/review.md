@@ -43,13 +43,15 @@ Created: 2026-09-23T12:42:13.939Z
  .../shared/workflow-step-worktree-priority.test.ts | 30 +++++++++
  .../src/commands/task/advance-task-step.ts         | 44 ++++++++++++-
  .../src/commands/task/advance.command.ts           | 25 +++++--
+ .../task/branch-task-supervisor-episodes.ts        |  1 +
  .../branch-task-supervisor-evaluator-episode.ts    |  1 +
  .../src/commands/task/branch-task-supervisor.ts    |  1 +
  .../task/direct-task-supervisor-evaluator.test.ts  | 60 +++++++++++++++++
  .../task/direct-task-supervisor-evaluator.ts       |  3 +-
+ .../direct-task-supervisor-formal-operation.ts     | 12 ++++
  .../task/kernel-provider-effect-coordinator.ts     | 74 ++++++++++++++++++++-
  .../commands/task/roadmap-terminal-noop.test.ts    | 38 +++++++++++
- 20 files changed, 460 insertions(+), 23 deletions(-)
+ 22 files changed, 473 insertions(+), 23 deletions(-)
 ```
 
 </details>
