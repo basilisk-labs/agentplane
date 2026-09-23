@@ -4,22 +4,26 @@ import { cmdTaskComment } from "./comment.js";
 import { readDirectRepositoryStatus } from "./direct-task-finalization.js";
 import type * as ExternalAgent from "./external-agent-exchange.js";
 import { hasChangedTaskArtifacts } from "./external-agent-implementation-finalization.js";
+import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
 
 export async function applyExternalReadOnlyWorktreeObservation(opts: {
   command: CommandContext;
   exchange: ExternalAgent.ExternalAgentExchange;
   envelope: ExternalAgent.ExternalAgentResultEnvelope;
 }): Promise<void> {
-  await cmdTaskComment({
-    ctx: opts.command,
-    cwd: opts.exchange.checkout,
-    taskId: opts.exchange.task_id,
-    author: "SUPERVISOR",
-    body:
-      `Read-only worktree observation (${opts.envelope.result.status}): ` +
-      opts.envelope.result.summary,
-    quiet: true,
-  });
+  const task = await opts.command.taskBackend.getTask(opts.exchange.task_id);
+  if (!Object.hasOwn(task?.extensions ?? {}, TASK_KERNEL_EXTENSION)) {
+    await cmdTaskComment({
+      ctx: opts.command,
+      cwd: opts.exchange.checkout,
+      taskId: opts.exchange.task_id,
+      author: "SUPERVISOR",
+      body:
+        `Read-only worktree observation (${opts.envelope.result.status}): ` +
+        opts.envelope.result.summary,
+      quiet: true,
+    });
+  }
   const status = await readDirectRepositoryStatus(opts.exchange.checkout);
   if (!hasChangedTaskArtifacts(status?.lines ?? [], opts.exchange.task_id)) return;
   const exitCode = await cmdCommit({

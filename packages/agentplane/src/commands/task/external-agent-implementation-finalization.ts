@@ -94,6 +94,7 @@ export async function finishExternalImplementationVerification(opts: {
     const currentStatus = await readDirectRepositoryStatus(opts.exchange.checkout);
     if (!hasChangedTaskArtifacts(currentStatus?.lines ?? [], opts.exchange.task_id)) return;
     if (
+      !canonical &&
       !opts.conflict &&
       (await canCoalesceVerificationArtifacts({
         command: opts.command,

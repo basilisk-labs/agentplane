@@ -12,8 +12,8 @@ Created: 2026-09-23T10:57:06.440Z
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -64,9 +64,10 @@ Created: 2026-09-23T10:57:06.440Z
  .../agentplane/src/commands/task/doc.unit.test.ts  |  11 ++
  .../task/external-agent-canonical-rework.ts        |  42 +++++
  .../external-agent-implementation-authority.ts     |   8 +
- .../external-agent-implementation-finalization.ts  |   3 +
+ .../external-agent-implementation-finalization.ts  |   4 +
  .../task/external-agent-plan-refinement.test.ts    |  75 +++++++++
  .../task/external-agent-plan-refinement.ts         | 128 ++++++++++++++-
+ .../task/external-agent-read-only-observation.ts   |  24 +--
  .../task/external-agent-supervisor.test.ts         | 180 +++++++++++++++++++++
  .../src/commands/task/finish-execute-close.ts      |  41 +++++
  .../agentplane/src/commands/task/finish-execute.ts |  61 +++++--
@@ -96,7 +97,7 @@ Created: 2026-09-23T10:57:06.440Z
  packages/core/src/tasks/plan-execution-grant.ts    |  52 +++---
  .../core/src/tasks/task-kernel/invariants.test.ts  |  69 ++++++++
  packages/core/src/tasks/task-kernel/invariants.ts  |  11 ++
- 67 files changed, 2703 insertions(+), 301 deletions(-)
+ 68 files changed, 2718 insertions(+), 311 deletions(-)
 ```
 
 </details>
