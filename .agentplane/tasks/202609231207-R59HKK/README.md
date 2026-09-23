@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +24,11 @@ plan_approval:
   updated_by: "USER"
   note: "Projected from the approved canonical Task Kernel plan."
 verification:
-  state: "ok"
-  updated_at: "2026-09-23T15:44:02.112Z"
+  state: "needs_rework"
+  updated_at: "2026-09-23T16:15:27.067Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-  attempts: 0
+  note: "Rework: Declared check failed: bun run ci:local:full"
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -117,6 +117,8 @@ execution_contract:
     authority_violations:
       - "repository_effect:dependencies"
       - "repository_effect:tests"
+      - "verification:recorded-check-1:fail"
+      - "verification:verification-record:fail"
     changed_components:
       - "bun.lock"
       - "packages/agentplane"
@@ -158,46 +160,10 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-10"
-        result: "pass"
-      -
-        id: "recorded-check-11"
-        result: "pass"
-      -
-        id: "recorded-check-12"
-        result: "pass"
-      -
-        id: "recorded-check-13"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
-      -
-        id: "recorded-check-7"
-        result: "pass"
-      -
-        id: "recorded-check-8"
-        result: "pass"
-      -
-        id: "recorded-check-9"
-        result: "pass"
+        result: "fail"
       -
         id: "verification-record"
-        result: "pass"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "observed_effect_dependencies"
@@ -230,7 +196,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:a785bdb845c34b0d695d786898f78e52d6ebbb767bc1023222c96cff69c0fe47"
+      digest: "sha256:3eca480d286a201cd78d511fb0092c2ce27eb52e6e61f994da6e69ff38d79569"
       escalation_reasons:
         - "central_path:bun.lock"
         - "central_path:packages/agentplane/src/commands/shared/quality-review-retirement.ts"
@@ -242,6 +208,8 @@ execution_contract:
         - "central_path:packages/agentplane/src/commands/shared/workflow-step-factory-branch.ts"
         - "central_path:packages/agentplane/src/commands/shared/workflow-step-factory.ts"
         - "central_path:packages/agentplane/src/commands/shared/workflow-step-worktree-priority.test.ts"
+        - "central_path:packages/core/src/tasks/task-kernel/kernel-replan.test.ts"
+        - "central_path:packages/core/src/tasks/task-kernel/kernel.ts"
         - "effect_dependencies"
         - "unknown_path:.agentplane/tasks/202609231152-HP97AA/pr/diffstat.txt"
         - "unknown_path:.agentplane/tasks/202609231152-HP97AA/pr/github-title.txt"
@@ -274,6 +242,7 @@ execution_contract:
           - ".agentplane"
           - "bun.lock"
           - "packages/agentplane"
+          - "packages/core"
         changed_files:
           - ".agentplane/tasks/202609231152-HP97AA/README.md"
           - ".agentplane/tasks/202609231152-HP97AA/pr/diffstat.txt"
@@ -303,6 +272,7 @@ execution_contract:
           - ".agentplane/tasks/202609231152-HP97AA/supervision/declared-checks.json"
           - ".agentplane/tasks/202609231152-HP97AA/supervision/implementation-evidence.json"
           - ".agentplane/tasks/202609231152-HP97AA/verification/20260923120633958-28469bf4760981f8.json"
+          - ".agentplane/tasks/202609231310-V5FH8H/README.md"
           - "bun.lock"
           - "packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts"
           - "packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts"
@@ -333,6 +303,8 @@ execution_contract:
           - "packages/agentplane/src/commands/task/kernel-runtime-context.ts"
           - "packages/agentplane/src/commands/task/plan-reject.command.test.ts"
           - "packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts"
+          - "packages/core/src/tasks/task-kernel/kernel-replan.test.ts"
+          - "packages/core/src/tasks/task-kernel/kernel.ts"
         external_effects: []
         repository_effects:
           - "dependencies"
@@ -374,9 +346,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "af086495680ba250505f93e77296f3efe6134299"
-  message: "✅ R59HKK task: persist canonical completion"
+      - "verification_recovery:recorded-check-1"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -414,8 +386,14 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "verify"
+    at: "2026-09-23T16:15:27.067Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-23T15:46:09.725Z"
+doc_updated_at: "2026-09-23T16:15:32.978Z"
 doc_updated_by: "CODER"
 description: "Repair evaluator diff-base selection after provider branch updates, forward replacement intent into evaluator episodes, persist supervisor-generated task artifacts without false task_worktree_resolution, dispatch pre-merge closure through the supported local lifecycle path, and admit worktree.prepare before dirty-base worktree resolution."
 sections:
@@ -821,6 +799,40 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-09-23T16:15:27.067Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e573dbefa699ecc216e4bc34caa974444ade6e1ea84217539d4b4351c4f85e5d, input_digest=sha256:e244594db592e7b8931ca1636b7bffabcd836e4d0ec80b338c4bb16af4960d03
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609231207-R59HKK/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609231207-R59HKK declared verification
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:c7e4e13963ee3e176d46d80eff725163587d243761643fc175af5d05a235650d
+    - policy_digest: sha256:a5ab5000ca9215caf2e1a7dbd093cadfe6347f6c8f0c1f4a6af1a7e6f7770ffb
+    - capability_digest: sha256:44668150af015035b4f9295eeb1e83a605e3c89b183ce28b4421a381c9bdb75f
+    - checks_digest: sha256:77761d21d0a5a71bbe8c9a23fc262572465757b6f01ef4d7591c47e498f1fa70
+    - identity_digest: sha256:e3b9dcd337754079c34c7212328c77e5442415f6aaea4a3ed49e1c41a731cb2c
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -846,9 +858,6 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:b27716cfdf21052f810046405dc0204d0cad21eac7b0da8dd262dc1c954b7118"
     work_order_id: "sha256:061cb3ad1041d2a68dd6a373011b1dca865f86c72792d04ad23534280c23cf19"
-  implementation_commit:
-    hash: "3243d26a28119f73b05e2e6e5036d8a74a97cb54"
-    message: "🚧 R59HKK task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "940209a800dedc5b27c382a2642dff316b30a8fc"
@@ -1753,6 +1762,40 @@ Command: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-ve
 Result: pass
 Evidence: .agentplane/tasks/202609231207-R59HKK/supervision/declared-checks.json#check-3
 Scope: branch_pr task 202609231207-R59HKK Verification Contract check task_outcome (3/3)
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:c7e4e13963ee3e176d46d80eff725163587d243761643fc175af5d05a235650d
+- policy_digest: sha256:a5ab5000ca9215caf2e1a7dbd093cadfe6347f6c8f0c1f4a6af1a7e6f7770ffb
+- capability_digest: sha256:44668150af015035b4f9295eeb1e83a605e3c89b183ce28b4421a381c9bdb75f
+- checks_digest: sha256:77761d21d0a5a71bbe8c9a23fc262572465757b6f01ef4d7591c47e498f1fa70
+- identity_digest: sha256:e3b9dcd337754079c34c7212328c77e5442415f6aaea4a3ed49e1c41a731cb2c
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-23T16:15:27.067Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e573dbefa699ecc216e4bc34caa974444ade6e1ea84217539d4b4351c4f85e5d, input_digest=sha256:e244594db592e7b8931ca1636b7bffabcd836e4d0ec80b338c4bb16af4960d03
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609231207-R59HKK/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609231207-R59HKK declared verification
 
 NativeTaskIdentityRef:
 - plan_digest: sha256:c7e4e13963ee3e176d46d80eff725163587d243761643fc175af5d05a235650d
