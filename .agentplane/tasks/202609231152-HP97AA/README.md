@@ -1,10 +1,11 @@
 ---
 id: "202609231152-HP97AA"
 title: "Allow explicit USER rejection of an approved blocked canonical plan"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -40,6 +41,22 @@ quality_review:
     - "Pass: reject_plan alone bypasses the lineage replacement guard, while the kernel reducer retains the exact approved-plan, ACTIVE, blocked-work, manual USER, and rejection-evidence conditions."
     - "Pass: capture_intent and propose_plan still throw before rejection, and propose_plan remains allowed only in PLANNING with a REJECTED current plan."
     - "Pass: the regression tests invoke the same exported guard used by createKernelRuntime.input, and all four AgentPlane-observed native checks passed against commit 106b90ee0acbc3db8d0646a8824392caf9fc8701."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:0816e84d2c2594ca8f037f69dab41206d4b3b54caa4b9370a1317fc96af1dd8d"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-09-23T12:13:33.756Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -222,9 +239,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "106b90ee0acbc3db8d0646a8824392caf9fc8701"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "db379ae203ee9b5ca4f23b1bb497e69c1779b2ac"
+  message: "📝 HP97AA task: record GitHub PR metadata"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -232,9 +252,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-09-23T12:13:33.756Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "db379ae203ee9b5ca4f23b1bb497e69c1779b2ac"
 doc_version: 3
-doc_updated_at: "2026-09-23T12:06:35.013Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-23T12:13:33.756Z"
+doc_updated_by: "CODER"
 description: "Fix the unreachable canonical replanning route: task plan reject currently treats reject_plan as planning but rejects it whenever USER authority lineage exists. Preserve USER authority and existing blocked implementation evidence, allow only the exact manual USER rejection path, and add a regression test that exercises the real runtime guard."
 sections:
   Summary: |-
@@ -394,6 +422,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:9f2be166b983bb94d4d3c5d93c011e21de5cc117f158303865f8e5e250e0ff02"
     work_order_id: "sha256:4e57d0eae4ea2a61174ca57e0fd53b7e596a41303db0fe1d41fcb38f79799629"
+  implementation_commit:
+    hash: "106b90ee0acbc3db8d0646a8824392caf9fc8701"
+    message: "🚧 HP97AA task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "4d25a67cc233872b57c12b7fbaa6ceb84ed7d939"
@@ -1020,3 +1051,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:0816e84d2c2594ca8f037f69dab41206d4b3b54caa4b9370a1317fc96af1dd8d`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-09-23T12:13:33.756Z`

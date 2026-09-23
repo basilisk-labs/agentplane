@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:c6c9d48f8922171745d01788da15ad9f145c8c20a1b1f318535733ca7fabbd84",
   "pr_number": 6012,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6012",
+  "pre_merge_closure": {
+    "basis_commit": "db379ae203ee9b5ca4f23b1bb497e69c1779b2ac",
+    "branch": "task/202609231152-HP97AA/allow-explicit-user-rejection-of-an-approved-blo",
+    "pr_number": 6012,
+    "recorded_at": "2026-09-23T12:13:33.822Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
