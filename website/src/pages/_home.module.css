@@ -3540,18 +3540,16 @@
   font-size: 0.74rem;
 }
 
-/* A brief light sweep makes the repository window the entrance focal point. */
+/* The light moves behind the lower edge of the repository window. */
 .explorerScene::before {
-  animation: windowHalo 1250ms 140ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  background: radial-gradient(
-    ellipse at center,
-    rgb(255 93 82 / 0.17),
-    rgb(112 130 222 / 0.11) 42%,
-    transparent 72%
-  );
+  animation: backgroundDrift 9s ease-in-out infinite alternate;
+  background:
+    radial-gradient(ellipse 43% 34% at 25% 86%, rgb(255 101 94 / 0.54), transparent 82%),
+    radial-gradient(ellipse 48% 36% at 76% 83%, rgb(119 136 238 / 0.48), transparent 82%);
   content: "";
-  filter: blur(18px);
-  inset: -65px -85px 20px;
+  filter: blur(25px);
+  inset: 0 -75px -82px;
+  opacity: 0.85;
   pointer-events: none;
   position: absolute;
   z-index: 0;
@@ -3574,17 +3572,14 @@
   z-index: 3;
 }
 
-@keyframes windowHalo {
+@keyframes backgroundDrift {
   from {
-    opacity: 0;
-    transform: translateY(34px) scale(0.83);
-  }
-  65% {
-    opacity: 1;
+    opacity: 0.73;
+    transform: translateX(-45px) scale(0.96);
   }
   to {
-    opacity: 0.68;
-    transform: translateY(0) scale(1);
+    opacity: 1;
+    transform: translateX(45px) scale(1.04);
   }
 }
 
@@ -3603,6 +3598,12 @@
 }
 
 @media (min-width: 761px) {
+  .hero {
+    padding-bottom: 137px;
+  }
+  .explorerScene {
+    margin-bottom: 0;
+  }
   .proofOverview {
     padding-block: 69px 76px;
   }
@@ -3656,6 +3657,13 @@
 }
 
 @media (max-width: 760px) {
+  .hero {
+    padding-bottom: 48px;
+  }
+  .explorerScene::before {
+    filter: blur(18px);
+    inset: 0 -35px -56px;
+  }
   .proofOverview {
     padding-block: 43px 46px;
   }
