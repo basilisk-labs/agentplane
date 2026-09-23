@@ -6,8 +6,8 @@ import { hasChangedTaskArtifacts } from "./external-agent-implementation-finaliz
 import { runKernelFinalValidation } from "./kernel-final-validation.js";
 import { createKernelRuntime, requireKernelCommit } from "./kernel-runtime-context.js";
 
-/** Refresh canonical repository authority and revalidate the exact conflict-resolution HEAD. */
-export async function finalizeKernelConflictRework(opts: {
+/** Refresh canonical repository authority and revalidate the exact repository rework HEAD. */
+export async function finalizeKernelRepositoryRework(opts: {
   command: CommandContext;
   task_id: string;
   operation_id: string;
@@ -22,29 +22,28 @@ export async function finalizeKernelConflictRework(opts: {
   const context = await runtime.native.readContext(opts.task_id);
   const initial = await runtime.adapter.read(opts.task_id);
   if (initial.kind !== "canonical") {
-    throw new Error(`Canonical conflict rework requires a Task Kernel record: ${initial.kind}`);
+    throw new Error(`Canonical repository rework requires a Task Kernel record: ${initial.kind}`);
   }
   const currentAuthority = initial.record.aggregate.authority_lineage?.at(-1)?.authority;
-  if (!currentAuthority) throw new Error("Canonical conflict rework authority is unavailable");
+  if (!currentAuthority) throw new Error("Canonical repository rework authority is unavailable");
   if (currentAuthority.repository_fingerprint !== context.repository_fingerprint) {
     requireKernelCommit(await runtime.authority.continue(opts.task_id));
   }
   const continued = await runtime.adapter.read(opts.task_id);
   if (continued.kind !== "canonical") {
-    throw new Error(`Canonical conflict rework lost its Task Kernel record: ${continued.kind}`);
+    throw new Error(`Canonical repository rework lost its Task Kernel record: ${continued.kind}`);
   }
   const validation = await runKernelFinalValidation(opts.command, runtime, continued.record);
   if (validation.stop) {
     throw new CliError({
       code: "E_VALIDATION",
       message:
-        validation.stop.summary ??
-        "Canonical final validation failed after provider conflict rework.",
+        validation.stop.summary ?? "Canonical final validation failed after repository rework.",
     });
   }
   const status = await readDirectRepositoryStatus(opts.command.resolvedProject.gitRoot);
   if (!hasChangedTaskArtifacts(status?.lines ?? [], opts.task_id)) {
-    throw new Error("Canonical conflict rework produced no persistent validation evidence");
+    throw new Error("Canonical repository rework produced no persistent validation evidence");
   }
   await commitBranchSupervisorTaskArtifacts({
     command: opts.command,

@@ -52,7 +52,7 @@ import {
 } from "./external-agent-implementation-checkpoint.js";
 import { resolveTaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import { refreshExternalAgentRoute } from "./external-agent-result-routing.js";
-import { finalizeKernelConflictRework } from "./kernel-conflict-rework.js";
+import { finalizeKernelRepositoryRework } from "./kernel-conflict-rework.js";
 export function assertExternalImplementationReturnState(opts: {
   exchange: ExternalAgent.ExternalAgentExchange;
   work_order: AgentWorkOrderV2;
@@ -458,23 +458,25 @@ export async function applyExternalImplementationResult(opts: {
   if (implementation.status !== "ready") {
     throw new CliError({ code: "E_VALIDATION", message: implementation.reason });
   }
-  if (conflictContext && Object.hasOwn(taskAtReturn.extensions ?? {}, TASK_KERNEL_EXTENSION)) {
-    await finalizeKernelConflictRework({
+  if (Object.hasOwn(taskAtReturn.extensions ?? {}, TASK_KERNEL_EXTENSION)) {
+    await finalizeKernelRepositoryRework({
       command: opts.command,
       task_id: opts.exchange.task_id,
-      operation_id: `provider-conflict-rework:${opts.exchange.result_digest ?? "missing"}`,
+      operation_id: `${conflictContext ? "provider-conflict" : "implementation"}-rework:${opts.exchange.result_digest ?? "missing"}`,
       evidence_message: async () => {
-        const evidenceAuthority = conflictEvidenceAuthority(
-          await refreshExternalAgentRoute({
-            cwd: opts.exchange.checkout,
-            task_id: opts.exchange.task_id,
-            include_remote: true,
-          }),
-        );
+        const evidenceAuthority = conflictContext
+          ? conflictEvidenceAuthority(
+              await refreshExternalAgentRoute({
+                cwd: opts.exchange.checkout,
+                task_id: opts.exchange.task_id,
+                include_remote: true,
+              }),
+            )
+          : null;
         return (
           `🚧 ${opts.exchange.task_id.split("-").at(-1)} task: record external implementation evidence` +
           `\n\nAgentPlane-Result: ${opts.exchange.result_digest}` +
-          `\nAgentPlane-Postcondition: ${evidenceAuthority}`
+          (evidenceAuthority ? `\nAgentPlane-Postcondition: ${evidenceAuthority}` : "")
         );
       },
     });

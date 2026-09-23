@@ -70,7 +70,7 @@ import {
 } from "../pr/conflict-rework-authority.js";
 
 import { readCommitInfo } from "./shared.js";
-import { finalizeKernelConflictRework } from "./kernel-conflict-rework.js";
+import { finalizeKernelRepositoryRework } from "./kernel-conflict-rework.js";
 
 function operationId(decision: TaskRouteDecision): string | null {
   return decision.workflowStep.kind === "cli_operation" ? decision.workflowStep.operation.id : null;
@@ -322,7 +322,7 @@ export async function applyBranchImplementationResult(
     applicationContext &&
     Object.hasOwn(currentTask.extensions ?? {}, TASK_KERNEL_EXTENSION)
   ) {
-    await finalizeKernelConflictRework({
+    await finalizeKernelRepositoryRework({
       command,
       task_id: opts.input.task_id,
       operation_id: `managed-provider-conflict-rework:${applicationContext.result_digest}`,

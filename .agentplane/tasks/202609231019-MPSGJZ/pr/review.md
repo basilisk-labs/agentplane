@@ -52,6 +52,7 @@ Created: 2026-09-23T10:57:06.440Z
  .../src/commands/task/agent-action-packet.test.ts  |   1 +
  .../src/commands/task/agent-action-packet.ts       |   8 +-
  .../task/branch-task-supervisor-episodes.ts        |  73 ++++++++-
+ .../task/branch-task-supervisor-implementation.ts  |   4 +-
  ...branch-task-supervisor-journal-recovery.test.ts |  66 ++++++++
  .../branch-task-supervisor-journal-recovery.ts     |  90 +++++++++++
  .../commands/task/branch-task-supervisor.test.ts   |  31 +++-
@@ -61,12 +62,14 @@ Created: 2026-09-23T10:57:06.440Z
  .../direct-task-supervisor-formal-operation.ts     |  26 +++
  .../src/commands/task/doc-set.command.ts           |  15 +-
  .../agentplane/src/commands/task/doc.unit.test.ts  |  11 ++
+ .../external-agent-implementation-authority.ts     |  26 +--
  .../task/external-agent-plan-refinement.test.ts    |  75 +++++++++
  .../task/external-agent-plan-refinement.ts         | 128 ++++++++++++++-
  .../task/external-agent-supervisor.test.ts         | 180 +++++++++++++++++++++
  .../src/commands/task/finish-execute-close.ts      |  41 +++++
  .../agentplane/src/commands/task/finish-execute.ts |  61 +++++--
  .../task/finish.pre-merge-closure.unit.test.ts     |  50 +++++-
+ .../src/commands/task/kernel-conflict-rework.ts    |  15 +-
  .../kernel-provider-effect-coordinator.test.ts     | 158 +++++++++++++++++-
  .../task/kernel-provider-effect-coordinator.ts     | 149 +++++++++++++----
  .../src/commands/task/plan-set.command.ts          |  24 +--
@@ -90,7 +93,7 @@ Created: 2026-09-23T10:57:06.440Z
  packages/core/src/tasks/plan-execution-grant.ts    |  52 +++---
  .../core/src/tasks/task-kernel/invariants.test.ts  |  69 ++++++++
  packages/core/src/tasks/task-kernel/invariants.ts  |  11 ++
- 61 files changed, 2553 insertions(+), 301 deletions(-)
+ 64 files changed, 2576 insertions(+), 323 deletions(-)
 ```
 
 </details>
