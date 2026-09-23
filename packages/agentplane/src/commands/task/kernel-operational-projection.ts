@@ -7,6 +7,65 @@ import type { KernelRepositoryEvidence } from "./kernel-repository-coordinator.j
 
 export const KERNEL_OPERATIONAL_PROJECTION = "agentplane.kernel_operational_projection";
 
+/** Reset derived branch evidence for rework without reopening the completed Kernel aggregate. */
+export async function projectKernelImplementationRework(opts: {
+  command: CommandContext;
+  task_id: string;
+  implementation_commit: string;
+  projected_at: string;
+}): Promise<TaskData> {
+  const task = await opts.command.taskBackend.getTask(opts.task_id);
+  if (!task?.extensions || !Object.hasOwn(task.extensions, TASK_KERNEL_EXTENSION)) {
+    throw new Error("Canonical implementation rework requires a Task Kernel record");
+  }
+  if (
+    task.commit?.hash === opts.implementation_commit &&
+    task.quality_review?.state === "pending"
+  ) {
+    return task;
+  }
+  const revision = task.revision ?? 0;
+  await opts.command.taskBackend.writeTask(
+    {
+      ...task,
+      revision: revision + 1,
+      commit: {
+        hash: opts.implementation_commit,
+        message: "AgentPlane-owned canonical implementation rework commit",
+      },
+      verification: {
+        state: "pending",
+        attempts: task.verification?.attempts ?? 0,
+        updated_at: opts.projected_at,
+        updated_by: "SUPERVISOR",
+        note: "Canonical implementation rework is ready for fresh verification.",
+      },
+      quality_review: {
+        state: "pending",
+        updated_at: opts.projected_at,
+        updated_by: "SUPERVISOR",
+        note: "Canonical implementation rework requires a fresh EVALUATOR review.",
+        evaluated_sha: null,
+        review_identity_digest: null,
+        evidence_refs: [],
+        findings: [],
+      },
+    },
+    { expectedRevision: revision },
+  );
+  const observed = await opts.command.taskBackend.getTask(opts.task_id);
+  if (
+    !observed ||
+    observed.commit?.hash !== opts.implementation_commit ||
+    observed.quality_review?.state !== "pending" ||
+    JSON.stringify(observed.extensions?.[TASK_KERNEL_EXTENSION]) !==
+      JSON.stringify(task.extensions[TASK_KERNEL_EXTENSION])
+  ) {
+    throw new Error("Canonical implementation rework projection was not observed");
+  }
+  return observed;
+}
+
 function projectedVerification(
   verification: TaskData["verification"],
   fallback: NonNullable<TaskData["verification"]>,

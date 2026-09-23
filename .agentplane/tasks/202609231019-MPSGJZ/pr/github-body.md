@@ -50,7 +50,6 @@ Implement the verified AgentPlane lifecycle fixes as one clean semantic code tas
  .../src/commands/task/agent-action-packet.test.ts  |   1 +
  .../src/commands/task/agent-action-packet.ts       |   8 +-
  .../task/branch-task-supervisor-episodes.ts        |  73 ++++++++-
- .../task/branch-task-supervisor-implementation.ts  |   4 +-
  ...branch-task-supervisor-journal-recovery.test.ts |  66 ++++++++
  .../branch-task-supervisor-journal-recovery.ts     |  90 +++++++++++
  .../commands/task/branch-task-supervisor.test.ts   |  31 +++-
@@ -58,16 +57,20 @@ Implement the verified AgentPlane lifecycle fixes as one clean semantic code tas
  .../commands/task/branch-task-verification.test.ts |  14 +-
  ...direct-task-supervisor-formal-operation.test.ts | 172 ++++++++++++++++++++
  .../direct-task-supervisor-formal-operation.ts     |  26 +++
+ .../task/direct-task-verification-record.ts        |   2 +
  .../src/commands/task/doc-set.command.ts           |  15 +-
  .../agentplane/src/commands/task/doc.unit.test.ts  |  11 ++
- .../external-agent-implementation-authority.ts     |  26 +--
+ .../task/external-agent-canonical-rework.ts        |  42 +++++
+ .../external-agent-implementation-authority.ts     |   8 +
+ .../external-agent-implementation-finalization.ts  |   3 +
  .../task/external-agent-plan-refinement.test.ts    |  75 +++++++++
  .../task/external-agent-plan-refinement.ts         | 128 ++++++++++++++-
  .../task/external-agent-supervisor.test.ts         | 180 +++++++++++++++++++++
  .../src/commands/task/finish-execute-close.ts      |  41 +++++
  .../agentplane/src/commands/task/finish-execute.ts |  61 +++++--
  .../task/finish.pre-merge-closure.unit.test.ts     |  50 +++++-
- .../src/commands/task/kernel-conflict-rework.ts    |  15 +-
+ .../task/kernel-operational-projection.test.ts     |  36 +++++
+ .../commands/task/kernel-operational-projection.ts |  59 +++++++
  .../kernel-provider-effect-coordinator.test.ts     | 158 +++++++++++++++++-
  .../task/kernel-provider-effect-coordinator.ts     | 149 +++++++++++++----
  .../src/commands/task/plan-set.command.ts          |  24 +--
@@ -91,7 +94,7 @@ Implement the verified AgentPlane lifecycle fixes as one clean semantic code tas
  packages/core/src/tasks/plan-execution-grant.ts    |  52 +++---
  .../core/src/tasks/task-kernel/invariants.test.ts  |  69 ++++++++
  packages/core/src/tasks/task-kernel/invariants.ts  |  11 ++
- 64 files changed, 2576 insertions(+), 323 deletions(-)
+ 67 files changed, 2703 insertions(+), 301 deletions(-)
 ```
 
 </details>

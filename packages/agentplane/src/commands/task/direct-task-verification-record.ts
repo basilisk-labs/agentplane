@@ -15,6 +15,7 @@ import {
   isInfrastructureVerification,
   prepareInfrastructureVerificationForCheckout,
 } from "./verification-infrastructure.js";
+import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
 
 export async function recordDirectTaskVerification(opts: {
   command: CommandContext;
@@ -99,6 +100,7 @@ export async function recordDirectTaskVerification(opts: {
     incidentMatch: [],
     quiet: true,
     verificationSnapshot: verification.snapshot,
+    allowCanonicalProjection: Object.hasOwn(opts.task.extensions ?? {}, TASK_KERNEL_EXTENSION),
     beforePersist: opts.beforePersist
       ? (mutation) => opts.beforePersist!(mutation, checks)
       : undefined,

@@ -5,6 +5,7 @@ import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record
 import type { TaskWriteOptions } from "../../backends/task-backend.js";
 import {
   ensureKernelOperationalProjectionEvidence,
+  projectKernelImplementationRework,
   projectKernelOperationalEvidence,
   readKernelOperationalProjection,
 } from "./kernel-operational-projection.js";
@@ -37,6 +38,41 @@ function taskWriter() {
 }
 
 describe("canonical operational evidence projection", () => {
+  it("resets only derived evidence when a completed canonical task enters rework", async () => {
+    const kernel = { kind: "canonical_task", digest: k.kernelDigest("kernel") };
+    let task: ProjectedTask = {
+      id: "T-1",
+      revision: 7,
+      status: "DONE",
+      verification: { state: "ok", attempts: 2 },
+      quality_review: { state: "rework", evaluated_sha: "a".repeat(40) },
+      extensions: { [TASK_KERNEL_EXTENSION]: kernel },
+    };
+    const writeTask = vi.fn((next: ProjectedTask, options?: TaskWriteOptions) => {
+      expect(options).toEqual({ expectedRevision: 7 });
+      task = structuredClone(next);
+      return Promise.resolve();
+    });
+
+    const projected = await projectKernelImplementationRework({
+      command: {
+        taskBackend: { getTask: vi.fn(() => Promise.resolve(structuredClone(task))), writeTask },
+      } as never,
+      task_id: "T-1",
+      implementation_commit: "b".repeat(40),
+      projected_at: "2026-09-24T00:00:00.000Z",
+    });
+
+    expect(projected).toMatchObject({
+      revision: 8,
+      status: "DONE",
+      commit: { hash: "b".repeat(40) },
+      verification: { state: "pending", attempts: 2 },
+      quality_review: { state: "pending", evaluated_sha: null },
+    });
+    expect(projected.extensions?.[TASK_KERNEL_EXTENSION]).toEqual(kernel);
+  });
+
   it("projects commit, verification and evaluator evidence without replacing Kernel state", async () => {
     const writeTask = taskWriter();
     const kernel = { kind: "canonical_task", digest: k.kernelDigest("kernel") };

@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 7dcba52f067998298e9eeb00e6b0efd615846ab2..6e9b808f71a6b197d934a9d3fd64bf3983ac1404",
+      "command": "git diff --check 7dcba52f067998298e9eeb00e6b0efd615846ab2..490854d7ee56967a273c9bf0db7a5cec2ec50c64",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 7dcba52f067998298e9eeb00e6b0efd615846ab2..6e9b808f71a6b197d934a9d3fd64bf3983ac1404",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 7dcba52f067998298e9eeb00e6b0efd615846ab2..490854d7ee56967a273c9bf0db7a5cec2ec50c64",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,24 +21,39 @@
         "M\t.agentplane/tasks/202609231019-MPSGJZ/pr/github-body.md",
         "M\t.agentplane/tasks/202609231019-MPSGJZ/pr/meta.json",
         "M\t.agentplane/tasks/202609231019-MPSGJZ/pr/review.md",
-        "M\tpackages/agentplane/src/commands/task/external-agent-plan-refinement.test.ts"
+        "M\t.agentplane/tasks/202609231019-MPSGJZ/supervision/implementation-evidence.json",
+        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor-implementation.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-plan-refinement.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-conflict-rework.ts"
       ]
     },
     {
       "command": "git status --short --untracked-files=all",
       "id": "final-repository-status",
       "result": "pass",
-      "stdout": []
+      "stdout": [
+        " M .agentplane/tasks/202609231019-MPSGJZ/supervision/implementation-evidence.json"
+      ]
     }
   ],
   "execution_base_commit": "7dcba52f067998298e9eeb00e6b0efd615846ab2",
-  "implementation_commit": "6e9b808f71a6b197d934a9d3fd64bf3983ac1404",
+  "implementation_commit": "490854d7ee56967a273c9bf0db7a5cec2ec50c64",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
-    "classification": [],
-    "final": [],
-    "introduced_after_execution_baseline": [],
+    "classification": [
+      {
+        "classification": "introduced_during_execution",
+        "line": " M .agentplane/tasks/202609231019-MPSGJZ/supervision/implementation-evidence.json"
+      }
+    ],
+    "final": [
+      " M .agentplane/tasks/202609231019-MPSGJZ/supervision/implementation-evidence.json"
+    ],
+    "introduced_after_execution_baseline": [
+      " M .agentplane/tasks/202609231019-MPSGJZ/supervision/implementation-evidence.json"
+    ],
     "removed_after_execution_baseline": [],
     "unchanged_from_execution_baseline": []
   },

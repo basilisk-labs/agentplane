@@ -52,7 +52,8 @@ import {
 } from "./external-agent-implementation-checkpoint.js";
 import { resolveTaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import { refreshExternalAgentRoute } from "./external-agent-result-routing.js";
-import { finalizeKernelRepositoryRework } from "./kernel-conflict-rework.js";
+import { finalizeKernelConflictRework } from "./kernel-conflict-rework.js";
+import { finalizeExternalCanonicalImplementationRework } from "./external-agent-canonical-rework.js";
 export function assertExternalImplementationReturnState(opts: {
   exchange: ExternalAgent.ExternalAgentExchange;
   work_order: AgentWorkOrderV2;
@@ -458,27 +459,32 @@ export async function applyExternalImplementationResult(opts: {
   if (implementation.status !== "ready") {
     throw new CliError({ code: "E_VALIDATION", message: implementation.reason });
   }
-  if (Object.hasOwn(taskAtReturn.extensions ?? {}, TASK_KERNEL_EXTENSION)) {
-    await finalizeKernelRepositoryRework({
+  if (conflictContext && Object.hasOwn(taskAtReturn.extensions ?? {}, TASK_KERNEL_EXTENSION)) {
+    await finalizeKernelConflictRework({
       command: opts.command,
       task_id: opts.exchange.task_id,
-      operation_id: `${conflictContext ? "provider-conflict" : "implementation"}-rework:${opts.exchange.result_digest ?? "missing"}`,
+      operation_id: `provider-conflict-rework:${opts.exchange.result_digest ?? "missing"}`,
       evidence_message: async () => {
-        const evidenceAuthority = conflictContext
-          ? conflictEvidenceAuthority(
-              await refreshExternalAgentRoute({
-                cwd: opts.exchange.checkout,
-                task_id: opts.exchange.task_id,
-                include_remote: true,
-              }),
-            )
-          : null;
+        const evidenceAuthority = conflictEvidenceAuthority(
+          await refreshExternalAgentRoute({
+            cwd: opts.exchange.checkout,
+            task_id: opts.exchange.task_id,
+            include_remote: true,
+          }),
+        );
         return (
           `🚧 ${opts.exchange.task_id.split("-").at(-1)} task: record external implementation evidence` +
           `\n\nAgentPlane-Result: ${opts.exchange.result_digest}` +
-          (evidenceAuthority ? `\nAgentPlane-Postcondition: ${evidenceAuthority}` : "")
+          `\nAgentPlane-Postcondition: ${evidenceAuthority}`
         );
       },
+    });
+    return;
+  }
+  if (Object.hasOwn(taskAtReturn.extensions ?? {}, TASK_KERNEL_EXTENSION)) {
+    await finalizeExternalCanonicalImplementationRework({
+      ...opts,
+      implementation_commit: implementation.evidence.implementation_commit,
     });
     return;
   }

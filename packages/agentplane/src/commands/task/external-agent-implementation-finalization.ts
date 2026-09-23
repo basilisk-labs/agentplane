@@ -16,6 +16,7 @@ import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-fi
 import type { recordDirectTaskVerification } from "./direct-task-verification-record.js";
 import { isTaskLevelVerificationReworkState } from "./direct-task-verification.js";
 import { pathFromStatusLine } from "./git-status-path.js";
+import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
 
 import {
   recordTaskCentricExternalResult,
@@ -60,7 +61,9 @@ export async function finishExternalImplementationVerification(opts: {
   const { semantic, verification } = opts;
   const postVerificationHead = await readDirectTaskHead(opts.exchange.checkout);
   const postVerificationStatus = await readDirectRepositoryStatus(opts.exchange.checkout);
+  const canonical = Object.hasOwn(opts.task.extensions ?? {}, TASK_KERNEL_EXTENSION);
   const canonicalProjection: TaskCentricExternalResultProjection | null =
+    canonical ||
     isTaskLevelVerificationRework({
       task: opts.task,
       work_order: opts.work_order,
