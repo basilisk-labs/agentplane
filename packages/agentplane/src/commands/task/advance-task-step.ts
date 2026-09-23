@@ -19,10 +19,9 @@ import {
 import { commitCanonicalTerminalTaskArtifacts } from "./kernel-repository-coordinator.js";
 import {
   decideCanonicalWorkflowEffect,
-  executeCanonicalCompletedAgentEpisode,
-  executeCanonicalLocalWorkflowOperation,
   prepareCanonicalWorkflowEffect,
 } from "./kernel-provider-effect-coordinator.js";
+import { executeCanonicalCompletedWorkflowLocally } from "./kernel-completed-workflow.js";
 import { ensureKernelOperationalProjectionEvidence } from "./kernel-operational-projection.js";
 import { transferCanonicalControllerToBase } from "./kernel-controller-handoff.js";
 import { acceptKernelSemanticResult } from "./kernel-semantic-result.js";
@@ -213,24 +212,14 @@ async function advanceCanonicalRoute(opts: {
           canonical_revision: record.aggregate.revision,
         };
       }
-      if (
-        await executeCanonicalCompletedAgentEpisode({
-          command: opts.command,
-          decision: localWorkflow,
-          task_id: opts.task_id,
-          replace_failed_operation: replaceFailedOperation,
-        })
-      ) {
-        replaceFailedOperation = false;
-        continue;
-      }
-      if (
-        await executeCanonicalLocalWorkflowOperation({
-          command: opts.command,
-          decision: localWorkflow,
-          task_id: opts.task_id,
-        })
-      ) {
+      const localProgress = await executeCanonicalCompletedWorkflowLocally({
+        command: opts.command,
+        decision: localWorkflow,
+        task_id: opts.task_id,
+        replace_failed_operation: replaceFailedOperation,
+      });
+      if (localProgress) {
+        if (localProgress === "agent") replaceFailedOperation = false;
         continue;
       }
       if (!opts.allow_provider_effects) {
@@ -274,24 +263,14 @@ async function advanceCanonicalRoute(opts: {
           canonical_revision: record.aggregate.revision,
         };
       }
-      if (
-        await executeCanonicalCompletedAgentEpisode({
-          command: opts.command,
-          decision: workflow,
-          task_id: opts.task_id,
-          replace_failed_operation: replaceFailedOperation,
-        })
-      ) {
-        replaceFailedOperation = false;
-        continue;
-      }
-      if (
-        await executeCanonicalLocalWorkflowOperation({
-          command: opts.command,
-          decision: workflow,
-          task_id: opts.task_id,
-        })
-      ) {
+      const providerProgress = await executeCanonicalCompletedWorkflowLocally({
+        command: opts.command,
+        decision: workflow,
+        task_id: opts.task_id,
+        replace_failed_operation: replaceFailedOperation,
+      });
+      if (providerProgress) {
+        if (providerProgress === "agent") replaceFailedOperation = false;
         continue;
       }
       const prepared = await prepareCanonicalWorkflowEffect({
