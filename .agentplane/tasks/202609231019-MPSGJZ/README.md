@@ -4,7 +4,7 @@ title: "Fix canonical completed-task branch lifecycle recovery without internal 
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -23,10 +23,10 @@ plan_approval:
   note: "Projected from the approved canonical Task Kernel plan."
 verification:
   state: "blocked_external"
-  updated_at: "2026-09-23T20:41:09.400Z"
+  updated_at: "2026-09-23T21:25:19.767Z"
   updated_by: "SUPERVISOR"
   note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 6
+  attempts: 7
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -140,6 +140,7 @@ execution_contract:
       - "packages/agentplane/src/commands/task/plan-set.command.ts"
       - "packages/agentplane/src/commands/task/plan.unit.test.ts"
       - "packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts"
+      - "packages/agentplane/src/commands/task/roadmap-integration-parity.test.ts"
       - "packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts"
       - "packages/agentplane/src/commands/task/verify-record-execute.ts"
       - "packages/agentplane/src/commands/task/verify-record-kernel-state.test.ts"
@@ -206,7 +207,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:30b8f4d5366ef1695c63add290b0cbdc2a692d38e876fbdb5a986c73ce6acaca"
+      digest: "sha256:fcbe9b167d91e7335eddb21c6231fab1a80c0a193dc263bd9ac6309634b67515"
       escalation_reasons:
         - "central_path:bun.lock"
         - "central_path:packages/agentplane/src/commands/shared/branch-identity.ts"
@@ -488,6 +489,7 @@ execution_contract:
           - "packages/agentplane/src/commands/task/plan-set.command.ts"
           - "packages/agentplane/src/commands/task/plan.unit.test.ts"
           - "packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts"
+          - "packages/agentplane/src/commands/task/roadmap-integration-parity.test.ts"
           - "packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts"
           - "packages/agentplane/src/commands/task/verify-record-execute.ts"
           - "packages/agentplane/src/commands/task/verify-record-kernel-state.test.ts"
@@ -600,8 +602,14 @@ events:
     author: "SUPERVISOR"
     state: "blocked_external"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "verify"
+    at: "2026-09-23T21:25:19.767Z"
+    author: "SUPERVISOR"
+    state: "blocked_external"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-23T20:41:13.850Z"
+doc_updated_at: "2026-09-23T21:25:26.308Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the verified AgentPlane lifecycle fixes as one clean semantic code task. Keep implementation, tests, and local verification in the work item. Leave PR publication, hosted checks, merge, and cleanup to branch_pr lifecycle. Include completed canonical implementation-rework routing, safe supervisor journal replacement and stale-state recovery, exact DONE rework runner authority, completed verification and quality-review routing, base-checkout provider operations, and Codex-compatible strict output schemas. Do not include task artifacts from other tasks."
 sections:
@@ -882,6 +890,40 @@ sections:
     Attempts: 6
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:5f3d95b05b031f07880a41a3eca628614d6b7cf0567af923f9cf8881f7c6b8ca, input_digest=sha256:3bb331e7377bddbb380c58d7a6504880c2cd866570072b8e8581f95cb7e8e041
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609231019-MPSGJZ declared verification
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:b8810dd303286d6fdd7c8b7e964e33cdb45ef13091247e90d5d458d559e9f9a0
+    - policy_digest: sha256:9c3e5325d78af3d590b3ecf1641b0da288f0a1e3fec30c28b808c2c2f01aa68e
+    - capability_digest: sha256:44668150af015035b4f9295eeb1e83a605e3c89b183ce28b4421a381c9bdb75f
+    - checks_digest: sha256:00a64bdeee46cc450c680b122209ef944aa9e343a0a9e86210c2083b8b7338d6
+    - identity_digest: sha256:f3ebe3e4ba53d856a21de36fdb46c81f99171c66d5487d3d51883dc23deeea47
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-23T21:25:19.767Z — VERIFY — blocked_external
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 7
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:5f3d95b05b031f07880a41a3eca628614d6b7cf0567af923f9cf8881f7c6b8ca, input_digest=sha256:b2488ac09e4f50375dfe51f4200f600aa7749e94266bc7182b6829b620401adf
 
     Details:
 
@@ -1757,6 +1799,40 @@ Note: Rework: Declared check failed: bun run ci:local:full
 Attempts: 6
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:5f3d95b05b031f07880a41a3eca628614d6b7cf0567af923f9cf8881f7c6b8ca, input_digest=sha256:3bb331e7377bddbb380c58d7a6504880c2cd866570072b8e8581f95cb7e8e041
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609231019-MPSGJZ declared verification
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:b8810dd303286d6fdd7c8b7e964e33cdb45ef13091247e90d5d458d559e9f9a0
+- policy_digest: sha256:9c3e5325d78af3d590b3ecf1641b0da288f0a1e3fec30c28b808c2c2f01aa68e
+- capability_digest: sha256:44668150af015035b4f9295eeb1e83a605e3c89b183ce28b4421a381c9bdb75f
+- checks_digest: sha256:00a64bdeee46cc450c680b122209ef944aa9e343a0a9e86210c2083b8b7338d6
+- identity_digest: sha256:f3ebe3e4ba53d856a21de36fdb46c81f99171c66d5487d3d51883dc23deeea47
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-23T21:25:19.767Z — VERIFY — blocked_external
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 7
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:5f3d95b05b031f07880a41a3eca628614d6b7cf0567af923f9cf8881f7c6b8ca, input_digest=sha256:b2488ac09e4f50375dfe51f4200f600aa7749e94266bc7182b6829b620401adf
 
 Details:
 

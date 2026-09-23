@@ -67,6 +67,7 @@ Implement the verified AgentPlane lifecycle fixes as one clean semantic code tas
  .../src/commands/task/plan-set.command.ts          |  24 +--
  .../agentplane/src/commands/task/plan.unit.test.ts |  11 ++
  .../commands/task/roadmap-advance-one-step.test.ts |   9 +-
+ .../task/roadmap-integration-parity.test.ts        |   6 +
  .../commands/task/roadmap-terminal-noop.test.ts    |  58 ++++++-
  .../src/commands/task/verify-record-execute.ts     |  20 ++-
  .../task/verify-record-kernel-state.test.ts        |  20 +++
@@ -83,7 +84,7 @@ Implement the verified AgentPlane lifecycle fixes as one clean semantic code tas
  packages/core/src/tasks/plan-execution-grant.ts    |  52 +++---
  .../core/src/tasks/task-kernel/invariants.test.ts  |  69 ++++++++
  packages/core/src/tasks/task-kernel/invariants.ts  |  11 ++
- 56 files changed, 2155 insertions(+), 297 deletions(-)
+ 57 files changed, 2161 insertions(+), 297 deletions(-)
 ```
 
 </details>
