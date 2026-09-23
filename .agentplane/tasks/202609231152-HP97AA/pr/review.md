@@ -24,7 +24,7 @@ Created: 2026-09-23T12:04:47.411Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-23T12:04:47.411Z
+- Updated: 2026-09-23T12:08:15.110Z
 - Branch: task/202609231152-HP97AA/allow-explicit-user-rejection-of-an-approved-blo
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
