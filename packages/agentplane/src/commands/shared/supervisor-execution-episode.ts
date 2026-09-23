@@ -20,6 +20,8 @@ import { gitRevParse } from "@agentplaneorg/core/git";
 import type { TaskRouteDecision } from "./route-decision-types.js";
 import {
   continueSupervisorExecutionEpisodeAfterRenewableBudget,
+  DEFAULT_SUPERVISOR_EXECUTION_BUDGET,
+  defaultSupervisorExecutionBudget,
   recoverSupervisorExecutionEpisodeAfterResolvedTokenTelemetry,
 } from "./supervisor-execution-budget-renewal.js";
 import {
@@ -38,27 +40,6 @@ import { tryAcquireSupervisorExecutionLease } from "./supervisor-execution-lease
 export { tryAcquireSupervisorExecutionLease } from "./supervisor-execution-lease.js";
 
 const SUPERVISOR_EPISODE_ARTIFACT_DIRECTORY = "agentplane/supervisor/episodes";
-
-/**
- * Conservative process limits. Token limits stay disabled until the provider
- * supplies attributable telemetry; enforcing an unobservable token cap would
- * stop healthy external-agent workflows after their first agent result. The
- * measurable episode, agent-run, wall-time, changed-file, and no-progress
- * limits continue to bound supervisor-owned work.
- */
-const DEFAULT_SUPERVISOR_EXECUTION_BUDGET: SupervisorExecutionBudget = {
-  max_episodes: 50,
-  max_agent_runs: 50,
-  max_input_tokens: null,
-  max_output_tokens: null,
-  max_total_tokens: null,
-  max_wall_time_ms: 4 * 60 * 60 * 1000,
-  max_changed_files: 2000,
-  // The runner has no supervisor-observed line delta yet. A non-null default
-  // would falsely claim a hard limit while always charging zero.
-  max_diff_lines: null,
-  max_no_progress_episodes: 3,
-};
 
 export type SupervisorEpisodeStore = {
   read: () => Promise<unknown>;
@@ -195,10 +176,6 @@ export async function withSupervisorExecutionAdmissionFence<T>(opts: {
   } finally {
     await lease.release();
   }
-}
-
-function defaultSupervisorExecutionBudget(): SupervisorExecutionBudget {
-  return structuredClone(DEFAULT_SUPERVISOR_EXECUTION_BUDGET);
 }
 
 export async function openSupervisorExecutionEpisode(opts: {

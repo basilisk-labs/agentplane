@@ -385,7 +385,7 @@ describe("canonical provider effect coordinator", () => {
       git_root: "/repo",
       task_id: "T-1",
       state_fingerprint_digest: routeBeforeDigest,
-      replacement_operation_idempotency_key: before.workflowStep.operation.idempotencyKey,
+      replacement_operation_idempotency_key: `pr.open:T-1:${routeBeforeDigest}:payload`,
     });
   });
 

@@ -1,8 +1,25 @@
 import {
   digestSupervisorEpisodeValue,
   validateSupervisorExecutionEpisodeJournal,
+  type SupervisorExecutionBudget,
   type SupervisorExecutionEpisodeJournal,
 } from "@agentplaneorg/core/schemas";
+
+export const DEFAULT_SUPERVISOR_EXECUTION_BUDGET: SupervisorExecutionBudget = {
+  max_episodes: 50,
+  max_agent_runs: 50,
+  max_input_tokens: null,
+  max_output_tokens: null,
+  max_total_tokens: null,
+  max_wall_time_ms: 4 * 60 * 60 * 1000,
+  max_changed_files: 2000,
+  max_diff_lines: null,
+  max_no_progress_episodes: 3,
+};
+
+export function defaultSupervisorExecutionBudget(): SupervisorExecutionBudget {
+  return structuredClone(DEFAULT_SUPERVISOR_EXECUTION_BUDGET);
+}
 
 export function continueSupervisorExecutionEpisodeAfterRenewableBudget(opts: {
   journal: SupervisorExecutionEpisodeJournal;
