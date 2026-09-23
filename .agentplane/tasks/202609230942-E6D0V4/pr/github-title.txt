@@ -1,0 +1,1 @@
+🚧 E6D0V4 task: Make canonical AgentPlane autonomy safe and default [202609230942-E6D0V4]

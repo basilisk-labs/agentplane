@@ -7,7 +7,7 @@ import {
   taskExecutionBaseFromExtensions,
   withTaskReadmeTransaction,
 } from "@agentplaneorg/core/tasks";
-import type { TaskExecutionRouteRequest } from "@agentplaneorg/core/tasks";
+import type { TaskExecutionContract, TaskExecutionRouteRequest } from "@agentplaneorg/core/tasks";
 import { gitCurrentBranch, gitRevParse } from "@agentplaneorg/core/git";
 
 import { mapBackendError } from "../../cli/error-map.js";
@@ -63,6 +63,7 @@ export type TaskNewParsed = {
   mutationScope?: TaskData["mutation_scope"];
   riskFlags?: NonNullable<TaskData["risk_flags"]>;
   route?: TaskExecutionRouteRequest;
+  executionContract?: TaskExecutionContract;
   extensions?: TaskData["extensions"];
   dependsOn: string[];
   verify: string[];
@@ -321,11 +322,13 @@ export async function runTaskNewParsed(opts: {
         mutation_scope: p.mutationScope,
         risk_flags: p.riskFlags,
       };
-      const executionContract = resolveTaskExecutionContract({
-        config: ctx.config,
-        requestedMode: p.route,
-        task: routeTask,
-      });
+      const executionContract =
+        p.executionContract ??
+        resolveTaskExecutionContract({
+          config: ctx.config,
+          requestedMode: p.route,
+          task: routeTask,
+        });
       const draft = createTaskGraphDraft({
         context: intakeContext,
         clarification,
@@ -342,11 +345,20 @@ export async function runTaskNewParsed(opts: {
             ...(p.taskKind ? { task_kind: p.taskKind } : {}),
             ...(p.mutationScope ? { mutation_scope: p.mutationScope } : {}),
             ...(p.riskFlags && p.riskFlags.length > 0 ? { risk_flags: p.riskFlags } : {}),
-            execution_route: resolveTaskExecutionRoute({
-              config: ctx.config,
-              requestedMode: p.route,
-              task: routeTask,
-            }),
+            execution_route: p.executionContract
+              ? {
+                  schema_version: 1,
+                  requested_mode: p.route ?? "auto",
+                  selected_mode: p.executionContract.selected_mode,
+                  repository_mode: p.executionContract.repository_mode,
+                  reason_codes: [...p.executionContract.reason_codes],
+                  frozen: true,
+                }
+              : resolveTaskExecutionRoute({
+                  config: ctx.config,
+                  requestedMode: p.route,
+                  task: routeTask,
+                }),
             execution_contract: executionContract,
             ...(extensions ? { extensions } : {}),
             depends_on: p.dependsOn,

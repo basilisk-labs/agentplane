@@ -106,10 +106,29 @@ export class KernelAuthorityResolver {
   }
 
   private approvalEvidence(
-    observation: NativeApprovalObservation,
+    observation: NativeApprovalObservation | Readonly<{ kind: "repository_policy" }>,
     context: NativeAuthorityContext,
     plan: k.PlanRecord,
-  ): { actor: string; digest: k.Sha256Digest; expires_at: string | null } {
+  ): {
+    actor: string;
+    actor_kind: "USER" | "SYSTEM";
+    provenance_kind: "USER" | "SYSTEM";
+    digest: k.Sha256Digest;
+    expires_at: string | null;
+  } {
+    if (observation.kind === "repository_policy") {
+      return {
+        actor: context.actor.id,
+        actor_kind: "SYSTEM",
+        provenance_kind: "SYSTEM",
+        digest: k.kernelDigest({
+          kind: "canonical_repository_policy_approval",
+          approval_reference: kernelApprovalReference(context, plan),
+          policy_digests: context.ceiling.policy_digests,
+        }),
+        expires_at: context.ceiling.expires_at,
+      };
+    }
     if (observation.kind === "signed_user_receipt") {
       const verified = verifyUserApprovalReceipt({
         encoded: observation.encoded,
@@ -124,6 +143,8 @@ export class KernelAuthorityResolver {
       });
       return {
         actor: verified.actor,
+        actor_kind: "USER",
+        provenance_kind: "USER",
         digest: verified.digest as k.Sha256Digest,
         expires_at: verified.receipt.expires_at,
       };
@@ -145,6 +166,8 @@ export class KernelAuthorityResolver {
         invalid("host_decision_binding");
       return {
         actor: `HOST:${decision.host_id}:USER`,
+        actor_kind: "USER",
+        provenance_kind: "USER",
         digest: hostUserDecisionDigest(decision) as k.Sha256Digest,
         expires_at: context.ceiling.expires_at,
       };
@@ -157,6 +180,8 @@ export class KernelAuthorityResolver {
       invalid("explicit_manual_operator_required");
     return {
       actor: observation.actor_id,
+      actor_kind: "USER",
+      provenance_kind: "USER",
       digest: k.kernelDigest({
         observation,
         task_id: context.task_id,
@@ -168,12 +193,15 @@ export class KernelAuthorityResolver {
     };
   }
 
-  async approve(taskId: string) {
+  private async approveObserved(
+    taskId: string,
+    policyObservation: Readonly<{ kind: "repository_policy" }> | null,
+  ) {
     const { context, aggregate } = await this.context(taskId);
     const plan = aggregate.current_plan;
     if (aggregate.state !== "AWAITING_PLAN_APPROVAL" || plan?.state !== "PROPOSED")
       invalid("proposed_plan_required");
-    const observation = await this.native.readApproval(taskId);
+    const observation = policyObservation ?? (await this.native.readApproval(taskId));
     if (!observation) invalid("native_user_decision_required");
     const evidence = this.approvalEvidence(observation, context, plan);
     const ceilingExpiry = context.ceiling.expires_at;
@@ -192,7 +220,7 @@ export class KernelAuthorityResolver {
       repository_identity: context.repository_identity,
       repository_fingerprint: context.repository_fingerprint,
       provenance: {
-        kind: "USER" as const,
+        kind: evidence.provenance_kind,
         actor_id: evidence.actor,
         evidence_digest: evidence.digest,
         parent_authority_digest: null,
@@ -221,12 +249,21 @@ export class KernelAuthorityResolver {
         approval_evidence_digest: evidence.digest,
         authority_mode: observation.kind,
       },
-      actor: { ...context.actor, id: evidence.actor, kind: "USER" },
+      actor: { ...context.actor, id: evidence.actor, kind: evidence.actor_kind },
       authority,
       repository_fingerprint: context.repository_fingerprint,
       occurred_at: context.occurred_at,
       mutation_id: context.mutation_id,
     });
+  }
+
+  async approve(taskId: string) {
+    return this.approveObserved(taskId, null);
+  }
+
+  /** Trusted repository controller path. Semantic results cannot supply this observation. */
+  async approveByRepositoryPolicy(taskId: string) {
+    return this.approveObserved(taskId, { kind: "repository_policy" });
   }
 
   private async assertFresh(expected: NativeAuthorityContext, expiresAt: string | null) {
