@@ -39,14 +39,14 @@ Repair evaluator diff-base selection after provider branch updates, forward repl
  .../shared/workflow-step-factory-branch.ts         | 21 ++++++
  .../src/commands/shared/workflow-step-factory.ts   |  1 +
  .../shared/workflow-step-worktree-priority.test.ts | 30 +++++++++
- .../src/commands/task/advance-task-step.ts         | 22 ++++++-
+ .../src/commands/task/advance-task-step.ts         | 44 ++++++++++++-
  .../branch-task-supervisor-evaluator-episode.ts    |  1 +
  .../src/commands/task/branch-task-supervisor.ts    |  1 +
  .../task/direct-task-supervisor-evaluator.test.ts  | 60 +++++++++++++++++
  .../task/direct-task-supervisor-evaluator.ts       |  3 +-
- .../task/kernel-provider-effect-coordinator.ts     | 31 +++++++++
- .../commands/task/roadmap-terminal-noop.test.ts    | 35 ++++++++++
- 19 files changed, 373 insertions(+), 17 deletions(-)
+ .../task/kernel-provider-effect-coordinator.ts     | 74 ++++++++++++++++++++-
+ .../commands/task/roadmap-terminal-noop.test.ts    | 38 +++++++++++
+ 19 files changed, 440 insertions(+), 18 deletions(-)
 ```
 
 </details>

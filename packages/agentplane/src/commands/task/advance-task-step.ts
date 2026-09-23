@@ -19,6 +19,7 @@ import {
 import { commitCanonicalTerminalTaskArtifacts } from "./kernel-repository-coordinator.js";
 import {
   decideCanonicalWorkflowEffect,
+  executeCanonicalCompletedAgentEpisode,
   executeCanonicalLocalWorkflowOperation,
   prepareCanonicalWorkflowEffect,
 } from "./kernel-provider-effect-coordinator.js";
@@ -121,6 +122,7 @@ async function advanceCanonicalRoute(opts: {
   transport: "host" | "managed";
   effect_port_resolver?: KernelEffectPortResolver;
   allow_provider_effects?: boolean;
+  replace_failed_operation?: boolean;
 }) {
   const runtime = await createKernelRuntime({
     command: opts.command,
@@ -211,6 +213,16 @@ async function advanceCanonicalRoute(opts: {
         };
       }
       if (
+        await executeCanonicalCompletedAgentEpisode({
+          command: opts.command,
+          decision: localWorkflow,
+          task_id: opts.task_id,
+          replace_failed_operation: opts.replace_failed_operation,
+        })
+      ) {
+        continue;
+      }
+      if (
         await executeCanonicalLocalWorkflowOperation({
           command: opts.command,
           decision: localWorkflow,
@@ -259,6 +271,16 @@ async function advanceCanonicalRoute(opts: {
           action: { kind: "terminal", reason: route.reason_code },
           canonical_revision: record.aggregate.revision,
         };
+      }
+      if (
+        await executeCanonicalCompletedAgentEpisode({
+          command: opts.command,
+          decision: workflow,
+          task_id: opts.task_id,
+          replace_failed_operation: opts.replace_failed_operation,
+        })
+      ) {
+        continue;
       }
       if (
         await executeCanonicalLocalWorkflowOperation({

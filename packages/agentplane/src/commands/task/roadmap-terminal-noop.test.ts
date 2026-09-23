@@ -16,6 +16,7 @@ const mocks = vi.hoisted(() => ({
   commitCanonicalTerminalTaskArtifacts: vi.fn().mockResolvedValue(false),
   createKernelRuntime: vi.fn(),
   decideCanonicalWorkflowEffect: vi.fn(),
+  executeCanonicalCompletedAgentEpisode: vi.fn().mockResolvedValue(null),
   executeCanonicalLocalWorkflowOperation: vi.fn().mockResolvedValue(false),
   prepareCanonicalWorkflowEffect: vi.fn(),
   restoreKernelFinalValidation: vi.fn().mockResolvedValue(null),
@@ -37,6 +38,7 @@ vi.mock("./kernel-final-validation.js", () => ({
 }));
 vi.mock("./kernel-provider-effect-coordinator.js", () => ({
   decideCanonicalWorkflowEffect: mocks.decideCanonicalWorkflowEffect,
+  executeCanonicalCompletedAgentEpisode: mocks.executeCanonicalCompletedAgentEpisode,
   executeCanonicalLocalWorkflowOperation: mocks.executeCanonicalLocalWorkflowOperation,
   prepareCanonicalWorkflowEffect: mocks.prepareCanonicalWorkflowEffect,
 }));
@@ -55,6 +57,7 @@ const temporaryRoots: string[] = [];
 afterEach(async () => {
   vi.clearAllMocks();
   mocks.commitCanonicalTerminalTaskArtifacts.mockResolvedValue(false);
+  mocks.executeCanonicalCompletedAgentEpisode.mockResolvedValue(null);
   mocks.executeCanonicalLocalWorkflowOperation.mockResolvedValue(false);
   mocks.restoreKernelFinalValidation.mockResolvedValue(null);
   mocks.ensureKernelOperationalProjectionEvidence.mockResolvedValue(undefined);
