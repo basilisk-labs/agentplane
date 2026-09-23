@@ -1,0 +1,25 @@
+{
+  "base": "main",
+  "branch": "task/202609220730-N4NG4B/harden-lifecycle-boundaries",
+  "created_at": "2026-09-22T07:52:49.181Z",
+  "diffstat_sha256": "sha256:02642d62b456fe132dcd627bf1cc6c164a951d1774b36efecae5c6165d66fb9a",
+  "last_verified_at": "2026-09-22T08:03:36.590Z",
+  "last_verified_diffstat_sha256": "sha256:02642d62b456fe132dcd627bf1cc6c164a951d1774b36efecae5c6165d66fb9a",
+  "pr_number": 6004,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6004",
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202609220730-N4NG4B",
+  "updated_at": "2026-09-22T08:04:34.050Z",
+  "verify": {
+    "status": "pass"
+  }
+}

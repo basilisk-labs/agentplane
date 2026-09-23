@@ -7,7 +7,11 @@ import {
 import { createHash } from "node:crypto";
 
 import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
-import { createHumanDecisionTicket, type HumanDecisionTicket } from "@agentplaneorg/core/tasks";
+import {
+  createHumanDecisionTicket,
+  HOST_USER_DECISION_REQUIRED_FIELDS,
+  type HumanDecisionTicket,
+} from "@agentplaneorg/core/tasks";
 
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import { AGENT_INSTRUCTION_LANGUAGE } from "../../runner/context/semantic-prompt-projection.js";
@@ -80,6 +84,7 @@ export type AgentActionPacket = {
         plan_digest: string;
         state_fingerprint: string;
         decision: "approved";
+        required_fields: typeof HOST_USER_DECISION_REQUIRED_FIELDS;
       };
     };
   };
@@ -197,6 +202,7 @@ function operatorActionFor(opts: {
             plan_digest: planDigest,
             state_fingerprint: step.preconditionFingerprint.digest,
             decision: "approved",
+            required_fields: HOST_USER_DECISION_REQUIRED_FIELDS,
           },
         },
       };

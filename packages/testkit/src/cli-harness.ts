@@ -268,6 +268,30 @@ export async function approveTaskPlan(root: string, taskId: string): Promise<voi
     ownership_only: true,
   });
   await setTaskVerifySteps(root, taskId);
+  const canonicalPlan = {
+    work_items: [
+      {
+        id: "do-the-work",
+        depends_on: [],
+        required_inputs: [],
+        expected_outputs: ["work-complete"],
+        execution_requirements: {
+          scope_roots: [],
+          repository_effects: [],
+          external_effects: [],
+          capabilities: [],
+          resources: [],
+        },
+        optional: false,
+        contract: {
+          objective: "Do the work described by the task.",
+          acceptance_criteria: ["The task work is complete."],
+          verification_commands: [],
+          role: "EXECUTOR",
+        },
+      },
+    ],
+  };
   expect(
     await runCliSilent([
       "task",
@@ -275,7 +299,7 @@ export async function approveTaskPlan(root: string, taskId: string): Promise<voi
       "set",
       taskId,
       "--text",
-      "1) Do the work\n2) Verify the work",
+      JSON.stringify(canonicalPlan),
       "--updated-by",
       "ORCHESTRATOR",
       "--root",

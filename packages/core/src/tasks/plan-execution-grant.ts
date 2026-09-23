@@ -34,6 +34,13 @@ export type HostUserDecision = Readonly<{
   decided_at: string;
 }>;
 
+export const HOST_USER_DECISION_REQUIRED_FIELDS = [
+  "host_id",
+  "conversation_id",
+  "message_id",
+  "decided_at",
+] as const;
+
 export type ExecutionGrantCapability =
   | "task.lifecycle"
   | "task.scope.extend"
@@ -438,28 +445,29 @@ export function parseHostUserDecision(encoded: string): HostUserDecision {
     throw new Error("Host user decision must be canonical base64url-encoded JSON.");
   }
   const item = record(value);
-  if (!item) throw new Error("Host user decision fields are malformed.");
-  if (
-    item.schema_version !== 1 ||
-    item.kind !== "agentplane.host_user_decision" ||
-    item.origin !== "user" ||
-    typeof item.host_id !== "string" ||
-    !item.host_id.trim() ||
-    typeof item.conversation_id !== "string" ||
-    !item.conversation_id.trim() ||
-    typeof item.message_id !== "string" ||
-    !item.message_id.trim() ||
-    typeof item.task_id !== "string" ||
-    !item.task_id.trim() ||
-    typeof item.plan_digest !== "string" ||
-    !DIGEST_PATTERN.test(item.plan_digest) ||
-    typeof item.state_fingerprint !== "string" ||
-    !DIGEST_PATTERN.test(item.state_fingerprint) ||
-    item.decision !== "approved" ||
-    !isIsoDate(item.decided_at)
-  ) {
-    throw new Error("Host user decision fields are malformed.");
-  }
+  if (!item) throw new Error("Host user decision must be a JSON object.");
+  const requireField = (field: string, valid: boolean): void => {
+    if (!valid) throw new Error(`Host user decision field ${field} is missing or invalid.`);
+  };
+  const nonEmptyString = (field: string): boolean =>
+    typeof item[field] === "string" && (item[field] as string).trim().length > 0;
+  requireField("schema_version", item.schema_version === 1);
+  requireField("kind", item.kind === "agentplane.host_user_decision");
+  requireField("origin", item.origin === "user");
+  requireField("host_id", nonEmptyString("host_id"));
+  requireField("conversation_id", nonEmptyString("conversation_id"));
+  requireField("message_id", nonEmptyString("message_id"));
+  requireField("task_id", nonEmptyString("task_id"));
+  requireField(
+    "plan_digest",
+    typeof item.plan_digest === "string" && DIGEST_PATTERN.test(item.plan_digest),
+  );
+  requireField(
+    "state_fingerprint",
+    typeof item.state_fingerprint === "string" && DIGEST_PATTERN.test(item.state_fingerprint),
+  );
+  requireField("decision", item.decision === "approved");
+  requireField("decided_at", isIsoDate(item.decided_at));
   return Object.freeze(item as unknown as HostUserDecision);
 }
 

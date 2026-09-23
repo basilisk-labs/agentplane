@@ -125,7 +125,7 @@ describe("commands/shared/merged-branch-cleanup", () => {
     expect(mocks.rm).not.toHaveBeenCalled();
   });
 
-  it("atomically removes a proven branch while preserving a stale unregistered worktree hint", async () => {
+  it("removes a proven unregistered leftover directory before deleting its branch", async () => {
     const { cleanupMergedLocalBranch } = await import("./merged-branch-cleanup.js");
     const worktreePathHint = "/repo/.agentplane/worktrees/task-T2-stale-hint";
     mocks.gitRevParse.mockResolvedValue("head-1");
@@ -139,7 +139,7 @@ describe("commands/shared/merged-branch-cleanup", () => {
 
     expect(result).toEqual({
       removedBranch: true,
-      removedWorktree: false,
+      removedWorktree: true,
       worktreePath: worktreePathHint,
       skippedReason: null,
       preservedDirtyState: false,
@@ -150,7 +150,35 @@ describe("commands/shared/merged-branch-cleanup", () => {
       ["update-ref", "-d", "refs/heads/task/T-2-stale-hint", "head-1"],
       expect.objectContaining({ cwd: "/repo" }),
     );
-    expect(mocks.rm).not.toHaveBeenCalled();
+    expect(mocks.rm).toHaveBeenCalledWith(worktreePathHint, {
+      recursive: true,
+      maxRetries: 3,
+      retryDelay: 100,
+    });
+  });
+
+  it("preserves a proven branch when repeat cleanup cannot remove the leftover directory", async () => {
+    const { cleanupMergedLocalBranch } = await import("./merged-branch-cleanup.js");
+    const worktreePathHint = "/repo/.agentplane/worktrees/task-T2-locked";
+    mocks.gitRevParse.mockResolvedValue("head-1");
+    mocks.rm.mockRejectedValue(new Error("permission denied"));
+
+    await expect(
+      cleanupMergedLocalBranch({
+        gitRoot: "/repo",
+        branch: "task/T-2-locked",
+        worktreePathHint,
+        expectedHeadSha: "head-1",
+      }),
+    ).rejects.toMatchObject({
+      code: "E_GIT",
+      context: { reason_code: "merged_worktree_orphan_recovery_failed" },
+    });
+    expect(mocks.execFileAsync).not.toHaveBeenCalledWith(
+      "git",
+      ["update-ref", "-d", "refs/heads/task/T-2-locked", "head-1"],
+      expect.anything(),
+    );
   });
 
   it("treats a branch that disappears after worktree removal as already cleaned up", async () => {
