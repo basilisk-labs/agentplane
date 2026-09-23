@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 32
+revision: 33
 origin:
   system: "manual"
 depends_on: []
@@ -380,7 +380,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "a224d4e867e50177b2c5a10a2597a9bd41028a8c"
+  message: "🧭 R59HKK task: record evaluator verdict"
 comments:
   -
     author: "CODER"
@@ -443,7 +445,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-23T17:22:54.274Z"
+doc_updated_at: "2026-09-23T17:32:21.190Z"
 doc_updated_by: "CODER"
 description: "Repair evaluator diff-base selection after provider branch updates, forward replacement intent into evaluator episodes, persist supervisor-generated task artifacts without false task_worktree_resolution, dispatch pre-merge closure through the supported local lifecycle path, and admit worktree.prepare before dirty-base worktree resolution."
 sections:
@@ -1237,6 +1239,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:b27716cfdf21052f810046405dc0204d0cad21eac7b0da8dd262dc1c954b7118"
     work_order_id: "sha256:061cb3ad1041d2a68dd6a373011b1dca865f86c72792d04ad23534280c23cf19"
+  implementation_commit:
+    hash: "94c257a156d1356d43eaecac7a621b9e696a1d9c"
+    message: "🐛 R59HKK task: align inherited lockfile metadata"
   task_execution_context:
     base_ref: "main"
     base_sha: "940209a800dedc5b27c382a2642dff316b30a8fc"
