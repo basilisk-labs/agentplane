@@ -6,14 +6,14 @@ Created: 2026-09-23T10:57:06.440Z
 
 - Task: `202609231019-MPSGJZ`
 - Title: Fix canonical completed-task branch lifecycle recovery without internal provider work items
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609231019-MPSGJZ/fix-canonical-completed-task-branch-lifecycle-re`
 - Canonical task record: `.agentplane/tasks/202609231019-MPSGJZ/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
