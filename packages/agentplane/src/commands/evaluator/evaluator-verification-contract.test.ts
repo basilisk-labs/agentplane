@@ -138,7 +138,12 @@ describe("evaluator verification contract", () => {
     await addTask(root, taskId);
     await freezeTaskExecutionBase(root, taskId);
     await execFileAsync("git", ["switch", "-c", "feature/task-owned"], { cwd: root });
-    await commitPath(root, "src/feature-owned.ts", "export const featureOwned = true;\n", "feat: feature");
+    await commitPath(
+      root,
+      "src/feature-owned.ts",
+      "export const featureOwned = true;\n",
+      "feat: feature",
+    );
     await execFileAsync("git", ["switch", "main"], { cwd: root });
     await execFileAsync("git", ["switch", "-c", "task/evaluator-feature-merge"], { cwd: root });
     await commitPath(root, "src/task-owned.ts", "export const taskOwned = true;\n", "feat: task");
@@ -177,14 +182,24 @@ describe("evaluator verification contract", () => {
     await execFileAsync("git", ["switch", "-c", "task/evaluator-base-then-feature"], { cwd: root });
     await commitPath(root, "src/task-owned.ts", "export const taskOwned = true;\n", "feat: task");
     await execFileAsync("git", ["switch", "main"], { cwd: root });
-    await commitPath(root, "src/integrated-main.ts", "export const integrated = true;\n", "feat: main");
+    await commitPath(
+      root,
+      "src/integrated-main.ts",
+      "export const integrated = true;\n",
+      "feat: main",
+    );
     const { stdout: integratedStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
       cwd: root,
     });
     await execFileAsync("git", ["switch", "-c", "feature/later-task-owned", frozenBase], {
       cwd: root,
     });
-    await commitPath(root, "src/feature-owned.ts", "export const featureOwned = true;\n", "feat: feature");
+    await commitPath(
+      root,
+      "src/feature-owned.ts",
+      "export const featureOwned = true;\n",
+      "feat: feature",
+    );
     await execFileAsync("git", ["switch", "task/evaluator-base-then-feature"], { cwd: root });
     await execFileAsync("git", ["merge", "--no-edit", "main"], { cwd: root });
     await execFileAsync("git", ["merge", "--no-edit", "feature/later-task-owned"], { cwd: root });

@@ -30,19 +30,22 @@ Repair evaluator diff-base selection after provider branch updates, forward repl
  bun.lock                                           |   6 +-
  .../commands/evaluator/evaluator-diff-evidence.ts  |   3 +-
  .../commands/evaluator/evaluator-review-usecase.ts |  13 +-
- .../evaluator-verification-contract.test.ts        | 156 +++++++++++++++++++++
+ .../evaluator-verification-contract.test.ts        | 171 +++++++++++++++++++++
  .../pr/provider-update-branch-local.test.ts        |   2 +
- .../commands/pr/provider-update-branch-local.ts    |  16 +++
+ .../commands/pr/provider-update-branch-local.ts    |  16 ++
  .../src/commands/pr/provider-update-branch.test.ts |   2 +-
  .../src/commands/pr/provider-update-branch.ts      |   6 +-
- .../route-decision-blockers.quality-review.test.ts |  25 ++++
+ .../commands/shared/quality-review-retirement.ts   |   9 ++
+ .../route-decision-blockers.quality-review.test.ts |  25 +++
  .../src/commands/shared/route-decision-blockers.ts |  26 ++--
+ .../src/commands/shared/task-mutation.test.ts      |  66 ++++++++
+ .../src/commands/shared/task-mutation.ts           |  15 +-
  .../src/commands/shared/workflow-step-branch.ts    |   9 +-
  .../shared/workflow-step-factory-branch.ts         |  21 +++
  .../src/commands/shared/workflow-step-factory.ts   |   1 +
  .../shared/workflow-step-worktree-priority.test.ts |  30 ++++
  .../src/commands/task/advance-task-step.ts         |  44 +++++-
- .../src/commands/task/advance.command.ts           |  25 +++-
+ .../src/commands/task/advance.command.ts           |  25 ++-
  .../task/branch-task-supervisor-episodes.ts        |   2 +
  .../branch-task-supervisor-evaluator-episode.ts    |   3 +-
  .../commands/task/branch-task-supervisor.test.ts   |  13 ++
@@ -50,9 +53,9 @@ Repair evaluator diff-base selection after provider branch updates, forward repl
  .../task/direct-task-supervisor-evaluator.test.ts  |  60 ++++++++
  .../task/direct-task-supervisor-evaluator.ts       |   3 +-
  .../direct-task-supervisor-formal-operation.ts     |  12 ++
- .../task/kernel-provider-effect-coordinator.ts     |  74 +++++++++-
+ .../task/kernel-provider-effect-coordinator.ts     |  74 ++++++++-
  .../commands/task/roadmap-terminal-noop.test.ts    |  38 +++++
- 25 files changed, 561 insertions(+), 30 deletions(-)
+ 28 files changed, 660 insertions(+), 36 deletions(-)
 ```
 
 </details>
