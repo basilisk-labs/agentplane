@@ -232,13 +232,19 @@ export function canonicalAuthorityIssues(aggregate: TaskAggregate): string[] {
       const parent = records[index - 1]?.authority;
       if (!parent || !record.observation || continuationIssues(parent, record).length > 0)
         issues.push("authority_continuation");
-    } else if (
-      record.observation !== null ||
-      authority.provenance.kind !== "USER" ||
-      authority.provenance.parent_authority_digest !== null ||
-      plan?.approval_actor_id !== authority.provenance.actor_id
-    )
-      issues.push("authority_approval");
+    } else {
+      const validRootProvenance =
+        record.approval_mode === "repository_policy"
+          ? authority.provenance.kind === "SYSTEM"
+          : authority.provenance.kind === "USER";
+      if (
+        record.observation !== null ||
+        !validRootProvenance ||
+        authority.provenance.parent_authority_digest !== null ||
+        plan?.approval_actor_id !== authority.provenance.actor_id
+      )
+        issues.push("authority_approval");
+    }
   }
   return issues;
 }

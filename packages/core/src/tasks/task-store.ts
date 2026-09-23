@@ -322,6 +322,10 @@ export type TaskExecutionContract = {
     forbidden_repository_effects: TaskRepositoryEffect[];
     allowed_external_effects: TaskExternalEffect[];
     forbidden_external_effects: TaskExternalEffect[];
+    /** Explicit semantic capabilities admitted by the trusted intake boundary. */
+    allowed_capabilities?: string[];
+    /** Explicit resource claims admitted by the trusted intake boundary. */
+    allowed_resources?: string[];
   };
   safety: {
     requires_worktree: boolean;

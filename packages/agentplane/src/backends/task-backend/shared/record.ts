@@ -190,6 +190,8 @@ function normalizeExecutionContract(value: unknown): TaskData["execution_contrac
       (effect) => effect !== "network_read" || !allowedExternalEffects?.includes(effect),
     ),
   );
+  const allowedCapabilities = normalizeStringList(authority.allowed_capabilities ?? []) ?? [];
+  const allowedResources = normalizeStringList(authority.allowed_resources ?? []) ?? [];
   const approvalEffects = normalizeStringList(value.safety.approval_effects);
   const requiredEvidence = normalizeStringList(value.verification.required_evidence);
   const rawVerificationContract = value.verification.contract;
@@ -295,6 +297,8 @@ function normalizeExecutionContract(value: unknown): TaskData["execution_contrac
       forbidden_external_effects: forbiddenExternalEffects as NonNullable<
         TaskData["execution_contract"]
       >["authority"]["forbidden_external_effects"],
+      allowed_capabilities: allowedCapabilities,
+      allowed_resources: allowedResources,
     },
     safety: {
       requires_worktree: value.safety.requires_worktree,

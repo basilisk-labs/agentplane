@@ -26,6 +26,7 @@ import { transferCanonicalControllerToBase } from "./kernel-controller-handoff.j
 import { acceptKernelSemanticResult } from "./kernel-semantic-result.js";
 import { ensureCanonicalTaskWorktree } from "./kernel-worktree-routing.js";
 import { canonicalCompletionPrecedesWorkflow } from "./ordinary-advance-step.js";
+import { repositoryPolicyApprovalEligible } from "./kernel-plan-authority.js";
 
 export { blockKernelSemanticEpisode } from "./kernel-semantic-result.js";
 
@@ -297,6 +298,22 @@ async function advanceCanonicalRoute(opts: {
     }
     if (route.reason_code === "kernel_plan_approval_required" && plan) {
       await runtime.checkpoint(await runtime.observe());
+      if (
+        repositoryPolicyApprovalEligible({
+          config: opts.command.config,
+          task: current.read.task,
+          plan,
+        })
+      ) {
+        const policyRuntime = await createKernelRuntime({
+          command: opts.command,
+          task_id: opts.task_id,
+          transport: opts.transport,
+          operation_id: `repository-policy:${plan.digest}`,
+        });
+        requireKernelCommit(await policyRuntime.authority.approveByRepositoryPolicy(opts.task_id));
+        continue;
+      }
       const operatorAction = kernelPlanApprovalOperatorAction(
         opts.command,
         opts.task_id,

@@ -782,9 +782,16 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
     }
     case "approve_plan": {
       const provenance = input.authority?.provenance;
+      const policyApproval =
+        command.authority_mode === "repository_policy" &&
+        input.actor.kind === "SYSTEM" &&
+        provenance?.kind === "SYSTEM";
+      const userApproval =
+        command.authority_mode !== "repository_policy" &&
+        input.actor.kind === "USER" &&
+        provenance?.kind === "USER";
       if (
-        input.actor.kind !== "USER" ||
-        provenance?.kind !== "USER" ||
+        (!policyApproval && !userApproval) ||
         provenance.parent_authority_digest !== null ||
         provenance.actor_id !== input.actor.id ||
         provenance.evidence_digest !== command.approval_evidence_digest

@@ -41,7 +41,7 @@ export const kernelAuthoritySchema = z
 export const kernelAuthorityRecordSchema = z.strictObject({
   authority: kernelAuthoritySchema,
   approval_mode: z
-    .enum(["manual_operator", "signed_user_receipt", "host_user_decision"])
+    .enum(["manual_operator", "signed_user_receipt", "host_user_decision", "repository_policy"])
     .nullable(),
   observation: z
     .strictObject({

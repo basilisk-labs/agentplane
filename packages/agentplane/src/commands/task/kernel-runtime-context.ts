@@ -22,6 +22,7 @@ import type {
 } from "../../ports/kernel-authority.js";
 import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-backend.js";
 import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
+import { executionContractCeiling } from "./kernel-plan-authority.js";
 
 export function requireKernelCommit(result: KernelAdapterResult) {
   if (result.kind !== "committed")
@@ -109,13 +110,20 @@ export async function createKernelRuntime(opts: {
           ? aggregate.authority_lineage?.findLast((entry) => entry.approval_mode !== null)
               ?.authority
           : undefined;
+      const contracts = read.kind === "canonical" ? (read.record.documents?.contracts ?? {}) : {};
+      const contractCeiling =
+        read.kind === "canonical" ? executionContractCeiling(read.task) : null;
       const actor: k.ActorIdentity = {
         id: "agentplane:kernel-controller",
         kind: "SYSTEM",
         transport: opts.transport,
-        capabilities: [...new Set(["authority.observe", ...union("capabilities")])],
+        capabilities: [
+          ...new Set([
+            "authority.observe",
+            ...(approved?.capabilities ?? contractCeiling?.capabilities ?? union("capabilities")),
+          ]),
+        ],
       };
-      const contracts = read.kind === "canonical" ? (read.record.documents?.contracts ?? {}) : {};
       const policyFiles = repository.files.filter(
         (file) => file.path === "AGENTS.md" || file.path.startsWith(".agentplane/policy/"),
       );
@@ -133,13 +141,22 @@ export async function createKernelRuntime(opts: {
         }),
         approval_receipts: ctx.config.authority.approval_receipts,
         ceiling: {
-          scope_roots: approved?.scope_roots ?? union("scope_roots"),
-          repository_effects: approved?.repository_effects ?? union("repository_effects"),
-          external_effects: approved?.external_effects ?? union("external_effects"),
-          capabilities: approved?.capabilities ?? union("capabilities"),
-          resources: approved?.resources ?? union("resources"),
+          scope_roots:
+            approved?.scope_roots ?? contractCeiling?.scope_roots ?? union("scope_roots"),
+          repository_effects:
+            approved?.repository_effects ??
+            contractCeiling?.repository_effects ??
+            union("repository_effects"),
+          external_effects:
+            approved?.external_effects ??
+            contractCeiling?.external_effects ??
+            union("external_effects"),
+          capabilities:
+            approved?.capabilities ?? contractCeiling?.capabilities ?? union("capabilities"),
+          resources: approved?.resources ?? contractCeiling?.resources ?? union("resources"),
           validation_requirements:
             approved?.validation_requirements ??
+            contractCeiling?.validation_requirements ??
             [
               ...new Set(
                 items.flatMap(
@@ -150,7 +167,11 @@ export async function createKernelRuntime(opts: {
             ].toSorted(),
           policy_digests: [k.kernelDigest({ config: ctx.config, files: policyFiles })],
           completion_requirements: ["work_item_validation", "final_validation"],
-          risk: { requirements: "bounded", implementation: "bounded", reversibility: "reversible" },
+          risk: contractCeiling?.risk ?? {
+            requirements: "bounded",
+            implementation: "bounded",
+            reversibility: "reversible",
+          },
           expires_at: null,
         },
       } satisfies NativeAuthorityContext;

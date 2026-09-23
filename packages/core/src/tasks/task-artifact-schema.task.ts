@@ -230,6 +230,8 @@ const TASK_EXECUTION_CONTRACT_SCHEMA = z
         forbidden_repository_effects: z.array(TASK_REPOSITORY_EFFECT_SCHEMA),
         allowed_external_effects: z.array(TASK_EXTERNAL_EFFECT_SCHEMA),
         forbidden_external_effects: z.array(TASK_EXTERNAL_EFFECT_SCHEMA),
+        allowed_capabilities: z.array(NON_EMPTY_STRING).optional(),
+        allowed_resources: z.array(NON_EMPTY_STRING).optional(),
       })
       .strict(),
     safety: z
@@ -677,6 +679,12 @@ function legacyExecutionContractDefaults(value: unknown): unknown {
         )
       : TASK_EXTERNAL_EFFECT_SCHEMA.options
     ).filter((effect) => effect !== "network_read" || !allowedExternalEffects.includes(effect)),
+    allowed_capabilities: Array.isArray(authoritySource.allowed_capabilities)
+      ? authoritySource.allowed_capabilities
+      : [],
+    allowed_resources: Array.isArray(authoritySource.allowed_resources)
+      ? authoritySource.allowed_resources
+      : [],
   };
   return {
     ...value,
