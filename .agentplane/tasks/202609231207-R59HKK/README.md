@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 35
+revision: 36
 origin:
   system: "manual"
 depends_on: []
@@ -518,8 +518,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "efa6884528cf52bd514dd3d317a4d07b421e0330"
-  message: "AgentPlane-owned canonical implementation commit"
+  hash: "e2fdb7e5a2772f4d06066bfcec4f22a16c0c9e06"
+  message: "🧭 R59HKK task: record evaluator verdict"
 comments:
   -
     author: "CODER"
@@ -588,7 +588,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-23T18:30:32.860Z"
+doc_updated_at: "2026-09-23T18:32:25.257Z"
 doc_updated_by: "CODER"
 description: "Repair evaluator diff-base selection after provider branch updates, forward replacement intent into evaluator episodes, persist supervisor-generated task artifacts without false task_worktree_resolution, dispatch pre-merge closure through the supported local lifecycle path, and admit worktree.prepare before dirty-base worktree resolution."
 sections:
@@ -1491,7 +1491,7 @@ extensions:
     work_order_id: "sha256:061cb3ad1041d2a68dd6a373011b1dca865f86c72792d04ad23534280c23cf19"
   implementation_commit:
     hash: "efa6884528cf52bd514dd3d317a4d07b421e0330"
-    message: "AgentPlane-owned canonical implementation commit"
+    message: "♻️ R59HKK task: extract completed workflow continuation"
   task_execution_context:
     base_ref: "main"
     base_sha: "940209a800dedc5b27c382a2642dff316b30a8fc"
