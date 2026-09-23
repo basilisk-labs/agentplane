@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202609231207-R59HKK",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-23T18:30:32.830Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "efa6884528cf52bd514dd3d317a4d07b421e0330",
+  "review_identity_digest": "sha256:7c77ca215c38f44ad34ab8742627153301e66dab881183a344704cd2f37baf69",
+  "findings": [
+    "The declared focused Vitest command includes external-agent-supervisor.test.ts, which is absent at the evaluated SHA. Its passing result does not establish coverage of that named suite; the persisted full regression check also passed."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609231207-R59HKK/README.md",
+    ".agentplane/tasks/202609231207-R59HKK/verification/20260923182218141-e6531c975af7f0a6.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
