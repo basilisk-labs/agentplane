@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -30,32 +30,31 @@ verification:
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-23T14:54:39.716Z"
+  updated_at: "2026-09-23T15:46:09.717Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "1663b3c247eb098033997ad12a007220dd39601e"
-  review_identity_digest: "sha256:c88cdc580f353ac8adedd2dc69d2d76aa945e00a56c7a117ce2c0d5a3062971f"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "6759b1616cba474373998abdd8963b8894ad4b2e"
+  review_identity_digest: "sha256:b5a51da3bf570f191ac73d549d2dcf102a1f4bb677417612fe9fb8cb74281a03"
   evidence_refs:
-    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-145321863-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-145321863-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/4b6731a5c57300dafdfc09ebb523cc5559af5937d055fb34abcd5c57c1ee0fd8.md"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-145321863-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-145321863-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-145321863-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-145321863-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-154436878-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-154436878-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/696026ee45c209e97ccfd92e33ebb14b399770bcc0a70f0d7025ee07ec20bd35.md"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-154436878-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-154436878-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-154436878-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609231207-R59HKK/README.md"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/b62f2aa81cf989ed4066eed7a13bdfafe0a259b324469b0fcf7cae04b1fc5872.patch"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/e1483435cf1fb395403f7cfbe40e6f18bdd3bc5bdd7f9be05af554e838364d7b.json"
-    - ".agentplane/tasks/202609231207-R59HKK/verification/20260923144846870-4a1e16580868d4ae.json"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/9bfbe82d2e857611eb04b1407e7dca21d72de2e2a8167fa0864a8883642181a1.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/70e6995465910c8353ef1bbf2b986daaa46b4ddc358d39e9ddafa8e78a0c53f6.patch"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/43eb18c44593714c701dc9351e8debc7e368182484c30e1d848a1a501370c973.json"
+    - ".agentplane/tasks/202609231207-R59HKK/verification/20260923154402112-3f5ee60dd679ac16.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/7f7eb9cdbe3d1ef6d3597b5833a7c60954f42183239589eb3a18f8b6d0fb782f.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The diff-base fallback can exclude task-owned changes. resolveIntegratedBaseFromTaskUpstream selects the first qualifying second parent from any published merge, without establishing that it belongs to the configured base branch. If a task merges a feature branch descended from the local base, that feature tip satisfies both ancestry checks and becomes the review base, hiding its changes from the evaluator."
+    - "Frozen evidence digests match. Recorded verification passes all three required commands for the evaluated SHA. Observed workspace drift consists only of this review’s generated evidence artifacts."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -416,7 +415,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-23T15:44:07.392Z"
+doc_updated_at: "2026-09-23T15:46:09.725Z"
 doc_updated_by: "CODER"
 description: "Repair evaluator diff-base selection after provider branch updates, forward replacement intent into evaluator episodes, persist supervisor-generated task artifacts without false task_worktree_resolution, dispatch pre-merge closure through the supported local lifecycle path, and admit worktree.prepare before dirty-base worktree resolution."
 sections:
