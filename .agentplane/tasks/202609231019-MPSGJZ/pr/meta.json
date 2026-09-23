@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:57c80e9d3aa30539dc918d72ad8dfbe9c4025061724384dc31de201a1260b4d1",
   "pr_number": 6011,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6011",
+  "pre_merge_closure": {
+    "basis_commit": "99cb3d3f4d0b01373f7d026a4f5c56aee4b13cbf",
+    "branch": "task/202609231019-MPSGJZ/fix-canonical-completed-task-branch-lifecycle-re",
+    "pr_number": 6011,
+    "recorded_at": "2026-09-23T11:22:00.266Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
