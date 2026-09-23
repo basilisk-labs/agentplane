@@ -8,10 +8,10 @@
   "pr_number": 6013,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6013",
   "pre_merge_closure": {
-    "basis_commit": "a224d4e867e50177b2c5a10a2597a9bd41028a8c",
+    "basis_commit": "e2fdb7e5a2772f4d06066bfcec4f22a16c0c9e06",
     "branch": "task/202609231207-R59HKK/make-canonical-supervisor-transitions-recoverabl",
     "pr_number": 6013,
-    "recorded_at": "2026-09-23T17:32:21.258Z",
+    "recorded_at": "2026-09-23T18:32:25.310Z",
     "state": "closed_before_merge"
   },
   "provider": {
