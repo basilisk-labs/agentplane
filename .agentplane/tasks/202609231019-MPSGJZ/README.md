@@ -4,7 +4,7 @@ title: "Fix canonical completed-task branch lifecycle recovery without internal 
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,11 @@ plan_approval:
   updated_by: "USER"
   note: "Projected from the approved canonical Task Kernel plan."
 verification:
-  state: "ok"
-  updated_at: "2026-09-23T11:15:46.137Z"
+  state: "needs_rework"
+  updated_at: "2026-09-23T19:15:33.086Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: canonical Task Kernel final checks passed."
-  attempts: 0
+  note: "Rework: Declared check failed: bun run ci:local:full"
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -53,10 +53,12 @@ execution_route:
   selected_mode: "branch_pr"
 execution_contract:
   authority:
+    allowed_capabilities: []
     allowed_external_effects: []
     allowed_repository_effects:
       - "repository_write"
       - "source_code"
+    allowed_resources: []
     forbidden_external_effects:
       - "network_read"
       - "external_write"
@@ -89,15 +91,27 @@ execution_contract:
     scope_roots: []
   observed:
     authority_violations:
+      - "repository_effect:dependencies"
+      - "repository_effect:schema"
       - "repository_effect:tests"
+      - "verification:recorded-check-1:fail"
+      - "verification:verification-record:fail"
     changed_components:
+      - "bun.lock"
       - "packages/agentplane"
       - "packages/core"
     changed_paths:
+      - "bun.lock"
+      - "packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-review-apply.test.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts"
       - "packages/agentplane/src/commands/pr/conflict-rework.test.ts"
       - "packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts"
       - "packages/agentplane/src/commands/shared/merged-branch-cleanup.ts"
       - "packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts"
+      - "packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
       - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
       - "packages/agentplane/src/commands/shared/supervisor-execution-worktree-recovery.test.ts"
       - "packages/agentplane/src/commands/shared/supervisor-execution-worktree-recovery.ts"
@@ -111,9 +125,12 @@ execution_contract:
       - "packages/agentplane/src/commands/task/branch-task-supervisor.test.ts"
       - "packages/agentplane/src/commands/task/branch-task-supervisor.ts"
       - "packages/agentplane/src/commands/task/branch-task-verification.test.ts"
+      - "packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts"
+      - "packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts"
       - "packages/agentplane/src/commands/task/doc-set.command.ts"
       - "packages/agentplane/src/commands/task/doc.unit.test.ts"
       - "packages/agentplane/src/commands/task/external-agent-supervisor.test.ts"
+      - "packages/agentplane/src/commands/task/finish-execute-close.ts"
       - "packages/agentplane/src/commands/task/finish-execute.ts"
       - "packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts"
       - "packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts"
@@ -122,10 +139,15 @@ execution_contract:
       - "packages/agentplane/src/commands/task/plan.unit.test.ts"
       - "packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts"
       - "packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts"
+      - "packages/agentplane/src/commands/task/verify-record-execute.ts"
+      - "packages/agentplane/src/commands/task/verify-record.unit.test.ts"
       - "packages/agentplane/src/runner/adapters/codex-output-schema-compat.ts"
       - "packages/agentplane/src/runner/adapters/codex-result-transport.ts"
       - "packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts"
       - "packages/agentplane/src/runner/usecases/task-run-authority.ts"
+      - "packages/core/src/runner/supervisor-execution-episode.test.ts"
+      - "packages/core/src/runner/supervisor-execution-episode.ts"
+      - "packages/core/src/schemas/index.ts"
       - "packages/core/src/tasks/index.ts"
       - "packages/core/src/tasks/plan-execution-grant.test.ts"
       - "packages/core/src/tasks/plan-execution-grant.ts"
@@ -133,42 +155,22 @@ execution_contract:
       - "packages/core/src/tasks/task-kernel/invariants.ts"
     external_effects: []
     repository_effects:
+      - "dependencies"
       - "repository_write"
+      - "schema"
       - "source_code"
       - "tests"
     verification_results:
       -
         id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
-      -
-        id: "recorded-check-7"
-        result: "pass"
-      -
-        id: "recorded-check-8"
-        result: "pass"
-      -
-        id: "recorded-check-9"
-        result: "pass"
+        result: "fail"
       -
         id: "verification-record"
-        result: "pass"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
+    - "observed_effect_dependencies"
+    - "observed_effect_schema"
     - "repository_branch_pr_floor"
   repository_mode: "branch_pr"
   safety:
@@ -184,7 +186,10 @@ execution_contract:
         components: []
         evidence_requirements:
           - "hosted_integration"
+          - "repository_effect:dependencies"
+          - "repository_effect:documentation"
           - "repository_effect:repository_write"
+          - "repository_effect:schema"
           - "repository_effect:source_code"
           - "repository_effect:tests"
           - "task_outcome"
@@ -196,20 +201,52 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:c90f280da79445d8b8c685e11932be8bfd1c950777cc02a54864e72934b1ff30"
+      digest: "sha256:44bbe1cd47d57de5cbff36af15dee68fd84d97c268ee656769f884d77961e15f"
       escalation_reasons:
+        - "central_path:bun.lock"
+        - "central_path:packages/agentplane/src/commands/shared/branch-identity.ts"
+        - "central_path:packages/agentplane/src/commands/shared/branch-pr-context.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/branch-pr-context.ts"
         - "central_path:packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/merged-branch-cleanup.ts"
         - "central_path:packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/route-decision-workspace.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/route-decision-workspace.ts"
+        - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
         - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-worktree-recovery.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-worktree-recovery.ts"
         - "central_path:packages/agentplane/src/commands/shared/text-payload.ts"
+        - "central_path:packages/core/src/runner/supervisor-execution-episode.test.ts"
+        - "central_path:packages/core/src/runner/supervisor-execution-episode.ts"
+        - "central_path:packages/core/src/schemas/index.ts"
         - "central_path:packages/core/src/tasks/index.ts"
         - "central_path:packages/core/src/tasks/plan-execution-grant.test.ts"
         - "central_path:packages/core/src/tasks/plan-execution-grant.ts"
         - "central_path:packages/core/src/tasks/task-kernel/invariants.test.ts"
         - "central_path:packages/core/src/tasks/task-kernel/invariants.ts"
+        - "effect_dependencies"
+        - "effect_schema"
+        - "unknown_path:.agentplane/tasks/202609220752-4MGBBP/pr/diffstat.txt"
+        - "unknown_path:.agentplane/tasks/202609220752-4MGBBP/pr/github-title.txt"
+        - "unknown_path:.agentplane/tasks/202609220752-4MGBBP/pr/meta.json"
+        - "unknown_path:.agentplane/tasks/202609220752-4MGBBP/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json"
+        - "unknown_path:.agentplane/tasks/202609220752-4MGBBP/quality/objects/sha256/4340c69a72ea01faa72dcf87e07dfff35ea84123952ef257b9037259c0405a62.json"
+        - "unknown_path:.agentplane/tasks/202609220752-4MGBBP/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+        - "unknown_path:.agentplane/tasks/202609220752-4MGBBP/supervision/declared-checks.json"
+        - "unknown_path:.agentplane/tasks/202609220752-4MGBBP/supervision/implementation-evidence.json"
+        - "unknown_path:.agentplane/tasks/202609220752-4MGBBP/verification/20260922080259419-8a99d254a305e353.json"
+        - "unknown_path:.agentplane/tasks/202609230938-QFMVQ0/blueprint/resolved-snapshot.json"
+        - "unknown_path:.agentplane/tasks/202609230938-QFMVQ0/pr/diffstat.txt"
+        - "unknown_path:.agentplane/tasks/202609230938-QFMVQ0/pr/github-title.txt"
+        - "unknown_path:.agentplane/tasks/202609230938-QFMVQ0/pr/meta.json"
+        - "unknown_path:agentplane-roadmap-r2/checksums.json"
+        - "unknown_path:agentplane-roadmap-r2/coverage-map.json"
+        - "unknown_path:agentplane-roadmap-r2/dependency-graph.json"
+        - "unknown_path:agentplane-roadmap-r2/experiment-requirements.json"
+        - "unknown_path:agentplane-roadmap-r2/source-evidence.json"
+        - "unknown_path:agentplane-roadmap-r2/tasks.json"
+        - "unknown_path:agentplane-roadmap-r2/validation-report.json"
       execution_groups:
         - "docs-schema"
         - "core"
@@ -217,13 +254,202 @@ execution_contract:
         - "cli"
       observed:
         changed_components:
+          - ".agentplane"
+          - "agentplane-roadmap-r2"
+          - "bun.lock"
           - "packages/agentplane"
           - "packages/core"
+          - "packages/testkit"
+          - "vitest.config.ts"
         changed_files:
+          - ".agentplane/tasks/202609220752-4MGBBP/README.md"
+          - ".agentplane/tasks/202609220752-4MGBBP/pr/diffstat.txt"
+          - ".agentplane/tasks/202609220752-4MGBBP/pr/github-body.md"
+          - ".agentplane/tasks/202609220752-4MGBBP/pr/github-title.txt"
+          - ".agentplane/tasks/202609220752-4MGBBP/pr/meta.json"
+          - ".agentplane/tasks/202609220752-4MGBBP/pr/review.md"
+          - ".agentplane/tasks/202609220752-4MGBBP/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json"
+          - ".agentplane/tasks/202609220752-4MGBBP/quality/objects/sha256/4340c69a72ea01faa72dcf87e07dfff35ea84123952ef257b9037259c0405a62.json"
+          - ".agentplane/tasks/202609220752-4MGBBP/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+          - ".agentplane/tasks/202609220752-4MGBBP/supervision/declared-checks.json"
+          - ".agentplane/tasks/202609220752-4MGBBP/supervision/implementation-evidence.json"
+          - ".agentplane/tasks/202609220752-4MGBBP/verification/20260922080259419-8a99d254a305e353.json"
+          - ".agentplane/tasks/202609222220-BVX6N3/README.md"
+          - ".agentplane/tasks/202609230938-QFMVQ0/README.md"
+          - ".agentplane/tasks/202609230938-QFMVQ0/blueprint/resolved-snapshot.json"
+          - ".agentplane/tasks/202609230938-QFMVQ0/pr/diffstat.txt"
+          - ".agentplane/tasks/202609230938-QFMVQ0/pr/github-body.md"
+          - ".agentplane/tasks/202609230938-QFMVQ0/pr/github-title.txt"
+          - ".agentplane/tasks/202609230938-QFMVQ0/pr/meta.json"
+          - ".agentplane/tasks/202609230938-QFMVQ0/pr/review.md"
+          - "agentplane-roadmap-r2/AGENT-START.md"
+          - "agentplane-roadmap-r2/EXECUTION-CHARTER.md"
+          - "agentplane-roadmap-r2/README.md"
+          - "agentplane-roadmap-r2/agentplane-0.7.9-0.7.14-roadmap-r2.md"
+          - "agentplane-roadmap-r2/checksums.json"
+          - "agentplane-roadmap-r2/coverage-and-gap-audit.md"
+          - "agentplane-roadmap-r2/coverage-map.json"
+          - "agentplane-roadmap-r2/dependency-graph.json"
+          - "agentplane-roadmap-r2/experiment-requirements.json"
+          - "agentplane-roadmap-r2/releases/0.7.10.md"
+          - "agentplane-roadmap-r2/releases/0.7.11.md"
+          - "agentplane-roadmap-r2/releases/0.7.12.md"
+          - "agentplane-roadmap-r2/releases/0.7.13.md"
+          - "agentplane-roadmap-r2/releases/0.7.14.md"
+          - "agentplane-roadmap-r2/releases/0.7.9.md"
+          - "agentplane-roadmap-r2/source-evidence.json"
+          - "agentplane-roadmap-r2/tasks.json"
+          - "agentplane-roadmap-r2/tasks/BP-01.md"
+          - "agentplane-roadmap-r2/tasks/BP-02.md"
+          - "agentplane-roadmap-r2/tasks/BP-03.md"
+          - "agentplane-roadmap-r2/tasks/BP-04.md"
+          - "agentplane-roadmap-r2/tasks/BP-05.md"
+          - "agentplane-roadmap-r2/tasks/BP-06.md"
+          - "agentplane-roadmap-r2/tasks/BP-07.md"
+          - "agentplane-roadmap-r2/tasks/BP-08.md"
+          - "agentplane-roadmap-r2/tasks/BP-09.md"
+          - "agentplane-roadmap-r2/tasks/BP-10.md"
+          - "agentplane-roadmap-r2/tasks/BP-11.md"
+          - "agentplane-roadmap-r2/tasks/BP-12.md"
+          - "agentplane-roadmap-r2/tasks/BP-13.md"
+          - "agentplane-roadmap-r2/tasks/BP-14.md"
+          - "agentplane-roadmap-r2/tasks/BP-15.md"
+          - "agentplane-roadmap-r2/tasks/BP-16.md"
+          - "agentplane-roadmap-r2/tasks/BP-17.md"
+          - "agentplane-roadmap-r2/tasks/BP-18.md"
+          - "agentplane-roadmap-r2/tasks/BP-19.md"
+          - "agentplane-roadmap-r2/tasks/BP-20.md"
+          - "agentplane-roadmap-r2/tasks/BP-21.md"
+          - "agentplane-roadmap-r2/tasks/BP-22.md"
+          - "agentplane-roadmap-r2/tasks/BP-23.md"
+          - "agentplane-roadmap-r2/tasks/BP-24.md"
+          - "agentplane-roadmap-r2/tasks/BP-25.md"
+          - "agentplane-roadmap-r2/tasks/BP-26.md"
+          - "agentplane-roadmap-r2/tasks/BP-27.md"
+          - "agentplane-roadmap-r2/tasks/BP-28.md"
+          - "agentplane-roadmap-r2/tasks/BP-29.md"
+          - "agentplane-roadmap-r2/tasks/BP-30.md"
+          - "agentplane-roadmap-r2/tasks/BP-31.md"
+          - "agentplane-roadmap-r2/tasks/EV-01.md"
+          - "agentplane-roadmap-r2/tasks/EV-02.md"
+          - "agentplane-roadmap-r2/tasks/EV-03.md"
+          - "agentplane-roadmap-r2/tasks/EV-04.md"
+          - "agentplane-roadmap-r2/tasks/EV-05.md"
+          - "agentplane-roadmap-r2/tasks/EV-06.md"
+          - "agentplane-roadmap-r2/tasks/EV-07.md"
+          - "agentplane-roadmap-r2/tasks/EV-08.md"
+          - "agentplane-roadmap-r2/tasks/EV-09.md"
+          - "agentplane-roadmap-r2/tasks/EV-10.md"
+          - "agentplane-roadmap-r2/tasks/EV-11.md"
+          - "agentplane-roadmap-r2/tasks/EV-12.md"
+          - "agentplane-roadmap-r2/tasks/EV-13.md"
+          - "agentplane-roadmap-r2/tasks/EV-14.md"
+          - "agentplane-roadmap-r2/tasks/EV-15.md"
+          - "agentplane-roadmap-r2/tasks/EV-16.md"
+          - "agentplane-roadmap-r2/tasks/EV-17.md"
+          - "agentplane-roadmap-r2/tasks/EV-18.md"
+          - "agentplane-roadmap-r2/tasks/EV-19.md"
+          - "agentplane-roadmap-r2/tasks/EV-20.md"
+          - "agentplane-roadmap-r2/tasks/EV-21.md"
+          - "agentplane-roadmap-r2/tasks/EV-22.md"
+          - "agentplane-roadmap-r2/tasks/EV-23.md"
+          - "agentplane-roadmap-r2/tasks/EV-24.md"
+          - "agentplane-roadmap-r2/tasks/EV-25.md"
+          - "agentplane-roadmap-r2/tasks/EV-26.md"
+          - "agentplane-roadmap-r2/tasks/LC-01.md"
+          - "agentplane-roadmap-r2/tasks/LC-02.md"
+          - "agentplane-roadmap-r2/tasks/LC-03.md"
+          - "agentplane-roadmap-r2/tasks/LC-04.md"
+          - "agentplane-roadmap-r2/tasks/LC-05.md"
+          - "agentplane-roadmap-r2/tasks/LC-06.md"
+          - "agentplane-roadmap-r2/tasks/LC-07.md"
+          - "agentplane-roadmap-r2/tasks/LC-08.md"
+          - "agentplane-roadmap-r2/tasks/LC-09.md"
+          - "agentplane-roadmap-r2/tasks/LC-10.md"
+          - "agentplane-roadmap-r2/tasks/LC-11.md"
+          - "agentplane-roadmap-r2/tasks/LC-12.md"
+          - "agentplane-roadmap-r2/tasks/LC-13.md"
+          - "agentplane-roadmap-r2/tasks/LC-14.md"
+          - "agentplane-roadmap-r2/tasks/LC-15.md"
+          - "agentplane-roadmap-r2/tasks/LC-16.md"
+          - "agentplane-roadmap-r2/tasks/LC-17.md"
+          - "agentplane-roadmap-r2/tasks/LC-18.md"
+          - "agentplane-roadmap-r2/tasks/LC-19.md"
+          - "agentplane-roadmap-r2/tasks/LC-20.md"
+          - "agentplane-roadmap-r2/tasks/LC-21.md"
+          - "agentplane-roadmap-r2/tasks/LC-22.md"
+          - "agentplane-roadmap-r2/tasks/LC-23.md"
+          - "agentplane-roadmap-r2/tasks/LC-24.md"
+          - "agentplane-roadmap-r2/tasks/PL-01.md"
+          - "agentplane-roadmap-r2/tasks/PL-02.md"
+          - "agentplane-roadmap-r2/tasks/PL-03.md"
+          - "agentplane-roadmap-r2/tasks/PL-04.md"
+          - "agentplane-roadmap-r2/tasks/PL-05.md"
+          - "agentplane-roadmap-r2/tasks/PL-06.md"
+          - "agentplane-roadmap-r2/tasks/PL-07.md"
+          - "agentplane-roadmap-r2/tasks/PL-08.md"
+          - "agentplane-roadmap-r2/tasks/PL-09.md"
+          - "agentplane-roadmap-r2/tasks/PL-10.md"
+          - "agentplane-roadmap-r2/tasks/PL-11.md"
+          - "agentplane-roadmap-r2/tasks/PL-12.md"
+          - "agentplane-roadmap-r2/tasks/RC-01.md"
+          - "agentplane-roadmap-r2/tasks/RC-02.md"
+          - "agentplane-roadmap-r2/tasks/RC-03.md"
+          - "agentplane-roadmap-r2/tasks/RC-04.md"
+          - "agentplane-roadmap-r2/tasks/RC-05.md"
+          - "agentplane-roadmap-r2/tasks/RC-06.md"
+          - "agentplane-roadmap-r2/tasks/RC-07.md"
+          - "agentplane-roadmap-r2/tasks/RC-08.md"
+          - "agentplane-roadmap-r2/tasks/RC-09.md"
+          - "agentplane-roadmap-r2/tasks/RC-10.md"
+          - "agentplane-roadmap-r2/tasks/RC-11.md"
+          - "agentplane-roadmap-r2/tasks/RC-12.md"
+          - "agentplane-roadmap-r2/tasks/RC-13.md"
+          - "agentplane-roadmap-r2/tasks/RC-14.md"
+          - "agentplane-roadmap-r2/tasks/RC-15.md"
+          - "agentplane-roadmap-r2/tasks/RC-16.md"
+          - "agentplane-roadmap-r2/tasks/RC-17.md"
+          - "agentplane-roadmap-r2/tasks/RC-18.md"
+          - "agentplane-roadmap-r2/tasks/ST-01.md"
+          - "agentplane-roadmap-r2/tasks/ST-02.md"
+          - "agentplane-roadmap-r2/tasks/ST-03.md"
+          - "agentplane-roadmap-r2/tasks/ST-04.md"
+          - "agentplane-roadmap-r2/tasks/ST-05.md"
+          - "agentplane-roadmap-r2/tasks/ST-06.md"
+          - "agentplane-roadmap-r2/tasks/ST-07.md"
+          - "agentplane-roadmap-r2/tasks/ST-08.md"
+          - "agentplane-roadmap-r2/tasks/ST-09.md"
+          - "agentplane-roadmap-r2/tasks/ST-10.md"
+          - "agentplane-roadmap-r2/tasks/ST-11.md"
+          - "agentplane-roadmap-r2/tasks/ST-12.md"
+          - "agentplane-roadmap-r2/tasks/ST-13.md"
+          - "agentplane-roadmap-r2/tasks/ST-14.md"
+          - "agentplane-roadmap-r2/tasks/ST-15.md"
+          - "agentplane-roadmap-r2/tasks/ST-16.md"
+          - "agentplane-roadmap-r2/tasks/ST-17.md"
+          - "agentplane-roadmap-r2/tasks/ST-18.md"
+          - "agentplane-roadmap-r2/tasks/ST-19.md"
+          - "agentplane-roadmap-r2/tasks/ST-20.md"
+          - "agentplane-roadmap-r2/tasks/ST-21.md"
+          - "agentplane-roadmap-r2/validate_roadmap.py"
+          - "agentplane-roadmap-r2/validation-report.json"
+          - "bun.lock"
+          - "packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-review-apply.test.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts"
+          - "packages/agentplane/src/commands/guard/impl/close-message.test.ts"
           - "packages/agentplane/src/commands/pr/conflict-rework.test.ts"
+          - "packages/agentplane/src/commands/shared/branch-identity.ts"
+          - "packages/agentplane/src/commands/shared/branch-pr-context.test.ts"
+          - "packages/agentplane/src/commands/shared/branch-pr-context.ts"
           - "packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts"
           - "packages/agentplane/src/commands/shared/merged-branch-cleanup.ts"
           - "packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts"
+          - "packages/agentplane/src/commands/shared/route-decision-workspace.test.ts"
+          - "packages/agentplane/src/commands/shared/route-decision-workspace.ts"
+          - "packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
           - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
           - "packages/agentplane/src/commands/shared/supervisor-execution-worktree-recovery.test.ts"
           - "packages/agentplane/src/commands/shared/supervisor-execution-worktree-recovery.ts"
@@ -237,9 +463,12 @@ execution_contract:
           - "packages/agentplane/src/commands/task/branch-task-supervisor.test.ts"
           - "packages/agentplane/src/commands/task/branch-task-supervisor.ts"
           - "packages/agentplane/src/commands/task/branch-task-verification.test.ts"
+          - "packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts"
+          - "packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts"
           - "packages/agentplane/src/commands/task/doc-set.command.ts"
           - "packages/agentplane/src/commands/task/doc.unit.test.ts"
           - "packages/agentplane/src/commands/task/external-agent-supervisor.test.ts"
+          - "packages/agentplane/src/commands/task/finish-execute-close.ts"
           - "packages/agentplane/src/commands/task/finish-execute.ts"
           - "packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts"
           - "packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts"
@@ -248,18 +477,30 @@ execution_contract:
           - "packages/agentplane/src/commands/task/plan.unit.test.ts"
           - "packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts"
           - "packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts"
+          - "packages/agentplane/src/commands/task/verify-record-execute.ts"
+          - "packages/agentplane/src/commands/task/verify-record.unit.test.ts"
           - "packages/agentplane/src/runner/adapters/codex-output-schema-compat.ts"
           - "packages/agentplane/src/runner/adapters/codex-result-transport.ts"
           - "packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts"
           - "packages/agentplane/src/runner/usecases/task-run-authority.ts"
+          - "packages/core/src/runner/supervisor-execution-episode.test.ts"
+          - "packages/core/src/runner/supervisor-execution-episode.ts"
+          - "packages/core/src/schemas/index.ts"
           - "packages/core/src/tasks/index.ts"
           - "packages/core/src/tasks/plan-execution-grant.test.ts"
           - "packages/core/src/tasks/plan-execution-grant.ts"
           - "packages/core/src/tasks/task-kernel/invariants.test.ts"
           - "packages/core/src/tasks/task-kernel/invariants.ts"
+          - "packages/testkit/src/cli-harness/temp-root-cleanup.test.ts"
+          - "packages/testkit/src/cli-harness/temp-root-cleanup.ts"
+          - "packages/testkit/src/vitest-temp-root.setup.ts"
+          - "vitest.config.ts"
         external_effects: []
         repository_effects:
+          - "dependencies"
+          - "documentation"
           - "repository_write"
+          - "schema"
           - "source_code"
           - "tests"
       phase: "task"
@@ -273,6 +514,7 @@ execution_contract:
       selected_checks:
         - "affected_unit_integration"
         - "critical_paths"
+        - "docs_contract"
         - "full_regression"
         - "hosted_integration"
         - "task_outcome"
@@ -289,13 +531,16 @@ execution_contract:
       source: "execution_contract"
     required_evidence:
       - "hosted_integration"
+      - "repository_effect:dependencies"
+      - "repository_effect:documentation"
       - "repository_effect:repository_write"
+      - "repository_effect:schema"
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "9ce569668659b81073d3a95a3f5522ca121bc94e"
-  message: "AgentPlane-owned canonical implementation commit"
+      - "verification_recovery:recorded-check-1"
+      - "verification_recovery:verification-record"
+commit: null
 comments: []
 events:
   -
@@ -304,8 +549,14 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "verify"
+    at: "2026-09-23T19:15:33.086Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-23T11:15:47.177Z"
+doc_updated_at: "2026-09-23T19:15:38.031Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the verified AgentPlane lifecycle fixes as one clean semantic code task. Keep implementation, tests, and local verification in the work item. Leave PR publication, hosted checks, merge, and cleanup to branch_pr lifecycle. Include completed canonical implementation-rework routing, safe supervisor journal replacement and stale-state recovery, exact DONE rework runner authority, completed verification and quality-review routing, base-checkout provider operations, and Codex-compatible strict output schemas. Do not include task artifacts from other tasks."
 sections:
@@ -399,6 +650,40 @@ sections:
 
     DecisionContextRef:
     - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-23T19:15:33.086Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:5f3d95b05b031f07880a41a3eca628614d6b7cf0567af923f9cf8881f7c6b8ca, input_digest=sha256:8ddab2f1c009370815aec4db7c7547d7ce64edb431c3dd441dbce7c808d61f4e
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609231019-MPSGJZ declared verification
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:b8810dd303286d6fdd7c8b7e964e33cdb45ef13091247e90d5d458d559e9f9a0
+    - policy_digest: sha256:1508520334b86880f4c7ebdff3696edff99bcc2f3bd0e31747a3b7da58bf1dd6
+    - capability_digest: sha256:46110055c8caeef747ebc499338bda69c61c7aa9f1ec99d202d9b0005224f6cd
+    - checks_digest: sha256:90973dd2bfa546209d184eb47991c38ed25ff0f6204c6cd9843a80885ac2a6ef
+    - identity_digest: sha256:677a40e8204682df8938ddfb7471d37e379d34cac9f8250e0fda6360085e7b50
+
+    DecisionContextRef:
+    - operator_action: stop
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
@@ -1070,6 +1355,40 @@ NativeTaskIdentityRef:
 
 DecisionContextRef:
 - operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-23T19:15:33.086Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:5f3d95b05b031f07880a41a3eca628614d6b7cf0567af923f9cf8881f7c6b8ca, input_digest=sha256:8ddab2f1c009370815aec4db7c7547d7ce64edb431c3dd441dbce7c808d61f4e
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609231019-MPSGJZ declared verification
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:b8810dd303286d6fdd7c8b7e964e33cdb45ef13091247e90d5d458d559e9f9a0
+- policy_digest: sha256:1508520334b86880f4c7ebdff3696edff99bcc2f3bd0e31747a3b7da58bf1dd6
+- capability_digest: sha256:46110055c8caeef747ebc499338bda69c61c7aa9f1ec99d202d9b0005224f6cd
+- checks_digest: sha256:90973dd2bfa546209d184eb47991c38ed25ff0f6204c6cd9843a80885ac2a6ef
+- identity_digest: sha256:677a40e8204682df8938ddfb7471d37e379d34cac9f8250e0fda6360085e7b50
+
+DecisionContextRef:
+- operator_action: stop
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none

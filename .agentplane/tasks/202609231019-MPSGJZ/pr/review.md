@@ -12,8 +12,8 @@ Created: 2026-09-23T10:57:06.440Z
 
 ## Verification
 
-- State: ok
-- Note: Verified: canonical Task Kernel final checks passed.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
