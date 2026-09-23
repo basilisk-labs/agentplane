@@ -1,10 +1,10 @@
 ---
 id: "202609220730-N4NG4B"
 title: "Harden AgentPlane 0.7.11 lifecycle boundaries and recovery"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -370,7 +370,7 @@ sections:
   Findings: ""
 extensions:
   agentplane.kernel_operational_projection:
-    digest: "sha256:2cc902cc29a904ceca08e8e583680b461233b6ffeac439ceef40c8b873e8335a"
+    digest: "sha256:8bd566e6967e61f9d0e70f9caf29e143cefa2ef6182a59af83ce148b2ec827c8"
     evidence_refs:
       - "../../../.git/agentplane/kernel/exchanges/202609220730-N4NG4B/86c735b5e2c097f6c4a55625942b586b9d051ae50775c49fc1d6668a50c835d9/quality-report.json"
     findings:
@@ -381,7 +381,7 @@ extensions:
     review_identity_digest: "sha256:b1e13e00789bd226e0764bced24f35846c39a78fe597aff315b29814b95afc6e"
     schema_version: 1
     source: "task_kernel"
-    verification_evidence_digest: "sha256:e5b22e7ad07cc75a8ae44b8f3263ff8e2ea34aeaeb96bb97d9d53cc85c5beffc"
+    verification_evidence_digest: "sha256:c8ca42aeb045014de7e28078ae39129024a62df78f00fc15e9d296e832d3354c"
     work_order_id: "sha256:ecd1036039e5aed2391cea716563cc5c108ef5faab38847ef8a29f51e2df38c4"
   task_execution_context:
     base_ref: "main"
@@ -625,6 +625,15 @@ extensions:
           event_digests:
             - "sha256:e85cf870219513801a8014e58473c7abcfa84cf373bb26c36833f5588f0fcf73"
           mutation_id: "final-validation:sha256:c8ca42aeb045014de7e28078ae39129024a62df78f00fc15e9d296e832d3354c:18"
+        kernel_task_completion_required:sha256:30499fc51cfd89b77571a11d6343023e5e6d4df4324dc1958288d7af6699f395:sha256:0b07f2193bb2704d15a96d4762555a0b3534cc029eb4a79fcd9fcaff272fc450:
+          after_revision: 20
+          aggregate_digest: "sha256:259b8ec3bff8fbc116335952ab542ca08ec8c10e048a3b9befd6e9df285b8ea0"
+          before_revision: 19
+          command_digest: "sha256:8dbb59ebc0fbe7e2fa0cbad6b421d60919d3b8bdca42ee80c7106fa7c3b67d80"
+          effect_ids: []
+          event_digests:
+            - "sha256:b40408791209935dca2f7c2286d24022528426761a20b423229a8ae0e4e392b3"
+          mutation_id: "kernel_task_completion_required:sha256:30499fc51cfd89b77571a11d6343023e5e6d4df4324dc1958288d7af6699f395:sha256:0b07f2193bb2704d15a96d4762555a0b3534cc029eb4a79fcd9fcaff272fc450"
         kernel_work_item_claim_required:sha256:f02cc1c3ee99192d63d5cb7e585f5d59a78208e5f3558e65cfc35443074a0877:sha256:08247094cef311214d4b924b51e0e98802c558a8468ec3f57f672332d26c9a09:
           after_revision: 5
           aggregate_digest: "sha256:cd7fb2eea5f4c520deff27762416936d5acdde01476391b6ebd7497f05d1ce6a"
@@ -779,9 +788,9 @@ extensions:
             - "sha256:78b1b9c5fd617a590922e525a296469235eb1c4368494889b32549f95abc7d75"
           mutation_id: "validation:sha256:86c735b5e2c097f6c4a55625942b586b9d051ae50775c49fc1d6668a50c835d9"
       plan_history: []
-      revision: 19
+      revision: 20
       schema_version: 1
-      state: "FINAL_VALIDATION"
+      state: "COMPLETED"
       work_items:
         harden-lifecycle-boundaries:
           attempt: 2
@@ -846,7 +855,7 @@ extensions:
               toolchain_digest: "sha256:a0ee42b1cba7905d88b1510be74b48ec1d0ac21b6f282a81bfde91979f9179ad"
             observed_at: "2026-09-22T08:02:15.222Z"
             status: "PASSED"
-    digest: "sha256:30499fc51cfd89b77571a11d6343023e5e6d4df4324dc1958288d7af6699f395"
+    digest: "sha256:aef04bf7b9d29e85cd4ee8f2782d0aa3439d06b3eb006d456ed2d78fed14749c"
     documents:
       contracts:
         sha256:6c6b13dec8d69d94a37b3e0443021fedec5a310d8db3650a8cefebb849cff3ac:
@@ -1039,6 +1048,15 @@ extensions:
         payload_digest: "sha256:061b64c43e766deec68402b745cdbeebf06d7f074e836a20923db1df75ee5a64"
         task_id: "202609220730-N4NG4B"
         task_revision: 19
+      -
+        command_digest: "sha256:8dbb59ebc0fbe7e2fa0cbad6b421d60919d3b8bdca42ee80c7106fa7c3b67d80"
+        id: "kernel_task_completion_required:sha256:30499fc51cfd89b77571a11d6343023e5e6d4df4324dc1958288d7af6699f395:sha256:0b07f2193bb2704d15a96d4762555a0b3534cc029eb4a79fcd9fcaff272fc450:task_completed"
+        kind: "task_completed"
+        mutation_id: "kernel_task_completion_required:sha256:30499fc51cfd89b77571a11d6343023e5e6d4df4324dc1958288d7af6699f395:sha256:0b07f2193bb2704d15a96d4762555a0b3534cc029eb4a79fcd9fcaff272fc450"
+        occurred_at: "2026-09-22T21:54:54.891Z"
+        payload_digest: "sha256:ec42a2bbe60c2ff7acf39a31bba461482945ff99db021c2bab72ffc67a06d4d1"
+        task_id: "202609220730-N4NG4B"
+        task_revision: 20
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
