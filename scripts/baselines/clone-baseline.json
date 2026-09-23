@@ -30,14 +30,14 @@
     "compare_contract": "current metrics must not exceed baseline clones, duplicatedLines, or duplicatedTokens"
   },
   "metrics": {
-    "sources": 1592,
-    "lines": 313346,
-    "tokens": 1806068,
+    "sources": 1593,
+    "lines": 313584,
+    "tokens": 1811930,
     "clones": 95,
-    "duplicatedLines": 1488,
-    "duplicatedTokens": 10362,
-    "percentage": 0.47487441997025653,
-    "percentageTokens": 0.5737325504909007
+    "duplicatedLines": 1482,
+    "duplicatedTokens": 10417,
+    "percentage": 0.47260064288994336,
+    "percentageTokens": 0.5749118343423864
   },
   "top_duplicates": [
     {
@@ -112,20 +112,6 @@
     },
     {
       "lines": 25,
-      "tokens": 140,
-      "firstFile": {
-        "path": "packages/agentplane/src/cli/spec/docs-render.ts",
-        "start": 10,
-        "end": 34
-      },
-      "secondFile": {
-        "path": "packages/agentplane/src/cli/spec/help-render.ts",
-        "start": 35,
-        "end": 59
-      }
-    },
-    {
-      "lines": 25,
       "tokens": 143,
       "firstFile": {
         "path": "scripts/checks/check-cli-cold-baseline.mjs",
@@ -148,8 +134,22 @@
       },
       "secondFile": {
         "path": "packages/testkit/src/cli-harness.ts",
-        "start": 743,
-        "end": 761
+        "start": 762,
+        "end": 780
+      }
+    },
+    {
+      "lines": 24,
+      "tokens": 134,
+      "firstFile": {
+        "path": "packages/agentplane/src/cli/spec/docs-render.ts",
+        "start": 10,
+        "end": 33
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/cli/spec/help-render.ts",
+        "start": 35,
+        "end": 58
       }
     },
     {
@@ -220,6 +220,20 @@
         "path": "scripts/bench/measure-cli-walltime.mjs",
         "start": 62,
         "end": 83
+      }
+    },
+    {
+      "lines": 22,
+      "tokens": 126,
+      "firstFile": {
+        "path": "packages/agentplane/src/commands/task/branch-task-supervisor-implementation.ts",
+        "start": 336,
+        "end": 357
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/commands/task/branch-task-supervisor-implementation.ts",
+        "start": 440,
+        "end": 461
       }
     },
     {
@@ -330,8 +344,8 @@
       },
       "secondFile": {
         "path": "packages/agentplane/src/runner/usecases/agent-work-order-projection.ts",
-        "start": 36,
-        "end": 55
+        "start": 35,
+        "end": 54
       }
     },
     {
@@ -360,20 +374,6 @@
         "path": "packages/agentplane/src/commands/task/verify-record.ts",
         "start": 120,
         "end": 139
-      }
-    },
-    {
-      "lines": 20,
-      "tokens": 81,
-      "firstFile": {
-        "path": "packages/agentplane/src/runner/context/base-prompt-sources.ts",
-        "start": 191,
-        "end": 210
-      },
-      "secondFile": {
-        "path": "packages/agentplane/src/runtime/prompt-modules/registry.ts",
-        "start": 145,
-        "end": 164
       }
     },
     {
@@ -414,8 +414,8 @@
       },
       "secondFile": {
         "path": "packages/agentplane/src/backends/task-backend/shared/types.ts",
-        "start": 192,
-        "end": 210
+        "start": 179,
+        "end": 197
       }
     },
     {
@@ -430,20 +430,6 @@
         "path": "packages/core/src/tasks/tasks-export.ts",
         "start": 55,
         "end": 73
-      }
-    },
-    {
-      "lines": 19,
-      "tokens": 89,
-      "firstFile": {
-        "path": "packages/agentplane/src/cli/run-cli.core.task-advance.testkit.ts",
-        "start": 165,
-        "end": 183
-      },
-      "secondFile": {
-        "path": "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts",
-        "start": 377,
-        "end": 395
       }
     },
     {
@@ -507,13 +493,13 @@
       "tokens": 96,
       "firstFile": {
         "path": "packages/agentplane/src/commands/task/plan.ts",
-        "start": 253,
-        "end": 271
+        "start": 252,
+        "end": 270
       },
       "secondFile": {
         "path": "packages/agentplane/src/commands/task/plan.ts",
-        "start": 451,
-        "end": 469
+        "start": 450,
+        "end": 468
       }
     },
     {
@@ -738,6 +724,20 @@
         "path": "packages/agentplane/src/commands/guard/impl/commit-runner.ts",
         "start": 99,
         "end": 113
+      }
+    },
+    {
+      "lines": 15,
+      "tokens": 85,
+      "firstFile": {
+        "path": "packages/agentplane/src/commands/task/advance.command.ts",
+        "start": 72,
+        "end": 86
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/commands/task/run.command.ts",
+        "start": 146,
+        "end": 160
       }
     }
   ]
