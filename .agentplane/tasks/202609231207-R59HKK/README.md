@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -32,30 +32,30 @@ verification:
 quality_review:
   state: "human_review"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-23T16:34:45.974Z"
+  updated_at: "2026-09-23T16:50:29.523Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned human_review with 1 typed finding(s)."
-  evaluated_sha: "1dcaddc9c0d3b76fa4a724b7262a6ab32678dc77"
-  review_identity_digest: "sha256:012676464dd990b05cbfb77279c46e30cbfd5c19e7af5610186d8e61b7cb6521"
+  evaluated_sha: "5c015bc1bf457c164f058e655a08ae166e65c53b"
+  review_identity_digest: "sha256:3f04ce586c2a4792ecca2ee3e1df4f49763cb9861d48e979539290ffd8dbea2e"
   evidence_refs:
-    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-163224077-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-163224077-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/63f1ce87a9c962b6e76ca0919947cc36d3c13e1752beb54ac696d0269bf2cc00.md"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-163224077-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-163224077-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-163224077-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-163224077-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-164900171-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-164900171-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/3db1fffbd3a92ba385d9ed9fc832ed22d7e64ff87693e513ea4ccd1b984dea86.md"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-164900171-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-164900171-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-164900171-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/20260923-164900171-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609231207-R59HKK/README.md"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/96c42aaff1d9618c7f1893e1e504ab2d6d73cccf5a5fef605d2c0853ed931571.patch"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/f56d38e49b4aeafff63d1e537493decea1eb32e8d8b49833712af3ea1c4967e8.json"
-    - ".agentplane/tasks/202609231207-R59HKK/verification/20260923163153262-f2ac13c46929e267.json"
-    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/eed76037586e56f9efd4ce48039a2c8ea599b035ccdb32b19625ba50bb5ef81a.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/3dc4e9b0d5ea5b9504874a43b4c97e5898c3418bbeffd93a5fa6f388a089256c.patch"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/36600dc72a100753ed006c356b45fd09c3ae5925a5ec7b8aaf3fd74071ad10c9.json"
+    - ".agentplane/tasks/202609231207-R59HKK/verification/20260923164834144-d394aabf02f62bfd.json"
+    - ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/0043e9c4bbc2828cd35ea2ccf9c9f3e8003b3f8c8e469b206a9a61a25c1e0ac2.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen diff updates bun.lock workspace versions to 0.7.12-beta.1, outside the approved WorkItem scope. No approval for this expansion appears in the supplied evidence."
+    - "The frozen diff includes a canonical authority-boundary exception for blocked-plan rejection and bun.lock workspace version changes to 0.7.12-beta.1. The supplied approved scope does not authorize these changes; the previous lockfile finding remains unresolved. All evidence digests match, and the current verification record reports all three declared commands passed."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -438,7 +438,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-23T16:48:37.368Z"
+doc_updated_at: "2026-09-23T16:50:29.531Z"
 doc_updated_by: "CODER"
 description: "Repair evaluator diff-base selection after provider branch updates, forward replacement intent into evaluator episodes, persist supervisor-generated task artifacts without false task_worktree_resolution, dispatch pre-merge closure through the supported local lifecycle path, and admit worktree.prepare before dirty-base worktree resolution."
 sections:
@@ -1101,11 +1101,11 @@ extensions:
   agentplane.human_input:
     history: []
     openQuestion:
-      askedAt: "2026-09-23T16:34:45.974Z"
+      askedAt: "2026-09-23T16:50:29.523Z"
       askedBy: "EVALUATOR"
-      id: "evaluator-evaluator-work-order-202609231207-R59HKK-462829a19c9db3aaf5928fa1"
+      id: "evaluator-evaluator-work-order-202609231207-R59HKK-78f021e3f936ea289ba4bac8"
       previousStatus: "DONE"
-      question: "Do you approve the bun.lock synchronization to 0.7.12-beta.1 as an explicit scope expansion for this task?"
+      question: "Do you approve expanding this task’s scope to include the blocked-plan rejection authority exception and the bun.lock workspace version changes to 0.7.12-beta.1?"
   agentplane.kernel_operational_projection:
     digest: "sha256:6a150ed5e5ae8073bb8806e9add6eb885c7c0bd4e02b7f41f9f6e1042c56abd1"
     evidence_refs:
