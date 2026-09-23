@@ -65,6 +65,10 @@ import { conflictApplicationAuthority } from "../pr/conflict-rework-authority.js
 import { workflowTaskFingerprintComponent } from "../shared/workflow-step-fingerprint.js";
 import { buildSingleStageLifecycleTiming } from "../shared/lifecycle-stage-timing.js";
 import { executeBranchEvaluatorEpisode } from "./branch-task-supervisor-evaluator-episode.js";
+import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
+import { requiresImplementationReworkReopen } from "../shared/task-scope-extension-request.js";
+import { cmdTaskSetStatus } from "./set-status.js";
+import { recoverBranchImplementationJournal } from "./branch-task-supervisor-journal-recovery.js";
 
 async function executeBranchImplementationEpisode(opts: {
   input: BranchTaskSupervisorOptions;
@@ -80,7 +84,7 @@ async function executeBranchImplementationEpisode(opts: {
     });
   }
   const command = await loadCommandContext({ cwd: checkout, rootOverride: null });
-  const task = await loadTaskFromContext({ ctx: command, taskId: opts.input.task_id });
+  let task = await loadTaskFromContext({ ctx: command, taskId: opts.input.task_id });
   const opened = await openSupervisorExecutionEpisode({
     git_root: command.resolvedProject.gitRoot,
     task_id: opts.input.task_id,
@@ -99,7 +103,13 @@ async function executeBranchImplementationEpisode(opts: {
     });
   }
   try {
-    let journal = opened.journal;
+    let journal = await recoverBranchImplementationJournal({
+      opened,
+      journal: opened.journal,
+      decision: opts.decision,
+      task,
+      replace_failed_operation: opts.input.replace_failed_operation === true,
+    });
     if (journal.status === "running" && journal.cursor.phase === "completed") {
       const advanced = advanceSupervisorExecutionEpisodeState({
         journal,
@@ -158,6 +168,9 @@ async function executeBranchImplementationEpisode(opts: {
         conflictRunPaths?.result_path ??
         `branch-pr:${opts.input.task_id}:${step.preconditionFingerprint.digest}`,
       ...(conflictRunPaths ? { work_order_ref: conflictRunPaths.bundle_path } : {}),
+      ...(journal.cursor.replacement_of_operation_key
+        ? { replacement_of_operation_key: journal.cursor.replacement_of_operation_key }
+        : {}),
     });
     if (started.status !== "started") {
       await opened.store.write(started.journal);
@@ -181,6 +194,34 @@ async function executeBranchImplementationEpisode(opts: {
       });
     }
     journal = started.journal;
+    if (
+      requiresImplementationReworkReopen({
+        purpose: step.episode.purpose,
+        task_status: task.status,
+        work_item_id: null,
+        work_item_is_required: false,
+      }) &&
+      !Object.hasOwn(task.extensions ?? {}, TASK_KERNEL_EXTENSION)
+    ) {
+      await cmdTaskSetStatus({
+        ctx: command,
+        cwd: checkout,
+        taskId: opts.input.task_id,
+        status: "DOING",
+        author: "SUPERVISOR",
+        body: "Reopen completed task for implementation rework before executor dispatch.",
+        force: true,
+        yes: true,
+        commitFromComment: true,
+        commitAllow: [],
+        commitAutoAllow: false,
+        commitAllowTasks: true,
+        commitRequireClean: false,
+        confirmStatusCommit: true,
+        quiet: true,
+      });
+      task = await loadTaskFromContext({ ctx: command, taskId: opts.input.task_id });
+    }
     const [executionBaseCommit, executionBaselineStatus] = await Promise.all([
       readDirectTaskHead(checkout),
       readDirectRepositoryStatus(checkout),
@@ -427,6 +468,8 @@ async function executeBranchVerificationEpisode(opts: {
           incidentTags: [],
           incidentMatch: [],
           quiet: true,
+          allowCanonicalProjection:
+            task.extensions !== undefined && Object.hasOwn(task.extensions, TASK_KERNEL_EXTENSION),
         });
         if (exitCode !== 0) throw new Error(`Verification record exited with ${exitCode}.`);
         const coalesce =

@@ -18,6 +18,7 @@ import { atomicWriteFile } from "@agentplaneorg/core/fs";
 import path from "node:path";
 
 import { isRecord } from "../../shared/guards.js";
+import { codexCompatibleRoleSchema, omitNullCodexFields } from "./codex-output-schema-compat.js";
 
 export const CODEX_RESULT_TRANSPORT = "supervisor_jsonl_event_collector" as const;
 export const CODEX_RESULT_TRANSPORT_ENV = "AGENTPLANE_RUNNER_RESULT_TRANSPORT";
@@ -225,25 +226,37 @@ export function resolveCodexResultTransportPaths(runDir: string): {
 export function renderCodexResultOutputSchemaJson(workOrder?: AgentWorkOrderV2): string {
   if (workOrder) {
     const issued = validateAgentWorkOrderV2(workOrder);
-    const schema = JSON.parse(
-      renderAgentSemanticResultSchemaJson({
-        role: issued.role,
-        ...(issued.canonical_binding ? { phase: issued.canonical_binding.phase } : {}),
-      }),
-    ) as Record<string, unknown>;
+    const roleFields = new Set<string>(
+      issued.canonical_binding
+        ? [
+            issued.canonical_binding.phase === "planning"
+              ? "canonical_plan"
+              : issued.canonical_binding.phase === "implementation"
+                ? "canonical_outputs"
+                : "review",
+          ]
+        : issued.role === "PLANNER"
+          ? ["task_intent", "task_plan_proposal"]
+          : issued.role === "EVALUATOR"
+            ? ["review"]
+            : [],
+    );
+    const schema = codexCompatibleRoleSchema(
+      JSON.parse(
+        renderAgentSemanticResultSchemaJson({
+          role: issued.role,
+          ...(issued.canonical_binding ? { phase: issued.canonical_binding.phase } : {}),
+        }),
+      ) as Record<string, unknown>,
+      roleFields,
+    );
     if (isRecord(schema.properties)) delete schema.properties.work_order_id;
     if (Array.isArray(schema.required)) {
       schema.required = schema.required.filter((field) => field !== "work_order_id");
     }
     schema.description =
       "Role-specific semantic payload. The AgentPlane supervisor supplies the issued WorkOrder identity and service fields.";
-    if (Array.isArray(schema.examples)) {
-      schema.examples = schema.examples.map((example: unknown) => {
-        if (!isRecord(example)) return example;
-        const { work_order_id: _workOrderId, ...rest } = example;
-        return rest;
-      });
-    }
+    delete schema.examples;
     return `${JSON.stringify(schema, null, 2)}\n`;
   }
   // Work-order-free recipe runs retain the legacy transport until they have a
@@ -490,7 +503,7 @@ export async function materializeCodexResultTransport(opts: {
   if (opts.work_order) {
     const normalized = validateAgentSemanticResultForWorkOrder({
       work_order: opts.work_order,
-      semantic_result: raw,
+      semantic_result: omitNullCodexFields(raw),
       format: "semantic_payload_v1",
     });
     if (normalized.work_order_id !== opts.work_order_id) {

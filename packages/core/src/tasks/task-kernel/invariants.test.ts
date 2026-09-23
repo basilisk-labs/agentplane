@@ -419,6 +419,75 @@ describe("canonical task kernel invariants", () => {
     );
   });
 
+  it("rejects supervisor-owned lifecycle effects without rejecting multiple semantic items", () => {
+    const semantic = {
+      id: "implementation",
+      depends_on: [],
+      required_inputs: [],
+      expected_outputs: ["source"],
+      execution_requirements: requirements,
+      optional: false,
+    };
+    const verification = {
+      ...semantic,
+      id: "browser-verification",
+      depends_on: [semantic.id],
+      expected_outputs: ["browser-evidence"],
+    };
+    expect(validateWorkItemDefinitions([semantic, verification])).toEqual([]);
+    expect(
+      validateWorkItemDefinitions([
+        {
+          ...semantic,
+          execution_requirements: {
+            ...requirements,
+            resources: ["merged-worktree-cleanup"],
+          },
+        },
+      ]),
+    ).toEqual([]);
+    for (const externalEffect of [
+      "pull_request",
+      "integration",
+      "hosted_ci",
+      "pr.open",
+      "integration.enqueue",
+    ]) {
+      expect(
+        validateWorkItemDefinitions([
+          semantic,
+          {
+            ...verification,
+            id: "publish-and-merge",
+            execution_requirements: {
+              ...requirements,
+              external_effects: [externalEffect],
+            },
+          },
+        ]),
+      ).toContain(`supervisor_owned_lifecycle:publish-and-merge:${externalEffect}`);
+    }
+    expect(
+      validateWorkItemDefinitions([
+        {
+          ...semantic,
+          execution_requirements: { ...requirements, external_effects: ["network_read"] },
+        },
+      ]),
+    ).toEqual([]);
+    expect(
+      validateWorkItemDefinitions([
+        {
+          ...semantic,
+          execution_requirements: {
+            ...requirements,
+            external_effects: ["external_write", "publish", "deploy", "destructive_git"],
+          },
+        },
+      ]),
+    ).toEqual([]);
+  });
+
   it("blocks unrelated mutations while a non-idempotent effect is uncertain", () => {
     const uncertain: ExternalEffect = {
       id: "provider-effect",

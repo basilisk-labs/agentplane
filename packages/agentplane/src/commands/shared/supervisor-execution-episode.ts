@@ -32,7 +32,7 @@ import {
   workflowOperationLifecycleStage,
 } from "./lifecycle-stage-timing.js";
 import { observedRunnerUsage } from "./supervisor-execution-observation.js";
-
+import { recoverNotAppliedWorktreePreparation } from "./supervisor-execution-worktree-recovery.js";
 import { tryAcquireSupervisorExecutionLease } from "./supervisor-execution-lease.js";
 
 export { tryAcquireSupervisorExecutionLease } from "./supervisor-execution-lease.js";
@@ -420,6 +420,14 @@ export async function supervisePersistedWorkflowEpisode(opts: {
       journal_path: opened.journal_path,
     };
   }
+
+  journal = await recoverNotAppliedWorktreePreparation({
+    journal,
+    operation,
+    state_fingerprint_digest: currentFingerprint,
+    compare_and_swap: (expectedDigest, replacement) =>
+      store.compareAndSwap(expectedDigest, replacement),
+  });
 
   // A restart can observe the durable agent outcome before the route cursor
   // was advanced. Refresh and commit that observation first; launching a new

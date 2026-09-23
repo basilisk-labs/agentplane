@@ -14,7 +14,6 @@ type TextPayloadSource = {
 const SHELL_RISK_PATTERNS: readonly { pattern: RegExp; label: string }[] = [
   { pattern: /`/, label: "backticks" },
   { pattern: /\$\(/, label: "command substitution" },
-  { pattern: /\r|\n/, label: "literal newlines" },
   { pattern: /\$\{[^}]+}/, label: "shell variable expansion" },
 ];
 

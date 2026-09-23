@@ -16,6 +16,10 @@ const mocks = vi.hoisted(() => ({
   readEnvelope: vi.fn(),
   readJournal: vi.fn(),
   ensureProjection: vi.fn(),
+  executeEpisode: vi.fn(),
+  loadCommand: vi.fn(),
+  recoverSuspension: vi.fn(),
+  withSuspended: vi.fn((opts: { run: () => Promise<unknown> }) => opts.run()),
 }));
 const routeBeforeDigest = k.kernelDigest("route-before");
 const routeAfterDigest = k.kernelDigest("route-after");
@@ -38,24 +42,36 @@ vi.mock("../../shared/stable-file.js", () => ({
 vi.mock("./kernel-operational-projection.js", () => ({
   ensureKernelOperationalProjectionEvidence: mocks.ensureProjection,
 }));
+vi.mock("./branch-task-supervisor-episodes.js", () => ({
+  executeProductionBranchEpisode: mocks.executeEpisode,
+}));
+vi.mock("./kernel-controller-handoff.js", () => ({
+  recoverCanonicalControllerSuspension: mocks.recoverSuspension,
+  withCanonicalControllerSuspendedForOperation: mocks.withSuspended,
+}));
 vi.mock("../shared/task-backend.js", async (importOriginal) => ({
   ...(await importOriginal<typeof TaskBackendModule>()),
+  loadCommandContext: mocks.loadCommand,
   resolveCommandGitCommonDir: () => Promise.resolve("/repo/.git"),
 }));
 
 import {
   canonicalWorkflowEffectForDecision,
   createKernelProviderEffectPortResolver,
+  executeCanonicalAdmittedWorkflowOperation,
+  executeCanonicalCompletedAgentEpisode,
 } from "./kernel-provider-effect-coordinator.js";
 
-function operation(id: "pr.open" | "integration.enqueue" = "pr.open") {
+function operation(id: "pr.open" | "integration.enqueue" | "integration.run_next" = "pr.open") {
   return {
     id,
     type: "pr_sync",
     params:
       id === "pr.open"
         ? { taskId: "T-1", author: "CODER", includeTaskIds: [] }
-        : { taskId: "T-1", branch: "task/T-1/work" },
+        : id === "integration.enqueue"
+          ? { taskId: "T-1", branch: "task/T-1/work" }
+          : { taskId: "T-1" },
     preconditionFingerprint: { digest: routeBeforeDigest },
     authorityRef: "authority:route-before",
     idempotencyKey: `${id}:T-1:${routeBeforeDigest}:payload`,
@@ -72,7 +88,10 @@ function decision(candidate = operation()): TaskRouteDecision {
       baseBranch: "main",
       headSha: "a".repeat(40),
       prBranch: "task/T-1/work",
+      baseCheckoutPath: "/repo",
+      taskWorktreePath: "/repo/task",
     },
+    executionPacket: { mustRunFrom: "/repo/task" },
     prFlow: null,
     cleanupProbe: { state: "not_requested" },
     workflowStep: {
@@ -335,4 +354,131 @@ describe("canonical provider effect coordinator", () => {
       port!.observe({ task_id: "T-1", effect, idempotency_key: effect.idempotency_key }),
     ).resolves.toMatchObject({ state: "IN_DOUBT" });
   });
+
+  it("runs post-completion provider lifecycle through the admitted supervisor", async () => {
+    const before = decision();
+    const after = terminalDecision();
+    mocks.supervise.mockResolvedValueOnce({
+      journal: { digest: k.kernelDigest("post-completion") },
+      execution: {
+        executable: true,
+        result: { status: "succeeded", observed_postconditions: [], detail: "ok" },
+        stop_reason: null,
+        refreshed_decision: after,
+      },
+    });
+
+    await expect(
+      executeCanonicalAdmittedWorkflowOperation({
+        command: { resolvedProject: { gitRoot: "/repo" } } as never,
+        decision: before,
+        task_id: "T-1",
+        request_digest: k.kernelDigest("post-completion-request"),
+      }),
+    ).resolves.toMatchObject({ execution: { refreshed_decision: after } });
+    expect(mocks.supervise).toHaveBeenCalledWith(
+      expect.objectContaining({ decision: before, git_root: "/repo" }),
+    );
+  });
+
+  it.each(["integration.enqueue", "integration.run_next"] as const)(
+    "executes post-completion %s from the base checkout without a Kernel controller transition",
+    async (operationId) => {
+      const candidate = operation(operationId);
+      const before = decision(candidate);
+      const after = terminalDecision();
+      mocks.supervise.mockImplementationOnce(async (input) => {
+        const execute = (
+          input as unknown as {
+            execute: (invoked: typeof candidate) => Promise<unknown>;
+          }
+        ).execute;
+        await execute(candidate);
+        return {
+          journal: { digest: k.kernelDigest("post-completion-integration") },
+          execution: {
+            executable: true,
+            result: { status: "succeeded", observed_postconditions: [], detail: "ok" },
+            stop_reason: null,
+            refreshed_decision: after,
+          },
+        };
+      });
+      mocks.execute.mockResolvedValueOnce({
+        status: "succeeded",
+        observed_postconditions: [],
+        detail: "ok",
+      });
+
+      await executeCanonicalAdmittedWorkflowOperation({
+        command: { resolvedProject: { gitRoot: "/repo/task" } } as never,
+        decision: before,
+        task_id: "T-1",
+        request_digest: k.kernelDigest(`post-completion-${operationId}`),
+      });
+
+      const executionCall = mocks.execute.mock.calls.at(-1)?.[0] as unknown as {
+        decision: TaskRouteDecision;
+        operation: typeof candidate;
+      };
+      expect(executionCall.decision.executionPacket).toMatchObject({
+        authoritativeCheckout: "base_checkout",
+        authoritativeCheckoutPath: "/repo",
+        mutationPathHint: "/repo",
+        mustRunFrom: "/repo",
+      });
+      expect(executionCall.operation).toEqual(candidate);
+      if (operationId === "integration.run_next") {
+        expect(mocks.recoverSuspension).toHaveBeenCalledOnce();
+        expect(mocks.withSuspended).toHaveBeenCalledOnce();
+      }
+    },
+  );
+
+  it.each(["implementation_rework", "verification", "quality_review"] as const)(
+    "routes completed canonical %s episodes through the authoritative task checkout",
+    async (purpose) => {
+      const command = { resolvedProject: { gitRoot: "/repo" } } as never;
+      const taskCommand = { resolvedProject: { gitRoot: "/repo/task" } } as never;
+      const episodeDecision = {
+        ...decision(),
+        workflowStep: {
+          id: `agent.${purpose}`,
+          kind: "agent_episode",
+          episode: { purpose },
+        },
+      } as unknown as TaskRouteDecision;
+      mocks.loadCommand.mockResolvedValueOnce(taskCommand);
+      mocks.executeEpisode.mockResolvedValueOnce({
+        status: "completed",
+        decision: episodeDecision,
+        journal: null,
+        provider_episodes: 0,
+        lifecycle_calls: 1,
+      });
+
+      await expect(
+        executeCanonicalCompletedAgentEpisode({
+          command,
+          decision: episodeDecision,
+          task_id: "T-1",
+          replace_failed_operation: true,
+        }),
+      ).resolves.toBe(true);
+      expect(mocks.loadCommand).toHaveBeenCalledWith({ cwd: "/repo/task", rootOverride: null });
+      expect(mocks.executeEpisode).toHaveBeenCalledOnce();
+      const invocation = mocks.executeEpisode.mock.calls[0]?.[0] as unknown as {
+        input: {
+          command: unknown;
+          task_id: string;
+          replace_failed_operation: boolean;
+        };
+        decision: TaskRouteDecision;
+      };
+      expect(invocation.input.command).toBe(taskCommand);
+      expect(invocation.input.task_id).toBe("T-1");
+      expect(invocation.input.replace_failed_operation).toBe(true);
+      expect(invocation.decision).toBe(episodeDecision);
+    },
+  );
 });
