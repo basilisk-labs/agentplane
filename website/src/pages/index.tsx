@@ -5,7 +5,7 @@ import IconArrow from "@theme/Icon/Arrow";
 import IconCopy from "@theme/Icon/Copy";
 import IconEdit from "@theme/Icon/Edit";
 import IconSuccess from "@theme/Icon/Success";
-import { type CSSProperties, type ReactNode, useEffect, useMemo, useState } from "react";
+import { type CSSProperties, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import {
   acrUrl,
   examplesUrl,
@@ -288,6 +288,67 @@ function StageGlyph({
   );
 }
 
+function FolderGlyph(): ReactNode {
+  return (
+    <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+      <path d="M2 4.5a1.5 1.5 0 0 1 1.5-1.5h4l1.7 1.8h7.3A1.5 1.5 0 0 1 18 6.3v9.2a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 2 15.5z" />
+    </svg>
+  );
+}
+
+function RepoGlyph(): ReactNode {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+      <rect x="3.5" y="2.5" width="13" height="15" rx="1.5" />
+      <path d="M7 6.5h6M7 10h6M7 13.5h4" />
+    </svg>
+  );
+}
+
+function BranchGlyph(): ReactNode {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+      <circle cx="5" cy="3.5" r="1.5" />
+      <circle cx="15" cy="6.5" r="1.5" />
+      <circle cx="5" cy="16.5" r="1.5" />
+      <path d="M5 5v10M15 8v2a5 5 0 0 1-5 5H5" />
+    </svg>
+  );
+}
+
+function SearchGlyph(): ReactNode {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+      <circle cx="8.5" cy="8.5" r="5" />
+      <path d="m12.5 12.5 4 4" />
+    </svg>
+  );
+}
+
+function StageStrip({ mobile = false }: { mobile?: boolean }): ReactNode {
+  return (
+    <div
+      className={`${styles.stageStrip} ${mobile ? styles.stageStripMobile : styles.stageStripDesktop}`}
+      aria-label="How Agentplane records agent work"
+    >
+      {stages.map((stage, index) => (
+        <div className={styles.stage} key={stage.title}>
+          <span className={[styles.stageIcon, styles["stageIcon" + stage.title]].join(" ")}>
+            <StageGlyph stage={stage.title} />
+          </span>
+          <span>
+            <strong>{stage.title}</strong>
+            <small>{stage.text}</small>
+          </span>
+          {index < stages.length - 1 ? (
+            <IconArrow className={styles.stageArrow} aria-hidden="true" />
+          ) : null}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function highlightLine(line: string): ReactNode {
   if (!line) return "\u00a0";
   const tokens: ReactNode[] = [];
@@ -311,6 +372,9 @@ function ArtifactExplorer(): ReactNode {
   const [activeIndex, setActiveIndex] = useState(3);
   const [playing, setPlaying] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [segmentStart, setSegmentStart] = useState(0);
+  const remainingRef = useRef(tourDuration);
+  const startedAtRef = useRef<number | null>(null);
   const active = artifacts[activeIndex];
 
   useEffect(() => {
@@ -318,6 +382,8 @@ function ArtifactExplorer(): ReactNode {
     const syncPreference = () => {
       setReducedMotion(preference.matches);
       setPlaying(!preference.matches);
+      remainingRef.current = tourDuration;
+      setSegmentStart(0);
     };
     syncPreference();
     preference.addEventListener("change", syncPreference);
@@ -326,13 +392,29 @@ function ArtifactExplorer(): ReactNode {
 
   useEffect(() => {
     if (!playing || reducedMotion) return;
+    startedAtRef.current = performance.now();
     const timer = window.setTimeout(() => {
+      remainingRef.current = tourDuration;
+      startedAtRef.current = null;
+      setSegmentStart(0);
       setActiveIndex((index) => (index + 1) % artifacts.length);
-    }, tourDuration);
+    }, remainingRef.current);
     return () => window.clearTimeout(timer);
   }, [activeIndex, playing, reducedMotion]);
 
+  function pauseTour(): void {
+    if (!playing) return;
+    const elapsed = performance.now() - (startedAtRef.current ?? performance.now());
+    remainingRef.current = Math.max(1, remainingRef.current - elapsed);
+    setSegmentStart(1 - remainingRef.current / tourDuration);
+    startedAtRef.current = null;
+    setPlaying(false);
+  }
+
   function selectArtifact(index: number): void {
+    remainingRef.current = tourDuration;
+    startedAtRef.current = null;
+    setSegmentStart(0);
     setPlaying(false);
     setActiveIndex(index);
     trackHomeEvent("artifact_select", { file: artifacts[index].file });
@@ -340,20 +422,22 @@ function ArtifactExplorer(): ReactNode {
 
   function toggleTour(): void {
     if (reducedMotion) {
+      remainingRef.current = tourDuration;
+      setSegmentStart(0);
       setActiveIndex((index) => (index + 1) % artifacts.length);
       return;
     }
     if (playing) {
-      setPlaying(false);
+      pauseTour();
       return;
     }
     setPlaying(true);
   }
 
   const progressStyle = {
-    "--progress-start": String((activeIndex / artifacts.length) * 100) + "%",
+    "--progress-start": String(((activeIndex + segmentStart) / artifacts.length) * 100) + "%",
     "--progress-end": String(((activeIndex + 1) / artifacts.length) * 100) + "%",
-    "--tour-duration": String(tourDuration) + "ms",
+    "--tour-duration": String(remainingRef.current) + "ms",
   } as CSSProperties;
 
   return (
@@ -366,42 +450,63 @@ function ArtifactExplorer(): ReactNode {
         <DoodleArrow reverse />
         <span key={active.file + "-right"}>{active.notes[1]}</span>
       </div>
-      <div className={styles.artifactWindow} onFocusCapture={() => setPlaying(false)}>
+      <div className={styles.artifactWindow} onFocusCapture={pauseTour}>
         <div className={styles.windowChrome}>
           <div className={styles.repoName}>
             <span className={styles.repoGlyph} aria-hidden="true">
-              ▣
+              <RepoGlyph />
             </span>
             <span>acme / web-app</span>
-            <span className={styles.windowBranch}>♧ main</span>
+            <span className={styles.windowBranch}>
+              <BranchGlyph /> main
+            </span>
           </div>
           <div className={styles.windowActions} aria-hidden="true">
-            <span className={styles.searchFiles}>⌕ &nbsp; Search files...</span>
+            <span className={styles.searchFiles}>
+              <SearchGlyph /> Search files...
+            </span>
             <span className={styles.chromeAction}>◩</span>
             <span className={styles.chromeAction}>•••</span>
           </div>
         </div>
         <div className={styles.windowBody}>
           <nav className={styles.fileTree} aria-label="Explore Agentplane artifacts">
-            <p className={styles.treeFolder}>⌄ &nbsp; 📁 &nbsp; .agentplane</p>
+            <p className={styles.treeFolder}>
+              ⌄ <FolderGlyph /> .agentplane
+            </p>
             <p className={`${styles.treeFolder} ${styles.treeFolderNested}`}>
-              ⌄ &nbsp; 📁 &nbsp; tasks
+              ⌄ <FolderGlyph /> tasks
             </p>
+            <button
+              className={`${styles.treeFolder} ${styles.treeFolderTask} ${styles.treeFolderButton}`}
+              type="button"
+              onClick={() => selectArtifact(1)}
+              aria-label="Open task README.md"
+            >
+              › <FolderGlyph /> task-001-fix-parser
+            </button>
             <p className={`${styles.treeFolder} ${styles.treeFolderTask}`}>
-              › &nbsp; 📁 &nbsp; task-001-fix-parser
-            </p>
-            <p className={`${styles.treeFolder} ${styles.treeFolderTask}`}>
-              › &nbsp; 📁 &nbsp; task-002-add-tests
+              › <FolderGlyph /> task-002-add-tests
             </p>
             <div className={styles.treeFiles}>
-              {[2, 3, 4, 0, 5, 6, 1].map((index) => {
+              {[2, 3, 4, 0, 5, 6].map((index) => {
                 const artifact = artifacts[index];
                 return (
                   <div className={styles.treeFileGroup} key={artifact.file}>
                     {index === 4 ? (
                       <p className={`${styles.treeFolder} ${styles.treeFolderEvidence}`}>
-                        ⌄ &nbsp; 📁 &nbsp; evidence
+                        ⌄ <FolderGlyph /> evidence
                       </p>
+                    ) : null}
+                    {index === 6 ? (
+                      <>
+                        <p className={styles.treeFolder}>
+                          › <FolderGlyph /> src
+                        </p>
+                        <p className={styles.treeFolder}>
+                          › <FolderGlyph /> tests
+                        </p>
+                      </>
                     ) : null}
                     <button
                       type="button"
@@ -415,19 +520,33 @@ function ArtifactExplorer(): ReactNode {
                       <span className={styles.fileGlyph} aria-hidden="true">
                         {artifact.file.endsWith(".json") ? "{}" : "▤"}
                       </span>
-                      <span>
-                        {index === 1 ? "task README.md" : artifact.file.split("/").at(-1)}
-                      </span>
+                      <span>{artifact.file.split("/").at(-1)}</span>
                     </button>
                   </div>
                 );
               })}
             </div>
           </nav>
+          <nav
+            className={styles.mobileFileTabs}
+            aria-label="Explore Agentplane artifacts on mobile"
+          >
+            {[0, 6, 3, 1, 2, 4, 5].map((index) => (
+              <button
+                key={artifacts[index].file}
+                type="button"
+                className={index === activeIndex ? styles.mobileFileTabActive : ""}
+                aria-current={index === activeIndex ? "true" : undefined}
+                onClick={() => selectArtifact(index)}
+              >
+                {index === 1 ? "task README.md" : artifacts[index].file.split("/").at(-1)}
+              </button>
+            ))}
+          </nav>
           <div className={styles.editor}>
             <div className={styles.editorTab}>
               <span className={styles.tabFileIcon} aria-hidden="true">
-                ▤
+                {active.file.endsWith(".json") ? "{}" : "▤"}
               </span>
               {active.file}
               <span className={styles.tabClose} aria-hidden="true">
@@ -448,27 +567,18 @@ function ArtifactExplorer(): ReactNode {
             </div>
           </div>
         </div>
-        <div className={styles.stageStrip} aria-label="How Agentplane records agent work">
-          {stages.map((stage, index) => (
-            <div className={styles.stage} key={stage.title}>
-              <span className={[styles.stageIcon, styles["stageIcon" + stage.title]].join(" ")}>
-                <StageGlyph stage={stage.title} />
-              </span>
-              <span>
-                <strong>{stage.title}</strong>
-                <small>{stage.text}</small>
-              </span>
-              {index < stages.length - 1 ? (
-                <IconArrow className={styles.stageArrow} aria-hidden="true" />
-              ) : null}
-            </div>
-          ))}
-        </div>
+        <StageStrip />
       </div>
       <div className={styles.progressTrack} aria-hidden="true">
         <span
           key={activeIndex}
-          className={playing && !reducedMotion ? styles.progressAnimating : styles.progressStatic}
+          className={
+            reducedMotion
+              ? styles.progressReduced
+              : playing
+                ? styles.progressAnimating
+                : styles.progressStatic
+          }
           style={progressStyle}
         />
       </div>
@@ -491,6 +601,7 @@ function ArtifactExplorer(): ReactNode {
         <span key={active.file + "-bottom"}>{active.notes[2]}</span>
         <DoodleArrow />
       </div>
+      <StageStrip mobile />
     </div>
   );
 }
