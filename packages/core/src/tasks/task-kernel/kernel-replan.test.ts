@@ -17,6 +17,25 @@ function rejection(state: ReturnType<typeof aggregate>, withEvidence: boolean): 
   };
 }
 
+function planningAuthority() {
+  const { digest: _fixtureDigest, ...authorityContents } = authority;
+  const contents = {
+    ...authorityContents,
+    scope_roots: [],
+    repository_effects: [],
+    external_effects: [],
+    capabilities: [],
+    resources: [],
+    provenance: {
+      kind: "SYSTEM" as const,
+      actor_id: "agentplane:kernel-controller",
+      evidence_digest: kernelDigest({ kind: "native_planning", task_id: authority.task_id }),
+      parent_authority_digest: null,
+    },
+  };
+  return { ...contents, digest: authorityDigest(contents) };
+}
+
 describe("canonical blocked-plan replanning", () => {
   it("preserves blocked work and authority evidence when explicit rejection enters replanning", () => {
     const blocked = runtime("BLOCKED");
@@ -30,7 +49,7 @@ describe("canonical blocked-plan replanning", () => {
 
     const result = reduceTaskCommand({
       ...input(state, rejection(state, true)),
-      authority: validAuthority,
+      authority: planningAuthority(),
       actor: {
         id: "USER",
         kind: "USER",
@@ -68,6 +87,29 @@ describe("canonical blocked-plan replanning", () => {
       kind: "rejected",
       code: "ILLEGAL_TASK_TRANSITION",
     });
+
+    const { digest: _fixtureDigest, ...authorityContents } = authority;
+    const validAuthority = { ...authorityContents, digest: authorityDigest(authorityContents) };
+    const protectedState = aggregate({
+      work_items: { kernel: runtime("BLOCKED") },
+      authority_lineage: [{ authority: validAuthority }],
+    });
+    expect(
+      reduceTaskCommand({
+        ...input(protectedState, rejection(protectedState, true)),
+        actor: {
+          id: "agentplane:kernel-controller",
+          kind: "SYSTEM",
+          transport: "managed",
+          capabilities: [],
+        },
+        authority: planningAuthority(),
+      }),
+    ).toMatchObject({
+      kind: "rejected",
+      code: "AUTHORITY_SCOPE_EXCEEDED",
+      facts: ["canonical_authority_lineage"],
+    });
   });
 
   it("accepts a replacement proposal under fresh planning authority after rejection", () => {
@@ -90,26 +132,7 @@ describe("canonical blocked-plan replanning", () => {
       approval_actor_id: null,
       approval_evidence_digest: null,
     };
-    const { digest: _approvedDigest, ...planningContents } = {
-      ...approvedAuthority,
-      scope_roots: [],
-      repository_effects: [],
-      external_effects: [],
-      capabilities: [],
-      resources: [],
-      plan_revision: rejectedPlan.revision,
-      plan_digest: rejectedPlan.digest,
-      provenance: {
-        kind: "SYSTEM" as const,
-        actor_id: "agentplane:kernel-controller",
-        evidence_digest: kernelDigest("native-planning"),
-        parent_authority_digest: null,
-      },
-    };
-    const planningAuthority = {
-      ...planningContents,
-      digest: authorityDigest(planningContents),
-    };
+    const freshPlanningAuthority = planningAuthority();
     const command: TaskCommand = {
       kind: "propose_plan",
       task_id: state.id,
@@ -127,7 +150,7 @@ describe("canonical blocked-plan replanning", () => {
           transport: "managed",
           capabilities: [],
         },
-        authority: planningAuthority,
+        authority: freshPlanningAuthority,
       }),
     ).toMatchObject({
       kind: "accepted",
@@ -143,7 +166,7 @@ describe("canonical blocked-plan replanning", () => {
           transport: "managed",
           capabilities: [],
         },
-        authority: { ...planningAuthority, digest: kernelDigest("tampered-authority") },
+        authority: { ...freshPlanningAuthority, digest: kernelDigest("tampered-authority") },
       }),
     ).toMatchObject({
       kind: "rejected",
