@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -30,18 +30,18 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-23T12:39:38.644Z"
+  updated_at: "2026-09-23T12:41:29.914Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
   evaluated_sha: "106b90ee0acbc3db8d0646a8824392caf9fc8701"
   review_identity_digest: "sha256:fbdfecd15b4c7a149ab339ffe3031853fa1fedbbb070865b30d3eeb2f95253db"
   evidence_refs:
-    - ".agentplane/tasks/202609231152-HP97AA/quality/20260923-123625330-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609231152-HP97AA/quality/20260923-123625330-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609231152-HP97AA/quality/objects/sha256/c98d0a733e080e4ebef609c8c553bf7f7315f3c1033fd229ac0cc37f0d1cf359.md"
-    - ".agentplane/tasks/202609231152-HP97AA/quality/20260923-123625330-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609231152-HP97AA/quality/20260923-123625330-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609231152-HP97AA/quality/20260923-123625330-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609231152-HP97AA/quality/20260923-124129508-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609231152-HP97AA/quality/20260923-124129508-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609231152-HP97AA/quality/objects/sha256/68878b6e3a33e5329ddb5c5d73da312a56155c690e84dc6aaec4c997302f5744.md"
+    - ".agentplane/tasks/202609231152-HP97AA/quality/20260923-124129508-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609231152-HP97AA/quality/20260923-124129508-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609231152-HP97AA/quality/20260923-124129508-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609231152-HP97AA/README.md"
     - ".agentplane/tasks/202609231152-HP97AA/quality/objects/sha256/367ab027b2648ca0c4957873b269f302eb9d0822109731abe79144c7889ab5cd.patch"
     - ".agentplane/tasks/202609231152-HP97AA/quality/objects/sha256/cdeff7abc0a7068da98a9d5056013992f5703330dcee4ad70dee4a1d1a9c489b.json"
@@ -52,7 +52,8 @@ quality_review:
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "No contract violation found: only reject_plan bypasses the authority-lineage replacement guard, while capture_intent and propose_plan remain blocked until the plan is explicitly rejected and the task enters replanning."
+    - "Pass: reject_plan alone bypasses the lineage replacement guard; capture_intent and propose_plan remain blocked before explicit rejection, and proposal is allowed only after PLANNING plus REJECTED."
+    - "Pass: the regression suite covers the exact runtime guard and canonical command actor handoff, and all recorded verification checks pass."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -271,7 +272,7 @@ events:
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "db379ae203ee9b5ca4f23b1bb497e69c1779b2ac"
 doc_version: 3
-doc_updated_at: "2026-09-23T12:39:38.655Z"
+doc_updated_at: "2026-09-23T12:41:29.921Z"
 doc_updated_by: "CODER"
 description: "Fix the unreachable canonical replanning route: task plan reject currently treats reject_plan as planning but rejects it whenever USER authority lineage exists. Preserve USER authority and existing blocked implementation evidence, allow only the exact manual USER rejection path, and add a regression test that exercises the real runtime guard."
 sections:
