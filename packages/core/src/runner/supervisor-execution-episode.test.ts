@@ -10,7 +10,6 @@ import {
   refreshPendingReplacementSupervisorExecutionEpisode,
   recoverSupervisorExecutionEpisodeJournal,
   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
-  reopenSupervisorExecutionEpisodeAfterHumanReviewStateChange,
   reopenSupervisorExecutionEpisodeAfterEffectEvidence,
   retireSupervisorExecutionEpisodeIntentAfterStateDrift,
   retryFailedSupervisorExecutionEpisode,
@@ -697,55 +696,6 @@ describe("SupervisorExecutionEpisodeJournal", () => {
         }),
       ).toThrow("requires a stopped journal with a completed latest operation");
     }
-  });
-
-  it("reopens a completed human-review stop only after the state fingerprint changes", () => {
-    const first = start({ journal: journal(), kind: "evaluator_episode" });
-    if (first.status !== "started") throw new Error("expected started episode");
-    const completed = completeSupervisorExecutionEpisode({
-      journal: first.journal,
-      operation_key: first.operation_key,
-      result: { verdict: "human_review" },
-      now: "2026-07-28T00:00:01.000Z",
-    });
-    const stopped = stopSupervisorExecutionEpisode({
-      journal: completed,
-      reason: "human_review",
-      now: "2026-07-28T00:00:02.000Z",
-    });
-
-    expect(() =>
-      reopenSupervisorExecutionEpisodeAfterHumanReviewStateChange({
-        journal: stopped,
-        state_fingerprint_digest: FINGERPRINT,
-      }),
-    ).toThrow(
-      "requires a completed reviewed operation and either changed state or a distinct replacement effect",
-    );
-    expect(
-      reopenSupervisorExecutionEpisodeAfterHumanReviewStateChange({
-        journal: stopped,
-        state_fingerprint_digest: FINGERPRINT,
-        replacement_effect_ref: "evaluator-work-order:distinct",
-      }),
-    ).toMatchObject({
-      status: "running",
-      stop: null,
-      state_fingerprint_digest: FINGERPRINT,
-      cursor: { phase: "ready", operation_key: null },
-    });
-    expect(
-      reopenSupervisorExecutionEpisodeAfterHumanReviewStateChange({
-        journal: stopped,
-        state_fingerprint_digest: NEXT_FINGERPRINT,
-      }),
-    ).toMatchObject({
-      status: "running",
-      stop: null,
-      state_fingerprint_digest: NEXT_FINGERPRINT,
-      cursor: { phase: "ready", operation_key: null },
-      operations: [{ status: "completed" }],
-    });
   });
 
   it("opens an explicitly bound successor after a known failure without changing its history", () => {

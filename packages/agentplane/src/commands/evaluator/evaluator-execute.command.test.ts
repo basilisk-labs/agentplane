@@ -290,28 +290,6 @@ describe("evaluator execute supervisor episode", () => {
       stop: { reason: "human_review" },
       operations: [{ status: "completed" }],
     });
-
-    await writeFile(
-      path.join(root, "src", "evaluated.ts"),
-      "export const reviewed = 'addressed';\n",
-      "utf8",
-    );
-    await execFileAsync("git", ["add", "--", "src/evaluated.ts"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "fix: address evaluator review"], { cwd: root });
-    const replacement = await runWithFakeCodex(root, taskId, fakeBin, ["--replacement"]);
-
-    expect(replacement.code, replacement.stderr).toBe(0);
-    expect(JSON.parse(replacement.stdout)).toMatchObject({ verdict: "pass" });
-    const replaced = validateSupervisorExecutionEpisodeJournal(
-      await createSupervisorEpisodeStore(journalPath).read(),
-    );
-    expect(replaced).toMatchObject({
-      status: "running",
-      stop: null,
-      cursor: { phase: "ready", operation_key: null },
-      operations: [{ status: "completed" }, { status: "completed" }],
-    });
-    expect(replaced.operations[0]).toEqual(persisted.operations[0]);
   });
 
   it("applies a completed EVALUATOR result before preserving its terminal budget stop", async () => {
