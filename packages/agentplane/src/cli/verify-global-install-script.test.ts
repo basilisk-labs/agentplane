@@ -1,4 +1,4 @@
-import { mkdtemp, mkdir, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { execFile } from "node:child_process";
@@ -27,28 +27,34 @@ async function setupRepoFixture(root: string, version = "0.3.2") {
   await writeJson(path.join(root, "packages", "agentplane", "package.json"), {
     name: "agentplane",
     version,
-    dependencies: { "@agentplaneorg/core": version },
+    dependencies: { "@agentplaneorg/core": version, "@agentplaneorg/recipes": version },
   });
   await writeJson(path.join(root, "packages", "core", "package.json"), {
     name: "@agentplaneorg/core",
     version,
   });
+  await writeJson(path.join(root, "packages", "recipes", "package.json"), {
+    name: "@agentplaneorg/recipes",
+    version,
+  });
 }
 
 describe("verify-global-agentplane-install script", () => {
-  it("passes when the global runtime resolves agentplane and core from this checkout", async () => {
-    const root = await mkdtemp(path.join(tmpdir(), "agentplane-global-install-"));
-    const npmRoot = path.join(root, "global-prefix", "lib", "node_modules");
+  it("passes when copied global packages carry the expected checkout build identity", async () => {
+    const fixtureRoot = await mkdtemp(path.join(tmpdir(), "agentplane-global-install-"));
+    const root = path.join(fixtureRoot, "repo");
+    const npmRoot = path.join(fixtureRoot, "global-prefix", "lib", "node_modules");
     const gitHead = "abc123";
     await setupRepoFixture(root);
 
     const globalAgentplaneDir = path.join(npmRoot, "agentplane");
     const globalCoreDir = path.join(npmRoot, "@agentplaneorg", "core");
+    const globalRecipesDir = path.join(npmRoot, "@agentplaneorg", "recipes");
 
     await writeJson(path.join(globalAgentplaneDir, "package.json"), {
       name: "agentplane",
       version: "0.3.2",
-      dependencies: { "@agentplaneorg/core": "0.3.2" },
+      dependencies: { "@agentplaneorg/core": "0.3.2", "@agentplaneorg/recipes": "0.3.2" },
     });
     await writeBuildManifest(
       globalAgentplaneDir,
@@ -61,6 +67,11 @@ describe("verify-global-agentplane-install script", () => {
       version: "0.3.2",
     });
     await writeBuildManifest(globalCoreDir, path.join(root, "packages", "core"), gitHead);
+    await writeJson(path.join(globalRecipesDir, "package.json"), {
+      name: "@agentplaneorg/recipes",
+      version: "0.3.2",
+    });
+    await writeBuildManifest(globalRecipesDir, path.join(root, "packages", "recipes"), gitHead);
 
     const result = await execFileAsync(
       "node",
@@ -76,19 +87,21 @@ describe("verify-global-agentplane-install script", () => {
   });
 
   it("fails when global agentplane resolves core from a non-local nested dependency", async () => {
-    const root = await mkdtemp(path.join(tmpdir(), "agentplane-global-install-"));
-    const npmRoot = path.join(root, "global-prefix", "lib", "node_modules");
+    const fixtureRoot = await mkdtemp(path.join(tmpdir(), "agentplane-global-install-"));
+    const root = path.join(fixtureRoot, "repo");
+    const npmRoot = path.join(fixtureRoot, "global-prefix", "lib", "node_modules");
     const gitHead = "abc123";
     await setupRepoFixture(root);
 
     const globalAgentplaneDir = path.join(npmRoot, "agentplane");
     const nestedCoreDir = path.join(globalAgentplaneDir, "node_modules", "@agentplaneorg", "core");
     const topLevelCoreDir = path.join(npmRoot, "@agentplaneorg", "core");
+    const globalRecipesDir = path.join(npmRoot, "@agentplaneorg", "recipes");
 
     await writeJson(path.join(globalAgentplaneDir, "package.json"), {
       name: "agentplane",
       version: "0.3.2",
-      dependencies: { "@agentplaneorg/core": "0.3.2" },
+      dependencies: { "@agentplaneorg/core": "0.3.2", "@agentplaneorg/recipes": "0.3.2" },
     });
     await writeBuildManifest(
       globalAgentplaneDir,
@@ -101,6 +114,11 @@ describe("verify-global-agentplane-install script", () => {
       version: "0.3.2",
     });
     await writeBuildManifest(topLevelCoreDir, path.join(root, "packages", "core"), gitHead);
+    await writeJson(path.join(globalRecipesDir, "package.json"), {
+      name: "@agentplaneorg/recipes",
+      version: "0.3.2",
+    });
+    await writeBuildManifest(globalRecipesDir, path.join(root, "packages", "recipes"), gitHead);
 
     await writeJson(path.join(nestedCoreDir, "package.json"), {
       name: "@agentplaneorg/core",
@@ -128,5 +146,36 @@ describe("verify-global-agentplane-install script", () => {
 
     expect(result.ok).toBe(false);
     expect(result.stderr).toContain("@agentplaneorg/core was not built from this checkout");
+  });
+
+  it("rejects a global package symlink into the mutable checkout", async () => {
+    const fixtureRoot = await mkdtemp(path.join(tmpdir(), "agentplane-global-install-"));
+    const root = path.join(fixtureRoot, "repo");
+    const npmRoot = path.join(fixtureRoot, "global-prefix", "lib", "node_modules");
+    const gitHead = "abc123";
+    await setupRepoFixture(root);
+    await mkdir(npmRoot, { recursive: true });
+    await symlink(path.join(root, "packages", "agentplane"), path.join(npmRoot, "agentplane"));
+
+    const result = await execFileAsync(
+      "node",
+      [SCRIPT_PATH, "--repo-root", root, "--npm-root", npmRoot, "--expected-head", gitHead],
+      { cwd: root },
+    ).then(
+      () => ({ ok: true as const, stderr: "" }),
+      (error: unknown) => ({
+        ok: false as const,
+        stderr:
+          typeof error === "object" &&
+          error !== null &&
+          "stderr" in error &&
+          typeof (error as { stderr?: unknown }).stderr === "string"
+            ? (error as { stderr: string }).stderr
+            : "",
+      }),
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.stderr).toContain("global agentplane install resolves into the mutable checkout");
   });
 });

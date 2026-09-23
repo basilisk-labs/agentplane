@@ -88,6 +88,44 @@ describe("runCli hooks install", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () => {
     expect(shim).toContain("AGENTPLANE_HOOK_ALLOW_GLOBAL");
   });
 
+  it("lets an explicit hook runner bypass an incomplete repository-local runtime", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const installedBin = path.join(root, "installed agentplane", "bin", "agentplane.js");
+    const explicitBin = path.join(root, "recovery runtime", "agentplane.js");
+    const localBin = path.join(root, "packages", "agentplane", "bin", "agentplane.js");
+    const markerPath = path.join(root, "explicit-runner-used.txt");
+    const previousActiveBin = process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN;
+    await mkdir(path.dirname(installedBin), { recursive: true });
+    await mkdir(path.dirname(explicitBin), { recursive: true });
+    await mkdir(path.dirname(localBin), { recursive: true });
+    await writeFile(installedBin, "process.exit(0);\n", "utf8");
+    await writeFile(
+      explicitBin,
+      'import { writeFileSync } from "node:fs"; writeFileSync(process.env.AGENTPLANE_TEST_MARKER, "used\\n");\n',
+      "utf8",
+    );
+    await writeFile(localBin, 'import "missing-hook-runtime-dependency";\n', "utf8");
+    process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN = installedBin;
+
+    try {
+      await runCliSilent(["hooks", "install", "--root", root]);
+      execFileSync(path.join(root, ".git", "hooks", "pre-commit"), [], {
+        cwd: root,
+        env: {
+          ...process.env,
+          AGENTPLANE_HOOK_RUNNER: explicitBin,
+          AGENTPLANE_TEST_MARKER: markerPath,
+        },
+        stdio: "pipe",
+      });
+      expect(await readFile(markerPath, "utf8")).toBe("used\n");
+    } finally {
+      if (previousActiveBin === undefined) delete process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN;
+      else process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN = previousActiveBin;
+    }
+  });
+
   it("hooks install refuses to overwrite unmanaged hook", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
