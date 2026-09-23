@@ -24,7 +24,7 @@ Created: 2026-09-23T12:42:13.939Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-23T12:42:13.939Z
+- Updated: 2026-09-23T13:04:05.195Z
 - Branch: task/202609231207-R59HKK/make-canonical-supervisor-transitions-recoverabl
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
