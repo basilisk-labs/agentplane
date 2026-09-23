@@ -154,4 +154,17 @@ describe("canonical Plan execution-contract admission", () => {
       false,
     );
   });
+
+  it("keeps network reads at an external authority boundary even when network approval is disabled", () => {
+    const executionContract = contract();
+    executionContract.declaration.external_effects = ["network_read"];
+    executionContract.authority.allowed_external_effects = ["network_read"];
+    const task = { execution_contract: executionContract };
+    const networkPlan = plan({ external_effects: ["network_read"] });
+
+    expect(canonicalPlanContractViolations(task, networkPlan)).toEqual([]);
+    expect(
+      repositoryPolicyApprovalEligible({ config: config(false), task, plan: networkPlan }),
+    ).toBe(false);
+  });
 });

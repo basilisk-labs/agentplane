@@ -35,22 +35,22 @@ Created: 2026-09-23T10:25:48.224Z
  docs/user/task-lifecycle.mdx                       |  30 ++--
  .../task-backend/kernel-authority-schema.ts        |   2 +-
  .../src/commands/task/advance-task-step.ts         |  17 +++
- .../agentplane/src/commands/task/create.command.ts | 153 ++++++++++++++++++--
- .../commands/task/kernel-plan-authority.test.ts    | 157 +++++++++++++++++++++
- .../src/commands/task/kernel-plan-authority.ts     | 107 ++++++++++++++
+ .../agentplane/src/commands/task/create.command.ts | 153 ++++++++++++++++++-
+ .../commands/task/kernel-plan-authority.test.ts    | 170 +++++++++++++++++++++
+ .../src/commands/task/kernel-plan-authority.ts     | 104 +++++++++++++
  .../agentplane/src/commands/task/kernel-plan.ts    |   2 +
- .../src/commands/task/kernel-runtime-context.ts    |  37 +++--
+ .../src/commands/task/kernel-runtime-context.ts    |  37 ++++-
  .../src/commands/task/kernel-semantic-result.ts    |   2 +
  packages/agentplane/src/commands/task/new.ts       |  34 +++--
- .../src/runner/usecases/kernel-authority.test.ts   | 108 +++++++-------
- .../src/runner/usecases/kernel-authority.ts        |  49 ++++++-
- .../core/src/tasks/task-artifact-schema.task.ts    |   8 ++
+ .../src/runner/usecases/kernel-authority.test.ts   | 108 +++++++------
+ .../src/runner/usecases/kernel-authority.ts        |  49 +++++-
+ .../core/src/tasks/task-artifact-schema.task.ts    |   8 +
  .../src/tasks/task-kernel/authority-lineage.ts     |  20 ++-
  packages/core/src/tasks/task-kernel/kernel.ts      |  11 +-
  packages/core/src/tasks/task-kernel/model.ts       |   3 +-
- .../task-kernel/repository-policy-approval.test.ts |  63 +++++++++
+ .../task-kernel/repository-policy-approval.test.ts |  63 ++++++++
  packages/core/src/tasks/task-store.ts              |   4 +
- 21 files changed, 728 insertions(+), 107 deletions(-)
+ 21 files changed, 738 insertions(+), 107 deletions(-)
 ```
 
 </details>

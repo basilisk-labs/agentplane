@@ -70,10 +70,7 @@ export function repositoryPolicyApprovalEligible(opts: {
   )
     return false;
   return opts.plan.work_items.every(
-    (item) =>
-      item.execution_requirements.external_effects.length === 0 ||
-      (opts.config.agents.approvals.require_network !== true &&
-        item.execution_requirements.external_effects.every((effect) => effect === "network_read")),
+    (item) => item.execution_requirements.external_effects.length === 0,
   );
 }
 
