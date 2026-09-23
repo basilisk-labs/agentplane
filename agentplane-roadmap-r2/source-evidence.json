@@ -1,0 +1,146 @@
+{
+  "reviewed_sha": "50b1810dda648be0c0762b47e885c6ad0b2d42af",
+  "main_head_recheck": {
+    "status": "confirmed_unchanged",
+    "sha": "50b1810dda648be0c0762b47e885c6ad0b2d42af",
+    "date": "2026-09-12",
+    "source_url": "https://api.github.com/repos/basilisk-labs/agentplane/git/ref/heads/main",
+    "method": "GitHub connector read returned refs/heads/main at the reviewed SHA"
+  },
+  "method": "GitHub connector source reads; no local clone/build",
+  "sources": {
+    "S01": {
+      "path": "packages/agentplane/src/commands/task/run.command.ts",
+      "blob_sha": "75dd6a01bf9f5f4d0c36b5db3f48f2a384b37c4e",
+      "inspected_lines": "90-238",
+      "supports": "Ordinary direct/branch supervision and kernel dispatch are selected separately.",
+      "url": "https://github.com/basilisk-labs/agentplane/blob/50b1810dda648be0c0762b47e885c6ad0b2d42af/packages/agentplane/src/commands/task/run.command.ts"
+    },
+    "S02": {
+      "path": "packages/agentplane/src/commands/task/advance.command.ts",
+      "blob_sha": "9c93180edada07ba488c92539135836b414a28e1",
+      "inspected_lines": "1-230",
+      "supports": "Ordinary advance uses route decisions; kernel path rejects integration-supervisor recovery and replacement flags.",
+      "url": "https://github.com/basilisk-labs/agentplane/blob/50b1810dda648be0c0762b47e885c6ad0b2d42af/packages/agentplane/src/commands/task/advance.command.ts"
+    },
+    "S03": {
+      "path": "packages/core/src/tasks/task-centric/schema.ts",
+      "blob_sha": "3472105da6108731bb0a286701c52906c85b61a6",
+      "inspected_lines": "1-215",
+      "supports": "Compact proposal input V2 already normalizes to the existing persisted TaskPlanProposal V1 with supervisor-owned identity.",
+      "url": "https://github.com/basilisk-labs/agentplane/blob/50b1810dda648be0c0762b47e885c6ad0b2d42af/packages/core/src/tasks/task-centric/schema.ts"
+    },
+    "S04": {
+      "path": "packages/core/src/tasks/kernel-semantic.ts",
+      "blob_sha": "99bc78c1b67a3d6f0694c836285256c4df08f618",
+      "inspected_lines": "full file returned by connector",
+      "supports": "Separate kernel contract, planning/implementation/inspection bindings; role enum lacks CURATOR.",
+      "url": "https://github.com/basilisk-labs/agentplane/blob/50b1810dda648be0c0762b47e885c6ad0b2d42af/packages/core/src/tasks/kernel-semantic.ts"
+    },
+    "S05": {
+      "path": "packages/agentplane/src/commands/task/kernel-inspection.ts",
+      "blob_sha": "5bc44df65a63b68ee5348cf87b42e0fcfab71558",
+      "inspected_lines": "1-310",
+      "supports": "Kernel native validation is entered from semantic inspection acceptance.",
+      "url": "https://github.com/basilisk-labs/agentplane/blob/50b1810dda648be0c0762b47e885c6ad0b2d42af/packages/agentplane/src/commands/task/kernel-inspection.ts"
+    },
+    "S06": {
+      "path": "packages/agentplane/src/commands/task/finish-blueprint-evidence.ts",
+      "blob_sha": "c1794df68788aa863cec3fe4b8f6659a38630885",
+      "inspected_lines": "1-152",
+      "supports": "Finish and quality gates still consume Blueprint freshness and BlueprintSnapshotRef.",
+      "url": "https://github.com/basilisk-labs/agentplane/blob/50b1810dda648be0c0762b47e885c6ad0b2d42af/packages/agentplane/src/commands/task/finish-blueprint-evidence.ts"
+    },
+    "S07": {
+      "path": "packages/agentplane/src/blueprints/index.ts",
+      "blob_sha": "dbc79ae5cee3c43220e1ec8ee486cb6cd1cc5d47",
+      "inspected_lines": "full file returned by connector",
+      "supports": "Active registry, resolver, snapshots, execution artifacts and project-local Blueprint interfaces.",
+      "url": "https://github.com/basilisk-labs/agentplane/blob/50b1810dda648be0c0762b47e885c6ad0b2d42af/packages/agentplane/src/blueprints/index.ts"
+    },
+    "S08": {
+      "path": "packages/agentplane/src/runner/adapters/codex-result-transport.ts",
+      "blob_sha": "4b0bc1ad1c77c2be686fd56ae6e5ae879d7458f9",
+      "inspected_lines": "28-160,266-325",
+      "supports": "Managed strict result schema is generic; provider token parser already accounts for cache/reasoning subsets.",
+      "url": "https://github.com/basilisk-labs/agentplane/blob/50b1810dda648be0c0762b47e885c6ad0b2d42af/packages/agentplane/src/runner/adapters/codex-result-transport.ts"
+    },
+    "S09": {
+      "path": "packages/recipes/src/scenario-contracts.ts",
+      "blob_sha": "d399ae3b83aef2dba9d256c810b1c178b681a3e3",
+      "inspected_lines": "full file returned by connector",
+      "supports": "Scenario V1 has untyped inputs, outputs and steps.",
+      "url": "https://github.com/basilisk-labs/agentplane/blob/50b1810dda648be0c0762b47e885c6ad0b2d42af/packages/recipes/src/scenario-contracts.ts"
+    },
+    "S10": {
+      "path": "packages/recipes/src/manifest-contracts.ts",
+      "blob_sha": "f2756ed4852dfdfabdc9fdce692a89426ace1bad",
+      "inspected_lines": "80-202",
+      "supports": "Recipes already include overlays, validators and seven Blueprint extension kinds.",
+      "url": "https://github.com/basilisk-labs/agentplane/blob/50b1810dda648be0c0762b47e885c6ad0b2d42af/packages/recipes/src/manifest-contracts.ts"
+    },
+    "S11": {
+      "path": "packages/agentplane/src/commands/shared/route-decision.ts",
+      "blob_sha": "85469d6152aaacb087f449740bfb7992c22dc83d",
+      "inspected_lines": "1-235",
+      "supports": "Mature route path has policy/authority/provider/worktree observations and observed Git snapshot reuse.",
+      "url": "https://github.com/basilisk-labs/agentplane/blob/50b1810dda648be0c0762b47e885c6ad0b2d42af/packages/agentplane/src/commands/shared/route-decision.ts"
+    },
+    "S12": {
+      "path": "packages/agentplane/src/commands/shared/task-verification-records.ts",
+      "blob_sha": "3b47d89c8c459225a7be979586d04f2eeb1e8cfa",
+      "inspected_lines": "1-150",
+      "supports": "Existing current/equivalent-input assessment, check coverage and material invalidation reasons.",
+      "url": "https://github.com/basilisk-labs/agentplane/blob/50b1810dda648be0c0762b47e885c6ad0b2d42af/packages/agentplane/src/commands/shared/task-verification-records.ts"
+    },
+    "S13": {
+      "path": "packages/agentplane/src/commands/shared/task-verification-input.ts",
+      "blob_sha": "6b6450a2521d4c7717127eaa9d8c3be6e1613ccb",
+      "inspected_lines": "1-185",
+      "supports": "Existing input identity and evidence-path/filesystem hashing; not a blank verification subsystem.",
+      "url": "https://github.com/basilisk-labs/agentplane/blob/50b1810dda648be0c0762b47e885c6ad0b2d42af/packages/agentplane/src/commands/shared/task-verification-input.ts"
+    },
+    "S14": {
+      "path": "packages/agentplane/src/commands/shared/task-verification-input-types.ts",
+      "blob_sha": "30c651154a3de4063a09f6b8c3d731d577c18e77",
+      "inspected_lines": "1-180",
+      "supports": "VerificationInputIdentity supports versions 2/3/4, implementation, execution, contract, context, environment and evidence.",
+      "url": "https://github.com/basilisk-labs/agentplane/blob/50b1810dda648be0c0762b47e885c6ad0b2d42af/packages/agentplane/src/commands/shared/task-verification-input-types.ts"
+    },
+    "S15": {
+      "path": "packages/core/src/tasks/task-centric/index.ts",
+      "blob_sha": "f2d0fbc56c5571028c2660f74656ccfc96e93f77",
+      "inspected_lines": "1-180",
+      "supports": "Existing graph/lifecycle/policy/refinement/scheduler/orchestrator APIs must be inventoried before introducing substitutes.",
+      "url": "https://github.com/basilisk-labs/agentplane/blob/50b1810dda648be0c0762b47e885c6ad0b2d42af/packages/core/src/tasks/task-centric/index.ts"
+    },
+    "S16": {
+      "path": "packages/core/src/tasks/task-centric/orchestrator.ts",
+      "blob_sha": "e686cdcbc2c9ab5840c98db711fd5f86cc29a9ae",
+      "inspected_lines": "1-220",
+      "supports": "An additional TaskCentricOrchestrator exists; its name alone is not evidence of production parity.",
+      "url": "https://github.com/basilisk-labs/agentplane/blob/50b1810dda648be0c0762b47e885c6ad0b2d42af/packages/core/src/tasks/task-centric/orchestrator.ts"
+    },
+    "S17": {
+      "path": ".agentplane/tasks/202609111339-NGDG6V/README.md",
+      "blob_sha": "338e6f9af94a5c1228fabf2be4f0ada99961c127",
+      "inspected_lines": "57-89",
+      "supports": "Recent committed task reports 13 agent runs, zero observed usage runs and unavailable token totals; fixed supervisor-authored rework receipts are noted.",
+      "url": "https://github.com/basilisk-labs/agentplane/blob/50b1810dda648be0c0762b47e885c6ad0b2d42af/.agentplane/tasks/202609111339-NGDG6V/README.md"
+    },
+    "S18": {
+      "path": "packages/agentplane/package.json",
+      "blob_sha": "0c8855f9089cef8b8d1f95092c0642e4f8f7b663",
+      "inspected_lines": "1-60",
+      "supports": "Package 0.7.9-beta.1; Node >=24.",
+      "url": "https://github.com/basilisk-labs/agentplane/blob/50b1810dda648be0c0762b47e885c6ad0b2d42af/packages/agentplane/package.json"
+    },
+    "S19": {
+      "path": "package.json",
+      "blob_sha": "07feda1c4ef863b6d82c1cdecc8acfee00d5fc11",
+      "inspected_lines": "1-35",
+      "supports": "Pinned Bun 1.4.2, Node >=24 and existing test:project/test:release:critical entrypoints.",
+      "url": "https://github.com/basilisk-labs/agentplane/blob/50b1810dda648be0c0762b47e885c6ad0b2d42af/package.json"
+    }
+  }
+}
