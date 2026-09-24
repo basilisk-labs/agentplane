@@ -1,0 +1,1 @@
+🚧 CCBDZ9 task: Make canonical final validation execute only approved Plan verification commands [202609241856-CCBDZ9]

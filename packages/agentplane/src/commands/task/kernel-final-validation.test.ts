@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { finalValidationIdentityMatches } from "./kernel-final-validation.js";
+import {
+  canonicalFinalValidationTask,
+  finalValidationIdentityMatches,
+} from "./kernel-final-validation.js";
 
 const evaluatorTarget = "a".repeat(40);
 const storedIdentity = "sha256:" + "a".repeat(64);
@@ -52,5 +55,21 @@ describe("canonical final-validation identity recovery", () => {
         task_artifact_prefix: ".agentplane/tasks/T-1/",
       }),
     ).toBe(false);
+  });
+});
+
+describe("canonical final-validation command ownership", () => {
+  it("removes legacy operational verification commands without mutating the task", () => {
+    const task = {
+      id: "T-1",
+      verify: ["legacy stale command"],
+      description: "Canonical task projection",
+    };
+
+    expect(canonicalFinalValidationTask(task)).toEqual({
+      ...task,
+      verify: [],
+    });
+    expect(task.verify).toEqual(["legacy stale command"]);
   });
 });
