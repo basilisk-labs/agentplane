@@ -589,6 +589,11 @@ export async function resolveQualityReviewTargetSha(opts: {
     if (touchesCurrentTaskSet) {
       return currentTaskArtifactHead ?? current;
     }
+    if (opts.workflowMode === "direct" && previousEvaluatedSha) {
+      // Unrelated direct-mode task artifacts do not invalidate a known target.
+      current = parent;
+      continue;
+    }
     return currentTaskArtifactHead;
   }
 }
