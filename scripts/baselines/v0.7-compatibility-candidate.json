@@ -8,14 +8,14 @@
   "candidate": {
     "section_digests": {
       "agent_facing_context_contracts": "7710a5217ea614a3da8b4e99fe61e16fb738179797eba64c75c9537bc33f7785",
-      "cli_topology": "df23ddd48d70ad17c740b8661e2f6ca6e8362f175c613565d5be78f366838dc7",
+      "cli_topology": "4fd5c401aa48df8955d51c58bf70dbd501a953f250cd14665344022d0749040d",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "package_manifests": "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
       "tarball_policy": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
       "workflow_schema": "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452"
     },
-    "surface_sha256": "460836afc35a92f710f5d13f16bedd1b568a44a58d7582797f48c1742ee7dabe"
+    "surface_sha256": "389e9c0c3464b9317f1b28e13fea0e8ae187d239920db2fb0af46904ebe1383a"
   },
   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
   "contract_artifacts": {
@@ -825,54 +825,6 @@
             "visibility": "advanced"
           },
           {
-            "args": [
-              { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
-            ],
-            "group": "Task",
-            "id": ["task", "supervisor", "budget-epoch"],
-            "options": [
-              {
-                "kind": "string",
-                "name": "expected-journal-digest",
-                "required": true,
-                "valueHint": "<sha256>"
-              },
-              {
-                "kind": "string",
-                "name": "state-fingerprint",
-                "required": true,
-                "valueHint": "<sha256>"
-              },
-              {
-                "kind": "string",
-                "name": "max-input-tokens",
-                "required": false,
-                "valueHint": "<positive-integer>"
-              },
-              {
-                "default": false,
-                "kind": "boolean",
-                "name": "disable-token-limits",
-                "valueHint": null
-              },
-              {
-                "kind": "string",
-                "name": "max-output-tokens",
-                "required": false,
-                "valueHint": "<positive-integer>"
-              },
-              {
-                "kind": "string",
-                "name": "max-total-tokens",
-                "required": false,
-                "valueHint": "<positive-integer>"
-              },
-              { "kind": "string", "name": "by", "required": true, "valueHint": "<USER>" },
-              { "default": false, "kind": "boolean", "name": "json", "valueHint": null }
-            ],
-            "visibility": "advanced"
-          },
-          {
             "args": [],
             "group": "Workflow",
             "id": ["workflow", "migrate"],
@@ -906,7 +858,6 @@
           "task run resume-effect",
           "task run tool",
           "task scope extend",
-          "task supervisor budget-epoch",
           "workflow migrate"
         ],
         "added_options": [
@@ -1675,62 +1626,6 @@
             "valueHint": "<sha256:...>"
           },
           {
-            "command": "task supervisor budget-epoch",
-            "kind": "string",
-            "name": "by",
-            "required": true,
-            "valueHint": "<USER>"
-          },
-          {
-            "command": "task supervisor budget-epoch",
-            "default": false,
-            "kind": "boolean",
-            "name": "disable-token-limits",
-            "valueHint": null
-          },
-          {
-            "command": "task supervisor budget-epoch",
-            "kind": "string",
-            "name": "expected-journal-digest",
-            "required": true,
-            "valueHint": "<sha256>"
-          },
-          {
-            "command": "task supervisor budget-epoch",
-            "default": false,
-            "kind": "boolean",
-            "name": "json",
-            "valueHint": null
-          },
-          {
-            "command": "task supervisor budget-epoch",
-            "kind": "string",
-            "name": "max-input-tokens",
-            "required": false,
-            "valueHint": "<positive-integer>"
-          },
-          {
-            "command": "task supervisor budget-epoch",
-            "kind": "string",
-            "name": "max-output-tokens",
-            "required": false,
-            "valueHint": "<positive-integer>"
-          },
-          {
-            "command": "task supervisor budget-epoch",
-            "kind": "string",
-            "name": "max-total-tokens",
-            "required": false,
-            "valueHint": "<positive-integer>"
-          },
-          {
-            "command": "task supervisor budget-epoch",
-            "kind": "string",
-            "name": "state-fingerprint",
-            "required": true,
-            "valueHint": "<sha256>"
-          },
-          {
             "command": "work resume",
             "default": false,
             "kind": "boolean",
@@ -1832,11 +1727,6 @@
             "command": "task scope extend",
             "kind": "command",
             "source_task": "202608181404-CR1F9W"
-          },
-          {
-            "command": "task supervisor budget-epoch",
-            "kind": "command",
-            "source_task": "202609130858-RMHWQ5"
           },
           {
             "command": "workflow migrate",
@@ -2414,54 +2304,6 @@
             "source_task": "202608211020-FGAPJC"
           },
           {
-            "command": "task supervisor budget-epoch",
-            "kind": "option",
-            "name": "by",
-            "source_task": "202609130858-RMHWQ5"
-          },
-          {
-            "command": "task supervisor budget-epoch",
-            "kind": "option",
-            "name": "disable-token-limits",
-            "source_task": "202609130858-RMHWQ5"
-          },
-          {
-            "command": "task supervisor budget-epoch",
-            "kind": "option",
-            "name": "expected-journal-digest",
-            "source_task": "202609130858-RMHWQ5"
-          },
-          {
-            "command": "task supervisor budget-epoch",
-            "kind": "option",
-            "name": "json",
-            "source_task": "202609130858-RMHWQ5"
-          },
-          {
-            "command": "task supervisor budget-epoch",
-            "kind": "option",
-            "name": "max-input-tokens",
-            "source_task": "202609130858-RMHWQ5"
-          },
-          {
-            "command": "task supervisor budget-epoch",
-            "kind": "option",
-            "name": "max-output-tokens",
-            "source_task": "202609130858-RMHWQ5"
-          },
-          {
-            "command": "task supervisor budget-epoch",
-            "kind": "option",
-            "name": "max-total-tokens",
-            "source_task": "202609130858-RMHWQ5"
-          },
-          {
-            "command": "task supervisor budget-epoch",
-            "kind": "option",
-            "name": "state-fingerprint",
-            "source_task": "202609130858-RMHWQ5"
-          },
-          {
             "command": "workflow migrate",
             "kind": "option",
             "name": "dry-run",
@@ -2574,7 +2416,7 @@
             "source_task": "202609060720-NZXQ0E"
           }
         ],
-        "command_count": { "from": 243, "to": 252 },
+        "command_count": { "from": 243, "to": 251 },
         "mutated_command_shells": [
           {
             "after": {
@@ -2771,8 +2613,8 @@
             "identity": "task plan approve --by"
           }
         ],
-        "option_count": { "from": 767, "to": 851 },
-        "positional_count": { "from": 165, "to": 174 },
+        "option_count": { "from": 767, "to": 843 },
+        "positional_count": { "from": 165, "to": 173 },
         "removed_command_descriptors": [
           {
             "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
@@ -3282,10 +3124,11 @@
         "202609060720-NZXQ0E",
         "202609130858-RMHWQ5",
         "202609162254-YE48GC",
-        "202609230942-E6D0V4"
+        "202609230942-E6D0V4",
+        "202609241429-4WN4VX"
       ],
-      "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, including bounded scope, effect, capability, and resource declarations, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, safe local evidence statistics, compaction, garbage collection, and a state-bound USER-approved blocked-task scope extension; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; canonicalizes setup and execution profile selection to standard while retaining legacy init aliases; and makes auto the task route default while retiring repository as a user-facing route. Adds exact-intent operator reconciliation for interrupted integration workflow effects. Adds an explicit USER-authorized supervisor token budget epoch for telemetry-only stops. Retires the active Blueprint command surface after Task Kernel replacement proof while preserving cold compatibility readers.",
-      "to_sha256": "df23ddd48d70ad17c740b8661e2f6ca6e8362f175c613565d5be78f366838dc7"
+      "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, including bounded scope, effect, capability, and resource declarations, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, safe local evidence statistics, compaction, garbage collection, and a state-bound USER-approved blocked-task scope extension; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; canonicalizes setup and execution profile selection to standard while retaining legacy init aliases; and makes auto the task route default while retiring repository as a user-facing route. Adds exact-intent operator reconciliation for interrupted integration workflow effects. Retires the active supervisor budget-epoch command after spend limits became telemetry-only. Retires the active Blueprint command surface after Task Kernel replacement proof while preserving cold compatibility readers.",
+      "to_sha256": "4fd5c401aa48df8955d51c58bf70dbd501a953f250cd14665344022d0749040d"
     },
     {
       "classification": "intentional_breaking_retirement",
@@ -3499,7 +3342,7 @@
     "from_version": "0.6.24",
     "section": "package_manifests",
     "source_task": "202608082119-P6SHBN",
-    "surface_sha256": "e168b7c6f8857d993c67d0784accc023a0f056103bfa64d79b9b589b73c39d3c",
+    "surface_sha256": "ea6e1c4f0501fbce328daed8b70bd8bf05e6aab9dae3da5c3b656e8275d36459",
     "to_sha256": "e27e7737e65c939d493dd608b245362757bd5a84f2df553fe93696286062829b",
     "to_version": "0.7.12-beta.1"
   },
@@ -3564,6 +3407,7 @@
     "202609130858-RMHWQ5",
     "202609162254-YE48GC",
     "202609211330-5A54M1",
-    "202609230942-E6D0V4"
+    "202609230942-E6D0V4",
+    "202609241429-4WN4VX"
   ]
 }

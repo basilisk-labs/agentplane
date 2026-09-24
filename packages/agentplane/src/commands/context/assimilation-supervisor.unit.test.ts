@@ -474,7 +474,7 @@ describe("context assimilation supervisor", () => {
     expect(calls).not.toContain("finalize");
   });
 
-  it("shares one durable cursor across rework work orders and stops before a fourth cycle", async () => {
+  it("shares one durable cursor across rework work orders without enforcing legacy episode caps", async () => {
     const root = await fixtureRoot();
     await openSupervisorExecutionEpisode({
       git_root: root,
@@ -509,9 +509,7 @@ describe("context assimilation supervisor", () => {
     const second = await runContextAssimilationSupervisor(input(root), dependencies);
     await changeSemanticResult(root, "third correction");
 
-    await expect(runContextAssimilationSupervisor(input(root), dependencies)).rejects.toThrow(
-      /budget_exhausted \(episodes\)/u,
-    );
+    const third = await runContextAssimilationSupervisor(input(root), dependencies);
     expect(first).toMatchObject({
       status: "awaiting_semantic_rework",
       rework_work_order: ".agentplane/tasks/202607281900-SUPERV/context-rework/001.json",
@@ -520,8 +518,12 @@ describe("context assimilation supervisor", () => {
       status: "awaiting_semantic_rework",
       rework_work_order: ".agentplane/tasks/202607281900-SUPERV/context-rework/002.json",
     });
-    expect(evaluatorCalls).toBe(2);
-    expect(calls.filter((id) => id === "apply")).toHaveLength(2);
+    expect(third).toMatchObject({
+      status: "awaiting_semantic_rework",
+      rework_work_order: ".agentplane/tasks/202607281900-SUPERV/context-rework/003.json",
+    });
+    expect(evaluatorCalls).toBe(3);
+    expect(calls.filter((id) => id === "apply")).toHaveLength(3);
 
     const final = await openSupervisorExecutionEpisode({
       git_root: root,
@@ -531,9 +533,9 @@ describe("context assimilation supervisor", () => {
       recover_intent: false,
     });
     expect(final.journal).toMatchObject({
-      usage: { episodes: 29, agent_runs: 3 },
-      status: "stopped",
-      stop: { reason: "budget_exhausted", exhausted_dimensions: ["episodes"] },
+      usage: { episodes: 42, agent_runs: 3 },
+      status: "running",
+      stop: null,
     });
   });
 
@@ -554,7 +556,7 @@ describe("context assimilation supervisor", () => {
       undefined,
     ],
   ] as const)(
-    "refuses a new CURATOR cycle when the shared %s budget is exhausted",
+    "continues a new CURATOR cycle after the legacy %s budget is exceeded",
     async (_label, budget, firstUsage) => {
       const root = await fixtureRoot();
       await seedExhaustedBudget(root, {
@@ -564,20 +566,31 @@ describe("context assimilation supervisor", () => {
       });
       const calls: string[] = [];
       let evaluatorCalls = 0;
+      let currentTask = task();
 
       await expect(
         runContextAssimilationSupervisor(input(root), {
           operations: overriddenOperations(calls),
           getEpisodeState: fixedEpisodeState,
-          loadTask: () => Promise.resolve(task()),
+          loadTask: () => Promise.resolve(currentTask),
           runEvaluator: () => {
             evaluatorCalls += 1;
+            currentTask = task("rework");
             return Promise.resolve();
           },
         }),
-      ).rejects.toThrow(/budget_exhausted/u);
-      expect(calls).toEqual([]);
-      expect(evaluatorCalls).toBe(0);
+      ).resolves.toMatchObject({ status: "awaiting_semantic_rework" });
+      expect(calls).toContain("apply");
+      expect(evaluatorCalls).toBe(1);
+
+      const final = await openSupervisorExecutionEpisode({
+        git_root: root,
+        task_id: "202607281900-SUPERV",
+        task_revision: 1,
+        state_fingerprint_digest: FINGERPRINT,
+        recover_intent: false,
+      });
+      expect(final.journal).toMatchObject({ status: "running", stop: null });
     },
   );
 });
