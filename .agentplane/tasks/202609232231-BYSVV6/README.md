@@ -4,7 +4,7 @@ title: "Reduce AgentPlane workspace disk usage while preserving canonical task h
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -95,6 +95,7 @@ execution_contract:
       - "packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
       - "packages/agentplane/src/commands/branch/work-start.compact-tasks.test.ts"
       - "packages/agentplane/src/commands/branch/work-start.compact-tasks.ts"
+      - "packages/agentplane/src/commands/branch/work-start.hook-shim.test.ts"
       - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
       - "packages/agentplane/src/commands/branch/work-start.ts"
     external_effects: []
@@ -142,7 +143,7 @@ execution_contract:
           implementation_uncertainty: "material"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:0b666c01de6c6a7f2c4e6e64dffe15a0001ae90592458acebae2573473ec128a"
+      digest: "sha256:02fc1c594ab8142ac52b923deb28765cf2608f93b43b742a14307ca5d69461a2"
       escalation_reasons:
         - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
         - "effect_public_api"
@@ -164,6 +165,7 @@ execution_contract:
           - "packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
           - "packages/agentplane/src/commands/branch/work-start.compact-tasks.test.ts"
           - "packages/agentplane/src/commands/branch/work-start.compact-tasks.ts"
+          - "packages/agentplane/src/commands/branch/work-start.hook-shim.test.ts"
           - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
           - "packages/agentplane/src/commands/branch/work-start.ts"
         external_effects: []
@@ -206,7 +208,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "9a1e582d5f27a72dca7cd6c6d3c627f185d1726f"
+  message: "🚧 BYSVV6 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -217,6 +221,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: cbaa0c234441. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 9a1e582d5f27. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -238,8 +245,16 @@ events:
     to: "DOING"
     note: "Implementation committed: cbaa0c234441. CLI accepted one state-bound external-agent semantic result."
     commit: "cbaa0c2344413686a0da2c746b318c777cd0a28f"
+  -
+    type: "status"
+    at: "2026-09-24T18:03:50.324Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 9a1e582d5f27. CLI accepted one state-bound external-agent semantic result."
+    commit: "9a1e582d5f27a72dca7cd6c6d3c627f185d1726f"
 doc_version: 3
-doc_updated_at: "2026-09-24T14:39:08.753Z"
+doc_updated_at: "2026-09-24T18:03:50.324Z"
 doc_updated_by: "SUPERVISOR"
 description: "Avoid materializing completed .agentplane/tasks history in each new task worktree; keep authoritative access through the canonical task store. Add a size inventory and safe cleanup route for retained task worktrees and nested base repositories. Preserve dirty work, Git/provider/task evidence, and current task behavior. Verify focused tests and measured disk behavior."
 sections:
@@ -781,7 +796,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609232231-BYSVV6"
-    event_cursor: 6
+    event_cursor: 8
     final_validation: null
     id: "202609232231-BYSVV6"
     intent:
@@ -796,9 +811,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 9
+    revision: 11
     schema_version: 1
-    updated_at: "2026-09-24T14:45:52.434Z"
+    updated_at: "2026-09-24T18:03:50.324Z"
     work_items:
       compact-task-worktree:
         attempt: 1
@@ -939,6 +954,30 @@ extensions:
         work_item_id: "compact-task-worktree"
     leases: []
     mutation_receipts:
+      compatibility:sha256:1326a4d0cb1c932737460fd0155c8fd7431abc58b0f7f545c1d93204921f3511:
+        aggregate_digest: "sha256:1d4626a4e3773b9cfe39e7d963c47e71fc42467eff03333326d24395910aa513"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-24T18:03:50.324Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_3e3908a9173a8ab0d4193548"
+          mutation_id: "compatibility:sha256:1326a4d0cb1c932737460fd0155c8fd7431abc58b0f7f545c1d93204921f3511"
+          plan_digest: "sha256:f2ee045128dd9d0d747a2ad56be4dfda3ce812c46b7376071567ca825b7221db"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609232231-BYSVV6"
+          task_revision: 9
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:1326a4d0cb1c932737460fd0155c8fd7431abc58b0f7f545c1d93204921f3511"
+        next_revision: 10
+        previous_revision: 9
+        schema_version: 1
+        task_id: "202609232231-BYSVV6"
       compatibility:sha256:39f51a0ee2b8d85aabc90e90680381ab55dce5afeb28bc3d6cea3f4724c2858d:
         aggregate_digest: "sha256:b9167e320951adaac495b28d329d4fe582aaa2f70cae335e21cb0eb3280871dc"
         event:
@@ -961,6 +1000,30 @@ extensions:
         mutation_id: "compatibility:sha256:39f51a0ee2b8d85aabc90e90680381ab55dce5afeb28bc3d6cea3f4724c2858d"
         next_revision: 4
         previous_revision: 3
+        schema_version: 1
+        task_id: "202609232231-BYSVV6"
+      compatibility:sha256:49063607f99b910360faa72af24548914943b62b06b8655cae9e0348662be563:
+        aggregate_digest: "sha256:58e2cc0bff08bc2dc330663a46588f8712f5fb41170cb95ce3d6ef7752c8cf28"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-24T18:03:50.324Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_0707e51ed814871f49d6fed7"
+          mutation_id: "compatibility:sha256:49063607f99b910360faa72af24548914943b62b06b8655cae9e0348662be563"
+          plan_digest: "sha256:f2ee045128dd9d0d747a2ad56be4dfda3ce812c46b7376071567ca825b7221db"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609232231-BYSVV6"
+          task_revision: 10
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:49063607f99b910360faa72af24548914943b62b06b8655cae9e0348662be563"
+        next_revision: 11
+        previous_revision: 10
         schema_version: 1
         task_id: "202609232231-BYSVV6"
       compatibility:sha256:5932ab84ab97f62b4aca6740e6b86ea94837e32c45b498055f446eed5a50daa1:
@@ -1111,7 +1174,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "cbaa0c2344413686a0da2c746b318c777cd0a28f"
+    hash: "9a1e582d5f27a72dca7cd6c6d3c627f185d1726f"
   task_execution_context:
     base_ref: "origin/main"
     base_sha: "97c2c3dfca1b8a4a6a6f616e4b05341cb0d89927"
