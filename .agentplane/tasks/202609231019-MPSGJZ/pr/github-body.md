@@ -34,7 +34,7 @@ Implement the verified AgentPlane lifecycle fixes as one clean semantic code tas
  .../evaluator/evaluator-review-apply.test.ts       |  37 ++++-
  .../commands/evaluator/evaluator-review-apply.ts   |  71 +++++---
  .../commands/evaluator/evaluator-review-usecase.ts |  13 +-
- .../pr/conflict-rework-route-eligibility.ts        |  14 +-
+ .../pr/conflict-rework-route-eligibility.ts        |  17 +-
  .../src/commands/pr/conflict-rework.test.ts        |  80 +++++++++
  .../agentplane/src/commands/pr/conflict-rework.ts  |   4 +-
  .../commands/shared/merged-branch-cleanup.test.ts  |  34 +++-
@@ -97,7 +97,7 @@ Implement the verified AgentPlane lifecycle fixes as one clean semantic code tas
  packages/core/src/tasks/plan-execution-grant.ts    |  52 +++---
  .../core/src/tasks/task-kernel/invariants.test.ts  |  69 ++++++++
  packages/core/src/tasks/task-kernel/invariants.ts  |  11 ++
- 70 files changed, 2769 insertions(+), 317 deletions(-)
+ 70 files changed, 2772 insertions(+), 317 deletions(-)
 ```
 
 </details>

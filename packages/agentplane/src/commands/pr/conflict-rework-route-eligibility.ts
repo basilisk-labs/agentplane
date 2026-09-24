@@ -244,11 +244,14 @@ export function resolveConflictRouteEligibility(opts: {
     };
   }
   const implementationComplete = taskStatus === "DONE" || taskStatus === "COMPLETED";
-  const inactiveReworkQueue = opts.report.queue.present && opts.report.queue.status === "rework";
+  const inactiveStaleReworkQueue =
+    opts.report.queue.present &&
+    opts.report.queue.status === "rework" &&
+    matchingQueue(opts.report, opts.identity) === null;
   if (taskStatus === "DOING" || implementationComplete) {
     if (
       !opts.report.handoff.present &&
-      (!opts.report.queue.present || (implementationComplete && inactiveReworkQueue))
+      (!opts.report.queue.present || (implementationComplete && inactiveStaleReworkQueue))
     ) {
       return {
         state: "eligible",
