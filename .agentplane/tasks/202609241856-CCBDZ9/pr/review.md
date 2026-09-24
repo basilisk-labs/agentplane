@@ -6,14 +6,14 @@ Created: 2026-09-24T19:01:04.829Z
 
 - Task: `202609241856-CCBDZ9`
 - Title: Make canonical final validation execute only approved Plan verification commands
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609241856-CCBDZ9/make-canonical-final-validation-execute-only-app`
 - Canonical task record: `.agentplane/tasks/202609241856-CCBDZ9/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
