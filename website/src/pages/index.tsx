@@ -138,7 +138,7 @@ const artifacts = [
       "",
       "## Work on a task",
       "",
-      "1. Review the approved scope in AGENTS.md.",
+      "1. Read AGENTS.md and the task's approved WorkOrder.",
       "2. Make the change and run the project checks.",
       "3. Review the task record and evidence in Git.",
     ],
@@ -146,7 +146,7 @@ const artifacts = [
 ] as const;
 
 const stages = [
-  { title: "Authority", text: "AGENTS.md rules and approved scope" },
+  { title: "Authority", text: "Repository rules and task-specific scope" },
   { title: "Observed", text: "Repository changes observed independently" },
   { title: "Verified", text: "Required checks run and recorded" },
   { title: "Recorded", text: "Task evidence retained in Git" },
@@ -165,7 +165,7 @@ function HomeJsonLd(): ReactNode {
     mainEntity: [
       [
         "What is Agentplane?",
-        "Agentplane gives coding agents bounded tasks and keeps approved scope, observed changes, and verification records in Git.",
+        "Agentplane gives coding agents one bounded action at a time. AGENTS.md supplies repository rules; the CLI tracks task state, approval boundaries, and observed checks in Git.",
       ],
       [
         "Does Agentplane replace coding agents?",
@@ -612,10 +612,9 @@ function Hero(): ReactNode {
           {hero.eyebrow}
         </p>
         <h1>
-          Let agents write code.
+          {hero.titleLines[0]}
           <br />
-          Keep authority and <br className={styles.heroMobileBreak} />
-          proof in Git.
+          {hero.titleLines[1]}
         </h1>
         <p className={styles.lede}>{hero.subtitle}</p>
         <div className={styles.ctaGroup}>
@@ -628,10 +627,7 @@ function Hero(): ReactNode {
           </Link>
           <CopyInstallButton location="hero" />
         </div>
-        <p className={styles.trust}>
-          Agent-agnostic &nbsp; · &nbsp; Local-first &nbsp; · &nbsp; No account required &nbsp; ·
-          &nbsp; MIT licensed
-        </p>
+        <p className={styles.trust}>{hero.trustLine}</p>
       </div>
       <ArtifactExplorer />
     </section>
@@ -642,39 +638,35 @@ function ProofOverview(): ReactNode {
   return (
     <section className={`${styles.proofOverview} ${styles.reveal}`}>
       <div className={styles.proofOverviewInner}>
-        <p className={styles.kicker}>A clearer review trail</p>
-        <h2>Know what happened after the agent ran.</h2>
+        <p className={styles.kicker}>One job at a time</p>
+        <h2>The agent sees the next job. The CLI keeps the state.</h2>
         <p className={styles.proofOverviewLede}>
-          Agentplane keeps the task boundary, observed repository changes,
-          <br />
-          and check results together for review in Git.
+          A compact WorkOrder gives the agent the objective, scope, and context it needs. The CLI
+          tracks the rest of the workflow, so the agent can focus on the code.
         </p>
         <div className={styles.proofOverviewGrid}>
           <div>
             <span className={`${styles.stageIcon} ${styles.stageIconAuthority}`}>
               <StageGlyph stage="Authority" />
             </span>
-            <h3>Clear authority</h3>
-            <p>AGENTS.md defines the guardrails; the CLI returns the next bounded action.</p>
+            <h3>Repository rules</h3>
+            <p>AGENTS.md gives the agent its guardrails and command contract.</p>
           </div>
           <div>
             <span className={`${styles.stageIcon} ${styles.stageIconVerified}`}>
-              <IconSuccess aria-hidden="true" />
+              <IconArrow aria-hidden="true" />
             </span>
-            <h3>Verifiable work</h3>
+            <h3>Bounded handoff</h3>
             <p>
-              See observed changes and the result of each required check before accepting the work.
+              The CLI returns the next objective, permitted scope, expected result, and stop rules.
             </p>
           </div>
           <div>
             <span className={`${styles.stageIcon} ${styles.stageIconRecorded}`}>
               <StageGlyph stage="Recorded" />
             </span>
-            <h3>A durable record</h3>
-            <p>
-              Task state and available evidence remain in the repository after the agent session
-              ends.
-            </p>
+            <h3>Reviewable outcome</h3>
+            <p>Observed changes and check results stay in the repository after the session ends.</p>
           </div>
         </div>
       </div>
@@ -714,12 +706,12 @@ function AuthorityGap(): ReactNode {
             </code>
           </pre>
           <footer>
-            <strong>Missing proof</strong>
-            <p>No record of scope, allowed effects, approver, or independent verification.</p>
+            <strong>Missing context</strong>
+            <p>This diff alone shows no approved scope, approver, or check result.</p>
           </footer>
         </div>
         <div className={styles.authorityAnnotation} aria-hidden="true">
-          <DoodleArrow /> <span>A diff shows the what. Agentplane captures the why.</span>
+          <DoodleArrow /> <span>Changes here. Boundaries in the task record.</span>
         </div>
       </div>
     </section>
@@ -845,6 +837,38 @@ function DurableProof(): ReactNode {
           </dl>
         </div>
         <footer>{durableProof.footer}</footer>
+      </div>
+    </section>
+  );
+}
+
+function FormalChecks(): ReactNode {
+  const { formalChecks } = homepageContent;
+
+  return (
+    <section className={`${styles.section} ${styles.formalSection} ${styles.reveal}`}>
+      <div className={styles.formalInner}>
+        <div className={styles.sectionIntro}>
+          <p className={styles.kicker}>{formalChecks.eyebrow}</p>
+          <h2>{formalChecks.title}</h2>
+          <p>{formalChecks.text}</p>
+        </div>
+        <div className={styles.formalPanel}>
+          <header>
+            <span>Safety rule / effect ownership</span>
+            <code>Task Kernel</code>
+          </header>
+          <strong>{formalChecks.rule}</strong>
+          <ol>
+            {formalChecks.steps.map(([label, description]) => (
+              <li key={label}>
+                <span>{label}</span>
+                <p>{description}</p>
+              </li>
+            ))}
+          </ol>
+          <footer>{formalChecks.scope}</footer>
+        </div>
       </div>
     </section>
   );
@@ -999,6 +1023,7 @@ export default function Home(): ReactNode {
         <AuthorityGap />
         <ControlLoop />
         <DurableProof />
+        <FormalChecks />
         <WorksWith />
         <WorkflowModes />
         <DocsRail />

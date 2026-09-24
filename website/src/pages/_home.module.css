@@ -1966,10 +1966,6 @@
   margin: 27px 0 17px;
 }
 
-.heroMobileBreak {
-  display: none;
-}
-
 .hero .lede {
   color: #66789e;
   font-size: 1.17rem;
@@ -2694,9 +2690,6 @@
     line-height: 1.02;
     margin: 5px 0 9px;
   }
-  .heroMobileBreak {
-    display: inline;
-  }
   .hero .lede {
     font-size: 0.82rem;
     line-height: 1.35;
@@ -3339,6 +3332,89 @@
   color: #66779b;
   font-size: 0.71rem;
   padding: 10px 17px;
+}
+
+.formalSection {
+  background: #f8faff;
+}
+.formalInner {
+  align-items: center;
+  display: grid;
+  gap: 42px;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  margin-inline: auto;
+  max-width: 860px;
+  width: 100%;
+}
+.formalSection .sectionIntro h2 {
+  max-width: 13ch;
+}
+.formalPanel {
+  background: #fff;
+  border: 1px solid #dce4f2;
+  border-radius: 4px;
+  box-shadow: 0 16px 34px rgb(57 77 121 / 0.06);
+}
+.formalPanel header {
+  align-items: center;
+  border-bottom: 1px solid #e6eaf2;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  padding: 12px 17px;
+}
+.formalPanel header span {
+  color: #506996;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.61rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.formalPanel header code {
+  background: #f5f8ff;
+  border: 1px solid #e1e7f2;
+  border-radius: 4px;
+  color: #526998;
+  font-size: 0.64rem;
+  white-space: nowrap;
+}
+.formalPanel > strong {
+  color: #182135;
+  display: block;
+  font-size: 1.15rem;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  padding: 20px 17px;
+}
+.formalPanel ol {
+  list-style: none;
+  margin: 0;
+  padding: 0 17px 13px;
+}
+.formalPanel li {
+  border-top: 1px solid #edf0f6;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 82px minmax(0, 1fr);
+  padding: 9px 0;
+}
+.formalPanel li span {
+  color: #26334e;
+  font-size: 0.71rem;
+  font-weight: 620;
+}
+.formalPanel li p {
+  color: #66779b;
+  font-size: 0.72rem;
+  line-height: 1.3;
+}
+.formalPanel footer {
+  background: #f7f9fd;
+  border-top: 1px solid #e6eaf2;
+  color: #526998;
+  font-size: 0.7rem;
+  line-height: 1.35;
+  padding: 11px 17px;
 }
 
 .worksSection {
@@ -4003,6 +4079,26 @@
     padding: 7px 8px;
   }
 
+  .formalInner {
+    gap: 22px;
+    grid-template-columns: 1fr;
+    max-width: 310px;
+  }
+  .formalSection .sectionIntro h2 {
+    max-width: 13ch;
+  }
+  .formalPanel > strong {
+    font-size: 0.98rem;
+    padding: 16px 13px;
+  }
+  .formalPanel header,
+  .formalPanel footer {
+    padding-inline: 13px;
+  }
+  .formalPanel ol {
+    padding-inline: 13px;
+  }
+
   .worksSection {
     gap: 19px;
   }
@@ -4122,6 +4218,7 @@
   .loopGrid,
   .loopEvidence,
   .proofLedger,
+  .formalInner,
   .worksSection .toolList,
   .modeGrid,
   .docsGrid,

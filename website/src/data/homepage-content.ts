@@ -26,16 +26,15 @@ export const harnessUrl = siteRoutes.harness;
 
 export const homepageContent = {
   seo: {
-    title: "Agentplane | Git-native control plane for coding agents",
+    title: "Agentplane | Guardrails and workflow for coding agents",
     description:
-      "Review agent-written changes with approved scope, observed results, and required checks in Git. Agentplane works with your existing coding agent.",
+      "AGENTS.md sets repository guardrails. Agentplane's CLI gives coding agents one bounded action at a time and records approvals, observed changes, and checks in Git.",
   },
   hero: {
-    eyebrow: "The Git-native control plane for coding agents",
-    title: "Let agents write code. Keep authority and proof in Git.",
-    titleLines: ["Let agents write code.", "Keep authority and", "proof in Git."],
+    eyebrow: "A workflow CLI for coding agents",
+    titleLines: ["Less workflow to track.", "More focus on the code."],
     subtitle:
-      "Review agent-written code with a record of what was allowed, what changed, and which checks ran. AGENTS.md sets the guardrails; the CLI gives one bounded action at a time.",
+      "AGENTS.md sets repository guardrails. The Agentplane CLI tracks task state, enforces approval boundaries, and gives your coding agent one bounded action at a time. Review observed changes and check results in Git.",
     trustLine: "Agent-agnostic · Local-first · No account required · MIT licensed",
   },
   receipt: {
@@ -50,15 +49,14 @@ export const homepageContent = {
     ],
   },
   authorityGap: {
-    eyebrow: "The authority gap",
-    title:
-      "A diff shows what changed. It does not show what was authorized or independently verified.",
-    text: "Without a durable control record, reviewers have to trust the worker's own report about scope, checks, and completion.",
+    eyebrow: "Beyond the diff",
+    title: "A diff shows the change. The task record shows its boundaries.",
+    text: "See the approved scope, observed paths, and required check results together, without reconstructing the task from chat logs.",
   },
   controlLoop: {
     eyebrow: "The control loop",
-    title: "From an approved task to a reviewable result.",
-    text: "Your coding agent implements the change. Agentplane returns one bounded action at a time, observes the repository result, runs required checks, and records the outcome.",
+    title: "The CLI carries the process. The agent handles the problem.",
+    text: "After approval, Agentplane supplies one bounded WorkOrder at a time, observes the repository result, runs required checks, and records the outcome.",
     steps: [
       {
         id: "authorize",
@@ -96,6 +94,19 @@ export const homepageContent = {
         evidence: "Reviewers can inspect the task record in Git.",
         artifact: "acr.json",
       },
+    ],
+  },
+  formalChecks: {
+    eyebrow: "Checking Agentplane itself",
+    title: "We test the guardrails, too.",
+    text: "A bounded Quint model explores a critical Task Kernel rule: a replayed effect must not gain a fresh right to dispatch. TLC checks the finite state space, and trace tests exercise the matching TypeScript paths.",
+    scope:
+      "A focused effect-ownership pilot, run during development and outside your agent's task.",
+    rule: "Record intent before dispatch. Replays cannot own the effect again.",
+    steps: [
+      ["Model", "Quint describes the rule"],
+      ["Explore", "TLC checks bounded states"],
+      ["Match code", "Trace tests exercise TypeScript"],
     ],
   },
   durableProof: {
