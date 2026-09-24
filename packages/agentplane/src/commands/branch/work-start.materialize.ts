@@ -11,6 +11,8 @@ import {
   symlink,
 } from "node:fs/promises";
 import path from "node:path";
+import { gitEnv } from "@agentplaneorg/core/git";
+import { runProcess } from "@agentplaneorg/core/process";
 
 import { LocalBackend } from "../../backends/task-backend.js";
 import { fileExists } from "../../cli/fs-utils.js";
@@ -97,9 +99,19 @@ export async function materializeLocalBackendReadmesForWorktree(opts: {
   await mkdir(path.dirname(targetReadme), { recursive: true });
   await copyFile(sourceReadme, targetReadme);
 
-  // Hand off ownership of the active task README to the task worktree so
-  // later merges cannot collide with a stale untracked copy on the base checkout.
-  await rm(sourceReadme, { force: true });
+  // An untracked README must leave the base checkout so a later merge can add it.
+  // A tracked README belongs to the base commit and must stay present there.
+  const tracked = await runProcess({
+    command: "git",
+    args: ["ls-files", "--error-unmatch", "--", path.relative(opts.repoRoot, sourceReadme)],
+    cwd: opts.repoRoot,
+    env: gitEnv(),
+    reject: false,
+  });
+  if (tracked.exitCode !== 0 && tracked.exitCode !== 1) {
+    throw new Error(`Could not classify task README in Git: ${sourceReadme}`);
+  }
+  if (tracked.exitCode === 1) await rm(sourceReadme, { force: true });
   const remainingEntries = await readdir(sourceTaskRoot).catch(() => []);
   if (remainingEntries.length === 0) {
     await rm(sourceTaskRoot, { recursive: true, force: true });
