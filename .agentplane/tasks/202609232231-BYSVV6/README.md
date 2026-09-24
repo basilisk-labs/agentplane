@@ -4,7 +4,7 @@ title: "Reduce AgentPlane workspace disk usage while preserving canonical task h
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 12
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -208,7 +208,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "8bac79a048b540030f4a4d8614a61bd8cc82ba5e"
+  message: "🚧 BYSVV6 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -222,6 +224,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 9a1e582d5f27. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 8bac79a048b5. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -251,8 +256,16 @@ events:
     to: "DOING"
     note: "Implementation committed: 9a1e582d5f27. CLI accepted one state-bound external-agent semantic result."
     commit: "9a1e582d5f27a72dca7cd6c6d3c627f185d1726f"
+  -
+    type: "status"
+    at: "2026-09-24T18:12:42.402Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 8bac79a048b5. CLI accepted one state-bound external-agent semantic result."
+    commit: "8bac79a048b540030f4a4d8614a61bd8cc82ba5e"
 doc_version: 3
-doc_updated_at: "2026-09-24T18:03:50.324Z"
+doc_updated_at: "2026-09-24T18:12:42.402Z"
 doc_updated_by: "SUPERVISOR"
 description: "Avoid materializing completed .agentplane/tasks history in each new task worktree; keep authoritative access through the canonical task store. Add a size inventory and safe cleanup route for retained task worktrees and nested base repositories. Preserve dirty work, Git/provider/task evidence, and current task behavior. Verify focused tests and measured disk behavior."
 sections:
@@ -794,7 +807,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609232231-BYSVV6"
-    event_cursor: 8
+    event_cursor: 10
     final_validation: null
     id: "202609232231-BYSVV6"
     intent:
@@ -809,9 +822,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 12
+    revision: 14
     schema_version: 1
-    updated_at: "2026-09-24T18:11:13.938Z"
+    updated_at: "2026-09-24T18:12:42.402Z"
     work_items:
       compact-task-worktree:
         attempt: 2
@@ -969,6 +982,30 @@ extensions:
         work_item_id: "compact-task-worktree"
     leases: []
     mutation_receipts:
+      compatibility:sha256:00b185d93504a5e98a45a1abf7294ad00971fb941e6090e094ca9369ac6464f4:
+        aggregate_digest: "sha256:9824b07759d0a3883ded5acd85eafd0353ccb3d91b28314f6b861333eee5ce04"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-24T18:12:42.402Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_914aea0586aabb9d17657599"
+          mutation_id: "compatibility:sha256:00b185d93504a5e98a45a1abf7294ad00971fb941e6090e094ca9369ac6464f4"
+          plan_digest: "sha256:f2ee045128dd9d0d747a2ad56be4dfda3ce812c46b7376071567ca825b7221db"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609232231-BYSVV6"
+          task_revision: 12
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:00b185d93504a5e98a45a1abf7294ad00971fb941e6090e094ca9369ac6464f4"
+        next_revision: 13
+        previous_revision: 12
+        schema_version: 1
+        task_id: "202609232231-BYSVV6"
       compatibility:sha256:1326a4d0cb1c932737460fd0155c8fd7431abc58b0f7f545c1d93204921f3511:
         aggregate_digest: "sha256:1d4626a4e3773b9cfe39e7d963c47e71fc42467eff03333326d24395910aa513"
         event:
@@ -1161,6 +1198,30 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202609232231-BYSVV6"
+      compatibility:sha256:ffa79133509d55e764dfb76eaf73bcb7cc1e55197c0052d361327b6732df5731:
+        aggregate_digest: "sha256:8b0249784e2284c9c6229c24c50d67bd2fb117e1e25fbf633d56e1c5eb3118a5"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-24T18:12:42.402Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_3b3ef94b485b286f71123259"
+          mutation_id: "compatibility:sha256:ffa79133509d55e764dfb76eaf73bcb7cc1e55197c0052d361327b6732df5731"
+          plan_digest: "sha256:f2ee045128dd9d0d747a2ad56be4dfda3ce812c46b7376071567ca825b7221db"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609232231-BYSVV6"
+          task_revision: 13
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:ffa79133509d55e764dfb76eaf73bcb7cc1e55197c0052d361327b6732df5731"
+        next_revision: 14
+        previous_revision: 13
+        schema_version: 1
+        task_id: "202609232231-BYSVV6"
       external-result:work-order-202609232231-BYSVV6-executor-41e0e467253ae6b0220bc6cc:
         aggregate_digest: "sha256:ef969eab06d5ad05a8b8f51f13ccc066505e5f6039a62d50f6dcd24ca8558869"
         event:
@@ -1213,7 +1274,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "9a1e582d5f27a72dca7cd6c6d3c627f185d1726f"
+    hash: "8bac79a048b540030f4a4d8614a61bd8cc82ba5e"
   task_execution_context:
     base_ref: "origin/main"
     base_sha: "97c2c3dfca1b8a4a6a6f616e4b05341cb0d89927"
