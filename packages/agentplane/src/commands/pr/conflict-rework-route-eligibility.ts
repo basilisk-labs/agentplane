@@ -244,8 +244,12 @@ export function resolveConflictRouteEligibility(opts: {
     };
   }
   const implementationComplete = taskStatus === "DONE" || taskStatus === "COMPLETED";
+  const inactiveReworkQueue = opts.report.queue.present && opts.report.queue.status === "rework";
   if (taskStatus === "DOING" || implementationComplete) {
-    if (!opts.report.queue.present && !opts.report.handoff.present) {
+    if (
+      !opts.report.handoff.present &&
+      (!opts.report.queue.present || (implementationComplete && inactiveReworkQueue))
+    ) {
       return {
         state: "eligible",
         evidence: {

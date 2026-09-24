@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202609231019-MPSGJZ/fix-canonical-completed-task-branch-lifecycle-re",
   "created_at": "2026-09-23T10:57:06.440Z",
-  "diffstat_sha256": "sha256:b34f2c6853d55776a5510aa660a3bb4e9d325839b9e3ceab2b2154b05f173630",
+  "diffstat_sha256": "sha256:cd46aa6be78f4d703bbfc775938f527774871548315df72a4b229da3a71ef3ef",
   "last_verified_at": "2026-09-24T20:40:26.581Z",
   "last_verified_diffstat_sha256": "sha256:b34f2c6853d55776a5510aa660a3bb4e9d325839b9e3ceab2b2154b05f173630",
   "pr_number": 6011,

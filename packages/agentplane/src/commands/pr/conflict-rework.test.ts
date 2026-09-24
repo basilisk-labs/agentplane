@@ -449,6 +449,28 @@ describe("provider conflict rework packet", () => {
     });
   });
 
+  it("ignores an inactive stale rework queue for a verified completed current PR", async () => {
+    const conflicting = report({ handoff: { present: false } });
+    if (!conflicting.queue.present) throw new Error("fixture error");
+    conflicting.queue = {
+      ...conflicting.queue,
+      status: "rework",
+      headSha: "2222222222222222222222222222222222222222",
+      baseSha: "3333333333333333333333333333333333333333",
+    };
+
+    await expect(prepare({ report: conflicting })).resolves.toMatchObject({
+      state: "ready",
+      packet: {
+        route_evidence: {
+          kind: "current_verified_open_pr_rework",
+          queue: null,
+          handoff: null,
+        },
+      },
+    });
+  });
+
   it("invalidates a divergent local head", async () => {
     const prepared = await prepare({ report: providerBehindReport() });
     expect(prepared).toMatchObject({
