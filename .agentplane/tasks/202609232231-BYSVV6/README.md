@@ -4,7 +4,7 @@ title: "Reduce AgentPlane workspace disk usage while preserving canonical task h
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -208,9 +208,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "8bac79a048b540030f4a4d8614a61bd8cc82ba5e"
-  message: "🚧 BYSVV6 task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -822,70 +820,63 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 14
+    revision: 15
     schema_version: 1
-    updated_at: "2026-09-24T18:12:42.402Z"
+    updated_at: "2026-09-24T18:21:15.215Z"
     work_items:
       compact-task-worktree:
-        attempt: 2
+        attempt: 3
         claim_id: null
         id: "compact-task-worktree"
-        last_failure:
-          cause_refs:
-            - "history-access"
-            - "worktree-safety"
-          code: "validation_failed"
-          kind: "validation"
-          message: "Corrected the compact worktree implementation test fixtures after the declared CI failure. Historical task access and local current-task writes remain covered."
-          retryable: true
+        last_failure: null
         output_manifests:
           -
-            digest: "sha256:7256de88b6818079832096316210ec822a515b0e17569857c4b2c3a560533744"
+            digest: "sha256:9748eeb80777b58ff503f469028f5950c58854be7b8f56b1cc2eda6ee54e76a9"
             id: "Compact worktree behavior"
             kind: "semantic_output"
             producer:
-              attempt: 2
+              attempt: 3
               plan_revision: 1
               task_id: "202609232231-BYSVV6"
               work_item_id: "compact-task-worktree"
             provenance:
-              - "sha256:136ca64003d35c2c17b8390972ff7bee673956e3ae82d8090c757db543b34075"
+              - "sha256:9c55ab121b7ab2a5c8874f9fcfbc225755c43ad5bd2468af5a4a7fe0ae7e8f64"
               - ".agentplane/tasks/202609232231-BYSVV6/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:bb51d2e09e6625a2c49325946affbd446f9719ce61652c737e5532ca1c1cec75"
+            repository_snapshot_digest: "sha256:07196549b4795b0b3621d5c305931a944e9c140ccc8d3890b34502b4b242d8ee"
             schema: "agentplane.semantic-output.v1"
             schema_version: 1
           -
-            digest: "sha256:853fac63038481b60b2553a89d5e6059e4064ca5bcd261fab6d4893b32dbe9ca"
+            digest: "sha256:84676e9efff794d436a3a6cc69748f82525d2bce3f0c195f319f61b8c2fe5806"
             id: "Canonical historical read behavior"
             kind: "semantic_output"
             producer:
-              attempt: 2
+              attempt: 3
               plan_revision: 1
               task_id: "202609232231-BYSVV6"
               work_item_id: "compact-task-worktree"
             provenance:
-              - "sha256:136ca64003d35c2c17b8390972ff7bee673956e3ae82d8090c757db543b34075"
+              - "sha256:9c55ab121b7ab2a5c8874f9fcfbc225755c43ad5bd2468af5a4a7fe0ae7e8f64"
               - ".agentplane/tasks/202609232231-BYSVV6/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:bb51d2e09e6625a2c49325946affbd446f9719ce61652c737e5532ca1c1cec75"
+            repository_snapshot_digest: "sha256:07196549b4795b0b3621d5c305931a944e9c140ccc8d3890b34502b4b242d8ee"
             schema: "agentplane.semantic-output.v1"
             schema_version: 1
           -
-            digest: "sha256:582b475752cccf29ff32b8122d992227390c4a6c50a16c355b4cc614f6fe3763"
+            digest: "sha256:2c11e20cfe81f20b53389bf733db496c3d672b365f3005165c565093b4ec2270"
             id: "Focused regression evidence"
             kind: "semantic_output"
             producer:
-              attempt: 2
+              attempt: 3
               plan_revision: 1
               task_id: "202609232231-BYSVV6"
               work_item_id: "compact-task-worktree"
             provenance:
-              - "sha256:136ca64003d35c2c17b8390972ff7bee673956e3ae82d8090c757db543b34075"
+              - "sha256:9c55ab121b7ab2a5c8874f9fcfbc225755c43ad5bd2468af5a4a7fe0ae7e8f64"
               - ".agentplane/tasks/202609232231-BYSVV6/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:bb51d2e09e6625a2c49325946affbd446f9719ce61652c737e5532ca1c1cec75"
+            repository_snapshot_digest: "sha256:07196549b4795b0b3621d5c305931a944e9c140ccc8d3890b34502b4b242d8ee"
             schema: "agentplane.semantic-output.v1"
             schema_version: 1
-        revision: 3
-        state: "REWORK_READY"
+        revision: 4
+        state: "COMPLETED"
         validation_result:
           evidence:
             -
@@ -893,47 +884,45 @@ extensions:
                 - ".agentplane/tasks/202609232231-BYSVV6/supervision/declared-checks.json"
               check_id: "history-tests"
               command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/backends/task-backend.local.test.ts --pool=forks --maxWorkers=1"
-              detail: "Declared check failed: bun run ci:local:fast"
+              detail: "Observed by node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/backends/task-backend.local.test.ts --pool=forks --maxWorkers=1."
               exit_code: 0
-              observed_at: "2026-09-24T18:11:13.929Z"
-              repository_snapshot_digest: "sha256:bb51d2e09e6625a2c49325946affbd446f9719ce61652c737e5532ca1c1cec75"
+              observed_at: "2026-09-24T18:21:15.203Z"
+              repository_snapshot_digest: "sha256:07196549b4795b0b3621d5c305931a944e9c140ccc8d3890b34502b4b242d8ee"
               status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609232231-BYSVV6/supervision/declared-checks.json"
               check_id: "critical-tests"
               command_identity: "bun run ci:local:fast"
-              detail: "Declared check failed: bun run ci:local:fast"
-              exit_code: 1
-              observed_at: "2026-09-24T18:11:13.929Z"
-              repository_snapshot_digest: "sha256:bb51d2e09e6625a2c49325946affbd446f9719ce61652c737e5532ca1c1cec75"
-              status: "failed"
+              detail: "Observed by bun run ci:local:fast."
+              exit_code: 0
+              observed_at: "2026-09-24T18:21:15.203Z"
+              repository_snapshot_digest: "sha256:07196549b4795b0b3621d5c305931a944e9c140ccc8d3890b34502b4b242d8ee"
+              status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609232231-BYSVV6/supervision/declared-checks.json"
               check_id: "typecheck"
               command_identity: "bun run typecheck"
-              detail: "Declared validation command bun run typecheck was not observed by AgentPlane."
-              exit_code: null
-              observed_at: "2026-09-24T18:11:13.929Z"
-              repository_snapshot_digest: "sha256:bb51d2e09e6625a2c49325946affbd446f9719ce61652c737e5532ca1c1cec75"
-              status: "unsupported"
+              detail: "Observed by bun run typecheck."
+              exit_code: 0
+              observed_at: "2026-09-24T18:21:15.203Z"
+              repository_snapshot_digest: "sha256:07196549b4795b0b3621d5c305931a944e9c140ccc8d3890b34502b4b242d8ee"
+              status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609232231-BYSVV6/supervision/declared-checks.json"
               check_id: "disk-measure"
               command_identity: "task.verify"
-              detail: "Declared check failed: bun run ci:local:fast"
-              exit_code: 1
-              observed_at: "2026-09-24T18:11:13.929Z"
-              repository_snapshot_digest: "sha256:bb51d2e09e6625a2c49325946affbd446f9719ce61652c737e5532ca1c1cec75"
-              status: "failed"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-09-24T18:21:15.203Z"
+              repository_snapshot_digest: "sha256:07196549b4795b0b3621d5c305931a944e9c140ccc8d3890b34502b4b242d8ee"
+              status: "passed"
           schema_version: 1
           stale_evidence: []
-          status: "blocked"
-          unsatisfied_criteria:
-            - "history-access"
-            - "worktree-safety"
+          status: "passed"
+          unsatisfied_criteria: []
       disk-inventory-and-cleanup-guard:
         attempt: 0
         claim_id: null
@@ -979,6 +968,23 @@ extensions:
         schema_version: 1
         task_id: "202609232231-BYSVV6"
         task_revision: 11
+        work_item_id: "compact-task-worktree"
+      -
+        at: "2026-09-24T18:21:15.215Z"
+        from: "REWORK_READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:06167b94ac6c8181802452467e480220618207ab46cfade5ad2468d310e9c7bc"
+        entity: "work_item"
+        id: "event_7cf9d2e8d8955903621a61fc"
+        mutation_id: "external-result:work-order-202609232231-BYSVV6-executor-62aa8cc744f766affc0eab89"
+        plan_digest: "sha256:f2ee045128dd9d0d747a2ad56be4dfda3ce812c46b7376071567ca825b7221db"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609232231-BYSVV6"
+        task_revision: 14
         work_item_id: "compact-task-worktree"
     leases: []
     mutation_receipts:
@@ -1268,6 +1274,30 @@ extensions:
         mutation_id: "external-result:work-order-202609232231-BYSVV6-executor-5185c802c2659827fac134a4"
         next_revision: 12
         previous_revision: 11
+        schema_version: 1
+        task_id: "202609232231-BYSVV6"
+      external-result:work-order-202609232231-BYSVV6-executor-62aa8cc744f766affc0eab89:
+        aggregate_digest: "sha256:9f4c357b03a0a073def94ef40f1e417f43e3c0d360c61c7c5bc974b3645648f8"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-24T18:21:15.215Z"
+          cause_refs:
+            - "semantic-result:sha256:06167b94ac6c8181802452467e480220618207ab46cfade5ad2468d310e9c7bc"
+          entity: "work_item"
+          from: "REWORK_READY"
+          id: "event_7cf9d2e8d8955903621a61fc"
+          mutation_id: "external-result:work-order-202609232231-BYSVV6-executor-62aa8cc744f766affc0eab89"
+          plan_digest: "sha256:f2ee045128dd9d0d747a2ad56be4dfda3ce812c46b7376071567ca825b7221db"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609232231-BYSVV6"
+          task_revision: 14
+          to: "COMPLETED"
+          work_item_id: "compact-task-worktree"
+        mutation_id: "external-result:work-order-202609232231-BYSVV6-executor-62aa8cc744f766affc0eab89"
+        next_revision: 15
+        previous_revision: 14
         schema_version: 1
         task_id: "202609232231-BYSVV6"
     pending_effects: []
