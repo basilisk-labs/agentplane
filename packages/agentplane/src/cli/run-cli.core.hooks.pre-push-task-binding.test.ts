@@ -52,6 +52,7 @@ function runPrePush(
   root: string,
   baseSha: string,
   headSha: string,
+  remoteRef = "refs/heads/main",
 ): {
   failure: (Error & { stderr?: string | Buffer; stdout?: string | Buffer }) | null;
   stdout: string;
@@ -60,7 +61,7 @@ function runPrePush(
     const stdout = execFileSync("node", [PRE_PUSH_HOOK_SCRIPT], {
       cwd: root,
       encoding: "utf8",
-      input: `refs/heads/main ${headSha} refs/heads/main ${baseSha}\n`,
+      input: `${remoteRef} ${headSha} ${remoteRef} ${baseSha}\n`,
       stdio: ["pipe", "pipe", "pipe"],
     });
     return { failure: null, stdout };
@@ -190,6 +191,41 @@ describe("pre-push task binding audit", () => {
     });
     expect(existsSync(taskPath)).toBe(false);
     expectTaskBindingAcceptedBeforeBoundedHook(runPrePush(root, baseSha, head(root)));
+  });
+
+  it("does not re-audit merged main commits when pushing a task branch", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    await writeDefaultConfig(root);
+    await writeFastHookPackage(root);
+    await commitAll(root, "chore: base");
+    const baseSha = head(root);
+    const taskRef = "refs/heads/task/202601010101-ABCDEF/example";
+
+    execFileSync("git", ["checkout", "-b", taskRef.slice("refs/heads/".length)], { cwd: root });
+    const taskPath = path.join(root, ".agentplane", "tasks", "202601010101-ABCDEF");
+    await mkdir(taskPath, { recursive: true });
+    await writeFile(path.join(taskPath, "README.md"), "task\n", "utf8");
+    await mkdir(path.join(root, "src"), { recursive: true });
+    await writeFile(path.join(root, "src", "app.ts"), "export const app = 1;\n", "utf8");
+    await commitAll(root, "✨ ABCDEF code: add app");
+
+    execFileSync("git", ["checkout", "main"], { cwd: root });
+    await mkdir(path.join(root, "src"), { recursive: true });
+    await writeFile(path.join(root, "src", "base.ts"), "export const base = 1;\n", "utf8");
+    await commitAll(root, "✨ code: already merged on main");
+    execFileSync("git", ["update-ref", "refs/remotes/origin/main", head(root)], { cwd: root });
+    execFileSync("git", ["checkout", taskRef.slice("refs/heads/".length)], { cwd: root });
+    execFileSync("git", ["merge", "--no-ff", "main", "-m", "🔀 ABCDEF code: sync base"], {
+      cwd: root,
+    });
+
+    expectTaskBindingAcceptedBeforeBoundedHook(runPrePush(root, baseSha, head(root), taskRef));
+    await writeFile(path.join(root, "src", "unbound.ts"), "export const unbound = 1;\n", "utf8");
+    await commitAll(root, "✨ code: unbound branch change");
+    expect(String(runPrePush(root, baseSha, head(root), taskRef).failure?.stderr ?? "")).toContain(
+      "pre-push blocked: mutating commits require a valid task id",
+    );
   });
 
   it("passes pre-upgrade historical commits through task binding before the bounded-hook gate", async () => {
