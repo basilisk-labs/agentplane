@@ -1,0 +1,57 @@
+{
+  "checks": [
+    {
+      "check_ids": [],
+      "command": "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/kernel-final-validation.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts",
+      "duration_ms": 15771,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:173a8528197d53daf577c9c8eb68aa0e376df785cbdccd56d75348c09117de58",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/.codex/worktrees/pre-0712-clean/agentplane/.agentplane/worktrees/202609242035-WTM9M7-bind-canonical-final-verification-to-the-observe\n\n\n Test Files  2 passed (2)\n      Tests  35 passed (35)\n   Start at  23:40:06\n   Duration  13.81s (transform 8.75s, setup 139ms, import 10.31s, tests 8.57s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [],
+      "command": "bun run typecheck",
+      "duration_ms": 492,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:173a8528197d53daf577c9c8eb68aa0e376df785cbdccd56d75348c09117de58",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [],
+      "command": "bun run ci:local:fast",
+      "duration_ms": 737890,
+      "exit_code": 1,
+      "runtime": {
+        "environment_digest": "sha256:173a8528197d53daf577c9c8eb68aa0e376df785cbdccd56d75348c09117de58",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "ci:local:fast",
+      "stderr_tail": "t.ts:572:30\n    570|     );\n    571|     if (scenario === \"failed-check\")\n    572|       await expect(invocation).resolves.toMatchObject({\n       |                              ^\n    573|         stop: { kind: \"human_required\", reason: \"canonical_final_check…\n    574|       });\n\nCaused by: TypeError: Cannot read properties of undefined (reading 'workflow_mode')\n ❯ repositoryMode packages/agentplane/src/runtime/task-execution-context/resolve.ts:65:21\n ❯ routeSelection packages/agentplane/src/runtime/task-execution-context/resolve.ts:89:27\n ❯ resolveTaskExecutionContext packages/agentplane/src/runtime/task-execution-context/resolve.ts:283:23\n ❯ resolveImplementationVerificationTask packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts:309:27\n ❯ runKernelFinalValidation packages/agentplane/src/commands/task/kernel-final-validation.ts:191:30\n ❯ packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts:572:7\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯\n\nnode:internal/errors:985\n  const err = new Error(message);\n              ^\n\nError: Command failed: bunx vitest run --exclude **/cli-smoke.test.ts --exclude **/run-cli*.test.ts --exclude packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts --exclude packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts --pool=forks --maxWorkers 6 --testTimeout 60000 --hookTimeout 60000\n    at genericNodeError (node:internal/errors:985:15)\n    at wrappedFn (node:internal/errors:539:14)\n    at checkExecSyncError (node:child_process:925:11)\n    at execFileSync (node:child_process:961:15)\n    at run (file:///Users/densmirnov/.codex/worktrees/pre-0712-clean/agentplane/.agentplane/worktrees/202609242035-WTM9M7-bind-canonical-final-verification-to-the-observe/scripts/checks/run-local-ci-group.mjs:4:32)\n    at Object.core (file:///Users/densmirnov/.codex/worktrees/pre-0712-clean/agentplane/.agentplane/worktrees/202609242035-WTM9M7-bind-canonical-final-verification-to-the-observe/scripts/checks/run-local-ci-group.mjs:29:5)\n    at file:///Users/densmirnov/.codex/worktrees/pre-0712-clean/agentplane/.agentplane/worktrees/202609242035-WTM9M7-bind-canonical-final-verification-to-the-observe/scripts/checks/run-local-ci-group.mjs:72:14\n    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)\n    at async node:internal/modules/esm/loader:643:26\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\n  status: 1,\n  signal: null,\n  output: [ null, null, null ],\n  pid: 92206,\n  stdout: null,\n  stderr: null\n}\n\nNode.js v24.18.0\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic --timeout-ms 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":false,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":67964},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":42098},{\"id\":\"core\",\"exit_code\":1,\"timed_out\":false,\"duration_ms\":499805},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":119817}]}\nfile:///Users/densmirnov/.codex/worktrees/pre-0712-clean/agentplane/.agentplane/worktrees/202609242035-WTM9M7-bind-canonical-final-verification-to-the-observe/scripts/checks/run-local-ci.mjs:525\n  if (!ok) throw new Error(\"Full verification group failed.\");\n                 ^\n\nError: Full verification group failed.\n    at runFullFastPath (file:///Users/densmirnov/.codex/worktrees/pre-0712-clean/agentplane/.agentplane/worktrees/202609242035-WTM9M7-bind-canonical-final-verification-to-the-observe/scripts/checks/run-local-ci.mjs:525:18)\n    at async file:///Users/densmirnov/.codex/worktrees/pre-0712-clean/agentplane/.agentplane/worktrees/202609242035-WTM9M7-bind-canonical-final-verification-to-the-observe/scripts/checks/run-local-ci.mjs:600:7\n\nNode.js v24.18.0\nerror: script \"ci:local:fast\" exited with code 1\n",
+      "stdout_tail": "ext_bytes=261 preview_text_bytes=261 elapsed_ms=1\nUpgrade source: explicit upgrade bundle\nUpgrade version: v0.7.12-beta.1\nUpgrade mode: apply\nUpgrade applied: 30 add, 2 update, 0 remove, 1 unchanged\nWorkflow artifacts refreshed: .agentplane/WORKFLOW.md, .agentplane/workflows/last-known-good.md\nUpgrade commit: 72b178d19288 ⬆️ upgrade: apply framework v0.7.12-beta.1\nUpgrade source: explicit upgrade bundle\nUpgrade version: v0.7.12-beta.1\nUpgrade mode: apply\nUpgrade applied: 0 add, 1 update, 0 remove, 0 unchanged\nUpgrade commit: 48d31c6fd419 ⬆️ upgrade: apply framework v0.7.12-beta.1\nℹ️ reindex prepared at /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-vitest-run-Nhv9yr/agentplane-context-fts5-kUtoKC/.agentplane/cache.sqlite\nℹ️ reindex_receipt strategy=full-rebuild reason=missing-index added=3 changed=0 removed=0 unchanged=0\nℹ️ rows=6 files=3\nℹ️ projection_metrics source_bytes=54 search_text_bytes=108 preview_text_bytes=108 elapsed_ms=25\n\n Test Files  1 failed | 679 passed (680)\n      Tests  3 failed | 5835 passed | 1 skipped (5839)\n   Start at  23:44:12\n   Duration  386.27s (transform 49.93s, setup 24.32s, import 304.55s, tests 1879.54s, environment 46ms)\n\n\n== cli (119817ms) ==\nCLI cold-start baseline OK using fixture local-basic (quickstart median=283.887ms (threshold=5000ms, p95=283.887ms); task_list median=327.59ms (threshold=10000ms, p95=327.59ms); task_search median=289.107ms (threshold=6000ms, p95=289.107ms); task_next median=292.519ms (threshold=8000ms, p95=292.519ms); preflight_quick median=337.429ms (threshold=6000ms, p95=337.429ms))\nVitest suite critical-cli: chunk 1/5 (2 files): packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts, packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts\nVitest suite critical-cli: chunk 1/5 passed in 19617ms (Test Files  2 passed (2); Tests  3 passed (3); Duration  19.31s (transform 17.33s, setup 157ms, import 13.17s, tests 17.45s, environment 0ms))\nVitest suite critical-cli: chunk 2/5 (2 files): packages/agentplane/src/cli/run-cli.critical.git-edge.test.ts, packages/agentplane/src/cli/run-cli.critical.protected-paths.test.ts\nVitest suite critical-cli: chunk 2/5 passed in 9030ms (Test Files  2 passed (2); Tests  5 passed (5); Duration  8.67s (transform 8.93s, setup 101ms, import 10.60s, tests 5.99s, environment 0ms))\nVitest suite critical-cli: chunk 3/5 (2 files): packages/agentplane/src/cli/run-cli.critical.scope-leak.test.ts, packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts\nVitest suite critical-cli: chunk 3/5 passed in 11153ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  10.69s (transform 10.30s, setup 153ms, import 11.92s, tests 7.27s, environment 1ms))\nVitest suite critical-cli: chunk 4/5 (2 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts, packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 4/5 passed in 65312ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  64.83s (transform 19.40s, setup 122ms, import 14.22s, tests 58.13s, environment 0ms))\nVitest suite critical-cli: chunk 5/5 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 5/5 passed in 11903ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  11.48s (transform 4.85s, setup 48ms, import 5.45s, tests 5.88s, environment 0ms))\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":false,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":67964},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":42098},{\"id\":\"core\",\"exit_code\":1,\"timed_out\":false,\"duration_ms\":499805},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":119817}]}\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":737476,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":1,\"build_invocations\":1,\"ok\":false}\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": "Declared check failed: bun run ci:local:fast",
+  "schema_version": 1,
+  "status": "failed",
+  "task_id": "202609242035-WTM9M7"
+}

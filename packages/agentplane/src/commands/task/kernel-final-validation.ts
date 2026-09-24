@@ -1,9 +1,11 @@
 import { randomUUID } from "node:crypto";
+import path from "node:path";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
 import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { verificationChildEnv } from "../shared/pr-meta/verify-log.js";
 import {
+  bindDirectTaskVerificationChecks,
   renderDirectTaskVerificationDetails,
   runDirectTaskVerification,
 } from "./direct-task-verification.js";
@@ -188,20 +190,26 @@ export async function runKernelFinalValidation(
   await writeKernelArtifact(directory, "final-validation-inputs.json", binding);
   const operationalTask = await command.taskBackend.getTask(taskId);
   if (!operationalTask) throw new Error("Canonical operational verification task is unavailable");
-  const verification = await resolveImplementationVerificationTask({
+  const nativeChecks = await runDirectTaskVerification({
     command,
-    checkout: command.resolvedProject.gitRoot,
-    task: operationalTask,
-    workflow: "branch_pr",
-  });
-  const checks = await runDirectTaskVerification({
-    command,
-    task: canonicalFinalValidationTask(verification.task),
+    task: canonicalFinalValidationTask(operationalTask),
     task_id: taskId,
     cwd: command.resolvedProject.gitRoot,
     additional_commands: commands.map((check) => ({ command: check })),
     allow_empty: true,
   });
+  if (nativeChecks.status !== "passed") {
+    const evidence = { binding, checks: nativeChecks };
+    await writeKernelArtifact(directory, "final-validation.json", evidence);
+    return {
+      stop: {
+        kind: "human_required",
+        reason: "canonical_final_checks_failed",
+        summary: nativeChecks.reason,
+        evidence: directory,
+      },
+    };
+  }
   const current = await runtime.adapter.read(taskId);
   const observed = await runtime.observe();
   if (
@@ -213,17 +221,19 @@ export async function runKernelFinalValidation(
     k.kernelDigest(verificationChildEnv()) !== environmentDigest
   )
     throw new Error("Canonical final validation inputs changed during checks");
+  const verification = await resolveImplementationVerificationTask({
+    command,
+    checkout: command.resolvedProject.gitRoot,
+    task: operationalTask,
+    workflow: "branch_pr",
+  });
+  const checks = bindDirectTaskVerificationChecks(
+    nativeChecks,
+    verification.task,
+    path.join(directory, "final-validation.json"),
+  );
   const evidence = { binding, checks };
   await writeKernelArtifact(directory, "final-validation.json", evidence);
-  if (checks.status !== "passed")
-    return {
-      stop: {
-        kind: "human_required",
-        reason: "canonical_final_checks_failed",
-        summary: checks.reason,
-        evidence: directory,
-      },
-    };
   const validation: k.ValidationRecord = {
     status: "PASSED",
     identity: {
