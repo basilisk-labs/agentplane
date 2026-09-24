@@ -66,7 +66,7 @@ function isUserApprovedGrant(grant: ExecutionGrant): boolean {
   );
 }
 
-export async function activeExecutionGrantForTask(opts: {
+async function activeExecutionGrantForTask(opts: {
   command: CommandContext;
   task: Awaited<ReturnType<typeof loadTaskFromContext>>;
 }): Promise<ExecutionGrant | null> {

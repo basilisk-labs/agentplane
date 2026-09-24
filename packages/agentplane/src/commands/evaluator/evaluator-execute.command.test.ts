@@ -57,7 +57,7 @@ async function commitTarget(root: string): Promise<void> {
     "export const reviewed = true;\n",
     "utf8",
   );
-  await execFileAsync("git", ["add", "--", "src/evaluated.ts"], { cwd: root });
+  await execFileAsync("git", ["add", "--", "."], { cwd: root });
   await execFileAsync("git", ["commit", "-m", "feat: evaluator execute fixture"], { cwd: root });
 }
 
@@ -104,6 +104,11 @@ async function writeVerificationRecord(root: string, taskId: string): Promise<st
   }
   if (code !== 0) throw new Error(`failed to create verification record: ${io.stderr}`);
 
+  await execFileAsync("git", ["add", "--", ".agentplane"], { cwd: root });
+  await execFileAsync("git", ["commit", "-m", "test: record evaluator verification fixture"], {
+    cwd: root,
+  });
+
   const verificationDir = path.join(root, ".agentplane", "tasks", taskId, "verification");
   const entries = await readdir(verificationDir);
   const files = entries.filter((file) => file.endsWith(".json"));
@@ -112,7 +117,7 @@ async function writeVerificationRecord(root: string, taskId: string): Promise<st
 }
 
 async function installFakeCodex(root: string): Promise<string> {
-  const bin = path.join(root, "fake-bin");
+  const bin = path.join(root, ".agentplane", "cache", "fake-bin");
   await mkdir(bin, { recursive: true });
   const source = [
     "#!/usr/bin/env node",
@@ -189,7 +194,7 @@ describe("evaluator execute supervisor episode", () => {
 
     const execution = await runWithFakeCodex(root, taskId, fakeBin);
 
-    expect(execution.code).toBe(0);
+    expect(execution.code, execution.stderr).toBe(0);
     expect(execution.stderr).toBe("");
     const payload = JSON.parse(execution.stdout) as {
       verdict: string;
@@ -292,7 +297,7 @@ describe("evaluator execute supervisor episode", () => {
     });
   });
 
-  it("applies a completed EVALUATOR result before preserving its terminal budget stop", async () => {
+  it("applies a completed EVALUATOR result while keeping token usage informational", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const taskId = "202607280000-EE11";
@@ -336,9 +341,9 @@ describe("evaluator execute supervisor episode", () => {
     expect(JSON.parse(execution.stdout)).toMatchObject({
       verdict: "pass",
       supervisor_episode: {
-        status: "stopped",
-        cursor: { phase: "stopped" },
-        stop: { reason: "budget_exhausted", exhausted_dimensions: ["input_tokens"] },
+        status: "running",
+        cursor: { phase: "ready" },
+        stop: null,
       },
     });
     const stored = await readTask({ cwd: root, rootOverride: root, taskId });
@@ -348,9 +353,9 @@ describe("evaluator execute supervisor episode", () => {
     });
     const persisted = validateSupervisorExecutionEpisodeJournal(await store.read());
     expect(persisted).toMatchObject({
-      status: "stopped",
-      cursor: { phase: "stopped" },
-      stop: { reason: "budget_exhausted" },
+      status: "running",
+      cursor: { phase: "ready" },
+      stop: null,
       operations: [{ status: "completed" }],
     });
     expect(persisted.operations.at(-1)?.postcondition_fingerprint_digest).toMatch(
@@ -716,8 +721,7 @@ describe("evaluator execute supervisor episode", () => {
       }),
     );
     const exhaustedReplacement = await runWithFakeCodex(root, taskId, fakeBin, ["--replacement"]);
-    expect(exhaustedReplacement.code).toBe(2);
-    expect(exhaustedReplacement.stderr).toContain("requires a terminal operation_failed journal");
+    expect(exhaustedReplacement.code, exhaustedReplacement.stderr).toBe(0);
   });
 
   it("allows one replacement after external waiting following a real provider failure", async () => {
@@ -767,7 +771,7 @@ describe("evaluator execute supervisor episode", () => {
     expect(recorded.usage.wall_time_ms).toBeGreaterThanOrEqual(recordedFailure.usage.wall_time_ms);
   });
 
-  it("does not launch a replacement when a real provider failure exhausts observed wall time", async () => {
+  it("allows failure replacement regardless of observed wall time", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const taskId = "202607280000-EE10";
@@ -818,9 +822,8 @@ describe("evaluator execute supervisor episode", () => {
 
       const replacement = await runWithFakeCodex(root, taskId, fakeBin, ["--replacement"]);
 
-      expect(replacement.code).toBe(2);
-      expect(replacement.stderr).toContain("requires a terminal operation_failed journal");
-      expect(await readFile(invocationLog, "utf8")).toBe("provider-started\n");
+      expect(replacement.code, replacement.stderr).toBe(0);
+      expect(await readFile(invocationLog, "utf8")).toBe("provider-started\nprovider-started\n");
     } finally {
       if (previousLog === undefined) delete process.env.AGENTPLANE_FAKE_CODEX_INVOCATIONS;
       else process.env.AGENTPLANE_FAKE_CODEX_INVOCATIONS = previousLog;
@@ -976,10 +979,7 @@ describe("evaluator execute supervisor episode", () => {
     });
     const executions = await Promise.all([winner, loser]);
 
-    expect(
-      executions.map((execution) => execution.code).toSorted(),
-      JSON.stringify(executions),
-    ).toEqual([0, 2]);
+    expect(executions.map((execution) => execution.code).toSorted()).toEqual([0, 2]);
     const invocationContents = await readFile(invocationLog, "utf8");
     const invocationLines = invocationContents.trim().split("\n");
     expect(invocationLines).toEqual(["provider-started"]);

@@ -358,6 +358,7 @@ function validateReviewedCandidate({
     "202609130858-RMHWQ5",
     "202609162254-YE48GC",
     "202609230942-E6D0V4",
+    "202609241429-4WN4VX",
   ];
   const expectedSourceTasks = [
     "202607221846-4VB97J",
@@ -410,6 +411,7 @@ function validateReviewedCandidate({
     "202609162254-YE48GC",
     "202609211330-5A54M1",
     "202609230942-E6D0V4",
+    "202609241429-4WN4VX",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -3215,20 +3217,23 @@ function validateReviewedCandidate({
   };
   const activeExpectedAdditionSources = expectedAdditionSources.filter(
     (source) =>
+      source.command !== "task supervisor budget-epoch" &&
       !(
         source.kind === "option" &&
         ((source.command === "task create" && source.name === "blueprint-request") ||
           (source.command === "task new" && source.name === "canonical"))
       ),
   );
-  const activeExpectedAddedCommandDescriptors = expectedAddedCommandDescriptors.map((command) =>
-    command.id.join(" ") === "task create"
-      ? {
-          ...command,
-          options: command.options.filter((option) => option.name !== "blueprint-request"),
-        }
-      : command,
-  );
+  const activeExpectedAddedCommandDescriptors = expectedAddedCommandDescriptors
+    .filter((command) => command.id.join(" ") !== "task supervisor budget-epoch")
+    .map((command) =>
+      command.id.join(" ") === "task create"
+        ? {
+            ...command,
+            options: command.options.filter((option) => option.name !== "blueprint-request"),
+          }
+        : command,
+    );
   assert(
     cliDelta?.classification === "intentional_breaking_retirement",
     "CLI candidate delta must record the reviewed Blueprint command retirement",
@@ -3285,7 +3290,6 @@ function validateReviewedCandidate({
         "task run resume-effect",
         "task run tool",
         "task scope extend",
-        "task supervisor budget-epoch",
         "workflow migrate",
       ]),
     "unexpected CLI addition",
@@ -3297,6 +3301,7 @@ function validateReviewedCandidate({
   );
   const activeExpectedAddedOptions = expectedAddedOptions.filter(
     (option) =>
+      option.command !== "task supervisor budget-epoch" &&
       !(option.command === "task create" && option.name === "blueprint-request") &&
       !(option.command === "task new" && option.name === "canonical"),
   );

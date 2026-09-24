@@ -1,6 +1,9 @@
 import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 import type { TaskData } from "../../backends/task-backend/shared/types.js";
 import type { taskKernel as k } from "@agentplaneorg/core/tasks";
+import type { NativeAuthorityContext } from "../../ports/kernel-authority.js";
+import { kernelApprovalReference } from "../../runner/usecases/kernel-authority.js";
+import type { CommandContext } from "../shared/task-backend.js";
 
 function setIsSubset(child: readonly string[], parent: readonly string[]): boolean {
   const allowed = new Set(parent);
@@ -99,6 +102,54 @@ export function executionContractCeiling(
       requirements: contract.declaration.requirements_uncertainty,
       implementation: contract.declaration.implementation_uncertainty,
       reversibility: contract.declaration.reversibility,
+    },
+  };
+}
+
+export function kernelPlanApprovalOperatorAction(
+  command: CommandContext,
+  taskId: string,
+  context: NativeAuthorityContext,
+  plan: k.PlanRecord,
+) {
+  const authorityReference = kernelApprovalReference(context, plan);
+  if (command.config.authority.approval_receipts.trusted_issuers.length === 0) {
+    return {
+      kind: "approve_plan" as const,
+      required_role: "USER" as const,
+      cwd: command.resolvedProject.gitRoot,
+      argv: ["agentplane", "task", "plan", "approve", taskId, "--by", "USER"],
+      authority_reference: authorityReference,
+      transport: "manual_operator" as const,
+    };
+  }
+  return {
+    kind: "approve_plan" as const,
+    required_role: "USER" as const,
+    cwd: command.resolvedProject.gitRoot,
+    argv: [
+      "agentplane",
+      "task",
+      "plan",
+      "approve",
+      taskId,
+      "--approval-receipt",
+      "<base64url-receipt>",
+    ],
+    authority_reference: authorityReference,
+    transport: "signed_user_receipt" as const,
+    approval_receipt: {
+      schema_version: 1 as const,
+      format: "base64url-json+ed25519" as const,
+      request: {
+        approval_type: "plan_approval" as const,
+        task_id: taskId,
+        authority_reference: authorityReference,
+        state_fingerprint: context.repository_fingerprint,
+        operation_id: null,
+        operation_digest: null,
+        state_scope_digest: null,
+      },
     },
   };
 }

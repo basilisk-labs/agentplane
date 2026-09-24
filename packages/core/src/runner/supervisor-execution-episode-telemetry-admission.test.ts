@@ -10,7 +10,7 @@ import {
 const digest = `sha256:${"a".repeat(64)}`;
 
 describe("supervisor telemetry admission", () => {
-  it("blocks another paid dispatch after unallocatable usage without provider identity", () => {
+  it("keeps unallocatable usage informational for the next dispatch", () => {
     const journal = createSupervisorExecutionEpisodeJournal({
       task_id: "T-UNKNOWN-USAGE",
       task_revision: 1,
@@ -58,17 +58,13 @@ describe("supervisor telemetry admission", () => {
       precondition_fingerprint_digest: digest,
     });
 
-    expect(next).toMatchObject({
-      status: "stopped",
-      stop: {
-        reason: "budget_exhausted",
-        exhausted_dimensions: [
-          "input_tokens_telemetry",
-          "output_tokens_telemetry",
-          "total_tokens_telemetry",
-        ],
-      },
+    expect(next.status).toBe("started");
+    expect(next.journal.operations).toHaveLength(2);
+    expect(next.journal.usage).toMatchObject({
+      input_tokens: 0,
+      output_tokens: 0,
+      total_tokens: 0,
+      token_observed_agent_runs: 0,
     });
-    expect(next.journal.operations).toHaveLength(1);
   });
 });

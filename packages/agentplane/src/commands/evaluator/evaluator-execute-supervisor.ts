@@ -277,7 +277,7 @@ function hasCompletedEvaluatorOutcomeForApplication(
   if (journal.status === "running" && journal.cursor.phase === "completed") return true;
   return (
     journal.status === "stopped" &&
-    (journal.stop?.reason === "budget_exhausted" || journal.stop?.reason === "human_review") &&
+    journal.stop?.reason === "human_review" &&
     journal.cursor.phase === "stopped" &&
     journal.stop.operation_key === last.operation_key
   );
@@ -567,7 +567,7 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
       throw new CliError({
         code: "E_RUNTIME",
         message:
-          "Evaluator outcome was persisted, but the supervisor budget stopped before its task-state application.",
+          "Evaluator outcome was persisted, but the supervisor journal is not eligible for task-state application.",
       });
     }
     if (!outcome) throw new Error("Evaluator execution did not produce an outcome.");

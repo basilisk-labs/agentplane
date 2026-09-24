@@ -141,14 +141,6 @@ export const loadTaskAuthorityGrantSpec = (session: TaskRouteLifecycleSession) =
   import("../../../commands/task/authority-grant.command.js").then((m) =>
     m.makeRunTaskAuthorityGrantHandler(getTaskAuthorityRouteContexts(session)),
   );
-export const loadTaskSupervisorBudgetEpochSpec = (session: RunnerExecutionSession) =>
-  import("../../../commands/task/supervisor-budget-epoch.command.js").then((m) =>
-    m.makeRunTaskSupervisorBudgetEpochHandler(async (command) => {
-      await session.require("git.mutate", command);
-      await session.require("approvals", command);
-      return await session.require("route.local", command);
-    }),
-  );
 export const loadTaskListSpec = (session: TaskReadSession) =>
   import("../../../commands/task/list.run.js").then((m) =>
     m.makeRunTaskListHandler((command) => session.require("task.read", command)),
