@@ -24,6 +24,7 @@ import { requiredWorkItemRoute } from "./workflow-step-factory-branch.js";
 export { cliOperationStep } from "./workflow-step-authority.js";
 export {
   foreignTaskReadmeReplicaRepairStep,
+  readyWorkItemWorktreeStep,
   requiredWorkItemRoute,
   taskWorktreeBlocker,
   verifiedIncludedClosureCandidate,

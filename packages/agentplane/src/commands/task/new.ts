@@ -7,7 +7,7 @@ import {
   taskExecutionBaseFromExtensions,
   withTaskReadmeTransaction,
 } from "@agentplaneorg/core/tasks";
-import type { TaskExecutionRouteRequest } from "@agentplaneorg/core/tasks";
+import type { TaskExecutionContract, TaskExecutionRouteRequest } from "@agentplaneorg/core/tasks";
 import { gitCurrentBranch, gitRevParse } from "@agentplaneorg/core/git";
 
 import { mapBackendError } from "../../cli/error-map.js";
@@ -63,6 +63,7 @@ export type TaskNewParsed = {
   mutationScope?: TaskData["mutation_scope"];
   riskFlags?: NonNullable<TaskData["risk_flags"]>;
   route?: TaskExecutionRouteRequest;
+  executionContract?: TaskExecutionContract;
   extensions?: TaskData["extensions"];
   dependsOn: string[];
   verify: string[];
@@ -111,6 +112,35 @@ function validateEnumArray<T extends string>(flag: string, values: T[], allowed:
   return out;
 }
 
+const CONTROLLED_OPS_RISK_FLAGS = new Set(["credentials", "deploy", "security", "external_system"]);
+
+function assertCompleteControlledOpsIntent(
+  task: Pick<TaskNewParsed, "tags" | "taskKind" | "mutationScope" | "riskFlags">,
+): void {
+  const declaresOps =
+    task.tags.some((tag) => tag.toLowerCase() === "ops") ||
+    task.taskKind === "ops" ||
+    task.mutationScope === "ops";
+  if (!declaresOps) return;
+
+  const missing: string[] = [];
+  if (task.taskKind !== "ops") missing.push("--task-kind ops");
+  if (task.mutationScope !== "ops") missing.push("--mutation-scope ops");
+  if (!(task.riskFlags ?? []).some((risk) => CONTROLLED_OPS_RISK_FLAGS.has(risk))) {
+    missing.push("--risk <credentials|deploy|security|external_system>");
+  }
+  if (missing.length === 0) return;
+
+  throw new CliError({
+    exitCode: 2,
+    code: "E_USAGE",
+    message:
+      "Incomplete controlled ops intent. Tasks tagged or declared as ops must provide " +
+      "--task-kind ops, --mutation-scope ops, and at least one controlled ops --risk. " +
+      `Missing or incompatible: ${missing.join(", ")}.`,
+  });
+}
+
 function sanitizeTaskNewParsed(p: TaskNewParsed): TaskNewParsed {
   const title = p.title.trim();
   if (!title)
@@ -153,6 +183,8 @@ function sanitizeTaskNewParsed(p: TaskNewParsed): TaskNewParsed {
   );
   const riskFlags = validateEnumArray("risk", p.riskFlags ?? [], RISK_FLAG_VALUES);
   const route = p.route ?? "auto";
+
+  assertCompleteControlledOpsIntent({ tags, taskKind, mutationScope, riskFlags });
 
   return {
     ...p,
@@ -321,11 +353,13 @@ export async function runTaskNewParsed(opts: {
         mutation_scope: p.mutationScope,
         risk_flags: p.riskFlags,
       };
-      const executionContract = resolveTaskExecutionContract({
-        config: ctx.config,
-        requestedMode: p.route,
-        task: routeTask,
-      });
+      const executionContract =
+        p.executionContract ??
+        resolveTaskExecutionContract({
+          config: ctx.config,
+          requestedMode: p.route,
+          task: routeTask,
+        });
       const draft = createTaskGraphDraft({
         context: intakeContext,
         clarification,
@@ -342,11 +376,20 @@ export async function runTaskNewParsed(opts: {
             ...(p.taskKind ? { task_kind: p.taskKind } : {}),
             ...(p.mutationScope ? { mutation_scope: p.mutationScope } : {}),
             ...(p.riskFlags && p.riskFlags.length > 0 ? { risk_flags: p.riskFlags } : {}),
-            execution_route: resolveTaskExecutionRoute({
-              config: ctx.config,
-              requestedMode: p.route,
-              task: routeTask,
-            }),
+            execution_route: p.executionContract
+              ? {
+                  schema_version: 1,
+                  requested_mode: p.route ?? "auto",
+                  selected_mode: p.executionContract.selected_mode,
+                  repository_mode: p.executionContract.repository_mode,
+                  reason_codes: [...p.executionContract.reason_codes],
+                  frozen: true,
+                }
+              : resolveTaskExecutionRoute({
+                  config: ctx.config,
+                  requestedMode: p.route,
+                  task: routeTask,
+                }),
             execution_contract: executionContract,
             ...(extensions ? { extensions } : {}),
             depends_on: p.dependsOn,

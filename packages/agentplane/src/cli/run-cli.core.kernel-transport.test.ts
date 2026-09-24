@@ -33,27 +33,29 @@ import { observeKernelTestRunner } from "../commands/task/kernel-run.testkit.js"
 import { readKernelOperationalProjection } from "../commands/task/kernel-operational-projection.js";
 
 async function createTask(root: string): Promise<string> {
-  const io = captureStdIO();
-  try {
-    const code = await runCli([
-      "task",
-      "new",
-      "--title",
-      "Canonical creation",
-      "--description",
-      "Persist immutable intent with the canonical aggregate",
-      "--owner",
-      "CODER",
-      "--tag",
-      "code",
-      "--root",
-      root,
-    ]);
-    expect(code, io.stderr).toBe(0);
-    return io.stdout.trim();
-  } finally {
-    io.restore();
-  }
+  const created = await runJson(root, [
+    "task",
+    "create",
+    "Canonical creation",
+    "--description",
+    "Persist immutable intent with the canonical aggregate",
+    "--task-kind",
+    "code",
+    "--mutation-scope",
+    "code",
+    "--scope-root",
+    "result.txt",
+    "--scope-root",
+    "more",
+    "--repository-effect",
+    "source_code",
+    "--capability",
+    "repository_write",
+    "--verify",
+    "node --version",
+    "--json",
+  ]);
+  return String(created.task_id);
 }
 
 async function refused(root: string, argv: string[], message: string) {
@@ -539,34 +541,6 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
         "more/extra.txt",
         "docs/user/cli-reference.generated.mdx",
       ];
-      expect(
-        await runCliSilent([
-          "task",
-          "plan",
-          "set",
-          taskId,
-          "--text",
-          JSON.stringify(refined),
-          "--scope-expansion-approved-by",
-          "USER",
-          "--root",
-          root,
-        ]),
-      ).toBe(0);
-      const topLevelExpanded = await runtime.adapter.read(taskId);
-      if (topLevelExpanded.kind !== "canonical") throw new Error("Top-level amendment missing");
-      const topLevelAuthority = topLevelExpanded.record.aggregate.authority_lineage?.at(-1);
-      expect(topLevelAuthority).toMatchObject({
-        approval_mode: null,
-        observation: {
-          kind: "plan_amendment",
-          added_scope_roots: ["docs/user/cli-reference.generated.mdx"],
-        },
-      });
-      expect(topLevelAuthority?.authority.scope_roots).toContain(
-        "docs/user/cli-reference.generated.mdx",
-      );
-      refined.work_items[1]!.execution_requirements.scope_roots = ["."];
       await refused(
         root,
         [
@@ -579,9 +553,9 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
           "--scope-expansion-approved-by",
           "USER",
         ],
-        "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+        "Canonical Plan exceeds the trusted execution contract: scope_roots",
       );
-      expect(await runtime.adapter.read(taskId)).toEqual(topLevelExpanded);
+      expect(await runtime.adapter.read(taskId)).toEqual(expanded);
     },
   );
   it.each([
@@ -688,7 +662,13 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
           const stopped = await runJson(root, ["task", "run", taskId, "--json"]);
           expect(stopped.action).toMatchObject({
             kind: "human_required",
-            reason: "canonical_transition_no_progress",
+            reason: "internal_anomaly",
+            diagnostic: {
+              code: "orchestrator_tight_loop",
+              repetition_count: 4,
+              exhausted_recovery_strategies: ["route_refresh", "repository_checkpoint"],
+              resume_hint: "Inspect the route and repository checkpoint, then rerun task advance.",
+            },
           });
           expect(execute).toHaveBeenCalledTimes(1);
         } finally {

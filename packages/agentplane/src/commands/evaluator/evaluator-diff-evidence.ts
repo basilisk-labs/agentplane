@@ -47,9 +47,8 @@ export async function resolveEvaluatorDiffBase(opts: {
       !upstreamMergeBase ||
       upstreamMergeBase === localMergeBase ||
       !(await gitIsAncestor(opts.gitRoot, localMergeBase, upstreamMergeBase))
-    ) {
+    )
       return localMergeBase;
-    }
 
     // A squash-merged base update can leave the checked-out local base on a
     // content-equivalent sibling commit. Prefer its newer tracking ref so the

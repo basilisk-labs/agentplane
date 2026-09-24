@@ -98,12 +98,14 @@ reads `exchange.work_order_ref`, performs only the PLANNER objective, writes a t
 agentplane task advance <task-id> --result <exchange-directory>/result.json --agent-json
 ```
 
-Agentplane persists the semantic plan and emits a typed approval request if human approval is
-required. A host such as Codex may return a `host_user_decision` event that is bound to the task,
-plan digest, and route fingerprint. Agentplane compiles the approved plan and declared execution
-scope into a task-local execution grant. The supervisor then continues deterministic lifecycle,
-workspace, PR, verification, integration, and closure operations without requesting approval for
-each step covered by that grant.
+Agentplane persists the semantic plan and compares it with the trusted execution contract captured
+at task intake. When `agents.approvals.require_plan` is false, an exact repository-only subset with
+bounded risk may receive `repository_policy` approval. That path records SYSTEM provenance; it does
+not impersonate a user. Other plans emit a typed approval request. A host such as Codex may return a
+`host_user_decision` event that is bound to the task, plan digest, and route fingerprint. Agentplane
+compiles the approved plan and declared execution scope into a task-local execution grant. The
+supervisor then continues deterministic lifecycle, workspace, PR, verification, integration, and
+closure operations without requesting approval for each step covered by that grant.
 
 After approval, use `task run` for an eligible configured managed-runner episode; an external host
 may instead keep returning typed `task advance` results through the same supervisor contract.
@@ -124,10 +126,18 @@ A newly created task contains a non-approvable placeholder, not synthetic semant
 `semantic_input_required` until that result has been supplied through the external protocol.
 Agentplane persists the returned plan and then stops for human approval when policy requires it.
 
-Only a user-originated host event, a valid signed user receipt, or an explicit operator command may
-satisfy an approval boundary. An agent must not manufacture the event, approve its own plan, or
-infer approval from unrelated prose. Editing the plan or execution scope invalidates the execution
-grant and returns the task to approval.
+An exact contract-bounded repository Plan may be approved by repository policy when explicit plan
+approval is disabled. Every remaining approval boundary requires a user-originated host event, a
+valid signed user receipt, or an explicit operator command. An agent must not manufacture any of
+these decisions, approve its own plan, or infer approval from unrelated prose. Editing the plan or
+execution scope invalidates the execution grant and returns the task to approval.
+
+The four approval routes have different provenance:
+
+- `repository_policy` is controller-owned automation with SYSTEM provenance and no external effects;
+- `host_user_decision` is an authenticated host observation with USER provenance;
+- `signed_user_receipt` is a verified trusted-issuer receipt with USER provenance;
+- manual `task plan approve --by USER` is an operator/bootstrap compatibility route.
 
 ### Host approval event
 

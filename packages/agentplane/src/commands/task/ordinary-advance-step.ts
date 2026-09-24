@@ -20,7 +20,7 @@ import {
 } from "./agent-action-packet.js";
 import type { TaskAdvanceParsed } from "./advance.spec.js";
 import { executeAdmittedBranchWorkflowOperation } from "./branch-task-supervisor-operations.js";
-import { activeExecutionGrantForTask, resolveConfiguredAuthority } from "./configured-authority.js";
+import { resolveConfiguredAuthority } from "./configured-authority.js";
 import { runDirectTaskFinalizationOperation } from "./direct-task-finalization.js";
 import {
   acceptExternalAgentResult,
@@ -109,37 +109,18 @@ export async function advanceOrdinaryRoute(opts: {
           }),
       })) ?? routed;
   }
-  const authorityTask = await loadTaskFromContext({
-    ctx: command,
-    taskId: parsed.taskId,
-    preferBranchSnapshot: current.workflowMode === "branch_pr",
-  });
-  const activeExecutionGrant = await activeExecutionGrantForTask({ command, task: authorityTask });
-  if (!parsed.replacement && activeExecutionGrant) {
-    const continuation = await preparePersistedSupervisorReplacementAfterFailure({
-      git_root: command.resolvedProject.gitRoot,
-      task_id: parsed.taskId,
-      state_fingerprint_digest: current.workflowStep.preconditionFingerprint.digest,
-      allow_agent_run_budget_extension: true,
-      budget_only: true,
-    });
-    if (continuation === "budget_extended" || continuation === "telemetry_recovered") {
-      current = await decide(true);
-    }
-  }
   let replacementPrepared = false;
   if (parsed.replacement) {
     const replacement = await preparePersistedSupervisorReplacementAfterFailure({
       git_root: command.resolvedProject.gitRoot,
       task_id: parsed.taskId,
       state_fingerprint_digest: current.workflowStep.preconditionFingerprint.digest,
-      allow_agent_run_budget_extension: activeExecutionGrant !== null,
     });
     if (replacement === "not_failed") {
       throw new CliError({
         code: "E_USAGE",
         message:
-          "task advance --replacement requires a terminal failed operation or a renewable budget stop authorized by the active execution grant.",
+          "task advance --replacement requires a terminal failed operation or a diagnosed internal anomaly.",
       });
     }
     replacementPrepared = true;
@@ -237,7 +218,7 @@ export async function advanceOrdinaryRoute(opts: {
     if (!execution.executable || execution.stop_reason !== null) {
       const journalReason = persisted.journal.stop?.reason;
       const reason =
-        journalReason === "effect_in_doubt" || journalReason === "budget_exhausted"
+        journalReason === "effect_in_doubt"
           ? journalReason
           : execution.stop_reason?.includes("already completed")
             ? "completed_operation"

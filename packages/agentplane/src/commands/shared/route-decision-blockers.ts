@@ -22,11 +22,11 @@ import {
 } from "./task-worktree-cleanliness.js";
 
 import { hasCanonicalPreMergeEvidence } from "./canonical-pre-merge-evidence.js";
-
 export { hasCanonicalPreMergeEvidence } from "./canonical-pre-merge-evidence.js";
 import {
   qualityReviewHasRetiredExchange,
   qualityReviewIsFreshForHead,
+  qualityReviewReworkIsFreshForHead,
 } from "./quality-review-retirement.js";
 import {
   hasAcceptedVerificationForCurrentImplementation,
@@ -307,7 +307,6 @@ export async function deriveBlockers(opts: {
     });
   }
   if (opts.workflowMode === "branch_pr") {
-    const canonicalPreMergeEvidence = hasCanonicalPreMergeEvidence(opts.task);
     let verificationReason: string | null = null;
     let verificationRecoveryHint: string | null = null;
     const finalizedDoneTask =
@@ -317,9 +316,8 @@ export async function deriveBlockers(opts: {
     addVerificationRequiredBlocker({
       blockers,
       task: opts.task,
-      acceptedVerificationRecord: canonicalPreMergeEvidence
-        ? true
-        : opts.task.verification?.state === "ok" && !finalizedDoneTask
+      acceptedVerificationRecord:
+        opts.task.verification?.state === "ok" && !finalizedDoneTask
           ? await hasAcceptedVerificationForCurrentImplementation({
               ...opts,
               execution: opts.execution,
@@ -398,13 +396,19 @@ export async function deriveBlockers(opts: {
     }
   }
   if (opts.task.status === "DONE") {
-    if (opts.workflowMode === "branch_pr" && qualityReviewRequiresImplementationRework(opts.task)) {
+    if (
+      opts.workflowMode === "branch_pr" &&
+      qualityReviewRequiresImplementationRework(opts.task) &&
+      (await qualityReviewReworkIsFreshForHead({
+        ...opts,
+        headSha: opts.prFlow?.branch.headSha ?? opts.resume.head_sha,
+      }))
+    )
       addBlocker(
         blockers,
         "implementation_rework_required",
         "latest EVALUATOR result requires implementation rework before integration",
       );
-    }
     if (opts.workflowMode === "branch_pr" && opts.cleanupProbe.state === "blocked") {
       addBlocker(
         blockers,
@@ -462,13 +466,9 @@ export async function deriveBlockers(opts: {
       qualityReviewRequiresImplementationRework(opts.task) &&
       !qualityReworkHasNewVerification(opts.task)
     ) {
-      implementationReworkRequired = await qualityReviewIsFreshForHead({
-        ctx: opts.ctx,
-        task: opts.task,
+      implementationReworkRequired = await qualityReviewReworkIsFreshForHead({
+        ...opts,
         headSha: opts.prFlow?.branch.headSha ?? opts.resume.head_sha,
-        batchOwnership: opts.batchOwnership,
-        expectedState: opts.task.quality_review?.state === "blocked" ? "blocked" : "rework",
-        workflowMode: opts.workflowMode,
       });
     }
     if (implementationReworkRequired) {

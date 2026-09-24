@@ -6,7 +6,6 @@ import { verificationChildEnv } from "../shared/pr-meta/verify-log.js";
 import { issueKernelInspection, resumeKernelInspection } from "./kernel-inspection.js";
 import path from "node:path";
 import { repositoryEffectsForPath, taskKernel as k } from "@agentplaneorg/core/tasks";
-import { kernelApprovalReference } from "../../runner/usecases/kernel-authority.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { createKernelRuntime, requireKernelCommit } from "./kernel-runtime-context.js";
 import { buildKernelAgentWorkOrder, resumeKernelWorkOrder } from "./kernel-work-order.js";
@@ -21,65 +20,27 @@ import {
   decideCanonicalWorkflowEffect,
   prepareCanonicalWorkflowEffect,
 } from "./kernel-provider-effect-coordinator.js";
+import { executeCanonicalCompletedWorkflowLocally } from "./kernel-completed-workflow.js";
 import { ensureKernelOperationalProjectionEvidence } from "./kernel-operational-projection.js";
 import { transferCanonicalControllerToBase } from "./kernel-controller-handoff.js";
 import { acceptKernelSemanticResult } from "./kernel-semantic-result.js";
 import { ensureCanonicalTaskWorktree } from "./kernel-worktree-routing.js";
 import { canonicalCompletionPrecedesWorkflow } from "./ordinary-advance-step.js";
+import {
+  kernelPlanApprovalOperatorAction,
+  repositoryPolicyApprovalEligible,
+} from "./kernel-plan-authority.js";
+import {
+  createKernelTransitionAnomalyTracker,
+  INTERNAL_ORCHESTRATOR_TRANSITION_FUSE,
+} from "./kernel-transition-anomaly.js";
 
 export { blockKernelSemanticEpisode } from "./kernel-semantic-result.js";
+export { kernelPlanApprovalOperatorAction } from "./kernel-plan-authority.js";
 
 type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
 
 export { canonicalCompletionPrecedesWorkflow } from "./ordinary-advance-step.js";
-
-export function kernelPlanApprovalOperatorAction(
-  command: CommandContext,
-  taskId: string,
-  context: Awaited<ReturnType<Runtime["native"]["readContext"]>>,
-  plan: k.PlanRecord,
-) {
-  const authorityReference = kernelApprovalReference(context, plan);
-  if (command.config.authority.approval_receipts.trusted_issuers.length === 0) {
-    return {
-      kind: "approve_plan" as const,
-      required_role: "USER" as const,
-      cwd: command.resolvedProject.gitRoot,
-      argv: ["agentplane", "task", "plan", "approve", taskId, "--by", "USER"],
-      authority_reference: authorityReference,
-      transport: "manual_operator" as const,
-    };
-  }
-  return {
-    kind: "approve_plan" as const,
-    required_role: "USER" as const,
-    cwd: command.resolvedProject.gitRoot,
-    argv: [
-      "agentplane",
-      "task",
-      "plan",
-      "approve",
-      taskId,
-      "--approval-receipt",
-      "<base64url-receipt>",
-    ],
-    authority_reference: authorityReference,
-    transport: "signed_user_receipt" as const,
-    approval_receipt: {
-      schema_version: 1 as const,
-      format: "base64url-json+ed25519" as const,
-      request: {
-        approval_type: "plan_approval" as const,
-        task_id: taskId,
-        authority_reference: authorityReference,
-        state_fingerprint: context.repository_fingerprint,
-        operation_id: null,
-        operation_digest: null,
-        state_scope_digest: null,
-      },
-    },
-  };
-}
 
 async function authorityDeltaStop(runtime: Runtime, taskId: string) {
   const prepared = await runtime.authority.prepareDelta(taskId, repositoryEffectsForPath);
@@ -119,6 +80,7 @@ async function advanceCanonicalRoute(opts: {
   transport: "host" | "managed";
   effect_port_resolver?: KernelEffectPortResolver;
   allow_provider_effects?: boolean;
+  replace_failed_operation?: boolean;
 }) {
   const runtime = await createKernelRuntime({
     command: opts.command,
@@ -135,14 +97,15 @@ async function advanceCanonicalRoute(opts: {
     );
     if (stop) return { schema_version: 1, task_id: opts.task_id, action: stop };
   }
-  const visited = new Set<string>();
+  const anomalyTracker = createKernelTransitionAnomalyTracker(opts.task_id);
+  let replaceFailedOperation = opts.replace_failed_operation;
   let finalValidation: {
     fingerprint: string;
     environment_digest: string;
     evidence_digest: k.Sha256Digest;
     plan_digest: string;
   } | null = null;
-  for (let step = 0; step < 16; step++) {
+  for (let step = 0; step < INTERNAL_ORCHESTRATOR_TRANSITION_FUSE; step++) {
     const context = await runtime.native.readContext(opts.task_id);
     const current = await runtime.lifecycle.read(opts.task_id, context.repository_fingerprint);
     if (current.read.kind !== "canonical")
@@ -151,6 +114,22 @@ async function advanceCanonicalRoute(opts: {
     const plan = record.aggregate.current_plan;
     const route = current.next_action;
     const operationId = `${route.reason_code}:${record.digest}:${context.repository_fingerprint}`;
+    const anomaly = anomalyTracker.observe({
+      reason_code: route.reason_code,
+      work_item_id: route.work_item_id ?? null,
+      record_digest: record.digest,
+      repository_fingerprint: context.repository_fingerprint,
+    });
+    if (anomaly.kind === "checkpoint") {
+      await runtime.checkpoint(await runtime.observe());
+    }
+    if (anomaly.kind === "stop") {
+      return {
+        schema_version: 1,
+        task_id: opts.task_id,
+        action: anomaly.action,
+      };
+    }
     finalValidation ??= await restoreKernelFinalValidation(
       opts.command,
       record,
@@ -195,18 +174,29 @@ async function advanceCanonicalRoute(opts: {
       route.reason_code === "kernel_task_completed" &&
       current.read.task.execution_route?.repository_mode === "branch_pr"
     ) {
+      await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
       const localWorkflow = await decideCanonicalWorkflowEffect(opts.command, opts.task_id, false);
       const localTerminal =
         localWorkflow.workflowStep.kind === "terminal" &&
         ["done", "superseded"].includes(localWorkflow.workflowStep.outcome.type);
       if (localTerminal) {
-        await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
         return {
           schema_version: 1,
           task_id: opts.task_id,
           action: { kind: "terminal", reason: route.reason_code },
           canonical_revision: record.aggregate.revision,
         };
+      }
+      const localProgress = await executeCanonicalCompletedWorkflowLocally({
+        command: opts.command,
+        decision: localWorkflow,
+        task_id: opts.task_id,
+        replace_failed_operation: replaceFailedOperation,
+      });
+      if (localProgress) {
+        anomalyTracker.reset();
+        if (localProgress === "agent") replaceFailedOperation = false;
+        continue;
       }
       if (!opts.allow_provider_effects) {
         return {
@@ -242,7 +232,6 @@ async function advanceCanonicalRoute(opts: {
         workflow.workflowStep.kind === "terminal" &&
         ["done", "superseded"].includes(workflow.workflowStep.outcome.type);
       if (terminal) {
-        await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
         return {
           schema_version: 1,
           task_id: opts.task_id,
@@ -250,13 +239,27 @@ async function advanceCanonicalRoute(opts: {
           canonical_revision: record.aggregate.revision,
         };
       }
+      const providerProgress = await executeCanonicalCompletedWorkflowLocally({
+        command: opts.command,
+        decision: workflow,
+        task_id: opts.task_id,
+        replace_failed_operation: replaceFailedOperation,
+      });
+      if (providerProgress) {
+        anomalyTracker.reset();
+        if (providerProgress === "agent") replaceFailedOperation = false;
+        continue;
+      }
       const prepared = await prepareCanonicalWorkflowEffect({
         command: opts.command,
         runtime,
         record,
         decision: workflow,
       });
-      if (prepared === "prepared") continue;
+      if (prepared === "prepared") {
+        anomalyTracker.reset();
+        continue;
+      }
       return {
         schema_version: 1,
         task_id: opts.task_id,
@@ -297,6 +300,22 @@ async function advanceCanonicalRoute(opts: {
     }
     if (route.reason_code === "kernel_plan_approval_required" && plan) {
       await runtime.checkpoint(await runtime.observe());
+      if (
+        repositoryPolicyApprovalEligible({
+          config: opts.command.config,
+          task: current.read.task,
+          plan,
+        })
+      ) {
+        const policyRuntime = await createKernelRuntime({
+          command: opts.command,
+          task_id: opts.task_id,
+          transport: opts.transport,
+          operation_id: `repository-policy:${plan.digest}`,
+        });
+        requireKernelCommit(await policyRuntime.authority.approveByRepositoryPolicy(opts.task_id));
+        continue;
+      }
       const operatorAction = kernelPlanApprovalOperatorAction(
         opts.command,
         opts.task_id,
@@ -309,7 +328,7 @@ async function advanceCanonicalRoute(opts: {
         action: { kind: "approval_required", reason: route.reason_code },
         authority: {
           required: true,
-          reference: kernelApprovalReference(context, plan),
+          reference: operatorAction.authority_reference,
           repository_fingerprint: context.repository_fingerprint,
         },
         operator_action: operatorAction,
@@ -335,13 +354,6 @@ async function advanceCanonicalRoute(opts: {
         };
       }
     }
-    if (visited.has(operationId))
-      return {
-        schema_version: 1,
-        task_id: opts.task_id,
-        action: { kind: "human_required", reason: "canonical_transition_no_progress" },
-      };
-    visited.add(operationId);
     if (
       route.reason_code === "kernel_final_validation_required" ||
       route.reason_code === "kernel_task_completion_required"
@@ -544,7 +556,7 @@ async function advanceCanonicalRoute(opts: {
   return {
     schema_version: 1,
     task_id: opts.task_id,
-    action: { kind: "human_required", reason: "canonical_transition_budget_exhausted" },
+    action: anomalyTracker.fuseAction(),
   };
 }
 export type AdvanceTaskStepOptions = Parameters<typeof advanceCanonicalRoute>[0];

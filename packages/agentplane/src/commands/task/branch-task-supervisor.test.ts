@@ -2,12 +2,13 @@ import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 
 async function sources() {
-  const [contract, episodes, advance] = await Promise.all([
+  const [contract, episodes, advance, planAuthority] = await Promise.all([
     readFile(new URL("branch-task-supervisor.ts", import.meta.url), "utf8"),
     readFile(new URL("branch-task-supervisor-episodes.ts", import.meta.url), "utf8"),
     readFile(new URL("advance-task-step.ts", import.meta.url), "utf8"),
+    readFile(new URL("kernel-plan-authority.ts", import.meta.url), "utf8"),
   ]);
-  return { contract, episodes, advance };
+  return { contract, episodes, advance, planAuthority };
 }
 
 describe("retired branch task outer supervisor", () => {
@@ -22,15 +23,28 @@ describe("retired branch task outer supervisor", () => {
   });
 
   it("returns merge authority to the user without imitating a provider action", async () => {
-    const { advance } = await sources();
+    const { advance, planAuthority } = await sources();
     expect(advance).toContain("kernelPlanApprovalOperatorAction");
-    expect(advance).toContain('required_role: "USER"');
+    expect(planAuthority).toContain('required_role: "USER"');
   });
 
   it("maps late checks through the canonical workflow effect coordinator", async () => {
     const { advance } = await sources();
     expect(advance).toContain("prepareCanonicalWorkflowEffect");
     expect(advance).toContain("applyKernelEffectStep");
+  });
+
+  it("records branch verification as a canonical compatibility projection", async () => {
+    const { episodes } = await sources();
+    expect(episodes).toContain("allowCanonicalProjection: true");
+  });
+
+  it("preserves evaluator adapter failure details", async () => {
+    const evaluatorEpisode = await readFile(
+      new URL("branch-task-supervisor-evaluator-episode.ts", import.meta.url),
+      "utf8",
+    );
+    expect(evaluatorEpisode).toContain("`${error.name}: ${error.message}`");
   });
 
   it("does not replay a completed hosted-close side effect on supervisor restart", async () => {

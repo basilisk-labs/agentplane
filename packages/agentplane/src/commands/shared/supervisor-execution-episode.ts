@@ -8,8 +8,8 @@ import {
   prepareReplacementSupervisorExecutionEpisodeAfterFailure,
   recoverSupervisorExecutionEpisodeJournal,
   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
+  resumeSupervisorExecutionEpisodeAfterInternalAnomaly,
   startSupervisorExecutionEpisode,
-  stopSupervisorExecutionEpisode,
   type SupervisorEpisodeOperationKind,
   type SupervisorExecutionBudget,
   type SupervisorExecutionEpisodeJournal,
@@ -18,10 +18,6 @@ import { atomicWriteFile } from "@agentplaneorg/core/fs";
 import { gitRevParse } from "@agentplaneorg/core/git";
 
 import type { TaskRouteDecision } from "./route-decision-types.js";
-import {
-  continueSupervisorExecutionEpisodeAfterRenewableBudget,
-  recoverSupervisorExecutionEpisodeAfterResolvedTokenTelemetry,
-} from "./supervisor-execution-budget-renewal.js";
 import {
   superviseWorkflowStep,
   type WorkflowSupervisorExecution,
@@ -32,6 +28,7 @@ import {
   workflowOperationLifecycleStage,
 } from "./lifecycle-stage-timing.js";
 import { observedRunnerUsage } from "./supervisor-execution-observation.js";
+import { recoverProvenNotAppliedWorktreePreparation } from "./supervisor-execution-effect-recovery.js";
 
 import { tryAcquireSupervisorExecutionLease } from "./supervisor-execution-lease.js";
 
@@ -39,25 +36,17 @@ export { tryAcquireSupervisorExecutionLease } from "./supervisor-execution-lease
 
 const SUPERVISOR_EPISODE_ARTIFACT_DIRECTORY = "agentplane/supervisor/episodes";
 
-/**
- * Conservative process limits. Token limits stay disabled until the provider
- * supplies attributable telemetry; enforcing an unobservable token cap would
- * stop healthy external-agent workflows after their first agent result. The
- * measurable episode, agent-run, wall-time, changed-file, and no-progress
- * limits continue to bound supervisor-owned work.
- */
-const DEFAULT_SUPERVISOR_EXECUTION_BUDGET: SupervisorExecutionBudget = {
-  max_episodes: 50,
-  max_agent_runs: 50,
+/** Persisted only because schema_version=1 journals include this legacy field. */
+const LEGACY_DISABLED_SUPERVISOR_EXECUTION_BUDGET: SupervisorExecutionBudget = {
+  max_episodes: Number.MAX_SAFE_INTEGER,
+  max_agent_runs: null,
   max_input_tokens: null,
   max_output_tokens: null,
   max_total_tokens: null,
-  max_wall_time_ms: 4 * 60 * 60 * 1000,
-  max_changed_files: 2000,
-  // The runner has no supervisor-observed line delta yet. A non-null default
-  // would falsely claim a hard limit while always charging zero.
+  max_wall_time_ms: null,
+  max_changed_files: null,
   max_diff_lines: null,
-  max_no_progress_episodes: 3,
+  max_no_progress_episodes: null,
 };
 
 export type SupervisorEpisodeStore = {
@@ -198,7 +187,7 @@ export async function withSupervisorExecutionAdmissionFence<T>(opts: {
 }
 
 function defaultSupervisorExecutionBudget(): SupervisorExecutionBudget {
-  return structuredClone(DEFAULT_SUPERVISOR_EXECUTION_BUDGET);
+  return structuredClone(LEGACY_DISABLED_SUPERVISOR_EXECUTION_BUDGET);
 }
 
 export async function openSupervisorExecutionEpisode(opts: {
@@ -254,11 +243,7 @@ export async function preparePersistedSupervisorReplacementAfterFailure(opts: {
   git_root: string;
   task_id: string;
   state_fingerprint_digest: string;
-  allow_agent_run_budget_extension?: boolean;
-  budget_only?: boolean;
-}): Promise<
-  "prepared" | "budget_extended" | "telemetry_recovered" | "already_prepared" | "not_failed"
-> {
+}): Promise<"prepared" | "anomaly_resumed" | "already_prepared" | "not_failed"> {
   const journalPath = await resolveSupervisorExecutionEpisodePath({
     git_root: opts.git_root,
     task_id: opts.task_id,
@@ -281,52 +266,14 @@ export async function preparePersistedSupervisorReplacementAfterFailure(opts: {
       return "already_prepared";
     }
     const latest = journal.operations.at(-1);
-    const exhaustedDimensions = journal.stop?.exhausted_dimensions ?? [];
-    const telemetryRecovery = recoverSupervisorExecutionEpisodeAfterResolvedTokenTelemetry({
-      journal,
-      state_fingerprint_digest: opts.state_fingerprint_digest,
-    });
-    if (telemetryRecovery.digest !== journal.digest) {
-      if (await opened.store.compareAndSwap(journal.digest, telemetryRecovery)) {
-        return "telemetry_recovered";
-      }
-      continue;
-    }
-    const renewableBudgetExhausted =
-      journal.status === "stopped" &&
-      journal.stop?.reason === "budget_exhausted" &&
-      exhaustedDimensions.length > 0 &&
-      exhaustedDimensions.every(
-        (dimension) =>
-          dimension === "episodes" ||
-          (dimension === "agent_runs" && opts.allow_agent_run_budget_extension === true),
-      ) &&
-      latest?.status === "completed";
-    if (renewableBudgetExhausted) {
-      const extendEpisodes = exhaustedDimensions.includes("episodes");
-      const extendAgentRuns = exhaustedDimensions.includes("agent_runs");
-      const agentRunIncrement = DEFAULT_SUPERVISOR_EXECUTION_BUDGET.max_agent_runs ?? 0;
-      const continued = continueSupervisorExecutionEpisodeAfterRenewableBudget({
+    if (journal.status === "stopped" && journal.stop?.reason === "internal_anomaly") {
+      const resumed = resumeSupervisorExecutionEpisodeAfterInternalAnomaly({
         journal,
         state_fingerprint_digest: opts.state_fingerprint_digest,
-        ...(extendEpisodes ||
-        (extendAgentRuns &&
-          journal.budget.max_episodes < (journal.budget.max_agent_runs ?? 0) + agentRunIncrement)
-          ? {
-              max_episodes:
-                journal.budget.max_episodes + DEFAULT_SUPERVISOR_EXECUTION_BUDGET.max_episodes,
-            }
-          : {}),
-        ...(extendAgentRuns
-          ? {
-              max_agent_runs: (journal.budget.max_agent_runs ?? 0) + agentRunIncrement,
-            }
-          : {}),
       });
-      if (await opened.store.compareAndSwap(journal.digest, continued)) return "budget_extended";
+      if (await opened.store.compareAndSwap(journal.digest, resumed)) return "anomaly_resumed";
       continue;
     }
-    if (opts.budget_only) return "not_failed";
     const recoverableFailure =
       journal.status === "stopped" &&
       latest?.status === "failed" &&
@@ -420,6 +367,13 @@ export async function supervisePersistedWorkflowEpisode(opts: {
       journal_path: opened.journal_path,
     };
   }
+
+  journal = await recoverProvenNotAppliedWorktreePreparation({
+    journal,
+    operation,
+    state_fingerprint_digest: currentFingerprint,
+    compare_and_swap: store.compareAndSwap,
+  });
 
   // A restart can observe the durable agent outcome before the route cursor
   // was advanced. Refresh and commit that observation first; launching a new
@@ -531,7 +485,7 @@ export async function supervisePersistedWorkflowEpisode(opts: {
       try {
         const result = await opts.execute({ operation: invoked });
         const operationEndedAt = performance.now();
-        const observed = observedRunnerUsage({ result, budget: journal.budget });
+        const observed = observedRunnerUsage({ result });
         journal = completeSupervisorExecutionEpisode({
           journal,
           operation_key: started.operation_key,
@@ -546,13 +500,6 @@ export async function supervisePersistedWorkflowEpisode(opts: {
           ...(observed.progress === undefined ? {} : { progress: observed.progress }),
           failed: result.status !== "succeeded",
         });
-        if (result.status === "succeeded" && observed.missing_dimensions.length > 0) {
-          journal = stopSupervisorExecutionEpisode({
-            journal,
-            reason: "human_review",
-            exhausted_dimensions: observed.missing_dimensions,
-          });
-        }
         completed = result.status === "succeeded" && journal.status === "running";
         await store.write(journal);
         return result;

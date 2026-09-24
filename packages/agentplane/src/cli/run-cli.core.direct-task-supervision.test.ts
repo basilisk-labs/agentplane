@@ -21,8 +21,7 @@ describe("runCli direct task supervision", () => {
       expect(
         await runCli([
           "task",
-          "new",
-          "--title",
+          "create",
           "Direct supervision approval stop",
           "--description",
           "Ensure the direct supervisor never starts a provider before plan approval.",
@@ -32,11 +31,22 @@ describe("runCli direct task supervision", () => {
           "CODER",
           "--tag",
           "code",
+          "--task-kind",
+          "code",
+          "--mutation-scope",
+          "code",
+          "--scope-root",
+          ".",
+          "--repository-effect",
+          "tests",
+          "--capability",
+          "task.verify",
+          "--json",
           "--root",
           root,
         ]),
       ).toBe(0);
-      taskId = createIo.stdout.trim();
+      taskId = (JSON.parse(createIo.stdout) as { task_id: string }).task_id;
     } finally {
       createIo.restore();
     }

@@ -9,8 +9,8 @@ import { describe, expect, it } from "vitest";
 const fingerprint = `sha256:${"a".repeat(64)}`;
 const nextFingerprint = `sha256:${"b".repeat(64)}`;
 
-describe("telemetry coverage and spend admission", () => {
-  it("retains a valid verdict but blocks another paid dispatch when finite token coverage is unknown", () => {
+describe("telemetry coverage without spend admission", () => {
+  it("retains a valid verdict and keeps missing token coverage informational", () => {
     const created = createSupervisorExecutionEpisodeJournal({
       task_id: "202609130000-TEL001",
       task_revision: 1,
@@ -64,16 +64,21 @@ describe("telemetry coverage and spend admission", () => {
     expect(applied.operations).toHaveLength(1);
     expect(applied.operations[0]?.result_digest).not.toBeNull();
     expect(next).toMatchObject({
-      status: "stopped",
-      stop: {
-        reason: "budget_exhausted",
-        exhausted_dimensions: [
-          "input_tokens_telemetry",
-          "output_tokens_telemetry",
-          "total_tokens_telemetry",
+      status: "started",
+      journal: {
+        status: "running",
+        stop: null,
+        operations: [
+          { status: "completed" },
+          {
+            status: "intent",
+            usage_attribution: {
+              state: "unavailable",
+              reason: "provider_result_not_observed",
+            },
+          },
         ],
       },
-      journal: { operations: [{ status: "completed" }] },
     });
   });
 });

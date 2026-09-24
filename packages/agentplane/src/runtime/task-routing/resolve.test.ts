@@ -68,6 +68,45 @@ describe("task execution route", () => {
     expect(reconciled.contract.observed.authority_violations).toEqual([]);
   });
 
+  it("escalates package manifest changes only when dependency effects are observed", () => {
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    const initial = resolveTaskExecutionContract({
+      config,
+      task: {},
+      requestedMode: "direct",
+      declaration: {
+        schema_version: 2,
+        preferred_mode: "direct",
+        scope_roots: ["packages/example/package.json"],
+        repository_effects: ["repository_write"],
+        external_effects: [],
+        requirements_uncertainty: "bounded",
+        implementation_uncertainty: "bounded",
+        reversibility: "reversible",
+        rationale: ["package metadata update"],
+      },
+    });
+
+    const metadataOnly = reconcileTaskExecutionContract({
+      contract: initial,
+      changed_paths: ["packages/example/package.json"],
+    });
+    expect(metadataOnly.contract.observed.repository_effects).not.toContain("dependencies");
+    expect(metadataOnly.escalated).toBe(false);
+
+    const dependencyChange = reconcileTaskExecutionContract({
+      contract: initial,
+      changed_paths: ["packages/example/package.json"],
+      observed_repository_effects: ["dependencies"],
+    });
+    expect(dependencyChange.contract.observed.repository_effects).toContain("dependencies");
+    expect(dependencyChange.contract.observed.authority_violations).toContain(
+      "repository_effect:dependencies",
+    );
+    expect(dependencyChange.escalated).toBe(true);
+  });
+
   it("treats the general repository-write observation as an umbrella, not a separate effect", () => {
     const config = defaultConfig();
     config.workflow_mode = "direct";

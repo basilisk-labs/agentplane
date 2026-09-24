@@ -1,6 +1,7 @@
 import type { CommandContext } from "../shared/task-backend.js";
 import type { TaskData } from "../../backends/task-backend.js";
 import type { PreparedTaskMutationObserver } from "../shared/task-mutation.js";
+import type { TaskRepositoryEffect } from "@agentplaneorg/core/tasks";
 
 export type VerifyState = "ok" | "needs_rework";
 export type VerifyCommandName = "task verify ok" | "task verify rework" | "verify";
@@ -10,6 +11,7 @@ export type VerificationSnapshot = {
   evaluated_sha: string | null;
   changed_paths: string[];
   inherited_paths?: string[];
+  repository_effects?: TaskRepositoryEffect[];
 };
 
 export type VerifyStructuredFindingInput = {

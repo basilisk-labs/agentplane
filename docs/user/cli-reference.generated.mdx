@@ -616,6 +616,11 @@ Options:
 - `--risk <risk>`: Repeatable structured risk flag supplied by the semantic caller. (repeatable, choices=network|credentials|deploy|publish|merge|security|external_system)
 - `--tag <tag>`: Repeatable semantic tag supplied by the caller. (repeatable)
 - `--verify <command>`: Repeatable. Seed an explicit verification command. (repeatable)
+- `--scope-root <repository-relative-path>`: Repeatable writable root admitted by the execution contract. (repeatable)
+- `--repository-effect <effect>`: Repeatable repository effect admitted by the execution contract. (repeatable, choices=repository_write|documentation|source_code|tests|public_api|schema|dependencies|ci|release_metadata|security_boundary)
+- `--external-effect <effect>`: Repeatable external effect declared at intake. (repeatable, choices=network_read|external_write|credentials|publish|deploy|destructive_git)
+- `--capability <capability>`: Repeatable semantic capability admitted by the execution contract. (repeatable)
+- `--resource <resource>`: Repeatable resource claim admitted by the execution contract. (repeatable)
 - `--base <branch-or-ref>`: Freeze this task on an explicit development base. Defaults to the current checkout.
 - `--allow-duplicate`: Allow an exact duplicate of an open task. (default=false)
 - `--json`: Emit JSON. (default=false)

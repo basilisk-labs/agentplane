@@ -57,6 +57,9 @@ export function projectTaskKernelRead(read: CanonicalTaskRead, taskId: string) {
             ...projectKernelTask(read.record.aggregate),
             title: read.task.title,
             owner: read.task.owner,
+            task_kind: read.task.task_kind,
+            mutation_scope: read.task.mutation_scope,
+            risk_flags: read.task.risk_flags,
           }
         : { id: taskId, ...(read.kind === "archived" ? { title: read.task.title } : {}) },
     ready,
@@ -81,7 +84,15 @@ export function reportTaskKernelRead(
       { label: "source", value: view.source },
       { label: "record", value: read.kind },
       ...(read.kind === "canonical"
-        ? [{ label: "state", value: read.record.aggregate.state }]
+        ? [
+            { label: "state", value: read.record.aggregate.state },
+            { label: "task_kind", value: read.task.task_kind ?? "unset" },
+            { label: "mutation_scope", value: read.task.mutation_scope ?? "unset" },
+            {
+              label: "risk_flags",
+              value: read.task.risk_flags?.length ? read.task.risk_flags.join(", ") : "none",
+            },
+          ]
         : []),
       { label: "ready", value: view.ready },
       { label: "next", value: view.next_action.reason_code },

@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "human_review",
+  "findings": [
+    {
+      "id": "unresolved-scope-approval",
+      "severity": "high",
+      "summary": "The frozen diff retains a Task Kernel authority-lineage exception and bun.lock version changes outside the stated supervisor-recovery scope. The prior owner question remains unanswered; the separate kernel-rejection task included in the patch has pending plan approval.",
+      "broken_invariant": "Material scope drift and security-boundary changes require explicit approval. Passing deterministic checks does not resolve missing authorization.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609231207-R59HKK/README.md",
+          "sha256": "sha256:40098a42e7bb8377ef98a6db13b9ae2e5f3b3cba9003239424f8dc831f2cbea4",
+          "line": 1101,
+          "section": "extensions.agentplane.human_input"
+        },
+        {
+          "path": ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/3dc4e9b0d5ea5b9504874a43b4c97e5898c3418bbeffd93a5fa6f388a089256c.patch",
+          "sha256": "sha256:3dc4e9b0d5ea5b9504874a43b4c97e5898c3418bbeffd93a5fa6f388a089256c",
+          "line": 4083,
+          "section": "packages/core/src/tasks/task-kernel/kernel.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/3dc4e9b0d5ea5b9504874a43b4c97e5898c3418bbeffd93a5fa6f388a089256c.patch",
+          "sha256": "sha256:3dc4e9b0d5ea5b9504874a43b4c97e5898c3418bbeffd93a5fa6f388a089256c",
+          "line": 2541,
+          "section": "bun.lock"
+        },
+        {
+          "path": ".agentplane/policy/security.must.md",
+          "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+          "section": "Security MUST Rules"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The additional authority-boundary and lockfile changes are authorized for inclusion despite the unresolved owner question."
+  ],
+  "recovery_context": "Do you approve expanding this task’s scope to include the blocked-plan rejection authority exception and the bun.lock workspace version changes to 0.7.12-beta.1?"
+}

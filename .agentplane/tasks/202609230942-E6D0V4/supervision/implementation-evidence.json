@@ -1,0 +1,134 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 40120af8c975e9007717fbac99fb5e2df3d03538..d1c7d56e7d7e45f4dcff37db37151c96b5860b29",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 40120af8c975e9007717fbac99fb5e2df3d03538..d1c7d56e7d7e45f4dcff37db37151c96b5860b29",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202609230942-E6D0V4/README.md",
+        "M\t.agentplane/tasks/202609230942-E6D0V4/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609230942-E6D0V4/pr/github-body.md",
+        "M\t.agentplane/tasks/202609230942-E6D0V4/pr/meta.json",
+        "M\t.agentplane/tasks/202609230942-E6D0V4/pr/review.md",
+        "M\t.agentplane/tasks/202609230942-E6D0V4/supervision/declared-checks.json",
+        "M\t.agentplane/tasks/202609230942-E6D0V4/supervision/implementation-evidence.json",
+        "M\tpackages/agentplane/src/backends/task-backend/shared/record.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.roadmap-managed-owner-cutover.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.critical.task-centric.test.ts",
+        "M\tpackages/core/schemas/task-readme-frontmatter.schema.json",
+        "M\tpackages/core/schemas/tasks-export.schema.json",
+        "M\tpackages/spec/schemas/task-readme-frontmatter.schema.json",
+        "M\tpackages/spec/schemas/tasks-export.schema.json",
+        "M\tschemas/task-readme-frontmatter.schema.json",
+        "M\tschemas/tasks-export.schema.json"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "40120af8c975e9007717fbac99fb5e2df3d03538",
+  "implementation_commit": "d1c7d56e7d7e45f4dcff37db37151c96b5860b29",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M .agentplane/tasks/202609230942-E6D0V4/README.md",
+      " M .agentplane/tasks/202609230942-E6D0V4/supervision/declared-checks.json",
+      " M .agentplane/tasks/202609230942-E6D0V4/supervision/implementation-evidence.json",
+      " M packages/agentplane/src/backends/task-backend/shared/record.ts",
+      " M packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts",
+      " M packages/agentplane/src/cli/run-cli.core.roadmap-managed-owner-cutover.test.ts",
+      " M packages/core/schemas/task-readme-frontmatter.schema.json",
+      " M packages/core/schemas/tasks-export.schema.json",
+      " M packages/spec/schemas/task-readme-frontmatter.schema.json",
+      " M packages/spec/schemas/tasks-export.schema.json",
+      " M schemas/task-readme-frontmatter.schema.json",
+      " M schemas/tasks-export.schema.json"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609230942-E6D0V4/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609230942-E6D0V4/supervision/declared-checks.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609230942-E6D0V4/supervision/implementation-evidence.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/backends/task-backend/shared/record.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/run-cli.core.roadmap-managed-owner-cutover.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/schemas/task-readme-frontmatter.schema.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/schemas/tasks-export.schema.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/spec/schemas/task-readme-frontmatter.schema.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/spec/schemas/tasks-export.schema.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M schemas/task-readme-frontmatter.schema.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M schemas/tasks-export.schema.json"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M .agentplane/tasks/202609230942-E6D0V4/README.md",
+      " M .agentplane/tasks/202609230942-E6D0V4/supervision/declared-checks.json",
+      " M .agentplane/tasks/202609230942-E6D0V4/supervision/implementation-evidence.json",
+      " M packages/agentplane/src/backends/task-backend/shared/record.ts",
+      " M packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts",
+      " M packages/agentplane/src/cli/run-cli.core.roadmap-managed-owner-cutover.test.ts",
+      " M packages/core/schemas/task-readme-frontmatter.schema.json",
+      " M packages/core/schemas/tasks-export.schema.json",
+      " M packages/spec/schemas/task-readme-frontmatter.schema.json",
+      " M packages/spec/schemas/tasks-export.schema.json",
+      " M schemas/task-readme-frontmatter.schema.json",
+      " M schemas/tasks-export.schema.json"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609230942-E6D0V4"
+}

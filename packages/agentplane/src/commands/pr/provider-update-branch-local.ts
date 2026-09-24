@@ -18,6 +18,10 @@ function trackingRef(request: ProviderUpdateBranchRequest): string {
   return `refs/remotes/${request.identity.remote}/${request.branch}`;
 }
 
+function baseTrackingRef(request: ProviderUpdateBranchRequest): string {
+  return `refs/remotes/${request.identity.remote}/${request.baseBranch}`;
+}
+
 /** Validate only. No local or provider mutation is permitted before this succeeds. */
 export async function validateProviderUpdateLocalState(
   request: ProviderUpdateBranchRequest,
@@ -57,6 +61,7 @@ export async function validateProviderUpdateLocalState(
 export async function reconcileProviderUpdateLocalHead(
   request: ProviderUpdateBranchRequest,
   observedHead: string,
+  observedBase: string = request.expectedBaseSha,
 ): Promise<string | null> {
   const cwd = checkout(request);
   const allowedHeads = [request.expectedHeadSha, observedHead];
@@ -74,6 +79,17 @@ export async function reconcileProviderUpdateLocalHead(
     ]);
     if ((await git(cwd, ["rev-parse", "--verify", trackingRef(request)])) !== observedHead) {
       return "Fetched task branch does not match the ancestry-proven provider head.";
+    }
+    await git(cwd, [
+      "fetch",
+      "--no-tags",
+      "--no-write-fetch-head",
+      "--",
+      request.identity.targetUrl,
+      `refs/heads/${request.baseBranch}:${baseTrackingRef(request)}`,
+    ]);
+    if ((await git(cwd, ["rev-parse", "--verify", baseTrackingRef(request)])) !== observedBase) {
+      return "Fetched base branch does not match the ancestry-proven provider base.";
     }
     for (const ancestor of [request.expectedHeadSha, request.expectedBaseSha]) {
       await git(cwd, ["merge-base", "--is-ancestor", ancestor, observedHead], true);

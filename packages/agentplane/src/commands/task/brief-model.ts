@@ -19,6 +19,7 @@ import {
 } from "../../runner/usecases/agent-work-order.js";
 import type { NativeTaskObligations } from "../../runtime/task-obligations/index.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+import type { TaskData } from "../../backends/task-backend/shared/types.js";
 import {
   agentWorkContextContract,
   type AgentWorkContextContract,
@@ -87,6 +88,9 @@ type TaskBriefLegacyProjection = {
     title: string;
     status: string;
     owner: string;
+    task_kind: TaskData["task_kind"];
+    mutation_scope: TaskData["mutation_scope"];
+    risk_flags: TaskData["risk_flags"];
     plan: string | null;
     verification: string | null;
     token_usage: TaskTokenUsage | undefined;
@@ -242,6 +246,9 @@ export function projectTaskBriefFromPreparedWorkOrder(
       title: task.title,
       status: task.status,
       owner: task.owner,
+      task_kind: task.task_kind,
+      mutation_scope: task.mutation_scope,
+      risk_flags: task.risk_flags,
       plan: task.plan_approval?.state ?? null,
       verification: task.verification?.state ?? null,
       token_usage: task.token_usage,

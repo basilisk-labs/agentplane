@@ -26,8 +26,7 @@ async function createTask(root: string): Promise<string> {
   try {
     const code = await runCli([
       "task",
-      "new",
-      "--title",
+      "create",
       "Managed owner parity",
       "--description",
       "Preserve one semantic obligation across transports.",
@@ -37,12 +36,26 @@ async function createTask(root: string): Promise<string> {
       "med",
       "--tag",
       "code",
+      "--task-kind",
+      "code",
+      "--mutation-scope",
+      "code",
+      "--scope-root",
+      "managed-result.txt",
+      "--capability",
+      "repository_write",
       "--allow-duplicate",
+      "--json",
       "--root",
       root,
     ]);
     expect(code, io.stderr).toBe(0);
-    return io.stdout.trim();
+    const created = JSON.parse(io.stdout) as {
+      task_id: string;
+      execution_contract: { authority: { allowed_capabilities?: string[] } };
+    };
+    expect(created.execution_contract.authority.allowed_capabilities).toContain("repository_write");
+    return created.task_id;
   } finally {
     io.restore();
   }

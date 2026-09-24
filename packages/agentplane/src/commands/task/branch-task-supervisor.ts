@@ -11,7 +11,7 @@ export type BranchTaskSupervisorStopCode =
   | "human_input_required"
   | "wait_required"
   | "terminal_attention"
-  | "step_budget_exhausted"
+  | "internal_anomaly"
   | "unsupported_agent_episode"
   | "operation_failed"
   | "route_refresh_failed"
@@ -37,6 +37,13 @@ type BranchTaskSupervisorStop = {
   reason: string;
   route_step_id: string;
   operation_id: string | null;
+  diagnostic?: {
+    code: "orchestrator_tight_loop";
+    semantic_state_digest: string;
+    repetition_count: number;
+    exhausted_recovery_strategies: readonly string[];
+    resume_hint: string;
+  };
 };
 
 export type BranchExecutorEvidence = {
@@ -81,6 +88,7 @@ export type BranchTaskSupervisorOptions = {
   ctx: CommandCtx;
   command: CommandContext;
   task_id: string;
+  replace_failed_operation?: boolean;
   task_execution?: TaskExecutionContext;
   sandbox_override?: string;
   danger_authority?: {

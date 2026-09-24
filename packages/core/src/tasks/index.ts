@@ -64,6 +64,7 @@ export * as taskKernel from "./task-kernel/index.js";
 
 export {
   EXECUTION_GRANT_EXTENSION_KEY,
+  HOST_USER_DECISION_REQUIRED_FIELDS,
   computeExecutionScopeDigest,
   computeLogicalCompletionContractDigest,
   computePlanDigest,
@@ -100,6 +101,7 @@ export {
   computeVerificationContractKernel,
   computeLegacyVerificationContractKernel,
   isCentralVerificationPath,
+  repositoryEffectsForChange,
   repositoryEffectsForPath,
   type VerificationContractKernelInput,
   type VerificationContractPhase,

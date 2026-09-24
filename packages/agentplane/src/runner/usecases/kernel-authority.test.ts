@@ -138,32 +138,34 @@ async function fixture(
     return Buffer.from(JSON.stringify(receipt)).toString("base64url");
   }
   let approval: NativeApprovalObservation | null =
-    mode === "manual_operator"
-      ? { kind: mode, actor_id: "USER", invocation_id: "operator-invocation-1" }
-      : mode === "signed_user_receipt"
-        ? { kind: mode, encoded: signed() }
-        : {
-            kind: mode,
-            repository_identity: replayRepositoryIdentity,
-            host_id: "host-1",
-            conversation_id: "conversation-1",
-            message_id: "message-1",
-            encoded: Buffer.from(
-              JSON.stringify({
-                schema_version: 1,
-                kind: "agentplane.host_user_decision",
-                origin: "user",
-                host_id: "host-1",
-                conversation_id: "conversation-1",
-                message_id: "message-1",
-                task_id: journey.task.id,
-                plan_digest: plan.digest,
-                state_fingerprint: values.repository_fingerprint,
-                decision: "approved",
-                decided_at: now,
-              }),
-            ).toString("base64url"),
-          };
+    mode === "repository_policy"
+      ? null
+      : mode === "manual_operator"
+        ? { kind: mode, actor_id: "USER", invocation_id: "operator-invocation-1" }
+        : mode === "signed_user_receipt"
+          ? { kind: mode, encoded: signed() }
+          : {
+              kind: mode,
+              repository_identity: replayRepositoryIdentity,
+              host_id: "host-1",
+              conversation_id: "conversation-1",
+              message_id: "message-1",
+              encoded: Buffer.from(
+                JSON.stringify({
+                  schema_version: 1,
+                  kind: "agentplane.host_user_decision",
+                  origin: "user",
+                  host_id: "host-1",
+                  conversation_id: "conversation-1",
+                  message_id: "message-1",
+                  task_id: journey.task.id,
+                  plan_digest: plan.digest,
+                  state_fingerprint: values.repository_fingerprint,
+                  decision: "approved",
+                  decided_at: now,
+                }),
+              ).toString("base64url"),
+            };
   let observation: k.AuthorityObservation | null = null;
   const port: KernelAuthorityPort = {
     readContext: async () => {
@@ -216,33 +218,41 @@ async function fixture(
 const effects = (path: string) => (path.startsWith("schemas/") ? ["schema"] : ["source_code"]);
 
 describe("canonical native authority", () => {
-  it.each(["manual_operator", "signed_user_receipt", "host_user_decision"] as const)(
-    "persists exact %s approval and delegates without USER provenance",
-    async (mode) => {
-      const f = await fixture(mode);
-      expect(await f.resolver.approve(f.taskId)).toMatchObject({ kind: "committed" });
-      const read = await f.adapter.read(f.taskId);
-      expect(read).toMatchObject({
-        kind: "canonical",
-        record: { aggregate: { authority_lineage: [{ approval_mode: mode }] } },
-      });
-      const { authority: root } = await f.resolver.resolve(f.taskId);
-      const { authority: child } = await f.resolver.resolve(f.taskId, "build");
-      expect(root.provenance.kind).toBe("USER");
-      expect(child.provenance).toMatchObject({
-        kind: "DELEGATED",
-        parent_authority_digest: root.digest,
-      });
-      expect(child.provenance.actor_id).not.toBe("USER");
-      expect(k.compareExecutionAuthority(root, child)).toEqual({ ok: true });
-      expect(child.plan_digest).toBe(f.plan.digest);
-    },
-  );
+  it.each([
+    "manual_operator",
+    "signed_user_receipt",
+    "host_user_decision",
+    "repository_policy",
+  ] as const)("persists exact %s approval and delegates without USER provenance", async (mode) => {
+    const f = await fixture(mode);
+    expect(
+      mode === "repository_policy"
+        ? await f.resolver.approveByRepositoryPolicy(f.taskId)
+        : await f.resolver.approve(f.taskId),
+    ).toMatchObject({ kind: "committed" });
+    const read = await f.adapter.read(f.taskId);
+    expect(read).toMatchObject({
+      kind: "canonical",
+      record: { aggregate: { authority_lineage: [{ approval_mode: mode }] } },
+    });
+    const { authority: root } = await f.resolver.resolve(f.taskId);
+    const { authority: child } = await f.resolver.resolve(f.taskId, "build");
+    expect(root.provenance.kind).toBe(mode === "repository_policy" ? "SYSTEM" : "USER");
+    if (read.kind !== "canonical") throw new Error(read.kind);
+    expect(read.record.aggregate.current_plan?.approval_actor_id).toBe(
+      mode === "repository_policy" ? "native-controller" : root.provenance.actor_id,
+    );
+    expect(child.provenance).toMatchObject({
+      kind: "DELEGATED",
+      parent_authority_digest: root.digest,
+    });
+    expect(child.provenance.actor_id).not.toBe("USER");
+    expect(k.compareExecutionAuthority(root, child)).toEqual({ ok: true });
+    expect(child.plan_digest).toBe(f.plan.digest);
+  });
 
-  it("delegates an approved disposable deploy with its exact resource scope", async () => {
+  it("delegates approved semantic work with its exact resource scope", async () => {
     const requirements = {
-      external_effects: ["deploy"],
-      capabilities: ["deploy"],
       resources: ["environment:disposable/qualification"],
     };
     const f = await fixture("manual_operator", requirements);
@@ -260,10 +270,8 @@ describe("canonical native authority", () => {
     await expect(f.resolver.resolve(f.taskId, "build")).rejects.toThrow("native_policy_changed");
   });
 
-  it("refuses a production deploy under a disposable-only native approval", async () => {
+  it("refuses a production resource under a disposable-only native approval", async () => {
     const requirements = {
-      external_effects: ["deploy"],
-      capabilities: ["deploy"],
       resources: ["environment:production"],
     };
     const f = await fixture("manual_operator", requirements);
