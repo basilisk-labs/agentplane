@@ -318,6 +318,7 @@ function validateReviewedCandidate({
     "compatibility candidate id drift",
   );
   const cliSourceTasks = [
+    "202609232231-BYSVV6",
     "202607221846-4VB97J",
     "202607221846-YGWMA2",
     "202607230554-YFYT83",
@@ -361,6 +362,7 @@ function validateReviewedCandidate({
     "202609241429-4WN4VX",
   ];
   const expectedSourceTasks = [
+    "202609232231-BYSVV6",
     "202607221846-4VB97J",
     "202607221846-YGWMA2",
     "202607230554-YFYT83",
@@ -1305,6 +1307,13 @@ function validateReviewedCandidate({
   ];
   const expectedAddedCommandDescriptors = [
     {
+      id: ["cleanup", "inspect"],
+      visibility: "user",
+      group: "Branch",
+      args: [],
+      options: [{ name: "json", kind: "boolean", valueHint: null, default: false }],
+    },
+    {
       id: ["context", "supervise-task"],
       visibility: "user",
       group: "Context",
@@ -1800,6 +1809,13 @@ function validateReviewedCandidate({
     {
       command: "backend sync",
       name: "bootstrap-projection",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
+    },
+    {
+      command: "cleanup inspect",
+      name: "json",
       kind: "boolean",
       valueHint: null,
       default: false,
@@ -2544,6 +2560,7 @@ function validateReviewedCandidate({
     },
   ];
   const expectedAdditionSources = [
+    { kind: "command", command: "cleanup inspect", source_task: "202609232231-BYSVV6" },
     { kind: "command", command: "context supervise-task", source_task: "202607221850-8HBF4J" },
     { kind: "command", command: "doctor legacy", source_task: "202608021535-CNQKXP" },
     { kind: "command", command: "evaluator apply", source_task: "202607221849-TBTX8X" },
@@ -2616,6 +2633,12 @@ function validateReviewedCandidate({
       command: "backend sync",
       name: "bootstrap-projection",
       source_task: "202607221848-0ZAB1F",
+    },
+    {
+      kind: "option",
+      command: "cleanup inspect",
+      name: "json",
+      source_task: "202609232231-BYSVV6",
     },
     {
       kind: "option",
@@ -3268,6 +3291,7 @@ function validateReviewedCandidate({
   assert(
     hashJson(addedCommands) ===
       hashJson([
+        "cleanup inspect",
         "context supervise-task",
         "doctor legacy",
         "evaluator apply",
