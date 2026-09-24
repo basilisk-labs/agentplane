@@ -2,7 +2,7 @@
   "base": "origin/main",
   "branch": "task/202609232231-BYSVV6/compact-task-history",
   "created_at": "2026-09-24T14:39:05.856Z",
-  "diffstat_sha256": "sha256:b13fdc88e5537486bd73c2f43bc4f6861e85b0415a58c6425ea50f0cd43c0b65",
+  "diffstat_sha256": "sha256:45e8d28cdd1dfbd5f25a16f68c3e6ec6515871209eed3ac2962b18392136b6ab",
   "last_verified_at": null,
   "provider": {
     "hostname": "github.com",

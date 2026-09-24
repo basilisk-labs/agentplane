@@ -1,4 +1,5 @@
 import { execFileSync } from "node:child_process";
+import { randomBytes } from "node:crypto";
 import { existsSync } from "node:fs";
 import { mkdtemp, mkdir, readFile, realpath, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -147,7 +148,7 @@ describe("compact task worktree checkout", () => {
     await canonical.writeTask({ ...task, id: oldId, title: "Old task", status: "DONE" });
     await writeFile(
       path.join(repo, ".agentplane", "tasks", oldId, "artifact.bin"),
-      Buffer.alloc(1024 * 1024),
+      randomBytes(1024 * 1024),
     );
     await writeFile(path.join(repo, "src", "app.ts"), "export const value = 1;\n");
     git(repo, "init", "-b", "main");
