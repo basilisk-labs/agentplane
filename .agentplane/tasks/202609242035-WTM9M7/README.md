@@ -1,10 +1,11 @@
 ---
 id: "202609242035-WTM9M7"
 title: "Bind canonical final verification to the observed verification contract"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 30
+revision: 31
 origin:
   system: "manual"
 depends_on: []
@@ -43,6 +44,22 @@ quality_review:
     - "After successful native checks and the stale-input guard, one observed verification snapshot enriches those same check results and is reused for projection."
     - "The immutable final-validation artifact becomes the cited evidence path, so dynamically selected check IDs and their executed commands remain aligned."
     - "AgentPlane independently observed focused tests, typecheck, and ci:local:fast passing; the broad suite reported 680 test files and 5839 passed tests."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:f8da4263c97535e973ec64b4b65da79177795670801bc3cc4a6207c3705a7b61"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-09-24T21:31:13.516Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -218,9 +235,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "80c960f65f641e56b6ca8550a39ac5af3f443d62"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "0ec750726efecbec996b8a530cf3c5de6927ad8e"
+  message: "✅ WTM9M7 task: persist canonical completion"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -228,9 +248,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-09-24T21:31:13.516Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "0ec750726efecbec996b8a530cf3c5de6927ad8e"
 doc_version: 3
-doc_updated_at: "2026-09-24T21:29:09.448Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-24T21:31:13.516Z"
+doc_updated_by: "CODER"
 description: "Resolve the implementation verification task and observed contract before canonical final checks so dynamically required checks such as docs_contract are present in recorded evidence. Reuse the same snapshot for projection after the canonical validation record."
 sections:
   Summary: |-
@@ -357,6 +385,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:065619b6307bac0135473498937455e4357c58bdd8f9225ca7d04c490f4e80c1"
     work_order_id: "sha256:7c5ea1e14b9aa8d0d39780ebec1ab75f9b80213aa24ac38d4f22f4193b8b780b"
+  implementation_commit:
+    hash: "80c960f65f641e56b6ca8550a39ac5af3f443d62"
+    message: "🚧 WTM9M7 task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "b3af40b4834cbb0b270af1bd5772888d7a8cd97f"
@@ -1290,3 +1321,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:f8da4263c97535e973ec64b4b65da79177795670801bc3cc4a6207c3705a7b61`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-09-24T21:31:13.516Z`

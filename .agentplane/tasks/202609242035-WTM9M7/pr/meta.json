@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:3f16a37f6769a2c807824d1d8c0c4302bb4bb0eb275356210649546b7f5d9c8d",
   "pr_number": 6025,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6025",
+  "pre_merge_closure": {
+    "basis_commit": "0ec750726efecbec996b8a530cf3c5de6927ad8e",
+    "branch": "task/202609242035-WTM9M7/bind-canonical-final-verification-to-the-observe",
+    "pr_number": 6025,
+    "recorded_at": "2026-09-24T21:31:13.584Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
