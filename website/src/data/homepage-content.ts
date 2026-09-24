@@ -28,14 +28,14 @@ export const homepageContent = {
   seo: {
     title: "Agentplane | Git-native control plane for coding agents",
     description:
-      "Agentplane pairs AGENTS.md guardrails with a CLI that gives coding agents bounded actions and records independent proof in Git.",
+      "Review agent-written changes with approved scope, observed results, and required checks in Git. Agentplane works with your existing coding agent.",
   },
   hero: {
     eyebrow: "The Git-native control plane for coding agents",
     title: "Let agents write code. Keep authority and proof in Git.",
     titleLines: ["Let agents write code.", "Keep authority and", "proof in Git."],
     subtitle:
-      "AGENTS.md sets the guardrails. The CLI returns one bounded action at a time, so agents can focus on the task instead of tracking the workflow.",
+      "Review agent-written code with a record of what was allowed, what changed, and which checks ran. AGENTS.md sets the guardrails; the CLI gives one bounded action at a time.",
     trustLine: "Agent-agnostic · Local-first · No account required · MIT licensed",
   },
   receipt: {
@@ -57,16 +57,16 @@ export const homepageContent = {
   },
   controlLoop: {
     eyebrow: "The control loop",
-    title: "One clear path from intent to durable proof.",
-    text: "AGENTS.md keeps guardrails in the repository. The CLI gives the agent one bounded action at a time; Agentplane then verifies and records the result.",
+    title: "From an approved task to a reviewable result.",
+    text: "Your coding agent implements the change. Agentplane returns one bounded action at a time, observes the repository result, runs required checks, and records the outcome.",
     steps: [
       {
         id: "authorize",
         icon: "authorize",
         tone: "blue",
         title: "Authorize",
-        text: "Define the objective, writable scope, and allowed effects.",
-        evidence: "The agent receives one bounded WorkOrder.",
+        text: "Set the objective, writable paths, and required checks.",
+        evidence: "The agent receives the approved scope.",
         artifact: "AgentWorkOrder v2",
       },
       {
@@ -74,8 +74,8 @@ export const homepageContent = {
         icon: "run",
         tone: "violet",
         title: "Run",
-        text: "Dispatch one semantic episode to the coding agent.",
-        evidence: "Actions stay inside the approved boundary.",
+        text: "Give the coding agent one bounded action.",
+        evidence: "Changes are checked against the approved scope.",
         artifact: "AgentSemanticResult v2",
       },
       {
@@ -83,8 +83,8 @@ export const homepageContent = {
         icon: "verify",
         tone: "green",
         title: "Verify",
-        text: "Read repository facts and execute required checks.",
-        evidence: "Observed results stay separate from agent claims.",
+        text: "Observe repository changes and run required checks.",
+        evidence: "Observed facts stay separate from the agent's report.",
         artifact: "task verification",
       },
       {
@@ -92,16 +92,16 @@ export const homepageContent = {
         icon: "record",
         tone: "coral",
         title: "Record",
-        text: "Close deterministically or preserve an exact recovery route.",
-        evidence: "Authority and proof travel with the code in Git.",
+        text: "Keep the task outcome and evidence in the repository.",
+        evidence: "Reviewers can inspect the task record in Git.",
         artifact: "acr.json",
       },
     ],
   },
   durableProof: {
-    eyebrow: "Durable proof in Git",
-    title: "Every controlled task leaves evidence a reviewer can inspect.",
-    text: "Task state, observations, verification status, and the Agent Change Record remain repository-owned and versioned together.",
+    eyebrow: "The review trail",
+    title: "Inspect the task behind the diff.",
+    text: "This illustrative task shows the approved scope, changed paths, check results, and task files a reviewer can inspect after the agent session ends.",
     commit: "b1e9d4f",
     summary: "agentplane: fix parser edge case",
     files: [
@@ -116,15 +116,16 @@ export const homepageContent = {
       ["Observed", "3 paths changed"],
       ["Verification", "unit, lint, types passed"],
     ],
-    footer: "Hash-verify the evidence bundle and review the ACR with standard Git tooling.",
+    footer:
+      "When you create an evidence bundle, verify its hashes and review the ACR with Git tooling.",
   },
   worksWith: {
-    title: "Control plane, not another coding agent.",
-    text: "Keep the model, editor, agent, and CI you already use. Agentplane gives each worker the same authority and evidence contract.",
+    title: "Use the coding agent you already trust.",
+    text: "Keep your model, editor, and CI. Agentplane adds a consistent task boundary and review trail around the agent's work.",
     tools: ["Codex", "Claude Code", "Cursor", "Hermes", "Any repository-capable agent"],
   },
   closing: {
-    title: "Put your next agent task under control.",
-    text: "Start in a repository you own. Inspect the WorkOrder, run the agent, and review the task record and ACR in Git.",
+    title: "Try Agentplane on one task in your repository.",
+    text: "Set the scope, hand the next bounded action to your agent, and inspect the result in Git.",
   },
 } as const;

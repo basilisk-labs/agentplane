@@ -70,7 +70,7 @@ const artifacts = [
     file: "acr.json",
     category: "04 / CHANGE RECORD",
     caption: "An ACR links the task, changes, verification, and result.",
-    notes: ["Authority, in writing.", "Changes you can inspect.", "Every change leaves a record."],
+    notes: ["Authority, in writing.", "Changes you can inspect.", "Record the outcome."],
     preview: [
       "{",
       '  "acr_version": "0.1.0",',
@@ -146,10 +146,10 @@ const artifacts = [
 ] as const;
 
 const stages = [
-  { title: "Authority", text: "Bounded by AGENTS.md and approved scope" },
-  { title: "Observed", text: "Agent actions and rationale captured" },
-  { title: "Verified", text: "Tests and checks must pass" },
-  { title: "Recorded", text: "Durable, auditable evidence in Git" },
+  { title: "Authority", text: "AGENTS.md rules and approved scope" },
+  { title: "Observed", text: "Repository changes observed independently" },
+  { title: "Verified", text: "Required checks run and recorded" },
+  { title: "Recorded", text: "Task evidence retained in Git" },
 ] as const;
 
 function trackHomeEvent(eventName: string, payload: Record<string, string> = {}): void {
@@ -165,7 +165,7 @@ function HomeJsonLd(): ReactNode {
     mainEntity: [
       [
         "What is Agentplane?",
-        "Agentplane is the Git-native control plane for coding agents. It bounds delegated authority and keeps approvals, observed proof, recovery, and closure inspectable in Git.",
+        "Agentplane gives coding agents bounded tasks and keeps approved scope, observed changes, and verification records in Git.",
       ],
       [
         "Does Agentplane replace coding agents?",
@@ -624,7 +624,7 @@ function Hero(): ReactNode {
             to={quickstartUrl}
             onClick={() => trackHomeEvent("quickstart_click", { location: "hero_primary" })}
           >
-            Start in your repository <span aria-hidden="true">→</span>
+            Follow the quickstart <span aria-hidden="true">→</span>
           </Link>
           <CopyInstallButton location="hero" />
         </div>
@@ -642,12 +642,12 @@ function ProofOverview(): ReactNode {
   return (
     <section className={`${styles.proofOverview} ${styles.reveal}`}>
       <div className={styles.proofOverviewInner}>
-        <p className={styles.kicker}>Built for real development</p>
-        <h2>Proof lives with the code.</h2>
+        <p className={styles.kicker}>A clearer review trail</p>
+        <h2>Know what happened after the agent ran.</h2>
         <p className={styles.proofOverviewLede}>
-          Every change from an agent runs in a controlled workflow,
+          Agentplane keeps the task boundary, observed repository changes,
           <br />
-          with tests, checks, and a permanent record in Git.
+          and check results together for review in Git.
         </p>
         <div className={styles.proofOverviewGrid}>
           <div>
@@ -655,7 +655,7 @@ function ProofOverview(): ReactNode {
               <StageGlyph stage="Authority" />
             </span>
             <h3>Clear authority</h3>
-            <p>AGENTS.md sets the guardrails; the CLI returns the next bounded action.</p>
+            <p>AGENTS.md defines the guardrails; the CLI returns the next bounded action.</p>
           </div>
           <div>
             <span className={`${styles.stageIcon} ${styles.stageIconVerified}`}>
@@ -663,7 +663,7 @@ function ProofOverview(): ReactNode {
             </span>
             <h3>Verifiable work</h3>
             <p>
-              Agents run locally, changes pass your checks, and nothing lands without verification.
+              See observed changes and the result of each required check before accepting the work.
             </p>
           </div>
           <div>
@@ -672,7 +672,8 @@ function ProofOverview(): ReactNode {
             </span>
             <h3>A durable record</h3>
             <p>
-              Task state, ACR, and evidence are committed to your repository alongside the code.
+              Task state and available evidence remain in the repository after the agent session
+              ends.
             </p>
           </div>
         </div>
@@ -854,7 +855,7 @@ function WorksWith(): ReactNode {
   return (
     <section className={`${styles.section} ${styles.worksSection} ${styles.reveal}`}>
       <div className={styles.sectionIntro}>
-        <p className={styles.kicker}>The worker stays replaceable</p>
+        <p className={styles.kicker}>Keep your tools</p>
         <h2>{worksWith.title}</h2>
         <p>{worksWith.text}</p>
       </div>
@@ -875,10 +876,10 @@ function WorkflowModes(): ReactNode {
     <section className={`${styles.section} ${styles.modesSection} ${styles.reveal}`}>
       <div className={styles.sectionIntroWide}>
         <p className={styles.kicker}>Choose the route</p>
-        <h2>One control model. Two ways to work.</h2>
+        <h2>Choose how each task moves to review.</h2>
         <p>
-          Use the workflow that fits the size of the change. Both keep task state and verification
-          in your repository.
+          Work in the current checkout for a focused change, or use an isolated worktree and PR.
+          Both routes keep task state and check results in the repository.
         </p>
       </div>
       <div className={styles.modeGrid}>
@@ -891,8 +892,8 @@ function WorkflowModes(): ReactNode {
             <code>direct</code>
           </h3>
           <p>
-            Work in the current checkout for quick, focused changes. Review the task record and
-            required checks before closing.
+            Make a focused change in the current checkout. Review its task record and required
+            checks before closing.
           </p>
           <ul>
             <li>Fast iteration in your environment</li>
@@ -938,8 +939,8 @@ function DocsRail(): ReactNode {
   return (
     <section className={`${styles.section} ${styles.docsSection} ${styles.reveal}`}>
       <div className={styles.sectionIntroWide}>
-        <p className={styles.kicker}>Keep exploring</p>
-        <h2>Find the next useful page.</h2>
+        <p className={styles.kicker}>What to read next</p>
+        <h2>Choose the next step for your repository.</h2>
       </div>
       <div className={styles.docsGrid}>
         {groups.map((group) => (
