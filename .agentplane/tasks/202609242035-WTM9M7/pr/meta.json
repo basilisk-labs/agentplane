@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202609242035-WTM9M7/bind-canonical-final-verification-to-the-observe",
+  "created_at": "2026-09-24T20:39:37.177Z",
+  "diffstat_sha256": "sha256:900a4f73845c161a1a418798f5be43338d02615f6d2909fbaa4a9af34e48aec6",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202609242035-WTM9M7",
+  "updated_at": "2026-09-24T20:39:37.177Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

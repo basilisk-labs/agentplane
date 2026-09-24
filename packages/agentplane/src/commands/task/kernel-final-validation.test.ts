@@ -72,4 +72,16 @@ describe("canonical final-validation command ownership", () => {
     });
     expect(task.verify).toEqual(["legacy stale command"]);
   });
+
+  it("preserves dynamically observed verification requirements", () => {
+    const executionContract = {
+      verification: { contract: { selected_checks: ["docs_contract", "task_outcome"] } },
+    };
+    const task = { verify: ["legacy stale command"], execution_contract: executionContract };
+
+    const prepared = canonicalFinalValidationTask(task);
+
+    expect(prepared.verify).toEqual([]);
+    expect(prepared.execution_contract).toBe(executionContract);
+  });
 });

@@ -188,9 +188,15 @@ export async function runKernelFinalValidation(
   await writeKernelArtifact(directory, "final-validation-inputs.json", binding);
   const operationalTask = await command.taskBackend.getTask(taskId);
   if (!operationalTask) throw new Error("Canonical operational verification task is unavailable");
+  const verification = await resolveImplementationVerificationTask({
+    command,
+    checkout: command.resolvedProject.gitRoot,
+    task: operationalTask,
+    workflow: "branch_pr",
+  });
   const checks = await runDirectTaskVerification({
     command,
-    task: canonicalFinalValidationTask(operationalTask),
+    task: canonicalFinalValidationTask(verification.task),
     task_id: taskId,
     cwd: command.resolvedProject.gitRoot,
     additional_commands: commands.map((check) => ({ command: check })),
@@ -240,12 +246,6 @@ export async function runKernelFinalValidation(
   requireKernelCommit(await runtime.lifecycle.apply(input));
   const projectedTask = await command.taskBackend.getTask(taskId);
   if (projectedTask?.execution_route?.repository_mode === "branch_pr") {
-    const verification = await resolveImplementationVerificationTask({
-      command,
-      checkout: command.resolvedProject.gitRoot,
-      task: projectedTask,
-      workflow: "branch_pr",
-    });
     const exitCode = await cmdVerifyParsed({
       ctx: command,
       cwd: command.resolvedProject.gitRoot,
