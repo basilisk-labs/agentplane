@@ -22,7 +22,7 @@ Resolve the implementation verification task and observed contract before canoni
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-24T20:39:37.177Z
+- Updated: 2026-09-24T21:29:58.464Z
 - Branch: task/202609242035-WTM9M7/bind-canonical-final-verification-to-the-observe
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
