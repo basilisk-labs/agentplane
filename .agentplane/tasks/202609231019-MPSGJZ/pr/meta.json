@@ -3,8 +3,8 @@
   "branch": "task/202609231019-MPSGJZ/fix-canonical-completed-task-branch-lifecycle-re",
   "created_at": "2026-09-23T10:57:06.440Z",
   "diffstat_sha256": "sha256:54b774e9baaf35c4adfad1fc38f99ada038cae5874d32b6515188071d4686ca0",
-  "last_verified_at": "2026-09-23T23:33:24.891Z",
-  "last_verified_diffstat_sha256": "sha256:1248b2f7e46c3b7c56a83b6c693e56b634151f731b358f8c6ceb3764cb0bf545",
+  "last_verified_at": "2026-09-24T19:48:16.462Z",
+  "last_verified_diffstat_sha256": "sha256:54b774e9baaf35c4adfad1fc38f99ada038cae5874d32b6515188071d4686ca0",
   "pr_number": 6011,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6011",
   "provider": {

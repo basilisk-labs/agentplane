@@ -4,7 +4,7 @@ title: "Fix canonical completed-task branch lifecycle recovery without internal 
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 31
+revision: 32
 origin:
   system: "manual"
 depends_on: []
@@ -23,10 +23,10 @@ plan_approval:
   note: "Projected from the approved canonical Task Kernel plan."
 verification:
   state: "needs_rework"
-  updated_at: "2026-09-23T23:33:24.891Z"
+  updated_at: "2026-09-24T19:48:16.462Z"
   updated_by: "SUPERVISOR"
   note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 1
+  attempts: 2
 quality_review:
   state: "pending"
   updated_at: "2026-09-23T23:27:15.181Z"
@@ -213,6 +213,7 @@ execution_contract:
       - "packages/agentplane/src/commands/task/external-agent-implementation-finalization.ts"
       - "packages/agentplane/src/commands/task/external-agent-plan-refinement.test.ts"
       - "packages/agentplane/src/commands/task/external-agent-plan-refinement.ts"
+      - "packages/agentplane/src/commands/task/external-agent-read-only-observation.ts"
       - "packages/agentplane/src/commands/task/external-agent-supervisor.test.ts"
       - "packages/agentplane/src/commands/task/finish-execute-close.ts"
       - "packages/agentplane/src/commands/task/finish-execute.ts"
@@ -292,7 +293,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:f0d1168c34e4b118667a750bdaadeda54c1ba409a6cf2fe42aed48d57d6d2aaa"
+      digest: "sha256:1f2d384b1294e829af5c7d418774e18d7c32799a79167d658e240425872a7000"
       escalation_reasons:
         - "central_path:bun.lock"
         - "central_path:packages/agentplane/src/commands/shared/branch-identity.ts"
@@ -572,6 +573,7 @@ execution_contract:
           - "packages/agentplane/src/commands/task/external-agent-implementation-finalization.ts"
           - "packages/agentplane/src/commands/task/external-agent-plan-refinement.test.ts"
           - "packages/agentplane/src/commands/task/external-agent-plan-refinement.ts"
+          - "packages/agentplane/src/commands/task/external-agent-read-only-observation.ts"
           - "packages/agentplane/src/commands/task/external-agent-supervisor.test.ts"
           - "packages/agentplane/src/commands/task/finish-execute-close.ts"
           - "packages/agentplane/src/commands/task/finish-execute.ts"
@@ -715,8 +717,14 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "verify"
+    at: "2026-09-24T19:48:16.462Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-23T23:33:29.014Z"
+doc_updated_at: "2026-09-24T19:48:20.391Z"
 doc_updated_by: "external:EXECUTOR"
 description: "Implement the verified AgentPlane lifecycle fixes as one clean semantic code task. Keep implementation, tests, and local verification in the work item. Leave PR publication, hosted checks, merge, and cleanup to branch_pr lifecycle. Include completed canonical implementation-rework routing, safe supervisor journal replacement and stale-state recovery, exact DONE rework runner authority, completed verification and quality-review routing, base-checkout provider operations, and Codex-compatible strict output schemas. Do not include task artifacts from other tasks."
 sections:
@@ -1160,6 +1168,40 @@ sections:
     - capability_digest: sha256:44668150af015035b4f9295eeb1e83a605e3c89b183ce28b4421a381c9bdb75f
     - checks_digest: sha256:b210c956ad50fee265b5e19b6389dbdc2318d2787decae6760335c7d68a3a806
     - identity_digest: sha256:dc0f908e17aedca8adb2c050f25d063ddb84a966a205557115a7233e5e01dc49
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-24T19:48:16.462Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 2
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:853b6b80ed5aca4f6515b6493dc1f63f8262d59bd76be35ea2eb0b2799cc72c6, input_digest=sha256:8faf0e953e1ce55922959370db3ac57971a056eefe061c20a173e72f8d9b09f8
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609231019-MPSGJZ declared verification
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:b8810dd303286d6fdd7c8b7e964e33cdb45ef13091247e90d5d458d559e9f9a0
+    - policy_digest: sha256:9c3e5325d78af3d590b3ecf1641b0da288f0a1e3fec30c28b808c2c2f01aa68e
+    - capability_digest: sha256:44668150af015035b4f9295eeb1e83a605e3c89b183ce28b4421a381c9bdb75f
+    - checks_digest: sha256:759f5e2322d1dead583835ed7f819293fa6dde452579e71caaa95c629a64b2ee
+    - identity_digest: sha256:cea1693c10287b5e030d82694dfd38be12af7b0600d854a6a47d32d713497742
 
     DecisionContextRef:
     - operator_action: stop
@@ -2257,6 +2299,40 @@ NativeTaskIdentityRef:
 - capability_digest: sha256:44668150af015035b4f9295eeb1e83a605e3c89b183ce28b4421a381c9bdb75f
 - checks_digest: sha256:b210c956ad50fee265b5e19b6389dbdc2318d2787decae6760335c7d68a3a806
 - identity_digest: sha256:dc0f908e17aedca8adb2c050f25d063ddb84a966a205557115a7233e5e01dc49
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-24T19:48:16.462Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 2
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:853b6b80ed5aca4f6515b6493dc1f63f8262d59bd76be35ea2eb0b2799cc72c6, input_digest=sha256:8faf0e953e1ce55922959370db3ac57971a056eefe061c20a173e72f8d9b09f8
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609231019-MPSGJZ declared verification
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:b8810dd303286d6fdd7c8b7e964e33cdb45ef13091247e90d5d458d559e9f9a0
+- policy_digest: sha256:9c3e5325d78af3d590b3ecf1641b0da288f0a1e3fec30c28b808c2c2f01aa68e
+- capability_digest: sha256:44668150af015035b4f9295eeb1e83a605e3c89b183ce28b4421a381c9bdb75f
+- checks_digest: sha256:759f5e2322d1dead583835ed7f819293fa6dde452579e71caaa95c629a64b2ee
+- identity_digest: sha256:cea1693c10287b5e030d82694dfd38be12af7b0600d854a6a47d32d713497742
 
 DecisionContextRef:
 - operator_action: stop
