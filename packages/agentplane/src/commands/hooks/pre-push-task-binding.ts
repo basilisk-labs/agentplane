@@ -142,9 +142,14 @@ function hasManagedContextBootstrapEvidence(
   );
 }
 
-function readCommitList(gitRoot: string, range: CommitRange): string[] {
+function readCommitList(gitRoot: string, range: CommitRange, excludeRef?: string | null): string[] {
   if (!range) return [];
-  return readGitText(gitRoot, ["log", "--format=%H", `${range.from}..${range.to}`])
+  return readGitText(gitRoot, [
+    "log",
+    "--format=%H",
+    `${range.from}..${range.to}`,
+    ...(excludeRef ? ["--not", excludeRef] : []),
+  ])
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean);
@@ -199,8 +204,12 @@ function readCommitBody(gitRoot: string, commit: string): string {
   return readGitText(gitRoot, ["show", "--format=%B", "--no-patch", commit]);
 }
 
-export function findTaskBoundOutgoingCommitFailures(gitRoot: string, range: CommitRange): string[] {
-  const commits = readCommitList(gitRoot, range);
+export function findTaskBoundOutgoingCommitFailures(
+  gitRoot: string,
+  range: CommitRange,
+  excludeRef?: string | null,
+): string[] {
+  const commits = readCommitList(gitRoot, range, excludeRef);
   const commitBodies = new Map<string, string>();
   const commitBodyFor = (commit: string): string => {
     const cached = commitBodies.get(commit);

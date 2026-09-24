@@ -173,8 +173,9 @@ export function failIfPollutedReleaseGitConfig(gitRoot: string): void {
 export function enforceTaskBoundOutgoingCommits(
   gitRoot: string,
   range: { from: string; to: string } | null,
+  excludeRef?: string | null,
 ): void {
-  const failures = findTaskBoundOutgoingCommitFailures(gitRoot, range);
+  const failures = findTaskBoundOutgoingCommitFailures(gitRoot, range, excludeRef);
   if (failures.length === 0) return;
   fail(
     "pre-push blocked: mutating commits require a valid task id or emergency backfill evidence.",

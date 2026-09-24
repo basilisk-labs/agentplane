@@ -394,9 +394,14 @@ function hasManagedContextBootstrapEvidence(body, mutatingPaths) {
   );
 }
 
-function readCommitList(range) {
+function readCommitList(range, excludeRef) {
   if (!range) return [];
-  return readQuiet("git", ["log", "--format=%H", `${range.from}..${range.to}`])
+  return readQuiet("git", [
+    "log",
+    "--format=%H",
+    `${range.from}..${range.to}`,
+    ...(excludeRef ? ["--not", excludeRef] : []),
+  ])
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean);
@@ -445,8 +450,8 @@ function readCommitBody(commit) {
   return readQuiet("git", ["show", "--format=%B", "--no-patch", commit]);
 }
 
-function enforceTaskBoundOutgoingCommits(range) {
-  const commits = readCommitList(range);
+function enforceTaskBoundOutgoingCommits(range, excludeRef) {
+  const commits = readCommitList(range, excludeRef);
   const commitBodies = new Map();
   const commitBodyFor = (commit) => {
     if (commitBodies.has(commit)) return commitBodies.get(commit);
@@ -533,10 +538,13 @@ function main() {
     }),
   );
   const scripts = readPackageScripts();
+  const defaultBaseRef = resolveDefaultBaseRef();
   const diffRange = selectBranchDiffRange(updates, {
-    newBranchFallbackRef: resolveDefaultBaseRef(),
+    newBranchFallbackRef: defaultBaseRef,
   });
-  enforceTaskBoundOutgoingCommits(diffRange);
+  const baseBranch = defaultBaseRef?.replace(/^origin\//u, "");
+  const pushesBase = updates.some((update) => update.remoteRef === `refs/heads/${baseBranch}`);
+  enforceTaskBoundOutgoingCommits(diffRange, pushesBase ? null : defaultBaseRef);
   const key = proofKey({ updates, mode, ciScript, changedFiles });
   if (!isReleasePush && !trackedChangesShort()) {
     const localReceipt = readReusableLocalVerificationReceipt({
