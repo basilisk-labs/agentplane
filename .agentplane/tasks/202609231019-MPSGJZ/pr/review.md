@@ -78,7 +78,7 @@ Created: 2026-09-23T10:57:06.440Z
  .../task/kernel-provider-effect-coordinator.ts     | 149 +++++++++++++----
  .../src/commands/task/plan-set.command.ts          |  24 +--
  .../agentplane/src/commands/task/plan.unit.test.ts |  11 ++
- .../commands/task/roadmap-advance-one-step.test.ts |  13 +-
+ .../commands/task/roadmap-advance-one-step.test.ts |  11 +-
  .../task/roadmap-integration-parity.test.ts        |   6 +
  .../commands/task/roadmap-terminal-noop.test.ts    |  58 ++++++-
  .../src/commands/task/verify-record-execute.ts     |  20 ++-
@@ -97,7 +97,7 @@ Created: 2026-09-23T10:57:06.440Z
  packages/core/src/tasks/plan-execution-grant.ts    |  52 +++---
  .../core/src/tasks/task-kernel/invariants.test.ts  |  69 ++++++++
  packages/core/src/tasks/task-kernel/invariants.ts  |  11 ++
- 68 files changed, 2718 insertions(+), 311 deletions(-)
+ 68 files changed, 2716 insertions(+), 311 deletions(-)
 ```
 
 </details>

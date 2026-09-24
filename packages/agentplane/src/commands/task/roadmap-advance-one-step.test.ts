@@ -42,9 +42,7 @@ describe("LC-03 common advance-one-step coordinator", () => {
     expect(command).not.toMatch(/for\s*\(/u);
     expect(command).not.toContain("supervisePersistedWorkflowEpisode");
     expect(command).toContain('workflow?.workflowStep.kind === "agent_episode"');
-    expect(command).not.toContain(
-      'workflow?.workflowStep.id === "agent.provider_conflict_rework"',
-    );
+    expect(command).not.toContain('workflow?.workflowStep.id === "agent.provider_conflict_rework"');
     expect(coordinator).toContain("export async function advanceTaskStep");
   });
 
