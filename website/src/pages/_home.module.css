@@ -1322,6 +1322,15 @@
   white-space: pre;
 }
 
+.jsonlCodeLines .codeLine {
+  min-width: 0;
+}
+
+.jsonlCodeLines .codeLine code {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
 .codeLine:first-child code,
 .codeLine:nth-child(3) code {
   color: #785993;

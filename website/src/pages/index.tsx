@@ -22,17 +22,17 @@ const artifacts = [
   {
     file: "AGENTS.md",
     category: "01 / AUTHORITY",
-    caption: "The agent reads the rules before it touches the code.",
+    caption: "The agent reads repository policy before it touches the code.",
     notes: ["Start with the boundary.", "Instructions live with the repo.", "Scope comes first."],
     preview: [
       "# AGENTS.md",
       "",
-      "## Scope",
-      "Work only inside the approved task.",
-      "Read the current WorkOrder before editing.",
+      "## PROJECT",
+      "Repository type: user project initialized with agentplane.",
       "",
-      "## Checks",
-      "Return evidence for every required check.",
+      "## MUST / MUST NOT",
+      "- MUST create/reuse executable task IDs for any repo-state mutation.",
+      "- MUST perform only the semantic objective supplied by the current packet.",
     ],
   },
   {
@@ -41,78 +41,68 @@ const artifacts = [
     caption: "A task has an owner, a plan, and a reviewable path to done.",
     notes: ["A plan you can inspect.", "One task, one record.", "No hidden handoff."],
     preview: [
-      "# Fix parser edge case",
-      "",
-      "Status: DOING",
-      "Plan approval: approved",
+      "---",
+      'id: "202609231539-BY7E3D"',
+      'title: "Redesign the Agentplane homepage with an interactive artifact explorer"',
+      'status: "DONE"',
+      'owner: "CODER"',
+      "verify:",
+      '  - "bun run docs:site:typecheck"',
+      "---",
       "",
       "## Scope",
-      "Update the parser and its focused checks.",
-      "",
-      "## Verify Steps",
-      "Run the checks named in this task.",
+      "Update the homepage artifact explorer.",
     ],
   },
   {
     file: "observations.jsonl",
     category: "03 / OBSERVED",
-    caption: "Repository facts are captured separately from the agent's report.",
-    notes: ["Show what happened.", "Claims differ from observations.", "Readable later."],
+    caption: "A task observation records a decision or risk as one JSONL entry.",
+    notes: ["One entry per line.", "Keep decisions visible.", "Readable later."],
     preview: [
-      '{"kind":"workspace_observation",',
-      ' "task_id":"parser-edge",',
-      ' "changed_paths":["src/parser/token.ts"],',
-      ' "checks":[{"name":"unit","status":"passed"}],',
-      ' "source":"repository_readback"}',
+      '{"schema_version":"0.1","id":"obs-example-1","task_id":"202609231539-BY7E3D","created_at":"2026-09-23T15:40:00.000Z","author":"CODER","phase":"implementation","kind":"decision","severity":"low","summary":"Keep the artifact explorer keyboard-accessible.","status":"accepted"}',
     ],
   },
   {
     file: "acr.json",
     category: "04 / CHANGE RECORD",
-    caption: "The Agent Change Record connects the work to its authority and proof.",
+    caption: "An ACR links the task, changes, verification, and result.",
     notes: ["Authority, in writing.", "Changes you can inspect.", "Every change leaves a record."],
     preview: [
       "{",
-      '  "version": "1",',
-      '  "task": "fix-parser-edge-case",',
-      '  "authority": {',
-      '    "actor": "code-agent:cli",',
-      '    "policy": "AGENTS.md",',
-      '    "scope": ["src/parser/**"]',
+      '  "acr_version": "0.1.0",',
+      '  "record_type": "agent_change_record",',
+      '  "record_id": "acr_202609231539-BY7E3D",',
+      '  "task": {',
+      '    "task_id": "202609231539-BY7E3D",',
+      '    "title": "Redesign the Agentplane homepage"',
       "  },",
-      '  "changes": [',
-      "    {",
-      '      "path": "src/parser/lexer.ts",',
-      '      "action": "modify",',
-      '      "summary": "Handle empty input edge case"',
-      "    },",
-      "    {",
-      '      "path": "src/parser/lexer.test.ts",',
-      '      "action": "add",',
-      '      "summary": "Add regression test"',
-      "    }",
-      "  ],",
-      '  "observations": "see observations.jsonl",',
-      '  "verified": {',
-      '    "checks": ["lint", "typecheck", "tests"],',
+      '  "changes": {',
+      '    "summary": "Updated the homepage artifact explorer",',
+      '    "diff_stats": { "files_changed": 2 }',
+      "  },",
+      '  "verification": {',
       '    "status": "passed"',
+      "  },",
+      '  "result": {',
+      '    "status": "verified"',
       "  }",
       "}",
     ],
   },
   {
-    file: "evidence/manifest.json",
+    file: "verification/<record-id>.json",
     category: "05 / EVIDENCE",
-    caption: "A manifest keeps the checks and their source files together in Git.",
-    notes: ["Find the evidence.", "Verify the bundle.", "Keep the record."],
+    caption: "A verification record ties the checked commit to the result.",
+    notes: ["Check the commit.", "See who verified.", "Keep the record."],
     preview: [
       "{",
-      '  "schema_version": 1,',
-      '  "task_id": "parser-edge",',
-      '  "artifacts": [',
-      '    "verification/result.json",',
-      '    "observations.jsonl"',
-      "  ]",
+      '  "schema_version": 2,',
+      '  "kind": "task_verification_record",',
+      '  "task_id": "202609231539-BY7E3D",',
+      '  "implementation_sha": "4c4b659b08416bc32b8b4db69314e2b825b15a34",',
+      '  "result": "ok",',
+      '  "verifier": "SUPERVISOR"',
       "}",
     ],
   },
@@ -483,11 +473,8 @@ function ArtifactExplorer(): ReactNode {
               onClick={() => selectArtifact(1)}
               aria-label="Open task README.md"
             >
-              › <FolderGlyph /> task-001-fix-parser
+              › <FolderGlyph /> 202609231539-BY7E3D
             </button>
-            <p className={`${styles.treeFolder} ${styles.treeFolderTask}`}>
-              › <FolderGlyph /> task-002-add-tests
-            </p>
             <div className={styles.treeFiles}>
               {[2, 3, 4, 0, 5, 6].map((index) => {
                 const artifact = artifacts[index];
@@ -495,7 +482,7 @@ function ArtifactExplorer(): ReactNode {
                   <div className={styles.treeFileGroup} key={artifact.file}>
                     {index === 4 ? (
                       <p className={`${styles.treeFolder} ${styles.treeFolderEvidence}`}>
-                        ⌄ <FolderGlyph /> evidence
+                        ⌄ <FolderGlyph /> verification
                       </p>
                     ) : null}
                     {index === 6 ? (
@@ -557,7 +544,10 @@ function ArtifactExplorer(): ReactNode {
               </span>
             </div>
             <div className={styles.editorContent} key={active.file}>
-              <div className={styles.codeLines} aria-label={"Example contents of " + active.file}>
+              <div
+                className={`${styles.codeLines} ${active.file.endsWith(".jsonl") ? styles.jsonlCodeLines : ""}`}
+                aria-label={"Representative excerpt from " + active.file}
+              >
                 {active.preview.map((line, index) => (
                   <div className={styles.codeLine} key={index}>
                     <span className={styles.lineNumber} aria-hidden="true">
