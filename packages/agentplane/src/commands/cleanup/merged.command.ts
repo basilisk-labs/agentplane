@@ -16,9 +16,13 @@ export const cleanupSpec: CommandSpec<CleanupGroupParsed> = {
   id: ["cleanup"],
   group: "Branch",
   summary: "Clean up local branches/worktrees.",
-  synopsis: ["agentplane cleanup <merged> [options]"],
+  synopsis: ["agentplane cleanup <inspect|merged> [options]"],
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
   examples: [
+    {
+      cmd: "agentplane cleanup inspect",
+      why: "Inspect local disk use and cleanup classification.",
+    },
     { cmd: "agentplane cleanup merged --yes", why: "Delete merged task branches/worktrees." },
   ],
   parse: (raw) => parseGroupCommand(raw),

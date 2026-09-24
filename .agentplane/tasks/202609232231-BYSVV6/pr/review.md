@@ -29,17 +29,25 @@ Created: 2026-09-24T14:39:05.856Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ docs/user/branching-and-pr-artifacts.mdx           |  10 +
+ docs/user/cli-reference.generated.mdx              |  29 +++
  .../agentplane/src/backends/task-backend/load.ts   |  62 +++++-
  .../backends/task-backend/local-backend-read.ts    |  18 +-
  .../backends/task-backend/local-backend-write.ts   |  19 +-
  .../src/backends/task-backend/local-backend.ts     | 104 +++++++--
  .../run-cli.core.pr-flow.worktree-runtime.test.ts  |   6 +
+ .../src/cli/run-cli/command-catalog/lifecycle.ts   |   6 +
+ .../src/cli/run-cli/command-loaders/lifecycle.ts   |   4 +
  .../branch/work-start.compact-tasks.test.ts        | 233 +++++++++++++++++++++
  .../commands/branch/work-start.compact-tasks.ts    |  58 +++++
  .../commands/branch/work-start.hook-shim.test.ts   |   1 +
  .../src/commands/branch/work-start.materialize.ts  |  18 +-
  .../agentplane/src/commands/branch/work-start.ts   |  27 ++-
- 10 files changed, 510 insertions(+), 36 deletions(-)
+ .../src/commands/cleanup/inspect.command.ts        |  59 ++++++
+ .../src/commands/cleanup/inspect.test.ts           |  88 ++++++++
+ .../agentplane/src/commands/cleanup/inspect.ts     | 141 +++++++++++++
+ .../src/commands/cleanup/merged.command.ts         |   6 +-
+ 18 files changed, 852 insertions(+), 37 deletions(-)
 ```
 
 </details>

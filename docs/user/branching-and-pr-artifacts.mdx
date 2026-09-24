@@ -138,6 +138,16 @@ manual PR link on the merged task PR instead of failing silently.
 
 See the [generated CLI reference](cli-reference.generated) for the public command surface.
 
+To inspect disk use before cleanup, run `agentplane cleanup inspect` or
+`agentplane cleanup inspect --json`. The report lists allocated size, task branch ownership,
+dirty state, and cleanup classification for registered worktrees. It also lists separate Git
+repositories directly under `.agentplane` and its worktrees directory. Sizes are filesystem block
+allocations; shared APFS data can make their sum differ from reclaimable space. A
+`proof_required` entry is only a prompt to inspect `agentplane cleanup merged`. That command
+still requires task closure and provider proof before deletion. Dirty or active worktrees and
+separate repositories remain retained; inspect them individually rather than deleting them based
+on size.
+
 Typical branch_pr flow:
 
 ```bash
