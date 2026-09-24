@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202609232231-BYSVV6",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-24T19:47:13.415Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "human_review",
+  "summary": "EVALUATOR returned human_review with 1 typed finding(s).",
+  "evaluated_sha": "d6f82fa61c7719c09cb08e8edffeabb7c2fa7b3c",
+  "review_identity_digest": "sha256:66ca309e4a77873b114896bd66f7a6922557d879887c79be201f4911c1a28e2b",
+  "findings": [
+    "The frozen diff changes three scripts outside the declared writable roots: scripts/baselines/v0.7-compatibility-candidate.json, scripts/checks/check-compatibility-contract-baseline.mjs, and scripts/checks/run-pre-push-hook.mjs. The task explicitly records these authority violations. Passing verification and the general task.scope.extend capability do not establish approval of these specific changes."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609232231-BYSVV6/README.md",
+    ".agentplane/tasks/202609232231-BYSVV6/quality/objects/sha256/83b68085b1abe9f6bbe2f0d29f5dcd4917c2e743e564bfe2c5ed3c97cb6c5daf.patch",
+    ".agentplane/policy/dod.core.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The implementation treats required compatibility and pre-push script changes as implicitly authorized despite the frozen writable-root restrictions."
+  ],
+  "residual_risks": [
+    "Do you approve expanding this task’s scope to include the three scripts identified in scope-approval-conflict, including the pre-push change that excludes commits already reachable from the default base when pushing a task branch?"
+  ]
+}
