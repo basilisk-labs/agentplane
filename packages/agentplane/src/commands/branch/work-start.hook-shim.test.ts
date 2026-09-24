@@ -185,6 +185,7 @@ describe("worktree task artifact materialization", () => {
 
   it("does not materialize foreign local task READMEs into the task worktree", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-worktree-local-task-"));
+    await execFileNodeAsync("git", ["init", "-q"], { cwd: root });
     const worktreePath = path.join(root, "worktree");
     const activeTaskId = "202607260101-ABCD";
     const foreignTaskId = "202607260102-BCDE";

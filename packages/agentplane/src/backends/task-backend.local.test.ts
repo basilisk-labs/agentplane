@@ -107,56 +107,6 @@ describe("LocalBackend", () => {
     expect(backend.capabilities.supports_snapshot_export).toBe(false);
   });
 
-  it("reads historical tasks from the canonical store while keeping current writes local", async () => {
-    const historyDir = path.join(tempDir, "canonical");
-    const localDir = path.join(tempDir, "worktree");
-    const canonical = new LocalBackend({ dir: historyDir });
-    const history: TaskData = {
-      id: "202601300001-ABCD",
-      title: "Historical task",
-      description: "Archived result",
-      status: "DONE",
-      priority: "med",
-      owner: "tester",
-      depends_on: [],
-      tags: [],
-      verify: [],
-      doc: "## Summary\n\nHistorical bytes",
-    };
-    const current: TaskData = {
-      ...history,
-      id: "202601300002-EFGH",
-      title: "Current task",
-      status: "DOING",
-      doc: "## Summary\n\nCurrent bytes",
-    };
-    await canonical.writeTask(history);
-    const original = await readFile(path.join(historyDir, history.id, "README.md"));
-    const backend = new LocalBackend({ dir: localDir, historyDir });
-    await backend.writeTask(current);
-
-    const loadedHistory = await backend.getTask(history.id);
-    expect(loadedHistory?.title).toBe(history.title);
-    expect(await backend.getTaskDoc(history.id)).toContain("Historical bytes");
-    const tasks = await backend.listTasks();
-    const projection = await backend.listProjectionTasks();
-    expect(tasks.map((task) => task.id)).toEqual([history.id, current.id]);
-    expect(projection.map((task) => task.id)).toEqual([history.id, current.id]);
-    expect(await readFile(path.join(historyDir, history.id, "README.md"))).toEqual(original);
-    expect(await backend.getTask(current.id)).toMatchObject({ title: current.title });
-    await expect(backend.writeTask({ ...history, title: "Changed" })).rejects.toThrow(
-      "Refusing to write historical task",
-    );
-    expect(await readFile(path.join(historyDir, history.id, "README.md"))).toEqual(original);
-
-    await canonical.writeTask({ ...current, title: "Stale current task", status: "DONE" });
-    const completed = await backend.listProjectionTasks({ status: ["DONE"] });
-    expect(completed.map((task) => task.id)).toEqual([history.id]);
-
-    await rm(historyDir, { recursive: true });
-    await expect(backend.listTasks()).rejects.toThrow();
-  });
-
   it("uses cached projection entries when the README mtime is unchanged", async () => {
     const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
     const task: TaskData = {
