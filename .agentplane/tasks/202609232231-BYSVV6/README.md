@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -54,6 +54,8 @@ quality_review:
     - "No unresolved issue in the task diff after exact scope approval; focused tests and local and hosted regression checks pass on this head."
 token_usage:
   agent_runs: 10
+  cached_input_observed_agent_runs: 1
+  cached_input_tokens: 286976
   input_tokens: 349586
   journal_digest: "sha256:b15ba19f417aae625f59a5dd01e66600c0d0db4dfe9a52eeca823b37ed110f27"
   observed_agent_runs: 1
@@ -65,7 +67,7 @@ token_usage:
   state: "partial"
   total_tokens: 351717
   unavailable_reason: "some_agent_runs_unallocatable"
-  updated_at: "2026-09-24T20:18:03.537Z"
+  updated_at: "2026-09-24T20:39:17.658Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -815,8 +817,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "db2845bf530a13fbbd946350aa263333543d1336"
-  message: "🧪 BYSVV6 code: cover cleanup command usage"
+  hash: "e7e1533033d4b86a9f6dc35dc594f7fb81f04ebd"
+  message: "🧪 BYSVV6 task: record provider-head verification"
 comments:
   -
     author: "CODER"
@@ -842,6 +844,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -918,8 +923,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Current head 1b64ca71 passes 61 focused tests, all five local CI groups, and hosted PR checks; compact task checkout remains small."
+  -
+    type: "status"
+    at: "2026-09-24T20:39:17.658Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "e7e1533033d4b86a9f6dc35dc594f7fb81f04ebd"
 doc_version: 3
-doc_updated_at: "2026-09-24T20:37:52.174Z"
+doc_updated_at: "2026-09-24T20:39:17.681Z"
 doc_updated_by: "CODER"
 description: "Avoid materializing completed .agentplane/tasks history in each new task worktree; keep authoritative access through the canonical task store. Add a size inventory and safe cleanup route for retained task worktrees and nested base repositories. Preserve dirty work, Git/provider/task evidence, and current task behavior. Verify focused tests and measured disk behavior."
 sections:
@@ -1651,7 +1664,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609232231-BYSVV6"
-    event_cursor: 20
+    event_cursor: 21
     final_validation:
       evidence:
         -
@@ -1737,9 +1750,9 @@ extensions:
     lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 27
+    revision: 28
     schema_version: 1
-    updated_at: "2026-09-24T20:37:37.872Z"
+    updated_at: "2026-09-24T20:39:17.658Z"
     work_items:
       compact-task-worktree:
         attempt: 3
@@ -2082,6 +2095,30 @@ extensions:
         mutation_id: "compatibility:sha256:2b3e13b1239f928db9461bf90cee2a0b35f06032bca5510bd4d9f97f930cc953"
         next_revision: 23
         previous_revision: 22
+        schema_version: 1
+        task_id: "202609232231-BYSVV6"
+      compatibility:sha256:39a841f07c1070334778bc4787d7242987362a3f9f574fba11a7fd2548d5bbca:
+        aggregate_digest: "sha256:52fa3a88a41dba1edfa481900e35980f729e4058c4a876f65888af9002686f9a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-24T20:39:17.658Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_35f1f39c0f18eb789f9f389b"
+          mutation_id: "compatibility:sha256:39a841f07c1070334778bc4787d7242987362a3f9f574fba11a7fd2548d5bbca"
+          plan_digest: "sha256:f2ee045128dd9d0d747a2ad56be4dfda3ce812c46b7376071567ca825b7221db"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609232231-BYSVV6"
+          task_revision: 27
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:39a841f07c1070334778bc4787d7242987362a3f9f574fba11a7fd2548d5bbca"
+        next_revision: 28
+        previous_revision: 27
         schema_version: 1
         task_id: "202609232231-BYSVV6"
       compatibility:sha256:39f51a0ee2b8d85aabc90e90680381ab55dce5afeb28bc3d6cea3f4724c2858d:
@@ -2617,7 +2654,8 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "38431ddd41288c6ed75b6234ea178b413ea099f4"
+    hash: "1b64ca71286fe5a630b865f7306c2730c7dded0b"
+    message: "Merge branch 'main' into task/202609232231-BYSVV6/compact-task-history"
   task_execution_context:
     base_ref: "origin/main"
     base_sha: "97c2c3dfca1b8a4a6a6f616e4b05341cb0d89927"
@@ -2854,4 +2892,4 @@ DecisionContextRef:
 - Provenance: `supervisor_journal/agentplane`
 - Journal digest: `sha256:b15ba19f417aae625f59a5dd01e66600c0d0db4dfe9a52eeca823b37ed110f27`
 - Unavailable reason: `some_agent_runs_unallocatable`
-- Updated at: `2026-09-24T20:18:03.537Z`
+- Updated at: `2026-09-24T20:39:17.658Z`
