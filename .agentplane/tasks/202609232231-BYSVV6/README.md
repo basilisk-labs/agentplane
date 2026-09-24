@@ -4,7 +4,7 @@ title: "Reduce AgentPlane workspace disk usage while preserving canonical task h
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -855,9 +855,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 17
+    revision: 18
     schema_version: 1
-    updated_at: "2026-09-24T18:31:02.939Z"
+    updated_at: "2026-09-24T18:31:46.985Z"
     work_items:
       compact-task-worktree:
         attempt: 3
@@ -959,14 +959,104 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       disk-inventory-and-cleanup-guard:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "disk-inventory-and-cleanup-guard"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:ef4f8a1c24fee532d9c49de57ecd1a6b5b84e3dc33b03ae8ea3ffda6ac16550b"
+            id: "Read-only size and ownership report"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609232231-BYSVV6"
+              work_item_id: "disk-inventory-and-cleanup-guard"
+            provenance:
+              - "sha256:dafd2d8a69b96d87c05186a5850a5e38740b1dbd2c3e87ffcbfac4e6c8c5aaad"
+              - ".agentplane/tasks/202609232231-BYSVV6/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:fb4147bc706623a5a8e4af4d1e5da20bad4c7c38a219f93c2df6bf43e745d533"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:2ce282165bce6c3ac57973408b90a4e041fcbd262ccfffb2b6ecd093f2705fc3"
+            id: "Proof-gated cleanup behavior"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609232231-BYSVV6"
+              work_item_id: "disk-inventory-and-cleanup-guard"
+            provenance:
+              - "sha256:dafd2d8a69b96d87c05186a5850a5e38740b1dbd2c3e87ffcbfac4e6c8c5aaad"
+              - ".agentplane/tasks/202609232231-BYSVV6/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:fb4147bc706623a5a8e4af4d1e5da20bad4c7c38a219f93c2df6bf43e745d533"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:5437ecd52f08ea11652f25c5c43d808e3c126ac1fc2570b1705877e4c1a7f6c5"
+            id: "Operator guidance and focused regression evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609232231-BYSVV6"
+              work_item_id: "disk-inventory-and-cleanup-guard"
+            provenance:
+              - "sha256:dafd2d8a69b96d87c05186a5850a5e38740b1dbd2c3e87ffcbfac4e6c8c5aaad"
+              - ".agentplane/tasks/202609232231-BYSVV6/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:fb4147bc706623a5a8e4af4d1e5da20bad4c7c38a219f93c2df6bf43e745d533"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609232231-BYSVV6/supervision/declared-checks.json"
+              check_id: "cleanup-tests"
+              command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts --pool=forks --maxWorkers=1"
+              detail: "Observed by node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts --pool=forks --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-24T18:31:46.978Z"
+              repository_snapshot_digest: "sha256:fb4147bc706623a5a8e4af4d1e5da20bad4c7c38a219f93c2df6bf43e745d533"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609232231-BYSVV6/supervision/declared-checks.json"
+              check_id: "typecheck"
+              command_identity: "bun run typecheck"
+              detail: "Observed by bun run typecheck."
+              exit_code: 0
+              observed_at: "2026-09-24T18:31:46.978Z"
+              repository_snapshot_digest: "sha256:fb4147bc706623a5a8e4af4d1e5da20bad4c7c38a219f93c2df6bf43e745d533"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609232231-BYSVV6/supervision/declared-checks.json"
+              check_id: "disk-measure"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-09-24T18:31:46.978Z"
+              repository_snapshot_digest: "sha256:fb4147bc706623a5a8e4af4d1e5da20bad4c7c38a219f93c2df6bf43e745d533"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609232231-BYSVV6/supervision/declared-checks.json"
+              check_id: "scope-review"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-09-24T18:31:46.978Z"
+              repository_snapshot_digest: "sha256:fb4147bc706623a5a8e4af4d1e5da20bad4c7c38a219f93c2df6bf43e745d533"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -1021,6 +1111,23 @@ extensions:
         task_id: "202609232231-BYSVV6"
         task_revision: 14
         work_item_id: "compact-task-worktree"
+      -
+        at: "2026-09-24T18:31:46.985Z"
+        from: "PLANNED"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:d5f071d5fb6985487e40f17dff6c24ccf5421b24a2abe79f498982330d262a4e"
+        entity: "work_item"
+        id: "event_9f6fd85e0b4b7c9e2ba8f706"
+        mutation_id: "external-result:work-order-202609232231-BYSVV6-executor-cb768546205b0eb4d796dd08"
+        plan_digest: "sha256:f2ee045128dd9d0d747a2ad56be4dfda3ce812c46b7376071567ca825b7221db"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609232231-BYSVV6"
+        task_revision: 17
+        work_item_id: "disk-inventory-and-cleanup-guard"
     leases: []
     mutation_receipts:
       compatibility:sha256:00b185d93504a5e98a45a1abf7294ad00971fb941e6090e094ca9369ac6464f4:
@@ -1381,6 +1488,30 @@ extensions:
         mutation_id: "external-result:work-order-202609232231-BYSVV6-executor-62aa8cc744f766affc0eab89"
         next_revision: 15
         previous_revision: 14
+        schema_version: 1
+        task_id: "202609232231-BYSVV6"
+      external-result:work-order-202609232231-BYSVV6-executor-cb768546205b0eb4d796dd08:
+        aggregate_digest: "sha256:ba8630ef02df05a5b0661237e0fd893647bfa4dc1590b23c230e39319fae6bd0"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-24T18:31:46.985Z"
+          cause_refs:
+            - "semantic-result:sha256:d5f071d5fb6985487e40f17dff6c24ccf5421b24a2abe79f498982330d262a4e"
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_9f6fd85e0b4b7c9e2ba8f706"
+          mutation_id: "external-result:work-order-202609232231-BYSVV6-executor-cb768546205b0eb4d796dd08"
+          plan_digest: "sha256:f2ee045128dd9d0d747a2ad56be4dfda3ce812c46b7376071567ca825b7221db"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609232231-BYSVV6"
+          task_revision: 17
+          to: "COMPLETED"
+          work_item_id: "disk-inventory-and-cleanup-guard"
+        mutation_id: "external-result:work-order-202609232231-BYSVV6-executor-cb768546205b0eb4d796dd08"
+        next_revision: 18
+        previous_revision: 17
         schema_version: 1
         task_id: "202609232231-BYSVV6"
     pending_effects: []
