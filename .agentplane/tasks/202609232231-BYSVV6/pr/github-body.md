@@ -32,12 +32,12 @@ Avoid materializing completed .agentplane/tasks history in each new task worktre
  .../backends/task-backend/local-backend-write.ts   |  19 +-
  .../src/backends/task-backend/local-backend.ts     | 104 +++++++--
  .../run-cli.core.pr-flow.worktree-runtime.test.ts  |   6 +
- .../branch/work-start.compact-tasks.test.ts        | 232 +++++++++++++++++++++
- .../commands/branch/work-start.compact-tasks.ts    |  58 ++++++
+ .../branch/work-start.compact-tasks.test.ts        | 233 +++++++++++++++++++++
+ .../commands/branch/work-start.compact-tasks.ts    |  58 +++++
  .../commands/branch/work-start.hook-shim.test.ts   |   1 +
  .../src/commands/branch/work-start.materialize.ts  |  18 +-
  .../agentplane/src/commands/branch/work-start.ts   |  27 ++-
- 10 files changed, 509 insertions(+), 36 deletions(-)
+ 10 files changed, 510 insertions(+), 36 deletions(-)
 ```
 
 </details>
