@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 25
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -22,40 +22,38 @@ plan_approval:
   note: "host_user_decision=sha256:7795a08ce57156adf8b72a5f731013c57c77007563944f2905f72a277c2b13b0"
 verification:
   state: "ok"
-  updated_at: "2026-09-24T20:16:04.824Z"
+  updated_at: "2026-09-24T20:37:32.948Z"
   updated_by: "TESTER"
-  note: "Current head db2845bf passes focused cleanup tests and all five local CI groups; disk use is lower and unsafe worktrees are retained."
+  note: "Current head 1b64ca71 passes 61 focused tests, all five local CI groups, and hosted PR checks; compact task checkout remains small."
   attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-24T20:16:35.550Z"
+  updated_at: "2026-09-24T20:37:52.105Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "db2845bf530a13fbbd946350aa263333543d1336"
-  review_identity_digest: "sha256:27d8886ec6749484401912f6751ebdfe359ad4c039e374108a99f2834265b7c9"
+  evaluated_sha: "1b64ca71286fe5a630b865f7306c2730c7dded0b"
+  review_identity_digest: "sha256:0deec5e8154a805f0d608cd81a1e89d8c16184314839710ed9e73587c7c265c7"
   evidence_refs:
-    - ".agentplane/tasks/202609232231-BYSVV6/quality/20260924-201635169-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609232231-BYSVV6/quality/20260924-201635169-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609232231-BYSVV6/quality/objects/sha256/7733ffcaafe2e4a68568dbbf78c5c9c90ec9d21fc2aea90b2ed8819f7a9a783f.md"
-    - ".agentplane/tasks/202609232231-BYSVV6/quality/20260924-201635169-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609232231-BYSVV6/quality/20260924-201635169-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609232231-BYSVV6/quality/20260924-201635169-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609232231-BYSVV6/quality/20260924-203751190-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609232231-BYSVV6/quality/20260924-203751190-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609232231-BYSVV6/quality/objects/sha256/4c698ba1343c7e85c8abff6c87605da54a71c0b209856ad75dfd63d6a7d0ee5e.md"
+    - ".agentplane/tasks/202609232231-BYSVV6/quality/20260924-203751190-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609232231-BYSVV6/quality/20260924-203751190-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609232231-BYSVV6/quality/20260924-203751190-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609232231-BYSVV6/README.md"
     - ".agentplane/tasks/202609232231-BYSVV6/quality/objects/sha256/1832fd19c10d83291a43181b566bbb2b6bb111750a50b094d4c56c9439ff4694.patch"
-    - ".agentplane/tasks/202609232231-BYSVV6/quality/objects/sha256/1cc41dbef063d4e13a791e9e6d091ce973c853ab3a8086f29f9a0f4c31715b4f.json"
-    - ".agentplane/tasks/202609232231-BYSVV6/verification/20260924201604824-d01df9c9159ebe5c.json"
-    - ".agentplane/tasks/202609232231-BYSVV6/quality/objects/sha256/fbbca9b57e4d3ff905bda7659d195c113767560cd8ab625a07ef2099a0135304.json"
+    - ".agentplane/tasks/202609232231-BYSVV6/quality/objects/sha256/e37e6d6ae7e93b35d374f89b20ce9978d451d1e2ffedb8f28d8993a3f8499053.json"
+    - ".agentplane/tasks/202609232231-BYSVV6/verification/20260924203732948-b5f3e9ff081e2e08.json"
+    - ".agentplane/tasks/202609232231-BYSVV6/quality/objects/sha256/19e2eb5c87ac06801a287cedfc568396fb2ec4a9b548c696c9b1225ca8fc3bf5.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Prior scope-approval-conflict is resolved by the exact USER answer recorded in the task; cleanup help expectation now matches the two supported subcommands."
+    - "No unresolved issue in the task diff after exact scope approval; focused tests and local and hosted regression checks pass on this head."
 token_usage:
   agent_runs: 10
-  cached_input_observed_agent_runs: 1
-  cached_input_tokens: 286976
   input_tokens: 349586
   journal_digest: "sha256:b15ba19f417aae625f59a5dd01e66600c0d0db4dfe9a52eeca823b37ed110f27"
   observed_agent_runs: 1
@@ -233,7 +231,7 @@ execution_contract:
           implementation_uncertainty: "material"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:3e30ed3be6bebec4e5a26d2f746f558e151f1422a14cf9a36bda17f81fa7df6b"
+      digest: "sha256:cb3868da601c2de2ac163d9a937757f4f92bdaa4e54c24dac173670d23ed8054"
       escalation_reasons:
         - "central_path:packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.hooks.install.test.ts"
@@ -423,6 +421,15 @@ execution_contract:
         - "unknown_path:.agentplane/tasks/202609232204-B33RAA/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
         - "unknown_path:.agentplane/tasks/202609232204-B33RAA/supervision/declared-checks.json"
         - "unknown_path:.agentplane/tasks/202609232204-B33RAA/verification/20260923224045144-1cd160b529b21257.json"
+        - "unknown_path:.agentplane/tasks/202609241856-CCBDZ9/pr/diffstat.txt"
+        - "unknown_path:.agentplane/tasks/202609241856-CCBDZ9/pr/github-title.txt"
+        - "unknown_path:.agentplane/tasks/202609241856-CCBDZ9/pr/meta.json"
+        - "unknown_path:.agentplane/tasks/202609241856-CCBDZ9/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json"
+        - "unknown_path:.agentplane/tasks/202609241856-CCBDZ9/quality/objects/sha256/4340c69a72ea01faa72dcf87e07dfff35ea84123952ef257b9037259c0405a62.json"
+        - "unknown_path:.agentplane/tasks/202609241856-CCBDZ9/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+        - "unknown_path:.agentplane/tasks/202609241856-CCBDZ9/supervision/declared-checks.json"
+        - "unknown_path:.agentplane/tasks/202609241856-CCBDZ9/supervision/implementation-evidence.json"
+        - "unknown_path:.agentplane/tasks/202609241856-CCBDZ9/verification/20260924191919731-083c48e96af08493.json"
         - "unknown_path:scripts/baselines/clone-baseline.json"
         - "unknown_path:scripts/baselines/v0.7-compatibility-candidate.json"
         - "unknown_path:scripts/workflow/reinstall-global-agentplane.sh"
@@ -588,6 +595,18 @@ execution_contract:
           - ".agentplane/tasks/202609232204-B33RAA/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
           - ".agentplane/tasks/202609232204-B33RAA/supervision/declared-checks.json"
           - ".agentplane/tasks/202609232204-B33RAA/verification/20260923224045144-1cd160b529b21257.json"
+          - ".agentplane/tasks/202609241856-CCBDZ9/README.md"
+          - ".agentplane/tasks/202609241856-CCBDZ9/pr/diffstat.txt"
+          - ".agentplane/tasks/202609241856-CCBDZ9/pr/github-body.md"
+          - ".agentplane/tasks/202609241856-CCBDZ9/pr/github-title.txt"
+          - ".agentplane/tasks/202609241856-CCBDZ9/pr/meta.json"
+          - ".agentplane/tasks/202609241856-CCBDZ9/pr/review.md"
+          - ".agentplane/tasks/202609241856-CCBDZ9/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json"
+          - ".agentplane/tasks/202609241856-CCBDZ9/quality/objects/sha256/4340c69a72ea01faa72dcf87e07dfff35ea84123952ef257b9037259c0405a62.json"
+          - ".agentplane/tasks/202609241856-CCBDZ9/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+          - ".agentplane/tasks/202609241856-CCBDZ9/supervision/declared-checks.json"
+          - ".agentplane/tasks/202609241856-CCBDZ9/supervision/implementation-evidence.json"
+          - ".agentplane/tasks/202609241856-CCBDZ9/verification/20260924191919731-083c48e96af08493.json"
           - "docs/developer/task-execution-authority.mdx"
           - "docs/user/branching-and-pr-artifacts.mdx"
           - "docs/user/cli-reference.generated.mdx"
@@ -691,6 +710,8 @@ execution_contract:
           - "packages/agentplane/src/commands/task/external-agent-supervisor.test.ts"
           - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
           - "packages/agentplane/src/commands/task/kernel-completed-workflow.ts"
+          - "packages/agentplane/src/commands/task/kernel-final-validation.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-final-validation.ts"
           - "packages/agentplane/src/commands/task/kernel-plan-authority.test.ts"
           - "packages/agentplane/src/commands/task/kernel-plan-authority.ts"
           - "packages/agentplane/src/commands/task/kernel-plan.ts"
@@ -891,8 +912,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "db2845bf530a13fbbd946350aa263333543d1336"
+  -
+    type: "verify"
+    at: "2026-09-24T20:37:32.948Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Current head 1b64ca71 passes 61 focused tests, all five local CI groups, and hosted PR checks; compact task checkout remains small."
 doc_version: 3
-doc_updated_at: "2026-09-24T20:18:03.537Z"
+doc_updated_at: "2026-09-24T20:37:52.174Z"
 doc_updated_by: "CODER"
 description: "Avoid materializing completed .agentplane/tasks history in each new task worktree; keep authoritative access through the canonical task store. Add a size inventory and safe cleanup route for retained task worktrees and nested base repositories. Preserve dirty work, Git/provider/task evidence, and current task behavior. Verify focused tests and measured disk behavior."
 sections:
@@ -1025,6 +1052,65 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202609232231-BYSVV6
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-24T20:37:32.948Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Current head 1b64ca71 passes 61 focused tests, all five local CI groups, and hosted PR checks; compact task checkout remains small.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e46322e28e3dd143afdd6b63b5c94b8f4b454e07312c8929e8d0d42d71f0e280, input_digest=sha256:aa4f7a663d2bd4f2d0a6e5eebf299c53093bc8e4b77ac3e4c5eb914da4e8f708
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/commands/branch/work-start.compact-tasks.test.ts packages/agentplane/src/commands/cleanup/inspect.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts
+    Result: pass
+    Evidence: 5 files and 61 tests passed on 1b64ca71286f
+    Scope: compact task storage, disk inventory, merged worktree cleanup, and pre-push task binding
+
+    Check: critical_paths
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts
+    Result: pass
+    Evidence: included in 61 passing focused tests; dry-run and proven deletion exercised
+    Scope: cleanup merged safety and worktree removal
+
+    Check: docs_contract
+    Command: AGENTPLANE_FAST_CHANGED_FILES=<branch diff> bun run ci:local:fast
+    Result: pass
+    Evidence: docs-schema group passed on 1b64ca71286f; CLI reference and routing current
+    Scope: documentation and policy
+
+    Check: full_regression
+    Command: AGENTPLANE_FAST_CHANGED_FILES=<branch diff> bun run ci:local:fast; gh pr checks 6023
+    Result: pass
+    Evidence: full-fast all five groups on 1b64ca71286f in 782290 ms with reusable receipt; all required GitHub checks passed for exact PR head
+    Scope: local repository and hosted PR regression
+
+    Check: task_outcome
+    Command: du -sk .agentplane; du -sk .agentplane/tasks; git sparse-checkout list
+    Result: pass
+    Evidence: primary .agentplane measured 30733084 KiB (29.3 GiB) vs 38443752 KiB (36.7 GiB) initial; canonical tasks 385220 KiB; current sparse worktree tasks 2188 KiB after provider base update; unsafe legacy worktrees retained
+    Scope: live disk reduction and canonical task-store preservation
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:f2ee045128dd9d0d747a2ad56be4dfda3ce812c46b7376071567ca825b7221db
+    - policy_digest: sha256:c795bcd50defcbce5901e2cda7a0ee3e414bfc8bd91adf510a24c12d74a10ff7
+    - capability_digest: sha256:c4c6ab442898895169487f2938efe8bec8f521c7340e626f2a9e44bb8ba936e1
+    - checks_digest: sha256:cccca880a56cf9d3ae55ad094d83681e156f3cee134649dd144c16a17442c471
+    - identity_digest: sha256:487c5e7e22577b499c7a1f5df5534be272136c04b0d9e244335a23d28210eb24
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -1565,7 +1651,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609232231-BYSVV6"
-    event_cursor: 18
+    event_cursor: 20
     final_validation:
       evidence:
         -
@@ -1651,9 +1737,9 @@ extensions:
     lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 25
+    revision: 27
     schema_version: 1
-    updated_at: "2026-09-24T20:18:03.537Z"
+    updated_at: "2026-09-24T20:37:37.872Z"
     work_items:
       compact-task-worktree:
         attempt: 3
@@ -2190,6 +2276,30 @@ extensions:
         previous_revision: 5
         schema_version: 1
         task_id: "202609232231-BYSVV6"
+      compatibility:sha256:87d60cbda349e61662fecfee34826a7dfb62edb2118a514e9f0f79ab23d31c41:
+        aggregate_digest: "sha256:dae0e0415615f8d333fcc2ff67f353ae6b4b21b5b9a91dd8e7c472f9808839c9"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-24T20:37:37.872Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_cd8200208d5a0b97001b75c1"
+          mutation_id: "compatibility:sha256:87d60cbda349e61662fecfee34826a7dfb62edb2118a514e9f0f79ab23d31c41"
+          plan_digest: "sha256:f2ee045128dd9d0d747a2ad56be4dfda3ce812c46b7376071567ca825b7221db"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609232231-BYSVV6"
+          task_revision: 26
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:87d60cbda349e61662fecfee34826a7dfb62edb2118a514e9f0f79ab23d31c41"
+        next_revision: 27
+        previous_revision: 26
+        schema_version: 1
+        task_id: "202609232231-BYSVV6"
       compatibility:sha256:a285e1d26e939eb4e2cc45598f68c0701a234bc8ade9cd28b8fd2938d43e3dfc:
         aggregate_digest: "sha256:0f7a9db0599bec9374e6658eb920f7eb5ba5ef97955f93ef5dffb9435b074b3d"
         event:
@@ -2332,6 +2442,30 @@ extensions:
         mutation_id: "compatibility:sha256:d61fe83864178d0278e9e62a96b498daa119db8341d6c20ed344ecf182336dae"
         next_revision: 16
         previous_revision: 15
+        schema_version: 1
+        task_id: "202609232231-BYSVV6"
+      compatibility:sha256:dd7649c9a92c2278318a9c109ef7c97470e149331ca8accb7bc91522eb0b8a6e:
+        aggregate_digest: "sha256:69b999d6701072cc9dbe1be183f7566b2c9510f459464c0aee45144e1ac2828b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-24T20:37:37.869Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_1e295963d735fa0d1806c345"
+          mutation_id: "compatibility:sha256:dd7649c9a92c2278318a9c109ef7c97470e149331ca8accb7bc91522eb0b8a6e"
+          plan_digest: "sha256:f2ee045128dd9d0d747a2ad56be4dfda3ce812c46b7376071567ca825b7221db"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609232231-BYSVV6"
+          task_revision: 25
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:dd7649c9a92c2278318a9c109ef7c97470e149331ca8accb7bc91522eb0b8a6e"
+        next_revision: 26
+        previous_revision: 25
         schema_version: 1
         task_id: "202609232231-BYSVV6"
       compatibility:sha256:ffa79133509d55e764dfb76eaf73bcb7cc1e55197c0052d361327b6732df5731:
@@ -2635,6 +2769,65 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202609232231-BYSVV6
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-24T20:37:32.948Z — VERIFY — ok
+
+By: TESTER
+
+Note: Current head 1b64ca71 passes 61 focused tests, all five local CI groups, and hosted PR checks; compact task checkout remains small.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e46322e28e3dd143afdd6b63b5c94b8f4b454e07312c8929e8d0d42d71f0e280, input_digest=sha256:aa4f7a663d2bd4f2d0a6e5eebf299c53093bc8e4b77ac3e4c5eb914da4e8f708
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/commands/branch/work-start.compact-tasks.test.ts packages/agentplane/src/commands/cleanup/inspect.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts
+Result: pass
+Evidence: 5 files and 61 tests passed on 1b64ca71286f
+Scope: compact task storage, disk inventory, merged worktree cleanup, and pre-push task binding
+
+Check: critical_paths
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts
+Result: pass
+Evidence: included in 61 passing focused tests; dry-run and proven deletion exercised
+Scope: cleanup merged safety and worktree removal
+
+Check: docs_contract
+Command: AGENTPLANE_FAST_CHANGED_FILES=<branch diff> bun run ci:local:fast
+Result: pass
+Evidence: docs-schema group passed on 1b64ca71286f; CLI reference and routing current
+Scope: documentation and policy
+
+Check: full_regression
+Command: AGENTPLANE_FAST_CHANGED_FILES=<branch diff> bun run ci:local:fast; gh pr checks 6023
+Result: pass
+Evidence: full-fast all five groups on 1b64ca71286f in 782290 ms with reusable receipt; all required GitHub checks passed for exact PR head
+Scope: local repository and hosted PR regression
+
+Check: task_outcome
+Command: du -sk .agentplane; du -sk .agentplane/tasks; git sparse-checkout list
+Result: pass
+Evidence: primary .agentplane measured 30733084 KiB (29.3 GiB) vs 38443752 KiB (36.7 GiB) initial; canonical tasks 385220 KiB; current sparse worktree tasks 2188 KiB after provider base update; unsafe legacy worktrees retained
+Scope: live disk reduction and canonical task-store preservation
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:f2ee045128dd9d0d747a2ad56be4dfda3ce812c46b7376071567ca825b7221db
+- policy_digest: sha256:c795bcd50defcbce5901e2cda7a0ee3e414bfc8bd91adf510a24c12d74a10ff7
+- capability_digest: sha256:c4c6ab442898895169487f2938efe8bec8f521c7340e626f2a9e44bb8ba936e1
+- checks_digest: sha256:cccca880a56cf9d3ae55ad094d83681e156f3cee134649dd144c16a17442c471
+- identity_digest: sha256:487c5e7e22577b499c7a1f5df5534be272136c04b0d9e244335a23d28210eb24
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
