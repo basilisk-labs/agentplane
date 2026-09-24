@@ -315,10 +315,10 @@ export async function prepareConflictReworkPacket(opts: {
       "semantic conflict rework requires a current passing verification record",
     );
   }
-  if (taskStatus !== "DOING" && taskStatus !== "DONE") {
+  if (!["DOING", "DONE", "COMPLETED"].includes(taskStatus)) {
     return invalid(
       "conflict_rework_route_ineligible",
-      "semantic conflict rework requires a verified DOING or DONE task",
+      "semantic conflict rework requires a verified DOING, DONE, or canonical COMPLETED task",
     );
   }
   const baseProtection =

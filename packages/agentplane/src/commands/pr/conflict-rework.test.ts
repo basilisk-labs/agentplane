@@ -430,6 +430,25 @@ describe("provider conflict rework packet", () => {
     });
   });
 
+  it("allows a verified canonical COMPLETED provider head to enter bounded current-PR rework", async () => {
+    const conflicting = report({
+      task: { id: taskId, status: "COMPLETED", verification: "ok" },
+      queue: { present: false },
+      handoff: { present: false },
+    });
+
+    await expect(prepare({ report: conflicting })).resolves.toMatchObject({
+      state: "ready",
+      packet: {
+        route_evidence: {
+          kind: "current_verified_open_pr_rework",
+          queue: null,
+          handoff: null,
+        },
+      },
+    });
+  });
+
   it("invalidates a divergent local head", async () => {
     const prepared = await prepare({ report: providerBehindReport() });
     expect(prepared).toMatchObject({

@@ -243,7 +243,8 @@ export function resolveConflictRouteEligibility(opts: {
       reason: "semantic conflict rework requires a current passing verification record",
     };
   }
-  if (taskStatus === "DOING" || taskStatus === "DONE") {
+  const implementationComplete = taskStatus === "DONE" || taskStatus === "COMPLETED";
+  if (taskStatus === "DOING" || implementationComplete) {
     if (!opts.report.queue.present && !opts.report.handoff.present) {
       return {
         state: "eligible",
@@ -262,10 +263,10 @@ export function resolveConflictRouteEligibility(opts: {
       };
     }
   }
-  if (taskStatus !== "DONE" && !providerReady) {
+  if (!implementationComplete && !providerReady) {
     return {
       state: "ineligible",
-      reason: "semantic conflict rework requires a verified DOING or DONE task",
+    reason: "semantic conflict rework requires a verified DOING, DONE, or canonical COMPLETED task",
     };
   }
 
