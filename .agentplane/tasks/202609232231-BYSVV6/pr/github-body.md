@@ -19,15 +19,15 @@ Avoid materializing completed .agentplane/tasks history in each new task worktre
 - Note:
 
 ```text
-Focused tests, full local CI, compact task-store behavior, and measured disk reduction passed;
-hosted PR checks are tracked separately.
+Current head db2845bf passes focused cleanup tests and all five local CI groups; disk use is lower
+and unsafe worktrees are retained.
 ```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-24T19:57:54.670Z
+- Updated: 2026-09-24T20:19:22.715Z
 - Branch: task/202609232231-BYSVV6/compact-task-history
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

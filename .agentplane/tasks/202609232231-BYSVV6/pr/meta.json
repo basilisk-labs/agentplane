@@ -3,10 +3,17 @@
   "branch": "task/202609232231-BYSVV6/compact-task-history",
   "created_at": "2026-09-24T14:39:05.856Z",
   "diffstat_sha256": "sha256:3461b53b69f18d36905fa4b6858844e10ca5423f8593a96116997867c3e6cff3",
-  "last_verified_at": "2026-09-24T19:43:00.473Z",
-  "last_verified_diffstat_sha256": "sha256:25cec5c9a9f3a4d878cd60f98d50d0ba0292e5626835a1ba7f51999bde65b68d",
+  "last_verified_at": "2026-09-24T20:16:04.824Z",
+  "last_verified_diffstat_sha256": "sha256:3461b53b69f18d36905fa4b6858844e10ca5423f8593a96116997867c3e6cff3",
   "pr_number": 6023,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6023",
+  "pre_merge_closure": {
+    "basis_commit": "db2845bf530a13fbbd946350aa263333543d1336",
+    "branch": "task/202609232231-BYSVV6/compact-task-history",
+    "pr_number": 6023,
+    "recorded_at": "2026-09-24T20:18:03.721Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -18,7 +25,7 @@
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202609232231-BYSVV6",
-  "updated_at": "2026-09-24T19:57:54.670Z",
+  "updated_at": "2026-09-24T20:19:22.715Z",
   "verify": {
     "status": "pass"
   }

@@ -1,10 +1,11 @@
 ---
 id: "202609232231-BYSVV6"
 title: "Reduce AgentPlane workspace disk usage while preserving canonical task history"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 22
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -21,37 +22,52 @@ plan_approval:
   note: "host_user_decision=sha256:7795a08ce57156adf8b72a5f731013c57c77007563944f2905f72a277c2b13b0"
 verification:
   state: "ok"
-  updated_at: "2026-09-24T19:43:00.473Z"
+  updated_at: "2026-09-24T20:16:04.824Z"
   updated_by: "TESTER"
-  note: "Focused tests, full local CI, compact task-store behavior, and measured disk reduction passed; hosted PR checks are tracked separately."
+  note: "Current head db2845bf passes focused cleanup tests and all five local CI groups; disk use is lower and unsafe worktrees are retained."
   attempts: 0
 quality_review:
-  state: "human_review"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-24T19:47:13.415Z"
+  updated_at: "2026-09-24T20:16:35.550Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned human_review with 1 typed finding(s)."
-  evaluated_sha: "d6f82fa61c7719c09cb08e8edffeabb7c2fa7b3c"
-  review_identity_digest: "sha256:66ca309e4a77873b114896bd66f7a6922557d879887c79be201f4911c1a28e2b"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "db2845bf530a13fbbd946350aa263333543d1336"
+  review_identity_digest: "sha256:27d8886ec6749484401912f6751ebdfe359ad4c039e374108a99f2834265b7c9"
   evidence_refs:
-    - ".agentplane/tasks/202609232231-BYSVV6/quality/20260924-194541076-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609232231-BYSVV6/quality/20260924-194541076-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609232231-BYSVV6/quality/objects/sha256/f18f4f304e5c98803d4d2b3b0520a32adad8a9e048c6904559af961b3a938f01.md"
-    - ".agentplane/tasks/202609232231-BYSVV6/quality/20260924-194541076-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609232231-BYSVV6/quality/20260924-194541076-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609232231-BYSVV6/quality/20260924-194541076-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202609232231-BYSVV6/quality/20260924-194541076-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609232231-BYSVV6/quality/20260924-201635169-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609232231-BYSVV6/quality/20260924-201635169-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609232231-BYSVV6/quality/objects/sha256/7733ffcaafe2e4a68568dbbf78c5c9c90ec9d21fc2aea90b2ed8819f7a9a783f.md"
+    - ".agentplane/tasks/202609232231-BYSVV6/quality/20260924-201635169-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609232231-BYSVV6/quality/20260924-201635169-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609232231-BYSVV6/quality/20260924-201635169-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609232231-BYSVV6/README.md"
-    - ".agentplane/tasks/202609232231-BYSVV6/quality/objects/sha256/83b68085b1abe9f6bbe2f0d29f5dcd4917c2e743e564bfe2c5ed3c97cb6c5daf.patch"
-    - ".agentplane/tasks/202609232231-BYSVV6/quality/objects/sha256/30375b5e03047e8ad1dd0ea7d12df365ef9e94e222a4cfa828d51391e75b3d59.json"
-    - ".agentplane/tasks/202609232231-BYSVV6/verification/20260924194300473-0fe205171c249ad0.json"
-    - ".agentplane/tasks/202609232231-BYSVV6/quality/objects/sha256/3ed925c9d11aa098331fc41a3f2a92fe504ce6d4685d034ab5986388cf4b2719.json"
+    - ".agentplane/tasks/202609232231-BYSVV6/quality/objects/sha256/1832fd19c10d83291a43181b566bbb2b6bb111750a50b094d4c56c9439ff4694.patch"
+    - ".agentplane/tasks/202609232231-BYSVV6/quality/objects/sha256/1cc41dbef063d4e13a791e9e6d091ce973c853ab3a8086f29f9a0f4c31715b4f.json"
+    - ".agentplane/tasks/202609232231-BYSVV6/verification/20260924201604824-d01df9c9159ebe5c.json"
+    - ".agentplane/tasks/202609232231-BYSVV6/quality/objects/sha256/fbbca9b57e4d3ff905bda7659d195c113767560cd8ab625a07ef2099a0135304.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen diff changes three scripts outside the declared writable roots: scripts/baselines/v0.7-compatibility-candidate.json, scripts/checks/check-compatibility-contract-baseline.mjs, and scripts/checks/run-pre-push-hook.mjs. The task explicitly records these authority violations. Passing verification and the general task.scope.extend capability do not establish approval of these specific changes."
+    - "Prior scope-approval-conflict is resolved by the exact USER answer recorded in the task; cleanup help expectation now matches the two supported subcommands."
+token_usage:
+  agent_runs: 10
+  cached_input_observed_agent_runs: 1
+  cached_input_tokens: 286976
+  input_tokens: 349586
+  journal_digest: "sha256:b15ba19f417aae625f59a5dd01e66600c0d0db4dfe9a52eeca823b37ed110f27"
+  observed_agent_runs: 1
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "partial"
+  total_tokens: 351717
+  unavailable_reason: "some_agent_runs_unallocatable"
+  updated_at: "2026-09-24T20:18:03.537Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -128,6 +144,7 @@ execution_contract:
       - "packages/agentplane/src/backends/task-backend/local-backend-write.ts"
       - "packages/agentplane/src/backends/task-backend/local-backend.ts"
       - "packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts"
       - "packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
       - "packages/agentplane/src/cli/run-cli/command-catalog/lifecycle.ts"
       - "packages/agentplane/src/cli/run-cli/command-loaders/lifecycle.ts"
@@ -216,12 +233,13 @@ execution_contract:
           implementation_uncertainty: "material"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:da9af49a2d397737cdc385ede29d7cf6800b48a4266ed2b49b07d0c6942726aa"
+      digest: "sha256:3e30ed3be6bebec4e5a26d2f746f558e151f1422a14cf9a36bda17f81fa7df6b"
       escalation_reasons:
         - "central_path:packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.hooks.install.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.roadmap-managed-owner-cutover.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts"
@@ -586,6 +604,7 @@ execution_contract:
           - "packages/agentplane/src/cli/run-cli.core.hooks.install.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.roadmap-managed-owner-cutover.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts"
@@ -775,8 +794,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "38431ddd41288c6ed75b6234ea178b413ea099f4"
-  message: "🚧 BYSVV6 task: apply external agent result"
+  hash: "db2845bf530a13fbbd946350aa263333543d1336"
+  message: "🧪 BYSVV6 code: cover cleanup command usage"
 comments:
   -
     author: "CODER"
@@ -799,6 +818,9 @@ comments:
   -
     author: "USER"
     body: "User answer: I approve expanding task scope to scripts/baselines/v0.7-compatibility-candidate.json, scripts/checks/check-compatibility-contract-baseline.mjs, and scripts/checks/run-pre-push-hook.mjs, including the pre-push exclusion of commits already reachable from the default base when pushing a task branch."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -855,9 +877,23 @@ events:
     at: "2026-09-24T19:54:54.698Z"
     author: "USER"
     body: "User answer: I approve expanding task scope to scripts/baselines/v0.7-compatibility-candidate.json, scripts/checks/check-compatibility-contract-baseline.mjs, and scripts/checks/run-pre-push-hook.mjs, including the pre-push exclusion of commits already reachable from the default base when pushing a task branch."
+  -
+    type: "verify"
+    at: "2026-09-24T20:16:04.824Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Current head db2845bf passes focused cleanup tests and all five local CI groups; disk use is lower and unsafe worktrees are retained."
+  -
+    type: "status"
+    at: "2026-09-24T20:18:03.537Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "db2845bf530a13fbbd946350aa263333543d1336"
 doc_version: 3
-doc_updated_at: "2026-09-24T19:54:54.698Z"
-doc_updated_by: "USER"
+doc_updated_at: "2026-09-24T20:18:03.537Z"
+doc_updated_by: "CODER"
 description: "Avoid materializing completed .agentplane/tasks history in each new task worktree; keep authoritative access through the canonical task store. Add a size inventory and safe cleanup route for retained task worktrees and nested base repositories. Preserve dirty work, Git/provider/task evidence, and current task behavior. Verify focused tests and measured disk behavior."
 sections:
   Summary: |-
@@ -924,6 +960,65 @@ sections:
     - current_digest: df479dfe331943fdb95d6095eff0c6092193dfed8210fe6653e5258f867f6be5
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202609232231-BYSVV6
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609232231-BYSVV6
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-24T20:16:04.824Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Current head db2845bf passes focused cleanup tests and all five local CI groups; disk use is lower and unsafe worktrees are retained.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e46322e28e3dd143afdd6b63b5c94b8f4b454e07312c8929e8d0d42d71f0e280, input_digest=sha256:c242aa9601c4fe2308fac6ffeac20956c64c57d4dd3ce0cb224069b276162469
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts; prior focused compact-storage and hook tests
+    Result: pass
+    Evidence: cleanup suites 40/40 on db2845bf; prior compact-storage focused tests 24/24 and hook tests 17/17 on d6f82fa; implementation unchanged between heads except one usage expectation
+    Scope: compact storage, cleanup deletion, and task branch hook
+
+    Check: critical_paths
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts
+    Result: pass
+    Evidence: 40/40, including dry-run, proven deletion, dirty worktree retention, and race checks
+    Scope: cleanup merged safety and functionality
+
+    Check: docs_contract
+    Command: AGENTPLANE_FAST_CHANGED_FILES=<branch diff> bun run ci:local:fast
+    Result: pass
+    Evidence: docs-schema group passed on db2845bf; generated CLI reference and routing current
+    Scope: docs, CLI reference, and policy routing
+
+    Check: full_regression
+    Command: AGENTPLANE_FAST_CHANGED_FILES=<branch diff> bun run ci:local:fast
+    Result: pass
+    Evidence: full-fast executed all five groups on db2845bf; wall clock 1033945 ms; reusable receipt recorded
+    Scope: repository regression for current implementation head
+
+    Check: task_outcome
+    Command: du -sk .agentplane; du -sk .agentplane/tasks
+    Result: pass
+    Evidence: primary .agentplane measured 30733084 KiB (29.3 GiB) vs 38443752 KiB (36.7 GiB) initial; canonical tasks 385220 KiB; compact current worktree tasks 1988 KiB; legacy unsafe worktrees retained
+    Scope: live disk reduction and canonical task-store preservation
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:f2ee045128dd9d0d747a2ad56be4dfda3ce812c46b7376071567ca825b7221db
+    - policy_digest: sha256:c795bcd50defcbce5901e2cda7a0ee3e414bfc8bd91adf510a24c12d74a10ff7
+    - capability_digest: sha256:c4c6ab442898895169487f2938efe8bec8f521c7340e626f2a9e44bb8ba936e1
+    - checks_digest: sha256:b01d636360297bef1f909e4e48105900452ab7969ab4118ba6a46fd6ae3101de
+    - identity_digest: sha256:c8385153eaffac81efb9f6f2f54badffc6fa70b4d1284cb80fb70cd0f177cbfd
 
     DecisionContextRef:
     - operator_action: stop
@@ -1470,8 +1565,79 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609232231-BYSVV6"
-    event_cursor: 16
-    final_validation: null
+    event_cursor: 18
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609232231-BYSVV6"
+            - "git:db2845bf530a13fbbd946350aa263333543d1336"
+          check_id: "history-tests"
+          command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/backends/task-backend.local.test.ts --pool=forks --maxWorkers=1"
+          detail: "Current head db2845bf passes focused cleanup tests and all five local CI groups; disk use is lower and unsafe worktrees are retained."
+          exit_code: 0
+          observed_at: "2026-09-24T20:16:04.824Z"
+          repository_snapshot_digest: "sha256:9f53ee8946c87be7b95f1d46844c62b1b252517f9be662ff4cc68b79fb28f64f"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609232231-BYSVV6"
+            - "git:db2845bf530a13fbbd946350aa263333543d1336"
+          check_id: "cleanup-tests"
+          command_identity: "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts --pool=forks --maxWorkers=1"
+          detail: "Current head db2845bf passes focused cleanup tests and all five local CI groups; disk use is lower and unsafe worktrees are retained."
+          exit_code: 0
+          observed_at: "2026-09-24T20:16:04.824Z"
+          repository_snapshot_digest: "sha256:9f53ee8946c87be7b95f1d46844c62b1b252517f9be662ff4cc68b79fb28f64f"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609232231-BYSVV6"
+            - "git:db2845bf530a13fbbd946350aa263333543d1336"
+          check_id: "critical-tests"
+          command_identity: "bun run ci:local:fast"
+          detail: "Current head db2845bf passes focused cleanup tests and all five local CI groups; disk use is lower and unsafe worktrees are retained."
+          exit_code: 0
+          observed_at: "2026-09-24T20:16:04.824Z"
+          repository_snapshot_digest: "sha256:9f53ee8946c87be7b95f1d46844c62b1b252517f9be662ff4cc68b79fb28f64f"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609232231-BYSVV6"
+            - "git:db2845bf530a13fbbd946350aa263333543d1336"
+          check_id: "typecheck"
+          command_identity: "bun run typecheck"
+          detail: "Current head db2845bf passes focused cleanup tests and all five local CI groups; disk use is lower and unsafe worktrees are retained."
+          exit_code: 0
+          observed_at: "2026-09-24T20:16:04.824Z"
+          repository_snapshot_digest: "sha256:9f53ee8946c87be7b95f1d46844c62b1b252517f9be662ff4cc68b79fb28f64f"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609232231-BYSVV6"
+            - "git:db2845bf530a13fbbd946350aa263333543d1336"
+          check_id: "disk-measure"
+          command_identity: "task.verify"
+          detail: "Current head db2845bf passes focused cleanup tests and all five local CI groups; disk use is lower and unsafe worktrees are retained."
+          exit_code: 0
+          observed_at: "2026-09-24T20:16:04.824Z"
+          repository_snapshot_digest: "sha256:9f53ee8946c87be7b95f1d46844c62b1b252517f9be662ff4cc68b79fb28f64f"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609232231-BYSVV6"
+            - "git:db2845bf530a13fbbd946350aa263333543d1336"
+          check_id: "scope-review"
+          command_identity: "task.verify"
+          detail: "Current head db2845bf passes focused cleanup tests and all five local CI groups; disk use is lower and unsafe worktrees are retained."
+          exit_code: 0
+          observed_at: "2026-09-24T20:16:04.824Z"
+          repository_snapshot_digest: "sha256:9f53ee8946c87be7b95f1d46844c62b1b252517f9be662ff4cc68b79fb28f64f"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609232231-BYSVV6"
     intent:
       acceptance_criteria: []
@@ -1482,12 +1648,12 @@ extensions:
 
         Avoid materializing completed .agentplane/tasks history in each new task worktree; keep authoritative access through the canonical task store. Add a size inventory and safe cleanup route for retained task worktrees and nested base repositories. Preserve dirty work, Git/provider/task evidence, and current task behavior. Verify focused tests and measured disk behavior.
       task_id: "202609232231-BYSVV6"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 22
+    revision: 25
     schema_version: 1
-    updated_at: "2026-09-24T19:54:54.698Z"
+    updated_at: "2026-09-24T20:18:03.537Z"
     work_items:
       compact-task-worktree:
         attempt: 3
@@ -1808,6 +1974,30 @@ extensions:
         previous_revision: 9
         schema_version: 1
         task_id: "202609232231-BYSVV6"
+      compatibility:sha256:2b3e13b1239f928db9461bf90cee2a0b35f06032bca5510bd4d9f97f930cc953:
+        aggregate_digest: "sha256:ca59dcbec94bb448ec5c0ff25701f5374714ce0d7eeff40617e37b68ccf6f192"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-24T20:16:06.215Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_879e3049ce7e671b9ff5b929"
+          mutation_id: "compatibility:sha256:2b3e13b1239f928db9461bf90cee2a0b35f06032bca5510bd4d9f97f930cc953"
+          plan_digest: "sha256:f2ee045128dd9d0d747a2ad56be4dfda3ce812c46b7376071567ca825b7221db"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609232231-BYSVV6"
+          task_revision: 22
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:2b3e13b1239f928db9461bf90cee2a0b35f06032bca5510bd4d9f97f930cc953"
+        next_revision: 23
+        previous_revision: 22
+        schema_version: 1
+        task_id: "202609232231-BYSVV6"
       compatibility:sha256:39f51a0ee2b8d85aabc90e90680381ab55dce5afeb28bc3d6cea3f4724c2858d:
         aggregate_digest: "sha256:b9167e320951adaac495b28d329d4fe582aaa2f70cae335e21cb0eb3280871dc"
         event:
@@ -2048,6 +2238,30 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202609232231-BYSVV6"
+      compatibility:sha256:bfb3df26e2a201f3cd9ebef1a767ef19fbdecd24621f515bfa5340db0953b280:
+        aggregate_digest: "sha256:c5cea9b77afcd7007f7825b7d03e38843810d93a115892da846e8653d4417bd7"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-24T20:16:06.221Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_4253c4b5c1e3673f5157c98e"
+          mutation_id: "compatibility:sha256:bfb3df26e2a201f3cd9ebef1a767ef19fbdecd24621f515bfa5340db0953b280"
+          plan_digest: "sha256:f2ee045128dd9d0d747a2ad56be4dfda3ce812c46b7376071567ca825b7221db"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609232231-BYSVV6"
+          task_revision: 23
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:bfb3df26e2a201f3cd9ebef1a767ef19fbdecd24621f515bfa5340db0953b280"
+        next_revision: 24
+        previous_revision: 23
+        schema_version: 1
+        task_id: "202609232231-BYSVV6"
       compatibility:sha256:c0de2520d9672b73988ca707f324137c0d79ac45baa7809bd75ad41bf91f2449:
         aggregate_digest: "sha256:d6291b14725f637d6f671c8101acf725ea7aafbf63c9a9957157b635e59293aa"
         event:
@@ -2240,6 +2454,31 @@ extensions:
         previous_revision: 17
         schema_version: 1
         task_id: "202609232231-BYSVV6"
+      legacy-finish:202609232231-BYSVV6:2026-09-24T20:16:04.824Z:db2845bf530a13fbbd946350aa263333543d1336:
+        aggregate_digest: "sha256:ea264e7fa05a87ebd2616f2821a4a7226b7b8323310669347a79f0bc3ef00826"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-24T20:18:03.537Z"
+          cause_refs:
+            - "task-verification:202609232231-BYSVV6"
+            - "git:db2845bf530a13fbbd946350aa263333543d1336"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_644a854639fc98d684dd0a52"
+          mutation_id: "legacy-finish:202609232231-BYSVV6:2026-09-24T20:16:04.824Z:db2845bf530a13fbbd946350aa263333543d1336"
+          plan_digest: "sha256:f2ee045128dd9d0d747a2ad56be4dfda3ce812c46b7376071567ca825b7221db"
+          plan_revision: 1
+          repository_fingerprint: "sha256:9f53ee8946c87be7b95f1d46844c62b1b252517f9be662ff4cc68b79fb28f64f"
+          schema_version: 1
+          task_id: "202609232231-BYSVV6"
+          task_revision: 24
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609232231-BYSVV6:2026-09-24T20:16:04.824Z:db2845bf530a13fbbd946350aa263333543d1336"
+        next_revision: 25
+        previous_revision: 24
+        schema_version: 1
+        task_id: "202609232231-BYSVV6"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
@@ -2343,6 +2582,65 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-09-24T20:16:04.824Z — VERIFY — ok
+
+By: TESTER
+
+Note: Current head db2845bf passes focused cleanup tests and all five local CI groups; disk use is lower and unsafe worktrees are retained.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e46322e28e3dd143afdd6b63b5c94b8f4b454e07312c8929e8d0d42d71f0e280, input_digest=sha256:c242aa9601c4fe2308fac6ffeac20956c64c57d4dd3ce0cb224069b276162469
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts; prior focused compact-storage and hook tests
+Result: pass
+Evidence: cleanup suites 40/40 on db2845bf; prior compact-storage focused tests 24/24 and hook tests 17/17 on d6f82fa; implementation unchanged between heads except one usage expectation
+Scope: compact storage, cleanup deletion, and task branch hook
+
+Check: critical_paths
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts
+Result: pass
+Evidence: 40/40, including dry-run, proven deletion, dirty worktree retention, and race checks
+Scope: cleanup merged safety and functionality
+
+Check: docs_contract
+Command: AGENTPLANE_FAST_CHANGED_FILES=<branch diff> bun run ci:local:fast
+Result: pass
+Evidence: docs-schema group passed on db2845bf; generated CLI reference and routing current
+Scope: docs, CLI reference, and policy routing
+
+Check: full_regression
+Command: AGENTPLANE_FAST_CHANGED_FILES=<branch diff> bun run ci:local:fast
+Result: pass
+Evidence: full-fast executed all five groups on db2845bf; wall clock 1033945 ms; reusable receipt recorded
+Scope: repository regression for current implementation head
+
+Check: task_outcome
+Command: du -sk .agentplane; du -sk .agentplane/tasks
+Result: pass
+Evidence: primary .agentplane measured 30733084 KiB (29.3 GiB) vs 38443752 KiB (36.7 GiB) initial; canonical tasks 385220 KiB; compact current worktree tasks 1988 KiB; legacy unsafe worktrees retained
+Scope: live disk reduction and canonical task-store preservation
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:f2ee045128dd9d0d747a2ad56be4dfda3ce812c46b7376071567ca825b7221db
+- policy_digest: sha256:c795bcd50defcbce5901e2cda7a0ee3e414bfc8bd91adf510a24c12d74a10ff7
+- capability_digest: sha256:c4c6ab442898895169487f2938efe8bec8f521c7340e626f2a9e44bb8ba936e1
+- checks_digest: sha256:b01d636360297bef1f909e4e48105900452ab7969ab4118ba6a46fd6ae3101de
+- identity_digest: sha256:c8385153eaffac81efb9f6f2f54badffc6fa70b4d1284cb80fb70cd0f177cbfd
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609232231-BYSVV6
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -2351,3 +2649,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `partial`
+- Completeness: `1/10` agent runs
+- Input tokens: `349586`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `351717`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:b15ba19f417aae625f59a5dd01e66600c0d0db4dfe9a52eeca823b37ed110f27`
+- Unavailable reason: `some_agent_runs_unallocatable`
+- Updated at: `2026-09-24T20:18:03.537Z`
