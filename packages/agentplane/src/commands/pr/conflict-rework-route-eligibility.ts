@@ -266,7 +266,8 @@ export function resolveConflictRouteEligibility(opts: {
   if (!implementationComplete && !providerReady) {
     return {
       state: "ineligible",
-    reason: "semantic conflict rework requires a verified DOING, DONE, or canonical COMPLETED task",
+      reason:
+        "semantic conflict rework requires a verified DOING, DONE, or canonical COMPLETED task",
     };
   }
 
