@@ -4,7 +4,7 @@ title: "Reduce AgentPlane workspace disk usage while preserving canonical task h
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -84,10 +84,24 @@ execution_contract:
       - "packages/agentplane/src"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/backends/task-backend.local.test.ts"
+      - "packages/agentplane/src/backends/task-backend/load.ts"
+      - "packages/agentplane/src/backends/task-backend/local-backend-read.ts"
+      - "packages/agentplane/src/backends/task-backend/local-backend-write.ts"
+      - "packages/agentplane/src/backends/task-backend/local-backend.ts"
+      - "packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+      - "packages/agentplane/src/commands/branch/work-start.compact-tasks.test.ts"
+      - "packages/agentplane/src/commands/branch/work-start.compact-tasks.ts"
+      - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
+      - "packages/agentplane/src/commands/branch/work-start.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -128,8 +142,9 @@ execution_contract:
           implementation_uncertainty: "material"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:1fe03e80d8375e4caa3e565f7afdc0a1fd16edea04a0e12802dfee66300ca683"
+      digest: "sha256:0b666c01de6c6a7f2c4e6e64dffe15a0001ae90592458acebae2573473ec128a"
       escalation_reasons:
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
         - "effect_public_api"
         - "material_implementation_uncertainty"
       execution_groups:
@@ -138,10 +153,24 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/backends/task-backend.local.test.ts"
+          - "packages/agentplane/src/backends/task-backend/load.ts"
+          - "packages/agentplane/src/backends/task-backend/local-backend-read.ts"
+          - "packages/agentplane/src/backends/task-backend/local-backend-write.ts"
+          - "packages/agentplane/src/backends/task-backend/local-backend.ts"
+          - "packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+          - "packages/agentplane/src/commands/branch/work-start.compact-tasks.test.ts"
+          - "packages/agentplane/src/commands/branch/work-start.compact-tasks.ts"
+          - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
+          - "packages/agentplane/src/commands/branch/work-start.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -177,7 +206,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "cbaa0c2344413686a0da2c746b318c777cd0a28f"
+  message: "🚧 BYSVV6 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -185,6 +216,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "External EXECUTOR returned failed: The workspace conflict cannot be resolved within this episode: no dedicated task worktree exists, and the issued checkout is the dirty main repository."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: cbaa0c234441. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -198,8 +232,16 @@ events:
     at: "2026-09-24T10:04:01.356Z"
     author: "SUPERVISOR"
     body: "External EXECUTOR returned failed: The workspace conflict cannot be resolved within this episode: no dedicated task worktree exists, and the issued checkout is the dirty main repository."
+  -
+    type: "status"
+    at: "2026-09-24T14:39:08.753Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: cbaa0c234441. CLI accepted one state-bound external-agent semantic result."
+    commit: "cbaa0c2344413686a0da2c746b318c777cd0a28f"
 doc_version: 3
-doc_updated_at: "2026-09-24T10:04:01.356Z"
+doc_updated_at: "2026-09-24T14:39:08.753Z"
 doc_updated_by: "SUPERVISOR"
 description: "Avoid materializing completed .agentplane/tasks history in each new task worktree; keep authoritative access through the canonical task store. Add a size inventory and safe cleanup route for retained task worktrees and nested base repositories. Preserve dirty work, Git/provider/task evidence, and current task behavior. Verify focused tests and measured disk behavior."
 sections:
@@ -741,7 +783,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609232231-BYSVV6"
-    event_cursor: 4
+    event_cursor: 6
     final_validation: null
     id: "202609232231-BYSVV6"
     intent:
@@ -756,9 +798,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 6
+    revision: 8
     schema_version: 1
-    updated_at: "2026-09-24T10:04:01.356Z"
+    updated_at: "2026-09-24T14:39:08.753Z"
     work_items:
       compact-task-worktree:
         attempt: 0
@@ -831,6 +873,30 @@ extensions:
         previous_revision: 4
         schema_version: 1
         task_id: "202609232231-BYSVV6"
+      compatibility:sha256:5ad7041185360dcfa2aca49835627b94e0548224a0b603bb63f79daf02c5cf30:
+        aggregate_digest: "sha256:12b9bc92af337741ad7ac8176cea4776760bf8b413c5d314fa8cf04ab8dba2d9"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-24T14:39:08.753Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_9a724115ffce257d72a04f5a"
+          mutation_id: "compatibility:sha256:5ad7041185360dcfa2aca49835627b94e0548224a0b603bb63f79daf02c5cf30"
+          plan_digest: "sha256:f2ee045128dd9d0d747a2ad56be4dfda3ce812c46b7376071567ca825b7221db"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609232231-BYSVV6"
+          task_revision: 6
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:5ad7041185360dcfa2aca49835627b94e0548224a0b603bb63f79daf02c5cf30"
+        next_revision: 7
+        previous_revision: 6
+        schema_version: 1
+        task_id: "202609232231-BYSVV6"
       compatibility:sha256:81fc7f91f44ab72d7ac7b2ec3df7fd8a402220091061fe82823983c04c4cf9b8:
         aggregate_digest: "sha256:0aeff65841c3cfb67567cf7e395fc044df5bb4ae6cea93f4a326028fda185761"
         event:
@@ -879,9 +945,35 @@ extensions:
         previous_revision: 5
         schema_version: 1
         task_id: "202609232231-BYSVV6"
+      compatibility:sha256:af99f5c4b2a7910770e9a55bcbdc5f69f9b0fece1e022b6f6c19983554e0a063:
+        aggregate_digest: "sha256:ffee89e8a5a3867fd8f3012df82778dfca4134c0ced147555265e95e6bd0d88a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-24T14:39:08.753Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_4e3ed5121b2975887556c06e"
+          mutation_id: "compatibility:sha256:af99f5c4b2a7910770e9a55bcbdc5f69f9b0fece1e022b6f6c19983554e0a063"
+          plan_digest: "sha256:f2ee045128dd9d0d747a2ad56be4dfda3ce812c46b7376071567ca825b7221db"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609232231-BYSVV6"
+          task_revision: 7
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:af99f5c4b2a7910770e9a55bcbdc5f69f9b0fece1e022b6f6c19983554e0a063"
+        next_revision: 8
+        previous_revision: 7
+        schema_version: 1
+        task_id: "202609232231-BYSVV6"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "cbaa0c2344413686a0da2c746b318c777cd0a28f"
   task_execution_context:
     base_ref: "origin/main"
     base_sha: "97c2c3dfca1b8a4a6a6f616e4b05341cb0d89927"
