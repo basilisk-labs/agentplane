@@ -1,12 +1,11 @@
 {
-  "artifact_state": "remote_failed",
-  "artifact_state_reason": "GitHub PR creation failed",
-  "artifact_state_updated_at": "2026-09-24T18:31:54.664Z",
-  "base": "origin/main",
+  "base": "main",
   "branch": "task/202609232231-BYSVV6/compact-task-history",
   "created_at": "2026-09-24T14:39:05.856Z",
   "diffstat_sha256": "sha256:971f7c2dbbc91eace7f8e2a34fde7a1ba469215c6b7d81c985e5ed7e04d953e3",
   "last_verified_at": null,
+  "pr_number": 6023,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6023",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,8 +15,9 @@
     "target_project": "basilisk-labs/agentplane"
   },
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202609232231-BYSVV6",
-  "updated_at": "2026-09-24T14:39:05.856Z",
+  "updated_at": "2026-09-24T19:07:32.682Z",
   "verify": {
     "status": "skipped"
   }
