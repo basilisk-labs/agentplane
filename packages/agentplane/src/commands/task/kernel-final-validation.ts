@@ -19,6 +19,10 @@ import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.j
 
 type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
 
+export function canonicalFinalValidationTask<T extends { verify?: string[] }>(task: T): T {
+  return { ...task, verify: [] };
+}
+
 function finalValidationCommands(record: KernelRecord): string[] {
   const plan = record.aggregate.current_plan;
   if (plan?.state !== "APPROVED" || !record.documents)
@@ -186,7 +190,7 @@ export async function runKernelFinalValidation(
   if (!operationalTask) throw new Error("Canonical operational verification task is unavailable");
   const checks = await runDirectTaskVerification({
     command,
-    task: operationalTask,
+    task: canonicalFinalValidationTask(operationalTask),
     task_id: taskId,
     cwd: command.resolvedProject.gitRoot,
     additional_commands: commands.map((check) => ({ command: check })),
