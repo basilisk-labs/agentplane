@@ -3542,7 +3542,7 @@
 
 /* The light moves behind the lower edge of the repository window. */
 .explorerScene::before {
-  animation: backgroundDrift 9s ease-in-out infinite alternate;
+  animation: backgroundDrift 5.8s ease-in-out infinite alternate;
   background:
     radial-gradient(ellipse 43% 34% at 25% 86%, rgb(255 101 94 / 0.54), transparent 82%),
     radial-gradient(ellipse 48% 36% at 76% 83%, rgb(119 136 238 / 0.48), transparent 82%);
@@ -3552,6 +3552,24 @@
   opacity: 0.85;
   pointer-events: none;
   position: absolute;
+  z-index: 0;
+}
+
+.explorerScene::after {
+  --grid-step: 28px;
+  animation: gridDrift 6s linear infinite;
+  background-image:
+    linear-gradient(rgb(95 112 178 / 0.22) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(95 112 178 / 0.22) 1px, transparent 1px);
+  background-size: var(--grid-step) var(--grid-step);
+  content: "";
+  inset: 48% -75px -86px;
+  mask-image: radial-gradient(ellipse 72% 78% at 50% 74%, #000 23%, transparent 84%);
+  opacity: 0.47;
+  pointer-events: none;
+  position: absolute;
+  transform: perspective(650px) rotateX(38deg);
+  transform-origin: center bottom;
   z-index: 0;
 }
 
@@ -3574,12 +3592,25 @@
 
 @keyframes backgroundDrift {
   from {
-    opacity: 0.73;
-    transform: translateX(-45px) scale(0.96);
+    opacity: 0.78;
+    transform: translateX(-70px) scale(0.94);
   }
   to {
     opacity: 1;
-    transform: translateX(45px) scale(1.04);
+    transform: translateX(70px) scale(1.08);
+  }
+}
+
+@keyframes gridDrift {
+  from {
+    background-position:
+      0 0,
+      0 0;
+  }
+  to {
+    background-position:
+      var(--grid-step) var(--grid-step),
+      var(--grid-step) var(--grid-step);
   }
 }
 
@@ -3599,22 +3630,22 @@
 
 @media (min-width: 761px) {
   .hero {
-    padding-bottom: 137px;
+    padding-bottom: 157px;
   }
   .explorerScene {
     margin-bottom: 0;
   }
   .proofOverview {
-    padding-block: 69px 76px;
+    padding-block: 82px 91px;
   }
   .proofOverviewGrid {
     margin-top: 36px;
   }
   .section {
-    padding-block: 86px;
+    padding-block: 96px;
   }
   .authoritySection {
-    padding-block: 96px 113px;
+    padding-block: 108px 124px;
   }
   .sectionIntro,
   .sectionIntroWide {
@@ -3648,6 +3679,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .explorerScene::before,
+  .explorerScene::after,
   .artifactWindow::after {
     animation: none;
   }
@@ -3658,14 +3690,19 @@
 
 @media (max-width: 760px) {
   .hero {
-    padding-bottom: 48px;
+    padding-bottom: 64px;
   }
   .explorerScene::before {
     filter: blur(18px);
     inset: 0 -35px -56px;
   }
+  .explorerScene::after {
+    --grid-step: 22px;
+    inset: 55% -35px -62px;
+    opacity: 0.32;
+  }
   .proofOverview {
-    padding-block: 43px 46px;
+    padding-block: 52px 55px;
   }
   .proofOverviewInner,
   .section .sectionIntro,
@@ -3723,7 +3760,7 @@
   }
 
   .section {
-    padding: 50px 16px;
+    padding: 58px 16px;
   }
   .section::before,
   .section::after {
@@ -3752,7 +3789,7 @@
   }
 
   .authoritySection {
-    padding-bottom: 83px;
+    padding-bottom: 96px;
   }
   .authoritySection .splitSection {
     align-items: stretch;
