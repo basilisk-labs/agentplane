@@ -28,13 +28,14 @@ export const homepageContent = {
   seo: {
     title: "Agentplane | Git-native control plane for coding agents",
     description:
-      "Agentplane puts coding agents on an approved, verifiable Git workflow with bounded authority, observed proof, recovery, and deterministic closure.",
+      "Agentplane pairs AGENTS.md guardrails with a CLI that gives coding agents bounded actions and records independent proof in Git.",
   },
   hero: {
     eyebrow: "The Git-native control plane for coding agents",
     title: "Let agents write code. Keep authority and proof in Git.",
     titleLines: ["Let agents write code.", "Keep authority and", "proof in Git."],
-    subtitle: "Agentplane puts coding agents on an approved, verifiable repository workflow.",
+    subtitle:
+      "AGENTS.md sets the guardrails. The CLI returns one bounded action at a time, so agents can focus on the task instead of tracking the workflow.",
     trustLine: "Agent-agnostic · Local-first · No account required · MIT licensed",
   },
   receipt: {
@@ -57,7 +58,7 @@ export const homepageContent = {
   controlLoop: {
     eyebrow: "The control loop",
     title: "One clear path from intent to durable proof.",
-    text: "Agentplane separates the worker from the authority that approves, observes, verifies, and closes its work.",
+    text: "AGENTS.md keeps guardrails in the repository. The CLI gives the agent one bounded action at a time; Agentplane then verifies and records the result.",
     steps: [
       {
         id: "authorize",

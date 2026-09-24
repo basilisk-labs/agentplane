@@ -22,17 +22,20 @@ const artifacts = [
   {
     file: "AGENTS.md",
     category: "01 / AUTHORITY",
-    caption: "The agent reads repository policy before it touches the code.",
-    notes: ["Start with the boundary.", "Instructions live with the repo.", "Scope comes first."],
+    caption: "AGENTS.md sets the guardrails; the CLI gives the agent one bounded action at a time.",
+    notes: ["Rules live here.", "CLI returns the next step.", "Less to hold in context."],
     preview: [
-      "# AGENTS.md",
+      "# PURPOSE",
+      "`AGENTS.md` is the policy gateway for agents in this repository.",
+      "It provides strict routing, hard constraints, and command contracts.",
       "",
-      "## PROJECT",
-      "Repository type: user project initialized with agentplane.",
+      "## COMMANDS",
+      "```bash",
+      "ap task active",
+      "ap task advance <task-id> --agent-json",
+      "```",
       "",
-      "## MUST / MUST NOT",
-      "- MUST create/reuse executable task IDs for any repo-state mutation.",
-      "- MUST perform only the semantic objective supplied by the current packet.",
+      "When `action.kind=agent_episode`, perform only the supplied semantic objective.",
     ],
   },
   {
@@ -614,9 +617,7 @@ function Hero(): ReactNode {
           Keep authority and <br className={styles.heroMobileBreak} />
           proof in Git.
         </h1>
-        <p className={styles.lede}>
-          Agentplane puts coding agents on an approved, verifiable repository workflow.
-        </p>
+        <p className={styles.lede}>{hero.subtitle}</p>
         <div className={styles.ctaGroup}>
           <Link
             className={styles.buttonPrimary}
@@ -654,7 +655,7 @@ function ProofOverview(): ReactNode {
               <StageGlyph stage="Authority" />
             </span>
             <h3>Clear authority</h3>
-            <p>Define what agents can do in AGENTS.md with explicit scope and constraints.</p>
+            <p>AGENTS.md sets the guardrails; the CLI returns the next bounded action.</p>
           </div>
           <div>
             <span className={`${styles.stageIcon} ${styles.stageIconVerified}`}>
