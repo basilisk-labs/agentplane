@@ -24,7 +24,7 @@ Created: 2026-09-24T19:01:04.829Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-24T19:01:04.829Z
+- Updated: 2026-09-24T19:20:32.994Z
 - Branch: task/202609241856-CCBDZ9/make-canonical-final-validation-execute-only-app
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
