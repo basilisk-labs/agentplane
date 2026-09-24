@@ -50,6 +50,7 @@ import {
   recordVerificationOk,
 } from "@agentplane/testkit";
 import { resolveUpdateCheckCachePath } from "./update-check.js";
+import { loadTaskBackend } from "../backends/task-backend.js";
 import * as prompts from "./prompts.js";
 
 installRunCliIntegrationHarness();
@@ -186,6 +187,8 @@ describe(
         );
         await approveTaskPlan(root, taskId);
         await approveTaskPlan(root, siblingTaskId);
+        await execFileAsync("git", ["add", `.agentplane/tasks/${siblingTaskId}`], { cwd: root });
+        await execFileAsync("git", ["commit", "-m", "archive sibling task"], { cwd: root });
         const worktreeIo = captureStdIO();
         const worktreePath = path.join(root, ".agentplane", "worktrees", `${taskId}-seed-readmes`);
         try {
@@ -216,6 +219,9 @@ describe(
         );
         expect(await pathExists(taskReadmePath)).toBe(true);
         expect(await pathExists(siblingReadmePath)).toBe(false);
+        const worktreeBackend = await loadTaskBackend({ cwd: worktreePath, config });
+        const historicalTask = await worktreeBackend.backend.getTask(siblingTaskId);
+        expect(historicalTask?.id).toBe(siblingTaskId);
         expect(await pathExists(path.join(root, ".agentplane", "tasks", taskId, "README.md"))).toBe(
           false,
         );
