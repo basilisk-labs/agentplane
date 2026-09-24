@@ -1,10 +1,11 @@
 ---
 id: "202609241856-CCBDZ9"
 title: "Make canonical final validation execute only approved Plan verification commands"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -43,6 +44,22 @@ quality_review:
     - "The shared direct-task verification implementation is unchanged, preserving non-canonical task.verify behavior."
     - "The helper returns a copy and does not mutate the operational task."
     - "AgentPlane observed the focused test, typecheck, and ci:local:fast passing on commit ceb90233610621d4f3a26c2219a6f97dddb8cfde."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:09ede88e6880942c923dd48e61cc847c9392dd64ffb17545183180ac0dd393d7"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-09-24T19:22:04.223Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -216,9 +233,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "ceb90233610621d4f3a26c2219a6f97dddb8cfde"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "7b2eadba2ea59e750d8926d08ff632d2651c24ec"
+  message: "✅ CCBDZ9 task: persist canonical completion"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -226,9 +246,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-09-24T19:22:04.223Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "7b2eadba2ea59e750d8926d08ff632d2651c24ec"
 doc_version: 3
-doc_updated_at: "2026-09-24T19:19:21.042Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-24T19:22:04.223Z"
+doc_updated_by: "CODER"
 description: "Fix runKernelFinalValidation so legacy operational task.verify commands cannot be merged into canonical final validation after a replacement Plan. Preserve legacy direct-task verification behavior outside the canonical Kernel route. Add regression coverage for divergent legacy and canonical commands."
 sections:
   Summary: |-
@@ -355,6 +383,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:680df403f52c992a3e62540c9eae951a31d10fcfc8482752cee20e64ff44ca7b"
     work_order_id: "sha256:85d7586be04149ecd68ca87542702cb9f4b8cc2a2877e7d99294dc32c0510e34"
+  implementation_commit:
+    hash: "ceb90233610621d4f3a26c2219a6f97dddb8cfde"
+    message: "🚧 CCBDZ9 task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "9a9ccf33a80c42e7a2643caaaf2f490e588384d0"
@@ -939,3 +970,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:09ede88e6880942c923dd48e61cc847c9392dd64ffb17545183180ac0dd393d7`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-09-24T19:22:04.223Z`
