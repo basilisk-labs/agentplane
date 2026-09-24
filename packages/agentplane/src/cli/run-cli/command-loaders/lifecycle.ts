@@ -66,6 +66,10 @@ export const fromHooksUninstallSpec = commandModule(
 );
 export const loadCleanupSpec = (_session: NoContextSession) =>
   import("../../../commands/cleanup/merged.command.js").then((m) => m.runCleanup);
+export const loadCleanupInspectSpec = (session: TaskReadSession) =>
+  import("../../../commands/cleanup/inspect.command.js").then((m) =>
+    m.makeRunCleanupInspectHandler(getTaskReadContext(session)),
+  );
 export const loadCleanupMergedSpec = (session: ProviderWriteSession) =>
   import("../../../commands/cleanup/merged.command.js").then((m) =>
     m.makeRunCleanupMergedHandler(async (command) => {

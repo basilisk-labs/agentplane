@@ -1,0 +1,1 @@
+✅ BYSVV6 task: Reduce AgentPlane workspace disk usage while preserving canonical task history [202609232231-BYSVV6]

@@ -163,7 +163,7 @@ describe("runCli", () => {
       const code = await runCli(["cleanup", "nope", "--root", root]);
       expect(code).toBe(2);
       expect(io.stderr).toContain("Usage:");
-      expect(io.stderr).toContain("agentplane cleanup <merged>");
+      expect(io.stderr).toContain("agentplane cleanup <inspect|merged>");
     } finally {
       io.restore();
     }

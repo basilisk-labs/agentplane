@@ -65,11 +65,14 @@ function runInternalPrePushHook(gitRoot: string, stdin: string): number {
     if (isReleasePush) failIfPollutedReleaseGitConfig(gitRoot);
     const ciScript = envFull ? "ci:local:full" : "ci:local:fast";
     const scripts = readPackageScripts(gitRoot);
+    const defaultBaseRef = resolveDefaultBaseRef(gitRoot);
     const diffRange = selectBranchDiffRange(updates, {
-      newBranchFallbackRef: resolveDefaultBaseRef(gitRoot),
+      newBranchFallbackRef: defaultBaseRef,
     });
     const changedFiles = readChangedFilesForRange(gitRoot, diffRange);
-    enforceTaskBoundOutgoingCommits(gitRoot, diffRange);
+    const baseBranch = defaultBaseRef?.replace(/^origin\//u, "");
+    const pushesBase = updates.some((update) => update.remoteRef === `refs/heads/${baseBranch}`);
+    enforceTaskBoundOutgoingCommits(gitRoot, diffRange, pushesBase ? null : defaultBaseRef);
     const ciEnv =
       changedFiles.length > 0
         ? sanitizeCiEnv({ ...process.env, AGENTPLANE_FAST_CHANGED_FILES: changedFiles.join("\n") })

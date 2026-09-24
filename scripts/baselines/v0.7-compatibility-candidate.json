@@ -8,14 +8,14 @@
   "candidate": {
     "section_digests": {
       "agent_facing_context_contracts": "7710a5217ea614a3da8b4e99fe61e16fb738179797eba64c75c9537bc33f7785",
-      "cli_topology": "4fd5c401aa48df8955d51c58bf70dbd501a953f250cd14665344022d0749040d",
+      "cli_topology": "5ce3605acc5bb9705ea9f2f1652db201a9e5bfb44233b889cc064db8e8aa1ee5",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "package_manifests": "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
       "tarball_policy": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
       "workflow_schema": "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452"
     },
-    "surface_sha256": "389e9c0c3464b9317f1b28e13fea0e8ae187d239920db2fb0af46904ebe1383a"
+    "surface_sha256": "6183ef8027abc3b6b84a41229e3b0a62a85afb70be42ce668bc8c3733cebd1ef"
   },
   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
   "contract_artifacts": {
@@ -323,6 +323,13 @@
       "classification": "intentional_breaking_retirement",
       "evidence": {
         "added_command_descriptors": [
+          {
+            "args": [],
+            "group": "Branch",
+            "id": ["cleanup", "inspect"],
+            "options": [{ "default": false, "kind": "boolean", "name": "json", "valueHint": null }],
+            "visibility": "user"
+          },
           {
             "args": [
               { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
@@ -836,6 +843,7 @@
           }
         ],
         "added_commands": [
+          "cleanup inspect",
           "context supervise-task",
           "doctor legacy",
           "evaluator apply",
@@ -873,6 +881,13 @@
             "default": false,
             "kind": "boolean",
             "name": "bootstrap-projection",
+            "valueHint": null
+          },
+          {
+            "command": "cleanup inspect",
+            "default": false,
+            "kind": "boolean",
+            "name": "json",
             "valueHint": null
           },
           {
@@ -1660,6 +1675,7 @@
           }
         ],
         "addition_sources": [
+          { "command": "cleanup inspect", "kind": "command", "source_task": "202609232231-BYSVV6" },
           {
             "command": "context supervise-task",
             "kind": "command",
@@ -1744,6 +1760,12 @@
             "kind": "option",
             "name": "bootstrap-projection",
             "source_task": "202607221848-0ZAB1F"
+          },
+          {
+            "command": "cleanup inspect",
+            "kind": "option",
+            "name": "json",
+            "source_task": "202609232231-BYSVV6"
           },
           {
             "command": "cleanup merged",
@@ -2416,7 +2438,7 @@
             "source_task": "202609060720-NZXQ0E"
           }
         ],
-        "command_count": { "from": 243, "to": 251 },
+        "command_count": { "from": 243, "to": 252 },
         "mutated_command_shells": [
           {
             "after": {
@@ -2613,7 +2635,7 @@
             "identity": "task plan approve --by"
           }
         ],
-        "option_count": { "from": 767, "to": 843 },
+        "option_count": { "from": 767, "to": 844 },
         "positional_count": { "from": 165, "to": 173 },
         "removed_command_descriptors": [
           {
@@ -3085,6 +3107,7 @@
       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
       "section": "cli_topology",
       "source_tasks": [
+        "202609232231-BYSVV6",
         "202607221846-4VB97J",
         "202607221846-YGWMA2",
         "202607230554-YFYT83",
@@ -3128,7 +3151,7 @@
         "202609241429-4WN4VX"
       ],
       "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, including bounded scope, effect, capability, and resource declarations, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, safe local evidence statistics, compaction, garbage collection, and a state-bound USER-approved blocked-task scope extension; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; canonicalizes setup and execution profile selection to standard while retaining legacy init aliases; and makes auto the task route default while retiring repository as a user-facing route. Adds exact-intent operator reconciliation for interrupted integration workflow effects. Retires the active supervisor budget-epoch command after spend limits became telemetry-only. Retires the active Blueprint command surface after Task Kernel replacement proof while preserving cold compatibility readers.",
-      "to_sha256": "4fd5c401aa48df8955d51c58bf70dbd501a953f250cd14665344022d0749040d"
+      "to_sha256": "5ce3605acc5bb9705ea9f2f1652db201a9e5bfb44233b889cc064db8e8aa1ee5"
     },
     {
       "classification": "intentional_breaking_retirement",
@@ -3342,7 +3365,7 @@
     "from_version": "0.6.24",
     "section": "package_manifests",
     "source_task": "202608082119-P6SHBN",
-    "surface_sha256": "ea6e1c4f0501fbce328daed8b70bd8bf05e6aab9dae3da5c3b656e8275d36459",
+    "surface_sha256": "8573d058fb9249998b7f73de945e1b9445214aabeed76920bc81a639c33e3782",
     "to_sha256": "e27e7737e65c939d493dd608b245362757bd5a84f2df553fe93696286062829b",
     "to_version": "0.7.12-beta.1"
   },
@@ -3358,6 +3381,7 @@
   },
   "schema_version": 3,
   "source_tasks": [
+    "202609232231-BYSVV6",
     "202607221846-4VB97J",
     "202607221846-YGWMA2",
     "202607230554-YFYT83",

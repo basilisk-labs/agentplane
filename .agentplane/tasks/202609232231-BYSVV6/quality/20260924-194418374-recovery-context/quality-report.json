@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202609232231-BYSVV6",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-24T19:44:18.809Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "d6f82fa61c7719c09cb08e8edffeabb7c2fa7b3c",
+  "blueprint_digest": "df479dfe331943fdb95d6095eff0c6092193dfed8210fe6653e5258f867f6be5",
+  "findings": [
+    "Sparse checkout omits historical task directories while preserving the current task; canonical reads reject missing or unsafe storage and historical writes.",
+    "The push audit reads task identity from the committed Git tree and excludes commits already present on origin/main while auditing new branch commits."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609232231-BYSVV6/quality/objects/sha256/a2da3cb9de380ee4441474d347f4e6ffc2777d55c1d4b997659c04b26db82d1b.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
