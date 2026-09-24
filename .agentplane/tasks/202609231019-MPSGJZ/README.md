@@ -4,7 +4,7 @@ title: "Fix canonical completed-task branch lifecycle recovery without internal 
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 33
+revision: 34
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,11 @@ plan_approval:
   updated_by: "USER"
   note: "Projected from the approved canonical Task Kernel plan."
 verification:
-  state: "ok"
-  updated_at: "2026-09-24T20:02:18.851Z"
+  state: "needs_rework"
+  updated_at: "2026-09-24T20:23:59.753Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-  attempts: 0
+  note: "Rework: Declared check failed: bun run ci:local:full"
+  attempts: 1
 quality_review:
   state: "pending"
   updated_at: "2026-09-23T23:27:15.181Z"
@@ -167,6 +167,8 @@ execution_contract:
       - "repository_effect:dependencies"
       - "repository_effect:schema"
       - "repository_effect:tests"
+      - "verification:recorded-check-1:fail"
+      - "verification:verification-record:fail"
     changed_components:
       - "bun.lock"
       - "packages/agentplane"
@@ -180,7 +182,9 @@ execution_contract:
       - "packages/agentplane/src/commands/evaluator/evaluator-review-apply.test.ts"
       - "packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts"
       - "packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts"
+      - "packages/agentplane/src/commands/pr/conflict-rework-route-eligibility.ts"
       - "packages/agentplane/src/commands/pr/conflict-rework.test.ts"
+      - "packages/agentplane/src/commands/pr/conflict-rework.ts"
       - "packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts"
       - "packages/agentplane/src/commands/shared/merged-branch-cleanup.ts"
       - "packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts"
@@ -253,34 +257,10 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
-      -
-        id: "recorded-check-7"
-        result: "pass"
-      -
-        id: "recorded-check-8"
-        result: "pass"
-      -
-        id: "recorded-check-9"
-        result: "pass"
+        result: "fail"
       -
         id: "verification-record"
-        result: "pass"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "observed_effect_dependencies"
@@ -315,7 +295,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:1f2d384b1294e829af5c7d418774e18d7c32799a79167d658e240425872a7000"
+      digest: "sha256:4f50ce5ede439f44451e143766da3f51b9ae4ece4b4bfc4dd2035df9ef2fcd99"
       escalation_reasons:
         - "central_path:bun.lock"
         - "central_path:packages/agentplane/src/commands/shared/branch-identity.ts"
@@ -559,7 +539,9 @@ execution_contract:
           - "packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts"
           - "packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts"
           - "packages/agentplane/src/commands/guard/impl/close-message.test.ts"
+          - "packages/agentplane/src/commands/pr/conflict-rework-route-eligibility.ts"
           - "packages/agentplane/src/commands/pr/conflict-rework.test.ts"
+          - "packages/agentplane/src/commands/pr/conflict-rework.ts"
           - "packages/agentplane/src/commands/shared/branch-identity.ts"
           - "packages/agentplane/src/commands/shared/branch-pr-context.test.ts"
           - "packages/agentplane/src/commands/shared/branch-pr-context.ts"
@@ -674,6 +656,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
+      - "verification_recovery:recorded-check-1"
+      - "verification_recovery:verification-record"
 commit: null
 comments: []
 events:
@@ -749,8 +733,14 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "verify"
+    at: "2026-09-24T20:23:59.753Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-24T20:02:24.597Z"
+doc_updated_at: "2026-09-24T20:24:05.460Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the verified AgentPlane lifecycle fixes as one clean semantic code task. Keep implementation, tests, and local verification in the work item. Leave PR publication, hosted checks, merge, and cleanup to branch_pr lifecycle. Include completed canonical implementation-rework routing, safe supervisor journal replacement and stale-state recovery, exact DONE rework runner authority, completed verification and quality-review routing, base-checkout provider operations, and Codex-compatible strict output schemas. Do not include task artifacts from other tasks."
 sections:
@@ -1304,6 +1294,40 @@ sections:
     Result: pass
     Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-2
     Scope: branch_pr task 202609231019-MPSGJZ Verification Contract check task_outcome (2/2)
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:b8810dd303286d6fdd7c8b7e964e33cdb45ef13091247e90d5d458d559e9f9a0
+    - policy_digest: sha256:9c3e5325d78af3d590b3ecf1641b0da288f0a1e3fec30c28b808c2c2f01aa68e
+    - capability_digest: sha256:44668150af015035b4f9295eeb1e83a605e3c89b183ce28b4421a381c9bdb75f
+    - checks_digest: sha256:f723bdd333e3659f64d36611ff3e497dd248498d3d92ed11236914357f8edde8
+    - identity_digest: sha256:c481d91209f2132cc9e8fbd0e836d99ce0753343d262abe742ccae35f7959417
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-24T20:23:59.753Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:853b6b80ed5aca4f6515b6493dc1f63f8262d59bd76be35ea2eb0b2799cc72c6, input_digest=sha256:78bdffdf90764f69beef9e77a00260aa4b52eddd900b74673eb5fd087d6dfd6c
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609231019-MPSGJZ declared verification
 
     NativeTaskIdentityRef:
     - plan_digest: sha256:b8810dd303286d6fdd7c8b7e964e33cdb45ef13091247e90d5d458d559e9f9a0
@@ -2518,6 +2542,40 @@ Command: bunx vitest run packages/agentplane/src/commands/task/kernel-provider-e
 Result: pass
 Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-2
 Scope: branch_pr task 202609231019-MPSGJZ Verification Contract check task_outcome (2/2)
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:b8810dd303286d6fdd7c8b7e964e33cdb45ef13091247e90d5d458d559e9f9a0
+- policy_digest: sha256:9c3e5325d78af3d590b3ecf1641b0da288f0a1e3fec30c28b808c2c2f01aa68e
+- capability_digest: sha256:44668150af015035b4f9295eeb1e83a605e3c89b183ce28b4421a381c9bdb75f
+- checks_digest: sha256:f723bdd333e3659f64d36611ff3e497dd248498d3d92ed11236914357f8edde8
+- identity_digest: sha256:c481d91209f2132cc9e8fbd0e836d99ce0753343d262abe742ccae35f7959417
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-24T20:23:59.753Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:853b6b80ed5aca4f6515b6493dc1f63f8262d59bd76be35ea2eb0b2799cc72c6, input_digest=sha256:78bdffdf90764f69beef9e77a00260aa4b52eddd900b74673eb5fd087d6dfd6c
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609231019-MPSGJZ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609231019-MPSGJZ declared verification
 
 NativeTaskIdentityRef:
 - plan_digest: sha256:b8810dd303286d6fdd7c8b7e964e33cdb45ef13091247e90d5d458d559e9f9a0
