@@ -114,6 +114,7 @@ Field names and casing are exact. Optional fields are omitted when no value is a
   - [branch base set](#branch-base-set)
   - [branch remove](#branch-remove)
   - [branch status](#branch-status)
+  - [cleanup inspect](#cleanup-inspect)
   - [cleanup merged](#cleanup-merged)
 - Backend
   - [backend connect](#backend-connect)
@@ -1834,6 +1835,34 @@ agentplane branch status --base main
 ```
 
 - Check against an explicit base.
+
+### cleanup inspect
+
+Inspect local disk use and worktree cleanup eligibility without deleting files.
+
+Usage:
+
+```text
+agentplane cleanup inspect [options]
+```
+
+Options:
+
+- `--json`: Print machine-readable inventory. (default=false)
+
+Examples:
+
+```sh
+agentplane cleanup inspect
+```
+
+- List worktree and nested repository sizes.
+
+```sh
+agentplane cleanup inspect --json
+```
+
+- Export a read-only inventory.
 
 ### cleanup merged
 
