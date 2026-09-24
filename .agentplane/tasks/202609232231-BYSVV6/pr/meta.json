@@ -8,10 +8,10 @@
   "pr_number": 6023,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6023",
   "pre_merge_closure": {
-    "basis_commit": "db2845bf530a13fbbd946350aa263333543d1336",
+    "basis_commit": "e7e1533033d4b86a9f6dc35dc594f7fb81f04ebd",
     "branch": "task/202609232231-BYSVV6/compact-task-history",
     "pr_number": 6023,
-    "recorded_at": "2026-09-24T20:18:03.721Z",
+    "recorded_at": "2026-09-24T20:39:17.884Z",
     "state": "closed_before_merge"
   },
   "provider": {
