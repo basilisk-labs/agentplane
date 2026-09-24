@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:528179d4c84d63c0814f13aef1723377a8afb7ed78d58ff540952d202e504bff",
   "pr_number": 6024,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6024",
+  "pre_merge_closure": {
+    "basis_commit": "7b2eadba2ea59e750d8926d08ff632d2651c24ec",
+    "branch": "task/202609241856-CCBDZ9/make-canonical-final-validation-execute-only-app",
+    "pr_number": 6024,
+    "recorded_at": "2026-09-24T19:22:04.285Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
