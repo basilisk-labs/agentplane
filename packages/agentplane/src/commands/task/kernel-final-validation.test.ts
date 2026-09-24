@@ -3,6 +3,7 @@ import {
   canonicalFinalValidationTask,
   finalValidationIdentityMatches,
 } from "./kernel-final-validation.js";
+import { bindDirectTaskVerificationChecks } from "./direct-task-verification.js";
 
 const evaluatorTarget = "a".repeat(40);
 const storedIdentity = "sha256:" + "a".repeat(64);
@@ -59,6 +60,48 @@ describe("canonical final-validation identity recovery", () => {
 });
 
 describe("canonical final-validation command ownership", () => {
+  it("binds an observed verification contract to already executed checks", () => {
+    const task = {
+      execution_contract: {
+        verification: {
+          contract: {
+            selected_checks: ["docs_contract", "full_regression", "task_outcome"],
+          },
+        },
+      },
+    } as never;
+    const check = {
+      runtime: undefined,
+      command: "bun run test:critical",
+      script: "test:critical",
+      check_ids: ["plan-check"],
+      exit_code: 0,
+      duration_ms: 1,
+      stdout_tail: "",
+      stderr_tail: "",
+    };
+
+    const result = bindDirectTaskVerificationChecks(
+      {
+        status: "passed",
+        artifact_path: "old.json",
+        checks: [check, { ...check, command: "bun run ci:local:full", script: "ci:local:full" }],
+        reason: null,
+      },
+      task,
+      "final-validation.json",
+    );
+
+    expect(result.artifact_path).toBe("final-validation.json");
+    expect(result.checks[0]?.check_ids).toEqual(["plan-check", "docs_contract", "task_outcome"]);
+    expect(result.checks[1]?.check_ids).toEqual([
+      "plan-check",
+      "docs_contract",
+      "full_regression",
+      "task_outcome",
+    ]);
+  });
+
   it("removes legacy operational verification commands without mutating the task", () => {
     const task = {
       id: "T-1",
@@ -71,5 +114,17 @@ describe("canonical final-validation command ownership", () => {
       verify: [],
     });
     expect(task.verify).toEqual(["legacy stale command"]);
+  });
+
+  it("preserves dynamically observed verification requirements", () => {
+    const executionContract = {
+      verification: { contract: { selected_checks: ["docs_contract", "task_outcome"] } },
+    };
+    const task = { verify: ["legacy stale command"], execution_contract: executionContract };
+
+    const prepared = canonicalFinalValidationTask(task);
+
+    expect(prepared.verify).toEqual([]);
+    expect(prepared.execution_contract).toBe(executionContract);
   });
 });

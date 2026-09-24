@@ -29,6 +29,24 @@ export {
   type DirectTaskVerificationResult,
 } from "./direct-task-verification-checks.js";
 
+export function bindDirectTaskVerificationChecks(
+  result: DirectTaskVerificationResult,
+  task: Pick<TaskData, "execution_contract">,
+  artifactPath = result.artifact_path,
+): DirectTaskVerificationResult {
+  const selectedChecks = selectedLocalChecks(task);
+  return {
+    ...result,
+    artifact_path: artifactPath,
+    checks: result.checks.map((check) => ({
+      ...check,
+      check_ids: [
+        ...new Set([...check.check_ids, ...checkIdsForCommand(check.command, selectedChecks)]),
+      ],
+    })),
+  };
+}
+
 const DEFAULT_CHECK_TIMEOUT_MS = 30 * 60_000;
 const CHECK_TIMEOUT_MS_BY_SCRIPT: Readonly<Record<string, number>> = Object.freeze({
   "e2e:v0.7.1:gate": 150 * 60_000,

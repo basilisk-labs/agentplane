@@ -1,0 +1,4 @@
+ .../src/commands/task/direct-task-verification.ts  | 18 +++++++
+ .../commands/task/kernel-final-validation.test.ts  | 55 ++++++++++++++++++++++
+ .../src/commands/task/kernel-final-validation.ts   | 42 ++++++++++-------
+ 3 files changed, 99 insertions(+), 16 deletions(-)
