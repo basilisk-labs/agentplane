@@ -6,14 +6,14 @@ Created: 2026-09-24T14:39:05.856Z
 
 - Task: `202609232231-BYSVV6`
 - Title: Reduce AgentPlane workspace disk usage while preserving canonical task history
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609232231-BYSVV6/compact-task-history`
 - Canonical task record: `.agentplane/tasks/202609232231-BYSVV6/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Focused tests, full local CI, compact task-store behavior, and measured disk reduction passed; hosted PR checks are tracked separately.
+- Note: Current head db2845bf passes focused cleanup tests and all five local CI groups; disk use is lower and unsafe worktrees are retained.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-09-24T14:39:05.856Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-24T19:57:54.670Z
+- Updated: 2026-09-24T20:19:22.715Z
 - Branch: task/202609232231-BYSVV6/compact-task-history
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
