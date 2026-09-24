@@ -27,7 +27,7 @@ compact task checkout remains small.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-24T20:37:38.122Z
+- Updated: 2026-09-24T20:40:00.100Z
 - Branch: task/202609232231-BYSVV6/compact-task-history
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
