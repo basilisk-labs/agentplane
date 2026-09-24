@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 97c2c3dfca1b8a4a6a6f616e4b05341cb0d89927..cbaa0c2344413686a0da2c746b318c777cd0a28f",
+      "command": "git diff --check ea48e962217a78b6d4a8522ab3120ab78bc88e7b..9a1e582d5f27a72dca7cd6c6d3c627f185d1726f",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,27 +13,19 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 97c2c3dfca1b8a4a6a6f616e4b05341cb0d89927..cbaa0c2344413686a0da2c746b318c777cd0a28f",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB ea48e962217a78b6d4a8522ab3120ab78bc88e7b..9a1e582d5f27a72dca7cd6c6d3c627f185d1726f",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "A\t.agentplane/tasks/202609232231-BYSVV6/README.md",
-        "A\t.agentplane/tasks/202609232231-BYSVV6/blueprint/resolved-snapshot.json",
-        "A\t.agentplane/tasks/202609232231-BYSVV6/pr/diffstat.txt",
-        "A\t.agentplane/tasks/202609232231-BYSVV6/pr/github-body.md",
-        "A\t.agentplane/tasks/202609232231-BYSVV6/pr/github-title.txt",
-        "A\t.agentplane/tasks/202609232231-BYSVV6/pr/meta.json",
-        "A\t.agentplane/tasks/202609232231-BYSVV6/pr/review.md",
+        "M\t.agentplane/tasks/202609232231-BYSVV6/README.md",
+        "M\t.agentplane/tasks/202609232231-BYSVV6/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609232231-BYSVV6/pr/github-body.md",
+        "M\t.agentplane/tasks/202609232231-BYSVV6/pr/meta.json",
+        "M\t.agentplane/tasks/202609232231-BYSVV6/pr/review.md",
+        "A\t.agentplane/tasks/202609232231-BYSVV6/supervision/declared-checks.json",
         "M\tpackages/agentplane/src/backends/task-backend.local.test.ts",
-        "M\tpackages/agentplane/src/backends/task-backend/load.ts",
-        "M\tpackages/agentplane/src/backends/task-backend/local-backend-read.ts",
-        "M\tpackages/agentplane/src/backends/task-backend/local-backend-write.ts",
-        "M\tpackages/agentplane/src/backends/task-backend/local-backend.ts",
-        "M\tpackages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts",
-        "A\tpackages/agentplane/src/commands/branch/work-start.compact-tasks.test.ts",
-        "A\tpackages/agentplane/src/commands/branch/work-start.compact-tasks.ts",
-        "M\tpackages/agentplane/src/commands/branch/work-start.materialize.ts",
-        "M\tpackages/agentplane/src/commands/branch/work-start.ts"
+        "M\tpackages/agentplane/src/commands/branch/work-start.compact-tasks.test.ts",
+        "M\tpackages/agentplane/src/commands/branch/work-start.hook-shim.test.ts"
       ]
     },
     {
@@ -43,89 +35,29 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "97c2c3dfca1b8a4a6a6f616e4b05341cb0d89927",
-  "implementation_commit": "cbaa0c2344413686a0da2c746b318c777cd0a28f",
+  "execution_base_commit": "ea48e962217a78b6d4a8522ab3120ab78bc88e7b",
+  "implementation_commit": "9a1e582d5f27a72dca7cd6c6d3c627f185d1726f",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
-      " M packages/agentplane/src/backends/task-backend.local.test.ts",
-      " M packages/agentplane/src/backends/task-backend/load.ts",
-      " M packages/agentplane/src/backends/task-backend/local-backend-read.ts",
-      " M packages/agentplane/src/backends/task-backend/local-backend-write.ts",
-      " M packages/agentplane/src/backends/task-backend/local-backend.ts",
-      " M packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts",
-      " M packages/agentplane/src/commands/branch/work-start.materialize.ts",
-      " M packages/agentplane/src/commands/branch/work-start.ts",
-      "?? .agentplane/tasks/202609232231-BYSVV6/README.md",
-      "?? .agentplane/tasks/202609232231-BYSVV6/blueprint/resolved-snapshot.json",
-      "?? packages/agentplane/src/commands/branch/work-start.compact-tasks.test.ts",
-      "?? packages/agentplane/src/commands/branch/work-start.compact-tasks.ts"
+      " M .agentplane/tasks/202609232231-BYSVV6/README.md",
+      "?? .agentplane/tasks/202609232231-BYSVV6/supervision/declared-checks.json"
     ],
     "classification": [
       {
         "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/backends/task-backend.local.test.ts"
+        "line": " M .agentplane/tasks/202609232231-BYSVV6/README.md"
       },
       {
         "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/backends/task-backend/load.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/backends/task-backend/local-backend-read.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/backends/task-backend/local-backend-write.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/backends/task-backend/local-backend.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/branch/work-start.materialize.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/branch/work-start.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609232231-BYSVV6/README.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609232231-BYSVV6/blueprint/resolved-snapshot.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? packages/agentplane/src/commands/branch/work-start.compact-tasks.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? packages/agentplane/src/commands/branch/work-start.compact-tasks.ts"
+        "line": "?? .agentplane/tasks/202609232231-BYSVV6/supervision/declared-checks.json"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
-      " M packages/agentplane/src/backends/task-backend.local.test.ts",
-      " M packages/agentplane/src/backends/task-backend/load.ts",
-      " M packages/agentplane/src/backends/task-backend/local-backend-read.ts",
-      " M packages/agentplane/src/backends/task-backend/local-backend-write.ts",
-      " M packages/agentplane/src/backends/task-backend/local-backend.ts",
-      " M packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts",
-      " M packages/agentplane/src/commands/branch/work-start.materialize.ts",
-      " M packages/agentplane/src/commands/branch/work-start.ts",
-      "?? .agentplane/tasks/202609232231-BYSVV6/README.md",
-      "?? .agentplane/tasks/202609232231-BYSVV6/blueprint/resolved-snapshot.json",
-      "?? packages/agentplane/src/commands/branch/work-start.compact-tasks.test.ts",
-      "?? packages/agentplane/src/commands/branch/work-start.compact-tasks.ts"
+      " M .agentplane/tasks/202609232231-BYSVV6/README.md",
+      "?? .agentplane/tasks/202609232231-BYSVV6/supervision/declared-checks.json"
     ],
     "unchanged_from_execution_baseline": []
   },
