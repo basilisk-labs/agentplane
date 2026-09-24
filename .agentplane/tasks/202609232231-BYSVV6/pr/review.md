@@ -13,7 +13,7 @@ Created: 2026-09-24T14:39:05.856Z
 ## Verification
 
 - State: ok
-- Note: Current head db2845bf passes focused cleanup tests and all five local CI groups; disk use is lower and unsafe worktrees are retained.
+- Note: Current head 1b64ca71 passes 61 focused tests, all five local CI groups, and hosted PR checks; compact task checkout remains small.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-09-24T14:39:05.856Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-24T20:19:22.715Z
+- Updated: 2026-09-24T20:37:38.122Z
 - Branch: task/202609232231-BYSVV6/compact-task-history
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
