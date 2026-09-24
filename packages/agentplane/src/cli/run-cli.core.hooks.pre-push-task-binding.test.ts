@@ -1,4 +1,5 @@
 import { execFile, execFileSync } from "node:child_process";
+import { existsSync } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -167,6 +168,28 @@ describe("pre-push task binding audit", () => {
       "pre-push blocked: mutating commits require a valid task id",
     );
     expect(String(result.failure?.stderr ?? "")).toContain("src/app.ts");
+  });
+
+  it("accepts a task bound commit when sparse checkout omits task history", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    await writeDefaultConfig(root);
+    await writeFastHookPackage(root);
+    await commitAll(root, "chore: base");
+    const baseSha = head(root);
+
+    const taskPath = path.join(root, ".agentplane", "tasks", "202601010101-ABCDEF");
+    await mkdir(taskPath, { recursive: true });
+    await writeFile(path.join(taskPath, "README.md"), "task\n", "utf8");
+    await mkdir(path.join(root, "src"), { recursive: true });
+    await writeFile(path.join(root, "src", "app.ts"), "export const value = 1;\n", "utf8");
+    await commitAll(root, "✨ ABCDEF code: add app");
+
+    execFileSync("git", ["sparse-checkout", "set", "--no-cone", "/*", "!/.agentplane/tasks/"], {
+      cwd: root,
+    });
+    expect(existsSync(taskPath)).toBe(false);
+    expectTaskBindingAcceptedBeforeBoundedHook(runPrePush(root, baseSha, head(root)));
   });
 
   it("passes pre-upgrade historical commits through task binding before the bounded-hook gate", async () => {

@@ -299,7 +299,12 @@ function taskIdFromSubject(subject) {
   if (full) return full;
   const suffix = TASK_SUBJECT_RE.exec(subject)?.[1] ?? "";
   if (!suffix) return "";
-  const found = readQuiet("find", [
+  const found = new Set(
+    readQuiet("git", ["ls-tree", "-d", "--name-only", "HEAD:.agentplane/tasks"])
+      .split("\n")
+      .filter((name) => name.toLowerCase().endsWith(`-${suffix.toLowerCase()}`)),
+  );
+  for (const taskId of readQuiet("find", [
     ".agentplane/tasks",
     "-maxdepth",
     "1",
@@ -310,8 +315,9 @@ function taskIdFromSubject(subject) {
   ])
     .split("\n")
     .map((line) => line.trim().split("/").at(-1) ?? "")
-    .filter(Boolean);
-  return found.length === 1 ? found[0] : "";
+    .filter(Boolean))
+    found.add(taskId);
+  return found.size === 1 ? [...found][0] : "";
 }
 
 function hasEmergencyBackfillEvidence(body) {
