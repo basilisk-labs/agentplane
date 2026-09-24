@@ -6,7 +6,7 @@ import { runProcess } from "@agentplaneorg/core/process";
 
 import { isPathWithin } from "../shared/path.js";
 
-export type DiskInventoryEntry = {
+type DiskInventoryEntry = {
   path: string;
   kind: "registered_worktree" | "nested_repository";
   branch: string | null;

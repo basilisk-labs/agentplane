@@ -455,13 +455,6 @@ export async function getLocalTask(
   });
 }
 
-export async function getLocalTasks(
-  context: LocalBackendContext,
-  taskIds: string[],
-): Promise<(TaskData | null)[]> {
-  return await mapLimit(taskIds, 8, async (taskId) => await getLocalTask(context, taskId));
-}
-
 export async function getLocalTaskDoc(
   context: LocalBackendContext,
   taskId: string,
