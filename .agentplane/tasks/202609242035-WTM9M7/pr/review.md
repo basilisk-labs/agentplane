@@ -29,11 +29,10 @@ Created: 2026-09-24T20:39:37.177Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../commands/task/direct-task-verification.test.ts | 47 ++++++++++++++++++++++
- .../src/commands/task/direct-task-verification.ts  | 18 +++++++++
- .../commands/task/kernel-final-validation.test.ts  | 12 ++++++
- .../src/commands/task/kernel-final-validation.ts   | 42 +++++++++++--------
- 4 files changed, 103 insertions(+), 16 deletions(-)
+ .../src/commands/task/direct-task-verification.ts  | 18 +++++++
+ .../commands/task/kernel-final-validation.test.ts  | 55 ++++++++++++++++++++++
+ .../src/commands/task/kernel-final-validation.ts   | 42 ++++++++++-------
+ 3 files changed, 99 insertions(+), 16 deletions(-)
 ```
 
 </details>

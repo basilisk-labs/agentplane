@@ -20,7 +20,6 @@ const ORIGINAL_AGENT_MODE = process.env.AGENTPLANE_AGENT_MODE;
 const ORIGINAL_RUNTIME_ACTIVE_BIN = process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN;
 
 import {
-  bindDirectTaskVerificationChecks,
   blockingWorkItemCommands,
   isTaskLevelVerificationReworkState,
   parseDirectTaskCheck,
@@ -126,52 +125,6 @@ afterEach(async () => {
 });
 
 describe("direct task verification", () => {
-  it("binds an observed verification contract to already executed checks", () => {
-    const task = {
-      execution_contract: {
-        verification: {
-          contract: {
-            selected_checks: ["docs_contract", "full_regression", "task_outcome"],
-          },
-        },
-      },
-    } as Pick<TaskData, "execution_contract">;
-    const check = {
-      runtime: undefined,
-      command: "bun run test:critical",
-      script: "test:critical",
-      check_ids: ["plan-check"],
-      exit_code: 0,
-      duration_ms: 1,
-      stdout_tail: "",
-      stderr_tail: "",
-    };
-
-    const result = bindDirectTaskVerificationChecks(
-      {
-        status: "passed",
-        artifact_path: "old.json",
-        checks: [check, { ...check, command: "bun run ci:local:full", script: "ci:local:full" }],
-        reason: null,
-      },
-      task,
-      "final-validation.json",
-    );
-
-    expect(result.artifact_path).toBe("final-validation.json");
-    expect(result.checks[0]?.check_ids).toEqual([
-      "plan-check",
-      "docs_contract",
-      "task_outcome",
-    ]);
-    expect(result.checks[1]?.check_ids).toEqual([
-      "plan-check",
-      "docs_contract",
-      "full_regression",
-      "task_outcome",
-    ]);
-  });
-
   it.each(["ENOENT", "ENOSPC", "EDQUOT"])(
     "records native %s as infrastructure evidence rather than a failing implementation",
     async (code) => {
