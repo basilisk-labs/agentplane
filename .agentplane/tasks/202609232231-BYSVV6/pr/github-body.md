@@ -45,7 +45,9 @@ Avoid materializing completed .agentplane/tasks history in each new task worktre
  .../src/commands/cleanup/inspect.test.ts           |  88 ++++++++
  .../agentplane/src/commands/cleanup/inspect.ts     | 141 +++++++++++++
  .../src/commands/cleanup/merged.command.ts         |   6 +-
- 18 files changed, 852 insertions(+), 37 deletions(-)
+ .../src/commands/pr/internal/sync-github.test.ts   |  72 +++++++
+ .../src/commands/pr/internal/sync-github.ts        |  28 ++-
+ 20 files changed, 947 insertions(+), 42 deletions(-)
 ```
 
 </details>
