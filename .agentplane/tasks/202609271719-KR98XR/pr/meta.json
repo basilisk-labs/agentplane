@@ -3,7 +3,8 @@
   "branch": "task/202609271719-KR98XR/qualify-canonical-final-verification-contract-al",
   "created_at": "2026-09-27T17:27:46.303Z",
   "diffstat_sha256": "sha256:3b33607e4ac06fdd7cdda4c81176399bd80ed1f0d2276a21573456f7e601cc36",
-  "last_verified_at": null,
+  "last_verified_at": "2026-09-27T18:45:26.167Z",
+  "last_verified_diffstat_sha256": "sha256:3b33607e4ac06fdd7cdda4c81176399bd80ed1f0d2276a21573456f7e601cc36",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202609271719-KR98XR",
   "updated_at": "2026-09-27T17:27:46.303Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
