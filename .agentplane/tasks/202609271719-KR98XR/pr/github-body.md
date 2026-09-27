@@ -22,7 +22,7 @@ Supersede legacy intake BET6F3 with explicit scope. Consolidate the reviewed sou
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-27T17:27:46.303Z
+- Updated: 2026-09-27T18:47:24.980Z
 - Branch: task/202609271719-KR98XR/qualify-canonical-final-verification-contract-al
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
