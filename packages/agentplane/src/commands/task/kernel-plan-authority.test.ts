@@ -1,10 +1,17 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { taskKernel as k, type TaskExecutionContract } from "@agentplaneorg/core/tasks";
 
 import {
   canonicalPlanContractViolations,
   repositoryPolicyApprovalEligible,
+  projectCanonicalPlanApproval,
 } from "./kernel-plan-authority.js";
+import {
+  makeKernelRecord,
+  TASK_KERNEL_EXTENSION,
+} from "../../adapters/task-backend/kernel-record.js";
+import type { CommandContext } from "../shared/task-backend.js";
+import type { TaskData } from "../../backends/task-backend.js";
 import { resolveExplicitExecutionContract } from "./create.command.js";
 
 function contract(): TaskExecutionContract {
@@ -77,6 +84,84 @@ function plan(overrides: Partial<k.ExecutionRequirements> = {}): k.PlanRecord {
 
 const config = (requirePlan: boolean) =>
   ({ agents: { approvals: { require_plan: requirePlan, require_network: true } } }) as never;
+
+function approvalFixture(actor: string) {
+  const approved: k.PlanRecord = {
+    ...plan(),
+    state: "APPROVED",
+    approval_actor_id: actor,
+    approval_evidence_digest: k.kernelDigest("approval"),
+  };
+  const record = makeKernelRecord(
+    k.kernelDigest("repo"),
+    {
+      schema_version: 1,
+      id: "task",
+      revision: 3,
+      state: "ACTIVE",
+      intent_digest: k.kernelDigest("intent"),
+      current_plan: approved,
+      plan_history: [],
+      work_items: {},
+      final_validation: null,
+      effects: [],
+      mutation_receipts: {},
+      controller_transfer: null,
+      migration_receipts: [],
+    },
+    [],
+  );
+  let task: TaskData = {
+    id: "task",
+    title: "Projection",
+    description: "Projection",
+    status: "DOING",
+    priority: "med",
+    owner: "CODER",
+    depends_on: [],
+    tags: [],
+    revision: 3,
+    extensions: { [TASK_KERNEL_EXTENSION]: record },
+    plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+  };
+  const writeTask = vi.fn((next: TaskData, options: { expectedRevision: number }) => {
+    expect(options.expectedRevision).toBe(task.revision);
+    task = next;
+    return Promise.resolve();
+  });
+  const command = {
+    taskBackend: { getTask: vi.fn(() => Promise.resolve(task)), writeTask },
+  } as unknown as CommandContext;
+  return { record, command, writeTask, task: () => task };
+}
+
+describe("canonical approval projection", () => {
+  it.each(["USER", "POLICY:repository"])(
+    "projects %s without replacing its provenance and does not rewrite on replay",
+    async (actor) => {
+      const f = approvalFixture(actor);
+      await projectCanonicalPlanApproval(f.command, "task", f.record);
+      expect(f.task().plan_approval).toMatchObject({ state: "approved", updated_by: actor });
+      expect(f.task().sections?.Plan).toBe("1. Execute approved WorkItem build.");
+      expect(f.task().extensions?.[TASK_KERNEL_EXTENSION]).toEqual(f.record);
+      await projectCanonicalPlanApproval(f.command, "task", f.record);
+      expect(f.writeTask).toHaveBeenCalledTimes(1);
+    },
+  );
+
+  it("rejects stale and unapproved Plans before writing a compatibility projection", async () => {
+    const f = approvalFixture("POLICY:repository");
+    const stale = structuredClone(f.record);
+    stale.aggregate.current_plan!.digest = k.kernelDigest("other-plan");
+    await expect(projectCanonicalPlanApproval(f.command, "task", stale)).rejects.toThrow("changed");
+    const unapproved = structuredClone(f.record);
+    unapproved.aggregate.current_plan!.state = "PROPOSED";
+    await expect(projectCanonicalPlanApproval(f.command, "task", unapproved)).rejects.toThrow(
+      "approved",
+    );
+    expect(f.writeTask).not.toHaveBeenCalled();
+  });
+});
 
 describe("canonical Plan execution-contract admission", () => {
   it("preserves explicitly requested test, documentation, schema, and CI effects at intake", () => {

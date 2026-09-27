@@ -26,7 +26,7 @@ type ParsedTaskScanWarning = {
 
 function parseTaskScanWarning(raw: string): ParsedTaskScanWarning {
   const trimmed = raw.trim();
-  const match = /^skip:([^:]+):\s*(.+)$/.exec(trimmed);
+  const match = /^(?:history:)?skip:([^:]+):\s*(.+)$/.exec(trimmed);
   if (!match) {
     return { raw: trimmed, taskId: null, kind: null };
   }
