@@ -6,14 +6,14 @@ Created: 2026-09-27T17:27:46.303Z
 
 - Task: `202609271719-KR98XR`
 - Title: Qualify canonical final verification contract alignment for 0.7.12
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609271719-KR98XR/qualify-canonical-final-verification-contract-al`
 - Canonical task record: `.agentplane/tasks/202609271719-KR98XR/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
