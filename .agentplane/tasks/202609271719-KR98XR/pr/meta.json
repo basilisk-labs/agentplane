@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:3b33607e4ac06fdd7cdda4c81176399bd80ed1f0d2276a21573456f7e601cc36",
   "pr_number": 6027,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6027",
+  "pre_merge_closure": {
+    "basis_commit": "63d71c191bebfa871f41060cc4e8514b2df28a1c",
+    "branch": "task/202609271719-KR98XR/qualify-canonical-final-verification-contract-al",
+    "pr_number": 6027,
+    "recorded_at": "2026-09-27T18:50:31.634Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

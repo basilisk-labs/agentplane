@@ -1,10 +1,11 @@
 ---
 id: "202609271719-KR98XR"
 title: "Qualify canonical final verification contract alignment for 0.7.12"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -41,6 +42,22 @@ quality_review:
     - "The branch_pr contract is resolved before checks and reused for structured projection. The existing command classifier and verification gate remain responsible for full_regression attribution."
     - "A projection exception or nonzero exit occurs before native record_final_validation. Revision checks and evaluator/environment readback remain enforced. Legacy pre-projection identities force fresh checks."
     - "Controller evidence records exit 0 for typecheck, 65 focused tests, CLI documentation parity and full local CI."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:01d26483a98a599c81db76d7471b9c351e541489897694dd7fda8ac1884cf392"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-09-27T18:50:31.418Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -352,9 +369,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "fd9bd553d8d382ea9b4fb9bf9cc2f40f385ee85b"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "63d71c191bebfa871f41060cc4e8514b2df28a1c"
+  message: "✅ KR98XR task: persist canonical completion"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -362,9 +382,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-09-27T18:50:31.418Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "63d71c191bebfa871f41060cc4e8514b2df28a1c"
 doc_version: 3
-doc_updated_at: "2026-09-27T18:45:26.864Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-27T18:50:31.418Z"
+doc_updated_by: "CODER"
 description: "Supersede legacy intake BET6F3 with explicit scope. Consolidate the reviewed source repair commit 9bcd4d494946a46624f641ae881769fd2ede06f8 without copying native artifacts. Fix kernel-final-validation.ts to resolve the branch_pr Verification Contract before executing checks and use that same contract for projection. Current full CI passes but projection rejects missing full_regression. Fix persistence ordering so a projection failure cannot leave reusable final validation. Add focused regression tests for actual contract strengthening, genuine full-suite attribution, rejection of narrow checks and safe retry after projection failure. Preserve all prior task artifacts and historical baselines. Run focused checks and native full CI. User explicitly authorizes code-fixable release blockers. Do not publish."
 sections:
   Summary: |-
@@ -586,6 +614,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:ff669128e35fe4b1c9e59a3e9cf313edc8619967c1e4786c18e75c22b394f605"
     work_order_id: "sha256:4b2e1d6af2422b94e5ab398d358a545ae6ffb70da12606ff678af393ec8a8424"
+  implementation_commit:
+    hash: "fd9bd553d8d382ea9b4fb9bf9cc2f40f385ee85b"
+    message: "🚧 KR98XR task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "d07c03509049e4ca1e06ce0d5873e7e50ca39b38"
@@ -1366,3 +1397,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:01d26483a98a599c81db76d7471b9c351e541489897694dd7fda8ac1884cf392`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-09-27T18:50:31.418Z`
