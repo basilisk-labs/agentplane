@@ -228,8 +228,8 @@ describe("updateTaskReadmeAtomic", () => {
 
     try {
       await Promise.all([
-        withTaskReadmeTransaction(readmePath, operation, { timeoutMs: 250, retryMs: 1 }),
-        withTaskReadmeTransaction(readmePath, operation, { timeoutMs: 250, retryMs: 1 }),
+        withTaskReadmeTransaction(readmePath, operation, { retryMs: 1 }),
+        withTaskReadmeTransaction(readmePath, operation, { retryMs: 1 }),
       ]);
       expect(maximumActive).toBe(1);
       const entries = await readdir(root);
