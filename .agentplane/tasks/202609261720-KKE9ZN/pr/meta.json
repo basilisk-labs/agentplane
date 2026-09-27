@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202609261720-KKE9ZN/implement-and-qualify-agentplane-0-7-12-planning",
+  "created_at": "2026-09-27T19:16:20.496Z",
+  "diffstat_sha256": "sha256:a995cc08afa9c331bed8895bfc389390e0270a87be400b6f452d8f700befe0bf",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202609261720-KKE9ZN",
+  "updated_at": "2026-09-27T19:16:20.496Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

@@ -1,0 +1,4 @@
+ bun.lock                                           |   6 +-
+ .../tasks/task-centric/planning-obligation.test.ts | 102 +++++++++++++++++++++
+ packages/core/src/tasks/task-centric/policy.ts     |  55 +++++++++++
+ 3 files changed, 160 insertions(+), 3 deletions(-)
