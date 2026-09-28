@@ -217,3 +217,31 @@ incomplete Kernel state, failed or missing final-validation evidence, and digest
 tampering. The repaired closure source still requires new full native checks,
 independent review, hosted CI, and exact-SHA release qualification. The earlier
 passing results do not certify this later source change or production publication.
+
+## Recovered Cursor Readback
+
+During R0XP40 pre-merge closure, the canonical local coordinator reported
+`route refresh unavailable` after the supervisor successfully advanced a
+previously completed journal cursor. No closure operation ran in that invocation.
+The persisted supervisor returned an inspection result without the fresh route,
+and the coordinator required an executed operation result. The exact native
+operator closure command subsequently succeeded.
+
+Under the same explicit user override, KKE9ZN carries a bounded recovery repair.
+The supervisor now returns the actual refreshed route after cursor advancement.
+The canonical local coordinator treats a ready, running journal with that
+readback and no operation result as cursor progress. It requests a new route
+before any subsequent operation. This does not create an execution receipt,
+replay the completed operation, or grant authority at an approval boundary.
+
+Before the repair, two regression assertions failed with the observed missing
+readback and lifecycle error. All 37 tests across the persisted supervisor,
+canonical coordinator, integration parity, and branch-publication parity now
+pass. Negative cases cover missing readback, stopped and pending journals, and
+failed operations. An approval-boundary case confirms that recovery itself does
+not execute the operation.
+
+The c950ef9 native branch-check run was intentionally terminated before full CI
+so this additional repair could be included. Its interruption is not a passing
+verification result. The final source still requires a complete native check
+run, independent review, hosted CI, and stable release qualification.

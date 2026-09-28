@@ -387,7 +387,10 @@ export async function supervisePersistedWorkflowEpisode(opts: {
     });
     await store.write(journal);
     return {
-      execution: await superviseWorkflowStep({ decision: refreshed, mode: "inspect" }),
+      execution: {
+        ...(await superviseWorkflowStep({ decision: refreshed, mode: "inspect" })),
+        refreshed_decision: refreshed,
+      },
       journal,
       journal_path: store.path,
     };

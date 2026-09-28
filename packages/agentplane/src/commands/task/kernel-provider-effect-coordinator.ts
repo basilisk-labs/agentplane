@@ -513,6 +513,15 @@ export async function executeCanonicalLocalWorkflowOperation(opts: {
     refresh: async () => await decide(opts.command, opts.task_id),
   });
   const execution = persisted.execution;
+  // Cursor recovery observes a new route without executing its operation.
+  if (
+    execution.result === null &&
+    execution.refreshed_decision !== null &&
+    persisted.journal.status === "running" &&
+    persisted.journal.cursor.phase === "ready"
+  ) {
+    return true;
+  }
   if (
     !execution.executable ||
     execution.stop_reason !== null ||
