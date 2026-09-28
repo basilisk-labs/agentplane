@@ -32,7 +32,7 @@ Created: 2026-09-27T19:16:20.496Z
  bun.lock                                           |   6 +-
  docs/developer/incident-archive.mdx                |  10 +
  docs/releases/planning-0.7.12-handoff.md           |  59 ++++
- .../planning-0.7.12-integrated-qualification.md    | 219 +++++++++++++++
+ .../planning-0.7.12-integrated-qualification.md    | 247 +++++++++++++++++
  docs/releases/v0.7.12-m04.md                       |  87 ++++++
  docs/user/agent-bootstrap.generated.mdx            |   6 +-
  docs/user/cli-reference.generated.mdx              |   1 +
@@ -54,6 +54,8 @@ Created: 2026-09-27T19:16:20.496Z
  .../evaluator/evaluator-execute-supervisor.ts      |  13 +
  .../evaluator/evaluator-execute.command.test.ts    | 223 +++++----------
  .../shared/canonical-pre-merge-evidence.ts         |  28 +-
+ .../shared/supervisor-execution-episode.test.ts    |   2 +
+ .../shared/supervisor-execution-episode.ts         |   5 +-
  .../src/commands/task/advance-task-step.ts         |   3 +
  .../agentplane/src/commands/task/brief.command.ts  |   2 +-
  .../src/commands/task/create-plan-input.test.ts    | 307 +++++++++++++++++++++
@@ -73,6 +75,8 @@ Created: 2026-09-27T19:16:20.496Z
  .../commands/task/kernel-planning-recovery.test.ts | 125 +++++++++
  .../src/commands/task/kernel-planning-view.test.ts | 234 ++++++++++++++++
  .../src/commands/task/kernel-planning-view.ts      | 197 +++++++++++++
+ .../kernel-provider-effect-coordinator.test.ts     | 101 +++++++
+ .../task/kernel-provider-effect-coordinator.ts     |   9 +
  .../agentplane/src/commands/task/kernel-read.ts    |  20 +-
  .../src/commands/task/kernel-run.testkit.ts        |  13 +-
  .../src/commands/task/kernel-semantic-result.ts    |   6 +
@@ -108,7 +112,7 @@ Created: 2026-09-27T19:16:20.496Z
  .../check-packaged-mixed-scope-lifecycle.mjs       |   4 +
  .../release/check-local-tarball-install-smoke.mjs  |  24 +-
  website/static/llms-full.txt                       | 138 +++++++--
- 79 files changed, 3833 insertions(+), 340 deletions(-)
+ 83 files changed, 3977 insertions(+), 341 deletions(-)
 ```
 
 </details>

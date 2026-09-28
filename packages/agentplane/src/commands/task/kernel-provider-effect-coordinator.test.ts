@@ -46,6 +46,7 @@ vi.mock("../shared/task-backend.js", async (importOriginal) => ({
 import {
   canonicalWorkflowEffectForDecision,
   createKernelProviderEffectPortResolver,
+  executeCanonicalLocalWorkflowOperation,
 } from "./kernel-provider-effect-coordinator.js";
 
 function operation(id: "pr.open" | "integration.enqueue" = "pr.open") {
@@ -172,11 +173,111 @@ function completedJournal(before: ReturnType<typeof decision>, fingerprint = rou
   });
 }
 
+function localDecision() {
+  const before = decision();
+  if (before.workflowStep.kind !== "cli_operation") throw new Error("operation required");
+  return {
+    ...before,
+    workflowStep: {
+      ...before.workflowStep,
+      id: "task.pre_merge_close",
+      operation: {
+        ...before.workflowStep.operation,
+        id: "task.pre_merge_close",
+        type: "task_record_result",
+        params: {
+          taskId: "T-1",
+          author: "CODER",
+          body: "Verified: current checks passed.",
+          result: "pre-merge closure",
+          commit: "a".repeat(40),
+          force: true,
+        },
+      },
+    },
+  } as TaskRouteDecision;
+}
+
 describe("canonical provider effect coordinator", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     mocks.readJournal.mockResolvedValue(null);
   });
+
+  it("continues after a completed journal cursor is advanced without claiming execution", async () => {
+    const before = localDecision();
+    mocks.supervise.mockResolvedValueOnce({
+      journal: { status: "running", cursor: { phase: "ready" } },
+      execution: {
+        executable: true,
+        result: null,
+        stop_reason: null,
+        refreshed_decision: before,
+      },
+    });
+
+    await expect(
+      executeCanonicalLocalWorkflowOperation({
+        command: { resolvedProject: { gitRoot: "/repo" } } as never,
+        decision: before,
+        task_id: "T-1",
+      }),
+    ).resolves.toBe(true);
+    expect(mocks.supervise).toHaveBeenCalledOnce();
+    expect(mocks.execute).not.toHaveBeenCalled();
+  });
+
+  it("returns cursor progress when the fresh route stops at an approval boundary", async () => {
+    const before = localDecision();
+    mocks.supervise.mockResolvedValueOnce({
+      journal: { status: "running", cursor: { phase: "ready" } },
+      execution: {
+        executable: false,
+        result: null,
+        stop_reason: "approval required",
+        refreshed_decision: {
+          ...before,
+          workflowStep: { kind: "approval", id: "approval.task.pre_merge_close" },
+        },
+      },
+    });
+
+    await expect(
+      executeCanonicalLocalWorkflowOperation({
+        command: { resolvedProject: { gitRoot: "/repo" } } as never,
+        decision: before,
+        task_id: "T-1",
+      }),
+    ).resolves.toBe(true);
+    expect(mocks.execute).not.toHaveBeenCalled();
+  });
+
+  it.each(["missing_readback", "stopped_journal", "pending_journal", "failed_operation"])(
+    "does not treat %s as recovered cursor progress",
+    async (state) => {
+      const before = localDecision();
+      mocks.supervise.mockResolvedValueOnce({
+        journal: {
+          status: state === "stopped_journal" ? "stopped" : "running",
+          cursor: { phase: state === "pending_journal" ? "intent_recorded" : "ready" },
+        },
+        execution: {
+          executable: true,
+          result: state === "failed_operation" ? { status: "failed", detail: "failed" } : null,
+          stop_reason: null,
+          refreshed_decision: state === "missing_readback" ? null : before,
+        },
+      });
+
+      await expect(
+        executeCanonicalLocalWorkflowOperation({
+          command: { resolvedProject: { gitRoot: "/repo" } } as never,
+          decision: before,
+          task_id: "T-1",
+        }),
+      ).rejects.toThrow("Canonical local lifecycle operation task.pre_merge_close failed");
+    },
+  );
 
   it("binds a supported typed operation to approved canonical provider authority", () => {
     const effect = canonicalWorkflowEffectForDecision(record(), decision());
