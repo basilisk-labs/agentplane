@@ -18,6 +18,7 @@ import { listKernelRepositoryEvidence } from "./kernel-repository-coordinator.js
 import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
 
 type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
+const FINAL_VALIDATION_CHECK_ID = "canonical-final-contracts-v2";
 
 export function canonicalFinalValidationTask<T extends { verify?: string[] }>(task: T): T {
   return { ...task, verify: [] };
@@ -103,7 +104,7 @@ export async function restoreKernelFinalValidation(
   if (
     plan?.state !== "APPROVED" ||
     validation?.status !== "PASSED" ||
-    validation.identity.check_id !== "canonical-final-contracts" ||
+    validation.identity.check_id !== FINAL_VALIDATION_CHECK_ID ||
     !finalValidationIdentityMatches({
       stored_identity: validation.identity.implementation_identity,
       repository_fingerprint: repositoryFingerprint,
@@ -162,6 +163,17 @@ export async function runKernelFinalValidation(
   const evaluatorTarget = await resolveEvaluatorTarget(command, taskId, previousEvaluatorTarget);
   if (previousEvaluatorTarget && !evaluatorTarget)
     throw new Error("Canonical final validation commit identity is unavailable");
+  const operationalTask = await command.taskBackend.getTask(taskId);
+  if (!operationalTask) throw new Error("Canonical operational verification task is unavailable");
+  const verification =
+    operationalTask.execution_route?.repository_mode === "branch_pr"
+      ? await resolveImplementationVerificationTask({
+          command,
+          checkout: command.resolvedProject.gitRoot,
+          task: operationalTask,
+          workflow: "branch_pr",
+        })
+      : null;
   // Retain only a digest of the check environment, never its values. No check cache spans invocations.
   const environmentDigest = k.kernelDigest(verificationChildEnv());
   const binding = {
@@ -173,6 +185,7 @@ export async function runKernelFinalValidation(
     environment_digest: environmentDigest,
     repository_evidence: repositoryEvidence,
     evaluator_target: evaluatorTarget,
+    verification_contract: (verification?.task ?? operationalTask).execution_contract ?? null,
     work_items: Object.fromEntries(
       Object.entries(record.aggregate.work_items).map(([id, item]) => [
         id,
@@ -186,11 +199,9 @@ export async function runKernelFinalValidation(
     k.kernelDigest({ binding, revision: record.aggregate.revision, attempt: randomUUID() }),
   );
   await writeKernelArtifact(directory, "final-validation-inputs.json", binding);
-  const operationalTask = await command.taskBackend.getTask(taskId);
-  if (!operationalTask) throw new Error("Canonical operational verification task is unavailable");
   const checks = await runDirectTaskVerification({
     command,
-    task: canonicalFinalValidationTask(operationalTask),
+    task: canonicalFinalValidationTask(verification?.task ?? operationalTask),
     task_id: taskId,
     cwd: command.resolvedProject.gitRoot,
     additional_commands: commands.map((check) => ({ command: check })),
@@ -222,7 +233,7 @@ export async function runKernelFinalValidation(
     status: "PASSED",
     identity: {
       implementation_identity: binding.repository_fingerprint,
-      check_id: "canonical-final-contracts",
+      check_id: FINAL_VALIDATION_CHECK_ID,
       command_digest: k.kernelDigest(commands),
       environment_digest: environmentDigest,
       toolchain_digest: k.kernelDigest(checks.checks.map((check) => check.runtime ?? null)),
@@ -230,22 +241,7 @@ export async function runKernelFinalValidation(
     evidence_digests: [k.kernelDigest(evidence)],
     observed_at: context.occurred_at,
   };
-  const input = await runtime.input(
-    { kind: "record_final_validation", validation },
-    `final-validation:${k.kernelDigest(evidence)}:${record.aggregate.revision}`,
-  );
-  if (input.command.expected_task_revision !== record.aggregate.revision)
-    throw new Error("Canonical final validation task changed before persistence");
-  await writeKernelArtifact(directory, "final-validation-command.json", input);
-  requireKernelCommit(await runtime.lifecycle.apply(input));
-  const projectedTask = await command.taskBackend.getTask(taskId);
-  if (projectedTask?.execution_route?.repository_mode === "branch_pr") {
-    const verification = await resolveImplementationVerificationTask({
-      command,
-      checkout: command.resolvedProject.gitRoot,
-      task: projectedTask,
-      workflow: "branch_pr",
-    });
+  if (verification) {
     const exitCode = await cmdVerifyParsed({
       ctx: command,
       cwd: command.resolvedProject.gitRoot,
@@ -269,7 +265,22 @@ export async function runKernelFinalValidation(
       allowCanonicalProjection: true,
     });
     if (exitCode !== 0) throw new Error(`Canonical verification projection exited ${exitCode}`);
+    if (
+      (evaluatorTarget !== null &&
+        !(await evaluatorTargetRemainsCurrent(command, taskId, evaluatorTarget))) ||
+      k.kernelDigest(verificationChildEnv()) !== environmentDigest
+    )
+      throw new Error("Canonical final validation inputs changed during projection");
   }
+  // Only a successful projection may make final validation reusable.
+  const input = await runtime.input(
+    { kind: "record_final_validation", validation },
+    `final-validation:${k.kernelDigest(evidence)}:${record.aggregate.revision}`,
+  );
+  if (input.command.expected_task_revision !== record.aggregate.revision)
+    throw new Error("Canonical final validation task changed before persistence");
+  await writeKernelArtifact(directory, "final-validation-command.json", input);
+  requireKernelCommit(await runtime.lifecycle.apply(input));
   return {
     fingerprint: binding.repository_fingerprint,
     environment_digest: environmentDigest,

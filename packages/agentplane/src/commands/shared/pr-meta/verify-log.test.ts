@@ -17,6 +17,8 @@ describe("verification child environment", () => {
         "AGENTPLANE_CLOUD_ENDPOINT, AGENTPLANE_CLOUD_PROJECT_ID,GITHUB_TOKEN",
       AGENTPLANE_AGENT_MODE: "1",
       AGENTPLANE_RUNTIME_ACTIVE_BIN: "/repo/packages/agentplane/bin/agentplane.js",
+      AGENTPLANE_HOOK_RUNNER: "/parent/agentplane.js",
+      AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK: "1",
     };
 
     const { PATH: runtimePath, ...clean } = verificationChildEnv(source);
@@ -56,6 +58,8 @@ describe("verification child environment", () => {
     vi.stubEnv("AGENTPLANE_VERIFY_TEST_DOTENV", "repository-only");
     vi.stubEnv("AGENTPLANE_VERIFY_TEST_PARENT", "explicit-parent");
     vi.stubEnv("AGENTPLANE_RUNTIME_HANDOFF_FROM", "verification-parent");
+    vi.stubEnv("AGENTPLANE_HOOK_RUNNER", "/parent/agentplane.js");
+    vi.stubEnv("AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK", "1");
     vi.stubEnv(
       "AGENTPLANE_DOTENV_LOADED_KEYS",
       `${process.env.AGENTPLANE_DOTENV_LOADED_KEYS ?? ""},AGENTPLANE_VERIFY_TEST_DOTENV`,
@@ -63,13 +67,15 @@ describe("verification child environment", () => {
     try {
       await writeFile(
         path.join(root, "probe.cjs"),
-        "process.stdout.write(JSON.stringify({dotenv:process.env.AGENTPLANE_VERIFY_TEST_DOTENV,parent:process.env.AGENTPLANE_VERIFY_TEST_PARENT,dotenvMarker:process.env.AGENTPLANE_DOTENV_LOADED_KEYS,handoff:process.env.AGENTPLANE_RUNTIME_HANDOFF_FROM}));",
+        "process.stdout.write(JSON.stringify({dotenv:process.env.AGENTPLANE_VERIFY_TEST_DOTENV,parent:process.env.AGENTPLANE_VERIFY_TEST_PARENT,dotenvMarker:process.env.AGENTPLANE_DOTENV_LOADED_KEYS,handoff:process.env.AGENTPLANE_RUNTIME_HANDOFF_FROM,hookRunner:process.env.AGENTPLANE_HOOK_RUNNER,forceGlobal:process.env.AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK}));",
       );
       const result = await runShellCommand("node probe.cjs", root);
       expect(result.code).toBe(0);
       expect(JSON.parse(result.output)).toEqual({ parent: "explicit-parent" });
       expect(process.env.AGENTPLANE_VERIFY_TEST_DOTENV).toBe("repository-only");
       expect(process.env.AGENTPLANE_RUNTIME_HANDOFF_FROM).toBe("verification-parent");
+      expect(process.env.AGENTPLANE_HOOK_RUNNER).toBe("/parent/agentplane.js");
+      expect(process.env.AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK).toBe("1");
     } finally {
       vi.unstubAllEnvs();
       await rm(root, { recursive: true, force: true });

@@ -4,6 +4,56 @@ import type { taskKernel as k } from "@agentplaneorg/core/tasks";
 import type { NativeAuthorityContext } from "../../ports/kernel-authority.js";
 import { kernelApprovalReference } from "../../runner/usecases/kernel-authority.js";
 import type { CommandContext } from "../shared/task-backend.js";
+import { readKernelRecord, type KernelRecord } from "../../adapters/task-backend/kernel-record.js";
+
+export async function projectCanonicalPlanApproval(
+  command: CommandContext,
+  taskId: string,
+  record: KernelRecord,
+  note?: string,
+): Promise<void> {
+  const plan = record.aggregate.current_plan;
+  if (plan?.state !== "APPROVED" || !plan.approval_actor_id || !plan.approval_evidence_digest)
+    throw new Error("Canonical approval projection requires an approved Plan.");
+  const task = await command.taskBackend.getTask(taskId);
+  if (!task) throw new Error(`Task not found: ${taskId}`);
+  const current = readKernelRecord(task, record.repository_identity);
+  if (
+    current.kind !== "canonical" ||
+    current.record.aggregate.current_plan?.state !== "APPROVED" ||
+    current.record.aggregate.current_plan.digest !== plan.digest ||
+    current.record.aggregate.current_plan.approval_actor_id !== plan.approval_actor_id ||
+    current.record.aggregate.current_plan.approval_evidence_digest !== plan.approval_evidence_digest
+  )
+    throw new Error("Canonical Plan changed before approval projection.");
+  const planText = plan.work_items
+    .map((item, index) => `${index + 1}. Execute approved WorkItem ${item.id}.`)
+    .join("\n");
+  const approvalNote = note ?? task.plan_approval?.note ?? null;
+  if (
+    task.plan_approval?.state === "approved" &&
+    task.plan_approval.updated_by === plan.approval_actor_id &&
+    task.plan_approval.note === approvalNote &&
+    task.sections?.Plan === planText
+  )
+    return;
+  const revision = task.revision ?? 0;
+  await command.taskBackend.writeTask(
+    {
+      ...task,
+      revision: revision + 1,
+      doc: undefined,
+      sections: { ...task.sections, Plan: planText },
+      plan_approval: {
+        state: "approved",
+        updated_at: new Date().toISOString(),
+        updated_by: plan.approval_actor_id,
+        note: approvalNote,
+      },
+    },
+    { expectedRevision: revision },
+  );
+}
 
 function setIsSubset(child: readonly string[], parent: readonly string[]): boolean {
   const allowed = new Set(parent);

@@ -1,4 +1,5 @@
 import { isRecord } from "../../shared/guards.js";
+import { kernelRecoveryInputs } from "./kernel-recovery-evidence.js";
 import {
   putEvaluatorEvidenceObject,
   readEvaluatorEvidenceObject,
@@ -131,7 +132,7 @@ export async function readKernelOrderResult(
   };
 }
 
-async function withKernelReworkEvidence(
+export async function withKernelReworkEvidence(
   order: AgentWorkOrderV2,
   directory: string,
   record?: KernelRecord,
@@ -199,6 +200,7 @@ async function withKernelReworkEvidence(
       if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
     }
   }
+  if (inputs.length === 0) inputs.push(...(await kernelRecoveryInputs(order, directory, record)));
   if (inputs.length === 0 && !isKernelScopeExpansionRecovery(order, record))
     throw new Error("Canonical rework requires retained review or failed-check evidence");
   return AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse({

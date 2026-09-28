@@ -318,6 +318,7 @@ function validateReviewedCandidate({
     "compatibility candidate id drift",
   );
   const cliSourceTasks = [
+    "202609271356-4SANDJ",
     "202609232231-BYSVV6",
     "202607221846-4VB97J",
     "202607221846-YGWMA2",
@@ -362,6 +363,7 @@ function validateReviewedCandidate({
     "202609241429-4WN4VX",
   ];
   const expectedSourceTasks = [
+    "202609271356-4SANDJ",
     "202609232231-BYSVV6",
     "202607221846-4VB97J",
     "202607221846-YGWMA2",
@@ -1788,6 +1790,18 @@ function validateReviewedCandidate({
       ],
     },
     {
+      id: ["task", "work-item", "resume"],
+      visibility: "advanced",
+      group: "Task",
+      args: [{ name: "task-id", required: true, variadic: false, valueHint: "<task-id>" }],
+      options: [
+        { name: "work-item", kind: "string", valueHint: "<id>", required: true },
+        { name: "state-digest", kind: "string", valueHint: "<sha256:...>", required: true },
+        { name: "by", kind: "string", valueHint: "<role>", required: true, choices: ["USER"] },
+        { name: "note", kind: "string", valueHint: "<text>", required: true },
+      ],
+    },
+    {
       id: ["workflow", "migrate"],
       visibility: "user",
       group: "Workflow",
@@ -2526,6 +2540,35 @@ function validateReviewedCandidate({
       required: true,
     },
     {
+      command: "task work-item resume",
+      name: "by",
+      kind: "string",
+      valueHint: "<role>",
+      required: true,
+      choices: ["USER"],
+    },
+    {
+      command: "task work-item resume",
+      name: "note",
+      kind: "string",
+      valueHint: "<text>",
+      required: true,
+    },
+    {
+      command: "task work-item resume",
+      name: "state-digest",
+      kind: "string",
+      valueHint: "<sha256:...>",
+      required: true,
+    },
+    {
+      command: "task work-item resume",
+      name: "work-item",
+      kind: "string",
+      valueHint: "<id>",
+      required: true,
+    },
+    {
       command: "work resume",
       name: "apply",
       kind: "boolean",
@@ -2621,6 +2664,7 @@ function validateReviewedCandidate({
       command: "task supervisor budget-epoch",
       source_task: "202609130858-RMHWQ5",
     },
+    { kind: "command", command: "task work-item resume", source_task: "202609271356-4SANDJ" },
     { kind: "command", command: "workflow migrate", source_task: "202607221846-4VB97J" },
     {
       kind: "option",
@@ -3104,6 +3148,18 @@ function validateReviewedCandidate({
     })),
     {
       kind: "option",
+      command: "task work-item resume",
+      name: "by",
+      source_task: "202609271356-4SANDJ",
+    },
+    ...["note", "state-digest", "work-item"].map((name) => ({
+      kind: "option",
+      command: "task work-item resume",
+      name,
+      source_task: "202609271356-4SANDJ",
+    })),
+    {
+      kind: "option",
       command: "workflow migrate",
       name: "dry-run",
       source_task: "202607221846-4VB97J",
@@ -3314,6 +3370,7 @@ function validateReviewedCandidate({
         "task run resume-effect",
         "task run tool",
         "task scope extend",
+        "task work-item resume",
         "workflow migrate",
       ]),
     "unexpected CLI addition",

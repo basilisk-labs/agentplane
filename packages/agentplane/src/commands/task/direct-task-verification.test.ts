@@ -740,7 +740,15 @@ describe("direct task verification", () => {
     expect(result.status).toBe("passed");
     expect(mocks.runProcess).toHaveBeenNthCalledWith(
       2,
-      expect.objectContaining({ command: "bun", args: ["run", "ci:local:full"] }),
+      expect.objectContaining({
+        command: "bun",
+        args: ["run", "ci:local:full"],
+        timeoutMs: 90 * 60_000,
+      }),
+    );
+    expect(mocks.runProcess).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ timeoutMs: 30 * 60_000 }),
     );
     expect(result.checks).toEqual(
       expect.arrayContaining([

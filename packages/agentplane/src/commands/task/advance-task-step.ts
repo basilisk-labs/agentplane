@@ -25,11 +25,13 @@ import { executeCanonicalCompletedWorkflowLocally } from "./kernel-completed-wor
 import { ensureKernelOperationalProjectionEvidence } from "./kernel-operational-projection.js";
 import { transferCanonicalControllerToBase } from "./kernel-controller-handoff.js";
 import { acceptKernelSemanticResult } from "./kernel-semantic-result.js";
+import { workItemResumeOperatorAction } from "./kernel-work-item-resume.js";
 import { ensureCanonicalTaskWorktree } from "./kernel-worktree-routing.js";
 import { canonicalCompletionPrecedesWorkflow } from "./ordinary-advance-step.js";
 import {
   kernelPlanApprovalOperatorAction,
   repositoryPolicyApprovalEligible,
+  projectCanonicalPlanApproval,
 } from "./kernel-plan-authority.js";
 import {
   createKernelTransitionAnomalyTracker,
@@ -113,6 +115,9 @@ async function advanceCanonicalRoute(opts: {
       throw new Error(`Explicit canonical migration required: ${current.read.kind}`);
     const { record } = current.read;
     const plan = record.aggregate.current_plan;
+    if (plan?.state === "APPROVED") {
+      await projectCanonicalPlanApproval(opts.command, opts.task_id, record);
+    }
     const route = current.next_action;
     const operationId = `${route.reason_code}:${record.digest}:${context.repository_fingerprint}`;
     const anomaly = anomalyTracker.observe({
@@ -548,6 +553,9 @@ async function advanceCanonicalRoute(opts: {
       schema_version: 1,
       task_id: opts.task_id,
       action: {
+        ...(route.reason_code === "kernel_work_item_blocked" && route.work_item_id
+          ? { operator_action: workItemResumeOperatorAction(record, route.work_item_id) }
+          : {}),
         kind: ["kernel_task_completed", "kernel_task_cancelled"].includes(route.reason_code)
           ? "terminal"
           : "external_wait",

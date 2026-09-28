@@ -15,7 +15,9 @@ async function gitConfigGet(cwd: string, key: string): Promise<string | null> {
     return trimmed.length > 0 ? trimmed : null;
   } catch (err) {
     const code = (err as { code?: number | string } | null)?.code;
-    if (code === 1) return null;
+    const stderr = (err as { stderr?: string } | null)?.stderr;
+    // Git also exits 1 for unreadable config paths, with a diagnostic on stderr.
+    if (code === 1 && !stderr?.trim()) return null;
     throw err;
   }
 }
