@@ -215,9 +215,9 @@ describe("runCli CommandSession", () => {
     try {
       const code = await runCli(["task", "status", taskId, "--route", "--root", root]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("source:    task_kernel");
-      expect(io.stdout).toContain("state:     PLANNING");
-      expect(io.stdout).toContain("authority: read_only");
+      expect(io.stdout).toMatch(/^source: +task_kernel$/mu);
+      expect(io.stdout).toMatch(/^state: +PLANNING$/mu);
+      expect(io.stdout).toMatch(/^authority: +read_only$/mu);
       expect(io.stderr).toContain('"capability":"route.local"');
       expect(io.stderr).toContain('"event":"task_loaded"');
       expect(io.stderr).not.toContain('"node":"remote_provider_state"');

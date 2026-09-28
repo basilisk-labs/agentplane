@@ -99,7 +99,7 @@ Options:
   --tag <tag>  Repeatable. Adds a tag (must provide at least one). (repeatable, min=1)
   --task-kind <analysis|content|docs|code|release|ops|context>  Structured task-kind intent. Tags/title remain fallback hints. (choices=analysis|content|docs|code|release|ops|context)
   --mutation-scope <none|docs|code|release|ops|context|unknown>  Structured task mutation scope. (choices=none|docs|code|release|ops|context|unknown)
-  --risk <risk>  Structured task risk flag. Repeatable. (repeatable, choices=network|credentials|deploy|publish|merge|security|external_system)
+  --risk <risk>  Structured task risk flag. Repeatable. Controlled ops requires credentials, deploy, security, or external_system. (repeatable, choices=network|credentials|deploy|publish|merge|security|external_system)
   --route <auto|direct|branch_pr>  Task execution route. auto selects direct unless repository policy or isolation risk requires branch_pr. (choices=auto|direct|branch_pr, default=auto)
   --depends-on <task-id>  Repeatable. Adds a dependency. Special-case: '[]' is treated as empty. (repeatable)
   --verify <command>  Repeatable. Verification commands/checks to run for this task. (repeatable)
