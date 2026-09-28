@@ -22,7 +22,7 @@ User-authorized release blocker repair. The candidate wrapper currently runs rel
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-28T15:07:14.483Z
+- Updated: 2026-09-28T17:13:00.550Z
 - Branch: task/202609281457-R0XP40/fix-release-candidate-preparation-order-before-0
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
