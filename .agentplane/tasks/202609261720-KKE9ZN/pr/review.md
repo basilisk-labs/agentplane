@@ -31,7 +31,7 @@ Created: 2026-09-27T19:16:20.496Z
 ```text
  bun.lock                                           |   6 +-
  docs/releases/planning-0.7.12-handoff.md           |  59 ++++
- .../planning-0.7.12-integrated-qualification.md    | 179 ++++++++++++
+ .../planning-0.7.12-integrated-qualification.md    | 219 +++++++++++++++
  docs/releases/v0.7.12-m04.md                       |  87 ++++++
  docs/user/agent-bootstrap.generated.mdx            |   6 +-
  docs/user/cli-reference.generated.mdx              |   1 +
@@ -52,6 +52,7 @@ Created: 2026-09-27T19:16:20.496Z
  .../evaluator-execute-subprocess.testkit.ts        | 161 ++++++++++-
  .../evaluator/evaluator-execute-supervisor.ts      |  13 +
  .../evaluator/evaluator-execute.command.test.ts    | 223 +++++----------
+ .../shared/canonical-pre-merge-evidence.ts         |  28 +-
  .../src/commands/task/advance-task-step.ts         |   3 +
  .../agentplane/src/commands/task/brief.command.ts  |   2 +-
  .../src/commands/task/create-plan-input.test.ts    | 307 +++++++++++++++++++++
@@ -61,6 +62,8 @@ Created: 2026-09-27T19:16:20.496Z
  .../agentplane/src/commands/task/create.command.ts |  31 ++-
  .../direct-task-verification.sequence.cases.ts     |  24 ++
  .../src/commands/task/direct-task-verification.ts  |   2 +
+ .../agentplane/src/commands/task/finish-execute.ts |  12 +-
+ .../task/finish.canonical-closure.unit.test.ts     | 170 ++++++++++++
  .../agentplane/src/commands/task/kernel-create.ts  |  17 +-
  .../src/commands/task/kernel-inspection.ts         |  20 +-
  .../src/commands/task/kernel-plan-proposal.ts      |  20 ++
@@ -104,7 +107,7 @@ Created: 2026-09-27T19:16:20.496Z
  .../check-packaged-mixed-scope-lifecycle.mjs       |   4 +
  .../release/check-local-tarball-install-smoke.mjs  |  24 +-
  website/static/llms-full.txt                       | 138 +++++++--
- 75 files changed, 3584 insertions(+), 329 deletions(-)
+ 78 files changed, 3823 insertions(+), 340 deletions(-)
 ```
 
 </details>
