@@ -11,6 +11,8 @@ import {
 import {
   advanceSupervisorExecutionEpisodeState,
   completeSupervisorExecutionEpisode,
+  recoverSupervisorExecutionEpisodeJournal,
+  reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
   startSupervisorExecutionEpisode,
 } from "@agentplaneorg/core/schemas";
 
@@ -100,6 +102,26 @@ async function executeBranchImplementationEpisode(opts: {
   }
   try {
     let journal = opened.journal;
+    if (
+      journal.operations.at(-1)?.status === "completed" &&
+      ((journal.status === "stopped" && journal.stop?.reason === "stale_state") ||
+        (journal.status === "running" &&
+          journal.cursor.phase === "ready" &&
+          journal.state_fingerprint_digest !==
+            opts.decision.workflowStep.preconditionFingerprint.digest))
+    ) {
+      const refreshed = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
+        journal: recoverSupervisorExecutionEpisodeJournal({
+          journal,
+          state_fingerprint_digest: opts.decision.workflowStep.preconditionFingerprint.digest,
+        }),
+        state_fingerprint_digest: opts.decision.workflowStep.preconditionFingerprint.digest,
+      });
+      if (!(await opened.store.compareAndSwap(journal.digest, refreshed))) {
+        throw new Error("Branch supervisor journal changed before completed-state refresh.");
+      }
+      journal = refreshed;
+    }
     if (journal.status === "running" && journal.cursor.phase === "completed") {
       const advanced = advanceSupervisorExecutionEpisodeState({
         journal,

@@ -7,10 +7,21 @@ import { describe, expect, it } from "vitest";
 
 import * as vitestSuiteModule from "../../../../../scripts/run-vitest-suite.mjs";
 
-const { SUITES, VITEST_CHUNK_TIMEOUT_MS } = vitestSuiteModule as {
+const { SUITES, VITEST_CHUNK_TIMEOUT_MS, resolveVitestChunkTimeoutMs } = vitestSuiteModule as {
   SUITES: Record<string, { chunkSize?: number; files: string[]; isolatedPatterns?: RegExp[] }>;
   VITEST_CHUNK_TIMEOUT_MS: number;
+  resolveVitestChunkTimeoutMs: (raw?: string) => number;
 };
+
+it("bounds the optional slow-host chunk timeout without changing the default", () => {
+  expect(resolveVitestChunkTimeoutMs()).toBe(600_000);
+  expect(resolveVitestChunkTimeoutMs("")).toBe(600_000);
+  expect(resolveVitestChunkTimeoutMs("1800000")).toBe(1_800_000);
+  expect(resolveVitestChunkTimeoutMs("3600000")).toBe(3_600_000);
+  for (const raw of ["0", "-1", "599999", "3600001", "600000.5", "Infinity", "oops"]) {
+    expect(() => resolveVitestChunkTimeoutMs(raw)).toThrow("AGENTPLANE_VITEST_CHUNK_TIMEOUT_MS");
+  }
+});
 
 async function readRootText(relativePath: string): Promise<string> {
   return readFile(path.join(process.cwd(), relativePath), "utf8");
