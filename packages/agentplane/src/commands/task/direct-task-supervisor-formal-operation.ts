@@ -83,6 +83,18 @@ export async function recordDirectTaskFormalOperation(opts: {
       });
       await opened.store.write(journal);
     }
+    if (
+      opts.replacement === true &&
+      journal.status === "stopped" &&
+      journal.stop?.reason === "stale_state" &&
+      journal.operations.at(-1)?.status === "completed"
+    ) {
+      journal = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
+        journal,
+        state_fingerprint_digest: before.workflowStep.preconditionFingerprint.digest,
+      });
+      await opened.store.write(journal);
+    }
     if (journal.status === "stopped") {
       throw new CliError({
         code: "E_RUNTIME",

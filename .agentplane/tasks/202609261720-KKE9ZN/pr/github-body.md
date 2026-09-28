@@ -30,7 +30,7 @@ User authorizes all necessary work to implement and release 0.7.12 without repea
  bun.lock                                           |   6 +-
  docs/developer/incident-archive.mdx                |  10 +
  docs/releases/planning-0.7.12-handoff.md           |  59 ++++
- .../planning-0.7.12-integrated-qualification.md    | 282 +++++++++++++++++++
+ .../planning-0.7.12-integrated-qualification.md    | 294 ++++++++++++++++++++
  docs/releases/v0.7.12-m04.md                       |  87 ++++++
  docs/user/agent-bootstrap.generated.mdx            |   6 +-
  docs/user/cli-reference.generated.mdx              |   1 +
@@ -61,6 +61,8 @@ User authorizes all necessary work to implement and release 0.7.12 without repea
  .../src/commands/task/create-plan-input.ts         |  81 ++++++
  .../src/commands/task/create-plan-proposal.ts      |  99 +++++++
  .../agentplane/src/commands/task/create.command.ts |  31 ++-
+ ...direct-task-supervisor-formal-operation.test.ts | 138 ++++++---
+ .../direct-task-supervisor-formal-operation.ts     |  12 +
  .../direct-task-verification.sequence.cases.ts     |  24 ++
  .../src/commands/task/direct-task-verification.ts  |   2 +
  .../task/external-agent-implementation-recovery.ts |   2 +-
@@ -114,7 +116,7 @@ User authorizes all necessary work to implement and release 0.7.12 without repea
  .../check-packaged-mixed-scope-lifecycle.mjs       |   4 +
  .../release/check-local-tarball-install-smoke.mjs  |  24 +-
  website/static/llms-full.txt                       | 138 +++++++--
- 87 files changed, 4047 insertions(+), 367 deletions(-)
+ 89 files changed, 4167 insertions(+), 409 deletions(-)
 ```
 
 </details>

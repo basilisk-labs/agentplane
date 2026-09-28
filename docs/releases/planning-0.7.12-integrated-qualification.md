@@ -280,3 +280,15 @@ concurrent repetitions and sixteen durability cases. Temporary instrumentation
 was removed. This later source change still requires fresh full checks,
 independent review, and hosted qualification before publication. M04 remains
 NOT ESTABLISHED.
+
+The next native verification attempt exposed a persisted recovery boundary:
+the earlier branch executor had recorded a `stale_state` stop after the last
+operation had completed, without recording a new intent. Explicit replacement
+could recover a failure but not this already persisted stale completion. The
+formal-operation adapter now uses the existing core stale-state reopening
+transition while holding the execution lease, only for explicit replacement and
+a completed latest operation. The prior operations remain unchanged. It starts
+a distinct current verification operation rather than replaying the completed
+provider operation. The new regression failed on the old adapter. Negative
+cases retain the stop without explicit replacement and retain effect-in-doubt
+stops even with replacement. No journal was edited manually.
