@@ -8,7 +8,7 @@ import {
 import { captureGitSnapshot } from "../../runner/observation/git-snapshot.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
-import { z } from "zod";
+import type { z } from "zod";
 
 export function parseSuppliedPlanInput(value: unknown) {
   const parsed = TASK_PLAN_PROPOSAL_INPUT_ZOD_SCHEMA.safeParse(value);
@@ -16,7 +16,7 @@ export function parseSuppliedPlanInput(value: unknown) {
   const format = (issues: readonly z.core.$ZodIssue[]): string[] =>
     issues.flatMap((issue) =>
       issue.code === "invalid_union"
-        ? issue.errors.flatMap(format)
+        ? issue.errors.flatMap((nested) => format(nested))
         : [`${issue.path.join(".") || "plan"}: ${issue.message}`],
     );
   throw new CliError({

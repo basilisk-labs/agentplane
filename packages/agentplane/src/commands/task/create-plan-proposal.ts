@@ -1,11 +1,13 @@
 import {
   kernelPlanProposalSchema,
+  validateTaskPlanProposal,
   taskKernel as k,
   type KernelPlanProposal,
   type ParsedTaskPlanProposal,
 } from "@agentplaneorg/core/tasks";
 import type { TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
+import { PLAN_VALIDATION_CAPABILITIES } from "./planning-capabilities.js";
 
 /** Convert explicit requirements only. Input bytes remain part of the canonical documents. */
 export function suppliedKernelProposal(
@@ -24,7 +26,35 @@ export function suppliedKernelProposal(
       message: "Supplied Plan requires a trusted execution declaration.",
     });
   const top = input.top_level_validation;
-  const declaredChecks = new Set(task.verify ?? []);
+  const issues = validateTaskPlanProposal({
+    proposal: input,
+    expected_task_id: input.task_id,
+    current_repository_digest: input.planning_baseline.digest,
+    supported_capabilities: new Set([
+      ...PLAN_VALIDATION_CAPABILITIES,
+      ...(task.execution_contract?.authority.allowed_capabilities ?? []),
+    ]),
+  });
+  if (issues.length > 0)
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: `Supplied Plan requires PLANNER: ${issues.map((issue) => `${issue.path}: ${issue.message}`).join("; ")}`,
+    });
+  for (const check of [
+    ...top.checks,
+    ...input.work_items.work_items.flatMap((item) => item.validation.checks),
+  ]) {
+    if (
+      !PLAN_VALIDATION_CAPABILITIES.has(check.capability) ||
+      check.kind === "provider" ||
+      (check.kind !== "semantic" && !check.command)
+    )
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: `Supplied Plan requires PLANNER: checks.${check.id} has no supported executable validation contract`,
+      });
+  }
+  const declaredChecks = new Set(task.verify);
   for (const check of top.checks) {
     if (check.command && !declaredChecks.has(check.command))
       throw new CliError({

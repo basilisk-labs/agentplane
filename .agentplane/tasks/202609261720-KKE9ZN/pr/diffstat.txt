@@ -1,19 +1,25 @@
  bun.lock                                           |   6 +-
  .../task-backend/kernel-backend-adapter.ts         |  10 +-
  .../src/adapters/task-backend/kernel-documents.ts  |  18 ++
- .../src/commands/task/create-plan-input.test.ts    | 339 +++++++++++++++++++++
- .../src/commands/task/create-plan-input.ts         |  81 +++++
- .../src/commands/task/create-plan-proposal.ts      |  69 +++++
+ .../src/commands/task/advance-task-step.ts         |   3 +
+ .../src/commands/task/create-plan-input.test.ts    | 307 +++++++++++++++++++++
+ .../src/commands/task/create-plan-input.testkit.ts |  32 +++
+ .../src/commands/task/create-plan-input.ts         |  81 ++++++
+ .../src/commands/task/create-plan-proposal.ts      |  99 +++++++
  .../agentplane/src/commands/task/create.command.ts |  25 ++
  .../agentplane/src/commands/task/kernel-create.ts  |  17 +-
- .../agentplane/src/commands/task/kernel-plan.ts    |  27 +-
+ .../agentplane/src/commands/task/kernel-plan.ts    |  34 ++-
+ .../src/commands/task/kernel-supplied-plan.ts      |  52 ++++
  .../src/commands/task/kernel-work-order.ts         |  14 +-
  packages/agentplane/src/commands/task/new.ts       |   3 +-
+ .../src/commands/task/planning-capabilities.ts     |   1 +
+ .../roadmap-inline-plan-materialization.test.ts    | 151 ++++++++++
+ .../commands/task/task-centric-external-result.ts  |   2 +-
  .../src/runner/usecases/kernel-task-lifecycle.ts   |  21 +-
  packages/core/src/runner/agent-work-order.ts       |   4 +-
- packages/core/src/tasks/index.ts                   |   2 +
+ packages/core/src/tasks/index.ts                   |   3 +
  packages/core/src/tasks/kernel-semantic.ts         |   7 +-
  .../tasks/task-centric/planning-obligation.test.ts | 102 +++++++
  packages/core/src/tasks/task-centric/policy.ts     |  55 ++++
  packages/core/src/tasks/task-centric/schema.ts     |  38 +++
- 18 files changed, 821 insertions(+), 17 deletions(-)
+ 24 files changed, 1066 insertions(+), 19 deletions(-)
