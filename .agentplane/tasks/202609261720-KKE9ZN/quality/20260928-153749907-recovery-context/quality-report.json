@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202609261720-KKE9ZN",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-28T16:06:42.818Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "c0b3be603d850883aae69d3117428609ce446761",
+  "review_identity_digest": "sha256:f65297f265dcd86c8eb8d63007c95a22b1a533e82be6d182828a1cef22247e10",
+  "findings": [
+    "Final workspace cleanliness is evidenced only for 679f2a797368bbed591abdaa183ac469fe485d01, not the evaluated c0b3be603d850883aae69d3117428609ce446761. The frozen patch and current passing verification do not establish the disposition of untracked artifacts or concurrent workspace drift."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/3df9bbcc79489e85627c4a5e9a9ec9fed33fc94c2f32aadc1358e4a9f53f15ff.json",
+    ".agentplane/policy/dod.core.md"
+  ],
+  "missing_tests": [
+    "Current repository-state observation and classification of any tracked or untracked drift at the evaluated SHA."
+  ],
+  "hidden_assumptions": [
+    "The clean workspace observation from the earlier implementation commit remains valid after subsequent repairs."
+  ],
+  "residual_risks": [
+    "Supply frozen final repository-state evidence for c0b3be603d850883aae69d3117428609ce446761, including disposition of any concurrent or untracked artifacts. Current declared checks already have passing SHA-bound evidence; this finding does not require repeating them."
+  ]
+}
