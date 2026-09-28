@@ -443,17 +443,32 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
       const original = (await taskCtx.taskBackend.getTask(taskId))!;
       expect(original.status).toBe("DOING");
       expect(original.depends_on).toEqual([dependencyId]);
-      expect(await taskCtx.taskBackend.getTask(dependencyId)).toBeNull();
+      await expect(
+        readFile(path.join(taskRoot, workflowDir, dependencyId, "README.md"), "utf8"),
+      ).rejects.toMatchObject({ code: "ENOENT" });
+      const hasHistory =
+        taskCtx.taskBackend instanceof LocalBackend && taskCtx.taskBackend.historyRoot !== null;
+      const dependency = await taskCtx.taskBackend.getTask(dependencyId);
+      if (hasHistory) expect(dependency).toMatchObject({ id: dependencyId, status: "DONE" });
+      else expect(dependency).toBeNull();
       const beforeRoute = await buildTaskRouteDecision({
         ctx: taskCtx,
         cwd: taskRoot,
         taskId,
         includeRemote: false,
       });
-      expect(beforeRoute.oracle.phase).toBe("dependency_wait");
-      expect(beforeRoute.blockers).toEqual(
-        expect.arrayContaining([expect.objectContaining({ code: "dependency_not_ready" })]),
-      );
+      // Compact worktrees can resolve completed dependencies from retained history.
+      if (hasHistory) {
+        expect(beforeRoute.oracle.phase).not.toBe("dependency_wait");
+        expect(
+          beforeRoute.blockers.some((blocker) => blocker.code === "dependency_not_ready"),
+        ).toBe(false);
+      } else {
+        expect(beforeRoute.oracle.phase).toBe("dependency_wait");
+        expect(beforeRoute.blockers).toEqual(
+          expect.arrayContaining([expect.objectContaining({ code: "dependency_not_ready" })]),
+        );
+      }
       await expect(
         recoverWorkPlanningBase({
           ctx,
@@ -531,7 +546,7 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
         await writeFile(path.join(taskRoot, "prerequisite.txt"), "preserve ignored local bytes\n");
         await expect(
           recoverWorkPlanningBase({ ctx, taskId, apply: true, expectedToken: ready.token }),
-        ).rejects.toThrow();
+        ).rejects.toThrow("ignored local paths overlap the target snapshot");
         expect(await readFile(path.join(taskRoot, "prerequisite.txt"), "utf8")).toBe(
           "preserve ignored local bytes\n",
         );
