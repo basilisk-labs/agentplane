@@ -13,7 +13,7 @@ Created: 2026-09-27T19:16:20.496Z
 ## Verification
 
 - State: ok
-- Note: Verified: canonical Task Kernel final checks passed.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,14 +24,14 @@ Created: 2026-09-27T19:16:20.496Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-27T19:16:20.496Z
+- Updated: 2026-09-28T14:27:10.809Z
 - Branch: task/202609261720-KKE9ZN/implement-and-qualify-agentplane-0-7-12-planning
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
  bun.lock                                           |   6 +-
  docs/releases/planning-0.7.12-handoff.md           |  59 ++++
- .../planning-0.7.12-integrated-qualification.md    | 138 +++++++++
+ .../planning-0.7.12-integrated-qualification.md    | 179 ++++++++++++
  docs/releases/v0.7.12-m04.md                       |  87 ++++++
  docs/user/agent-bootstrap.generated.mdx            |   6 +-
  docs/user/cli-reference.generated.mdx              |   1 +
@@ -45,9 +45,13 @@ Created: 2026-09-27T19:16:20.496Z
  .../src/cli/run-cli.core.kernel-transport.test.ts  |   9 +-
  ...core.task-advance.roadmap-supplied-plan.test.ts |  88 ++++++
  ...i.core.task-advance.worktree-resolution.test.ts |  27 +-
+ .../src/cli/run-cli.core.task-hosted-close.test.ts |   6 +-
  .../agentplane/src/cli/supplied-plan.testkit.ts    |  56 ++++
  packages/agentplane/src/commands/acr/generate.ts   |   6 +
  .../commands/branch/work-resume-planning-base.ts   |  36 +++
+ .../evaluator-execute-subprocess.testkit.ts        | 161 ++++++++++-
+ .../evaluator/evaluator-execute-supervisor.ts      |  13 +
+ .../evaluator/evaluator-execute.command.test.ts    | 223 +++++----------
  .../src/commands/task/advance-task-step.ts         |   3 +
  .../agentplane/src/commands/task/brief.command.ts  |   2 +-
  .../src/commands/task/create-plan-input.test.ts    | 307 +++++++++++++++++++++
@@ -97,9 +101,10 @@ Created: 2026-09-27T19:16:20.496Z
  scripts/lib/installed-planning-matrix.mjs          | 216 +++++++++++++++
  scripts/lib/test-route-registry.mjs                |  10 +
  scripts/lib/test-route-registry.test.mjs           |  41 ++-
+ .../check-packaged-mixed-scope-lifecycle.mjs       |   4 +
  .../release/check-local-tarball-install-smoke.mjs  |  24 +-
  website/static/llms-full.txt                       | 138 +++++++--
- 70 files changed, 3295 insertions(+), 170 deletions(-)
+ 75 files changed, 3584 insertions(+), 329 deletions(-)
 ```
 
 </details>
