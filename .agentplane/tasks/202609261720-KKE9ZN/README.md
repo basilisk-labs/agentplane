@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 140
+revision: 141
 origin:
   system: "manual"
 depends_on: []
@@ -32,29 +32,29 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-28T18:12:05.732Z"
+  updated_at: "2026-09-28T19:41:07.659Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "300d2399b1bd6b392e6ec61cb5922b3a88bd4ac3"
-  review_identity_digest: "sha256:5a50a9e8fc0fb16916b4b802e2c94dd751bf0891f6bb8ca432e5807d823e53af"
+  evaluated_sha: "6b5310b1550f3628c3081103e10bccdf498068d9"
+  review_identity_digest: "sha256:ea318db585ca9181c9b3f30329a0aba14b87ac0c980d87af443a22567ef89a01"
   evidence_refs:
-    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-181015768-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-181015768-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/a933e6650b50474907673201205c212634a174d2061a0f449c5b373f1e0dec3f.md"
-    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-181015768-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-181015768-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-181015768-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-193730165-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-193730165-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/32bb40af5b64a1dab28c4f973653923ee840fa963f3dfc25e66fb1123a266c86.md"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-193730165-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-193730165-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-193730165-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609261720-KKE9ZN/README.md"
-    - ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/94df67dc8d1275949d0ee38ca2c4876da6e16770dff95bd9a59ba0aeb8a201ee.patch"
-    - ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/2937b0d9e3e378139693d2a9717dfc5585d6b99ce36eb6bccf738ea7aad73756.json"
-    - ".agentplane/tasks/202609261720-KKE9ZN/verification/20260928180827375-e3952578b7103f25.json"
-    - ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/731151e00cf573a597bfc0cc6a0fbe0db2103e866e845c4ba0b39959daf959e3.json"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/83a1ce27512cc48b57285cc16545b78d53cb1f94e7a992e907c47f898a6ffb6f.patch"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/84108de9c694b1a8924269dc8ad2b596dd812835ec5922e8c723ac059862c5dc.json"
+    - ".agentplane/tasks/202609261720-KKE9ZN/verification/20260928193632778-bdab509bdaa54c39.json"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/5f593bad60d4a6acdc387193a789efb58828159dfc0eff141a50696d37888390.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Reviewed planning reuse and recovery preserve approval, independent evaluation, stale-result rejection, and retry evidence. Closure and cursor recovery include positive and negative regressions. Required checks passed at the evaluated SHA. The current Git observation resolves the workspace-evidence gap: status is clean and subsequent changes are confined to this task's artifacts. M04 remains NOT ESTABLISHED; hosted integration and publication retain their separate gates."
+    - "Planning reuse retains approval, independent evaluation, provenance, and stale-result rejection. Concurrent verification now uses one task snapshot. Explicit stale-state recovery preserves completed operations and rejects effect-in-doubt recovery. Positive and negative regressions cover these repairs, and current SHA-bound checks passed. The supplied Git observation resolves the workspace-evidence gap. M04 remains NOT ESTABLISHED; hosted integration and publication retain separate gates."
 token_usage:
   agent_runs: 3
   input_tokens: 187198
@@ -737,7 +737,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-28T19:36:41.399Z"
+doc_updated_at: "2026-09-28T19:41:07.802Z"
 doc_updated_by: "CODER"
 description: "User authorizes all necessary work to implement and release 0.7.12 without repeated permission requests. Use agentplane-roadmap-r2/tasks/PL-01.md through PL-12.md and EXECUTION-CHARTER.md as the scope contract. Inspect current main and accepted LC-24 evidence, preserve one Kernel and coordinator, reuse compact Plan proposal normalization, retain approval and EVALUATOR floors, implement managed and external planning reuse and recovery, run installed-package and release-critical qualification, record M04 measurement with honest unknown accounting, and document observed behavior. Use sequential independently verifiable WorkItems. Include bootstrap lockfile workspace version reconciliation. Release publication follows exact-SHA release checks in a subsequent release task. Do not implement 0.7.13 or 0.7.14."
 sections:
