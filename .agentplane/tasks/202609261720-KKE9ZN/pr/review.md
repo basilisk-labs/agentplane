@@ -32,6 +32,10 @@ Created: 2026-09-27T19:16:20.496Z
  bun.lock                                           |   6 +-
  .../task-backend/kernel-backend-adapter.ts         |  10 +-
  .../src/adapters/task-backend/kernel-documents.ts  |  18 ++
+ ...core.task-advance.roadmap-supplied-plan.test.ts |  82 ++++++
+ ...i.core.task-advance.worktree-resolution.test.ts |  27 +-
+ .../agentplane/src/cli/supplied-plan.testkit.ts    |  56 ++++
+ .../commands/branch/work-resume-planning-base.ts   |  36 +++
  .../src/commands/task/advance-task-step.ts         |   3 +
  .../src/commands/task/create-plan-input.test.ts    | 307 +++++++++++++++++++++
  .../src/commands/task/create-plan-input.testkit.ts |  32 +++
@@ -39,6 +43,7 @@ Created: 2026-09-27T19:16:20.496Z
  .../src/commands/task/create-plan-proposal.ts      |  99 +++++++
  .../agentplane/src/commands/task/create.command.ts |  25 ++
  .../agentplane/src/commands/task/kernel-create.ts  |  17 +-
+ .../src/commands/task/kernel-inspection.ts         |  20 +-
  .../task/kernel-plan-supplied-approval.test.ts     | 189 +++++++++++++
  .../agentplane/src/commands/task/kernel-plan.ts    |  34 ++-
  .../src/commands/task/kernel-supplied-plan.ts      |  52 ++++
@@ -54,7 +59,7 @@ Created: 2026-09-27T19:16:20.496Z
  .../tasks/task-centric/planning-obligation.test.ts | 102 +++++++
  packages/core/src/tasks/task-centric/policy.ts     |  55 ++++
  packages/core/src/tasks/task-centric/schema.ts     |  38 +++
- 25 files changed, 1255 insertions(+), 19 deletions(-)
+ 30 files changed, 1464 insertions(+), 31 deletions(-)
 ```
 
 </details>

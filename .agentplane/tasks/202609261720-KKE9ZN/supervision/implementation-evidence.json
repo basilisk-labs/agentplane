@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check dffad02f1db0d1c8b4ff38c5a740a8f02858931c..91e6d77418c400d0066d0c14b67ff22d12506905",
+      "command": "git diff --check 91e6d77418c400d0066d0c14b67ff22d12506905..8fe95f7ac94e2909c52f71a82cd64aaa3aa61bbb",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB dffad02f1db0d1c8b4ff38c5a740a8f02858931c..91e6d77418c400d0066d0c14b67ff22d12506905",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 91e6d77418c400d0066d0c14b67ff22d12506905..8fe95f7ac94e2909c52f71a82cd64aaa3aa61bbb",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,18 +24,7 @@
         "M\t.agentplane/tasks/202609261720-KKE9ZN/pr/review.md",
         "M\t.agentplane/tasks/202609261720-KKE9ZN/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202609261720-KKE9ZN/supervision/implementation-evidence.json",
-        "M\tpackages/agentplane/src/commands/task/advance-task-step.ts",
-        "M\tpackages/agentplane/src/commands/task/create-plan-input.test.ts",
-        "A\tpackages/agentplane/src/commands/task/create-plan-input.testkit.ts",
-        "M\tpackages/agentplane/src/commands/task/create-plan-input.ts",
-        "M\tpackages/agentplane/src/commands/task/create-plan-proposal.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-create.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-plan.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-supplied-plan.ts",
-        "A\tpackages/agentplane/src/commands/task/planning-capabilities.ts",
-        "A\tpackages/agentplane/src/commands/task/roadmap-inline-plan-materialization.test.ts",
-        "M\tpackages/agentplane/src/commands/task/task-centric-external-result.ts",
-        "M\tpackages/core/src/tasks/index.ts"
+        "A\tpackages/agentplane/src/commands/task/kernel-plan-supplied-approval.test.ts"
       ]
     },
     {
@@ -45,8 +34,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "dffad02f1db0d1c8b4ff38c5a740a8f02858931c",
-  "implementation_commit": "91e6d77418c400d0066d0c14b67ff22d12506905",
+  "execution_base_commit": "91e6d77418c400d0066d0c14b67ff22d12506905",
+  "implementation_commit": "8fe95f7ac94e2909c52f71a82cd64aaa3aa61bbb",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [

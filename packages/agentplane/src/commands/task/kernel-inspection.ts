@@ -265,12 +265,20 @@ export async function issueKernelInspection(
       },
     ],
     verification_intent: {
-      requirements: contract.verification_commands.map((check, index) => ({
-        id: `check-${index + 1}`,
-        description: check,
-        required: true,
-        observed_by: "agentplane",
-      })),
+      requirements: [
+        ...contract.acceptance_criteria.map((criterion, index) => ({
+          id: `criterion-${index + 1}`,
+          description: criterion,
+          required: true,
+          observed_by: "evaluator" as const,
+        })),
+        ...contract.verification_commands.map((check, index) => ({
+          id: `check-${index + 1}`,
+          description: check,
+          required: true,
+          observed_by: "agentplane" as const,
+        })),
+      ],
       require_execution_receipt: true,
     },
     semantic_result_schema: "agentplane.agent_semantic_result.v2",
