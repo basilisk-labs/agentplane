@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check cac5ce4b6b27393276c0f05dacec90163f507915..ab405fb655f203613a9d3c58f5219ce83edfa62d",
+      "command": "git diff --check ab405fb655f203613a9d3c58f5219ce83edfa62d..bb6cfaf0da9981370fb03d0ebcd574b88202fa8e",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB cac5ce4b6b27393276c0f05dacec90163f507915..ab405fb655f203613a9d3c58f5219ce83edfa62d",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB ab405fb655f203613a9d3c58f5219ce83edfa62d..bb6cfaf0da9981370fb03d0ebcd574b88202fa8e",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,7 +24,11 @@
         "M\t.agentplane/tasks/202609261720-KKE9ZN/pr/review.md",
         "M\t.agentplane/tasks/202609261720-KKE9ZN/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202609261720-KKE9ZN/supervision/implementation-evidence.json",
-        "A\tpackages/agentplane/src/commands/task/kernel-planning-recovery.test.ts"
+        "M\tpackages/agentplane/src/cli/cli-smoke.test.ts",
+        "M\tscripts/lib/installed-migration-matrix.mjs",
+        "A\tscripts/lib/installed-planning-matrix.mjs",
+        "M\tscripts/lib/test-route-registry.mjs",
+        "M\tscripts/release/check-local-tarball-install-smoke.mjs"
       ]
     },
     {
@@ -34,8 +38,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "cac5ce4b6b27393276c0f05dacec90163f507915",
-  "implementation_commit": "ab405fb655f203613a9d3c58f5219ce83edfa62d",
+  "execution_base_commit": "ab405fb655f203613a9d3c58f5219ce83edfa62d",
+  "implementation_commit": "bb6cfaf0da9981370fb03d0ebcd574b88202fa8e",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
