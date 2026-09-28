@@ -24,7 +24,7 @@ import {
   type StateFingerprintPreconditionDiagnostic,
 } from "./state-fingerprint.js";
 import {
-  normalizeCompactTaskPlanProposal,
+  normalizeTaskPlanProposal,
   REPOSITORY_SNAPSHOT_ZOD_SCHEMA,
 } from "../tasks/task-centric/schema.js";
 import { taskCentricDigest } from "../tasks/task-centric/digest.js";
@@ -530,7 +530,7 @@ export function validateAgentSemanticResultForWorkOrder(opts: {
   ) {
     if (!workOrder.planning_context)
       throw new Error("Compact planning requires an issued repository baseline");
-    payload.task_plan_proposal = normalizeCompactTaskPlanProposal(proposal, {
+    payload.task_plan_proposal = normalizeTaskPlanProposal(proposal, {
       task_id: workOrder.task.id,
       planning_baseline: workOrder.planning_context.repository_snapshot,
     });
