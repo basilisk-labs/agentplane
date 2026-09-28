@@ -486,13 +486,13 @@ export function makeRunTaskCreateHandler(
     };
     const payload = {
       task_id: created.task_id,
-      status: "semantic_input_required" as const,
+      status: suppliedPlan ? ("advance_required" as const) : ("semantic_input_required" as const),
       semantic_intent: semanticIntent,
       /** @deprecated Compatibility alias for pre-0.7.6 JSON consumers. */
       inferred_intent: semanticIntent,
       execution_route: route,
       execution_contract: executionContract,
-      required_role: "PLANNER" as const,
+      required_role: suppliedPlan ? null : ("PLANNER" as const),
       next_command: nextCommand,
     };
 
@@ -520,7 +520,7 @@ export function makeRunTaskCreateHandler(
               `repository=${route.repository_mode}`,
           },
           { label: "route_reasons", value: route.reason_codes.join(", ") },
-          { label: "required_role", value: payload.required_role },
+          { label: "required_role", value: payload.required_role ?? "pending_advance" },
           { label: "next", value: nextCommand },
         ],
         { header: "task create" },

@@ -63,10 +63,12 @@ const BOOTSTRAP_SECTIONS: readonly BootstrapSection[] = [
   {
     heading: "3. Direct happy path",
     summary:
-      "Create a task from ordinary language, return its initial PLANNER result through the external protocol, then let the supervisor own formal transitions, verification persistence, and closeout.",
+      "Create a task, let the common coordinator resolve planning, and let the supervisor own formal transitions, verification persistence, and closeout.",
     commands: BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS,
     notes: [
-      "Before a task-specific plan exists, `task run` returns `semantic_input_required`; use the read-only PLANNER packet from `task advance --agent-json` first.",
+      "Without supplied input, task creation reports `semantic_input_required`. With `--plan-file`, creation reports `advance_required`; sufficient planning input can reach ordinary approval without a separate PLANNER episode.",
+      "Required managed PLANNER uses a read-only sandbox and supervised typed results. Advisory adapters fail before launch. An unverified runtime receipt cannot admit a planning result; use the external `task advance --agent-json` route when the managed runtime is not qualified.",
+      "The same planning-obligation resolver applies without a Recipe. Trusted `agents.approvals.require_planner=true` keeps PLANNER required. Independent EVALUATOR review remains required.",
       "The external agent writes its typed result to `exchange.result_path` and resumes with the exact `exchange.resume_argv`; `exchange.return_invocation` remains compatibility-only.",
       "After planning and approval, `task run` may resolve eligible semantic episodes through the configured managed adapter and returns control at human or external boundaries.",
     ],

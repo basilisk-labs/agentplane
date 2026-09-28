@@ -10,7 +10,8 @@ installRunCliIntegrationHarness();
 
 describe("external supplied Plan shortcut", { timeout: 120_000 }, () => {
   it("uses zero PLANNER dispatches while retaining USER approval and EVALUATOR", async () => {
-    const { root, id } = await createSuppliedCliTask();
+    const { root, id, created } = await createSuppliedCliTask();
+    expect(created).toMatchObject({ status: "advance_required", required_role: null });
     const approval = await runJson(root, ["task", "advance", id, "--agent-json"]);
     expect(approval.action).toMatchObject({ kind: "approval_required" });
     expect(approval).not.toHaveProperty("exchange");
@@ -67,7 +68,12 @@ describe("external supplied Plan shortcut", { timeout: 120_000 }, () => {
   it.each([{ missing: true }, { unresolved: true }, { requirePlanner: true }])(
     "retains read-only planning for %j",
     async (options) => {
-      const { root, id } = await createSuppliedCliTask(options);
+      const { root, id, created } = await createSuppliedCliTask(options);
+      expect(created).toMatchObject(
+        options.missing
+          ? { status: "semantic_input_required", required_role: "PLANNER" }
+          : { status: "advance_required", required_role: null },
+      );
       const packet = await runJson(root, ["task", "advance", id, "--agent-json"]);
       const { order } = await readSuppliedCliOrder(packet);
       expect(order.role).toBe("PLANNER");

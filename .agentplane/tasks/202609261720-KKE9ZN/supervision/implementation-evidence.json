@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check ab405fb655f203613a9d3c58f5219ce83edfa62d..bb6cfaf0da9981370fb03d0ebcd574b88202fa8e",
+      "command": "git diff --check bb6cfaf0da9981370fb03d0ebcd574b88202fa8e..db14bb4aad12c31a04d895967442d0b5db3bcd2b",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB ab405fb655f203613a9d3c58f5219ce83edfa62d..bb6cfaf0da9981370fb03d0ebcd574b88202fa8e",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB bb6cfaf0da9981370fb03d0ebcd574b88202fa8e..db14bb4aad12c31a04d895967442d0b5db3bcd2b",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,11 +24,7 @@
         "M\t.agentplane/tasks/202609261720-KKE9ZN/pr/review.md",
         "M\t.agentplane/tasks/202609261720-KKE9ZN/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202609261720-KKE9ZN/supervision/implementation-evidence.json",
-        "M\tpackages/agentplane/src/cli/cli-smoke.test.ts",
-        "M\tscripts/lib/installed-migration-matrix.mjs",
-        "A\tscripts/lib/installed-planning-matrix.mjs",
-        "M\tscripts/lib/test-route-registry.mjs",
-        "M\tscripts/release/check-local-tarball-install-smoke.mjs"
+        "A\tdocs/releases/v0.7.12-m04.md"
       ]
     },
     {
@@ -38,8 +34,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "ab405fb655f203613a9d3c58f5219ce83edfa62d",
-  "implementation_commit": "bb6cfaf0da9981370fb03d0ebcd574b88202fa8e",
+  "execution_base_commit": "bb6cfaf0da9981370fb03d0ebcd574b88202fa8e",
+  "implementation_commit": "db14bb4aad12c31a04d895967442d0b5db3bcd2b",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [

@@ -1,10 +1,17 @@
  bun.lock                                           |   6 +-
+ docs/releases/planning-0.7.12-handoff.md           |  59 ++++
  docs/releases/v0.7.12-m04.md                       |  87 ++++++
+ docs/user/agent-bootstrap.generated.mdx            |   6 +-
+ docs/user/cli-reference.generated.mdx              |   1 +
+ docs/user/task-lifecycle.mdx                       |  63 ++++-
+ docs/user/workflow.mdx                             |  75 +++--
  .../task-backend/kernel-backend-adapter.ts         |  10 +-
  .../src/adapters/task-backend/kernel-documents.ts  |  18 ++
+ packages/agentplane/src/cli/bootstrap-guide.ts     |   6 +-
  packages/agentplane/src/cli/cli-smoke.test.ts      |   4 +-
+ packages/agentplane/src/cli/command-guide.test.ts  |   5 +
  .../src/cli/run-cli.core.kernel-transport.test.ts  |   9 +-
- ...core.task-advance.roadmap-supplied-plan.test.ts |  82 ++++++
+ ...core.task-advance.roadmap-supplied-plan.test.ts |  88 ++++++
  ...i.core.task-advance.worktree-resolution.test.ts |  27 +-
  .../agentplane/src/cli/supplied-plan.testkit.ts    |  56 ++++
  packages/agentplane/src/commands/acr/generate.ts   |   6 +
@@ -15,7 +22,7 @@
  .../src/commands/task/create-plan-input.testkit.ts |  32 +++
  .../src/commands/task/create-plan-input.ts         |  81 ++++++
  .../src/commands/task/create-plan-proposal.ts      |  99 +++++++
- .../agentplane/src/commands/task/create.command.ts |  25 ++
+ .../agentplane/src/commands/task/create.command.ts |  31 ++-
  .../agentplane/src/commands/task/kernel-create.ts  |  17 +-
  .../src/commands/task/kernel-inspection.ts         |  20 +-
  .../src/commands/task/kernel-plan-proposal.ts      |  20 ++
@@ -49,8 +56,10 @@
  packages/core/src/tasks/task-centric/policy.ts     |  55 ++++
  packages/core/src/tasks/task-centric/schema.ts     |  38 +++
  schemas/agent-semantic-result.schema.json          |  12 +
+ scripts/checks/check-agent-onboarding-scenario.mjs |  21 +-
  scripts/lib/installed-migration-matrix.mjs         |  25 +-
  scripts/lib/installed-planning-matrix.mjs          | 216 +++++++++++++++
  scripts/lib/test-route-registry.mjs                |   7 +
  .../release/check-local-tarball-install-smoke.mjs  |  24 +-
- 55 files changed, 2734 insertions(+), 93 deletions(-)
+ website/static/llms-full.txt                       | 138 +++++++--
+ 64 files changed, 3051 insertions(+), 162 deletions(-)
