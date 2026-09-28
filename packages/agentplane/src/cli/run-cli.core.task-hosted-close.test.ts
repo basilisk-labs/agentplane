@@ -166,6 +166,8 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
           ].join("\n"),
         ],
       ] as const) {
+        const sectionFile = path.join(root, ".git", "hosted-close-section.md");
+        await writeFile(sectionFile, text, "utf8");
         const code = await runCliSilent([
           "task",
           "doc",
@@ -173,8 +175,8 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
           taskId,
           "--section",
           section,
-          "--text",
-          text,
+          "--file",
+          sectionFile,
           "--root",
           root,
         ]);

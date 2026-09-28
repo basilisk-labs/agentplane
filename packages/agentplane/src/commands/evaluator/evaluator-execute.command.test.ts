@@ -1,7 +1,5 @@
-import { execFile } from "node:child_process";
-import { chmod, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { promisify } from "node:util";
 
 import {
   completeSupervisorExecutionEpisode,
@@ -10,6 +8,7 @@ import {
   prepareReplacementSupervisorExecutionEpisodeAfterFailure,
   recoverSupervisorExecutionEpisodeJournal,
   startSupervisorExecutionEpisode,
+  stopSupervisorExecutionEpisode,
   validateSupervisorExecutionEpisodeJournal,
 } from "@agentplaneorg/core/schemas";
 import { readTask } from "@agentplaneorg/core/tasks";
@@ -19,170 +18,82 @@ import { describe, expect, it } from "vitest";
 import { runCli } from "../../cli/run-cli.js";
 import {
   createSupervisorEpisodeStore,
+  openSupervisorExecutionEpisode,
   resolveSupervisorExecutionEpisodePath,
 } from "../shared/supervisor-execution-episode.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
-import { materializeLegacyDrainIdentityFixture } from "../shared/native-task-identity-fixture.js";
-import { cmdTaskAdd } from "../workflow.js";
 import {
+  addTask,
+  commitTarget,
+  installFakeCodex,
   replaceCodexWithFailure,
   runEvaluatorCliInSeparateProcess,
+  runWithFakeCodex,
   waitForFileText,
+  writeVerificationRecord,
 } from "./evaluator-execute-subprocess.testkit.js";
 
-const execFileAsync = promisify(execFile);
-
-async function addTask(root: string, taskId: string): Promise<void> {
-  await cmdTaskAdd({
-    cwd: root,
-    taskIds: [taskId],
-    title: "Evaluator supervisor integration",
-    description: "Exercise one persisted EVALUATOR episode.",
-    status: "TODO",
-    priority: "med",
-    owner: "CODER",
-    tags: ["nodejs"],
-    dependsOn: [],
-    verify: [],
-    commentAuthor: null,
-    commentBody: null,
-  });
-  await materializeLegacyDrainIdentityFixture({ root, task_id: taskId });
-}
-
-async function commitTarget(root: string): Promise<void> {
-  await mkdir(path.join(root, "src"), { recursive: true });
-  await writeFile(
-    path.join(root, "src", "evaluated.ts"),
-    "export const reviewed = true;\n",
-    "utf8",
-  );
-  await execFileAsync("git", ["add", "--", "."], { cwd: root });
-  await execFileAsync("git", ["commit", "-m", "feat: evaluator execute fixture"], { cwd: root });
-}
-
-async function writeVerificationRecord(root: string, taskId: string): Promise<string> {
-  const io = captureStdIO();
-  let code: number;
-  try {
-    code = await runCli([
-      "task",
-      "doc",
-      "set",
-      taskId,
-      "--section",
-      "Verify Steps",
-      "--text",
-      "Run evaluator execute verification. Expected: the fixture record is durable.",
-      "--root",
-      root,
-    ]);
-    if (code === 0) {
-      await materializeLegacyDrainIdentityFixture({ root, task_id: taskId });
-      code = await runCli([
-        "verify",
-        taskId,
-        "--ok",
-        "--by",
-        "QA",
-        "--note",
-        "Evaluator execute fixture verified.",
-        "--details",
-        [
-          "Command: bunx vitest run evaluator-execute.command.test.ts",
-          "Result: pass",
-          "Evidence: fixture test run",
-          "Scope: evaluator execute fixture",
-        ].join("\n"),
-        "--quiet",
-        "--root",
-        root,
-      ]);
-    }
-  } finally {
-    io.restore();
-  }
-  if (code !== 0) throw new Error(`failed to create verification record: ${io.stderr}`);
-
-  await execFileAsync("git", ["add", "--", ".agentplane"], { cwd: root });
-  await execFileAsync("git", ["commit", "-m", "test: record evaluator verification fixture"], {
-    cwd: root,
-  });
-
-  const verificationDir = path.join(root, ".agentplane", "tasks", taskId, "verification");
-  const entries = await readdir(verificationDir);
-  const files = entries.filter((file) => file.endsWith(".json"));
-  expect(files).toHaveLength(1);
-  return path.join(verificationDir, files[0]!);
-}
-
-async function installFakeCodex(root: string): Promise<string> {
-  const bin = path.join(root, ".agentplane", "cache", "fake-bin");
-  await mkdir(bin, { recursive: true });
-  const source = [
-    "#!/usr/bin/env node",
-    "const fs = require('node:fs');",
-    "let prompt = '';",
-    "process.stdin.setEncoding('utf8');",
-    "process.stdin.on('data', (chunk) => { prompt += chunk; });",
-    "process.stdin.on('end', () => {",
-    "  const workOrderMatch = prompt.match(/^- work_order: (.+)$/m);",
-    "  if (!workOrderMatch) process.exit(1);",
-    "  const workOrder = JSON.parse(fs.readFileSync(workOrderMatch[1], 'utf8'));",
-    "  const evidence = workOrder.evidence.find((entry) => entry.kind === 'actual_diff');",
-    "  if (!evidence) process.exit(1);",
-    "  const invocationLog = process.env.AGENTPLANE_FAKE_CODEX_INVOCATIONS;",
-    "  if (invocationLog) fs.appendFileSync(invocationLog, 'provider-started\\n');",
-    "  const verdict = process.env.AGENTPLANE_FAKE_CODEX_VERDICT ?? 'pass';",
-    "  const result = { schema_version: 1, kind: 'evaluator_result', evaluator_id: 'recovery-context', verdict, findings: [{ id: 'fixture-pass', severity: 'low', summary: 'Fixture verifies the persisted EVALUATOR result path.', broken_invariant: 'Pass reviews require one evidence-backed finding.', evidence_refs: [{ path: evidence.path }] }], missing_tests: [], hidden_assumptions: [], ...(verdict === 'pass' ? {} : { recovery_context: 'Should the owner accept this explicit decision boundary?' }) };",
-    "  const complete = () => {",
-    "    process.stdout.write(JSON.stringify({ type: 'session.started' }) + '\\n');",
-    "    process.stdout.write(JSON.stringify({ type: 'item.completed', item: { type: 'agent_message', text: JSON.stringify(result) } }) + '\\n');",
-    "    process.stdout.write(JSON.stringify({ type: 'turn.completed', usage: { input_tokens: 100, output_tokens: 50, reasoning_output_tokens: 20 } }) + '\\n');",
-    "  };",
-    "  const delayMs = Number(process.env.AGENTPLANE_FAKE_CODEX_DELAY_MS ?? '0');",
-    "  if (Number.isFinite(delayMs) && delayMs > 0) setTimeout(complete, delayMs);",
-    "  else complete();",
-    "});",
-    "",
-  ].join("\n");
-  const command = path.join(bin, "codex");
-  await writeFile(command, source, "utf8");
-  await chmod(command, 0o755);
-  return bin;
-}
-
-async function runWithFakeCodex(
-  root: string,
-  taskId: string,
-  fakeBin: string,
-  executeArgs: string[] = [],
-) {
-  const previous = process.env.PATH;
-  process.env.PATH = `${fakeBin}${path.delimiter}${previous ?? ""}`;
-  try {
-    const io = captureStdIO();
-    try {
-      const code = await runCli([
-        "evaluator",
-        "execute",
-        taskId,
-        ...executeArgs,
-        "--json",
-        "--root",
-        root,
-      ]);
-      return { code, stdout: io.stdout, stderr: io.stderr };
-    } finally {
-      io.restore();
-    }
-  } finally {
-    if (previous === undefined) delete process.env.PATH;
-    else process.env.PATH = previous;
-  }
-}
-
 describe("evaluator execute supervisor episode", () => {
+  it.each([false, true])(
+    "handles a completed lifecycle operation with human stop %s",
+    async (stopped) => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
+      const taskId = "202609280000-EE18";
+      await addTask(root, taskId);
+      await commitTarget(root);
+      const fakeBin = await installFakeCodex(root);
+      const fingerprint = digestSupervisorEpisodeValue({ stage: "worktree.prepare" });
+      const opened = await openSupervisorExecutionEpisode({
+        git_root: root,
+        task_id: taskId,
+        task_revision: null,
+        state_fingerprint_digest: fingerprint,
+      });
+      const started = startSupervisorExecutionEpisode({
+        journal: opened.journal,
+        role: "EXECUTOR",
+        kind: "cli_operation",
+        operation_identity: { id: "worktree.prepare" },
+        precondition_fingerprint_digest: fingerprint,
+        authority_ref: "workflow-operation:worktree.prepare",
+        authority_digest: fingerprint,
+      });
+      if (started.status !== "started") throw new Error("expected lifecycle fixture intent");
+      const completed = completeSupervisorExecutionEpisode({
+        journal: started.journal,
+        operation_key: started.operation_key,
+        result: { worktree_prepared: true },
+        usage: {},
+      });
+      const saved = stopped
+        ? stopSupervisorExecutionEpisode({ journal: completed, reason: "human_review" })
+        : completed;
+      await opened.store.write(saved);
+
+      const execution = await runWithFakeCodex(root, taskId, fakeBin);
+
+      if (stopped) {
+        expect(execution.code).toBe(8);
+        expect(validateSupervisorExecutionEpisodeJournal(await opened.store.read())).toEqual(saved);
+        return;
+      }
+      expect(execution.code, execution.stderr).toBe(0);
+      const journal = validateSupervisorExecutionEpisodeJournal(await opened.store.read());
+      expect(journal).toMatchObject({
+        status: "running",
+        cursor: { phase: "ready" },
+        usage: { episodes: 2, agent_runs: 1 },
+        operations: [
+          { role: "EXECUTOR", kind: "cli_operation", status: "completed" },
+          { role: "EVALUATOR", kind: "evaluator_episode", status: "completed" },
+        ],
+      });
+      expect(journal.operations[0]?.operation_key).toBe(started.operation_key);
+      expect(journal.operations[0]?.result_digest).toBe(completed.operations[0]?.result_digest);
+    },
+  );
+
   it("persists one bounded EVALUATOR episode and applies its durable result", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

@@ -136,3 +136,44 @@ user override. Native final validation remains required before integration.
 M04 qualification remains not established as documented in
 `docs/releases/v0.7.12-m04.md`. This update makes no new containment or
 performance claim.
+
+## Hosted and Evaluator Recovery
+
+The native final validation on `34bf5f29ed51d6f7155fac7666e1e45e93deab8d`
+passed all 20 checks. `ci:local:full` completed in 2,325,998 ms. The controller
+persisted canonical completion, and the operator granted the exact `pr.open`
+request under the user's release authorization. AgentPlane opened
+[PR 6029](https://github.com/basilisk-labs/agentplane/pull/6029).
+
+The subsequent native independent-review attempt stopped before obtaining a
+verdict. Its supervisor journal contained a completed `EXECUTOR` operation
+for `worktree.prepare`, with no pending provider intent. Evaluator startup
+accepted only a ready journal or its own completed outcome. The new regression
+reproduced the real `Evaluator supervisor journal is not ready` error.
+
+The operator reused task `202609261720-KKE9ZN` under the explicit repair
+override. Evaluator startup now uses the existing journal transition primitive
+to advance a completed non-evaluator operation. It preserves prior operations,
+result digests, telemetry, evaluator-result replay, and stopped/pending-state
+guards. The fixture test also proves that `human_review` remains stopped.
+The existing fixture helpers moved into their companion testkit to preserve
+the test-file size limit. All 15 evaluator execution tests pass.
+
+[Hosted Core CI 36436089308](https://github.com/basilisk-labs/agentplane/actions/runs/36436089308)
+reported two real-E2E failures. The mixed-scope fixture requested documentation
+and `task.verify` authority only in its Plan, outside its intake-owned contract.
+Its task creation now declares the exact source, test, documentation, and
+metadata paths, the required repository effects, and `task.verify` explicitly.
+The authority guard remains unchanged. The hosted-close fixture passed literal
+newlines through `--text`; it now supplies the same content with `--file`.
+Its original failure reproduced locally, and all four hosted-close tests pass
+after correction.
+
+The qualification contract tests initially failed because seven historical
+owner-task directories were absent from the sparse checkout. Git restored only
+those tracked directories from the current commit without changing their
+contents. All 40 contract tests then passed. Focused ESLint, root typecheck,
+format checks, and `git diff --check` also passed. Packaged mixed-scope
+qualification, fresh hosted CI, and the real independent verdict still require
+successful execution on the repaired source. Controlled test-provider results
+are not substitutes for the real review.
