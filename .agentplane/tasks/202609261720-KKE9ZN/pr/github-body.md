@@ -37,6 +37,7 @@ User authorizes all necessary work to implement and release 0.7.12 without repea
  .../src/commands/task/create-plan-proposal.ts      |  99 +++++++
  .../agentplane/src/commands/task/create.command.ts |  25 ++
  .../agentplane/src/commands/task/kernel-create.ts  |  17 +-
+ .../task/kernel-plan-supplied-approval.test.ts     | 189 +++++++++++++
  .../agentplane/src/commands/task/kernel-plan.ts    |  34 ++-
  .../src/commands/task/kernel-supplied-plan.ts      |  52 ++++
  .../src/commands/task/kernel-work-order.ts         |  14 +-
@@ -51,7 +52,7 @@ User authorizes all necessary work to implement and release 0.7.12 without repea
  .../tasks/task-centric/planning-obligation.test.ts | 102 +++++++
  packages/core/src/tasks/task-centric/policy.ts     |  55 ++++
  packages/core/src/tasks/task-centric/schema.ts     |  38 +++
- 24 files changed, 1066 insertions(+), 19 deletions(-)
+ 25 files changed, 1255 insertions(+), 19 deletions(-)
 ```
 
 </details>
