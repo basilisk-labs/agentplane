@@ -64,7 +64,7 @@ export function makeRunTaskStatusHandler(session: {
       : session.getLocalContext("task status"));
     const canonical = await readTaskKernel(commandCtx, parsed.taskId);
     if (canonical.kind !== "legacy_unmigrated") {
-      return reportTaskKernelRead(canonical, parsed.taskId, parsed.json);
+      return reportTaskKernelRead(canonical, parsed.taskId, parsed.json, commandCtx);
     }
     const decision = await buildTaskRouteDecision({
       ctx: commandCtx,

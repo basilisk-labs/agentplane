@@ -24,6 +24,9 @@ vi.mock("../shared/task-backend.js", () => ({ loadTaskFromContext: mocks.load })
 vi.mock("./execution-authority-context.js", () => ({
   resolveLogicalRepositoryIdentity: mocks.identity,
 }));
+vi.mock("./kernel-planning-view.js", () => ({
+  projectKernelPlanning: () => Promise.resolve({ requirement: "required", outcome: "missing" }),
+}));
 afterEach(() => vi.restoreAllMocks());
 
 const identity = taskKernel.kernelDigest("repository");

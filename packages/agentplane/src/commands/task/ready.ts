@@ -20,7 +20,7 @@ export async function cmdReady(opts: {
     const task = await ctx.taskBackend.getTask(opts.taskId);
     const canonical = await readTaskKernel(ctx, opts.taskId, task ?? undefined);
     if (canonical.kind !== "legacy_unmigrated" && canonical.kind !== "missing") {
-      const code = reportTaskKernelRead(canonical, opts.taskId, false);
+      const code = await reportTaskKernelRead(canonical, opts.taskId, false, ctx);
       return code || (projectTaskKernelRead(canonical, opts.taskId).ready ? 0 : 2);
     }
     const warnings: string[] = [];
