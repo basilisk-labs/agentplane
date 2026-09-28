@@ -2,8 +2,8 @@
   "checks": [
     {
       "check_ids": [],
-      "command": "bun run test:project core --maxWorkers=1 packages/core/src/tasks/task-kernel",
-      "duration_ms": 3808,
+      "command": "bun run package:tarball:check",
+      "duration_ms": 53144,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:e9970e0222261dcb51b9dea12a6e40fd0d1f3cc919e27603192ff802cba00905",
@@ -12,14 +12,46 @@
         "status": "resolved",
         "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
       },
-      "script": "test:project",
-      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project core \"--maxWorkers=1\" packages/core/src/tasks/task-kernel\n",
-      "stdout_tail": "\n RUN  v4.1.9 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609261720-KKE9ZN-implement-and-qualify-agentplane-0-7-12-planning\n\n\n Test Files  6 passed (6)\n      Tests  98 passed (98)\n   Start at  12:37:26\n   Duration  2.47s (transform 581ms, setup 142ms, import 1.10s, tests 243ms, environment 1ms)\n\n"
+      "script": "package:tarball:check",
+      "stderr_tail": "$ node scripts/release/check-package-tarball.mjs\n",
+      "stdout_tail": "package tarball policy OK (@agentplaneorg/core=125, @agentplaneorg/recipes=20, agentplane=59)\n"
+    },
+    {
+      "check_ids": [],
+      "command": "bun run package:install-smoke",
+      "duration_ms": 230350,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:e9970e0222261dcb51b9dea12a6e40fd0d1f3cc919e27603192ff802cba00905",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "package:install-smoke",
+      "stderr_tail": "$ node scripts/release/check-local-tarball-install-smoke.mjs\n",
+      "stdout_tail": "installed planning matrix OK (scenarios=6)\ninstalled migration matrix OK (scenarios=8)\nlocal tarball install smoke OK (202609170001-TRB1)\n"
+    },
+    {
+      "check_ids": [],
+      "command": "bun run test:release:critical",
+      "duration_ms": 93903,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:e9970e0222261dcb51b9dea12a6e40fd0d1f3cc919e27603192ff802cba00905",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:release:critical",
+      "stderr_tail": "$ node scripts/checks/run-vitest-suite.mjs release-critical\n",
+      "stdout_tail": "\n RUN  v4.1.9 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609261720-KKE9ZN-implement-and-qualify-agentplane-0-7-12-planning\n\n\n Test Files  11 passed (11)\n      Tests  64 passed (64)\n   Start at  13:02:52\n   Duration  91.61s (transform 60.99s, setup 915ms, import 62.22s, tests 241.91s, environment 2ms)\n\n"
     },
     {
       "check_ids": [],
       "command": "bun run typecheck",
-      "duration_ms": 1233,
+      "duration_ms": 1017,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:e9970e0222261dcb51b9dea12a6e40fd0d1f3cc919e27603192ff802cba00905",
@@ -31,6 +63,22 @@
       "script": "typecheck",
       "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
       "stdout_tail": ""
+    },
+    {
+      "check_ids": [],
+      "command": "bun run schemas:check",
+      "duration_ms": 1548,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:e9970e0222261dcb51b9dea12a6e40fd0d1f3cc919e27603192ff802cba00905",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "schemas:check",
+      "stderr_tail": "$ bun scripts/generate/sync-schemas.mjs check\n",
+      "stdout_tail": "schemas OK\n"
     }
   ],
   "kind": "direct_task_declared_checks",

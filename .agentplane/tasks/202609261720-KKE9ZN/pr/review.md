@@ -30,6 +30,7 @@ Created: 2026-09-27T19:16:20.496Z
 
 ```text
  bun.lock                                           |   6 +-
+ docs/releases/v0.7.12-m04.md                       |  87 ++++++
  .../task-backend/kernel-backend-adapter.ts         |  10 +-
  .../src/adapters/task-backend/kernel-documents.ts  |  18 ++
  packages/agentplane/src/cli/cli-smoke.test.ts      |   4 +-
@@ -83,7 +84,7 @@ Created: 2026-09-27T19:16:20.496Z
  scripts/lib/installed-planning-matrix.mjs          | 216 +++++++++++++++
  scripts/lib/test-route-registry.mjs                |   7 +
  .../release/check-local-tarball-install-smoke.mjs  |  24 +-
- 54 files changed, 2647 insertions(+), 93 deletions(-)
+ 55 files changed, 2734 insertions(+), 93 deletions(-)
 ```
 
 </details>
