@@ -6,14 +6,14 @@ Created: 2026-09-28T15:07:14.483Z
 
 - Task: `202609281457-R0XP40`
 - Title: Fix release candidate preparation order before 0.7.12 publication
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609281457-R0XP40/fix-release-candidate-preparation-order-before-0`
 - Canonical task record: `.agentplane/tasks/202609281457-R0XP40/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
