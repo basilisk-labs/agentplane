@@ -1,32 +1,11 @@
-import {
-  taskKernel as k,
-  kernelPlanProposalSchema,
-  type KernelPlanProposal,
-} from "@agentplaneorg/core/tasks";
+import { taskKernel as k, kernelPlanProposalSchema } from "@agentplaneorg/core/tasks";
 import type { CommandContext } from "../shared/task-backend.js";
 import { createKernelRuntime, requireKernelCommit } from "./kernel-runtime-context.js";
 import { assertCanonicalPlanWithinExecutionContract } from "./kernel-plan-authority.js";
 import { parseSuppliedPlanInput, prepareSuppliedPlan } from "./create-plan-input.js";
 import { suppliedKernelProposal } from "./create-plan-proposal.js";
-
-export function canonicalPlanFromProposal(
-  proposal: KernelPlanProposal,
-  revision: number,
-): k.PlanRecord {
-  const definitions: k.WorkItemDefinition[] = proposal.work_items.map(
-    ({ contract, ...definition }) => ({ ...definition, contract_digest: k.kernelDigest(contract) }),
-  );
-  const issues = k.validateWorkItemDefinitions(definitions);
-  if (issues.length > 0) throw new Error(`Invalid canonical plan: ${issues.join(", ")}`);
-  return {
-    revision,
-    digest: k.kernelDigest({ revision, work_items: definitions }),
-    state: "PROPOSED",
-    approval_actor_id: null,
-    approval_evidence_digest: null,
-    work_items: definitions,
-  };
-}
+import { canonicalPlanFromProposal } from "./kernel-plan-proposal.js";
+export { canonicalPlanFromProposal } from "./kernel-plan-proposal.js";
 
 /** Explicit native planning entrypoint. The input describes intent and never carries approval. */
 export async function setCanonicalPlan(

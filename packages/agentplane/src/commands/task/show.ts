@@ -1,5 +1,6 @@
 import { projectKernelTask } from "../../adapters/task-backend/kernel-projector.js";
 import { readTaskKernel } from "./kernel-read.js";
+import { projectKernelPlanning } from "./kernel-planning-view.js";
 import {
   parseTaskReadme,
   taskReadmePath,
@@ -116,6 +117,7 @@ export async function cmdTaskShow(opts: {
                 }
               : {}),
             canonical_record: canonical.record,
+            planning: await projectKernelPlanning(ctx, task, canonical.record),
             source: "task_kernel",
           },
           null,

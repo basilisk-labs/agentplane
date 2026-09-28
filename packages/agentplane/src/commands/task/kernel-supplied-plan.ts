@@ -7,6 +7,7 @@ import { CliError } from "../../shared/errors.js";
 import { prepareSuppliedPlan } from "./create-plan-input.js";
 import { suppliedKernelProposal } from "./create-plan-proposal.js";
 import { setCanonicalPlan } from "./kernel-plan.js";
+import { readKernelPlanningEvidence } from "./kernel-planning-view.js";
 
 const requirePlannerPolicy = z.boolean().optional();
 
@@ -21,6 +22,13 @@ export async function materializeSuppliedPlan(opts: {
   const digest = record.documents?.intent.plan_input_digest;
   const supplied = digest ? record.documents?.plan_inputs?.[digest] : undefined;
   if (!supplied) return false;
+  const evidence = await readKernelPlanningEvidence(command, record);
+  if (
+    evidence.issued_work_orders.length > 0 ||
+    (evidence.managed_attempts ?? 0) > 0 ||
+    evidence.evidence_issues.length > 0
+  )
+    return false;
   const policy = requirePlannerPolicy.safeParse(command.config.agents.approvals.require_planner);
   const current = await prepareSuppliedPlan(command, task.id, supplied, supplied);
   const obligation = resolvePlanningObligation({
