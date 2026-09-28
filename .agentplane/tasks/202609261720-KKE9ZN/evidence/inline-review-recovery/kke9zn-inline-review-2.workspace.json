@@ -1,0 +1,33 @@
+{
+  "observed_at": "2026-09-28T16:10:30.345Z",
+  "authoritative_checkout": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202609261720-KKE9ZN-implement-and-qualify-agentplane-0-7-12-planning",
+  "implementation_sha": "c0b3be603d850883aae69d3117428609ce446761",
+  "head": "c7e4a0c31e9ade51d26b0c450a221e1c10d15daf",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "status",
+        "--short",
+        "--untracked-files=all"
+      ],
+      "exit_code": 0,
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--stat",
+        "c0b3be603d850883aae69d3117428609ce446761",
+        "HEAD",
+        "--",
+        ".",
+        ":(exclude).agentplane/tasks/202609261720-KKE9ZN/**"
+      ],
+      "exit_code": 0,
+      "stdout": ""
+    }
+  ],
+  "classification": "The operator committed native review and verification artifacts before this observation. This review invocation does not write to the authoritative checkout. The independent release-wrapper repair uses another worktree."
+}

@@ -4,7 +4,7 @@ title: "Implement and qualify AgentPlane 0.7.12 planning reuse for PL-01 through
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 135
+revision: 136
 origin:
   system: "manual"
 depends_on: []
@@ -29,21 +29,20 @@ verification:
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
-  state: "blocked"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-28T16:06:42.818Z"
+  updated_at: "2026-09-28T16:11:22.458Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
   evaluated_sha: "c0b3be603d850883aae69d3117428609ce446761"
   review_identity_digest: "sha256:f65297f265dcd86c8eb8d63007c95a22b1a533e82be6d182828a1cef22247e10"
   evidence_refs:
-    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-153749907-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-153749907-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/fbe93af41a5fae959f9c7428edb34b11cbdce42b928026966d48d99de655ae28.md"
-    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-153749907-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-153749907-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-153749907-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-153749907-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-160858212-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-160858212-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/51dddf111eea86ceeae6a08fbecc29bcad10e36cfee04846535328f0d0d703b6.md"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-160858212-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-160858212-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-160858212-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609261720-KKE9ZN/README.md"
     - ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/08b303b5830e201ae83e902b766c7a3bf3658172bead4082f1f461303a919b5e.patch"
     - ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/3df9bbcc79489e85627c4a5e9a9ec9fed33fc94c2f32aadc1358e4a9f53f15ff.json"
@@ -54,7 +53,7 @@ quality_review:
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Final workspace cleanliness is evidenced only for 679f2a797368bbed591abdaa183ac469fe485d01, not the evaluated c0b3be603d850883aae69d3117428609ce446761. The frozen patch and current passing verification do not establish the disposition of untracked artifacts or concurrent workspace drift."
+    - "The supplied current Git observation resolves the previous workspace-evidence gap: status is clean, and HEAD differs from the evaluated implementation only in this task's artifacts. Frozen verification records passing required checks at the evaluated SHA. Reviewed regressions cover planning reuse, approval binding, negative admission, drift, and retry recovery."
 execution_route:
   frozen: true
   reason_codes:
