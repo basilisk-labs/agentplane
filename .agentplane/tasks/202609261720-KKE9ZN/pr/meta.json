@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:3c26a7c85328128ea256bdde5de1db9c208074cb4011c2b196d42ac774f7c3bc",
   "pr_number": 6029,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6029",
+  "pre_merge_closure": {
+    "basis_commit": "d7c8b967ef22711f657af96128ce975dd15083b9",
+    "branch": "task/202609261720-KKE9ZN/implement-and-qualify-agentplane-0-7-12-planning",
+    "pr_number": 6029,
+    "recorded_at": "2026-09-28T18:13:51.837Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
