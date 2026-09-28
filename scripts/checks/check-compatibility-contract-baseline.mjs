@@ -361,6 +361,7 @@ function validateReviewedCandidate({
     "202609162254-YE48GC",
     "202609230942-E6D0V4",
     "202609241429-4WN4VX",
+    "202609261720-KKE9ZN",
   ];
   const expectedSourceTasks = [
     "202609271356-4SANDJ",
@@ -416,6 +417,7 @@ function validateReviewedCandidate({
     "202609211330-5A54M1",
     "202609230942-E6D0V4",
     "202609241429-4WN4VX",
+    "202609261720-KKE9ZN",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -1491,6 +1493,7 @@ function validateReviewedCandidate({
       group: "Task",
       args: [{ name: "outcome", required: true, variadic: false, valueHint: "<outcome>" }],
       options: [
+        { name: "plan-file", kind: "string", valueHint: "<path>" },
         { name: "description", kind: "string", valueHint: "<text>" },
         { name: "owner", kind: "string", valueHint: "<id>", default: "CODER" },
         {
@@ -2220,6 +2223,12 @@ function validateReviewedCandidate({
       kind: "string",
       valueHint: "<id>",
       default: "CODER",
+    },
+    {
+      command: "task create",
+      name: "plan-file",
+      kind: "string",
+      valueHint: "<path>",
     },
     {
       command: "task create",
@@ -3031,6 +3040,12 @@ function validateReviewedCandidate({
       command: "task create",
       name: "owner",
       source_task: "202608061646-30TKV4",
+    },
+    {
+      kind: "option",
+      command: "task create",
+      name: "plan-file",
+      source_task: "202609261720-KKE9ZN",
     },
     {
       kind: "option",
