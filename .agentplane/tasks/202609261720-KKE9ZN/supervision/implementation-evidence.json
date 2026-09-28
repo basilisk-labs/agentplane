@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 91e6d77418c400d0066d0c14b67ff22d12506905..8fe95f7ac94e2909c52f71a82cd64aaa3aa61bbb",
+      "command": "git diff --check 8fe95f7ac94e2909c52f71a82cd64aaa3aa61bbb..0082fa3231b4498a9eb6d7d802ba0473a7c0edc4",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 91e6d77418c400d0066d0c14b67ff22d12506905..8fe95f7ac94e2909c52f71a82cd64aaa3aa61bbb",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 8fe95f7ac94e2909c52f71a82cd64aaa3aa61bbb..0082fa3231b4498a9eb6d7d802ba0473a7c0edc4",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,7 +24,11 @@
         "M\t.agentplane/tasks/202609261720-KKE9ZN/pr/review.md",
         "M\t.agentplane/tasks/202609261720-KKE9ZN/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202609261720-KKE9ZN/supervision/implementation-evidence.json",
-        "A\tpackages/agentplane/src/commands/task/kernel-plan-supplied-approval.test.ts"
+        "A\tpackages/agentplane/src/cli/run-cli.core.task-advance.roadmap-supplied-plan.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts",
+        "A\tpackages/agentplane/src/cli/supplied-plan.testkit.ts",
+        "M\tpackages/agentplane/src/commands/branch/work-resume-planning-base.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-inspection.ts"
       ]
     },
     {
@@ -34,14 +38,18 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "91e6d77418c400d0066d0c14b67ff22d12506905",
-  "implementation_commit": "8fe95f7ac94e2909c52f71a82cd64aaa3aa61bbb",
+  "execution_base_commit": "8fe95f7ac94e2909c52f71a82cd64aaa3aa61bbb",
+  "implementation_commit": "0082fa3231b4498a9eb6d7d802ba0473a7c0edc4",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
       " M .agentplane/tasks/202609261720-KKE9ZN/README.md",
       " M .agentplane/tasks/202609261720-KKE9ZN/supervision/declared-checks.json",
-      " M .agentplane/tasks/202609261720-KKE9ZN/supervision/implementation-evidence.json"
+      " M .agentplane/tasks/202609261720-KKE9ZN/supervision/implementation-evidence.json",
+      " M packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-inspection.ts",
+      "?? packages/agentplane/src/cli/run-cli.core.task-advance.roadmap-supplied-plan.test.ts",
+      "?? packages/agentplane/src/cli/supplied-plan.testkit.ts"
     ],
     "classification": [
       {
@@ -55,6 +63,22 @@
       {
         "classification": "removed_during_execution",
         "line": " M .agentplane/tasks/202609261720-KKE9ZN/supervision/implementation-evidence.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-inspection.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/cli/run-cli.core.task-advance.roadmap-supplied-plan.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/cli/supplied-plan.testkit.ts"
       }
     ],
     "final": [],
@@ -62,7 +86,11 @@
     "removed_after_execution_baseline": [
       " M .agentplane/tasks/202609261720-KKE9ZN/README.md",
       " M .agentplane/tasks/202609261720-KKE9ZN/supervision/declared-checks.json",
-      " M .agentplane/tasks/202609261720-KKE9ZN/supervision/implementation-evidence.json"
+      " M .agentplane/tasks/202609261720-KKE9ZN/supervision/implementation-evidence.json",
+      " M packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-inspection.ts",
+      "?? packages/agentplane/src/cli/run-cli.core.task-advance.roadmap-supplied-plan.test.ts",
+      "?? packages/agentplane/src/cli/supplied-plan.testkit.ts"
     ],
     "unchanged_from_execution_baseline": []
   },
