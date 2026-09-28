@@ -28,6 +28,7 @@ User authorizes all necessary work to implement and release 0.7.12 without repea
 
 ```text
  bun.lock                                           |   6 +-
+ docs/developer/incident-archive.mdx                |  10 +
  docs/releases/planning-0.7.12-handoff.md           |  59 ++++
  .../planning-0.7.12-integrated-qualification.md    | 219 +++++++++++++++
  docs/releases/v0.7.12-m04.md                       |  87 ++++++
@@ -105,7 +106,7 @@ User authorizes all necessary work to implement and release 0.7.12 without repea
  .../check-packaged-mixed-scope-lifecycle.mjs       |   4 +
  .../release/check-local-tarball-install-smoke.mjs  |  24 +-
  website/static/llms-full.txt                       | 138 +++++++--
- 78 files changed, 3823 insertions(+), 340 deletions(-)
+ 79 files changed, 3833 insertions(+), 340 deletions(-)
 ```
 
 </details>
