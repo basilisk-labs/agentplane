@@ -187,6 +187,9 @@ export function listRepoFiles(relativeDir, options = {}) {
     for (const entry of readdirSync(current, { withFileTypes: true })) {
       const absolute = path.join(current, entry.name);
       if (entry.isDirectory()) {
+        const relative = normalizeRepoPath(path.relative(repoRoot, absolute));
+        // Package builds replace dist while test routes are being discovered.
+        if (entry.name === "node_modules" || /^packages\/[^/]+\/dist$/u.test(relative)) continue;
         pending.push(absolute);
         continue;
       }

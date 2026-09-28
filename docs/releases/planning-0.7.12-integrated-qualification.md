@@ -38,6 +38,26 @@ Its native result is recorded in exchange
 Neither interrupted invocation is reported as a pass or as an assertion
 failure. A fresh complete final validation is required.
 
+A third invocation on `24165f47c` was stopped during the installed-package
+smoke check after a concurrent read-only CI plan inspection exposed a test
+discovery race. Its native result is recorded in exchange
+`28e00905684953c8438630691bae6138982478941d1613a9f7aeb0337d1e7a89`.
+The plan inspection tried to scan a generated package `dist` directory while
+the package build was replacing it. It failed with `ENOENT`.
+
+The operator corrected test discovery to exclude package-root generated
+`dist` directories and installed `node_modules` before traversal. The
+regression test failed before the fix because generated and dependency tests
+were discovered. It preserves legitimate `src/dist` directories and keeps
+missing source roots as errors. This repair does not suppress filesystem
+errors or remove source tests from the verification contract.
+
+The discovery regression suite passes both tests. A comparison with the
+previous traversal on the quiescent checkout finds the same 823 source test
+files. `bun run vitest:projects:check` passes with 823 tests and 10 primary
+routes. `node scripts/checks/run-local-ci.mjs --mode full --explain` also
+passes after the repair.
+
 ## Compatibility Verification
 
 - `bun run bench:compatibility:candidate:check`: pass; candidate is current.
