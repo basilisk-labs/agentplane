@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import {
+  advanceSupervisorExecutionEpisodeState,
   completeSupervisorExecutionEpisode,
   prepareReplacementSupervisorExecutionEpisodeAfterFailure,
   refreshPendingReplacementSupervisorExecutionEpisode,
@@ -388,6 +389,18 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
       journal = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
         journal,
         state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+      });
+      await opened.store.write(journal);
+    }
+    if (
+      journal.status === "running" &&
+      journal.cursor.phase === "completed" &&
+      !hasCompletedEvaluatorOutcomeForApplication(journal)
+    ) {
+      journal = advanceSupervisorExecutionEpisodeState({
+        journal,
+        state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+        route_observation: { step_id: decision.workflowStep.id },
       });
       await opened.store.write(journal);
     }
