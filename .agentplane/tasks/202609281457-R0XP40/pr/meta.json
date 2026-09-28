@@ -3,7 +3,8 @@
   "branch": "task/202609281457-R0XP40/fix-release-candidate-preparation-order-before-0",
   "created_at": "2026-09-28T15:07:14.483Z",
   "diffstat_sha256": "sha256:0b828f93e9644cc20af767db40d3561da36d9380d2e9b652f859458126e76630",
-  "last_verified_at": null,
+  "last_verified_at": "2026-09-28T17:06:56.354Z",
+  "last_verified_diffstat_sha256": "sha256:0b828f93e9644cc20af767db40d3561da36d9380d2e9b652f859458126e76630",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202609281457-R0XP40",
   "updated_at": "2026-09-28T15:07:14.483Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
