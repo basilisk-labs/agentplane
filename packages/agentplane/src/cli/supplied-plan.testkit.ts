@@ -43,7 +43,7 @@ export async function createSuppliedCliTask(
     ...(options.missing ? [] : ["--plan-file", path.join(root, "supplied.json")]),
     "--json",
   ]);
-  return { root, id: String(created.task_id) };
+  return { root, id: String(created.task_id), created };
 }
 
 export async function readSuppliedCliOrder(packet: Record<string, unknown>) {
