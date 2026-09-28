@@ -4,7 +4,7 @@ title: "Prepare stable AgentPlane 0.7.12 release candidate"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 36
+revision: 37
 origin:
   system: "manual"
 depends_on: []
@@ -1484,6 +1484,104 @@ extensions:
             repository_evidence_digest: "sha256:554546c58e6d65c01b600e991dfe1ff20166413ce4284dda69fb556d9312431c"
             request_digest: "sha256:eaee11ccbd7e193f0d926224a3dc7cb34983a42e2e843c6e64bb7d9433baec02"
             request_task_revision: 33
+        -
+          approval_mode: "manual_operator"
+          authority:
+            capabilities:
+              - "provider.merge"
+              - "provider.pr"
+              - "repository.integrate"
+              - "repository.write"
+              - "repository_write"
+              - "task.verify"
+            completion_requirements:
+              - "work_item_validation"
+              - "final_validation"
+            digest: "sha256:500a9d76fe1a34ff5241e93bdf8217e19ed55a22a56952e643631aa8a6148beb"
+            expires_at: null
+            external_effects:
+              - "network_read"
+            plan_digest: "sha256:faa1295c812611e1addad5d44bdc9bb6c70d5ed5a5b0e34f2e3d9261b9572980"
+            plan_revision: 2
+            policy_digests:
+              - "sha256:46ab96cb2da8e193a7f501a37237d84581adf7e67f1f87977fcafc07bc4ae1c6"
+            provenance:
+              actor_id: "USER"
+              evidence_digest: "sha256:adbb3043069ad6944895e184d16697ae3365c5cf71ae9bad768357fd0044bebd"
+              kind: "USER"
+              parent_authority_digest: "sha256:1518af93106426b9a860796cecf8a2e549de11f09f70746f54fae35c3ca35abf"
+            repository_effects:
+              - "dependencies"
+              - "documentation"
+              - "public_api"
+              - "release_metadata"
+              - "repository_write"
+              - "source_code"
+              - "tests"
+            repository_fingerprint: "sha256:96b7f3bd4b5a1ac0e4fd366d5ab6097ff38a61fe5131b8b0f217bcba49712358"
+            repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+            resources: []
+            risk:
+              implementation: "bounded"
+              requirements: "bounded"
+              reversibility: "recovery_required"
+            scope_roots:
+              - ".agentplane/WORKFLOW.md"
+              - "bun.lock"
+              - "docs/reference/generated-reference.mdx"
+              - "docs/releases/v0.7.12.md"
+              - "packages/agentplane/package.json"
+              - "packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap"
+              - "packages/agentplane/src/cli/managed-conflict-recovery.testkit.ts"
+              - "packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts"
+              - "packages/agentplane/src/cli/run-cli.core.command-session.test.ts"
+              - "packages/agentplane/src/cli/run-cli.core.demo.test.ts"
+              - "packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts"
+              - "packages/agentplane/src/cli/run-cli.core.incidents.test.ts"
+              - "packages/agentplane/src/cli/run-cli.core.installed-smoke.test.ts"
+              - "packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts"
+              - "packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts"
+              - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-merge.test.ts"
+              - "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts"
+              - "packages/agentplane/src/cli/run-cli/commands/core/demo.ts"
+              - "packages/agentplane/src/commands/release/release-ci-contract.test.ts"
+              - "packages/agentplane/src/commands/task/branch-task-supervisor-episodes.test.ts"
+              - "packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts"
+              - "packages/agentplane/src/commands/task/branch-task-supervisor-implementation.ts"
+              - "packages/core/package.json"
+              - "packages/recipes/package.json"
+              - "packages/recipes/src/index.ts"
+              - "packages/spec/examples/acr.json"
+              - "packages/testkit/package.json"
+              - "scripts/baselines/v0.7-compatibility-candidate.json"
+              - "scripts/checks/run-pre-push-hook.mjs"
+              - "scripts/checks/run-vitest-suite.mjs"
+              - "scripts/oversized-test-baseline.json"
+              - "scripts/release/release-scope-exclusions.json"
+            task_id: "202609282003-E81FJR"
+            validation_requirements:
+              - "affected_unit_integration"
+              - "critical_paths"
+              - "docs_contract"
+              - "full_regression"
+              - "hosted_integration"
+              - "real_e2e"
+              - "task_outcome"
+            work_item_id: null
+          observation:
+            added_repository_effects:
+              - "repository_write"
+              - "tests"
+            added_scope_roots:
+              - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-merge.test.ts"
+            changed_paths:
+              - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-merge.test.ts"
+            evidence_digest: "sha256:b3b52943c253d66b61bc72498190cb4e3b6bda54327505784a31d5dc42f387f3"
+            kind: "authority_delta"
+            previous_fingerprint: "sha256:03362be382ea37b91335b53ae070a5b7ea104f14f87e275b25807b5786a946de"
+            repository_evidence_digest: "sha256:3f6c905c3d2fa063de1b6f15ad0e31ab89531ebe43248517e707e784559b07cb"
+            request_digest: "sha256:6a0318ca3354229aa180a3cdb7c4e9b281bc0ae59008929187a5d85ed39fea5b"
+            request_task_revision: 34
       controller_transfer: null
       current_plan:
         approval_actor_id: "USER"
@@ -1767,6 +1865,15 @@ extensions:
           event_digests:
             - "sha256:5aa41e72b0fc260053b696792c162a26804eb0914d1519e5c6a7a31198c905e9"
           mutation_id: "sha256:4a47973512a4a4685342ff5d51f7980666ea89c491ab2cc6a3bd8b10efe03c1b"
+        sha256:6145e9932ed1129c9afc2fd7a3f2dba0dae662ebf85362e4790a3033dadf6945:
+          after_revision: 35
+          aggregate_digest: "sha256:192c194dd3bc0a0081ce1955cd9c4c349ba9e6da361476595ee68b0a43692a26"
+          before_revision: 34
+          command_digest: "sha256:c173ccf5b8b9988884b88fef9f320bcb9cf2f2642a295e79096f094ce97e3d83"
+          effect_ids: []
+          event_digests:
+            - "sha256:2a5ee4e744b4cfa8d06f4d501da338b77d4f3446a44952b534b8ddda0cca83db"
+          mutation_id: "sha256:6145e9932ed1129c9afc2fd7a3f2dba0dae662ebf85362e4790a3033dadf6945"
         sha256:7838ec190eb5bfde8f56cd63e34369d6698f7d5c484187f672fa4c4e6ec4f6dd:
           after_revision: 12
           aggregate_digest: "sha256:553b0f55040d2d8ed954c4d2bbfc71ea4d6f3f66b7ff9901f7806f00bac84239"
@@ -1882,7 +1989,7 @@ extensions:
               id: "RC01"
               optional: false
               required_inputs: []
-      revision: 34
+      revision: 35
       schema_version: 1
       state: "ACTIVE"
       work_items:
@@ -1929,7 +2036,7 @@ extensions:
           revision: 12
           state: "BLOCKED"
           validation: null
-    digest: "sha256:29e1a3594b1c590665f072509ac1c6b79597d9e4d2c5ea3f21c551bb14ab9342"
+    digest: "sha256:779e02cc9f9cd8101e820df68ecaa6e0affc093d94a0187614d0dade649d346a"
     documents:
       contracts:
         sha256:46df66950aecbf99eb04c51604b1166329d49a0e28dc287a961be01e65360e68:
@@ -2448,6 +2555,15 @@ extensions:
         payload_digest: "sha256:3d2163f51fda60cd21b1c287bee4fdeb786611d20216e840ca008843ee4c0487"
         task_id: "202609282003-E81FJR"
         task_revision: 34
+      -
+        command_digest: "sha256:c173ccf5b8b9988884b88fef9f320bcb9cf2f2642a295e79096f094ce97e3d83"
+        id: "sha256:6145e9932ed1129c9afc2fd7a3f2dba0dae662ebf85362e4790a3033dadf6945:authority_continued"
+        kind: "authority_continued"
+        mutation_id: "sha256:6145e9932ed1129c9afc2fd7a3f2dba0dae662ebf85362e4790a3033dadf6945"
+        occurred_at: "2026-09-28T22:40:18.259Z"
+        payload_digest: "sha256:cc4a7ce5d5ebb283543c21d8a8099afb3bf7add8e1c841ff83fa6d1b51dd8684"
+        task_id: "202609282003-E81FJR"
+        task_revision: 35
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
