@@ -4,7 +4,7 @@ title: "Implement and qualify AgentPlane 0.7.12 planning reuse for PL-01 through
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 134
+revision: 135
 origin:
   system: "manual"
 depends_on: []
@@ -29,22 +29,32 @@ verification:
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "blocked"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-28T10:30:22.655Z"
+  updated_at: "2026-09-28T16:06:42.818Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "679f2a797368bbed591abdaa183ac469fe485d01"
-  review_identity_digest: "sha256:124ad108a7474316d07ed52c8cee08a9adb69e017e3c26b0cb06702190b21ca7"
+  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  evaluated_sha: "c0b3be603d850883aae69d3117428609ce446761"
+  review_identity_digest: "sha256:f65297f265dcd86c8eb8d63007c95a22b1a533e82be6d182828a1cef22247e10"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202609261720-KKE9ZN/19f9cb3a1fcef146d965debd68591d8bf23c01fe824203054fca415f02868374/quality-report.json"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-153749907-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-153749907-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/fbe93af41a5fae959f9c7428edb34b11cbdce42b928026966d48d99de655ae28.md"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-153749907-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-153749907-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-153749907-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-153749907-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609261720-KKE9ZN/README.md"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/08b303b5830e201ae83e902b766c7a3bf3658172bead4082f1f461303a919b5e.patch"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/3df9bbcc79489e85627c4a5e9a9ec9fed33fc94c2f32aadc1358e4a9f53f15ff.json"
+    - ".agentplane/tasks/202609261720-KKE9ZN/verification/20260928153207125-240201868571d349.json"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/b57fdb6bb79427db36b4748ebda3b9e1e9818b3696bbbe636f8ec5b358e1bef1.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Validated all 13 context blocks and canonical digests of implementation, repository and native-validation evidence."
-    - "Controller bound the 11 changed source/documentation paths to 679f2a797368bbed591abdaa183ac469fe485d01 and passed all four required checks."
-    - "Reviewed create response deferral for supplied input; no lifecycle state, approval or authority is manufactured. Regression coverage retains sufficient-plan approval/EVALUATOR and missing/unresolved/mandatory PLANNER cases."
-    - "Documentation preserves independent review, managed preflight and observed receipt boundaries; explicitly documents older-writer limits and unknown M04 full-host metrics."
-    - "Generated website corpus is a disclosed separate operator commit with exact native authority delta approval. Handoff requires final integration and exact-SHA production gates, not reuse of intermediate qualification as publication evidence."
-    - "Same-host inspection is disclosed; this result is not an independent second-agent measurement."
+    - "Final workspace cleanliness is evidenced only for 679f2a797368bbed591abdaa183ac469fe485d01, not the evaluated c0b3be603d850883aae69d3117428609ce446761. The frozen patch and current passing verification do not establish the disposition of untracked artifacts or concurrent workspace drift."
 execution_route:
   frozen: true
   reason_codes:
