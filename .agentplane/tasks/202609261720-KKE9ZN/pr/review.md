@@ -6,14 +6,14 @@ Created: 2026-09-27T19:16:20.496Z
 
 - Task: `202609261720-KKE9ZN`
 - Title: Implement and qualify AgentPlane 0.7.12 planning reuse for PL-01 through PL-12
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609261720-KKE9ZN/implement-and-qualify-agentplane-0-7-12-planning`
 - Canonical task record: `.agentplane/tasks/202609261720-KKE9ZN/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:5dd197e110bdc7f9da6def8e00d6cb750262e3a84ca44254bf23d29bf3d9141f
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -31,6 +31,7 @@ Created: 2026-09-27T19:16:20.496Z
 ```text
  bun.lock                                           |   6 +-
  docs/releases/planning-0.7.12-handoff.md           |  59 ++++
+ .../planning-0.7.12-integrated-qualification.md    | 138 +++++++++
  docs/releases/v0.7.12-m04.md                       |  87 ++++++
  docs/user/agent-bootstrap.generated.mdx            |   6 +-
  docs/user/cli-reference.generated.mdx              |   1 +
@@ -54,6 +55,8 @@ Created: 2026-09-27T19:16:20.496Z
  .../src/commands/task/create-plan-input.ts         |  81 ++++++
  .../src/commands/task/create-plan-proposal.ts      |  99 +++++++
  .../agentplane/src/commands/task/create.command.ts |  31 ++-
+ .../direct-task-verification.sequence.cases.ts     |  24 ++
+ .../src/commands/task/direct-task-verification.ts  |   2 +
  .../agentplane/src/commands/task/kernel-create.ts  |  17 +-
  .../src/commands/task/kernel-inspection.ts         |  20 +-
  .../src/commands/task/kernel-plan-proposal.ts      |  20 ++
@@ -87,13 +90,16 @@ Created: 2026-09-27T19:16:20.496Z
  packages/core/src/tasks/task-centric/policy.ts     |  55 ++++
  packages/core/src/tasks/task-centric/schema.ts     |  38 +++
  schemas/agent-semantic-result.schema.json          |  12 +
+ .../baselines/v0.7-compatibility-candidate.json    |  29 +-
  scripts/checks/check-agent-onboarding-scenario.mjs |  21 +-
+ .../check-compatibility-contract-baseline.mjs      |  15 +
  scripts/lib/installed-migration-matrix.mjs         |  25 +-
  scripts/lib/installed-planning-matrix.mjs          | 216 +++++++++++++++
- scripts/lib/test-route-registry.mjs                |   7 +
+ scripts/lib/test-route-registry.mjs                |  10 +
+ scripts/lib/test-route-registry.test.mjs           |  41 ++-
  .../release/check-local-tarball-install-smoke.mjs  |  24 +-
  website/static/llms-full.txt                       | 138 +++++++--
- 64 files changed, 3051 insertions(+), 162 deletions(-)
+ 70 files changed, 3295 insertions(+), 170 deletions(-)
 ```
 
 </details>
