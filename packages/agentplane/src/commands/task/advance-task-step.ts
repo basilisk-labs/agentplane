@@ -9,6 +9,7 @@ import { repositoryEffectsForPath, taskKernel as k } from "@agentplaneorg/core/t
 import type { CommandContext } from "../shared/task-backend.js";
 import { createKernelRuntime, requireKernelCommit } from "./kernel-runtime-context.js";
 import { buildKernelAgentWorkOrder, resumeKernelWorkOrder } from "./kernel-work-order.js";
+import { materializeSuppliedPlan } from "./kernel-supplied-plan.js";
 import { issueKernelExchange } from "./kernel-exchange.js";
 import {
   applyKernelEffectStep,
@@ -295,6 +296,8 @@ async function advanceCanonicalRoute(opts: {
       continue;
     }
     if (route.reason_code === "kernel_plan_required") {
+      if (await materializeSuppliedPlan({ command: opts.command, record, task: current.read.task }))
+        continue;
       const order = await buildKernelAgentWorkOrder({ command: opts.command, record, context });
       return issueKernelExchange(opts.command, order, opts.transport);
     }

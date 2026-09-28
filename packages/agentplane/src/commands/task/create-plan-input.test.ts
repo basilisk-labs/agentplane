@@ -23,41 +23,9 @@ import { setCanonicalPlan } from "./kernel-plan.js";
 import { createKernelRuntime } from "./kernel-runtime-context.js";
 import { buildKernelAgentWorkOrder } from "./kernel-work-order.js";
 import { taskCreateSpec, makeRunTaskCreateHandler } from "./create.command.js";
+import { compactPlanInput } from "./create-plan-input.testkit.js";
 
 installRunCliIntegrationHarness();
-
-export function compactPlanInput() {
-  return {
-    schema_version: 2,
-    criteria: [
-      {
-        id: "c",
-        description: "The report answers the question",
-        required: true,
-        check_ids: ["review"],
-      },
-    ],
-    checks: [{ id: "review", kind: "semantic", required: true, capability: "review" }],
-    work_items: [
-      {
-        id: "report",
-        objective: "Produce the report",
-        depends_on: [],
-        required_inputs: [],
-        expected_outputs: ["report"],
-        scope_roots: [] as string[],
-        context: { required_sources: [], optional_sources: [], symbol_hints: [], max_bytes: 4096 },
-        risk: "low",
-        capabilities: [],
-        resource_claims: [],
-        optional: false,
-        priority: 0,
-      },
-    ],
-    assumptions: [],
-    unresolved_questions: [],
-  };
-}
 
 function baseline(sha = "a".repeat(40)) {
   return createRepositorySnapshot({
@@ -155,41 +123,41 @@ describe("supplied Plan intake", () => {
       kernelDocumentIssues(aggregate, {
         intent,
         contracts: {},
-        plan_inputs: { [digest]: proposal },
+        plan_inputs: { [String(digest)]: proposal },
       }),
     ).toEqual([]);
     expect(
       kernelDocumentIssues(aggregate, {
         intent,
         contracts: {},
-        plan_inputs: { [digest]: { ...proposal, assumptions: ["altered"] } },
+        plan_inputs: { [String(digest)]: { ...proposal, assumptions: ["altered"] } },
       }),
     ).toContain(`plan_input_identity:${digest}`);
   });
 });
 
-describe("canonical supplied Plan transport", { timeout: 180_000 }, () => {
-  async function setup() {
-    const root = await mkGitRepoRootWithBranch("main");
-    await configureGitUser(root);
-    await writeConfig(root, defaultConfig());
-    await commitAll(root, "seed supplied Plan test");
-    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
-    const parsed = {
-      title: "Produce a report",
-      description: "Answer the supplied question.",
-      owner: "CODER",
-      priority: "med" as const,
-      taskKind: "analysis" as const,
-      mutationScope: "none" as const,
-      tags: ["workflow"],
-      dependsOn: [],
-      verify: [],
-      allowDuplicate: true,
-    };
-    return { root, ctx, parsed };
-  }
+async function setup() {
+  const root = await mkGitRepoRootWithBranch("main");
+  await configureGitUser(root);
+  await writeConfig(root, defaultConfig());
+  await commitAll(root, "seed supplied Plan test");
+  const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+  const parsed = {
+    title: "Produce a report",
+    description: "Answer the supplied question.",
+    owner: "CODER",
+    priority: "med" as const,
+    taskKind: "analysis" as const,
+    mutationScope: "none" as const,
+    tags: ["workflow"],
+    dependsOn: [],
+    verify: [],
+    allowDuplicate: true,
+  };
+  return { root, ctx, parsed };
+}
 
+describe("canonical supplied Plan transport", { timeout: 180_000 }, () => {
   it("retains compact intake as canonical input without inventing approval", async () => {
     const { root, ctx, parsed } = await setup();
     const suppliedPlan = { ...compactPlanInput(), unresolved_questions: ["Which audience?"] };
@@ -273,7 +241,7 @@ describe("canonical supplied Plan transport", { timeout: 180_000 }, () => {
     const result = await setCanonicalPlan(ctx, created.task_id, refined);
     expect(result.record.aggregate.current_plan?.state).toBe("PROPOSED");
     const definition = result.record.aggregate.current_plan!.work_items[0]!;
-    const contract = result.record.documents!.contracts[definition.contract_digest!]!;
+    const contract = result.record.documents!.contracts[String(definition.contract_digest)]!;
     expect(contract.objective).toBe("Produce the refined report");
     expect(contract.plan_input_digest).toBeDefined();
     expect(Object.keys(result.record.documents!.plan_inputs!)).toHaveLength(2);
@@ -330,7 +298,7 @@ describe("canonical supplied Plan transport", { timeout: 180_000 }, () => {
     taskCreateSpec.validateRaw?.(raw);
     const parsed = taskCreateSpec.parse(raw);
     expect(parsed.planFile).toBe("proposal.json");
-    const code = await makeRunTaskCreateHandler(async () => ctx)({ cwd: root }, parsed);
+    const code = await makeRunTaskCreateHandler(() => Promise.resolve(ctx))({ cwd: root }, parsed);
     expect(code).toBe(0);
     const tasks = await ctx.taskBackend.listTasks();
     expect(tasks).toHaveLength(1);

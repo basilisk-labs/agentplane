@@ -46,7 +46,7 @@ export async function createCanonicalTask(
       task,
       intent,
       input,
-      proposal && proposalDigest ? { [proposalDigest]: proposal } : undefined,
+      proposal && proposalDigest ? { [String(proposalDigest)]: proposal } : undefined,
     ),
   );
   const read = await runtime.adapter.read(task.id);

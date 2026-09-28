@@ -33,7 +33,7 @@ export async function setCanonicalPlan(
   command: CommandContext,
   taskId: string,
   value: unknown,
-  options: { scopeExpansionApprovedBy?: string } = {},
+  options: { scopeExpansionApprovedBy?: string; expectedSuppliedInputDigest?: string } = {},
 ) {
   const supplied =
     typeof value === "object" && value !== null && "schema_version" in value
@@ -51,7 +51,7 @@ export async function setCanonicalPlan(
   const current = read.record.aggregate.current_plan;
   const currentContract = current?.work_items[0]?.contract_digest;
   const previousInputDigest = currentContract
-    ? read.record.documents?.contracts[currentContract]?.plan_input_digest
+    ? read.record.documents?.contracts[String(currentContract)]?.plan_input_digest
     : read.record.documents?.intent.plan_input_digest;
   const previousInput = previousInputDigest
     ? read.record.documents?.plan_inputs?.[previousInputDigest]
@@ -60,7 +60,12 @@ export async function setCanonicalPlan(
     ? await prepareSuppliedPlan(command, taskId, supplied, previousInput)
     : undefined;
   const proposal = input ? suppliedKernelProposal(input, read.task) : direct!;
-  const planInputs = input ? { [k.kernelDigest(input)]: input } : undefined;
+  if (
+    options.expectedSuppliedInputDigest !== undefined &&
+    (!input || k.kernelDigest(input) !== options.expectedSuppliedInputDigest)
+  )
+    throw new Error("Supplied Plan observation changed before proposal admission");
+  const planInputs = input ? { [String(k.kernelDigest(input))]: input } : undefined;
   if (
     current &&
     k.kernelDigest(canonicalPlanFromProposal(proposal, current.revision).work_items) ===

@@ -286,6 +286,7 @@ export {
   decideConfirmation,
   dispositionForOutcome,
   recoveryDecisionForFailure,
+  resolvePlanningObligation,
   validateHumanDecisionAnswer,
   type ConfirmationFacts,
   type PlanChangeClassification,
