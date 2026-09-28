@@ -1,5 +1,6 @@
  bun.lock                                           |   6 +-
  docs/releases/planning-0.7.12-handoff.md           |  59 ++++
+ .../planning-0.7.12-integrated-qualification.md    | 138 +++++++++
  docs/releases/v0.7.12-m04.md                       |  87 ++++++
  docs/user/agent-bootstrap.generated.mdx            |   6 +-
  docs/user/cli-reference.generated.mdx              |   1 +
@@ -23,6 +24,8 @@
  .../src/commands/task/create-plan-input.ts         |  81 ++++++
  .../src/commands/task/create-plan-proposal.ts      |  99 +++++++
  .../agentplane/src/commands/task/create.command.ts |  31 ++-
+ .../direct-task-verification.sequence.cases.ts     |  24 ++
+ .../src/commands/task/direct-task-verification.ts  |   2 +
  .../agentplane/src/commands/task/kernel-create.ts  |  17 +-
  .../src/commands/task/kernel-inspection.ts         |  20 +-
  .../src/commands/task/kernel-plan-proposal.ts      |  20 ++
@@ -56,10 +59,13 @@
  packages/core/src/tasks/task-centric/policy.ts     |  55 ++++
  packages/core/src/tasks/task-centric/schema.ts     |  38 +++
  schemas/agent-semantic-result.schema.json          |  12 +
+ .../baselines/v0.7-compatibility-candidate.json    |  29 +-
  scripts/checks/check-agent-onboarding-scenario.mjs |  21 +-
+ .../check-compatibility-contract-baseline.mjs      |  15 +
  scripts/lib/installed-migration-matrix.mjs         |  25 +-
  scripts/lib/installed-planning-matrix.mjs          | 216 +++++++++++++++
- scripts/lib/test-route-registry.mjs                |   7 +
+ scripts/lib/test-route-registry.mjs                |  10 +
+ scripts/lib/test-route-registry.test.mjs           |  41 ++-
  .../release/check-local-tarball-install-smoke.mjs  |  24 +-
  website/static/llms-full.txt                       | 138 +++++++--
- 64 files changed, 3051 insertions(+), 162 deletions(-)
+ 70 files changed, 3295 insertions(+), 170 deletions(-)
