@@ -46,6 +46,31 @@
       "evidence_kind": "merged_commit",
       "reason": "The release-scope validation repair was integrated by PR 5997; this commit is present on the release ancestry.",
       "git_ref": "787f96425a4b382a0322fbe2df893871028ccfad"
+    },
+    {
+      "task_id": "202609211700-JT0KEW",
+      "evidence_kind": "published_tag",
+      "reason": "AgentPlane 0.7.11 is published from this exact tagged commit; the remaining DOING value is a historical projection.",
+      "git_ref": "65b1c24e83576b7daca306e6dc6b7085c522cf58",
+      "tag": "v0.7.11"
+    },
+    {
+      "task_id": "202609230938-QFMVQ0",
+      "evidence_kind": "merged_commit",
+      "reason": "This task was integrated by PR 6010; the exact merge commit is present on the release ancestry.",
+      "git_ref": "940209a800dedc5b27c382a2642dff316b30a8fc"
+    },
+    {
+      "task_id": "202609231941-2A8922",
+      "evidence_kind": "merged_commit",
+      "reason": "This task was integrated by PR 6016; the exact merge commit is present on the release ancestry.",
+      "git_ref": "5ee2da01f9fa34bbdd8386dc8be29a93b2c4fcb2"
+    },
+    {
+      "task_id": "202609232204-B33RAA",
+      "evidence_kind": "merged_commit",
+      "reason": "This task was integrated by PR 6017; the exact merge commit is present on the release ancestry.",
+      "git_ref": "cc0516672e107f63083aa97aa4d8a8509e19d169"
     }
   ]
 }
