@@ -177,3 +177,43 @@ format checks, and `git diff --check` also passed. Packaged mixed-scope
 qualification, fresh hosted CI, and the real independent verdict still require
 successful execution on the repaired source. Controlled test-provider results
 are not substitutes for the real review.
+
+## Current Review and Pre-Merge Recovery
+
+The repaired implementation at `c0b3be603d850883aae69d3117428609ce446761`
+passed all six native branch checks, including install smoke, release-critical
+tests, typecheck, routing validation, doctor, and full local CI. Full CI completed
+in 2,409,222 ms. The actual packaged mixed-scope lifecycle also passed.
+
+The real Codex review transport first produced an invalid evidence reference,
+then timed out. A diagnostic proved that this host rejects Bubblewrap namespace
+setup. No sandbox was disabled and neither failed attempt was accepted as a
+review. Under the explicit operator recovery authorization, all nine frozen
+evidence items were hash-checked and embedded directly in a read-only Codex
+invocation. Its blocked result identified missing current workspace evidence.
+After native evidence commits, both the full Git status and the implementation
+diff outside task artifacts were empty. A second independent invocation received
+that observation and the fresh frozen packet, and returned pass. Native
+`evaluator apply` validated and recorded the unmodified result. Provider JSONL
+and the current workspace observation are preserved in the task evidence.
+
+Pre-merge closure then exposed a separate code defect: fresh verification and
+review passed, but the mutation guard accepted only a review matching the old
+last-WorkItem operational projection. The task's immutable Kernel completion
+remained valid; the subsequent qualified repair had a different implementation
+SHA and review identity. Native execution failed with the legacy-mutation refusal.
+
+The operator reused `202609261720-KKE9ZN` for this bounded closure repair under
+the user's explicit override. The closure path now permits preservation of an
+already completed, digest-valid Kernel with passed final-validation evidence,
+only after the existing current-SHA verification and independent-review gate.
+The original operational-projection shortcut and all Kernel mutation guards
+remain unchanged. The repair does not rewrite historical Kernel evidence.
+
+The regression failed on the old code because `allowCanonicalProjection` was
+false after fresh checks. All 30 related tests pass after the correction.
+Negative cases cover rejected current evidence, non-pre-merge mutations,
+incomplete Kernel state, failed or missing final-validation evidence, and digest
+tampering. The repaired closure source still requires new full native checks,
+independent review, hosted CI, and exact-SHA release qualification. The earlier
+passing results do not certify this later source change or production publication.
