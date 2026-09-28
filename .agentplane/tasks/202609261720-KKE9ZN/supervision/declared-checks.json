@@ -1,0 +1,41 @@
+{
+  "checks": [
+    {
+      "check_ids": [],
+      "command": "bun run test:project core --maxWorkers=1 packages/core/src/tasks/task-centric",
+      "duration_ms": 2431,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:afe07e3855feb1777019f3d1cd8870a535fc83ab335a475ae620a61572db25ec",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project core \"--maxWorkers=1\" packages/core/src/tasks/task-centric\n",
+      "stdout_tail": "\n RUN  v4.1.9 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609261720-KKE9ZN-implement-and-qualify-agentplane-0-7-12-planning\n\n\n Test Files  3 passed (3)\n      Tests  49 passed (49)\n   Start at  22:16:55\n   Duration  1.17s (transform 303ms, setup 104ms, import 455ms, tests 148ms, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [],
+      "command": "bun run typecheck",
+      "duration_ms": 1148,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:afe07e3855feb1777019f3d1cd8870a535fc83ab335a475ae620a61572db25ec",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202609261720-KKE9ZN"
+}

@@ -15,8 +15,8 @@ User authorizes all necessary work to implement and release 0.7.12 without repea
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:5dd197e110bdc7f9da6def8e00d6cb750262e3a84ca44254bf23d29bf3d9141f
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -28,9 +28,24 @@ User authorizes all necessary work to implement and release 0.7.12 without repea
 
 ```text
  bun.lock                                           |   6 +-
- .../tasks/task-centric/planning-obligation.test.ts | 102 +++++++++++++++++++++
- packages/core/src/tasks/task-centric/policy.ts     |  55 +++++++++++
- 3 files changed, 160 insertions(+), 3 deletions(-)
+ .../task-backend/kernel-backend-adapter.ts         |  10 +-
+ .../src/adapters/task-backend/kernel-documents.ts  |  18 ++
+ .../src/commands/task/create-plan-input.test.ts    | 339 +++++++++++++++++++++
+ .../src/commands/task/create-plan-input.ts         |  81 +++++
+ .../src/commands/task/create-plan-proposal.ts      |  69 +++++
+ .../agentplane/src/commands/task/create.command.ts |  25 ++
+ .../agentplane/src/commands/task/kernel-create.ts  |  17 +-
+ .../agentplane/src/commands/task/kernel-plan.ts    |  27 +-
+ .../src/commands/task/kernel-work-order.ts         |  14 +-
+ packages/agentplane/src/commands/task/new.ts       |   3 +-
+ .../src/runner/usecases/kernel-task-lifecycle.ts   |  21 +-
+ packages/core/src/runner/agent-work-order.ts       |   4 +-
+ packages/core/src/tasks/index.ts                   |   2 +
+ packages/core/src/tasks/kernel-semantic.ts         |   7 +-
+ .../tasks/task-centric/planning-obligation.test.ts | 102 +++++++
+ packages/core/src/tasks/task-centric/policy.ts     |  55 ++++
+ packages/core/src/tasks/task-centric/schema.ts     |  38 +++
+ 18 files changed, 821 insertions(+), 17 deletions(-)
 ```
 
 </details>

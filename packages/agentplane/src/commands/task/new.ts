@@ -65,6 +65,7 @@ export type TaskNewParsed = {
   route?: TaskExecutionRouteRequest;
   executionContract?: TaskExecutionContract;
   extensions?: TaskData["extensions"];
+  suppliedPlan?: unknown;
   dependsOn: string[];
   verify: string[];
   taskDocSections?: Partial<Record<"Plan" | "Verify Steps" | "Rollback Plan" | "Findings", string>>;
@@ -416,7 +417,7 @@ export async function runTaskNewParsed(opts: {
         });
       }
 
-      const created = await createCanonicalTask(ctx, task);
+      const created = await createCanonicalTask(ctx, task, p.suppliedPlan);
       if (opts.printTaskId !== false) process.stdout.write(`${created.task_id}\n`);
       return {
         task_id: created.task_id,

@@ -6,6 +6,8 @@ import {
 import type { CommandContext } from "../shared/task-backend.js";
 import { createKernelRuntime, requireKernelCommit } from "./kernel-runtime-context.js";
 import { assertCanonicalPlanWithinExecutionContract } from "./kernel-plan-authority.js";
+import { parseSuppliedPlanInput, prepareSuppliedPlan } from "./create-plan-input.js";
+import { suppliedKernelProposal } from "./create-plan-proposal.js";
 
 export function canonicalPlanFromProposal(
   proposal: KernelPlanProposal,
@@ -33,16 +35,32 @@ export async function setCanonicalPlan(
   value: unknown,
   options: { scopeExpansionApprovedBy?: string } = {},
 ) {
-  const proposal = kernelPlanProposalSchema.parse(value);
+  const supplied =
+    typeof value === "object" && value !== null && "schema_version" in value
+      ? parseSuppliedPlanInput(value)
+      : undefined;
+  const direct = supplied ? undefined : kernelPlanProposalSchema.parse(value);
   const runtime = await createKernelRuntime({
     command,
     task_id: taskId,
     transport: "manual",
-    operation_id: `amend:${k.kernelDigest(proposal)}`,
+    operation_id: `amend:${k.kernelDigest(supplied ?? direct)}`,
   });
   const read = await runtime.adapter.read(taskId);
   if (read.kind !== "canonical") throw new Error(`Explicit migration required: ${read.kind}`);
   const current = read.record.aggregate.current_plan;
+  const currentContract = current?.work_items[0]?.contract_digest;
+  const previousInputDigest = currentContract
+    ? read.record.documents?.contracts[currentContract]?.plan_input_digest
+    : read.record.documents?.intent.plan_input_digest;
+  const previousInput = previousInputDigest
+    ? read.record.documents?.plan_inputs?.[previousInputDigest]
+    : undefined;
+  const input = supplied
+    ? await prepareSuppliedPlan(command, taskId, supplied, previousInput)
+    : undefined;
+  const proposal = input ? suppliedKernelProposal(input, read.task) : direct!;
+  const planInputs = input ? { [k.kernelDigest(input)]: input } : undefined;
   if (
     current &&
     k.kernelDigest(canonicalPlanFromProposal(proposal, current.revision).work_items) ===
@@ -61,6 +79,7 @@ export async function setCanonicalPlan(
       await runtime.lifecycle.apply(
         await runtime.input({ kind: "propose_plan", plan }, `plan:${plan.digest}`, true),
         contracts,
+        planInputs,
       ),
     );
   }
@@ -110,7 +129,9 @@ export async function setCanonicalPlan(
       actor: { ...amendmentInput.actor, id: approval.actor_id, kind: "USER" },
     };
   }
-  requireKernelCommit(await amendmentRuntime.lifecycle.apply(amendmentInput, contracts));
+  requireKernelCommit(
+    await amendmentRuntime.lifecycle.apply(amendmentInput, contracts, planInputs),
+  );
   // M1 compares all authority dimensions before native continuation binds the refined plan.
   return requireKernelCommit(await amendmentRuntime.authority.continue(taskId));
 }

@@ -254,3 +254,41 @@ export function normalizeCompactTaskPlanProposal(
     top_level_validation: topLevel,
   });
 }
+
+export const TASK_PLAN_PROPOSAL_INPUT_ZOD_SCHEMA = z.union([
+  TASK_PLAN_PROPOSAL_ZOD_SCHEMA,
+  COMPACT_TASK_PLAN_PROPOSAL_ZOD_SCHEMA,
+]);
+
+/** Only native intake may rebind a supplied full proposal to a newly observed task baseline. */
+export function normalizeTaskPlanProposal(
+  value: unknown,
+  context: { task_id: string; planning_baseline: RepositorySnapshot; rebind?: boolean },
+): ParsedTaskPlanProposal {
+  const input = TASK_PLAN_PROPOSAL_INPUT_ZOD_SCHEMA.parse(value);
+  if (input.schema_version === 2) return normalizeCompactTaskPlanProposal(input, context);
+  if (!context.rebind) {
+    if (input.task_id !== context.task_id)
+      throw new Error("task_id does not match the current task");
+    if (input.planning_baseline.digest !== context.planning_baseline.digest)
+      throw new Error("planning_baseline does not match the issued repository observation");
+    return input;
+  }
+  const validation = (plan: ParsedTaskPlanProposal["top_level_validation"]) => ({
+    ...plan,
+    evidence_fingerprint: context.planning_baseline.digest,
+  });
+  return parseTaskPlanProposal({
+    ...input,
+    task_id: context.task_id,
+    planning_baseline: context.planning_baseline,
+    work_items: {
+      ...input.work_items,
+      work_items: input.work_items.work_items.map((item) => ({
+        ...item,
+        validation: validation(item.validation),
+      })),
+    },
+    top_level_validation: validation(input.top_level_validation),
+  });
+}

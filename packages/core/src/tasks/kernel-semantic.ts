@@ -11,12 +11,17 @@ const root = text.refine(
       !value.split("/").some((part) => part === ".." || part === "." || !part)),
 );
 
-export const kernelIntentSchema = z.strictObject({ objective: text, context: text });
+export const kernelIntentSchema = z.strictObject({
+  objective: text,
+  context: text,
+  plan_input_digest: digest.optional(),
+});
 export const kernelWorkContractSchema = z.strictObject({
   objective: text,
   acceptance_criteria: z.array(text).min(1),
   verification_commands: z.array(text),
   role: z.enum(["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]),
+  plan_input_digest: digest.optional(),
 });
 const kernelExecutionRequirementsSchema = z.strictObject({
   scope_roots: z.array(root),
