@@ -295,6 +295,13 @@ const BACKEND_CRITICAL_FILES = [
 ];
 
 const RELEASE_CRITICAL_FILES = [
+  "packages/agentplane/src/commands/task/create-plan-input.test.ts",
+  "packages/agentplane/src/commands/task/kernel-plan-supplied-approval.test.ts",
+  "packages/agentplane/src/commands/task/kernel-planning-view.test.ts",
+  "packages/agentplane/src/commands/task/kernel-planning-recovery.test.ts",
+  "packages/agentplane/src/commands/task/run-supplied-plan.test.ts",
+  "packages/agentplane/src/commands/task/run-required-planner.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.task-advance.roadmap-supplied-plan.test.ts",
   "packages/agentplane/src/cli/release-recovery-script.test.ts",
   "packages/agentplane/src/cli/release-smoke.test.ts",
   "packages/agentplane/src/cli/cli-smoke.test.ts",

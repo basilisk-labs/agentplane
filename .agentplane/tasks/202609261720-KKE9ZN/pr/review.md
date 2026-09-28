@@ -32,6 +32,7 @@ Created: 2026-09-27T19:16:20.496Z
  bun.lock                                           |   6 +-
  .../task-backend/kernel-backend-adapter.ts         |  10 +-
  .../src/adapters/task-backend/kernel-documents.ts  |  18 ++
+ packages/agentplane/src/cli/cli-smoke.test.ts      |   4 +-
  .../src/cli/run-cli.core.kernel-transport.test.ts  |   9 +-
  ...core.task-advance.roadmap-supplied-plan.test.ts |  82 ++++++
  ...i.core.task-advance.worktree-resolution.test.ts |  27 +-
@@ -78,7 +79,11 @@ Created: 2026-09-27T19:16:20.496Z
  packages/core/src/tasks/task-centric/policy.ts     |  55 ++++
  packages/core/src/tasks/task-centric/schema.ts     |  38 +++
  schemas/agent-semantic-result.schema.json          |  12 +
- 49 files changed, 2395 insertions(+), 69 deletions(-)
+ scripts/lib/installed-migration-matrix.mjs         |  25 +-
+ scripts/lib/installed-planning-matrix.mjs          | 216 +++++++++++++++
+ scripts/lib/test-route-registry.mjs                |   7 +
+ .../release/check-local-tarball-install-smoke.mjs  |  24 +-
+ 54 files changed, 2647 insertions(+), 93 deletions(-)
 ```
 
 </details>

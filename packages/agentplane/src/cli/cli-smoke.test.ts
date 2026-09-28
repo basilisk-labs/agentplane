@@ -111,11 +111,11 @@ describe("agentplane CLI smoke", () => {
         "set",
         taskId,
         "--text",
-        "1) Smoke plan: proceed with start/verify/finish and basic recipe/work checks.\n",
+        "1) Smoke plan: proceed with start/verify/finish and basic recipe/work checks.",
         "--updated-by",
         "ORCHESTRATOR",
       ]);
-      expect(planSet.code).toBe(0);
+      expect(planSet.code, `${planSet.stdout}\n${planSet.stderr}`).toBe(0);
 
       const planApprove = await runCliWithOutput(root, [
         "task",

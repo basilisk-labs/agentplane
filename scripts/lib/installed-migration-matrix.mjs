@@ -234,6 +234,16 @@ function initializeInstalledProject(agentplane, root, workflowMode) {
 
 function createApprovedTask(agentplane, root, workflowMode) {
   const taskId = workflowMode === "direct" ? "202609170002-MD01" : "202609170002-MB01";
+  const planPath = path.join(path.dirname(root), `${taskId}-plan.md`);
+  const verifyPath = path.join(path.dirname(root), `${taskId}-verify.md`);
+  writeFileSync(
+    planPath,
+    "1. Preserve active task truth\n2. Exercise installed migration commands\n",
+  );
+  writeFileSync(
+    verifyPath,
+    "1. Check that migrated task records retain valid identity, owner, status, plan approval, and verification fields.\n2. Check that the installed migration fixture reports no diagnostic errors.\n",
+  );
   run(
     agentplane,
     [
@@ -255,16 +265,7 @@ function createApprovedTask(agentplane, root, workflowMode) {
   );
   run(
     agentplane,
-    [
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "1. Preserve active task truth\n2. Exercise installed migration commands",
-      "--updated-by",
-      "ORCHESTRATOR",
-    ],
+    ["task", "plan", "set", taskId, "--file", planPath, "--updated-by", "ORCHESTRATOR"],
     { cwd: root },
   );
   run(
@@ -276,8 +277,8 @@ function createApprovedTask(agentplane, root, workflowMode) {
       taskId,
       "--section",
       "Verify Steps",
-      "--text",
-      "1. Check that migrated task records retain valid identity, owner, status, plan approval, and verification fields.\n2. Check that the installed migration fixture reports no diagnostic errors.",
+      "--file",
+      verifyPath,
       "--updated-by",
       "ORCHESTRATOR",
     ],
