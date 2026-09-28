@@ -1,6 +1,7 @@
 import { saveConfig, setByDottedKey, loadConfig } from "@agentplaneorg/core/config";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { isScalar, parseDocument } from "yaml";
 
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
@@ -121,28 +122,47 @@ export async function replaceAcrExampleVersionInFile(
   acrPath: string,
   nextVersion: string,
 ): Promise<void> {
-  const raw = JSON.parse(await readFile(acrPath, "utf8")) as {
+  const text = await readFile(acrPath, "utf8");
+  const raw = JSON.parse(text) as {
     producer?: { version?: unknown };
     agent?: { toolchain?: { name?: unknown; version?: unknown }[] };
   };
-  raw.producer = raw.producer ?? {};
-  raw.producer.version = nextVersion;
   const toolchain = Array.isArray(raw.agent?.toolchain) ? raw.agent.toolchain : [];
-  let updatedToolchain = false;
-  for (const tool of toolchain) {
+  const versionPaths: (string | number)[][] = [["producer", "version"]];
+  for (const [index, tool] of toolchain.entries()) {
     if (tool.name === "agentplane") {
-      tool.version = nextVersion;
-      updatedToolchain = true;
+      versionPaths.push(["agent", "toolchain", index, "version"]);
     }
   }
-  if (!updatedToolchain) {
+  if (versionPaths.length === 1) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
       message: `Failed to update agentplane toolchain version in ${acrPath}.`,
     });
   }
-  await writeFile(acrPath, `${JSON.stringify(raw, null, 2)}\n`, "utf8");
+  // JSON is validated above. Parsed scalar ranges preserve unrelated formatting byte for byte.
+  const document = parseDocument(text, { schema: "json" });
+  const ranges = versionPaths.map((keys) => {
+    const node = document.getIn(keys, true);
+    if (
+      document.errors.length > 0 ||
+      !isScalar(node) ||
+      typeof node.value !== "string" ||
+      !node.range
+    ) {
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: `Failed to locate an unambiguous ACR version at ${keys.join(".")} in ${acrPath}.`,
+      });
+    }
+    return node.range;
+  });
+  let replaced = text;
+  for (const [start, end] of ranges.toSorted((a, b) => b[0] - a[0])) {
+    replaced = replaced.slice(0, start) + JSON.stringify(nextVersion) + replaced.slice(end);
+  }
+  if (replaced !== text) await writeFile(acrPath, replaced, "utf8");
 }
 
 export async function packageDependencyExists(
