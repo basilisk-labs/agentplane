@@ -748,11 +748,18 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
       "ANCHOR_LOCK_MISMATCH",
     );
 
-    const incoherentRelease = Buffer.from(
-      driverLock
-        .toString("utf8")
-        .replace('"@agentplaneorg/core": "0.7.11"', '"@agentplaneorg/core": "0.7.10"'),
+    const { parseReplayJsonc } = await importModule<{
+      parseReplayJsonc: (input: string) => {
+        workspaces: Record<string, { version: string; dependencies: Record<string, string> }>;
+      };
+    }>("scripts/bench/internal/agent-efficiency-dependency-manifest.mjs");
+    const incoherentLock = parseReplayJsonc(driverLock.toString("utf8"));
+    const dependencies = incoherentLock.workspaces["packages/agentplane"].dependencies;
+    expect(dependencies["@agentplaneorg/core"]).toBe(
+      incoherentLock.workspaces["packages/core"].version,
     );
+    dependencies["@agentplaneorg/core"] = "0.0.0-incoherent";
+    const incoherentRelease = Buffer.from(JSON.stringify(incoherentLock));
     expect(() => anchorRuntime.assertAnchorLockCompatible(subjectLock, incoherentRelease)).toThrow(
       "ANCHOR_LOCK_MISMATCH",
     );
