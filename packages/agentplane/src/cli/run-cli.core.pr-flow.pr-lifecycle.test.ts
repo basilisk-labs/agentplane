@@ -396,6 +396,12 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
       ioTask.restore();
     }
 
+    await materializeLegacyDrainIdentityFixture({
+      root,
+      task_id: taskId,
+      adopt_canonical_as_legacy: true,
+      ownership_only: true,
+    });
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     await execFileAsync("git", ["checkout", "-b", `task/${taskId}/task-artifacts-only`], {
       cwd: root,
@@ -416,7 +422,8 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
     const before = JSON.parse(await readFile(metaPath, "utf8")) as { head_sha?: string | null };
     expect(before.head_sha).toBeUndefined();
 
-    await runCliSilent([
+    const findingsIo = captureStdIO();
+    const findingsCode = await runCli([
       "task",
       "doc",
       "set",
@@ -424,10 +431,12 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
       "--section",
       "Findings",
       "--text",
-      "- Command: manual task artifact commit\n- Result: pending\n- Evidence: task-local note only\n- Scope: task README and task registry only",
+      "- Command: manual task artifact commit\\n- Result: pending\\n- Evidence: task-local note only\\n- Scope: task README and task registry only",
       "--root",
       root,
     ]);
+    findingsIo.restore();
+    expect(findingsCode, findingsIo.stderr).toBe(0);
 
     const io = captureStdIO();
     try {

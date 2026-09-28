@@ -119,8 +119,7 @@ async function createTask(binPath: string, root: string, title: string): Promise
     binPath,
     [
       "task",
-      "new",
-      "--title",
+      "create",
       title,
       "--description",
       "Installed runtime smoke task",
@@ -130,14 +129,23 @@ async function createTask(binPath: string, root: string, title: string): Promise
       "CODER",
       "--tag",
       "code",
+      "--task-kind",
+      "code",
+      "--mutation-scope",
+      "code",
+      "--scope-root",
+      "README.md",
+      "--resource",
+      "installed-runtime-smoke",
       "--verify",
       "node --version",
+      "--json",
       "--root",
       root,
     ],
     root,
   );
-  return result.stdout.trim();
+  return (JSON.parse(result.stdout) as { task_id: string }).task_id;
 }
 
 async function approveCanonicalPlan(binPath: string, root: string, taskId: string): Promise<void> {
@@ -149,11 +157,11 @@ async function approveCanonicalPlan(binPath: string, root: string, taskId: strin
         required_inputs: [],
         expected_outputs: ["installed-runtime-smoke"],
         execution_requirements: {
-          scope_roots: ["."],
+          scope_roots: ["README.md"],
           repository_effects: ["source_code"],
           external_effects: [],
           capabilities: ["repository_write"],
-          resources: [taskId],
+          resources: ["installed-runtime-smoke"],
         },
         optional: false,
         contract: {
@@ -203,7 +211,6 @@ describe("installed AgentPlane smoke", { timeout: INSTALLED_SMOKE_TIMEOUT_MS }, 
       cwd: root,
       env: cleanGitEnv(),
     });
-
     await expectInstalledOk(
       binPath,
       [
