@@ -130,6 +130,34 @@ export function assertRunnerPolicyCompatibility(bundle: RunnerContextBundle): vo
   if (profile?.writes_artifacts_to && profile.writes_artifacts_to.length > 0) {
     normalizeRecipeArtifactPrefixes(profile.writes_artifacts_to);
   }
+  if (bundle.work_order?.canonical_binding?.phase === "planning") {
+    const output = capabilities?.phase_tools?.report_result;
+    const readOnly =
+      sandboxPolicy.requested === "read-only" &&
+      bundle.work_order.authority.mutation_scope === "none" &&
+      bundle.work_order.authority.writable_roots.length === 0 &&
+      isEnforcedCapabilityLevel(sandboxCapability?.level) &&
+      sandboxCapability?.supported_values?.includes("read-only") === true;
+    const typedOutput =
+      output?.availability === "available" &&
+      (output.enforcement === "adapter" || output.enforcement === "supervisor") &&
+      (output.transport === "terminal_result" || output.transport === "run_scoped_command");
+    if (!readOnly || !typedOutput) {
+      throw new CliError({
+        exitCode: exitCodeForError("E_RUNTIME"),
+        code: "E_RUNTIME",
+        message:
+          `Runner adapter ${JSON.stringify(adapterId)} cannot enforce the required read-only ` +
+          "planning and typed output contract before launch. Use a capable managed adapter or external task advance.",
+        context: {
+          reason_code: "planner_adapter_capability_missing",
+          adapter_id: adapterId,
+          read_only_capability: readOnly,
+          typed_output_capability: typedOutput,
+        },
+      });
+    }
+  }
 }
 
 async function canonicalPath(value: string): Promise<string> {
