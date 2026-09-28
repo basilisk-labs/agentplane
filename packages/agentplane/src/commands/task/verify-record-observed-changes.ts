@@ -15,6 +15,7 @@ import {
   type TaskVerificationObservation,
 } from "@agentplaneorg/core/tasks";
 import { reconcileTaskExecutionContract } from "../../runtime/task-routing/index.js";
+import type { TaskData } from "../../backends/task-backend.js";
 
 function hasFrozenDirectExecutionBase(extensions: unknown, executionBaseSha: string): boolean {
   if (!isRecord(extensions)) return false;
@@ -30,19 +31,15 @@ function hasFrozenDirectExecutionBase(extensions: unknown, executionBaseSha: str
 export async function resolveObservedVerificationChangedPaths(opts: {
   ctx: CommandContext;
   evaluatedSha: string | null;
-  taskId: string;
+  task: TaskData;
   artifactTaskIds: readonly string[];
   execution: TaskExecutionContext;
 }): Promise<string[]> {
   if (!opts.evaluatedSha) return [];
   const { config, resolvedProject } = opts.ctx;
-  const task =
-    opts.execution.selected_mode === "direct"
-      ? await opts.ctx.taskBackend.getTask(opts.taskId)
-      : null;
   const baseRef =
     opts.execution.selected_mode === "branch_pr" ||
-    hasFrozenDirectExecutionBase(task?.extensions, opts.execution.base_sha)
+    hasFrozenDirectExecutionBase(opts.task.extensions, opts.execution.base_sha)
       ? opts.execution.base_sha
       : null;
   // Use a frozen execution boundary when it is persisted; legacy direct tasks retain parent fallback.
@@ -73,13 +70,9 @@ export async function resolveObservedVerificationRepositoryEffects(
 ): Promise<TaskRepositoryEffect[]> {
   if (!opts.evaluatedSha) return [];
   const evaluatedSha = opts.evaluatedSha;
-  const task =
-    opts.execution.selected_mode === "direct"
-      ? await opts.ctx.taskBackend.getTask(opts.taskId)
-      : null;
   const baseRef =
     opts.execution.selected_mode === "branch_pr" ||
-    hasFrozenDirectExecutionBase(task?.extensions, opts.execution.base_sha)
+    hasFrozenDirectExecutionBase(opts.task.extensions, opts.execution.base_sha)
       ? opts.execution.base_sha
       : null;
   const diffBaseSha = await resolveEvaluatorDiffBase({
@@ -140,6 +133,7 @@ export async function resolveInheritedVerificationPaths(
   return opts.changed_paths.filter((file) => !owned.has(file));
 }
 
+/** Observe paths and effects against the same task snapshot used by the guarded mutation. */
 export async function resolveObservedVerificationChangeSet(
   opts: Parameters<typeof resolveObservedVerificationChangedPaths>[0] & {
     snapshot?: {

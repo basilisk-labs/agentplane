@@ -245,3 +245,38 @@ The c950ef9 native branch-check run was intentionally terminated before full CI
 so this additional repair could be included. Its interruption is not a passing
 verification result. The final source still requires a complete native check
 run, independent review, hosted CI, and stable release qualification.
+
+## Hosted Concurrent Verification Repair
+
+The source at `300d2399b1bd6b392e6ec61cb5922b3a88bd4ac3` passed all six
+native local checks, including full CI, and a real independent review. Native
+pre-merge closure succeeded. PR 6029 was then updated from protected `main`
+through GitHub's exact-head update-branch operation and reconciled locally by
+fast-forward. The earlier hosted run was cancelled as superseded, not accepted
+as passing evidence.
+
+Core CI run `36464866219`, at `73d84fd18bcc67cfa2762b87bf05ce63ed7d92f0`,
+passed runtime, Windows, security, contract, static, and real end-to-end checks.
+Its fast test gate failed one concurrent-verification test: 6004 tests passed,
+one failed, and one was skipped. Integration stopped without merging.
+
+Temporary local diagnostics reproduced the same failure in four of twenty
+concurrent runs. The observed-path and repository-effect helpers reread the
+Task README after the verification transaction had already captured its task.
+A concurrent verification could change the directory during that redundant
+contained read. The unchanged fail-closed reader correctly rejected it.
+
+Under the user's explicit operator-recovery authorization, KKE9ZN carries the
+bounded repair. Both helpers now require the caller's task snapshot. Verification
+passes its current transactional task, and external implementation recovery
+passes its existing task snapshot. The frozen direct execution base therefore
+comes from one observation for both paths and effects. No filesystem security
+checks, revision guards, or durable-result assertions are weakened.
+
+A deterministic regression rejects all backend rereads and checks the complete
+two-commit direct range and its repository effects. It failed before the fix.
+After the fix, all 46 tests passed in the diagnostic run, including twenty
+concurrent repetitions and sixteen durability cases. Temporary instrumentation
+was removed. This later source change still requires fresh full checks,
+independent review, and hosted qualification before publication. M04 remains
+NOT ESTABLISHED.

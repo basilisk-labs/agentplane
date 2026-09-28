@@ -30,7 +30,7 @@ User authorizes all necessary work to implement and release 0.7.12 without repea
  bun.lock                                           |   6 +-
  docs/developer/incident-archive.mdx                |  10 +
  docs/releases/planning-0.7.12-handoff.md           |  59 ++++
- .../planning-0.7.12-integrated-qualification.md    | 247 +++++++++++++++++
+ .../planning-0.7.12-integrated-qualification.md    | 282 +++++++++++++++++++
  docs/releases/v0.7.12-m04.md                       |  87 ++++++
  docs/user/agent-bootstrap.generated.mdx            |   6 +-
  docs/user/cli-reference.generated.mdx              |   1 +
@@ -63,6 +63,7 @@ User authorizes all necessary work to implement and release 0.7.12 without repea
  .../agentplane/src/commands/task/create.command.ts |  31 ++-
  .../direct-task-verification.sequence.cases.ts     |  24 ++
  .../src/commands/task/direct-task-verification.ts  |   2 +
+ .../task/external-agent-implementation-recovery.ts |   2 +-
  .../agentplane/src/commands/task/finish-execute.ts |  12 +-
  .../task/finish.canonical-closure.unit.test.ts     | 170 ++++++++++++
  .../agentplane/src/commands/task/kernel-create.ts  |  17 +-
@@ -91,6 +92,9 @@ User authorizes all necessary work to implement and release 0.7.12 without repea
  packages/agentplane/src/commands/task/show.ts      |   2 +
  .../agentplane/src/commands/task/status.command.ts |   2 +-
  .../commands/task/task-centric-external-result.ts  |   2 +-
+ .../src/commands/task/verify-record-execute.ts     |   2 +-
+ .../task/verify-record-observed-changes.ts         |  16 +-
+ .../task/verify-record.durability.unit.test.ts     |  41 ++-
  .../src/runner/usecases/kernel-task-lifecycle.ts   |  21 +-
  .../src/runner/usecases/task-run-authority.ts      |  28 ++
  packages/core/src/runner/agent-work-order.ts       |   4 +-
@@ -110,7 +114,7 @@ User authorizes all necessary work to implement and release 0.7.12 without repea
  .../check-packaged-mixed-scope-lifecycle.mjs       |   4 +
  .../release/check-local-tarball-install-smoke.mjs  |  24 +-
  website/static/llms-full.txt                       | 138 +++++++--
- 83 files changed, 3977 insertions(+), 341 deletions(-)
+ 87 files changed, 4047 insertions(+), 367 deletions(-)
 ```
 
 </details>
