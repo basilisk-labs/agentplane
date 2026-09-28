@@ -50,6 +50,7 @@ Created: 2026-09-27T19:16:20.496Z
  .../src/commands/task/kernel-plan-proposal.ts      |  20 ++
  .../task/kernel-plan-supplied-approval.test.ts     | 189 +++++++++++++
  .../agentplane/src/commands/task/kernel-plan.ts    |  61 ++--
+ .../commands/task/kernel-planning-recovery.test.ts | 125 +++++++++
  .../src/commands/task/kernel-planning-view.test.ts | 234 ++++++++++++++++
  .../src/commands/task/kernel-planning-view.ts      | 197 +++++++++++++
  .../agentplane/src/commands/task/kernel-read.ts    |  20 +-
@@ -77,7 +78,7 @@ Created: 2026-09-27T19:16:20.496Z
  packages/core/src/tasks/task-centric/policy.ts     |  55 ++++
  packages/core/src/tasks/task-centric/schema.ts     |  38 +++
  schemas/agent-semantic-result.schema.json          |  12 +
- 48 files changed, 2270 insertions(+), 69 deletions(-)
+ 49 files changed, 2395 insertions(+), 69 deletions(-)
 ```
 
 </details>
