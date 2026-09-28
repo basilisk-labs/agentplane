@@ -73,6 +73,59 @@ tests, assertion criteria, and per-test deadlines remain unchanged.
 `NODE_OPTIONS=--max-old-space-size=4096 bun run lint:core` subsequently
 passed with exit code 0.
 
+The subsequent native full-CI attempt passed runtime, docs/schema, and CLI
+groups, but the core group exhausted its 15-minute combined lint/test budget.
+The native exchange is
+`cc1a45e79d7167bf76f65406daedfd684ee65f79c724068dc529791d1f4901a7`.
+This is an incomplete test run, not a passed suite or a reported assertion
+failure. The operator selected
+`AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS=2700000` for this host.
+The individual 60-second test and hook deadlines remain unchanged.
+
+With that group budget, native full CI passed all four primary groups on
+`84e9cf84c96abe8c86abc21073aa848f8a67c2fd`. The core group completed in
+1,875,584 ms. The later docs-site build failed on two M04 report links to
+roadmap sources outside the Docusaurus docs plugin. This attempt is retained in
+exchange
+`4ec1946b0b9725fb4e8a262a23c069d3fffb65caaae86c63052cc07500be4d26`.
+
+The operator replaced those links with GitHub source URLs pinned to the
+report's existing candidate commit. Both target blobs were verified with
+`git cat-file`. The source hashes, measurement disposition, and all measurement
+claims remain unchanged. The original accepted PL-11 output remains available
+in its immutable implementation commit; this is a publication-link correction,
+not a new measurement result. Broken-link enforcement remains enabled.
+
+After the link correction, `bun run docs:site:check` passed, including the
+production Docusaurus build and design check. A supplemental
+`bun run ci:contract` also passed before the following timeout repair.
+
+## Prepublish Deadline Repair
+
+The operator found that native `release:prepublish` still inherited the
+ordinary 30-minute check deadline. The 0.7.8 preparation record already
+documents a successful 39-minute prepublish run. The current command includes
+contract checks, builds, 815 release-base test files, coverage, and release
+smoke checks. This is a deadline regression risk, not an observed 0.7.12
+prepublish failure.
+
+Under the same user-authorized release repair override, the operator assigned
+`release:prepublish` a bounded 150-minute default. Explicit task check limits
+retain priority. Other commands and individual test/group limits are unchanged.
+The regression test failed on the old implementation: it observed 1,800,000 ms
+instead of the release-specific 9,000,000 ms. The test also covers an explicit
+1,000 ms limit and the unchanged 30-minute `release:prepublish:fast` default.
+
+The corrected verification suite passed all 32 tests. Focused ESLint and root
+typecheck passed. The operator also ran the remaining full-CI steps:
+`workflows:lint` passed, all 98 platform-critical tests passed, and all 101
+guard coverage tests passed. `coverage:significant` passed its contract check
+for 17 source targets. These supplemental results do not replace a complete
+native final validation or hosted integration evidence.
+
+The operator repair commit bypasses local lifecycle hooks under the explicit
+user override. Native final validation remains required before integration.
+
 ## Compatibility Verification
 
 - `bun run bench:compatibility:candidate:check`: pass; candidate is current.
