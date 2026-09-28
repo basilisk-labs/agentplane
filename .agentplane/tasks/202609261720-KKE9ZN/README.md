@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 141
+revision: 142
 origin:
   system: "manual"
 depends_on: []
@@ -56,19 +56,21 @@ quality_review:
   findings:
     - "Planning reuse retains approval, independent evaluation, provenance, and stale-result rejection. Concurrent verification now uses one task snapshot. Explicit stale-state recovery preserves completed operations and rejects effect-in-doubt recovery. Positive and negative regressions cover these repairs, and current SHA-bound checks passed. The supplied Git observation resolves the workspace-evidence gap. M04 remains NOT ESTABLISHED; hosted integration and publication retain separate gates."
 token_usage:
-  agent_runs: 3
-  input_tokens: 187198
-  journal_digest: "sha256:0fcba41b6b8fed950b26b98eaa8e32676d0919ca5ff6ded4c91465aeefc755f8"
-  observed_agent_runs: 2
+  agent_runs: 4
+  cached_input_observed_agent_runs: 3
+  cached_input_tokens: 193024
+  input_tokens: 279727
+  journal_digest: "sha256:4ae848069cab36d8697bc0240284c745ff94ca60cbafcb4efc4e7cd3af9c385c"
+  observed_agent_runs: 3
   observed_by: "agentplane"
   output_tokens: null
   reasoning_tokens: null
   schema_version: 1
   source: "supervisor_journal"
   state: "partial"
-  total_tokens: 188026
+  total_tokens: 280980
   unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
-  updated_at: "2026-09-28T18:13:51.509Z"
+  updated_at: "2026-09-28T19:43:51.153Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -697,9 +699,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "d7c8b967ef22711f657af96128ce975dd15083b9"
-  message: "📝 KKE9ZN task: preserve final repair independent review"
+  hash: "f8164096c616cd15f75b667bd0d7438623c5ecbd"
+  message: "📝 KKE9ZN task: preserve verification repair independent review"
 comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -736,8 +741,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-28T19:43:51.153Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "f8164096c616cd15f75b667bd0d7438623c5ecbd"
 doc_version: 3
-doc_updated_at: "2026-09-28T19:41:07.802Z"
+doc_updated_at: "2026-09-28T19:43:51.188Z"
 doc_updated_by: "CODER"
 description: "User authorizes all necessary work to implement and release 0.7.12 without repeated permission requests. Use agentplane-roadmap-r2/tasks/PL-01.md through PL-12.md and EXECUTION-CHARTER.md as the scope contract. Inspect current main and accepted LC-24 evidence, preserve one Kernel and coordinator, reuse compact Plan proposal normalization, retain approval and EVALUATOR floors, implement managed and external planning reuse and recovery, run installed-package and release-critical qualification, record M04 measurement with honest unknown accounting, and document observed behavior. Use sequential independently verifiable WorkItems. Include bootstrap lockfile workspace version reconciliation. Release publication follows exact-SHA release checks in a subsequent release task. Do not implement 0.7.13 or 0.7.14."
 sections:
@@ -2077,8 +2090,8 @@ extensions:
     verification_evidence_digest: "sha256:af250e817176eaa3f1753d88f7bb122968093b5e6b09d06473b7ae5305bde1ce"
     work_order_id: "sha256:f717a432def6d5d618bc2d685e74370af3f46c914923d23b8cf8c2e14affc86e"
   implementation_commit:
-    hash: "300d2399b1bd6b392e6ec61cb5922b3a88bd4ac3"
-    message: "🚧 KKE9ZN fix: preserve recovered supervisor cursor readback"
+    hash: "6b5310b1550f3628c3081103e10bccdf498068d9"
+    message: "🐛 KKE9ZN supervisor: resume completed stale verification journal"
   task_execution_context:
     base_ref: "main"
     base_sha: "d07c03509049e4ca1e06ce0d5873e7e50ca39b38"
@@ -9290,12 +9303,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `partial`
-- Completeness: `2/3` agent runs
-- Input tokens: `187198`
+- Completeness: `3/4` agent runs
+- Input tokens: `279727`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
-- Total tokens: `188026`
+- Total tokens: `280980`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:0fcba41b6b8fed950b26b98eaa8e32676d0919ca5ff6ded4c91465aeefc755f8`
+- Journal digest: `sha256:4ae848069cab36d8697bc0240284c745ff94ca60cbafcb4efc4e7cd3af9c385c`
 - Unavailable reason: `some_agent_runs_lack_provider_token_telemetry`
-- Updated at: `2026-09-28T18:13:51.509Z`
+- Updated at: `2026-09-28T19:43:51.153Z`
