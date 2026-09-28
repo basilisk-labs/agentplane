@@ -58,6 +58,21 @@ files. `bun run vitest:projects:check` passes with 823 tests and 10 primary
 routes. `node scripts/checks/run-local-ci.mjs --mode full --explain` also
 passes after the repair.
 
+The next native attempt on `8784d01ec` completed the declared implementation,
+package, replay, and documentation checks. Its full CI run failed because
+ESLint exhausted the Node heap near 2 GiB and received `SIGABRT`. Runtime,
+docs/schema, and CLI CI groups passed. The native failure is preserved in
+exchange
+`2f4496d9d041d1c2b5cade5b028e12a67150fa3816423ea00e50ddfde863e28d`.
+
+The operator increased the local Node heap ceiling to 4 GiB with
+`NODE_OPTIONS=--max-old-space-size=4096` and selected two fast-test workers
+with `AGENTPLANE_FAST_VITEST_MAX_WORKERS=2` for this two-CPU host. These are
+local execution settings, not repository defaults or exemptions. All selected
+tests, assertion criteria, and per-test deadlines remain unchanged.
+`NODE_OPTIONS=--max-old-space-size=4096 bun run lint:core` subsequently
+passed with exit code 0.
+
 ## Compatibility Verification
 
 - `bun run bench:compatibility:candidate:check`: pass; candidate is current.
