@@ -4,7 +4,7 @@ title: "Implement and qualify AgentPlane 0.7.12 planning reuse for PL-01 through
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 137
+revision: 138
 origin:
   system: "manual"
 depends_on: []
@@ -31,29 +31,29 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-28T16:11:22.458Z"
+  updated_at: "2026-09-28T18:12:05.732Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "c0b3be603d850883aae69d3117428609ce446761"
-  review_identity_digest: "sha256:f65297f265dcd86c8eb8d63007c95a22b1a533e82be6d182828a1cef22247e10"
+  evaluated_sha: "300d2399b1bd6b392e6ec61cb5922b3a88bd4ac3"
+  review_identity_digest: "sha256:5a50a9e8fc0fb16916b4b802e2c94dd751bf0891f6bb8ca432e5807d823e53af"
   evidence_refs:
-    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-160858212-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-160858212-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/51dddf111eea86ceeae6a08fbecc29bcad10e36cfee04846535328f0d0d703b6.md"
-    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-160858212-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-160858212-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-160858212-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-181015768-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-181015768-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/a933e6650b50474907673201205c212634a174d2061a0f449c5b373f1e0dec3f.md"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-181015768-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-181015768-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-181015768-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609261720-KKE9ZN/README.md"
-    - ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/08b303b5830e201ae83e902b766c7a3bf3658172bead4082f1f461303a919b5e.patch"
-    - ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/3df9bbcc79489e85627c4a5e9a9ec9fed33fc94c2f32aadc1358e4a9f53f15ff.json"
-    - ".agentplane/tasks/202609261720-KKE9ZN/verification/20260928153207125-240201868571d349.json"
-    - ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/b57fdb6bb79427db36b4748ebda3b9e1e9818b3696bbbe636f8ec5b358e1bef1.json"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/94df67dc8d1275949d0ee38ca2c4876da6e16770dff95bd9a59ba0aeb8a201ee.patch"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/2937b0d9e3e378139693d2a9717dfc5585d6b99ce36eb6bccf738ea7aad73756.json"
+    - ".agentplane/tasks/202609261720-KKE9ZN/verification/20260928180827375-e3952578b7103f25.json"
+    - ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/731151e00cf573a597bfc0cc6a0fbe0db2103e866e845c4ba0b39959daf959e3.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The supplied current Git observation resolves the previous workspace-evidence gap: status is clean, and HEAD differs from the evaluated implementation only in this task's artifacts. Frozen verification records passing required checks at the evaluated SHA. Reviewed regressions cover planning reuse, approval binding, negative admission, drift, and retry recovery."
+    - "Reviewed planning reuse and recovery preserve approval, independent evaluation, stale-result rejection, and retry evidence. Closure and cursor recovery include positive and negative regressions. Required checks passed at the evaluated SHA. The current Git observation resolves the workspace-evidence gap: status is clean and subsequent changes are confined to this task's artifacts. M04 remains NOT ESTABLISHED; hosted integration and publication retain their separate gates."
 execution_route:
   frozen: true
   reason_codes:
