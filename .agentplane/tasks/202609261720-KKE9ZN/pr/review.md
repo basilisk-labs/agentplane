@@ -51,6 +51,7 @@ Created: 2026-09-27T19:16:20.496Z
  packages/agentplane/src/commands/task/new.ts       |   3 +-
  .../src/commands/task/planning-capabilities.ts     |   1 +
  .../roadmap-inline-plan-materialization.test.ts    | 151 ++++++++++
+ .../src/commands/task/run-supplied-plan.test.ts    |  93 +++++++
  .../commands/task/task-centric-external-result.ts  |   2 +-
  .../src/runner/usecases/kernel-task-lifecycle.ts   |  21 +-
  packages/core/src/runner/agent-work-order.ts       |   4 +-
@@ -59,7 +60,7 @@ Created: 2026-09-27T19:16:20.496Z
  .../tasks/task-centric/planning-obligation.test.ts | 102 +++++++
  packages/core/src/tasks/task-centric/policy.ts     |  55 ++++
  packages/core/src/tasks/task-centric/schema.ts     |  38 +++
- 30 files changed, 1464 insertions(+), 31 deletions(-)
+ 31 files changed, 1557 insertions(+), 31 deletions(-)
 ```
 
 </details>
