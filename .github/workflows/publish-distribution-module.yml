@@ -34,18 +34,18 @@ jobs:
       RELEASE_SHA: ${{ github.event.inputs.sha }}
       GITHUB_TOKEN: ${{ github.token }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.inputs.sha }}
           fetch-depth: 0
       - name: Checkout current workflow runtime
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: .agentplane/.release/runtime
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: "1.4.2"
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
       - name: Validate module input

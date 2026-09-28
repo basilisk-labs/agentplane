@@ -71,16 +71,16 @@ jobs:
           else
             echo "ref=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
           fi
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ steps.ref.outputs.ref }}
           fetch-depth: 0
       - name: Checkout current workflow runtime
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.sha != ''
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: .agentplane/.release/runtime
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
       - name: Classify release channel
@@ -302,7 +302,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: main
           persist-credentials: false
@@ -320,7 +320,7 @@ jobs:
           git merge-base --is-ancestor "${RELEASE_SHA}" origin/main
           git checkout --detach "${RELEASE_SHA}"
       - name: Checkout current packaging runtime
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.workflow_sha }}
           persist-credentials: false
@@ -329,7 +329,7 @@ jobs:
         with:
           bun-version: "1.4.2"
           no-cache: true
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
           package-manager-cache: false
@@ -386,14 +386,14 @@ jobs:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN || '' }}
       NPM_CONFIG_USERCONFIG: ${{ github.workspace }}/.npmrc
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ needs.detect.outputs.ref }}
           fetch-depth: 0
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: "1.4.2"
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
       - name: Download release-ready artifact
@@ -432,7 +432,7 @@ jobs:
           EOF
       - run: npm i -g npm@11.5.1
       - name: Cache Bun artifacts
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.bun/install/cache
@@ -550,7 +550,7 @@ jobs:
             --manifest .agentplane/.release/publish/distribution/release-distribution.json \
             --out .agentplane/.release/publish/scoop
       - name: Checkout current setup publication runtime
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.workflow_sha }}
           path: .agentplane/.release/runtime
