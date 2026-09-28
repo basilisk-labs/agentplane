@@ -1,10 +1,11 @@
 ---
 id: "202609281457-R0XP40"
 title: "Fix release candidate preparation order before 0.7.12 publication"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -41,6 +42,22 @@ quality_review:
     - "Native validation records 24 passing release CI contract tests, ESLint exit 0 and typecheck exit 0."
     - "Source inspection confirms no version generator runs before native candidate. Requested-version mismatch and malformed version metadata stop before registry and candidate. The selected plan directory is explicit, so a later unrelated latest plan cannot silently change the selected candidate."
     - "Only the two declared implementation/test paths changed; task and PR artifacts were written by the controller."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:6ed8ed7938a222b3405ea754fd483ad7e07e847738da1034a4e53b5ab0459158"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-09-28T17:16:04.669Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -280,9 +297,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "054771d7822e484c4eeb4ed6a89a7d93c715b639"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "2438e9a5f5841bbb3bcce0159a2f5c7208257ff2"
+  message: "✅ R0XP40 task: persist canonical completion"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -290,9 +310,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-09-28T17:16:04.669Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "2438e9a5f5841bbb3bcce0159a2f5c7208257ff2"
 doc_version: 3
-doc_updated_at: "2026-09-28T17:06:57.198Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-28T17:16:04.669Z"
+doc_updated_by: "CODER"
 description: "User-authorized release blocker repair. The candidate wrapper currently runs release plan, then version:bump --write, then release candidate. Native release candidate correctly requires a clean tracked tree and plan.prevVersion; the wrapper violates both preconditions. Reproduce with a focused regression test. Preserve native candidate ownership of version mutation, exact requested target validation, registry availability checks, task registry and incident gates, protected-branch publication, and all required prepublish checks. Do not weaken native preflight or publish locally. Coordinate integration after feature task 202609261720-KKE9ZN. Do not delete any GitHub repository."
 sections:
   Summary: |-
@@ -513,6 +541,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:e213038d140a7b4dc40967f3fc7fb6a49430212cac19fce59665ae75aa746381"
     work_order_id: "sha256:6af13b533083ae882e64256721e5ffd772660b74965932400dc006c52244a421"
+  implementation_commit:
+    hash: "054771d7822e484c4eeb4ed6a89a7d93c715b639"
+    message: "🚧 R0XP40 task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "81fc89167d9d7655bd29664849af6fa2eb4bb054"
@@ -1193,3 +1224,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:6ed8ed7938a222b3405ea754fd483ad7e07e847738da1034a4e53b5ab0459158`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-09-28T17:16:04.669Z`

@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:0b828f93e9644cc20af767db40d3561da36d9380d2e9b652f859458126e76630",
   "pr_number": 6030,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6030",
+  "pre_merge_closure": {
+    "basis_commit": "2438e9a5f5841bbb3bcce0159a2f5c7208257ff2",
+    "branch": "task/202609281457-R0XP40/fix-release-candidate-preparation-order-before-0",
+    "pr_number": 6030,
+    "recorded_at": "2026-09-28T17:16:05.030Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
