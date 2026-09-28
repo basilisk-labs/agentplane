@@ -331,7 +331,7 @@ export async function resolveImplementationVerificationTask(opts: {
   const observedChanges = await resolveObservedVerificationChangeSet({
     ctx: opts.command,
     evaluatedSha,
-    taskId: opts.task.id,
+    task: opts.task,
     artifactTaskIds: taskIds,
     execution,
   });

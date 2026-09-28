@@ -202,7 +202,7 @@ async function recordVerificationResult(opts: {
         const observedChanges = await resolveObservedVerificationChangeSet({
           ctx,
           evaluatedSha,
-          taskId: current.id,
+          task: current,
           artifactTaskIds: qualityReviewTaskIds,
           execution: taskCommand.execution,
           snapshot: opts.verificationSnapshot,
