@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 0082fa3231b4498a9eb6d7d802ba0473a7c0edc4..b34ba169ee8bc10d177ae4db191660c4fcd7fe55",
+      "command": "git diff --check b34ba169ee8bc10d177ae4db191660c4fcd7fe55..ec7b89a688152237ee3189ca89b8731716881dba",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 0082fa3231b4498a9eb6d7d802ba0473a7c0edc4..b34ba169ee8bc10d177ae4db191660c4fcd7fe55",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB b34ba169ee8bc10d177ae4db191660c4fcd7fe55..ec7b89a688152237ee3189ca89b8731716881dba",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,7 +24,21 @@
         "M\t.agentplane/tasks/202609261720-KKE9ZN/pr/review.md",
         "M\t.agentplane/tasks/202609261720-KKE9ZN/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202609261720-KKE9ZN/supervision/implementation-evidence.json",
-        "A\tpackages/agentplane/src/commands/task/run-supplied-plan.test.ts"
+        "M\tpackages/agentplane/src/commands/acr/generate.ts",
+        "M\tpackages/agentplane/src/commands/task/brief.command.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-plan-proposal.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-plan.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-planning-view.test.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-planning-view.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-read.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-semantic-result.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-supplied-plan.ts",
+        "M\tpackages/agentplane/src/commands/task/next-action.command.ts",
+        "M\tpackages/agentplane/src/commands/task/ready.ts",
+        "M\tpackages/agentplane/src/commands/task/show-kernel.test.ts",
+        "M\tpackages/agentplane/src/commands/task/show.ts",
+        "M\tpackages/agentplane/src/commands/task/status.command.ts",
+        "M\tschemas/agent-semantic-result.schema.json"
       ]
     },
     {
@@ -34,14 +48,29 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "0082fa3231b4498a9eb6d7d802ba0473a7c0edc4",
-  "implementation_commit": "b34ba169ee8bc10d177ae4db191660c4fcd7fe55",
+  "execution_base_commit": "b34ba169ee8bc10d177ae4db191660c4fcd7fe55",
+  "implementation_commit": "ec7b89a688152237ee3189ca89b8731716881dba",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
       " M .agentplane/tasks/202609261720-KKE9ZN/README.md",
       " M .agentplane/tasks/202609261720-KKE9ZN/supervision/declared-checks.json",
-      " M .agentplane/tasks/202609261720-KKE9ZN/supervision/implementation-evidence.json"
+      " M .agentplane/tasks/202609261720-KKE9ZN/supervision/implementation-evidence.json",
+      " M packages/agentplane/src/commands/acr/generate.ts",
+      " M packages/agentplane/src/commands/task/brief.command.ts",
+      " M packages/agentplane/src/commands/task/kernel-plan.ts",
+      " M packages/agentplane/src/commands/task/kernel-read.ts",
+      " M packages/agentplane/src/commands/task/kernel-semantic-result.ts",
+      " M packages/agentplane/src/commands/task/kernel-supplied-plan.ts",
+      " M packages/agentplane/src/commands/task/next-action.command.ts",
+      " M packages/agentplane/src/commands/task/ready.ts",
+      " M packages/agentplane/src/commands/task/show-kernel.test.ts",
+      " M packages/agentplane/src/commands/task/show.ts",
+      " M packages/agentplane/src/commands/task/status.command.ts",
+      " M schemas/agent-semantic-result.schema.json",
+      "?? packages/agentplane/src/commands/task/kernel-plan-proposal.ts",
+      "?? packages/agentplane/src/commands/task/kernel-planning-view.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-planning-view.ts"
     ],
     "classification": [
       {
@@ -55,6 +84,66 @@
       {
         "classification": "removed_during_execution",
         "line": " M .agentplane/tasks/202609261720-KKE9ZN/supervision/implementation-evidence.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/acr/generate.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/brief.command.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-plan.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-read.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-semantic-result.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-supplied-plan.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/next-action.command.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/ready.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/show-kernel.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/show.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/status.command.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M schemas/agent-semantic-result.schema.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/kernel-plan-proposal.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/kernel-planning-view.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/kernel-planning-view.ts"
       }
     ],
     "final": [],
@@ -62,7 +151,22 @@
     "removed_after_execution_baseline": [
       " M .agentplane/tasks/202609261720-KKE9ZN/README.md",
       " M .agentplane/tasks/202609261720-KKE9ZN/supervision/declared-checks.json",
-      " M .agentplane/tasks/202609261720-KKE9ZN/supervision/implementation-evidence.json"
+      " M .agentplane/tasks/202609261720-KKE9ZN/supervision/implementation-evidence.json",
+      " M packages/agentplane/src/commands/acr/generate.ts",
+      " M packages/agentplane/src/commands/task/brief.command.ts",
+      " M packages/agentplane/src/commands/task/kernel-plan.ts",
+      " M packages/agentplane/src/commands/task/kernel-read.ts",
+      " M packages/agentplane/src/commands/task/kernel-semantic-result.ts",
+      " M packages/agentplane/src/commands/task/kernel-supplied-plan.ts",
+      " M packages/agentplane/src/commands/task/next-action.command.ts",
+      " M packages/agentplane/src/commands/task/ready.ts",
+      " M packages/agentplane/src/commands/task/show-kernel.test.ts",
+      " M packages/agentplane/src/commands/task/show.ts",
+      " M packages/agentplane/src/commands/task/status.command.ts",
+      " M schemas/agent-semantic-result.schema.json",
+      "?? packages/agentplane/src/commands/task/kernel-plan-proposal.ts",
+      "?? packages/agentplane/src/commands/task/kernel-planning-view.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-planning-view.ts"
     ],
     "unchanged_from_execution_baseline": []
   },

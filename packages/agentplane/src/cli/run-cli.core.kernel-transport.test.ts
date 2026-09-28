@@ -622,12 +622,8 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
       const preview = await runJson(root, ["task", "run", taskId, "--dry-run", "--json"]);
       expect(preview.action).toMatchObject({ kind: "read_only" });
       expect(execute).not.toHaveBeenCalled();
-      const planned = await runJson(root, ["task", "run", taskId, "--json"]);
       if (mode === "real-custom") {
-        expect(planned.action).toMatchObject({
-          kind: "human_required",
-          reason: "canonical_runner_receipt_not_successful",
-        });
+        await refused(root, ["task", "run", taskId, "--json"], "required read-only planning");
         const command = await loadCommandContext({ cwd: root });
         const runtime = await createKernelRuntime({
           command,
@@ -637,9 +633,10 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
         });
         const state = await runtime.adapter.read(taskId);
         expect(state.kind === "canonical" && state.record.aggregate.current_plan).toBeNull();
-        expect(execute).toHaveBeenCalledTimes(1);
+        expect(execute).not.toHaveBeenCalled();
         return;
       }
+      const planned = await runJson(root, ["task", "run", taskId, "--json"]);
       expect(planned.action).toMatchObject({ kind: "approval_required" });
       await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]);
       const command = await loadCommandContext({ cwd: root });

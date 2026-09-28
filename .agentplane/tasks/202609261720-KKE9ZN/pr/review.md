@@ -32,6 +32,7 @@ Created: 2026-09-27T19:16:20.496Z
  bun.lock                                           |   6 +-
  .../task-backend/kernel-backend-adapter.ts         |  10 +-
  .../src/adapters/task-backend/kernel-documents.ts  |  18 ++
+ .../src/cli/run-cli.core.kernel-transport.test.ts  |   9 +-
  ...core.task-advance.roadmap-supplied-plan.test.ts |  82 ++++++
  ...i.core.task-advance.worktree-resolution.test.ts |  27 +-
  .../agentplane/src/cli/supplied-plan.testkit.ts    |  56 ++++
@@ -52,6 +53,7 @@ Created: 2026-09-27T19:16:20.496Z
  .../src/commands/task/kernel-planning-view.test.ts | 234 ++++++++++++++++
  .../src/commands/task/kernel-planning-view.ts      | 197 +++++++++++++
  .../agentplane/src/commands/task/kernel-read.ts    |  20 +-
+ .../src/commands/task/kernel-run.testkit.ts        |  13 +-
  .../src/commands/task/kernel-semantic-result.ts    |   6 +
  .../src/commands/task/kernel-supplied-plan.ts      |  60 ++++
  .../src/commands/task/kernel-work-order.ts         |  14 +-
@@ -60,12 +62,14 @@ Created: 2026-09-27T19:16:20.496Z
  .../src/commands/task/planning-capabilities.ts     |   1 +
  packages/agentplane/src/commands/task/ready.ts     |   2 +-
  .../roadmap-inline-plan-materialization.test.ts    | 151 ++++++++++
+ .../src/commands/task/run-required-planner.test.ts | 158 +++++++++++
  .../src/commands/task/run-supplied-plan.test.ts    |  93 +++++++
  .../src/commands/task/show-kernel.test.ts          |   3 +
  packages/agentplane/src/commands/task/show.ts      |   2 +
  .../agentplane/src/commands/task/status.command.ts |   2 +-
  .../commands/task/task-centric-external-result.ts  |   2 +-
  .../src/runner/usecases/kernel-task-lifecycle.ts   |  21 +-
+ .../src/runner/usecases/task-run-authority.ts      |  28 ++
  packages/core/src/runner/agent-work-order.ts       |   4 +-
  packages/core/src/tasks/index.ts                   |   3 +
  packages/core/src/tasks/kernel-semantic.ts         |   7 +-
@@ -73,7 +77,7 @@ Created: 2026-09-27T19:16:20.496Z
  packages/core/src/tasks/task-centric/policy.ts     |  55 ++++
  packages/core/src/tasks/task-centric/schema.ts     |  38 +++
  schemas/agent-semantic-result.schema.json          |  12 +
- 44 files changed, 2069 insertions(+), 62 deletions(-)
+ 48 files changed, 2270 insertions(+), 69 deletions(-)
 ```
 
 </details>
