@@ -1,10 +1,11 @@
 ---
 id: "202609291255-PGF2EM"
 title: "Recognize empty schema object staging directories during task scans"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -39,6 +40,22 @@ quality_review:
     - "The scanner accepts only an optional empty real .staging sibling. Existing object digest, schema identity and containment checks remain unchanged."
     - "Native-writer regression covers empty staging and five unsafe shapes across cold and warm scans. Existing corrupt-schema regressions remain intact. Native validation records 34 passing tests and a passing typecheck bound to this implementation commit."
     - "Repository evidence digest and source output digest were verified. No unexpected source changes were found."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:65de8a66cc3c013e18580af27f5898a57af210648335a0c5e974d793c26fe228"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-09-29T19:17:37.021Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -205,9 +222,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "1f37e400a02032977c18e1ee776acfc581217045"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "eeccba88603f7defccf13f1286e3ed04ea90481f"
+  message: "✅ PGF2EM task: persist canonical completion"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -215,9 +235,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-09-29T19:17:37.021Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "eeccba88603f7defccf13f1286e3ed04ea90481f"
 doc_version: 3
-doc_updated_at: "2026-09-29T13:11:54.193Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-29T19:17:37.021Z"
+doc_updated_by: "CODER"
 description: "User-approved scanner repair. Native quality schema storage leaves an empty quality/objects/.staging directory next to sha256. Existing schema-only recognition rejects this legitimate shape and blocks canonical commit reconciliation. Recognize only an empty real staging directory, preserve all artifacts, and retain warnings for nonempty staging, symlinks, unknown siblings, damaged schemas and genuinely unreadable README. Add cold and warm projection regressions, run focused tests and typecheck, then resume issue 6020."
 sections:
   Summary: |-
@@ -323,6 +351,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:09db97da94191bf52c85f2da40987e89f451881d341e0d791eb3973da5a7c067"
     work_order_id: "sha256:7c772c11d15e18f5d59ff1864e57bec5f0bfbdd409126e6758ff7d59b825e339"
+  implementation_commit:
+    hash: "1f37e400a02032977c18e1ee776acfc581217045"
+    message: "🚧 PGF2EM task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "4119c4342407fa28a7283521e2b0f87bbea5f243"
@@ -875,3 +906,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:65de8a66cc3c013e18580af27f5898a57af210648335a0c5e974d793c26fe228`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-09-29T19:17:37.021Z`
